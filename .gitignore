@@ -3,3 +3,7 @@
 CMakeLists.txt.user*
 *.patch
 doc/_build/*
+*~
+*.kate-swp
+*.kdev4
+win/
