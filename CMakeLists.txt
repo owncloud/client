@@ -4,6 +4,10 @@ project(mirall)
 set(PACKAGE "mirall")
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
 
+
+option(ENABLE_SOCKETAPI "Enable SocketApi needed for file manager integration" OFF)
+
+
 if ( EXISTS ${CMAKE_SOURCE_DIR}/OEM.cmake )
      include ( ${CMAKE_SOURCE_DIR}/OEM.cmake )
 else ()

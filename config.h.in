@@ -5,4 +5,5 @@
 #cmakedefine WITH_CSYNC 1
 
 #cmakedefine THEME_CLASS @THEME_CLASS@
+#cmakedefine ENABLE_SOCKETAPI
 #endif
