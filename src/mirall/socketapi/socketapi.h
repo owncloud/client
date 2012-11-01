@@ -16,7 +16,12 @@
 #ifndef SOCKETAPI_H
 #define SOCKETAPI_H
 
+#include <attica/provider.h>
 #include <QWeakPointer>
+
+namespace Attica {
+    class ProviderManager;
+};
 
 class QUrl;
 class QLocalSocket;
@@ -41,16 +46,24 @@ private slots:
     void onReadyRead();
     void onSyncStateChanged(const QString&);
 
+    void onProviderAdded(const Attica::Provider& provider);
+    void onGotPublicShareLink(Attica::BaseJob*);
+
 private:
     void sendMessage(QLocalSocket* socket, const QString& message);
     void broadcastMessage(const QString& message);
 
     Q_INVOKABLE void command_RETRIEVE_FOLDER_STATUS(const QString& argument, QLocalSocket* socket);
+    Q_INVOKABLE void command_PUBLIC_SHARE_LINK(const QString& argument, QLocalSocket* socket);
 
 private:
     QLocalServer* _localServer;
     FolderMan* _folderMan;
     QList< QLocalSocket* > _listeners;
+
+    QString _remotePath;
+    Attica::ProviderManager* _atticaManager;
+    Attica::Provider _atticaProvider;
 };
 
 }

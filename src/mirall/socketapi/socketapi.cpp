@@ -20,6 +20,8 @@
 #include "../folder.h"
 #include "../owncloudfolder.h"
 
+#include <attica/providermanager.h>
+
 #include <QDebug>
 #include <QUrl>
 #include <QLocalSocket>
@@ -29,7 +31,7 @@
 #include <QFile>
 #include <QDir>
 #include <QApplication>
-#include <sys/socket.h>
+#include <QClipboard>
 
 using namespace Mirall;
 
@@ -54,6 +56,15 @@ SocketApi::SocketApi(QObject* parent, const QUrl& localFile, FolderMan* folderMa
 
     // folder watcher
     connect(_folderMan, SIGNAL(folderSyncStateChange(QString)), SLOT(onSyncStateChanged(QString)));
+
+    // setup attica
+    QString tmp(QLatin1String("%1ocs/providers.php"));
+    QUrl providerFile(tmp.arg(MirallConfigFile().ownCloudUrl()));
+
+    _atticaManager = new Attica::ProviderManager();
+    DEBUG << "ctor: Add provider file: " << providerFile;
+    _atticaManager->addProviderFile(providerFile);
+    connect(_atticaManager, SIGNAL(providerAdded(Attica::Provider)), SLOT(onProviderAdded(Attica::Provider)));
 }
 
 SocketApi::~SocketApi()
@@ -194,5 +205,56 @@ void SocketApi::command_RETRIEVE_FOLDER_STATUS(const QString& argument, QLocalSo
         QString message("%1:%2:%3");
         message = message.arg("STATUS").arg(statusString).arg(absoluteFilePath);
         sendMessage(socket, message);
+    }
+}
+
+void SocketApi::command_PUBLIC_SHARE_LINK(const QString& argument, QLocalSocket* socket)
+{
+    DEBUG << "copy public share link for" << argument;
+
+    if(!_atticaProvider.isEnabled()) {
+        qWarning() << "Attica Provider is not enabled!";
+        return;
+    }
+
+
+    ownCloudFolder* folder = qobject_cast< ownCloudFolder* >(_folderMan->folderForPath( argument ));
+    if(!folder)
+        return;
+
+    int lastChars = argument.length()-folder->path().length();
+    QString remotePath;
+    remotePath = argument.right(lastChars);
+    remotePath.prepend("/");
+    remotePath.prepend(folder->secondPath());
+
+    qDebug() << "remote path: " << remotePath;
+    _remotePath = remotePath;
+
+    Attica::ItemPostJob<Attica::Link>* job = _atticaProvider.requestPublicShareLink(_remotePath);
+    connect(job, SIGNAL(finished(Attica::BaseJob*)), SLOT(onGotPublicShareLink(Attica::BaseJob*)));
+    job->start();
+}
+
+void SocketApi::onProviderAdded(const Attica::Provider& provider)
+{
+    qDebug() << Q_FUNC_INFO << provider.name() << provider.baseUrl() << provider.isValid() << provider.isEnabled();
+    _atticaProvider = provider;
+
+    MirallConfigFile config;
+    _atticaProvider.saveCredentials(config.ownCloudUser(), config.ownCloudPasswd());
+}
+
+void SocketApi::onGotPublicShareLink(Attica::BaseJob* job)
+{
+    Attica::ItemPostJob<Attica::Link>* itemJob = static_cast<Attica::ItemPostJob<Attica::Link>*>(job);
+    QString publicLink = itemJob->result().url().toString();
+
+    if(!publicLink.isEmpty()) {
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText(publicLink);
+        DEBUG << "copied " << publicLink << "to clipboard";
+    } else {
+        DEBUG << "public link empty, not copying to clipboard";
     }
 }
