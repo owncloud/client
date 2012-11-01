@@ -43,6 +43,7 @@ class OwncloudSetupWizard;
 class ownCloudInfo;
 class SslErrorDialog;
 class UpdateDetector;
+class SocketApi;
 
 class Application : public SharedTools::QtSingleApplication
 {
@@ -124,6 +125,7 @@ private:
     UpdateDetector *_updateDetector;
     QMap<QString, QString> _overallStatusStrings;
     LogBrowser *_logBrowser;
+    SocketApi *_socketApi;
     QString _logFile;
     bool _showLogWindow;
     bool _logFlush;

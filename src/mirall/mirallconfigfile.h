@@ -36,6 +36,7 @@ public:
     };
 
     QString configPath() const;
+    QString configPathWithAppName() const;
     QString configFile() const;
     QString excludeFile() const;
 
