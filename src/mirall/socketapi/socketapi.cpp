@@ -131,3 +131,68 @@ void SocketApi::broadcastMessage(const QString& message)
         sendMessage(current, message);
     }
 }
+
+void SocketApi::command_RETRIEVE_FOLDER_STATUS(const QString& argument, QLocalSocket* socket)
+{
+    qDebug() << Q_FUNC_INFO << argument;
+    //TODO: do security checks?!
+    ownCloudFolder* folder = qobject_cast< ownCloudFolder* >(_folderMan->folderForPath( argument ));
+    // this can happen in offline mode e.g.: nothing to worry about
+    if(!folder)
+    {
+        DEBUG << "folder offline or not watched:" << argument;
+        return;
+    }
+
+    QDir dir(argument);
+    foreach(QString entry, dir.entryList())
+    {
+        QString absoluteFilePath = dir.absoluteFilePath(entry);
+        QString statusString;
+        SyncFileStatus fileStatus = folder->fileStatus(absoluteFilePath);
+        switch(fileStatus)
+        {
+            case STATUS_NONE:
+                statusString = QLatin1String("STATUS_NONE");
+                break;
+            case STATUS_EVAL:
+                statusString = QLatin1String("STATUS_EVAL");
+                break;
+            case STATUS_REMOVE:
+                statusString = QLatin1String("STATUS_REMOVE");
+                break;
+            case STATUS_RENAME:
+                statusString = QLatin1String("STATUS_RENAME");
+                break;
+            case STATUS_NEW:
+                statusString = QLatin1String("STATUS_NEW");
+                break;
+            case STATUS_CONFLICT:
+                statusString = QLatin1String("STATUS_CONFLICT");
+                break;
+            case STATUS_IGNORE:
+                statusString = QLatin1String("STATUS_IGNORE");
+                break;
+            case STATUS_SYNC:
+                statusString = QLatin1String("STATUS_SYNC");
+                break;
+            case STATUS_STAT_ERROR:
+                statusString = QLatin1String("STATUS_STAT_ERROR");
+                break;
+            case STATUS_ERROR:
+                statusString = QLatin1String("STATUS_ERROR");
+                break;
+            case STATUS_UPDATED:
+                statusString = QLatin1String("STATUS_UPDATED");
+                break;
+            default:
+                qWarning() << "not all SyncFileStatus items checked!";
+                Q_ASSERT(false);
+                statusString = QLatin1String("STATUS_NONE");
+
+        }
+        QString message("%1:%2:%3");
+        message = message.arg("STATUS").arg(statusString).arg(absoluteFilePath);
+        sendMessage(socket, message);
+    }
+}
