@@ -330,12 +330,16 @@ void ownCloudFolder::wipe()
 SyncFileStatus ownCloudFolder::fileStatus( const QString& file )
 {
     if( file.isEmpty() ) return STATUS_NONE;
-    QFileInfo fi( path(), file );
+
 
     foreach( const SyncFileItem item, _items ) {
-        qDebug() << "FileStatus compare: " << item.file << " <> " << fi.absoluteFilePath();
+        QString currentAbsoluteFilePath("%1%2");
+        currentAbsoluteFilePath = currentAbsoluteFilePath.arg(path()).arg(item.file);
+//         qDebug() << "FileStatus compare: " << currentAbsoluteFilePath << " <> " << file;
 
-        if( item.file == fi.absoluteFilePath() ) {
+
+        if( currentAbsoluteFilePath == file ) {
+
             switch( item.instruction ) {
             case   CSYNC_INSTRUCTION_NONE:
                 return STATUS_NONE;
@@ -347,7 +351,7 @@ SyncFileStatus ownCloudFolder::fileStatus( const QString& file )
                 return STATUS_RENAME;
                 break;
             case   CSYNC_INSTRUCTION_NEW:
-                return STATUS_NEW;
+                return STATUS_NONE;
                 break;
             case   CSYNC_INSTRUCTION_CONFLICT:
                 return STATUS_CONFLICT;
