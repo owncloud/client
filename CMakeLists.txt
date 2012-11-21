@@ -4,6 +4,10 @@ project(mirall)
 set(PACKAGE "mirall")
 set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
 
+
+option(ENABLE_SOCKETAPI "Enable SocketApi needed for file manager integration" OFF)
+
+
 if ( EXISTS ${CMAKE_SOURCE_DIR}/OEM.cmake )
      include ( ${CMAKE_SOURCE_DIR}/OEM.cmake )
 else ()
@@ -40,6 +44,7 @@ endif()
 find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui QtXml QtNetwork QtTest REQUIRED )
 find_package(Csync)
 find_package(INotify)
+find_package(LibAttica)
 
 set(WITH_CSYNC CSYNC_FOUND)
 set(USE_INOTIFY ${INOTIFY_FOUND})

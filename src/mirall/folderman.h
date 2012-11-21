@@ -23,6 +23,7 @@
 #include "mirall/folderwatcher.h"
 
 class QSignalMapper;
+class QUrl;
 
 namespace Mirall {
 
@@ -56,6 +57,11 @@ public:
       * return the folder by alias or NULL if no folder with the alias exists.
       */
     Folder *folder( const QString& );
+
+    /**
+     *  return the folder which the file or directory stored in path is in
+     */
+    Folder *folderForPath( const QUrl& path );
 
     /**
       * return the last sync result by alias

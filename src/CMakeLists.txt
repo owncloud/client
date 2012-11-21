@@ -132,6 +132,17 @@ set(mirall_HEADERS
     mirall/proxydialog.h
 )
 
+set(mirall_LINK_LIBRARIES "")
+
+if(ENABLE_SOCKETAPI)
+    list(APPEND mirall_SRCS mirall/socketapi/socketapi.cpp)
+    list(APPEND mirall_HEADERS mirall/socketapi/socketapi.h)
+    list(APPEND mirall_LINK_LIBRARIES ${LIBATTICA_LIBRARIES})
+    include_directories(${LIBATTICA_INCLUDE_DIR})
+endif()
+
+
+
 if( UNIX AND NOT APPLE)
     if(NOT DEFINED USE_INOTIFY)
         set(USE_INOTIFY ON)
@@ -185,6 +196,9 @@ if(NOT BUILD_OWNCLOUD_OSX_BUNDLE)
     target_link_libraries(mirall ${QT_LIBRARIES} )
     target_link_libraries(mirall mirallsync)
     target_link_libraries(mirall ${CSYNC_LIBRARY})
+    if(mirall_LINK_LIBRARIES)
+        target_link_libraries(mirall ${mirall_LINK_LIBRARIES})
+    endif()
 
     set_target_properties( mirall PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY  ${BIN_OUTPUT_DIRECTORY} )
@@ -222,6 +236,9 @@ set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
 target_link_libraries( ${APPLICATION_EXECUTABLE} ${QT_LIBRARIES} )
 target_link_libraries( ${APPLICATION_EXECUTABLE} owncloudsync )
 target_link_libraries( ${APPLICATION_EXECUTABLE} ${CSYNC_LIBRARY} )
+if(mirall_LINK_LIBRARIES)
+    target_link_libraries( ${APPLICATION_EXECUTABLE} ${mirall_LINK_LIBRARIES})
+endif()
 
 install(TARGETS ${APPLICATION_EXECUTABLE}
         RUNTIME DESTINATION bin
