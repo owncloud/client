@@ -461,7 +461,7 @@ Copyright 2012, die ownCloud Entwickler.</translation>
     <message>
         <location filename="../src/mirall/application.cpp" line="768"/>
         <source>The folder waits to start syncing.</source>
-        <translation>Der Ordner wartet auf den Beginn der Synchronistation.</translation>
+        <translation>Der Ordner wartet auf den Beginn der Synchronisation.</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="771"/>
@@ -532,7 +532,7 @@ Copyright 2012, die ownCloud Entwickler.</translation>
     <message>
         <location filename="../src/mirall/application.cpp" line="835"/>
         <source>The syncing operation is running.&lt;br/&gt;Do you want to terminate it?</source>
-        <translation>Die Synchronistation läuft gerade.&lt;br/&gt;Wollen Sie diese beenden?</translation>
+        <translation>Die Synchronisation läuft gerade.&lt;br/&gt;Wollen Sie diese beenden?</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="934"/>
@@ -542,7 +542,7 @@ Copyright 2012, die ownCloud Entwickler.</translation>
     <message>
         <location filename="../src/mirall/application.cpp" line="937"/>
         <source>Waits to start syncing.</source>
-        <translation>Wartet auf Beginn der Synchronistation</translation>
+        <translation>Wartet auf Beginn der Synchronisation</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="966"/>
@@ -583,12 +583,12 @@ Copyright 2012, die ownCloud Entwickler.</translation>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="251"/>
         <source>The system time on this client is different than the system time on the server. Please use a time synchronization service (NTP) on the server and client machines so that the times remain the same.</source>
-        <translation>Die Uhrzeit auf diesem Klienten und dem Server sind verschieden. Bitte verwenden Sie ein Zeitsynchronisationsprotokolls (NTP) auf Ihrem Server und Klienten, damit die gleiche Uhrzeit verwendet wird.</translation>
+        <translation>Die Uhrzeit auf diesem Klienten und dem Server sind verschieden. Bitte verwenden Sie ein Zeitsynchronisationsprotokoll (NTP) auf Ihrem Server und Klienten, damit die gleiche Uhrzeit verwendet wird.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="256"/>
         <source>CSync could not detect the filesystem type.</source>
-        <translation>CSync konnte den Typ des Dateisystem nicht feststellen.</translation>
+        <translation>CSync konnte den Typ des Dateisystems nicht feststellen.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="259"/>
@@ -649,7 +649,7 @@ Please make sure that all directories are writeable.</source>
         <source>CSync encountered an error while examining the file system.
 Syncing is not possible.</source>
         <translation>CSync hatte einen Fehler bei der Prüfung des Dateisystems.
-Synchronistation ist nicht möglich.</translation>
+Synchronisation ist nicht möglich.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="315"/>
@@ -661,7 +661,7 @@ Bitte schreiben Sie einen Fehlerbericht.</translation>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="318"/>
         <source>Local filesystem problems. Better disable Syncing and check.</source>
-        <translation>Lokale Dateisystem-Probleme. Am besten ist es, die Synchronistation zu deaktivieren und den Fehler zu überprüfen.</translation>
+        <translation>Lokale Dateisystem-Probleme. Am besten ist es, die Synchronisation zu deaktivieren und den Fehler zu überprüfen.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="323"/>
@@ -1052,7 +1052,7 @@ Das Setup kann nicht ausgeführt werden.</translation>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="378"/>
         <source>Local sync folder %1 already exists, setting it up for sync.&lt;br/&gt;&lt;br/&gt;</source>
-        <translation>Lokaler Sync-Ordner %1 existiert bereits, aktiviere Synchronistation.&lt;br/&gt;&lt;br/&gt;</translation>
+        <translation>Lokaler Sync-Ordner %1 existiert bereits, aktiviere Synchronisation.&lt;br/&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="380"/>
@@ -1692,7 +1692,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/mirall/theme.cpp" line="45"/>
         <source>Waiting to start sync</source>
-        <translation>Warte, um mit der Synchronistation zu beginnen</translation>
+        <translation>Warte, um mit der Synchronisation zu beginnen</translation>
     </message>
     <message>
         <location filename="../src/mirall/theme.cpp" line="48"/>
