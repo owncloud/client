@@ -1,6 +1,9 @@
 ChangeLog
 =========
-version 1.1.2 (release 2012-11- ), csync 0.60.2 required
+version 1.1.3 (release 2012-11-30), csync 0.60.3 required
+  * No changes to mirall, csync fixes only.
+
+version 1.1.2 (release 2012-11-26), csync 0.60.2 required
   * [Fixes] Allow to properly cancel the password dialog.
   * [Fixes] Share folder name correctly percent encoded with old Qt
             4.6 builds ie. Debian.
