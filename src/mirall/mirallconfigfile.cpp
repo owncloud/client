@@ -299,6 +299,18 @@ QString MirallConfigFile::ownCloudUser( const QString& connection ) const
     return user;
 }
 
+void MirallConfigFile::setRemotePollIntval(int interval, const QString &connection )
+{
+    QString con( connection );
+    if( connection.isEmpty() ) con = defaultConnection();
+
+    QSettings settings( configFile(), QSettings::IniFormat );
+    settings.setIniCodec( "UTF-8" );
+    settings.beginGroup( con );
+    settings.setValue("remotePollInterval", interval );
+    settings.sync();
+}
+
 int MirallConfigFile::remotePollInterval( const QString& connection ) const
 {
   QString con( connection );

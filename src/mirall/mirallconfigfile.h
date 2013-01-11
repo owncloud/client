@@ -75,6 +75,7 @@ public:
 
     /* Poll intervals in milliseconds */
     int localPollInterval ( const QString& connection = QString() ) const;
+    void setRemotePollIntval(int interval, const QString& connection = QString() );
     int remotePollInterval( const QString& connection = QString() ) const;
     int pollTimerExceedFactor( const QString& connection = QString() ) const;
 
