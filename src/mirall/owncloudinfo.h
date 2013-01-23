@@ -45,12 +45,12 @@ public:
       * a general GET request to the ownCloud. If the second bool parameter is
       * true, the WebDAV server is queried.
       */
-    void getRequest( const QString&, bool );
+    QNetworkReply* getRequest( const QString&, bool );
 
     /**
       * convenience: GET request to the WebDAV server.
       */
-    void getWebDAVPath( const QString& );
+    QNetworkReply* getWebDAVPath( const QString& );
 
     /**
       * There is a global flag here if the user once decided against trusting the
@@ -69,9 +69,17 @@ public:
     bool certsUntrusted();
 
     /**
+     * Set a NetworkAccessManager to be used
+     *
+     * This method will take ownership of the NetworkAccessManager, so you can just
+     * set it initially and forget about its memory management.
+     */
+    void setNetworkAccessManager( QNetworkAccessManager *qnam );
+
+    /**
       * Create a collection via owncloud. Provide a relative path.
       */
-    void mkdirRequest( const QString& );
+    QNetworkReply* mkdirRequest( const QString& );
 
     /**
      * Use a custom ownCloud configuration file identified by handle

@@ -48,11 +48,20 @@ ownCloudInfo* ownCloudInfo::instance()
 }
 
 ownCloudInfo::ownCloudInfo() :
-    QObject(0)
+    QObject(0),
+    _manager(0)
 {
     _connection = Theme::instance()->appName();
 
-    _manager = new QNetworkAccessManager( this );
+    setNetworkAccessManager( new QNetworkAccessManager( this ) );
+
+}
+
+void ownCloudInfo::setNetworkAccessManager( QNetworkAccessManager* qnam )
+{
+    delete _manager;
+    qnam->setParent( this );
+    _manager = qnam;
 
     MirallConfigFile cfg( _configHandle );
     QSettings settings( cfg.configFile(), QSettings::IniFormat);
@@ -66,6 +75,7 @@ ownCloudInfo::ownCloudInfo() :
              this, SLOT(slotAuthentication(QNetworkReply*,QAuthenticator*)));
 
     _certsUntrusted = false;
+
 }
 
 ownCloudInfo::~ownCloudInfo()
@@ -91,12 +101,12 @@ void ownCloudInfo::checkInstallation()
     getRequest( QLatin1String("status.php"), false );
 }
 
-void ownCloudInfo::getWebDAVPath( const QString& path )
+QNetworkReply* ownCloudInfo::getWebDAVPath( const QString& path )
 {
-    getRequest( path, true );
+    return getRequest( path, true );
 }
 
-void ownCloudInfo::getRequest( const QString& path, bool webdav )
+QNetworkReply* ownCloudInfo::getRequest( const QString& path, bool webdav )
 {
     qDebug() << "Get Request to " << path;
 
@@ -117,6 +127,7 @@ void ownCloudInfo::getRequest( const QString& path, bool webdav )
 
     connect( reply, SIGNAL( error(QNetworkReply::NetworkError )),
              this, SLOT(slotError( QNetworkReply::NetworkError )));
+    return reply;
 }
 
 #if QT46_IMPL
@@ -184,7 +195,7 @@ void ownCloudInfo::qhttpRequestFinished(int id, bool success )
      }
 }
 #else
-void ownCloudInfo::mkdirRequest( const QString& dir )
+QNetworkReply* ownCloudInfo::mkdirRequest( const QString& dir )
 {
     qDebug() << "OCInfo Making dir " << dir;
     _authAttempts = 0;
@@ -205,6 +216,7 @@ void ownCloudInfo::mkdirRequest( const QString& dir )
     connect( reply, SIGNAL(finished()), SLOT(slotMkdirFinished()) );
     connect( reply, SIGNAL( error(QNetworkReply::NetworkError )),
              this, SLOT(slotError(QNetworkReply::NetworkError )));
+    return reply;
 }
 
 void ownCloudInfo::slotMkdirFinished()
