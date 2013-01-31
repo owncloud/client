@@ -93,6 +93,8 @@ public:
     int proxyPort() const;
     QString proxyUser() const;
     QString proxyPassword() const;
+    
+    static void setConfDir(const QString &value);
 
 protected:
     // these classes can only be access from CredentialStore as a friend class.
@@ -108,6 +110,7 @@ private:
 private:
     static bool    _askedUser;
     static QString _oCVersion;
+    static QString _confDir;
     QString        _customHandle;
 
 };
