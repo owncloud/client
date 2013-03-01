@@ -890,7 +890,7 @@ void Application::parseOptions(const QStringList &options)
             setHelp();
             break;
         }
-	}
+    }
 }
 
 void Application::computeOverallSyncStatus()
