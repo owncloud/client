@@ -882,7 +882,7 @@ void Application::parseOptions(const QStringList &options)
 
     while (it.hasNext()) {
         QString option = it.next();
-        if (option == QLatin1String("--help")) {
+        if (option == QLatin1String("--help") || option == QLatin1String("-h")) {
             showHelp();
         } else if (option == QLatin1String("--logwindow") ||
                 option == QLatin1String("-l")) {
@@ -897,6 +897,8 @@ void Application::parseOptions(const QStringList &options)
             _logFlush = true;
         } else if (option == QLatin1String("--monoicons")) {
             _theme->setSystrayUseMonoIcons(true); 
+        } else {
+            showHelp();
         }
     }
 }
