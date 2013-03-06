@@ -38,6 +38,9 @@ set(3rdparty_SRC
 
 3rdparty/qtlockedfile/qtlockedfile.h
 3rdparty/qtlockedfile/qtlockedfile.cpp
+
+3rdparty/qt-json/json.h
+3rdparty/qt-json/json.cpp
 )
 
 set(3rdparty_HEADER
@@ -190,6 +193,17 @@ qt4_wrap_cpp(mirallMoc ${mirall_HEADERS})
 
 qt4_add_translation(mirall_I18N ${TRANSLATIONS})
 
+set(oauth_SRCS
+    mirall/oauth/oauth.cpp
+)
+
+set(oauth_HEADERS
+    mirall/oauth/oauth.h
+)
+
+qt4_wrap_cpp(oauth_MOC ${oauth_HEADERS})
+QT4_GENERATE_MOC(mirall/oauth/oauth.cpp oauth.moc)
+
 set( final_src
     ${mirall_HEADERS}
     ${MIRALL_RC_SRC}
@@ -200,6 +214,9 @@ set( final_src
     ${mirall_I18N}
     ${3rdparty_SRC}
     ${3rdparty_MOC}
+    ${oauth_HEADERS}
+    ${oauth_SRCS}
+    ${oauth_MOC}
 )
 
 # add executable icon on windows and osx
