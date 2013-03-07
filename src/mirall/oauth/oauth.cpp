@@ -8,10 +8,14 @@
 #include <QUrl>
 #include <QHostAddress>
 #include <QSharedPointer>
+#include <QScopedPointer>
 #include <QTcpServer>
 #include <QTimer>
 
 #include <QDebug>
+
+// local
+#include "oauthlistener.h"
 
 /// OAUTH constants
 static const QString CLIENT_KEY( "a52c72ab0903261fddc804682105f8" );
@@ -56,22 +60,30 @@ public:
     void authenticate()
     {
         // kick off authentication
-        startListener();
+        listener.reset( new OAuthListener );
+        connect( listener.data(), SIGNAL( codeReceived( const QString& ) ), this, SLOT( onCodeReceived( const QString& ) ) );
         
-    }
-    
-    void startListener()
-    {
-        
+        QUrl auth( AUTH_URL );
+        auth.addQueryItem( "response_type", "code" );
+        auth.addQueryItem( "client_id", CLIENT_KEY );
+        auth.addQueryItem( "redirect_url", QString( "http://localhost:%1" ).arg( listener->port() ) );
+
+        accessManager()->get( QNetworkRequest( auth ) );
     }
 
 
     OAuth* owner;
-    QTcpServer* listener;
+    QScopedPointer< OAuthListener > listener;
 
 signals:
     void error( Error );
     void authenticated();
+
+private slots:
+    void onCodeReceived( const QString& code )
+    {
+        qDebug() << Q_FUNC_INFO << code;
+    }
 
 private:
     mutable QSharedPointer< QNetworkAccessManager > nam;
