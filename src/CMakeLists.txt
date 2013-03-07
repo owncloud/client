@@ -195,14 +195,18 @@ qt4_add_translation(mirall_I18N ${TRANSLATIONS})
 
 set(oauth_SRCS
     mirall/oauth/oauth.cpp
+    mirall/oauth/oauthlistener.cpp
 )
 
 set(oauth_HEADERS
     mirall/oauth/oauth.h
+    mirall/oauth/oauthlistener.h
 )
 
 qt4_wrap_cpp(oauth_MOC ${oauth_HEADERS})
 QT4_GENERATE_MOC(mirall/oauth/oauth.cpp oauth.moc)
+QT4_GENERATE_MOC(mirall/oauth/oauthlistener.cpp oauthlistener.moc)
+SET(oauth_MOC ${oauth_MOC} ${CMAKE_CURRENT_BINARY_DIR}/oauth.moc ${CMAKE_CURRENT_BINARY_DIR}/oauthlistener.moc)
 
 set( final_src
     ${mirall_HEADERS}
