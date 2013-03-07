@@ -93,6 +93,7 @@ OwncloudSetupPage::OwncloudSetupPage()
     registerField( QLatin1String("connectMyOC"), _ui.cbConnectOC );
     registerField( QLatin1String("secureConnect"), _ui.cbSecureConnect );
     registerField( QLatin1String("PwdNoLocalStore"), _ui.cbNoPasswordStore );
+    registerField( QLatin1String("UserOAuth"), _ui.cbUseOAuth );
 
     _ui.cbSecureConnect->setEnabled(QSslSocket::supportsSsl());
 
@@ -101,6 +102,7 @@ OwncloudSetupPage::OwncloudSetupPage()
 
     connect( _ui.cbNoPasswordStore, SIGNAL(stateChanged(int)), this, SLOT(slotPwdStoreChanged(int)));
     connect( _ui.cbSecureConnect, SIGNAL(stateChanged(int)), this, SLOT(slotSecureConChanged(int)));
+    connect( _ui.cbUseOAuth, SIGNAL(stateChanged(int)), this, SLOT(slotUseOAuthChanged(int)));
 
     _ui.cbConnectOC->hide();
     setupCustomization();
@@ -170,6 +172,12 @@ void OwncloudSetupPage::slotSecureConChanged( int state )
     } else {
         _ui.protocolLabel->setText(QLatin1String("http://"));
     }
+}
+
+void OwncloudSetupPage::slotUseOAuthChanged( int state )
+{
+    _ui.lbPassword->setHidden( state == Qt::Checked );
+    _ui.lePassword->setHidden( state == Qt::Checked );
 }
 
 void OwncloudSetupPage::handleNewOcUrl(const QString& ocUrl)
