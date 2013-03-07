@@ -47,6 +47,7 @@ public:
 protected slots:
   void slotPwdStoreChanged( int );
   void slotSecureConChanged( int );
+  void slotUseOAuthChanged( int );
   void handleNewOcUrl(const QString& ocUrl);
   void setupCustomization();
 private:
