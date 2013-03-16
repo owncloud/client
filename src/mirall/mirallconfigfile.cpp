@@ -122,7 +122,7 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
                                             const QString& url,
                                             const QString& user,
                                             const QString& passwd,
-                                            bool https, bool skipPwd )
+                                            bool https, bool skipPwd, bool useOauth )
 {
     const QString file = configFile();
     qDebug() << "*** writing mirall config to " << file << " Skippwd: " << skipPwd;
@@ -141,7 +141,7 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
     settings.beginGroup( connection );
     settings.setValue( QLatin1String("url"), cloudsUrl );
     settings.setValue( QLatin1String("user"), user );
-
+    settings.setValue( QLatin1String("useOauth"), useOauth );
 
 #ifdef WITH_QTKEYCHAIN
     // Password is stored to QtKeyChain now by default in CredentialStore
@@ -293,6 +293,14 @@ QString MirallConfigFile::ownCloudUser( const QString& connection ) const
     // qDebug() << "Returning configured owncloud user: " << user;
 
     return user;
+}
+
+bool MirallConfigFile::useOauth( const QString& connection ) const
+{
+    QString con( connection );
+    if( connection.isEmpty() ) con = defaultConnection();
+
+    return getValue( QLatin1String("useOauth"), con ).toBool();
 }
 
 int MirallConfigFile::remotePollInterval( const QString& connection ) const
