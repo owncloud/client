@@ -51,7 +51,7 @@ public:
                               const QString& url,
                               const QString& user,
                               const QString& passwd,
-                              bool https, bool skipPwd );
+                              bool https, bool skipPwd, bool useOauth );
 
     void removeConnection( const QString& connection = QString() );
 
@@ -59,6 +59,8 @@ public:
     QString ownCloudUrl( const QString& connection = QString(), bool webdav = false ) const;
 
     void setOwnCloudUrl(const QString &connection, const QString& );
+
+    bool useOauth( const QString& connection ) const;
 
     // the certs do not depend on a connection.
     QByteArray caCerts();
