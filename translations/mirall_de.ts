@@ -305,7 +305,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/mirall/application.cpp" line="362"/>
         <source>Sync started for %1 configured sync folder(s).</source>
-        <translation>Synchronisation wurde für %1 konfigurierte Sync-Ordner gestartet</translation>
+        <translation>Synchronisation wurde für %1 konfigurierte(n) Sync-Ordner gestartet</translation>
     </message>
     <message>
         <source>Open ownCloud...</source>
