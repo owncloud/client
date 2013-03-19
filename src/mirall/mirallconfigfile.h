@@ -55,6 +55,7 @@ public:
 
     void removeConnection( const QString& connection = QString() );
 
+    QString ownCloudUser( const QString& connection = QString() ) const;
     QString ownCloudUrl( const QString& connection = QString(), bool webdav = false ) const;
 
     void setOwnCloudUrl(const QString &connection, const QString& );
@@ -63,18 +64,22 @@ public:
     QByteArray caCerts();
     void setCaCerts( const QByteArray& );
 
-    bool passwordStorageAllowed(const QString &);
+    bool passwordStorageAllowed(const QString &connection = QString::null );
 
     QString ownCloudVersion() const;
     void setOwnCloudVersion( const QString& );
 
     // max count of lines in the log window
     int  maxLogLines() const;
+    void setMaxLogLines(int);
 
     bool ownCloudSkipUpdateCheck( const QString& connection = QString() ) const;
+    void setOwnCloudSkipUpdateCheck( bool, const QString& );
 
     /* Server poll interval in milliseconds */
     int remotePollInterval( const QString& connection = QString() ) const;
+    /* Set poll interval. Value in microseconds has to be larger than 5000 */
+    void setRemotePollInterval(int interval, const QString& connection = QString() );
 
     // Custom Config: accept the custom config to become the main one.
     void acceptCustomConfig();
@@ -97,7 +102,6 @@ public:
 protected:
     // these classes can only be access from CredentialStore as a friend class.
     QString ownCloudPasswd( const QString& connection = QString() ) const;
-    QString ownCloudUser( const QString& connection = QString() ) const;
     void clearPasswordFromConfig( const QString& connect = QString() );
     bool writePassword( const QString& passwd, const QString& connection = QString() );
 

@@ -57,7 +57,7 @@ void setupCustomMedia( QVariant variant, QLabel *label )
 
 OwncloudWelcomePage::OwncloudWelcomePage()
 {
-    setTitle(tr("Welcome to %1").arg(Theme::instance()->appName()));
+    setTitle(tr("Welcome to %1").arg(Theme::instance()->appNameGUI()));
 
     QVBoxLayout *lay = new QVBoxLayout(this);
     QLabel *content = new QLabel;
@@ -70,11 +70,11 @@ OwncloudWelcomePage::OwncloudWelcomePage()
         content->setText(tr("<p>In order to connect to your %1 server, you need to provide the server address "
                             "as well as your credentials.</p><p>This wizard will guide you through the process.<p>"
                             "<p>If you have not received this information, please contact your %1 provider.</p>")
-                         .arg(theme->appName()));
+                         .arg(theme->appNameGUI()));
     } else {
         content->setText(tr("<p>In order to connect to your %1 server, you need to provide "
                             "your credentials.</p><p>This wizard will guide you through "
-                            "the setup process.</p>").arg(theme->appName()));
+                            "the setup process.</p>").arg(theme->appNameGUI()));
     }
 }
 
@@ -83,7 +83,7 @@ OwncloudSetupPage::OwncloudSetupPage()
 {
     _ui.setupUi(this);
 
-    setTitle(tr("Create Connection to %1").arg(Theme::instance()->appName()));
+    setTitle(tr("Create Connection to %1").arg(Theme::instance()->appNameGUI()));
 
     connect(_ui.leUrl, SIGNAL(textChanged(QString)), SLOT(handleNewOcUrl(QString)));
 
@@ -110,6 +110,18 @@ OwncloudSetupPage::OwncloudSetupPage()
 
 OwncloudSetupPage::~OwncloudSetupPage()
 {
+}
+
+void OwncloudSetupPage::setOCUser( const QString & user )
+{
+    if( _ui.leUsername->text().isEmpty() ) {
+        _ui.leUsername->setText(user);
+    }
+}
+
+void  OwncloudSetupPage::setAllowPasswordStorage( bool allow )
+{
+    _ui.cbNoPasswordStore->setChecked( ! allow );
 }
 
 void OwncloudSetupPage::setOCUrl( const QString& newUrl )
@@ -431,12 +443,19 @@ OwncloudWizardResultPage::~OwncloudWizardResultPage()
 
 void OwncloudWizardResultPage::initializePage()
 {
+    _complete = false;
     // _ui.lineEditOCAlias->setText( "Owncloud" );
+}
+
+void OwncloudWizardResultPage::setComplete(bool complete)
+{
+    _complete = complete;
+    emit completeChanged();
 }
 
 bool OwncloudWizardResultPage::isComplete() const
 {
-    return true;
+    return _complete;
 }
 
 void OwncloudWizardResultPage::appendResultText( const QString& msg, OwncloudWizard::LogType type )
@@ -457,7 +476,7 @@ void OwncloudWizardResultPage::appendResultText( const QString& msg, OwncloudWiz
 void OwncloudWizardResultPage::showOCUrlLabel( const QString& url, bool show )
 {
   _ui.ocLinkLabel->setText( tr("Congratulations! Your <a href=\"%1\" title=\"%1\">new %2</a> is now up and running!")
-		  .arg(url).arg( Theme::instance()->appName()));
+          .arg(url).arg( Theme::instance()->appNameGUI()));
   _ui.ocLinkLabel->setOpenExternalLinks( true );
 
   if( show ) {
@@ -517,6 +536,12 @@ QString OwncloudWizard::ocUrl() const
     return url;
 }
 
+void OwncloudWizard::enableFinishOnResultWidget(bool enable)
+{
+    OwncloudWizardResultPage *p = static_cast<OwncloudWizardResultPage*> (page( Page_Install ));
+    p->setComplete(enable);
+}
+
 void OwncloudWizard::slotCurrentPageChanged( int id )
 {
   qDebug() << "Current Wizard page changed to " << id;
@@ -553,6 +578,9 @@ void OwncloudWizard::slotCurrentPageChanged( int id )
     } else {
     }
   }
+  if( id == Page_oCSetup ) {
+      emit clearPendingRequests();
+  }
 }
 
 void OwncloudWizard::showOCUrlLabel( bool show )
@@ -578,6 +606,27 @@ void OwncloudWizard::setOCUrl( const QString& url )
   if( p )
       p->setOCUrl( url );
 
+}
+
+void OwncloudWizard::setOCUser( const QString& user )
+{
+  _oCUser = user;
+#ifdef OWNCLOUD_CLIENT
+  OwncloudSetupPage *p = static_cast<OwncloudSetupPage*>(page(Page_oCSetup));
+  if( p )
+      p->setOCUser( user );
+#else
+  OwncloudWizardSelectTypePage *p = static_cast<OwncloudWizardSelectTypePage*>(page( Page_SelectType ));
+#endif
+}
+
+void OwncloudWizard::setAllowPasswordStorage( bool allow )
+{
+#ifdef OWNCLOUD_CLIENT
+  OwncloudSetupPage *p = static_cast<OwncloudSetupPage*>(page(Page_oCSetup));
+  if( p )
+      p->setAllowPasswordStorage( allow );
+#endif
 }
 
 } // end namespace

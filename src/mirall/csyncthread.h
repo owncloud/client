@@ -1,6 +1,3 @@
-#ifndef CSYNCTHREAD_H
-#define CSYNCTHREAD_H
-
 /*
  * Copyright (C) by Duncan Mac-Vicar P. <duncan@kde.org>
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
@@ -15,6 +12,9 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+
+#ifndef CSYNCTHREAD_H
+#define CSYNCTHREAD_H
 
 #include <stdint.h>
 
@@ -61,6 +61,7 @@ signals:
     void started();
 
 private:
+    void handleSyncError(CSYNC *ctx, const char *state);
     static void progress(const char *remote_url,
                     enum csync_notify_type_e kind,
                     long long o1, long long o2,
@@ -92,6 +93,9 @@ private:
 
     QString _source;
     QString _target;
+    bool _needsUpdate;
+
+    friend class CSyncRunScopeHelper;
 };
 }
 

@@ -33,10 +33,6 @@
 #include "mirall/credentialstore.h"
 #include "mirall/logger.h"
 
-// for version information
-#include "config.h"
-#include <csync.h>
-
 #ifdef WITH_CSYNC
 #include "mirall/csyncfolder.h"
 #endif
@@ -52,6 +48,10 @@
 #include <QNetworkProxy>
 #include <QNetworkProxyFactory>
 
+#ifdef Q_OS_LINUX
+#include <dlfcn.h>
+#endif
+
 namespace Mirall {
 
 // application logging handler.
@@ -59,6 +59,22 @@ void mirallLogCatcher(QtMsgType type, const char *msg)
 {
   Q_UNUSED(type)
   Logger::instance()->mirallLog( QString::fromUtf8(msg) );
+}
+
+namespace {
+QString applicationTrPath()
+{
+#ifdef Q_OS_LINUX
+    // FIXME - proper path!
+    return QLatin1String("/usr/share/mirall/i18n/");
+#endif
+#ifdef Q_OS_MAC
+    return QApplication::applicationDirPath()+QLatin1String("/../Resources/Translations"); // path defaults to app dir.
+#endif
+#ifdef Q_OS_WIN32
+   return QApplication::applicationDirPath();
+#endif
+}
 }
 
 // ----------------------------------------------------------------------------------
@@ -79,43 +95,24 @@ Application::Application(int &argc, char **argv) :
     _helpOnly(false),
     _fileItemDialog(0)
 {
-    setApplicationName( _theme->appName() );
+    setApplicationName( _theme->appNameGUI() );
     setWindowIcon( _theme->applicationIcon() );
 
     parseOptions(arguments());
+    setupTranslations();
     setupLogBrowser();
     //no need to waste time;
     if ( _helpOnly ) return;
 
-    QString locale = Theme::instance()->enforcedLocale();
-    if (locale.isEmpty()) locale = QLocale::system().name();
-
-    QTranslator *qtTranslator = new QTranslator(this);
-#if defined(Q_OS_MAC)
-    qtTranslator->load(QLatin1String("qt_") + locale, applicationDirPath()+QLatin1String("/../translations") ); // path defaults to app dir.
-#elif defined(Q_OS_WIN32)
-    qtTranslator->load(QLatin1String("qt_") + locale, applicationDirPath());
-#endif
-    if (qtTranslator->isEmpty()) {
-        qtTranslator->load(QLatin1String("qt_") + QLocale::system().name(),
-                           QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    }
-    installTranslator(qtTranslator);
-
-    QTranslator *mirallTranslator = new QTranslator(this);
-
 #ifdef Q_OS_LINUX
-    // FIXME - proper path!
-    mirallTranslator->load(QLatin1String("mirall_") + locale, QLatin1String("/usr/share/mirall/i18n/"));
+        // HACK: bump the refcount for libgnutls by calling dlopen()
+        // so gnutls, which is an dependency of libneon on some linux
+        // distros, and does not cleanup it's FDs properly, does
+        // not get unloaded. This works around a FD exhaustion crash
+        // (#154). We are not using gnutls at all and it's fine
+        // if loading fails, so no error handling is performed here.
+        dlopen("libgnutls.so", RTLD_LAZY|RTLD_NODELETE);
 #endif
-#ifdef Q_OS_MAC
-    mirallTranslator->load(QLatin1String("mirall_") + locale, applicationDirPath()+QLatin1String("/../translations") ); // path defaults to app dir.
-#endif
-#ifdef Q_OS_WIN32
-    mirallTranslator->load(QLatin1String("mirall_") + locale, applicationDirPath());
-#endif
-
-    installTranslator(mirallTranslator);
 
     connect( this, SIGNAL(messageReceived(QString)), SLOT(slotParseOptions(QString)));
     connect( Logger::instance(), SIGNAL(guiLog(QString,QString)),
@@ -124,6 +121,7 @@ Application::Application(int &argc, char **argv) :
     _folderMan = new FolderMan(this);
     connect( _folderMan, SIGNAL(folderSyncStateChange(QString)),
              this,SLOT(slotSyncStateChange(QString)));
+    _folderMan->setSyncEnabled(false);
 
     /* use a signal mapper to map the open requests to the alias names */
     _folderOpenActionMapper = new QSignalMapper(this);
@@ -143,9 +141,6 @@ Application::Application(int &argc, char **argv) :
 
     connect( _statusDialog, SIGNAL(removeFolderAlias( const QString&)),
              SLOT(slotRemoveFolder(const QString&)));
-
-    connect( _statusDialog, SIGNAL(openLogBrowser()), this, SLOT(slotOpenLogBrowser()));
-
     connect( _statusDialog, SIGNAL(enableFolderAlias(QString,bool)),
              SLOT(slotEnableFolder(QString,bool)));
     connect( _statusDialog, SIGNAL(infoFolderAlias(const QString&)),
@@ -164,6 +159,10 @@ Application::Application(int &argc, char **argv) :
     setupActions();
     setupSystemTray();
     setupProxy();
+
+
+    int cnt = _folderMan->setupFolders();
+    _statusDialog->setFolderList( _folderMan->map() );
 
     QObject::connect( this, SIGNAL(messageReceived(QString)),
                          this, SLOT(slotOpenStatus()) );
@@ -185,7 +184,7 @@ Application::~Application()
 {
     delete _tray; // needed, see ctor
     if( _fileItemDialog) delete _fileItemDialog;
-    if( _statusDialog )  delete _statusDialog;
+    if( _statusDialog && ! _helpOnly)  delete _statusDialog;
     qDebug() << "* Mirall shutdown";
 }
 
@@ -229,9 +228,9 @@ void Application::slotOwnCloudFound( const QString& url, const QString& versionS
                 this, SLOT(slotNoOwnCloudFound(QNetworkReply*)));
 
     if( version.startsWith("4.0") ) {
-        QMessageBox::warning(0, tr("%1 Server Mismatch").arg(_theme->appName()),
+        QMessageBox::warning(0, tr("%1 Server Mismatch").arg(_theme->appNameGUI()),
                              tr("<p>The configured server for this client is too old.</p>"
-                                "<p>Please update to the latest %1 server and restart the client.</p>").arg(_theme->appName()));
+                                "<p>Please update to the latest %1 server and restart the client.</p>").arg(_theme->appNameGUI()));
         return;
     }
 
@@ -240,17 +239,10 @@ void Application::slotOwnCloudFound( const QString& url, const QString& versionS
 
 void Application::slotNoOwnCloudFound( QNetworkReply* reply )
 {
-    qDebug() << "** Application: NO ownCloud found!";
-    QString msg;
-    if( reply ) {
-        QString url( reply->url().toString() );
-        url.remove( QLatin1String("/status.php") );
-        msg = tr("<p>The %1 at %2 could not be reached.</p>").arg(_theme->appName()).arg( url );
-        msg += tr("<p>The detailed error message is<br/><tt>%1</tt></p>").arg( reply->errorString() );
-    }
-    msg += tr("<p>Please check your configuration by clicking on the tray icon.</p>");
+    Q_UNUSED(reply)
 
-    QMessageBox::warning(0, tr("%1 Connection Failed").arg(_theme->appName()), msg );
+    qDebug() << "** Application: NO ownCloud found! Going offline";
+
     _actionAddFolder->setEnabled( false );
 
     // Disconnect.
@@ -264,6 +256,7 @@ void Application::slotNoOwnCloudFound( QNetworkReply* reply )
                 this,SLOT(slotAuthCheck(QString,QNetworkReply*)));
 
     setupContextMenu();
+    QTimer::singleShot( 30*1000, this, SLOT( slotStartFolderSetup() ));
 }
 
 void Application::slotFetchCredentials()
@@ -280,7 +273,7 @@ void Application::slotFetchCredentials()
     } else {
         qDebug() << "Can not try again to fetch Credentials.";
         trayMessage = tr("%1 user credentials are wrong. Please check configuration.")
-                .arg(Theme::instance()->appName());
+                .arg(Theme::instance()->appNameGUI());
     }
 
     if( !trayMessage.isEmpty() ) {
@@ -310,6 +303,8 @@ void Application::slotCredentialsFetched(bool ok)
         _actionAddFolder->setEnabled( false );
         _actionOpenStatus->setEnabled( false );
     } else {
+        ownCloudInfo::instance()->setCredentials( CredentialStore::instance()->user(),
+                                                  CredentialStore::instance()->password() );
         // Credential fetched ok.
         QTimer::singleShot( 0, this, SLOT( slotCheckAuthentication() ));
     }
@@ -333,16 +328,16 @@ void Application::slotAuthCheck( const QString& ,QNetworkReply *reply )
 
     if( reply->error() == QNetworkReply::AuthenticationRequiredError ) { // returned if the user is wrong.
         qDebug() << "******** Password is wrong!";
-        QMessageBox::warning(0, tr("No %1 Connection").arg(_theme->appName()),
+        QMessageBox::warning(0, tr("No %1 Connection").arg(_theme->appNameGUI()),
                              tr("<p>Your %1 credentials are not correct.</p>"
                                 "<p>Please correct them by starting the configuration dialog from the tray!</p>")
-                             .arg(_theme->appName()));
+                             .arg(_theme->appNameGUI()));
         _actionAddFolder->setEnabled( false );
         ok = false;
     } else if( reply->error() == QNetworkReply::OperationCanceledError ) {
         // the username was wrong and ownCloudInfo was closing the request after a couple of auth tries.
         qDebug() << "******** Username or password is wrong!";
-        QMessageBox::warning(0, tr("No %1 Connection").arg(_theme->appName()),
+        QMessageBox::warning(0, tr("No %1 Connection").arg(_theme->appNameGUI()),
                              tr("<p>Either your user name or your password are not correct.</p>"
                                 "<p>Please correct it by starting the configuration dialog from the tray!</p>"));
         _actionAddFolder->setEnabled( false );
@@ -355,19 +350,22 @@ void Application::slotAuthCheck( const QString& ,QNetworkReply *reply )
 
     if( ok ) {
         qDebug() << "######## Credentials are ok!";
-        int cnt = _folderMan->setupFolders();
-        if( cnt ) {
-            _tray->setIcon( _theme->syncStateIcon( SyncResult::NotYetStarted, true ) );
-            _tray->show();
+        _folderMan->setSyncEnabled(true);
+        QMetaObject::invokeMethod(_folderMan, "slotScheduleFolderSync");
 
-            if( _tray )
-                _tray->showMessage(tr("%1 Sync Started").arg(_theme->appName()),
-                                   tr("Sync started for %1 configured sync folder(s).").arg(cnt));
+        _tray->setIcon( _theme->syncStateIcon( SyncResult::NotYetStarted, true ) );
+        _tray->show();
 
-            _statusDialog->setFolderList( _folderMan->map() );
-            computeOverallSyncStatus();
+        int cnt = _folderMan->map().size();
+        if( _tray )
+            _tray->showMessage(tr("%1 Sync Started").arg(_theme->appNameGUI()),
+                               tr("Sync started for %1 configured sync folder(s).").arg(cnt));
 
-        }
+        // queue up the sync for all folders.
+        _folderMan->slotScheduleAllFolders();
+
+        computeOverallSyncStatus();
+
         _actionAddFolder->setEnabled( true );
         _actionOpenStatus->setEnabled( true );
         setupContextMenu();
@@ -415,14 +413,17 @@ void Application::slotSSLFailed( QNetworkReply *reply, QList<QSslError> errors )
 void Application::slotownCloudWizardDone( int res )
 {
     if( res == QDialog::Accepted ) {
-
+        int cnt = _folderMan->setupFolders();
+        qDebug() << "Set up " << cnt << " folders.";
+        _statusDialog->setFolderList( _folderMan->map() );
     }
+    _folderMan->setSyncEnabled( true );
     slotStartFolderSetup( res );
 }
 
 void Application::setupActions()
 {
-    _actionOpenoC = new QAction(tr("Open %1 in browser...").arg(_theme->appName()), this);
+    _actionOpenoC = new QAction(tr("Open %1 in browser...").arg(_theme->appNameGUI()), this);
     QObject::connect(_actionOpenoC, SIGNAL(triggered(bool)), SLOT(slotOpenOwnCloud()));
     _actionOpenStatus = new QAction(tr("Open status..."), this);
     QObject::connect(_actionOpenStatus, SIGNAL(triggered(bool)), SLOT(slotOpenStatus()));
@@ -470,7 +471,7 @@ void Application::setupContextMenu()
         // it will trigger a bug in Ubuntu's SNI bridge patch (11.10, 12.04).
         _tray->setContextMenu(_contextMenu);
     }
-    _contextMenu->setTitle(_theme->appName() );
+    _contextMenu->setTitle(_theme->appNameGUI() );
     _contextMenu->addAction(_actionOpenStatus);
     _contextMenu->addAction(_actionOpenoC);
 
@@ -489,7 +490,7 @@ void Application::setupContextMenu()
                 Folder *folder = _folderMan->map().value(li.first());
                 if( folder ) {
                     // if there is singleFolder mode, a generic open action is displayed.
-                    QAction *action = new QAction( tr("Open %1 folder").arg(_theme->appName()), this);
+                    QAction *action = new QAction( tr("Open %1 folder").arg(_theme->appNameGUI()), this);
                     action->setIcon( _theme->trayFolderIcon( folder->backend()) );
 
                     connect( action, SIGNAL(triggered()),_folderOpenActionMapper,SLOT(map()));
@@ -546,8 +547,9 @@ void Application::setupLogBrowser()
     if (_showLogWindow)
         slotOpenLogBrowser();
 
-    qDebug() << QString::fromLatin1( "################## %1 %2 %3 ").arg(_theme->appName())
+    qDebug() << QString::fromLatin1( "################## %1 %2 (%3) %4").arg(_theme->appName())
                 .arg( QLocale::system().name() )
+                .arg(property("ui_lang").toString())
                 .arg(_theme->version());
 
 }
@@ -636,7 +638,7 @@ void Application::slotTrayClicked( QSystemTrayIcon::ActivationReason reason )
 
 void Application::slotAddFolder()
 {
-  _folderMan->disableFoldersWithRestore();
+  _folderMan->setSyncEnabled(false); // do not start more syncs.
 
   Folder::Map folderMap = _folderMan->map();
 
@@ -676,6 +678,8 @@ void Application::slotAddFolder()
       goodData = false;
     }
 
+    _folderMan->setSyncEnabled(true); // do start sync again.
+
     if( goodData ) {
         _folderMan->addFolderDefinition( backend, alias, sourceFolder, targetPath, onlyThisLAN );
         Folder *f = _folderMan->setupFolderFromConfigFile( alias );
@@ -689,7 +693,8 @@ void Application::slotAddFolder()
   } else {
     qDebug() << "* Folder wizard cancelled";
   }
-  _folderMan->restoreEnabledFolders();
+  _folderMan->setSyncEnabled(true);
+  _folderMan->slotScheduleAllFolders();
 }
 
 void Application::slotOpenStatus()
@@ -709,6 +714,7 @@ void Application::slotOpenStatus()
 
     if( !cfgFile.exists() ) {
       qDebug() << "No configured folders yet, start the Owncloud integration dialog.";
+      _folderMan->setSyncEnabled(false);
       _owncloudSetupWizard->startWizard(true); // with intro
     } else {
       qDebug() << "#============# Status dialog starting #=============#";
@@ -745,19 +751,7 @@ void Application::slotOpenLogBrowser()
 
 void Application::slotAbout()
 {
-    QString devString;
-#ifdef GIT_SHA1
-    const QString githubPrefix(QLatin1String(
-                               "https://github.com/owncloud/mirall/commit/"));
-    const QString gitSha1(QLatin1String(GIT_SHA1));
-    devString = tr("<p><small>Built from Git revision <a href=\"%1\">%2</a>"
-                   " on %3, %4<br>using OCsync %5 and Qt %6.</small><p>")
-                       .arg(githubPrefix+gitSha1).arg(gitSha1.left(6))
-                       .arg(__DATE__).arg(__TIME__)
-                       .arg(MIRALL_STRINGIFY(LIBCSYNC_VERSION))
-                       .arg(QT_VERSION_STR);
-#endif
-    QMessageBox::about(0, tr("About %1").arg(_theme->appName()),
+    QMessageBox::about(0, tr("About %1").arg(_theme->appNameGUI()),
                        Theme::instance()->about());
 }
 
@@ -831,9 +825,8 @@ void Application::slotEnableFolder(const QString& alias, const bool enable)
 
 void Application::slotConfigure()
 {
-  _folderMan->disableFoldersWithRestore();
-  _owncloudSetupWizard->startWizard(false);
-  _folderMan->restoreEnabledFolders();
+    _folderMan->setSyncEnabled(false); // do not start more syncs.
+    _owncloudSetupWizard->startWizard(false);
 }
 
 void Application::slotConfigureProxy()
@@ -880,10 +873,12 @@ void Application::parseOptions(const QStringList &options)
     // skip file name;
     if (it.hasNext()) it.next();
 
+    //parse options; if help or bad option exit
     while (it.hasNext()) {
         QString option = it.next();
-        if (option == QLatin1String("--help") || option == QLatin1String("-h")) {
-            showHelp();
+       	if (option == QLatin1String("--help") || option == QLatin1String("-h")) {
+            setHelp();
+            break;
         } else if (option == QLatin1String("--logwindow") ||
                 option == QLatin1String("-l")) {
             _showLogWindow = true;
@@ -891,15 +886,17 @@ void Application::parseOptions(const QStringList &options)
             if (it.hasNext() && !it.peekNext().startsWith(QLatin1String("--"))) {
                 _logFile = it.next();
             } else {
-                showHelp();
+                setHelp();
             }
         } else if (option == QLatin1String("--logflush")) {
             _logFlush = true;
         } else if (option == QLatin1String("--monoicons")) {
             _theme->setSystrayUseMonoIcons(true); 
-        } else {
-            showHelp();
-        }
+	} else {
+	    setHelp();
+	    std::cout << "Option not recognized:  " << option.toStdString() << std::endl;
+	    break;
+	}
     }
 }
 
@@ -928,6 +925,10 @@ void Application::computeOverallSyncStatus()
             case SyncResult::NotYetStarted:
                 folderMessage = tr( "Waits to start syncing." );
                 overallResult.setStatus( SyncResult::NotYetStarted );
+                break;
+            case SyncResult::SyncPrepare:
+                folderMessage = tr( "Preparing for sync." );
+                overallResult.setStatus( SyncResult::SyncPrepare );
                 break;
             case SyncResult::SyncRunning:
                 folderMessage = tr( "Sync is running." );
@@ -987,10 +988,12 @@ void Application::computeOverallSyncStatus()
 
 void Application::showHelp()
 {
+setHelp();
     std::cout << _theme->appName().toLatin1().constData() << " version " <<
                  _theme->version().toLatin1().constData() << std::endl << std::endl;
     std::cout << "File synchronisation desktop utility." << std::endl << std::endl;
     std::cout << "Options:" << std::endl;
+    std::cout << "  -h --help            : show this help screen." << std::endl;
     std::cout << "  --logwindow          : open a window to show log output." << std::endl;
     std::cout << "  --logfile <filename> : write log output to file <filename>." << std::endl;
     std::cout << "  --logflush           : flush the log file after every write." << std::endl;
@@ -998,7 +1001,81 @@ void Application::showHelp()
     std::cout << std::endl;
     if (_theme->appName() == QLatin1String("ownCloud"))
         std::cout << "For more information, see http://www.owncloud.org" << std::endl;
+}
+
+void Application::setHelp()
+{
     _helpOnly = true;
+}
+
+QString substLang(const QString &lang)
+{
+    // Map the more apropriate script codes
+    // to country codes as used by Qt and
+    // transifex translation conventions.
+
+    // Simplified Chinese
+    if (lang == QLatin1String("zh_Hans"))
+        return QLatin1String("zh_CN");
+    // Traditional Chinese
+    if (lang == QLatin1String("zh_Hant"))
+        return QLatin1String("zh_TW");
+    return lang;
+}
+
+void Application::setupTranslations()
+{
+    QStringList uiLanguages;
+    // uiLanguages crashes on Windows with 4.8.0 release builds
+    #if (QT_VERSION >= 0x040801) || (QT_VERSION >= 0x040800 && !defined(Q_OS_WIN))
+        uiLanguages = QLocale::system().uiLanguages();
+    #else
+        // older versions need to fall back to the systems locale
+        uiLanguages << QLocale::system().name();
+    #endif
+
+    QString enforcedLocale = Theme::instance()->enforcedLocale();
+    if (!enforcedLocale.isEmpty())
+        uiLanguages.prepend(enforcedLocale);
+
+    QTranslator *translator = new QTranslator(this);
+    QTranslator *qtTranslator = new QTranslator(this);
+    QTranslator *qtkeychainTranslator = new QTranslator(this);
+
+    foreach(QString lang, uiLanguages) {
+        lang.replace(QLatin1Char('-'), QLatin1Char('_')); // work around QTBUG-25973
+        lang = substLang(lang);
+        const QString trPath = applicationTrPath();
+        const QString trFile = QLatin1String("mirall_") + lang;
+        if (translator->load(trFile, trPath) ||
+            lang.startsWith(QLatin1String("en"))) {
+            // Permissive approach: Qt and keychain translations
+            // may be missing, but Qt translations must be there in order
+            // for us to accept the language. Otherwise, we try with the next.
+            // "en" is an exeption as it is the default language and may not
+            // have a translation file provided.
+            qDebug() << Q_FUNC_INFO << "Using" << lang << "translation";
+            setProperty("ui_lang", lang);
+            const QString qtTrPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+            const QString qtTrFile = QLatin1String("qt_") + lang;
+            if (qtTranslator->load(qtTrFile, qtTrPath)) {
+                qtTranslator->load(qtTrFile, trPath);
+            }
+            const QString qtkeychainFile = QLatin1String("qt_") + lang;
+            if (!qtkeychainTranslator->load(qtkeychainFile, qtTrPath)) {
+               qtkeychainTranslator->load(qtkeychainFile, trPath);
+            }
+            if (!translator->isEmpty())
+                installTranslator(translator);
+            if (!qtTranslator->isEmpty())
+                installTranslator(qtTranslator);
+            if (!qtkeychainTranslator->isEmpty())
+                installTranslator(qtkeychainTranslator);
+            break;
+        }
+        if (property("ui_lang").isNull())
+            setProperty("ui_lang", "C");
+    }
 }
 
 bool Application::giveHelp()

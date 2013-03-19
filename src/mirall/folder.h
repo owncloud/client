@@ -15,7 +15,6 @@
 #ifndef MIRALL_FOLDER_H
 #define MIRALL_FOLDER_H
 
-#include "config.h"
 
 #include <QObject>
 #include <QString>
@@ -46,6 +45,7 @@ public:
     virtual ~Folder();
 
     typedef QHash<QString, Folder*> Map;
+    typedef QHashIterator<QString, Folder*> MapIterator;
 
     /**
      * alias or nickname
@@ -149,6 +149,12 @@ public:
      QIcon icon( int size ) const;
      QTimer   *_pollTimer;
 
+signals:
+    void syncStateChange();
+    void syncStarted();
+    void syncFinished(const SyncResult &result);
+    void scheduleToSync( const QString& );
+
 public slots:
      void slotSyncFinished(const SyncResult &);
 
@@ -162,29 +168,39 @@ public slots:
        */
      virtual void slotTerminateSync() = 0;
 
+     /**
+      * Sets minimum amounts of milliseconds that will separate
+      * poll intervals
+      */
+     void setPollInterval( int );
+
 protected:
     /**
      * The minimum amounts of seconds to wait before
      * doing a full sync to see if the remote changed
      */
     int pollInterval() const;
+    void setSyncState(SyncResult::Status state);
 
-    /**
-     * Sets minimum amounts of milliseconds that will separate
-     * poll intervals
-     */
-    void setPollInterval( int );
-
-signals:
-    void syncStateChange();
-    void syncStarted();
-    void syncFinished(const SyncResult &result);
-    void scheduleToSync( const QString& );
-
-protected:
     FolderWatcher *_watcher;
     int _errorCount;
     SyncResult _syncResult;
+
+protected slots:
+
+    void slotOnlineChanged(bool online);
+
+    void slotPollTimerTimeout();
+
+    /* called when the watcher detect a list of changed
+       paths */
+
+    void slotSyncStarted();
+
+    /**
+     * Triggered by a file system watcher on the local sync dir
+     */
+    virtual void slotLocalPathChanged( const QString& );
 
 private:
 
@@ -211,22 +227,6 @@ private:
     bool       _online;
     bool       _enabled;
     QString    _backend;
-
-protected slots:
-
-    void slotOnlineChanged(bool online);
-
-    void slotPollTimerTimeout();
-
-    /* called when the watcher detect a list of changed
-       paths */
-
-    void slotSyncStarted();
-
-    /**
-     * Triggered by a file system watcher on the local sync dir
-     */
-    virtual void slotLocalPathChanged( const QString& );
 
 };
 

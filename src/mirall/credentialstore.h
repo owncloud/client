@@ -14,21 +14,12 @@
 #ifndef CREDENTIALSTORE_H
 #define CREDENTIALSTORE_H
 
-#include "config.h"
 #include <QObject>
+#include <QInputDialog>
 
-#ifdef WITH_QTKEYCHAIN
-#include "qtkeychain/keychain.h"
-
-using namespace QKeychain;
-#else
-// FIXME: If the slot definition below is ifdefed for some reason the slot is
-// not there even if WITH_QTKEYCHAIN is defined.
 namespace QKeychain {
-   typedef void Job;
+  class Job;
 }
-#endif
-
 
 namespace Mirall {
 
@@ -74,8 +65,8 @@ public:
         KeyChain
     };
 
-    QString password( const QString& connection = QString::null ) const;
-    QString user( const QString& connection = QString::null ) const;
+    QString password( ) const;
+    QString user( ) const;
 
     /**
      * @brief state
@@ -92,12 +83,6 @@ public:
     void fetchCredentials();
 
     /**
-     * @brief basicAuthHeader - return a basic authentication header.
-     * @return a QByteArray with a ready to use Header for HTTP basic auth.
-     */
-    QByteArray basicAuthHeader() const;
-
-    /**
      * @brief instance - singleton pointer.
      * @return the singleton pointer to access the object.
      */
@@ -109,10 +94,11 @@ public:
      * This function is called from the setup wizard to set the credentials
      * int this store. Note that it does not store the password.
      * The function also sets the state to ok.
+     * @param url - the connection url
      * @param user - the user name
      * @param password - the password.
      */
-    void setCredentials( const QString&, const QString&, const QString& );
+    void setCredentials( const QString&, const QString&, const QString&, bool );
 
     void saveCredentials( );
 
@@ -138,6 +124,7 @@ signals:
 protected slots:
     void slotKeyChainReadFinished( QKeychain::Job* );
     void slotKeyChainWriteFinished( QKeychain::Job* );
+    void slotUserDialogDone(int);
 
 private:
     explicit CredentialStore(QObject *parent = 0);
@@ -152,6 +139,7 @@ private:
     static QString _errorMsg;
     static int     _tries;
     static CredentialType _type;
+    QInputDialog   *_inputDialog;
 };
 }
 

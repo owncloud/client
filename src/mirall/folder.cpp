@@ -11,6 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+#include "config.h"
 
 #include "mirall/folder.h"
 #include "mirall/folderwatcher.h"
@@ -192,6 +193,11 @@ int Folder::pollInterval() const
     return _pollTimer->interval();
 }
 
+void Folder::setSyncState(SyncResult::Status state)
+{
+    _syncResult.setStatus(state);
+}
+
 void Folder::setPollInterval(int milliseconds)
 {
     _pollTimer->setInterval( milliseconds );
@@ -245,12 +251,6 @@ void Folder::evaluateSync(const QStringList &pathList)
   _syncResult.setStatus( SyncResult::NotYetStarted );
   emit scheduleToSync( alias() );
 
-}
-
-void Folder::startSync( const QStringList &pathList )
-{
-    _syncResult.setStatus( SyncResult::SyncRunning );
-    emit syncStateChange();
 }
 
 void Folder::slotPollTimerTimeout()

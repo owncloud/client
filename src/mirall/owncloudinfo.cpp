@@ -16,7 +16,6 @@
 #include "mirall/mirallconfigfile.h"
 #include "mirall/version.h"
 #include "mirall/theme.h"
-#include "mirall/credentialstore.h"
 
 #include <QtCore>
 #include <QtGui>
@@ -25,6 +24,8 @@
 #if QT46_IMPL
 #include <QHttp>
 #endif
+
+#define DEFAULT_CONNECTION QLatin1String("default");
 
 namespace Mirall
 {
@@ -48,11 +49,20 @@ ownCloudInfo* ownCloudInfo::instance()
 }
 
 ownCloudInfo::ownCloudInfo() :
-    QObject(0)
+    QObject(0),
+    _manager(0)
 {
     _connection = Theme::instance()->appName();
 
-    _manager = new QNetworkAccessManager( this );
+    setNetworkAccessManager( new QNetworkAccessManager( this ) );
+
+}
+
+void ownCloudInfo::setNetworkAccessManager( QNetworkAccessManager* qnam )
+{
+    delete _manager;
+    qnam->setParent( this );
+    _manager = qnam;
 
     MirallConfigFile cfg( _configHandle );
     QSettings settings( cfg.configFile(), QSettings::IniFormat);
@@ -66,6 +76,7 @@ ownCloudInfo::ownCloudInfo() :
              this, SLOT(slotAuthentication(QNetworkReply*,QAuthenticator*)));
 
     _certsUntrusted = false;
+
 }
 
 ownCloudInfo::~ownCloudInfo()
@@ -85,18 +96,18 @@ bool ownCloudInfo::isConfigured()
     return cfgFile.connectionExists( _connection );
 }
 
-void ownCloudInfo::checkInstallation()
+QNetworkReply *ownCloudInfo::checkInstallation()
 {
     /* No authentication required for this. */
-    getRequest( QLatin1String("status.php"), false );
+    return getRequest( QLatin1String("status.php"), false );
 }
 
-void ownCloudInfo::getWebDAVPath( const QString& path )
+QNetworkReply* ownCloudInfo::getWebDAVPath( const QString& path )
 {
-    getRequest( path, true );
+    return getRequest( path, true );
 }
 
-void ownCloudInfo::getRequest( const QString& path, bool webdav )
+QNetworkReply* ownCloudInfo::getRequest( const QString& path, bool webdav )
 {
     qDebug() << "Get Request to " << path;
 
@@ -117,10 +128,11 @@ void ownCloudInfo::getRequest( const QString& path, bool webdav )
 
     connect( reply, SIGNAL( error(QNetworkReply::NetworkError )),
              this, SLOT(slotError( QNetworkReply::NetworkError )));
+    return reply;
 }
 
 #if QT46_IMPL
-void ownCloudInfo::mkdirRequest( const QString& dir )
+QNetworkReply* ownCloudInfo::mkdirRequest( const QString& dir )
 {
     qDebug() << "OCInfo Making dir " << dir;
 
@@ -131,8 +143,6 @@ void ownCloudInfo::mkdirRequest( const QString& dir )
         conMode = QHttp::ConnectionModeHttps;
 
     QHttp* qhttp = new QHttp(QString(url.encodedHost()), conMode, 0, this);
-    qhttp->setUser( CredentialStore::instance()->user(_connection),
-                    CredentialStore::instance()->password(_connection) );
 
     connect(qhttp, SIGNAL(requestStarted(int)), this,SLOT(qhttpRequestStarted(int)));
     connect(qhttp, SIGNAL(requestFinished(int, bool)), this,SLOT(qhttpRequestFinished(int,bool)));
@@ -147,7 +157,18 @@ void ownCloudInfo::mkdirRequest( const QString& dir )
     header.setValue("Connection", "keep-alive");
     header.setContentType("application/x-www-form-urlencoded"); //important
     header.setContentLength(0);
-    header.setValue("Authorization", CredentialStore::instance()->basicAuthHeader());
+
+    QString con = _configHandle;
+    if( con.isEmpty() ) con = DEFAULT_CONNECTION;
+    if( _credentials.contains(con)) {
+        oCICredentials creds = _credentials.value(con);
+        QString concatenated = creds.user + QLatin1Char(':') + creds.passwd;
+        const QString b(QLatin1String("Basic "));
+        QByteArray data = b.toLocal8Bit() + concatenated.toLocal8Bit().toBase64();
+        header.setValue("Authorization", data);
+
+        qhttp->setUser( creds.user, creds.passwd );
+    }
 
     int david = qhttp->request(header,0,0);
     //////////////// connect(davinfo, SIGNAL(dataSendProgress(int,int)), this, SLOT(SendStatus(int, int)));
@@ -155,7 +176,7 @@ void ownCloudInfo::mkdirRequest( const QString& dir )
     //connect(_http, SIGNAL(requestFinished(int, bool)), this,SLOT(qhttpRequestFinished(int,bool)));
     ///////////connect(davinfo, SIGNAL(responseHeaderReceived(constQHttpResponseHeader &)), this, SLOT(RegisterBackHeader(constQHttpResponseHeader &)));
 
-
+    return NULL;
 }
 
 void ownCloudInfo::qhttpResponseHeaderReceived(const QHttpResponseHeader& header)
@@ -184,7 +205,7 @@ void ownCloudInfo::qhttpRequestFinished(int id, bool success )
      }
 }
 #else
-void ownCloudInfo::mkdirRequest( const QString& dir )
+QNetworkReply* ownCloudInfo::mkdirRequest( const QString& dir )
 {
     qDebug() << "OCInfo Making dir " << dir;
     _authAttempts = 0;
@@ -205,6 +226,7 @@ void ownCloudInfo::mkdirRequest( const QString& dir )
     connect( reply, SIGNAL(finished()), SLOT(slotMkdirFinished()) );
     connect( reply, SIGNAL( error(QNetworkReply::NetworkError )),
              this, SLOT(slotError(QNetworkReply::NetworkError )));
+    return reply;
 }
 
 void ownCloudInfo::slotMkdirFinished()
@@ -242,16 +264,25 @@ void ownCloudInfo::slotAuthentication( QNetworkReply *reply, QAuthenticator *aut
     MirallConfigFile cfgFile( configHandle );
     qDebug() << "Authenticating request for " << reply->url();
     if( reply->url().toString().startsWith( cfgFile.ownCloudUrl( _connection, true )) ) {
-        auth->setUser( CredentialStore::instance()->user() ); //_connection ) );
-        auth->setPassword( CredentialStore::instance()->password() ); // _connection ));
+
+        QString con = configHandle;
+        if( con.isEmpty() ) con = DEFAULT_CONNECTION;
+        if( _credentials.contains(con)) {
+            oCICredentials creds = _credentials.value(con);
+
+            auth->setUser( creds.user );
+            auth->setPassword( creds.passwd );
+        } else {
+            qDebug() << "Unable to get Credentials, not set!";
+            reply->close();
+        }
     } else {
         qDebug() << "WRN: attempt to authenticate to different url - attempt " <<_authAttempts;
     }
-    if( _authAttempts > 10 ) {
+    if( _authAttempts > 1) {
         qDebug() << "Too many attempts to authenticate. Stop request.";
         reply->close();
     }
-
 }
 
 QString ownCloudInfo::configHandle(QNetworkReply *reply)
@@ -431,6 +462,24 @@ void ownCloudInfo::slotError( QNetworkReply::NetworkError err)
   qDebug() << "ownCloudInfo Network Error: " << err;
 }
 
+void ownCloudInfo::setCredentials( const QString& user, const QString& passwd,
+                                   const QString& configHandle )
+{
+    QString con( configHandle );
+    if( configHandle.isEmpty() )
+        con = DEFAULT_CONNECTION;
+
+    if( _credentials.contains(con) ) {
+        qDebug() << "Overwriting credentials for connection " << con;
+    }
+
+    oCICredentials creds;
+    creds.user = user;
+    creds.passwd = passwd;
+    creds.connection = con;
+    _credentials[con] = creds;
+}
+
 // ============================================================================
 void ownCloudInfo::setupHeaders( QNetworkRequest & req, quint64 size )
 {
@@ -441,7 +490,16 @@ void ownCloudInfo::setupHeaders( QNetworkRequest & req, quint64 size )
     req.setRawHeader( QByteArray("Host"), url.host().toUtf8() );
     req.setRawHeader( QByteArray("User-Agent"), QString::fromLatin1("mirall-%1")
                       .arg(QLatin1String(MIRALL_STRINGIFY(MIRALL_VERSION))).toAscii());
-    req.setRawHeader( QByteArray("Authorization"), CredentialStore::instance()->basicAuthHeader() );
+
+    QString con = _configHandle;
+    if( con.isEmpty() ) con = DEFAULT_CONNECTION;
+    if( _credentials.contains(con)) {
+        oCICredentials creds = _credentials.value(con);
+        QString concatenated = creds.user + QLatin1Char(':') + creds.passwd;
+        const QString b(QLatin1String("Basic "));
+        QByteArray data = b.toLocal8Bit() + concatenated.toLocal8Bit().toBase64();
+        req.setRawHeader( QByteArray("Authorization"), data );
+    }
 
     if (size) {
         req.setHeader( QNetworkRequest::ContentLengthHeader, size);

@@ -15,6 +15,7 @@
 #include "config.h"
 
 #include "mirall/mirallconfigfile.h"
+#include "mirall/owncloudinfo.h"
 #include "mirall/owncloudtheme.h"
 #include "mirall/miralltheme.h"
 #include "mirall/credentialstore.h"
@@ -83,7 +84,7 @@ QString MirallConfigFile::excludeFile() const
 QString MirallConfigFile::configFile() const
 {
     if( qApp->applicationName().isEmpty() ) {
-        qApp->setApplicationName( Theme::instance()->appName() );
+        qApp->setApplicationName( Theme::instance()->appNameGUI() );
     }
     QString dir = configPath() + Theme::instance()->configFileName();
     if( !_customHandle.isEmpty() ) {
@@ -125,7 +126,6 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
 {
     const QString file = configFile();
     qDebug() << "*** writing mirall config to " << file << " Skippwd: " << skipPwd;
-    QString pwd( passwd );
 
     QSettings settings( file, QSettings::IniFormat);
     settings.setIniCodec( "UTF-8" );
@@ -141,9 +141,7 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
     settings.beginGroup( connection );
     settings.setValue( QLatin1String("url"), cloudsUrl );
     settings.setValue( QLatin1String("user"), user );
-    if( skipPwd ) {
-        pwd.clear();
-    }
+
 
 #ifdef WITH_QTKEYCHAIN
     // Password is stored to QtKeyChain now by default in CredentialStore
@@ -154,13 +152,18 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
     if( !skipPwd )
         writePassword( passwd );
 #endif
+    if( !skipPwd )
+        writePassword( passwd );
+    else
+        clearPasswordFromConfig();  // wipe the password.
+
     settings.setValue( QLatin1String("nostoredpassword"), QVariant(skipPwd) );
     settings.sync();
     // check the perms, only read-write for the owner.
     QFile::setPermissions( file, QFile::ReadOwner|QFile::WriteOwner );
 
     // Store credentials temporar until the config is finalized.
-    CredentialStore::instance()->setCredentials( cloudsUrl, user, passwd );
+    ownCloudInfo::instance()->setCredentials( user, passwd, _customHandle );
 
 }
 
@@ -197,6 +200,8 @@ bool MirallConfigFile::writePassword( const QString& passwd, const QString& conn
     QByteArray pwdba = pwd.toUtf8();
     settings.setValue( QLatin1String("passwd"), QVariant(pwdba.toBase64()) );
     settings.sync();
+
+    return true;
 }
 
 // set the url, called from redirect handling.
@@ -264,13 +269,6 @@ QString MirallConfigFile::ownCloudUrl( const QString& connection, bool webdav ) 
     settings.setIniCodec( "UTF-8" );
     settings.beginGroup( con );
 
-    // For the WebDAV connect it is required to know which version the server is running
-    // because the url changed :-/
-    if( webdav && _oCVersion.isEmpty() ) {
-        qDebug() << "######## Config does not yet know the ownCloud server version #########";
-        qDebug() << "###################### THIS SHOULD NOT HAPPEN! ########################";
-    }
-
     QString url = settings.value( QLatin1String("url") ).toString();
     if( ! url.isEmpty() ) {
         if( ! url.endsWith(QLatin1Char('/'))) url.append(QLatin1String("/"));
@@ -312,6 +310,22 @@ int MirallConfigFile::remotePollInterval( const QString& connection ) const
     remoteInterval = DEFAULT_REMOTE_POLL_INTERVAL;
   }
   return remoteInterval;
+}
+
+void MirallConfigFile::setRemotePollInterval(int interval, const QString &connection )
+{
+    QString con( connection );
+    if( connection.isEmpty() ) con = defaultConnection();
+
+    if( interval < 5000 ) {
+        qDebug() << "Remote Poll interval of " << interval << " is below fife seconds.";
+        return;
+    }
+    QSettings settings( configFile(), QSettings::IniFormat );
+    settings.setIniCodec( "UTF-8" );
+    settings.beginGroup( con );
+    settings.setValue("remotePollInterval", interval );
+    settings.sync();
 }
 
 bool MirallConfigFile::passwordStorageAllowed( const QString& connection )
@@ -384,6 +398,20 @@ bool MirallConfigFile::ownCloudSkipUpdateCheck( const QString& connection ) cons
     return skipIt;
 }
 
+void MirallConfigFile::setOwnCloudSkipUpdateCheck( bool skip, const QString& connection )
+{
+    QString con( connection );
+    if( connection.isEmpty() ) con = defaultConnection();
+
+    QSettings settings( configFile(), QSettings::IniFormat );
+    settings.setIniCodec( "UTF-8" );
+    settings.beginGroup( con );
+
+    settings.setValue( QLatin1String("skipUpdateCheck"), QVariant(skip) );
+    settings.sync();
+
+}
+
 int MirallConfigFile::maxLogLines() const
 {
     QSettings settings( configFile(), QSettings::IniFormat );
@@ -391,6 +419,16 @@ int MirallConfigFile::maxLogLines() const
     settings.beginGroup(QLatin1String("Logging"));
     int logLines = settings.value( QLatin1String("maxLogLines"), 20000 ).toInt();
     return logLines;
+}
+
+void MirallConfigFile::setMaxLogLines( int lines )
+{
+    QSettings settings( configFile(), QSettings::IniFormat );
+    settings.setIniCodec( "UTF-8" );
+
+    settings.beginGroup(QLatin1String("Logging"));
+    settings.setValue(QLatin1String("maxLogLines"), lines);
+    settings.sync();
 }
 
 // remove a custom config file.
@@ -438,7 +476,17 @@ void MirallConfigFile::acceptCustomConfig()
     QFile::remove( targetBak );
 
     // inform the credential store about the password change.
-    CredentialStore::instance()->saveCredentials( );
+    QString url  = ownCloudUrl();
+    QString user = ownCloudUser();
+    QString pwd  = ownCloudPasswd();
+    bool allow   = passwordStorageAllowed();
+
+    if( pwd.isEmpty() ) {
+        qDebug() << "Password is empty, skipping to write cred store.";
+    } else {
+        CredentialStore::instance()->setCredentials(url, user, pwd, allow);
+        CredentialStore::instance()->saveCredentials();
+    }
 }
 
 void MirallConfigFile::setProxyType(int proxyType,

@@ -37,8 +37,6 @@ public:
     ~FolderMan();
 
     int setupFolders();
-    void disableFoldersWithRestore();
-    void restoreEnabledFolders();
 
     Mirall::Folder::Map map();
 
@@ -73,6 +71,11 @@ public:
      */
     void removeAllFolderDefinitions();
 
+    /**
+     * Removes csync journals from all folders.
+     */
+    void wipeAllJournals();
+
 signals:
     /**
       * signal to indicate a folder named by alias has changed its sync state.
@@ -91,6 +94,12 @@ public slots:
 
     void terminateSyncProcess( const QString& );
 
+    // if enabled is set to false, no new folders will start to sync.
+    // the current one will finish.
+    void setSyncEnabled( bool );
+
+    void slotScheduleAllFolders();
+
 private slots:
     // slot to add a folder to the syncing queue
     void slotScheduleSync( const QString & );
@@ -103,6 +112,7 @@ private:
     // and create the folders
     int setupKnownFolders();
     void setupFavLink(const QString& folder);
+    void terminateCurrentSync();
 
     // Escaping of the alias which is used in QSettings AND the file
     // system, thus need to be escaped.
@@ -113,11 +123,11 @@ private:
 
     FolderWatcher *_configFolderWatcher;
     Folder::Map    _folderMap;
-    QHash<QString, bool> _folderEnabledMap;
     QString        _folderConfigPath;
     QSignalMapper *_folderChangeSignalMapper;
     QString        _currentSyncFolder;
     QStringList    _scheduleQueue;
+    bool           _syncEnabled;
 };
 
 }

@@ -34,7 +34,8 @@
 namespace Mirall {
 
 FolderMan::FolderMan(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    _syncEnabled( true )
 {
     // if QDir::mkpath would not be so stupid, I would not need to have this
     // duplication of folderConfigPath() here
@@ -84,7 +85,15 @@ int FolderMan::setupKnownFolders()
 {
   qDebug() << "* Setup folders from " << _folderConfigPath;
 
-  _folderMap.clear(); // FIXME: check if delete of folder structure happens
+  // first terminate sync jobs.
+  terminateCurrentSync();
+
+  // clear the list of existing folders.
+  Folder::MapIterator i(_folderMap);
+  while (i.hasNext()) {
+      i.next();
+      delete _folderMap.take( i.key() );
+  }
 
   QDir dir( _folderConfigPath );
   dir.setFilter(QDir::Files);
@@ -98,6 +107,23 @@ int FolderMan::setupKnownFolders()
   }
   // return the number of valid folders.
   return _folderMap.size();
+}
+
+void FolderMan::wipeAllJournals()
+{
+    terminateCurrentSync();
+
+    foreach( Folder *f, _folderMap.values() ) {
+        f->wipe();
+    }
+}
+
+void FolderMan::terminateCurrentSync()
+{
+    if( !_currentSyncFolder.isEmpty() ) {
+        qDebug() << "Terminating syncing on folder " << _currentSyncFolder;
+        terminateSyncProcess( _currentSyncFolder );
+    }
 }
 
 #define SLASH_TAG   QLatin1String("__SLASH__")
@@ -279,25 +305,6 @@ Folder* FolderMan::setupFolderFromConfigFile(const QString &file) {
     return folder;
 }
 
-void FolderMan::disableFoldersWithRestore()
-{
-  _folderEnabledMap.clear();
-  foreach( Folder *f, _folderMap ) {
-    // store the enabled state, then make sure it is disabled
-    _folderEnabledMap.insert(f->alias(), f->syncEnabled());
-    f->setSyncEnabled(false);
-  }
-}
-
-void FolderMan::restoreEnabledFolders()
-{
-  foreach( Folder *f, _folderMap ) {
-    if (_folderEnabledMap.contains( f->alias() )) {
-        f->setSyncEnabled( _folderEnabledMap.value( f->alias() ) );
-    }
-  }
-}
-
 void FolderMan::slotEnableFolder( const QString& alias, bool enable )
 {
     if( ! _folderMap.contains( alias ) ) {
@@ -318,6 +325,9 @@ void FolderMan::terminateSyncProcess( const QString& alias )
     Folder *f = _folderMap[alias];
     if( f ) {
         f->slotTerminateSync();
+
+        if(_currentSyncFolder == alias )
+            _currentSyncFolder = QString::null;
     }
 }
 
@@ -342,6 +352,13 @@ SyncResult FolderMan::syncResult( const QString& alias )
     return res;
 }
 
+void FolderMan::slotScheduleAllFolders()
+{
+    foreach( Folder *f, _folderMap.values() ) {
+        slotScheduleSync( f->alias() );
+    }
+}
+
 /*
   * if a folder wants to be synced, it calls this slot and is added
   * to the queue. The slot to actually start a sync is called afterwards.
@@ -353,15 +370,22 @@ void FolderMan::slotScheduleSync( const QString& alias )
     qDebug() << "Schedule folder " << alias << " to sync!";
     if( _currentSyncFolder == alias ) {
         // the current folder is currently syncing.
+        return;
     }
 
-    if( _scheduleQueue.contains( alias ) ) {
-        qDebug() << " II> Sync for folder " << alias << " already scheduled, do not enqueue!";
+    if( ! _scheduleQueue.contains(alias )) {
+        _scheduleQueue.append(alias);
     } else {
-        _scheduleQueue.append( alias );
-
-        slotScheduleFolderSync();
+        qDebug() << " II> Sync for folder " << alias << " already scheduled, do not enqueue!";
     }
+
+    slotScheduleFolderSync();
+
+}
+
+void FolderMan::setSyncEnabled( bool enabled )
+{
+    _syncEnabled = enabled;
 }
 
 /*
@@ -373,6 +397,11 @@ void FolderMan::slotScheduleFolderSync()
 {
     if( !_currentSyncFolder.isEmpty() ) {
         qDebug() << "Currently folder " << _currentSyncFolder << " is running, wait for finish!";
+        return;
+    }
+
+    if( ! _syncEnabled ) {
+        qDebug() << "FolderMan: Syncing is disabled, no scheduling.";
         return;
     }
 
