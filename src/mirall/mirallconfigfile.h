@@ -60,7 +60,7 @@ public:
 
     void setOwnCloudUrl(const QString &connection, const QString& );
 
-    bool useOauth( const QString& connection ) const;
+    bool useOAuth( const QString& connection = QString() ) const;
 
     // the certs do not depend on a connection.
     QByteArray caCerts();

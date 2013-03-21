@@ -67,6 +67,7 @@ public:
 
     QString password( ) const;
     QString user( ) const;
+    bool useOAuth() const;
 
     /**
      * @brief state
@@ -98,7 +99,7 @@ public:
      * @param user - the user name
      * @param password - the password.
      */
-    void setCredentials( const QString&, const QString&, const QString&, bool );
+    void setCredentials( const QString&, const QString&, const QString&, bool, bool );
 
     void saveCredentials( );
 
@@ -135,6 +136,7 @@ private:
     static CredState _state;
     static QString _passwd;
     static QString _user;
+    static bool _useOAuth;
     static QString _url;
     static QString _errorMsg;
     static int     _tries;

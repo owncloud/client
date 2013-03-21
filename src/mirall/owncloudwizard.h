@@ -169,6 +169,7 @@ public:
 
 protected slots:
   void slotPwdStoreChanged( int );
+  void slotUseOAuthChanged( int );
 
 private:
   Ui_OwncloudCredentialsPage _ui;

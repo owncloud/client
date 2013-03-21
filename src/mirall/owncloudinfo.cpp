@@ -16,6 +16,7 @@
 #include "mirall/mirallconfigfile.h"
 #include "mirall/version.h"
 #include "mirall/theme.h"
+#include "3rdparty/qt-json/json.h"
 
 #include <QtCore>
 #include <QtGui>
@@ -246,6 +247,31 @@ void ownCloudInfo::slotMkdirFinished()
 }
 #endif
 
+void ownCloudInfo::pushCredentials( const QString& user, const QString& pass, bool useOAuth, const QString& conn )
+{
+    qDebug() << Q_FUNC_INFO << user << pass << useOAuth << conn;
+
+    if ( sender() && sender() != this )
+        sender()->deleteLater();
+
+    oCICredentials creds;
+    creds.user = user;
+    creds.passwd = pass;
+    creds.useOAuth = useOAuth;
+    creds.connection = conn;
+    _credentials[conn] = creds;
+
+    emit credentialsSet();
+}
+
+void ownCloudInfo::onOAuthError( OAuthError e )
+{
+    QString errorString = OAuth::getStringForError( e );
+    qWarning() << Q_FUNC_INFO << errorString;
+
+    sender()->deleteLater();
+}
+
 void ownCloudInfo::slotAuthentication( QNetworkReply *reply, QAuthenticator *auth )
 {
     if( !(auth && reply) ) return;
@@ -375,11 +401,9 @@ void ownCloudInfo::slotReplyFinished()
     QString plainUrl(url);
     plainUrl.remove( QLatin1String("/status.php"));
 
-    QString info( version );
-
     if( url.endsWith( QLatin1String("status.php")) ) {
         // it was a call to status.php
-        if( reply->error() == QNetworkReply::NoError && info.isEmpty() ) {
+        if( reply->error() == QNetworkReply::NoError && version.isEmpty() ) {
             // This seems to be a bit strange behaviour of QNetworkAccessManager.
             // It calls the finised slot multiple times but only the first read wins.
             // That happend when the code connected the finished signal of the manager.
@@ -388,40 +412,16 @@ void ownCloudInfo::slotReplyFinished()
             reply->deleteLater();
             return;
         }
-        qDebug() << "status.php returns: " << info << " " << reply->error() << " Reply: " << reply;
+        qDebug() << "status.php returns: " << version << " " << reply->error() << " Reply: " << reply;
+        QVariantMap info = QtJson::parse( version ).toMap();
         if( info.contains(QLatin1String("installed"))
-                && info.contains(QLatin1String("version"))
-                && info.contains(QLatin1String("versionstring")) ) {
-            info.remove(0,1); // remove first char which is a "{"
-            info.remove(-1,1); // remove the last char which is a "}"
-            QStringList li = info.split( QLatin1Char(',') );
+            && info.contains(QLatin1String("version"))
+            && info.contains(QLatin1String("versionstring")) ) {
 
-            QString versionStr;
-            QString version;
-            QString edition;
+            QString versionStr = info[ QLatin1String( "versionstring" ) ].toString();
+            QString version    = info[ QLatin1String( "version" ) ].toString();
+            QString edition    = info[ QLatin1String( "edition" ) ].toString();
 
-            foreach ( const QString& infoString, li ) {
-                QStringList touple = infoString.split( QLatin1Char(':'));
-                QString key = touple[0];
-                key.remove(QLatin1Char('"'));
-                QString val = touple[1];
-                val.remove(QLatin1Char('"'));
-
-                if( key == QLatin1String("versionstring") ) {
-                    // get the versionstring out.
-                    versionStr = val;
-                } else if( key == QLatin1String( "version") ) {
-                    // get version out
-                    version = val;
-                } else if( key == QLatin1String( "edition") ) {
-                    // get version out
-                    edition = val;
-                } else if(key == QLatin1String("installed")) {
-		    // Silently ignoring "installed = true" information
-		} else {
-                    qDebug() << "Unknown info from ownCloud status.php: "<< key << "=" << val;
-                }
-            }
             emit ownCloudInfoFound( plainUrl, versionStr, version, edition );
         } else {
             qDebug() << "No proper answer on " << url;
@@ -464,9 +464,11 @@ void ownCloudInfo::slotError( QNetworkReply::NetworkError err)
   qDebug() << "ownCloudInfo Network Error: " << err;
 }
 
-void ownCloudInfo::setCredentials( const QString& user, const QString& passwd,
+void ownCloudInfo::setCredentials( const QString& user, const QString& passwd, bool useOAuth,
                                    const QString& configHandle )
 {
+    qDebug() << Q_FUNC_INFO << user << passwd << useOAuth << configHandle;
+
     QString con( configHandle );
     if( configHandle.isEmpty() )
         con = DEFAULT_CONNECTION;
@@ -475,11 +477,18 @@ void ownCloudInfo::setCredentials( const QString& user, const QString& passwd,
         qDebug() << "Overwriting credentials for connection " << con;
     }
 
-    oCICredentials creds;
-    creds.user = user;
-    creds.passwd = passwd;
-    creds.connection = con;
-    _credentials[con] = creds;
+    if ( !useOAuth ) {
+        pushCredentials( user, passwd, useOAuth, con );
+    } else {
+        OAuth* oauthHandler = new OAuth( this );
+        oauthHandler->setAccessManager( _manager );
+        connect( oauthHandler, SIGNAL( authenticated( const QString&, const QString&, bool, const QString& ) ),
+                 this, SLOT( pushCredentials( const QString&, const QString&, bool, const QString& ) ) );
+        connect( oauthHandler, SIGNAL( error( OAuthError ) ),
+                 this, SLOT( onOAuthError( OAuthError ) ) );
+
+        oauthHandler->authenticate( user, passwd, configHandle );
+    }
 }
 
 // ============================================================================

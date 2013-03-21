@@ -33,6 +33,7 @@ CredentialStore *CredentialStore::_instance=0;
 CredentialStore::CredState CredentialStore::_state = NotFetched;
 QString CredentialStore::_passwd   = QString::null;
 QString CredentialStore::_user     = QString::null;
+bool CredentialStore::_useOAuth = false;
 QString CredentialStore::_url      = QString::null;
 QString CredentialStore::_errorMsg = QString::null;
 int     CredentialStore::_tries    = 0;
@@ -60,6 +61,10 @@ QString CredentialStore::password() const
 QString CredentialStore::user() const
 {
     return _user;
+}
+bool CredentialStore::useOAuth() const
+{
+    return _useOAuth;
 }
 
 CredentialStore::CredState CredentialStore::state()
@@ -109,6 +114,7 @@ void CredentialStore::fetchCredentials()
     QString pwd;
     _user = cfgFile.ownCloudUser();
     _url  = cfgFile.ownCloudUrl();
+    _useOAuth = cfgFile.useOAuth();
     if( !cfgFile.passwordStorageAllowed() ) {
         _type = CredentialStore::User;
     }
@@ -207,6 +213,7 @@ void CredentialStore::reset()
     _state = NotFetched;
     _user   = QString::null;
     _passwd = QString::null;
+    _useOAuth = false;
     _tries = 0;
 }
 
@@ -305,10 +312,11 @@ QString CredentialStore::errorMessage()
 }
 
 void CredentialStore::setCredentials( const QString& url, const QString& user,
-                                      const QString& pwd, bool allowToStore )
+                                      const QString& pwd, bool useOAuth, bool allowToStore )
 {
     _passwd = pwd;
     _user = user;
+    _useOAuth = useOAuth;
     if( allowToStore ) {
 #ifdef WITH_QTKEYCHAIN
         _type = KeyChain;

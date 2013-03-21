@@ -93,7 +93,7 @@ OwncloudSetupPage::OwncloudSetupPage()
     registerField( QLatin1String("connectMyOC"), _ui.cbConnectOC );
     registerField( QLatin1String("secureConnect"), _ui.cbSecureConnect );
     registerField( QLatin1String("PwdNoLocalStore"), _ui.cbNoPasswordStore );
-    registerField( QLatin1String("UserOAuth"), _ui.cbUseOAuth );
+    registerField( QLatin1String("UseOAuth"), _ui.cbUseOAuth );
 
     _ui.cbSecureConnect->setEnabled(QSslSocket::supportsSsl());
 
@@ -190,6 +190,7 @@ void OwncloudSetupPage::slotUseOAuthChanged( int state )
 {
     _ui.lbPassword->setHidden( state == Qt::Checked );
     _ui.lePassword->setHidden( state == Qt::Checked );
+    emit completeChanged();
 }
 
 void OwncloudSetupPage::handleNewOcUrl(const QString& ocUrl)
@@ -218,6 +219,9 @@ bool OwncloudSetupPage::isComplete() const
     if( _ui.leUrl->text().isEmpty() ) return false;
 
     if( _ui.cbNoPasswordStore->checkState() == Qt::Checked ) {
+        return !(_ui.leUsername->text().isEmpty());
+    }
+    if( _ui.cbUseOAuth->checkState() == Qt::Checked ) {
         return !(_ui.leUsername->text().isEmpty());
     }
     return !(_ui.leUsername->text().isEmpty() || _ui.lePassword->text().isEmpty() );
@@ -300,10 +304,12 @@ OwncloudCredentialsPage::OwncloudCredentialsPage()
     registerField( QLatin1String("OCUser"),   _ui.OCUserEdit );
     registerField( QLatin1String("OCPasswd"), _ui.OCPasswdEdit );
     registerField( QLatin1String("PwdNoLocalStore"), _ui.cbPwdNoLocalStore );
+    registerField( QLatin1String("UseOAuth"), _ui.cbUseOAuth );
 
     connect( _ui.OCPasswdEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     connect( _ui.cbPwdNoLocalStore, SIGNAL(stateChanged(int)), this, SLOT(slotPwdStoreChanged(int)));
+    connect( _ui.cbUseOAuth, SIGNAL(stateChanged(int)), this, SLOT(slotUseOAuthChanged(int)));
 }
 
 OwncloudCredentialsPage::~OwncloudCredentialsPage()
@@ -316,9 +322,19 @@ void OwncloudCredentialsPage::slotPwdStoreChanged( int state )
     emit completeChanged();
 }
 
+void OwncloudCredentialsPage::slotUseOAuthChanged( int state )
+{
+    _ui.OCPasswdEdit->setHidden( state == Qt::Checked );
+    _ui.OCPasswdLabel->setHidden( state == Qt::Checked );
+    emit completeChanged();
+}
+
 bool OwncloudCredentialsPage::isComplete() const
 {
     if( _ui.cbPwdNoLocalStore->checkState() == Qt::Checked ) {
+        return !(_ui.OCUserEdit->text().isEmpty());
+    }
+    if( _ui.cbUseOAuth->checkState() == Qt::Checked ) {
         return !(_ui.OCUserEdit->text().isEmpty());
     }
     return !(_ui.OCUserEdit->text().isEmpty() || _ui.OCPasswdEdit->text().isEmpty() );

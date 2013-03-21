@@ -18,6 +18,8 @@
 #include <QObject>
 #include <QtNetwork>
 
+#include "mirall/oauth/oauth.h"
+
 #if QT_VERSION >= 0x040700
 #define QT46_IMPL 0
 #else
@@ -30,6 +32,7 @@ namespace Mirall
 typedef struct {
     QString user;
     QString passwd;
+    bool useOAuth;
     QString connection;
 } oCICredentials;
 
@@ -107,7 +110,7 @@ public:
      * Store credentials for a given connection. Empty connection parameter
      * means "default connection".
      */
-    void setCredentials( const QString&, const QString&,
+    void setCredentials( const QString&, const QString&, bool useOAuth,
                          const QString& configHandle = QString::null );
 
 signals:
@@ -118,6 +121,7 @@ signals:
 
     void webdavColCreated( QNetworkReply::NetworkError );
     void sslFailed( QNetworkReply *reply, QList<QSslError> errors );
+    void credentialsSet();
 
 public slots:
 
@@ -134,6 +138,9 @@ protected slots:
 #else
     void slotMkdirFinished();
 #endif
+
+    void pushCredentials( const QString& name, const QString& pass, bool useOAuth, const QString& conn );
+    void onOAuthError( OAuthError );
 
 private:
     explicit ownCloudInfo();
