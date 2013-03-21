@@ -7,6 +7,8 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <QByteArray>
+#include <QRegExp>
+
 #include <QDebug>
 
 /// impl
@@ -21,7 +23,7 @@ public:
           connection( NULL )
     {
         connect( this, SIGNAL( codeReceived( const QString& ) ), o, SIGNAL( codeReceived( const QString& ) ) );
-        connect( this, SIGNAL( error( Error ) ), o, SIGNAL( error( Error ) ) );
+        connect( this, SIGNAL( error( OAuthListenerError ) ), o, SIGNAL( error( OAuthListenerError ) ) );
 
         // start the server
         if ( !server->listen( QHostAddress::LocalHost ) )
@@ -36,17 +38,23 @@ public:
             onNewConnection();
 
         // ensure we can timeout
-        connect( &timeout, SIGNAL( timeout() ), o, SIGNAL( timeout() ) );
+        connect( &timeout, SIGNAL( timeout() ), this, SLOT( onTimeout() ) );
         timeout.setSingleShot( true );
-        timeout.start( 5000 );
+        timeout.start( 60000 ); // 1 minute timeout
     }
 
     QTimer timeout;
     QTcpServer* server;
     QTcpSocket* connection;
     QByteArray buffer;
+    QString code;
 
 private slots:
+    void onTimeout()
+    {
+        emit error( CodeTimeout );
+    }
+
     void onNewConnection()
     {
         qDebug() << Q_FUNC_INFO;
@@ -57,11 +65,20 @@ private slots:
     void onReadyRead()
     {
         buffer += connection->readAll();
+
         qDebug() << Q_FUNC_INFO << buffer;
+
+        QRegExp re( ".*code=(\\S+)\\s.*", Qt::CaseInsensitive );
+        if ( re.exactMatch( buffer ) )
+        {
+            code = re.cap( 1 );
+            timeout.stop();
+            emit codeReceived( code );
+        }
     }
 
 signals:
-    void error( Error );
+    void error( OAuthListenerError );
     void codeReceived( const QString& );
 };
 
@@ -72,11 +89,12 @@ OAuthListener::OAuthListener( QObject* parent )
     : m_impl( new OAuthListenerPrivate( this ) )
 {}
 
-QString OAuthListener::getStringForError( Error e )
+QString OAuthListener::getStringForError( OAuthListenerError e )
 {
     switch( e )
     {
     case CouldntStartServer: return tr( "Failed to start server" );
+    case CodeTimeout:        return tr( "Didn't receive code within timeout period" );
     default:
         break;
     }
