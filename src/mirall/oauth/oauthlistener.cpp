@@ -73,8 +73,22 @@ private slots:
         {
             code = re.cap( 1 );
             timeout.stop();
+            writeResponse();
             emit codeReceived( code );
         }
+    }
+
+private:
+    void writeResponse()
+    {
+        Q_ASSERT( connection );
+        QByteArray response;
+        response += "HTTP/1.1 200 OK\n";
+        response += "Content-Length: 0\n";
+        response += "Connection: close\n";
+
+        connection->write( response );
+        connection->flush();
     }
 
 signals:
