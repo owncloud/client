@@ -100,7 +100,7 @@ Application::Application(int &argc, char **argv) :
 
     parseOptions(arguments());
     setupTranslations();
-    setupLogBrowser();
+    // setupLogBrowser();
     //no need to waste time;
     if ( _helpOnly ) return;
 
@@ -304,7 +304,8 @@ void Application::slotCredentialsFetched(bool ok)
         _actionOpenStatus->setEnabled( false );
     } else {
         ownCloudInfo::instance()->setCredentials( CredentialStore::instance()->user(),
-                                                  CredentialStore::instance()->password() );
+                                                  CredentialStore::instance()->password(),
+                                                  CredentialStore::instance()->useOAuth());
         // Credential fetched ok.
         QTimer::singleShot( 0, this, SLOT( slotCheckAuthentication() ));
     }

@@ -170,7 +170,8 @@ void OwncloudSetupWizard::testOwnCloudConnect()
                                  _ocWizard->field(QLatin1String("OCUser")).toString(),
                                  _ocWizard->field(QLatin1String("OCPasswd")).toString(),
                                  _ocWizard->field(QLatin1String("secureConnect")).toBool(),
-                                 _ocWizard->field(QLatin1String("PwdNoLocalStore")).toBool() );
+                                 _ocWizard->field(QLatin1String("PwdNoLocalStore")).toBool(),
+                                 _ocWizard->field(QLatin1String("UseOAuth")).toBool() );
 
     // If there is already a config, take its proxy config.
     if( ownCloudInfo::instance()->isConfigured() ) {
