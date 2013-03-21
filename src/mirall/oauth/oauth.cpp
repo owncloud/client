@@ -58,6 +58,9 @@ public:
         if ( nam.isNull() )
         {
             nam = QSharedPointer< QNetworkAccessManager >( new QNetworkAccessManager );
+
+            /// \todo: remove this; it looks like there is a mechanism for handling and registering
+            /// exceptions within mirall
             connect( nam.data(), SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
                      this, SLOT( onIgnoreSSLErrors( QNetworkReply*, QList<QSslError> ) ) );
         }
