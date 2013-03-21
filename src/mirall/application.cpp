@@ -100,7 +100,7 @@ Application::Application(int &argc, char **argv) :
 
     parseOptions(arguments());
     setupTranslations();
-    // setupLogBrowser();
+    setupLogBrowser();
     //no need to waste time;
     if ( _helpOnly ) return;
 
