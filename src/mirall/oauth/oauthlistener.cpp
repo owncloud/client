@@ -33,12 +33,12 @@ public:
             return;
         }
 
-        connect( server, SIGNAL( newConnection() ), this, SLOT( onNewConnection() ) );
+        connect( server, SIGNAL( newConnection() ), this, SLOT( slotNewConnection() ) );
         if ( server->hasPendingConnections() )
-            onNewConnection();
+            slotNewConnection();
 
         // ensure we can timeout
-        connect( &timeout, SIGNAL( timeout() ), this, SLOT( onTimeout() ) );
+        connect( &timeout, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
         timeout.setSingleShot( true );
         timeout.start( 60000 ); // 1 minute timeout
     }
@@ -50,19 +50,19 @@ public:
     QString code;
 
 private slots:
-    void onTimeout()
+    void slotTimeout()
     {
         emit error( CodeTimeout );
     }
 
-    void onNewConnection()
+    void slotNewConnection()
     {
         qDebug() << Q_FUNC_INFO;
         connection = server->nextPendingConnection();
-        connect( connection, SIGNAL( readyRead() ), this, SLOT( onReadyRead() ) );
+        connect( connection, SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
     }
 
-    void onReadyRead()
+    void slotReadyRead()
     {
         buffer += connection->readAll();
 
