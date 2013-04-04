@@ -76,8 +76,8 @@ public:
         {
             // kick off authentication
             listener = new OAuthListener( this );
-            connect( listener, SIGNAL( codeReceived( const QString& ) ), this, SLOT( onCodeReceived( const QString& ) ) );
-            connect( listener, SIGNAL( error( OAuthListenerError ) ), this, SLOT( onListenerError( OAuthListenerError ) ) );
+            connect( listener, SIGNAL( codeReceived( const QString& ) ), this, SLOT( slotCodeReceived( const QString& ) ) );
+            connect( listener, SIGNAL( error( OAuthListenerError ) ), this, SLOT( slotListenerError( OAuthListenerError ) ) );
             
             QUrl auth( AUTH_URL );
             auth.addQueryItem( "response_type", "code" );
@@ -101,12 +101,12 @@ signals:
     void authenticated( const QString& user, const QString& pass, bool useOAuth, const QString& conn );
 
 private slots:
-    void onListenerError( OAuthListenerError e )
+    void slotListenerError( OAuthListenerError e )
     {
         Q_UNUSED( e );
     }
 
-    void onCodeReceived( const QString& code )
+    void slotCodeReceived( const QString& code )
     {
         // should be here once we receive a code; we can now use this to get access and refresh tokens
         qDebug() << Q_FUNC_INFO << code;
@@ -124,8 +124,8 @@ private slots:
         QNetworkRequest request( TOKEN_URL );
         request.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
         QNetworkReply* post = accessManager()->post( request, payload );
-        connect( post, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onTokenError( QNetworkReply::NetworkError ) ) );
-        connect( post, SIGNAL( finished() ), this, SLOT( onTokenFinished() ) );
+        connect( post, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( slotTokenError( QNetworkReply::NetworkError ) ) );
+        connect( post, SIGNAL( finished() ), this, SLOT( slotTokenFinished() ) );
     }
 
     void useRefreshToken()
@@ -142,11 +142,11 @@ private slots:
         QNetworkRequest request( TOKEN_URL );
         request.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
         QNetworkReply* post = accessManager()->post( request, payload );
-        connect( post, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onTokenError( QNetworkReply::NetworkError ) ) );
-        connect( post, SIGNAL( finished() ), this, SLOT( onTokenFinished() ) );
+        connect( post, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( slotTokenError( QNetworkReply::NetworkError ) ) );
+        connect( post, SIGNAL( finished() ), this, SLOT( slotTokenFinished() ) );
     }
 
-    void onTokenError( QNetworkReply::NetworkError e )
+    void slotTokenError( QNetworkReply::NetworkError e )
     {
         qWarning() << Q_FUNC_INFO << e;
         QNetworkReply* reply = static_cast< QNetworkReply* >( sender() );
@@ -164,7 +164,7 @@ private slots:
         emit error( TokenFetchError );
     }
 
-    void onTokenFinished()
+    void slotTokenFinished()
     {
         QNetworkReply* reply = static_cast< QNetworkReply* >( sender() );
         QByteArray json = reply->readAll();
