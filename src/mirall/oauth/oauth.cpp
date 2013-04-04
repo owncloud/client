@@ -7,9 +7,7 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QHostAddress>
-#include <QSharedPointer>
 #include <QDesktopServices>
-#include <QSslError>
 
 #include <QDebug>
 
@@ -25,9 +23,6 @@ static const QString CLIENT_SECRET( "58459d4b1a0134abc624b6bd5249e2" );
 static const QString BASE_URL( "https://ec2-23-23-37-57.compute-1.amazonaws.com" );
 static const QString AUTH_URL( BASE_URL + "/oauth2/authorize" );
 static const QString TOKEN_URL( BASE_URL + "/oauth2/token" );
-
-static void nullDeleter( QNetworkAccessManager* )
-{}
 
 // impl
 class OAuth::OAuthPrivate : public QObject
@@ -55,24 +50,14 @@ public:
 
     QNetworkAccessManager* accessManager() const
     {
-        if ( nam.isNull() )
-        {
-            nam = QSharedPointer< QNetworkAccessManager >( new QNetworkAccessManager );
-
-            /// \todo: remove this; it looks like there is a mechanism for handling and registering
-            /// exceptions within mirall
-            connect( nam.data(), SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
-                     this, SLOT( onIgnoreSSLErrors( QNetworkReply*, QList<QSslError> ) ) );
-        }
-
-        return nam.data();
+        Q_ASSERT( nam );
+        return nam;
     }
     
-    // this is being passed in; someone else will take care
-    // of the lifetime
     void setAccessManager( QNetworkAccessManager* n )
     {
-        nam = QSharedPointer< QNetworkAccessManager >( n, nullDeleter );
+        Q_ASSERT( n );
+        nam = n;
     }
 
     void authenticate( const QString& _user, const QString& _pass, const QString& _conn )
@@ -116,11 +101,6 @@ signals:
     void authenticated( const QString& user, const QString& pass, bool useOAuth, const QString& conn );
 
 private slots:
-    void onIgnoreSSLErrors( QNetworkReply* reply, QList<QSslError> error )
-    {
-        reply->ignoreSslErrors( error );
-    }
-
     void onListenerError( OAuthListenerError e )
     {
         Q_UNUSED( e );
@@ -224,7 +204,7 @@ private slots:
     }
 
 private:
-    mutable QSharedPointer< QNetworkAccessManager > nam;
+    QNetworkAccessManager* nam;
 };
 
 #include "oauth.moc"

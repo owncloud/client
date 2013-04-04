@@ -23,6 +23,7 @@ class OAuth : public QObject
 public:
     OAuth( QObject* parent = NULL );
 
+    /// must set a QNAM; failing to do so will result in an assert
     QNetworkAccessManager* accessManager() const;
     void setAccessManager( QNetworkAccessManager* );
 
