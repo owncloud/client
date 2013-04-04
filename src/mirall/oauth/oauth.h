@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef MIRALL_OAUTH_OAUTH_H
+#define MIRALL_OAUTH_OAUTH_H
 
 // qt
 #include <QObject>
@@ -40,3 +41,5 @@ private:
     class OAuthPrivate;
     OAuthPrivate* m_impl;
 };
+
+#endif // MIRALL_OAUTH_OAUTH_H
