@@ -22,6 +22,7 @@
 #include "ui_sslerrordialog.h"
 
 class QSslError;
+class QSslCertificate;
 
 
 namespace Mirall
@@ -38,6 +39,8 @@ public:
     bool trustConnection();
 
     void setCustomConfigHandle( const QString& );
+
+    QList<QSslCertificate> storedCACerts();
 
 signals:
     

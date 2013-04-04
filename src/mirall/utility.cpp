@@ -56,16 +56,15 @@ void Utility::setupFavLink(const QString &folder)
     if (!QFile::link(folder, linkName))
         qDebug() << Q_FUNC_INFO << "linking" << folder << "to" << linkName << "failed!";
 #elif defined (Q_OS_MAC)
-    // Finder: Place under "Places"
-    QString folderUrl = QUrl::fromLocalFile(folder).toString();
-    CFStringRef folderCFStr = CFStringCreateWithCharacters(0, reinterpret_cast<const UniChar *>(folderUrl.unicode()),
-                                                   folder.length());
-    CFURLRef urlRef = CFURLCreateWithString(NULL, folderCFStr, 0);
+    // Finder: Place under "Places"/"Favorites" on the left sidebar
+    CFStringRef folderCFStr = CFStringCreateWithCString(0, folder.toUtf8().data(), kCFStringEncodingUTF8);
+    CFURLRef urlRef = CFURLCreateWithFileSystemPath (0, folderCFStr, kCFURLPOSIXPathStyle, true);
+
     LSSharedFileListRef placesItems = LSSharedFileListCreate(0, kLSSharedFileListFavoriteItems, 0);
     if (placesItems) {
         //Insert an item to the list.
         LSSharedFileListItemRef item = LSSharedFileListInsertItemURL(placesItems,
-                                                                     kLSSharedFileListItemBeforeFirst, 0, 0,
+                                                                     kLSSharedFileListItemLast, 0, 0,
                                                                      urlRef, 0, 0);
         if (item)
             CFRelease(item);
@@ -73,6 +72,21 @@ void Utility::setupFavLink(const QString &folder)
     CFRelease(placesItems);
     CFRelease(folderCFStr);
     CFRelease(urlRef);
+#elif defined (Q_OS_UNIX)
+    // Nautilus: add to ~/.gtk-bookmarks
+    QFile gtkBookmarks(QDir::homePath()+QLatin1String("/.gtk-bookmarks"));
+    QByteArray folderUrl = "file://" + folder.toUtf8();
+    if (gtkBookmarks.open(QFile::ReadWrite)) {
+        QByteArray places = gtkBookmarks.readAll();
+        if (!places.contains(folderUrl)) {
+            places += folderUrl;
+            gtkBookmarks.reset();
+            gtkBookmarks.write(places + '\n');
+        }
+
+
+    }
+
 #endif
 }
 

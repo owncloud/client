@@ -57,18 +57,25 @@ QString SslErrorDialog::styleSheet() const
 }
 #define QL(x) QLatin1String(x)
 
+QList<QSslCertificate> SslErrorDialog::storedCACerts()
+{
+    MirallConfigFile cfg( _customConfigHandle );
+    QList<QSslCertificate> cacerts = QSslCertificate::fromData(cfg.caCerts());
+    return cacerts;
+}
+
 bool SslErrorDialog::setErrorList( QList<QSslError> errors )
 {
-    QList<QSslCertificate> ourCerts = ownCloudInfo::instance()->certificateChain();
-
     // check if unknown certs caused errors.
     _unknownCerts.clear();
 
     QStringList errorStrings;
 
+    QList<QSslCertificate> trustedCerts = SslErrorDialog::storedCACerts();
+
     for (int i = 0; i < errors.count(); ++i) {
-        if (ourCerts.contains(errors.at(i).certificate()) ||
-                _unknownCerts.contains(errors.at(i).certificate() ))
+        if (trustedCerts.contains(errors.at(i).certificate()) ||
+            _unknownCerts.contains(errors.at(i).certificate() ))
             continue;
         errorStrings += errors.at(i).errorString();
         if (!errors.at(i).certificate().isNull()) {
