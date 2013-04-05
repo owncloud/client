@@ -40,7 +40,6 @@ public:
         // ensure we can timeout
         connect( &timeout, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
         timeout.setSingleShot( true );
-        timeout.start( 60000 ); // 1 minute timeout
     }
 
     QTimer timeout;
@@ -52,6 +51,9 @@ public:
 private slots:
     void slotTimeout()
     {
+        qDebug() << Q_FUNC_INFO;
+
+        writeErrorResponse();
         emit error( CodeTimeout );
     }
 
@@ -60,6 +62,9 @@ private slots:
         qDebug() << Q_FUNC_INFO;
         connection = server->nextPendingConnection();
         connect( connection, SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
+
+        buffer.clear();
+        timeout.start( 10000 ); // 10s timeout
     }
 
     void slotReadyRead()
@@ -79,14 +84,42 @@ private slots:
     }
 
 private:
+    QByteArray createResponse( int code = 200, const QByteArray& payload = QByteArray() )
+    {
+        QByteArray header;
+        header += QString( "HTTP/1.1 %1 OK\r\n" ).arg( code ).toUtf8();
+        header += QString( "Content-Length: %1\r\n" ).arg( payload.size() ).toUtf8();
+        
+        if ( payload.size() )
+            header += "\r\n" + payload;
+
+        return header;
+    }
+
     void writeResponse()
     {
         Q_ASSERT( connection );
-        QByteArray response;
-        response += "HTTP/1.1 200 OK\n";
-        response += "Content-Length: 0\n";
-        response += "Connection: close\n";
+        QByteArray body = 
+            "<html><body>\n"
+            "code received!"
+            "</body></html>\n";
 
+        QByteArray response = createResponse( 200, body );
+        connection->write( response );
+        connection->flush();
+    }
+
+    void writeErrorResponse()
+    {
+        Q_ASSERT( connection );
+        QByteArray body = 
+            "<html><body>\n"
+            "failed to get code!"
+            "</body></html>\n";
+
+        /// \todo" change code to 408 to get client to resend if there 
+        /// really is a timeout
+        QByteArray response = createResponse( 406, body ); 
         connection->write( response );
         connection->flush();
     }
