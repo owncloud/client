@@ -8,45 +8,52 @@
 #include <QHostAddress>
 #include <QByteArray>
 #include <QRegExp>
+#include <QMap>
+#include <QList>
 
 #include <QDebug>
 
-/// impl
-class OAuthListener::OAuthListenerPrivate : public QObject
+typedef QMap< int, QString > ReasonPhraseMap;
+
+const ReasonPhraseMap& reasonPhraseMap()
+{
+    static ReasonPhraseMap static_rpm;
+    if ( static_rpm.isEmpty() )
+    {
+        static_rpm[ 200 ] = "OK";
+        static_rpm[ 406 ] = "Not Acceptable";
+        static_rpm[ 408 ] = "Request Time-Out";
+    }
+
+    return static_rpm;
+}
+
+/// keep track of connections
+class ConnectionHandler : public QObject
 {
     Q_OBJECT
 
 public:
-    OAuthListenerPrivate( OAuthListener* o )
-        : QObject( o ),
-          server( new QTcpServer( this ) ),
-          connection( NULL )
+    ConnectionHandler( QTcpSocket* c, int t )
+        : connection( c )
     {
-        connect( this, SIGNAL( codeReceived( const QString& ) ), o, SIGNAL( codeReceived( const QString& ) ) );
-        connect( this, SIGNAL( error( OAuthListenerError ) ), o, SIGNAL( error( OAuthListenerError ) ) );
-
-        // start the server
-        if ( !server->listen( QHostAddress::LocalHost ) )
-        {
-            qWarning() << Q_FUNC_INFO << "failed to start server";
-            emit error( CouldntStartServer );
-            return;
-        }
-
-        connect( server, SIGNAL( newConnection() ), this, SLOT( slotNewConnection() ) );
-        if ( server->hasPendingConnections() )
-            slotNewConnection();
+        // listen for data
+        connect( connection, SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
 
         // ensure we can timeout
         connect( &timeout, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
         timeout.setSingleShot( true );
+        timeout.start( t );
+    }
+
+    ~ConnectionHandler()
+    {
+        connection->close();
     }
 
     QTimer timeout;
-    QTcpServer* server;
     QTcpSocket* connection;
     QByteArray buffer;
-    QString code;
 
 private slots:
     void slotTimeout()
@@ -55,16 +62,6 @@ private slots:
 
         writeErrorResponse();
         emit error( CodeTimeout );
-    }
-
-    void slotNewConnection()
-    {
-        qDebug() << Q_FUNC_INFO;
-        connection = server->nextPendingConnection();
-        connect( connection, SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
-
-        buffer.clear();
-        timeout.start( 10000 ); // 10s timeout
     }
 
     void slotReadyRead()
@@ -76,18 +73,21 @@ private slots:
         QRegExp re( ".*code=(\\S+)\\s.*", Qt::CaseInsensitive );
         if ( re.exactMatch( buffer ) )
         {
-            code = re.cap( 1 );
+            QString code = re.cap( 1 );
             timeout.stop();
             writeResponse();
             emit codeReceived( code );
         }
+
+        if ( connection->bytesAvailable() )
+            QTimer::singleShot( 0, this, SLOT( slotReadyRead() ) );
     }
 
 private:
-    QByteArray createResponse( int code = 200, const QByteArray& payload = QByteArray() )
+    QByteArray createResponse( int code = 200, const QByteArray& payload = QByteArray() ) const
     {
         QByteArray header;
-        header += QString( "HTTP/1.1 %1 OK\r\n" ).arg( code ).toUtf8();
+        header += QString( "HTTP/1.1 %1 %2\r\n" ).arg( code ).arg( reasonPhraseMap()[ code ] ).toUtf8();
         header += QString( "Content-Length: %1\r\n" ).arg( payload.size() ).toUtf8();
         
         if ( payload.size() )
@@ -129,6 +129,59 @@ signals:
     void codeReceived( const QString& );
 };
 
+
+/// impl
+class OAuthListener::OAuthListenerPrivate : public QObject
+{
+    Q_OBJECT
+
+public:
+    OAuthListenerPrivate( OAuthListener* o )
+        : QObject( o ),
+          server( new QTcpServer( this ) ),
+          timeout( 10000 )
+    {
+        connect( this, SIGNAL( codeReceived( const QString& ) ), o, SIGNAL( codeReceived( const QString& ) ) );
+        connect( this, SIGNAL( error( OAuthListenerError ) ), o, SIGNAL( error( OAuthListenerError ) ) );
+
+        // start the server
+        if ( !server->listen( QHostAddress::LocalHost ) )
+        {
+            qWarning() << Q_FUNC_INFO << "failed to start server";
+            emit error( CouldntStartServer );
+            return;
+        }
+
+        connect( server, SIGNAL( newConnection() ), this, SLOT( slotNewConnection() ) );
+        if ( server->hasPendingConnections() )
+            slotNewConnection();
+    }
+
+    ~OAuthListenerPrivate()
+    {
+        foreach( ConnectionHandler* c, connections )
+            c->deleteLater();
+    }
+
+    QTcpServer* server;
+    QList< ConnectionHandler* > connections;
+    int timeout;
+
+private slots:
+    void slotNewConnection()
+    {
+        qDebug() << Q_FUNC_INFO;
+        ConnectionHandler* handler = new ConnectionHandler( server->nextPendingConnection(), timeout );
+
+        connect( handler, SIGNAL( codeReceived( const QString& ) ), this, SIGNAL( codeReceived( const QString& ) ) );
+        connect( handler, SIGNAL( error( OAuthListenerError ) ), this, SIGNAL( error( OAuthListenerError ) ) );        
+    }
+
+signals:
+    void error( OAuthListenerError );
+    void codeReceived( const QString& );
+};
+
 #include "oauthlistener.moc"
 
 ///
@@ -152,12 +205,12 @@ QString OAuthListener::getStringForError( OAuthListenerError e )
 
 int OAuthListener::timeout() const
 {
-    return m_impl->timeout.interval();
+    return m_impl->timeout;
 }
 
 void OAuthListener::setTimeout( int ms )
 {
-    return m_impl->timeout.start( ms );
+    m_impl->timeout = ms;
 }
 
 quint16 OAuthListener::port() const
