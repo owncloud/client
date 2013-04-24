@@ -35,8 +35,10 @@ class ConnectionHandler : public QObject
 
 public:
     ConnectionHandler( QTcpSocket* c, int t )
-        : connection( c )
+        : connection( c ),
+          codeFound( false )
     {
+        qDebug() << Q_FUNC_INFO << "@" << (void*)this << "connection @" << (void*)c;
         // listen for data
         connect( connection, SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
 
@@ -48,14 +50,22 @@ public:
 
     ~ConnectionHandler()
     {
-        connection->close();
+        qDebug() << Q_FUNC_INFO << "@" << (void*)this;
+        shutdown();
     }
 
     QTimer timeout;
     QTcpSocket* connection;
     QByteArray buffer;
+    bool codeFound;
 
 private slots:
+    void shutdown()
+    {
+        timeout.stop();
+        connection->close();
+    }
+
     void slotTimeout()
     {
         qDebug() << Q_FUNC_INFO;
@@ -66,17 +76,20 @@ private slots:
 
     void slotReadyRead()
     {
-        buffer += connection->readAll();
+        if ( codeFound )
+            return;
 
-        qDebug() << Q_FUNC_INFO << buffer;
+        buffer += connection->readAll();
+        qDebug() << Q_FUNC_INFO << "@" << (void*)this << buffer;
 
         QRegExp re( ".*code=(\\S+)\\s.*", Qt::CaseInsensitive );
         if ( re.exactMatch( buffer ) )
         {
+            codeFound = true;
             QString code = re.cap( 1 );
-            timeout.stop();
-            writeResponse();
             emit codeReceived( code );
+            writeResponse();
+            return;
         }
 
         if ( connection->bytesAvailable() )
@@ -141,6 +154,7 @@ public:
           server( new QTcpServer( this ) ),
           timeout( 10000 )
     {
+        // pass signals up the chain
         connect( this, SIGNAL( codeReceived( const QString& ) ), o, SIGNAL( codeReceived( const QString& ) ) );
         connect( this, SIGNAL( error( OAuthListenerError ) ), o, SIGNAL( error( OAuthListenerError ) ) );
 

@@ -122,6 +122,7 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
 
     // clear the custom config handle
     _configHandle.clear();
+    CredentialStore::instance()->resetConfigFileAppendix();
     ownCloudInfo::instance()->setCustomConfigHandle( QString::null );
 
     // disconnect the ocInfo object
@@ -436,12 +437,19 @@ void OwncloudSetupWizard::setupLocalSyncFolder()
 
     if( localFolderOk ) {
         _remoteFolder = Theme::instance()->defaultServerFolder();
-        slotCreateRemoteFolder(true);
+
+        // force credentials to be fetched
+        connect( CredentialStore::instance(), SIGNAL( fetchCredentialsFinished( bool ) ),
+                 this, SLOT( slotCreateRemoteFolder( bool ) ) );
+        CredentialStore::instance()->setConfigFileAppendix( _configHandle );
+        CredentialStore::instance()->fetchCredentials();
     }
 }
 
 void OwncloudSetupWizard::slotCreateRemoteFolder(bool credentialsOk )
 {
+    disconnect( CredentialStore::instance(), SIGNAL( fetchCredentialsFinished( bool ) ),
+                this, SLOT( slotCreateRemoteFolder( bool ) ) );    
     if( ! credentialsOk ) {
         // User pressed cancel while being asked for password.
         _ocWizard->appendToResultWidget("User canceled password dialog. Can not connect.");
