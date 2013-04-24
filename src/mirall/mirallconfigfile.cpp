@@ -178,7 +178,7 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
     QFile::setPermissions( file, QFile::ReadOwner|QFile::WriteOwner );
 
     // Store credentials temporar until the config is finalized.
-    ownCloudInfo::instance()->setCredentials( user, passwd, useOAuth, _customHandle );
+    ownCloudInfo::instance()->setCredentials( user, passwd, _customHandle );
 
 }
 
@@ -214,6 +214,24 @@ bool MirallConfigFile::writePassword( const QString& passwd, const QString& conn
     settings.beginGroup( con );
     QByteArray pwdba = pwd.toUtf8();
     settings.setValue( QLatin1String("passwd"), QVariant(pwdba.toBase64()) );
+    settings.sync();
+
+    return true;
+}
+
+bool MirallConfigFile::writeUseOAuth( bool useOAuth, const QString& connection )
+{
+    const QString file = configFile();
+    QString con( defaultConnection() );
+    if( !connection.isEmpty() )
+        con = connection;
+
+    QSettings settings( file, QSettings::IniFormat);
+    settings.setIniCodec( "UTF-8" );
+
+    // store password into settings file.
+    settings.beginGroup( con );
+    settings.setValue( QLatin1String("useOAuth"), useOAuth );
     settings.sync();
 
     return true;
@@ -508,7 +526,7 @@ void MirallConfigFile::acceptCustomConfig()
     if( pwd.isEmpty() ) {
         qDebug() << "Password is empty, skipping to write cred store.";
     } else {
-        CredentialStore::instance()->setCredentials(url, user, pwd, oauth, allow);
+        CredentialStore::instance()->setCredentials(url, user, pwd, allow, oauth);
         CredentialStore::instance()->saveCredentials();
     }
 }
