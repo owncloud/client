@@ -191,7 +191,7 @@ void CredentialStore::fetchCredentials()
         connect( _oauth.data(), SIGNAL( error( OAuthError ) ),
                  this, SLOT( slotOAuthError( OAuthError ) ) );
 
-        _oauth->authenticate( _user, _url );        
+        _oauth->authenticate( _user, _configFileAppendix );        
     }
     default: {
         break;
@@ -232,6 +232,7 @@ void CredentialStore::slotOAuthAuthenticated( const OAuthConnectionData& d )
     _oauth->deleteLater();
     _state = Ok;
     _passwd = d.token;
+    ownCloudInfo::instance()->setCredentials( d.user, d.token, d.connection );
     qDebug() << Q_FUNC_INFO << _user << _passwd;
 
     emit fetchCredentialsFinished( true );

@@ -37,8 +37,8 @@ public:
           nam( NULL )
     {
         connect( this, SIGNAL( error( OAuthError ) ), owner, SIGNAL( error( OAuthError ) ) );
-        connect( this, SIGNAL( authenticated( const QString&, const QString&, bool, const QString& ) ),
-                 owner, SIGNAL( authenticated( const QString&, const QString&, bool, const QString& ) ) );
+        connect( this, SIGNAL( authenticated( const OAuthConnectionData& ) ),
+                 owner, SIGNAL( authenticated( const OAuthConnectionData& ) ) );
     }
 
     ~OAuthPrivate()
@@ -60,7 +60,7 @@ public:
         nam = n;
     }
 
-    void authenticate( const QString& _user, const QString& _pass, const QString& _conn )
+    void authenticate( const QString& _user, const QString& _conn )
     {
         // store user, connection
         user = _user;
@@ -98,7 +98,7 @@ public:
 
 signals:
     void error( OAuthError );
-    void authenticated( const QString& user, const QString& pass, bool useOAuth, const QString& conn );
+    void authenticated( const OAuthConnectionData& );
 
 private slots:
     void slotListenerError( OAuthListenerError e )
@@ -195,12 +195,17 @@ private slots:
             emit error( TokenParseError );
             return;
         }
-        
+
+        // success!
         pass = _accessToken;
         refreshToken = _refreshToken;
 
-        // success!
-        emit authenticated( user, pass, true, conn );
+        OAuthConnectionData d;
+        d.user = user;
+        d.token = _accessToken;
+        d.refresh = _refreshToken;
+        d.connection = conn;
+        emit authenticated( d );
     }
 
 private:
@@ -241,7 +246,7 @@ QString OAuth::getStringForError( OAuthError e )
     return QString();
 }
 
-void OAuth::authenticate( const QString& user, const QString& pass, const QString& conn )
+void OAuth::authenticate( const QString& user, const QString& conn )
 {
-    m_impl->authenticate( user, pass, conn );
+    m_impl->authenticate( user, conn );
 }

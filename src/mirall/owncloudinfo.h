@@ -18,8 +18,6 @@
 #include <QObject>
 #include <QtNetwork>
 
-#include "mirall/oauth/oauth.h"
-
 #if QT_VERSION >= 0x040700
 #define QT46_IMPL 0
 #else
@@ -32,7 +30,6 @@ namespace Mirall
 typedef struct {
     QString user;
     QString passwd;
-    bool useOAuth;
     QString connection;
 } oCICredentials;
 
@@ -86,6 +83,11 @@ public:
     void setNetworkAccessManager( QNetworkAccessManager *qnam );
 
     /**
+     * Allow QNetworkAccessManager to be used by others
+     */
+    QNetworkAccessManager* networkAccessManager() const;
+
+    /**
       * Create a collection via owncloud. Provide a relative path.
       */
     QNetworkReply* mkdirRequest( const QString& );
@@ -110,7 +112,7 @@ public:
      * Store credentials for a given connection. Empty connection parameter
      * means "default connection".
      */
-    void setCredentials( const QString&, const QString&, bool useOAuth,
+    void setCredentials( const QString&, const QString&,
                          const QString& configHandle = QString::null );
 
 signals:
@@ -139,8 +141,7 @@ protected slots:
     void slotMkdirFinished();
 #endif
 
-    void pushCredentials( const QString& name, const QString& pass, bool useOAuth, const QString& conn );
-    void onOAuthError( OAuthError );
+    void pushCredentials( const QString& name, const QString& pass, const QString& conn );
 
 private:
     explicit ownCloudInfo();

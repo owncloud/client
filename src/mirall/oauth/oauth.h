@@ -16,6 +16,13 @@ enum OAuthError {
     TokenParseError
 };
 
+struct OAuthConnectionData {
+    QString user;
+    QString token;
+    QString refresh;
+    QString connection;
+};
+
 /// Encapsulation of OAuth.
 class OAuth : public QObject
 {
@@ -31,11 +38,11 @@ public:
     static QString getStringForError( OAuthError );
 
 public slots:
-    void authenticate( const QString& user, const QString& pass, const QString& conn );
+    void authenticate( const QString& user, const QString& conn );
 
 signals:
     void error( OAuthError );
-    void authenticated( const QString& user, const QString& pass, bool useOAuth, const QString& conn );
+    void authenticated( const OAuthConnectionData& );
 
 private:
     class OAuthPrivate;

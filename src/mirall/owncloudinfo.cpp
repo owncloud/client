@@ -75,7 +75,11 @@ void ownCloudInfo::setNetworkAccessManager( QNetworkAccessManager* qnam )
              this, SLOT(slotAuthentication(QNetworkReply*,QAuthenticator*)));
 
     _certsUntrusted = false;
+}
 
+QNetworkAccessManager* ownCloudInfo::networkAccessManager() const
+{
+    return _manager;
 }
 
 ownCloudInfo::~ownCloudInfo()
@@ -247,29 +251,17 @@ void ownCloudInfo::slotMkdirFinished()
 }
 #endif
 
-void ownCloudInfo::pushCredentials( const QString& user, const QString& pass, bool useOAuth, const QString& conn )
+void ownCloudInfo::pushCredentials( const QString& user, const QString& pass, const QString& conn )
 {
-    qDebug() << Q_FUNC_INFO << user << pass << useOAuth << conn;
-
-    if ( sender() && sender() != this )
-        sender()->deleteLater();
+    qDebug() << Q_FUNC_INFO << user << pass << conn;
 
     oCICredentials creds;
     creds.user = user;
     creds.passwd = pass;
-    creds.useOAuth = useOAuth;
     creds.connection = conn;
     _credentials[conn] = creds;
 
     emit credentialsSet();
-}
-
-void ownCloudInfo::onOAuthError( OAuthError e )
-{
-    QString errorString = OAuth::getStringForError( e );
-    qWarning() << Q_FUNC_INFO << errorString;
-
-    sender()->deleteLater();
 }
 
 void ownCloudInfo::slotAuthentication( QNetworkReply *reply, QAuthenticator *auth )
@@ -464,10 +456,10 @@ void ownCloudInfo::slotError( QNetworkReply::NetworkError err)
   qDebug() << "ownCloudInfo Network Error: " << err;
 }
 
-void ownCloudInfo::setCredentials( const QString& user, const QString& passwd, bool useOAuth,
+void ownCloudInfo::setCredentials( const QString& user, const QString& passwd,
                                    const QString& configHandle )
 {
-    qDebug() << Q_FUNC_INFO << user << passwd << useOAuth << configHandle;
+    qDebug() << Q_FUNC_INFO << user << passwd << configHandle;
 
     QString con( configHandle );
     if( configHandle.isEmpty() )
@@ -477,23 +469,14 @@ void ownCloudInfo::setCredentials( const QString& user, const QString& passwd, b
         qDebug() << "Overwriting credentials for connection " << con;
     }
 
-    if ( !useOAuth ) {
-        pushCredentials( user, passwd, useOAuth, con );
-    } else {
-        OAuth* oauthHandler = new OAuth( this );
-        oauthHandler->setAccessManager( _manager );
-        connect( oauthHandler, SIGNAL( authenticated( const QString&, const QString&, bool, const QString& ) ),
-                 this, SLOT( pushCredentials( const QString&, const QString&, bool, const QString& ) ) );
-        connect( oauthHandler, SIGNAL( error( OAuthError ) ),
-                 this, SLOT( onOAuthError( OAuthError ) ) );
-
-        oauthHandler->authenticate( user, passwd, configHandle );
-    }
+    pushCredentials( user, passwd, con );
 }
 
 // ============================================================================
 void ownCloudInfo::setupHeaders( QNetworkRequest & req, quint64 size )
 {
+    qDebug() << Q_FUNC_INFO << _configHandle << DEFAULT_CONNECTION;
+
     MirallConfigFile cfgFile(_configHandle );
 
     QUrl url( cfgFile.ownCloudUrl( QString::null, false ) );
@@ -510,6 +493,8 @@ void ownCloudInfo::setupHeaders( QNetworkRequest & req, quint64 size )
         const QString b(QLatin1String("Basic "));
         QByteArray data = b.toLocal8Bit() + concatenated.toLocal8Bit().toBase64();
         req.setRawHeader( QByteArray("Authorization"), data );
+
+        qDebug() << Q_FUNC_INFO << concatenated << data;
     }
 
     if (size) {
