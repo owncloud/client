@@ -184,6 +184,8 @@ void Application::slotStartUpdateDetector()
 
 void Application::slotStartFolderSetup( int result )
 {
+    qDebug() << Q_FUNC_INFO << result << ownCloudInfo::instance()->isConfigured();
+
     if( result == QDialog::Accepted ) {
         if( ownCloudInfo::instance()->isConfigured() ) {
             connect( ownCloudInfo::instance(),SIGNAL(ownCloudInfoFound(QString,QString,QString,QString)),
@@ -201,9 +203,13 @@ void Application::slotStartFolderSetup( int result )
     }
 }
 
-void Application::slotOwnCloudFound( const QString& url, const QString& versionStr, const QString& version, const QString& edition)
+void Application::slotOwnCloudFound( const QString& url, 
+                                     const QString& versionStr, 
+                                     const QString& version, 
+                                     const QString& edition)
 {
-    qDebug() << "** Application: ownCloud found: " << url << " with version " << versionStr << "(" << version << ")";
+    qDebug() << Q_FUNC_INFO << url << " with version " << versionStr << "(" << version << ")";
+
     // now check the authentication
     MirallConfigFile cfgFile;
     cfgFile.setOwnCloudVersion( version );
@@ -217,7 +223,8 @@ void Application::slotOwnCloudFound( const QString& url, const QString& versionS
     if( version.startsWith("4.0") ) {
         QMessageBox::warning(0, tr("%1 Server Mismatch").arg(_theme->appNameGUI()),
                              tr("<p>The configured server for this client is too old.</p>"
-                                "<p>Please update to the latest %1 server and restart the client.</p>").arg(_theme->appNameGUI()));
+                                "<p>Please update to the latest %1 server and restart the client.</p>")
+                             .arg(_theme->appNameGUI()));
         return;
     }
 
@@ -248,6 +255,8 @@ void Application::slotNoOwnCloudFound( QNetworkReply* reply )
 
 void Application::slotFetchCredentials()
 {
+    qDebug() << Q_FUNC_INFO;
+
     QString trayMessage;
 
     if( CredentialStore::instance()->canTryAgain() ) {
@@ -291,8 +300,7 @@ void Application::slotCredentialsFetched(bool ok)
         _actionOpenStatus->setEnabled( false );
     } else {
         ownCloudInfo::instance()->setCredentials( CredentialStore::instance()->user(),
-                                                  CredentialStore::instance()->password(),
-                                                  CredentialStore::instance()->useOAuth());
+                                                  CredentialStore::instance()->password());
         // Credential fetched ok.
         QTimer::singleShot( 0, this, SLOT( slotCheckAuthentication() ));
     }
