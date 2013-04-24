@@ -82,6 +82,13 @@ bool FolderWizardSourcePage::isComplete() const
     while( isOk && i != map->constEnd() ) {
       Folder *f = static_cast<Folder*>(i.value());
       QString folderDir = QDir( f->path() ).canonicalPath();
+      if( folderDir.isEmpty() )
+      {
+        isOk = true;
+        qDebug() << "Absolute path for folder: " << f->path() << " doesn't exist. Skipping.";
+        i++;
+        continue;
+      }
       if( ! folderDir.endsWith(QLatin1Char('/')) ) folderDir.append(QLatin1Char('/'));
 
       qDebug() << "Checking local path: " << folderDir << " <-> " << userInput;
@@ -455,18 +462,27 @@ bool FolderWizardOwncloudPage::isComplete() const
 
 FolderWizard::FolderWizard( QWidget *parent )
     : QWizard(parent),
-    _folderWizardSourcePage(0)
+    _folderWizardSourcePage(0),
+    _folderWizardTargetPage(0)
 {
     _folderWizardSourcePage = new FolderWizardSourcePage();
     setPage(Page_Source,   _folderWizardSourcePage );
-    if (!Theme::instance()->singleSyncFolder())
-        setPage(Page_Target,   new FolderWizardTargetPage());
-    // setPage(Page_Network,  new FolderWizardNetworkPage());
-    // setPage(Page_Owncloud, new FolderWizardOwncloudPage());
+    if (!Theme::instance()->singleSyncFolder()) {
+        _folderWizardTargetPage = new FolderWizardTargetPage();
+        setPage(Page_Target, _folderWizardTargetPage );
+    }
+
     setWindowTitle( tr( "%1 Folder Wizard" ).arg( Theme::instance()->appNameGUI() ) );
 #ifdef Q_WS_MAC
     setWizardStyle( QWizard::ModernStyle );
 #endif
+}
+
+FolderWizard::~FolderWizard()
+{
+  delete _folderWizardSourcePage;
+  if( _folderWizardTargetPage )
+    delete _folderWizardTargetPage;
 }
 
 void FolderWizard::setFolderMap( Folder::Map *fm)

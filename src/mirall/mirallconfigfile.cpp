@@ -30,11 +30,23 @@
 namespace Mirall {
 
 QString MirallConfigFile::_oCVersion;
+QString MirallConfigFile::_confDir = QString::null;
 bool    MirallConfigFile::_askedUser = false;
 
 MirallConfigFile::MirallConfigFile( const QString& appendix )
     :_customHandle(appendix)
 {
+}
+
+void MirallConfigFile::setConfDir(const QString &value)
+{
+    if( value.isEmpty() ) return;
+
+    QFileInfo fi(value);
+    if( fi.exists() && fi.isDir() ) {
+        qDebug() << "** Using custom dir " << value;
+        _confDir=value;
+    }
 }
 
 void MirallConfigFile::lockedFolderMsg( QString path )
@@ -52,27 +64,31 @@ void MirallConfigFile::lockedFolderMsg( QString path )
 
 QString MirallConfigFile::configPath() const
 {
+	QString dir = _confDir;
+    if( _confDir.isEmpty() )
+	{
 #ifdef Q_OS_WIN32
-	QString dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+		QString dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 	
-    //Workaround for Bug QTBUG-18864 to sotre config in Roming user's profile (Windows)
-	if ( dir.contains("local settings",Qt::CaseInsensitive ) ) //Windows 2k/XP local profile
-	{
-		qDebug() << "system XP";
-	    dir.replace((QString)"Local Settings",(QString)"",Qt::CaseInsensitive);
-	    qDebug() << "newdir=" << dir;
-	}
-	else
-	{
-	    if (dir.contains("Local",Qt::CaseInsensitive) )
-	    {
-			qDebug() << "System Vista Above";
-			dir.replace((QString)"Local",(QString)"Roaming",Qt::CaseInsensitive); //windows Vista and above
-		    qDebug() << "newdir=" << dir;
+		//Workaround for Bug QTBUG-18864 to sotre config in Roming user's profile (Windows)
+		if ( dir.contains("local settings",Qt::CaseInsensitive ) ) //Windows 2k/XP local profile
+		{
+			qDebug() << "system XP";
+			dir.replace((QString)"Local Settings",(QString)"",Qt::CaseInsensitive);
+			qDebug() << "newdir=" << dir;
 		}
-	}
+		else
+		{
+			if (dir.contains("Local",Qt::CaseInsensitive) )
+			{
+				qDebug() << "System Vista Above";
+				dir.replace((QString)"Local",(QString)"Roaming",Qt::CaseInsensitive); //windows Vista and above
+				qDebug() << "newdir=" << dir;
+			}
+		}
 #endif
-    qDebug() << "config path is" << dir;
+	    qDebug() << "config path is" << dir;
+	}
     if( !dir.endsWith(QLatin1Char('/')) ) dir.append(QLatin1Char('/'));
     return dir;
 }

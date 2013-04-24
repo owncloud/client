@@ -21,6 +21,13 @@
 #include "mirall/inotify.h"
 #include "mirall/theme.h"
 
+#ifdef Q_OS_MAC
+#include <CoreServices/CoreServices.h>
+#endif
+#ifdef Q_OS_WIN
+#include <shlobj.h>
+#endif
+
 #include <QDesktopServices>
 #include <QtCore>
 
@@ -28,27 +35,15 @@ namespace Mirall {
 
 FolderMan::FolderMan(QObject *parent) :
     QObject(parent),
-    
     _syncEnabled( true )
 {
-	//Get Folder ConfigFile same as MirallConfigFile's class
-	MirallConfigFile MiConf;
-	QString configPath;
-	
-	configPath = MiConf.configPath();
-	
     // if QDir::mkpath would not be so stupid, I would not need to have this
     // duplication of folderConfigPath() here
-    
-    //QDir storageDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-    QDir storageDir(configPath);
+    MirallConfigFile cfg;
+    QDir storageDir(cfg.configPath());
     storageDir.mkpath(QLatin1String("folders"));
-    //_folderConfigPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + QLatin1String("/folders");
-    _folderConfigPath = configPath + QLatin1String("/folders");
-    
-    // if QDir::mkpath would not be so stupid, I would not need to have this
-    // duplication of folderConfigPath() here
-    
+    _folderConfigPath = cfg.configPath() + QLatin1String("folders");
+
     _folderChangeSignalMapper = new QSignalMapper(this);
     connect(_folderChangeSignalMapper, SIGNAL(mapped(const QString &)),
             this, SIGNAL(folderSyncStateChange(const QString &)));
@@ -57,7 +52,6 @@ FolderMan::FolderMan(QObject *parent) :
 FolderMan::~FolderMan()
 {
     foreach (Folder *folder, _folderMap) {
-
         delete folder;
     }
 }
@@ -66,7 +60,6 @@ Mirall::Folder::Map FolderMan::map()
 {
     return _folderMap;
 }
-
 
 
 int FolderMan::setupFolders()
@@ -309,7 +302,6 @@ void FolderMan::terminateSyncProcess( const QString& alias )
 
 Folder *FolderMan::folder( const QString& alias )
 {
-	
     if( !alias.isEmpty() ) {
         if( _folderMap.contains( alias )) {
             return _folderMap[alias];
@@ -331,54 +323,8 @@ SyncResult FolderMan::syncResult( const QString& alias )
 
 void FolderMan::slotScheduleAllFolders()
 {
-	
     foreach( Folder *f, _folderMap.values() ) {
-		/*Before activating Folder Sync, try to see if it is not already
-		 * in use by anouther mirall instance.
-		 * Each  first schedule will create a .inuse file in its folder
-		 * to lock sync for other mirall starts
-		*/
-		
-		QString fileinuse = f->path() + "/.inuse";
-		QFileInfo fi = fileinuse;
-		if ( ! fi.exists() )
-		{
-			qDebug() << "OK ! creating lock file for the folder " << f->alias();
-			QFile F(fileinuse);
-			F.open(QIODevice::WriteOnly);
-			F.write("I'm the First on this folder\n");
-			F.close();
-			setSyncEnabled(true);
-			slotScheduleSync( f->alias() );
-		}
-		else
-		{
-			qDebug() << "The folder " << f->alias() << "is already in use !";
-			//setSyncEnabled(false);
-			f->setSyncEnabled(false);
-			f->setSyncLocked();
-			MirallConfigFile::lockedFolderMsg(f->path());
-			setSyncEnabled(true);
-		}
-		
-        
-    }
-}
-
-void FolderMan::unlockSyncedFolders()
-{
-	 foreach (Folder *f, _folderMap.values() ) {
-		 if ( ! f->syncLocked() )
-		 {
-			 QString fileinuse = f->path() + "/.inuse";
-			 qDebug() << "The folder was synced by me. I remove .inuse file";
-			 if (QFile::remove(fileinuse))
-				qDebug() <<"   OK, removed";
-			 else
-				qDebug() <<"   Error, can't delete this file. Next program launch will cause trouble";
-		 }
-		 else
-			qDebug() << "The folder " << f->alias() <<" was not synced. keep.inuse file";
+        slotScheduleSync( f->alias() );
     }
 }
 
@@ -418,11 +364,6 @@ void FolderMan::setSyncEnabled( bool enabled )
   */
 void FolderMan::slotScheduleFolderSync()
 {
-	/*if ( folder(_currentSyncFolder)->syncLocked() )
-	{
-		qDebug() << "Currently folder " << _currentSyncFolder << " is Locked, skipping...";
-        return;
-    }*/
     if( !_currentSyncFolder.isEmpty() ) {
         qDebug() << "Currently folder " << _currentSyncFolder << " is running, wait for finish!";
         return;

@@ -48,10 +48,6 @@
 #include <QNetworkProxy>
 #include <QNetworkProxyFactory>
 
-#ifdef Q_OS_LINUX
-#include <dlfcn.h>
-#endif
-
 namespace Mirall {
 
 // application logging handler.
@@ -93,7 +89,8 @@ Application::Application(int &argc, char **argv) :
     _showLogWindow(false),
     _logFlush(false),
     _helpOnly(false),
-    _fileItemDialog(0)
+    _fileItemDialog(0),
+    _statusDialog(0)
 {
     setApplicationName( _theme->appNameGUI() );
     setWindowIcon( _theme->applicationIcon() );
@@ -103,16 +100,6 @@ Application::Application(int &argc, char **argv) :
     setupLogBrowser();
     //no need to waste time;
     if ( _helpOnly ) return;
-
-#ifdef Q_OS_LINUX
-        // HACK: bump the refcount for libgnutls by calling dlopen()
-        // so gnutls, which is an dependency of libneon on some linux
-        // distros, and does not cleanup it's FDs properly, does
-        // not get unloaded. This works around a FD exhaustion crash
-        // (#154). We are not using gnutls at all and it's fine
-        // if loading fails, so no error handling is performed here.
-        dlopen("libgnutls.so", RTLD_LAZY|RTLD_NODELETE);
-#endif
 
     connect( this, SIGNAL(messageReceived(QString)), SLOT(slotParseOptions(QString)));
     connect( Logger::instance(), SIGNAL(guiLog(QString,QString)),
@@ -184,8 +171,8 @@ Application::~Application()
 {
 	_folderMan->unlockSyncedFolders();
     delete _tray; // needed, see ctor
-    if( _fileItemDialog) delete _fileItemDialog;
-    if( _statusDialog && ! _helpOnly)  delete _statusDialog;
+    delete _fileItemDialog;
+    delete _statusDialog;
     qDebug() << "* Mirall shutdown";
 }
 
@@ -272,7 +259,7 @@ void Application::slotFetchCredentials()
                  this, SLOT(slotCredentialsFetched(bool)) );
         CredentialStore::instance()->fetchCredentials();
         if( CredentialStore::instance()->state() == CredentialStore::TooManyAttempts ) {
-            trayMessage = tr("Too many attempts to get a valid password.");
+            trayMessage = tr("Too many incorrect password attempts.");
         }
     } else {
         qDebug() << "Can not try again to fetch Credentials.";
@@ -396,8 +383,7 @@ void Application::slotSSLFailed( QNetworkReply *reply, QList<QSslError> errors )
     }
     _sslErrorDialog->setCustomConfigHandle( configHandle );
 
-    QList<QSslCertificate> certs = reply->sslConfiguration().peerCertificateChain();
-    if( _sslErrorDialog->setErrorList( errors, certs) ) {
+    if( _sslErrorDialog->setErrorList( errors ) ) {
         // all ssl certs are known and accepted. We can ignore the problems right away.
         qDebug() << "Certs are already known and trusted, Warnings are not valid.";
         reply->ignoreSslErrors();
@@ -897,12 +883,18 @@ void Application::parseOptions(const QStringList &options)
             _logFlush = true;
         } else if (option == QLatin1String("--monoicons")) {
             _theme->setSystrayUseMonoIcons(true); 
-	} else {
-	    setHelp();
-	    std::cout << "Option not recognized:  " << option.toStdString() << std::endl;
-	    break;
+        } else if (option == QLatin1String("--confdir")) {
+            if (it.hasNext() && !it.peekNext().startsWith(QLatin1String("--"))) {
+                QString confDir = it.next();
+                MirallConfigFile::setConfDir( confDir );
+            } else {
+                showHelp();
+            }
+        } else {
+            setHelp();
+            break;
+        }
 	}
-    }
 }
 
 void Application::computeOverallSyncStatus()
@@ -1003,6 +995,7 @@ setHelp();
     std::cout << "  --logfile <filename> : write log output to file <filename>." << std::endl;
     std::cout << "  --logflush           : flush the log file after every write." << std::endl;
     std::cout << "  --monoicons          : Use black/white pictograms for systray." << std::endl;
+    std::cout << "  --confdir <dirname>  : Use the given configuration directory." << std::endl;
     std::cout << std::endl;
     if (_theme->appName() == QLatin1String("ownCloud"))
         std::cout << "For more information, see http://www.owncloud.org" << std::endl;

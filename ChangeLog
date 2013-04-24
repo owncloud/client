@@ -1,10 +1,35 @@
 ChangeLog
 =========
-version 1.2.2 (release 2013-03-22 ), csync 0.70.5 required
 
+version 1.2.5 (release 2013-04-23 ), csync 0.70.7 required
+  * [Fixes] NSIS installer fixes
+  * [Fixes] Fix crash race by making certificateChain() thread safe
+  * [Fixes] Build with older CMake versions (CentOS/RHEL 6) 
+  * [Fixes] Wording in GUI
+  * [Fixes] Silently ignore "installed = true" status.php
+  * Set log verbosity before calling csync_init.
+  * GUI feedback for the statistics copy action
+  * Safer approach for detecting duplicate sync runs
+
+version 1.2.4 (release 2013-04-11 ), csync 0.70.6 required
+  * [Fixes] Clarify string in folder wizard
+  * [Fixes] Fixed some valgrind warnings
+  * [Fixes] Ensure that only one sync thread can ever run 
+  * [Fixes] Fix default config storage path
+  * [Fixes] Skip folders with no absolute path
+  * [Fixes] Allow setting the configuration directory on command line
+
+version 1.2.3 (release 2013-04-02 ), csync 0.70.5 required
+  * [Fixes] Unbreak self-signed certificate handling
+
+version 1.2.2 (release 2013-04-02 ), csync 0.70.5 required
   * [Fixes] Do not crash when local file tree contains symlinks
   * [Fixes] Correctly handle locked files on Windows
   * [Fixes] Display errors in all members of the SSL chain
+  * [Fixes] Enable Accessibility features on Windows
+  * [Fixes] Make setupFavLink work properly on Mac OS
+  * [Fixes] Ignore temporary files created by MS Office
+  * [Gui] Support Nautilus in setupFavLink
 
 version 1.2.1 (release 2013-02-26 ), csync 0.70.4 required
   * [Fixes] Leave configured folders on configuration changes.
@@ -172,8 +197,3 @@ version 1.0.1 (release 2012-04-18), csync 0.50.5 required
   * [Platform] MacOSX Bundle creation added
   * [Platform] Enabled ranslations on Windows.
 
-
-ChangeLog
-=========
-
-version 1.2.1 (release 2013-02-26 ), csync 0.70.4 required

@@ -17,7 +17,6 @@
 
 #include <QString>
 
-
 class QVariant;
 
 namespace Mirall {
@@ -100,6 +99,7 @@ public:
     QString proxyUser() const;
     QString proxyPassword() const;
     
+	 static void setConfDir(const QString &value);
      /**
      * dirty hack
      * Display Message warning for locked folder
@@ -121,6 +121,7 @@ private:
 private:
     static bool    _askedUser;
     static QString _oCVersion;
+    static QString _confDir;
     QString        _customHandle;
 
 };
