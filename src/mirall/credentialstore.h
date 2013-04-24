@@ -16,6 +16,9 @@
 
 #include <QObject>
 #include <QInputDialog>
+#include <QPointer>
+
+#include "mirall/oauth/oauth.h"
 
 namespace QKeychain {
   class Job;
@@ -62,12 +65,12 @@ public:
     enum CredentialType {
         User = 0,
         Settings,
-        KeyChain
+        KeyChain,
+        UseOAuth
     };
 
     QString password( ) const;
     QString user( ) const;
-    bool useOAuth() const;
 
     /**
      * @brief state
@@ -98,6 +101,8 @@ public:
      * @param url - the connection url
      * @param user - the user name
      * @param password - the password.
+     * @param shouldSavePassword
+     * @param can we use OAUTH
      */
     void setCredentials( const QString&, const QString&, const QString&, bool, bool );
 
@@ -111,6 +116,14 @@ public:
     bool canTryAgain();
 
     void reset();
+
+    /**
+     * @brief allow the appendix to be set when constructing 
+     * MirallConfigFile
+     */
+    void setConfigFileAppendix( const QString& );
+    void resetConfigFileAppendix();
+
 signals:
     /**
      * @brief fetchCredentialsFinished
@@ -126,6 +139,8 @@ protected slots:
     void slotKeyChainReadFinished( QKeychain::Job* );
     void slotKeyChainWriteFinished( QKeychain::Job* );
     void slotUserDialogDone(int);
+    void slotOAuthAuthenticated( const OAuthConnectionData& );
+    void slotOAuthError( OAuthError );
 
 private:
     explicit CredentialStore(QObject *parent = 0);
@@ -136,12 +151,13 @@ private:
     static CredState _state;
     static QString _passwd;
     static QString _user;
-    static bool _useOAuth;
     static QString _url;
     static QString _errorMsg;
     static int     _tries;
     static CredentialType _type;
-    QInputDialog   *_inputDialog;
+    QInputDialog *_inputDialog;
+    QPointer< OAuth > _oauth;
+    static QString _configFileAppendix;
 };
 }
 
