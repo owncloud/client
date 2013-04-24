@@ -108,6 +108,7 @@ protected:
     QString ownCloudPasswd( const QString& connection = QString() ) const;
     void clearPasswordFromConfig( const QString& connect = QString() );
     bool writePassword( const QString& passwd, const QString& connection = QString() );
+    bool writeUseOAuth( bool useOAuth, const QString& connection = QString() );
 
 private:
     QVariant getValue(const QString& param, const QString& group) const;
