@@ -70,6 +70,12 @@ public:
      * wipes all folder defintions. No way back!
      */
     void removeAllFolderDefinitions();
+    
+    /**
+     * On normal quit, unlock all locked folders
+     * 
+    */
+    void unlockSyncedFolders();
 
     /**
      * Removes csync journals from all folders.

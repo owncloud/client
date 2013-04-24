@@ -55,6 +55,8 @@ public:
     bool giveHelp();
     void showHelp();
 
+
+
 signals:
 
 protected slots:

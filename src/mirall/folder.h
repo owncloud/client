@@ -71,6 +71,17 @@ public:
      void setSyncEnabled( bool );
 
      bool syncEnabled() const;
+     
+         /**
+      * definitively lock folder
+      * locked folder means another instance is syncing this folder
+      * it won't be possible to sync this folder, until clean quit
+      * of other instance,or manually delete .inuse file
+     */
+     void setSyncLocked();
+     
+     bool syncLocked() const;
+
 
     /**
      * Starts a sync operation
@@ -145,6 +156,8 @@ public:
       * This is called if the sync folder definition is removed. Do cleanups here.
       */
      virtual void wipe();
+     
+     
 
      QIcon icon( int size ) const;
      QTimer   *_pollTimer;
@@ -227,6 +240,8 @@ private:
     bool       _online;
     bool       _enabled;
     QString    _backend;
+    
+    bool _locked;
 
 };
 

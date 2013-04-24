@@ -36,7 +36,8 @@ Folder::Folder(const QString &alias, const QString &path, const QString& secondP
       _onlyOnlineEnabled(false),
       _onlyThisLANEnabled(false),
       _online(false),
-      _enabled(true)
+      _enabled(true),
+      _locked(false)
 {
     qsrand(QTime::currentTime().msec());
     MirallConfigFile cfgFile;
@@ -144,6 +145,9 @@ QString Folder::nativeSecondPath() const
     return secondPath();
 }
 
+
+
+
 bool Folder::syncEnabled() const
 {
   return _enabled;
@@ -166,6 +170,17 @@ void Folder::setSyncEnabled( bool doit )
   } else {
       // disable folder. Done through the _enabled-flag set above
   }
+}
+
+bool Folder::syncLocked() const
+{
+	return _locked;
+}
+
+void Folder::setSyncLocked()
+{
+	qDebug() << "setSyncLocked - ######## Folder locked. Stop other running instance and restart programm ######";
+	_locked = true; //locked is set to true. until end of program.
 }
 
 bool Folder::onlyOnlineEnabled() const

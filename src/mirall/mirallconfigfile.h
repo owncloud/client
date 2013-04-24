@@ -17,6 +17,7 @@
 
 #include <QString>
 
+
 class QVariant;
 
 namespace Mirall {
@@ -98,6 +99,14 @@ public:
     int proxyPort() const;
     QString proxyUser() const;
     QString proxyPassword() const;
+    
+     /**
+     * dirty hack
+     * Display Message warning for locked folder
+     * needed by folderman and statusdialog
+     * 
+    */
+    static void lockedFolderMsg( QString path );
 
 protected:
     // these classes can only be access from CredentialStore as a friend class.

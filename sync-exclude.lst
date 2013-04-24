@@ -1,3 +1,5 @@
+.inuse
+
 *.filepart
 *~
 *.bak
