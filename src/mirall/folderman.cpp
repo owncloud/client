@@ -323,9 +323,29 @@ SyncResult FolderMan::syncResult( const QString& alias )
 
 void FolderMan::slotScheduleAllFolders()
 {
-    foreach( Folder *f, _folderMap.values() ) {
-        slotScheduleSync( f->alias() );
-    }
+	foreach( Folder *f, _folderMap.values() ) {
+    	QString fileinuse = f->path() + "/.inuse";
+		QFileInfo fi = fileinuse;
+		if ( ! fi.exists() )
+		{
+			qDebug() << "OK ! creating lock file for the folder " << f->alias();
+			QFile F(fileinuse);
+			F.open(QIODevice::WriteOnly);
+			F.write("I'm the First on this folder\n");
+			F.close();
+			setSyncEnabled(true);
+			slotScheduleSync( f->alias() );
+		}
+		else
+		{
+			qDebug() << "The folder " << f->alias() << "is already in use !";
+			//setSyncEnabled(false);
+			f->setSyncEnabled(false);
+			f->setSyncLocked();
+			MirallConfigFile::lockedFolderMsg(f->path());
+			setSyncEnabled(true);
+		}
+	}
 }
 
 /*
@@ -468,6 +488,23 @@ void FolderMan::removeFolder( const QString& alias )
             file.remove();
         }
         f->deleteLater();
+    }
+}
+
+void FolderMan::unlockSyncedFolders()
+{
+	 foreach (Folder *f, _folderMap.values() ) {
+		 if ( ! f->syncLocked() )
+		 {
+			 QString fileinuse = f->path() + "/.inuse";
+			 qDebug() << "The folder was synced by me. I remove .inuse file";
+			 if (QFile::remove(fileinuse))
+				qDebug() <<"   OK, removed";
+			 else
+				qDebug() <<"   Error, can't delete this file. Next program launch will cause trouble";
+		 }
+		 else
+			qDebug() << "The folder " << f->alias() <<" was not synced. keep.inuse file";
     }
 }
 

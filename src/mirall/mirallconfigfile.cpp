@@ -65,11 +65,11 @@ void MirallConfigFile::lockedFolderMsg( QString path )
 QString MirallConfigFile::configPath() const
 {
 	QString dir = _confDir;
+    
     if( _confDir.isEmpty() )
 	{
+		dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #ifdef Q_OS_WIN32
-		QString dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-	
 		//Workaround for Bug QTBUG-18864 to sotre config in Roming user's profile (Windows)
 		if ( dir.contains("local settings",Qt::CaseInsensitive ) ) //Windows 2k/XP local profile
 		{
@@ -89,7 +89,9 @@ QString MirallConfigFile::configPath() const
 #endif
 	    qDebug() << "config path is" << dir;
 	}
+	
     if( !dir.endsWith(QLatin1Char('/')) ) dir.append(QLatin1Char('/'));
+    
     return dir;
 }
 
@@ -132,9 +134,11 @@ QString MirallConfigFile::excludeFile() const
 
 QString MirallConfigFile::configFile() const
 {
+	qDebug() << "  OO Custom config path is : " << configPath();
     if( qApp->applicationName().isEmpty() ) {
         qApp->setApplicationName( Theme::instance()->appNameGUI() );
     }
+    
     QString dir = configPath() + Theme::instance()->configFileName();
     if( !_customHandle.isEmpty() ) {
         dir.append( QLatin1Char('_'));
