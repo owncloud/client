@@ -15,7 +15,7 @@
 #include <QInputDialog>
 
 #include "config.h"
-
+#include "mirall/owncloudinfo.h"
 #include "mirall/credentialstore.h"
 #include "mirall/mirallconfigfile.h"
 #include "mirall/theme.h"
@@ -33,7 +33,6 @@ CredentialStore *CredentialStore::_instance=0;
 CredentialStore::CredState CredentialStore::_state = NotFetched;
 QString CredentialStore::_passwd   = QString::null;
 QString CredentialStore::_user     = QString::null;
-bool    CredentialStore::_useOAuth = false;
 QString CredentialStore::_url      = QString::null;
 QString CredentialStore::_errorMsg = QString::null;
 int     CredentialStore::_tries    = 0;
@@ -42,11 +41,11 @@ CredentialStore::CredentialType CredentialStore::_type = KeyChain;
 #else
 CredentialStore::CredentialType CredentialStore::_type = Settings;
 #endif
+QString CredentialStore::_configFileAppendix = QString::null;
 
 CredentialStore::CredentialStore(QObject *parent) :
     QObject(parent)
-{
-}
+{}
 
 CredentialStore *CredentialStore::instance()
 {
@@ -61,10 +60,6 @@ QString CredentialStore::password() const
 QString CredentialStore::user() const
 {
     return _user;
-}
-bool CredentialStore::useOAuth() const
-{
-    return _useOAuth;
 }
 
 CredentialStore::CredState CredentialStore::state()
@@ -102,7 +97,9 @@ bool CredentialStore::canTryAgain()
 
 void CredentialStore::fetchCredentials()
 {
-    MirallConfigFile cfgFile;
+    qDebug() << Q_FUNC_INFO;
+
+    MirallConfigFile cfgFile( _configFileAppendix );
     if( ++_tries > MAX_LOGIN_ATTEMPTS ) {
         qDebug() << "Too many attempts to enter password!";
         _state = TooManyAttempts;
@@ -114,9 +111,11 @@ void CredentialStore::fetchCredentials()
     QString pwd;
     _user = cfgFile.ownCloudUser();
     _url  = cfgFile.ownCloudUrl();
-    _useOAuth = cfgFile.useOAuth();
     if( !cfgFile.passwordStorageAllowed() ) {
         _type = CredentialStore::User;
+    }
+    if ( cfgFile.useOAuth() ) {
+        _type = CredentialStore::UseOAuth;    
     }
 
     QString key = keyChainKey(_url);
@@ -127,6 +126,8 @@ void CredentialStore::fetchCredentials()
         emit( fetchCredentialsFinished(false) );
         return;
     }
+
+    qDebug() << Q_FUNC_INFO << _user << _url << _type;
 
     switch( _type ) {
     case CredentialStore::User: {
@@ -174,6 +175,24 @@ void CredentialStore::fetchCredentials()
 #endif
         break;
     }
+    case UseOAuth: {
+        _state = AsyncFetching;
+        if( _user.isEmpty() ) {
+            _state = Error;
+            break;
+        }
+
+        if ( !_oauth )
+            _oauth = new OAuth( this );
+
+        _oauth->setAccessManager( ownCloudInfo::instance()->networkAccessManager() );
+        connect( _oauth.data(), SIGNAL( authenticated( const OAuthConnectionData& ) ),
+                 this, SLOT( slotOAuthAuthenticated( const OAuthConnectionData& ) ) );
+        connect( _oauth.data(), SIGNAL( error( OAuthError ) ),
+                 this, SLOT( slotOAuthError( OAuthError ) ) );
+
+        _oauth->authenticate( _user, _url );        
+    }
     default: {
         break;
     }
@@ -208,13 +227,43 @@ void CredentialStore::slotUserDialogDone( int result )
     emit(fetchCredentialsFinished(_state == Ok));
 }
 
+void CredentialStore::slotOAuthAuthenticated( const OAuthConnectionData& d )
+{
+    _oauth->deleteLater();
+    _state = Ok;
+    _passwd = d.token;
+    qDebug() << Q_FUNC_INFO << _user << _passwd;
+
+    emit fetchCredentialsFinished( true );
+}
+
+void CredentialStore::slotOAuthError( OAuthError e )
+{
+    _oauth->deleteLater();
+    QString errorString = OAuth::getStringForError( e );
+    qWarning() << Q_FUNC_INFO << errorString;
+    _state = Error;
+
+    emit fetchCredentialsFinished( false );
+}
+
 void CredentialStore::reset()
 {
     _state = NotFetched;
     _user   = QString::null;
     _passwd = QString::null;
-    _useOAuth = false;
     _tries = 0;
+}
+
+void CredentialStore::setConfigFileAppendix( const QString& a )
+{
+    _configFileAppendix = a;
+    reset();
+}
+
+void CredentialStore::resetConfigFileAppendix()
+{
+    _configFileAppendix = QString();
 }
 
 QString CredentialStore::keyChainKey( const QString& url ) const
@@ -312,11 +361,10 @@ QString CredentialStore::errorMessage()
 }
 
 void CredentialStore::setCredentials( const QString& url, const QString& user,
-                                      const QString& pwd, bool useOAuth, bool allowToStore )
+                                      const QString& pwd, bool allowToStore, bool useOAuth )
 {
     _passwd = pwd;
     _user = user;
-    _useOAuth = useOAuth;
     if( allowToStore ) {
 #ifdef WITH_QTKEYCHAIN
         _type = KeyChain;
@@ -326,30 +374,32 @@ void CredentialStore::setCredentials( const QString& url, const QString& user,
     } else {
         _type = User;
     }
+    if ( useOAuth ) {
+        _type = UseOAuth;
+    }
+        
     _url  = url;
     _state = Ok;
 }
 
 void CredentialStore::saveCredentials( )
 {
-    MirallConfigFile cfgFile;
+    MirallConfigFile cfgFile( _configFileAppendix );
     QString key = keyChainKey(_url);
     if( key.isNull() ) {
         qDebug() << "Error: Can not save credentials, URL is zero!";
         return;
     }
-#ifdef WITH_QTKEYCHAIN
-    WritePasswordJob *job = NULL;
-#endif
 
     switch( _type ) {
     case CredentialStore::User:
         deleteKeyChainCredential( key );
         break;
     case CredentialStore::KeyChain:
+    {
 #ifdef WITH_QTKEYCHAIN
         // Set password in KeyChain
-        job = new WritePasswordJob(Theme::instance()->appName());
+        WritePasswordJob *job = new WritePasswordJob(Theme::instance()->appName());
         job->setKey( key );
         job->setTextData(_passwd);
 
@@ -358,10 +408,14 @@ void CredentialStore::saveCredentials( )
         job->start();
 #endif
         break;
+    }
     case CredentialStore::Settings:
         cfgFile.writePassword( _passwd );
         reset();
         break;
+    case CredentialStore::UseOAuth:
+        cfgFile.writePassword( _passwd );
+        cfgFile.writeUseOAuth( true );
     default:
         // unsupported.
         break;
@@ -385,7 +439,7 @@ void CredentialStore::slotKeyChainWriteFinished( QKeychain::Job *job )
         } else {
             qDebug() << "Successfully stored password for user " << _user;
             // Try to remove password formerly stored in the config file.
-            MirallConfigFile cfgFile;
+            MirallConfigFile cfgFile( _configFileAppendix );
             cfgFile.clearPasswordFromConfig();
         }
     } else {
