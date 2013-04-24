@@ -67,10 +67,11 @@ OwncloudWelcomePage::OwncloudWelcomePage()
     content->setWordWrap(true);
     Theme *theme = Theme::instance();
     if (theme->overrideServerUrl().isEmpty()) {
-        content->setText(tr("<p>In order to connect to your %1 server, you need to provide the server address "
-                            "as well as your credentials.</p><p>This wizard will guide you through the process.<p>"
-                            "<p>If you have not received this information, please contact your %1 provider.</p>")
-                         .arg(theme->appNameGUI()));
+        content->setText(
+            tr("<p>In order to connect to your %1 server, you need to provide the server address "
+               "as well as your credentials.</p><p>This wizard will guide you through the process.<p>"
+               "<p>If you have not received this information, please contact your %1 provider.</p>")
+            .arg(theme->appNameGUI()));
     } else {
         content->setText(tr("<p>In order to connect to your %1 server, you need to provide "
                             "your credentials.</p><p>This wizard will guide you through "
