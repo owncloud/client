@@ -219,9 +219,10 @@ bool FolderViewDelegate::editorEvent ( QEvent * event, QAbstractItemModel * mode
 
  // ====================================================================================
 
-StatusDialog::StatusDialog( Theme *theme, QWidget *parent) :
+StatusDialog::StatusDialog( Theme *theme, FolderMan *folderMan, QWidget *parent) :
     QDialog(parent),
-    _theme( theme )
+    _theme( theme ),
+    _folderMan ( folderMan )
 {
   setupUi( this );
   setWindowTitle( QString::fromLatin1( "%1 %2" ).arg(_theme->appNameGUI(), _theme->version() ) );
@@ -448,13 +449,25 @@ void StatusDialog::slotEnableFolder()
     bool folderEnabled = _model->data( selected, FolderViewDelegate::FolderSyncEnabled).toBool();
     qDebug() << "Toggle enabled/disabled Folder alias " << alias << " - current state: " << folderEnabled;
     if( !alias.isEmpty() ) {
-      emit(enableFolderAlias( alias, !folderEnabled ));
-
+		
+		/*to prevent resume sync on locked folder */
+		if ( ! folderEnabled )
+		{
+			Folder *f = _folderMan->folder(alias);
+			if ( f->syncLocked() )
+				MirallConfigFile::lockedFolderMsg(f->path());
+			else
+				emit(enableFolderAlias( alias, !folderEnabled ));
+			
+		}
+		else
+			emit(enableFolderAlias( alias, !folderEnabled ));
       // set the button text accordingly.
       slotFolderActivated( selected );
     }
   }
 }
+
 
 void StatusDialog::slotInfoFolder()
 {

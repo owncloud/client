@@ -65,11 +65,12 @@ class StatusDialog : public QDialog, protected Ui::statusDialog
 {
     Q_OBJECT
 public:
-    explicit StatusDialog( Theme *theme, QWidget *parent = 0);
+    explicit StatusDialog( Theme *theme, FolderMan *folderman, QWidget *parent = 0);
     ~StatusDialog();
 
     void setFolderList( Folder::Map );
     void buttonsSetEnabled();
+    
 
 signals:
     void removeFolderAlias( const QString& );
@@ -109,6 +110,9 @@ private:
     FolderViewDelegate *_delegate;
     QUrl   _OCUrl;
     Theme *_theme;
+    
+    //need some ref to folderman
+    FolderMan *_folderMan;
 };
 }
 

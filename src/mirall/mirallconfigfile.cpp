@@ -49,13 +49,49 @@ void MirallConfigFile::setConfDir(const QString &value)
     }
 }
 
+void MirallConfigFile::lockedFolderMsg( QString path )
+{
+	QMessageBox::warning(0, QObject::tr("The folder %1 is locked").arg(path),
+			 QObject::tr("<p>Another instance of owncloud already seems to sync this folder</p>"
+				"<p>To prevent possible data loss. This folder is locked</p>"
+				"<p>Try to close other runing instance of Owncloud client sync, then restart program</p>"
+				"<p>If you're sure, there is no other instance runing (same share directory on other computer<br>"
+				"You could manually delete <b>.inuse</b> file in %1 folder then restart program. <b>MAKE BACKUP OF THE FOLDER BEFORE !</b></p>").arg(path)
+				);
+
+}
+
+
 QString MirallConfigFile::configPath() const
 {
-    QString dir = _confDir;
+	QString dir = _confDir;
+    
     if( _confDir.isEmpty() )
-      _confDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-
+	{
+		dir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#ifdef Q_OS_WIN32
+		//Workaround for Bug QTBUG-18864 to sotre config in Roming user's profile (Windows)
+		if ( dir.contains("local settings",Qt::CaseInsensitive ) ) //Windows 2k/XP local profile
+		{
+			qDebug() << "system XP";
+			dir.replace((QString)"Local Settings",(QString)"",Qt::CaseInsensitive);
+			qDebug() << "newdir=" << dir;
+		}
+		else
+		{
+			if (dir.contains("Local",Qt::CaseInsensitive) )
+			{
+				qDebug() << "System Vista Above";
+				dir.replace((QString)"Local",(QString)"Roaming",Qt::CaseInsensitive); //windows Vista and above
+				qDebug() << "newdir=" << dir;
+			}
+		}
+#endif
+	    qDebug() << "config path is" << dir;
+	}
+	
     if( !dir.endsWith(QLatin1Char('/')) ) dir.append(QLatin1Char('/'));
+    
     return dir;
 }
 
@@ -98,9 +134,11 @@ QString MirallConfigFile::excludeFile() const
 
 QString MirallConfigFile::configFile() const
 {
+	qDebug() << "  OO Custom config path is : " << configPath();
     if( qApp->applicationName().isEmpty() ) {
         qApp->setApplicationName( Theme::instance()->appNameGUI() );
     }
+    
     QString dir = configPath() + Theme::instance()->configFileName();
     if( !_customHandle.isEmpty() ) {
         dir.append( QLatin1Char('_'));

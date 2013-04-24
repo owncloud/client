@@ -123,7 +123,7 @@ Application::Application(int &argc, char **argv) :
     connect( _owncloudSetupWizard, SIGNAL(ownCloudWizardDone(int)),
              this, SLOT(slotownCloudWizardDone(int)));
 
-    _statusDialog = new StatusDialog( _theme );
+    _statusDialog = new StatusDialog( _theme, _folderMan );
     connect( _statusDialog, SIGNAL(addASync()), this, SLOT(slotAddFolder()) );
 
     connect( _statusDialog, SIGNAL(removeFolderAlias( const QString&)),
@@ -169,6 +169,7 @@ Application::Application(int &argc, char **argv) :
 
 Application::~Application()
 {
+	_folderMan->unlockSyncedFolders();
     delete _tray; // needed, see ctor
     delete _fileItemDialog;
     delete _statusDialog;
@@ -200,6 +201,9 @@ void Application::slotStartFolderSetup( int result )
         qDebug() << "Setup Wizard was canceled. No reparsing of config.";
     }
 }
+
+
+
 
 void Application::slotOwnCloudFound( const QString& url, const QString& versionStr, const QString& version, const QString& edition)
 {

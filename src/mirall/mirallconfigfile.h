@@ -99,7 +99,14 @@ public:
     QString proxyUser() const;
     QString proxyPassword() const;
     
-    static void setConfDir(const QString &value);
+	 static void setConfDir(const QString &value);
+     /**
+     * dirty hack
+     * Display Message warning for locked folder
+     * needed by folderman and statusdialog
+     * 
+    */
+    static void lockedFolderMsg( QString path );
 
 protected:
     // these classes can only be access from CredentialStore as a friend class.
