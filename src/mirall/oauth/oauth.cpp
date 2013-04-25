@@ -43,6 +43,7 @@ public:
 
     ~OAuthPrivate()
     {
+        qDebug() << Q_FUNC_INFO;
         // shut down the listener
         listener->deleteLater();
         listener = NULL;
