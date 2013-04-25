@@ -210,7 +210,7 @@ void ownCloudInfo::qhttpRequestFinished(int id, bool success )
 #else
 QNetworkReply* ownCloudInfo::mkdirRequest( const QString& dir )
 {
-    qDebug() << "OCInfo Making dir " << dir;
+    qDebug() << "OCInfo Making dir " << dir << _configHandle;
     _authAttempts = 0;
     MirallConfigFile cfgFile( _configHandle );
     QNetworkRequest req;
