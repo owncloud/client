@@ -10,6 +10,7 @@
 #include <QRegExp>
 #include <QMap>
 #include <QList>
+#include <QPointer>
 
 #include <QDebug>
 
@@ -40,7 +41,7 @@ public:
     {
         qDebug() << Q_FUNC_INFO << "@" << (void*)this << "connection @" << (void*)c;
         // listen for data
-        connect( connection, SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
+        connect( connection.data(), SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
 
         // ensure we can timeout
         connect( &timeout, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
@@ -54,18 +55,19 @@ public:
         shutdown();
     }
 
+    void shutdown()
+    {
+        timeout.stop();
+        if ( connection )
+            connection->close();
+    }
+
     QTimer timeout;
-    QTcpSocket* connection;
+    QPointer< QTcpSocket > connection;
     QByteArray buffer;
     bool codeFound;
 
 private slots:
-    void shutdown()
-    {
-        timeout.stop();
-        connection->close();
-    }
-
     void slotTimeout()
     {
         qDebug() << Q_FUNC_INFO;
@@ -173,6 +175,8 @@ public:
 
     ~OAuthListenerPrivate()
     {
+        qDebug() << Q_FUNC_INFO;
+
         foreach( ConnectionHandler* c, connections )
             c->deleteLater();
     }
@@ -186,6 +190,7 @@ private slots:
     {
         qDebug() << Q_FUNC_INFO;
         ConnectionHandler* handler = new ConnectionHandler( server->nextPendingConnection(), timeout );
+        connections.push_back( handler );
 
         connect( handler, SIGNAL( codeReceived( const QString& ) ), this, SIGNAL( codeReceived( const QString& ) ) );
         connect( handler, SIGNAL( error( OAuthListenerError ) ), this, SIGNAL( error( OAuthListenerError ) ) );        
