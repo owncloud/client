@@ -182,9 +182,7 @@ void CredentialStore::fetchCredentials()
             break;
         }
 
-        if ( !_oauth )
-            _oauth = new OAuth( this );
-
+        _oauth = new OAuth( this );
         _oauth->setAccessManager( ownCloudInfo::instance()->networkAccessManager() );
         connect( _oauth.data(), SIGNAL( authenticated( const OAuthConnectionData& ) ),
                  this, SLOT( slotOAuthAuthenticated( const OAuthConnectionData& ) ) );
