@@ -67,10 +67,11 @@ OwncloudWelcomePage::OwncloudWelcomePage()
     content->setWordWrap(true);
     Theme *theme = Theme::instance();
     if (theme->overrideServerUrl().isEmpty()) {
-        content->setText(tr("<p>In order to connect to your %1 server, you need to provide the server address "
-                            "as well as your credentials.</p><p>This wizard will guide you through the process.<p>"
-                            "<p>If you have not received this information, please contact your %1 provider.</p>")
-                         .arg(theme->appNameGUI()));
+        content->setText(
+            tr("<p>In order to connect to your %1 server, you need to provide the server address "
+               "as well as your credentials.</p><p>This wizard will guide you through the process.<p>"
+               "<p>If you have not received this information, please contact your %1 provider.</p>")
+            .arg(theme->appNameGUI()));
     } else {
         content->setText(tr("<p>In order to connect to your %1 server, you need to provide "
                             "your credentials.</p><p>This wizard will guide you through "
@@ -93,6 +94,7 @@ OwncloudSetupPage::OwncloudSetupPage()
     registerField( QLatin1String("connectMyOC"), _ui.cbConnectOC );
     registerField( QLatin1String("secureConnect"), _ui.cbSecureConnect );
     registerField( QLatin1String("PwdNoLocalStore"), _ui.cbNoPasswordStore );
+    registerField( QLatin1String("UseOAuth"), _ui.cbUseOAuth );
 
     _ui.cbSecureConnect->setEnabled(QSslSocket::supportsSsl());
 
@@ -101,6 +103,7 @@ OwncloudSetupPage::OwncloudSetupPage()
 
     connect( _ui.cbNoPasswordStore, SIGNAL(stateChanged(int)), this, SLOT(slotPwdStoreChanged(int)));
     connect( _ui.cbSecureConnect, SIGNAL(stateChanged(int)), this, SLOT(slotSecureConChanged(int)));
+    connect( _ui.cbUseOAuth, SIGNAL(stateChanged(int)), this, SLOT(slotUseOAuthChanged(int)));
 
     _ui.cbConnectOC->hide();
     setupCustomization();
@@ -184,6 +187,13 @@ void OwncloudSetupPage::slotSecureConChanged( int state )
     }
 }
 
+void OwncloudSetupPage::slotUseOAuthChanged( int state )
+{
+    _ui.lbPassword->setHidden( state == Qt::Checked );
+    _ui.lePassword->setHidden( state == Qt::Checked );
+    emit completeChanged();
+}
+
 void OwncloudSetupPage::handleNewOcUrl(const QString& ocUrl)
 {
     QString url = ocUrl;
@@ -210,6 +220,9 @@ bool OwncloudSetupPage::isComplete() const
     if( _ui.leUrl->text().isEmpty() ) return false;
 
     if( _ui.cbNoPasswordStore->checkState() == Qt::Checked ) {
+        return !(_ui.leUsername->text().isEmpty());
+    }
+    if( _ui.cbUseOAuth->checkState() == Qt::Checked ) {
         return !(_ui.leUsername->text().isEmpty());
     }
     return !(_ui.leUsername->text().isEmpty() || _ui.lePassword->text().isEmpty() );
@@ -292,10 +305,12 @@ OwncloudCredentialsPage::OwncloudCredentialsPage()
     registerField( QLatin1String("OCUser"),   _ui.OCUserEdit );
     registerField( QLatin1String("OCPasswd"), _ui.OCPasswdEdit );
     registerField( QLatin1String("PwdNoLocalStore"), _ui.cbPwdNoLocalStore );
+    registerField( QLatin1String("UseOAuth"), _ui.cbUseOAuth );
 
     connect( _ui.OCPasswdEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     connect( _ui.cbPwdNoLocalStore, SIGNAL(stateChanged(int)), this, SLOT(slotPwdStoreChanged(int)));
+    connect( _ui.cbUseOAuth, SIGNAL(stateChanged(int)), this, SLOT(slotUseOAuthChanged(int)));
 }
 
 OwncloudCredentialsPage::~OwncloudCredentialsPage()
@@ -308,9 +323,19 @@ void OwncloudCredentialsPage::slotPwdStoreChanged( int state )
     emit completeChanged();
 }
 
+void OwncloudCredentialsPage::slotUseOAuthChanged( int state )
+{
+    _ui.OCPasswdEdit->setHidden( state == Qt::Checked );
+    _ui.OCPasswdLabel->setHidden( state == Qt::Checked );
+    emit completeChanged();
+}
+
 bool OwncloudCredentialsPage::isComplete() const
 {
     if( _ui.cbPwdNoLocalStore->checkState() == Qt::Checked ) {
+        return !(_ui.OCUserEdit->text().isEmpty());
+    }
+    if( _ui.cbUseOAuth->checkState() == Qt::Checked ) {
         return !(_ui.OCUserEdit->text().isEmpty());
     }
     return !(_ui.OCUserEdit->text().isEmpty() || _ui.OCPasswdEdit->text().isEmpty() );

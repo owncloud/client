@@ -83,6 +83,11 @@ public:
     void setNetworkAccessManager( QNetworkAccessManager *qnam );
 
     /**
+     * Allow QNetworkAccessManager to be used by others
+     */
+    QNetworkAccessManager* networkAccessManager() const;
+
+    /**
       * Create a collection via owncloud. Provide a relative path.
       */
     QNetworkReply* mkdirRequest( const QString& );
@@ -118,6 +123,7 @@ signals:
 
     void webdavColCreated( QNetworkReply::NetworkError );
     void sslFailed( QNetworkReply *reply, QList<QSslError> errors );
+    void credentialsSet();
 
 public slots:
 
@@ -134,6 +140,8 @@ protected slots:
 #else
     void slotMkdirFinished();
 #endif
+
+    void pushCredentials( const QString& name, const QString& pass, const QString& conn );
 
 private:
     explicit ownCloudInfo();

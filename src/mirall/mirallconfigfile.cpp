@@ -137,7 +137,7 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
                                             const QString& url,
                                             const QString& user,
                                             const QString& passwd,
-                                            bool https, bool skipPwd )
+                                            bool https, bool skipPwd, bool useOAuth )
 {
     const QString file = configFile();
     qDebug() << "*** writing mirall config to " << file << " Skippwd: " << skipPwd;
@@ -156,7 +156,7 @@ void MirallConfigFile::writeOwncloudConfig( const QString& connection,
     settings.beginGroup( connection );
     settings.setValue( QLatin1String("url"), cloudsUrl );
     settings.setValue( QLatin1String("user"), user );
-
+    settings.setValue( QLatin1String("useOAuth"), useOAuth );
 
 #ifdef WITH_QTKEYCHAIN
     // Password is stored to QtKeyChain now by default in CredentialStore
@@ -214,6 +214,24 @@ bool MirallConfigFile::writePassword( const QString& passwd, const QString& conn
     settings.beginGroup( con );
     QByteArray pwdba = pwd.toUtf8();
     settings.setValue( QLatin1String("passwd"), QVariant(pwdba.toBase64()) );
+    settings.sync();
+
+    return true;
+}
+
+bool MirallConfigFile::writeUseOAuth( bool useOAuth, const QString& connection )
+{
+    const QString file = configFile();
+    QString con( defaultConnection() );
+    if( !connection.isEmpty() )
+        con = connection;
+
+    QSettings settings( file, QSettings::IniFormat);
+    settings.setIniCodec( "UTF-8" );
+
+    // store password into settings file.
+    settings.beginGroup( con );
+    settings.setValue( QLatin1String("useOAuth"), useOAuth );
     settings.sync();
 
     return true;
@@ -308,6 +326,14 @@ QString MirallConfigFile::ownCloudUser( const QString& connection ) const
     // qDebug() << "Returning configured owncloud user: " << user;
 
     return user;
+}
+
+bool MirallConfigFile::useOAuth( const QString& connection ) const
+{
+    QString con( connection );
+    if( connection.isEmpty() ) con = defaultConnection();
+
+    return getValue( QLatin1String("useOAuth"), con ).toBool();
 }
 
 int MirallConfigFile::remotePollInterval( const QString& connection ) const
@@ -494,12 +520,13 @@ void MirallConfigFile::acceptCustomConfig()
     QString url  = ownCloudUrl();
     QString user = ownCloudUser();
     QString pwd  = ownCloudPasswd();
+    bool oauth = useOAuth();
     bool allow   = passwordStorageAllowed();
 
     if( pwd.isEmpty() ) {
         qDebug() << "Password is empty, skipping to write cred store.";
     } else {
-        CredentialStore::instance()->setCredentials(url, user, pwd, allow);
+        CredentialStore::instance()->setCredentials(url, user, pwd, allow, oauth);
         CredentialStore::instance()->saveCredentials();
     }
 }
