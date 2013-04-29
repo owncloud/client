@@ -39,7 +39,7 @@ public:
         : connection( c ),
           codeFound( false )
     {
-        qDebug() << Q_FUNC_INFO << "@" << (void*)this << "connection @" << (void*)c;
+        qDebug() << Q_FUNC_INFO << "@" << (void*)this << "connection @" << (void*)c << t;
         // listen for data
         connect( connection.data(), SIGNAL( readyRead() ), this, SLOT( slotReadyRead() ) );
 
@@ -57,6 +57,7 @@ public:
 
     void shutdown()
     {
+        qDebug() << Q_FUNC_INFO;
         timeout.stop();
         if ( connection )
             connection->close();
@@ -154,11 +155,14 @@ public:
     OAuthListenerPrivate( OAuthListener* o )
         : QObject( o ),
           server( new QTcpServer( this ) ),
-          timeout( 10000 )
+          timeout( 2000 )
     {
         // pass signals up the chain
         connect( this, SIGNAL( codeReceived( const QString& ) ), o, SIGNAL( codeReceived( const QString& ) ) );
         connect( this, SIGNAL( error( OAuthListenerError ) ), o, SIGNAL( error( OAuthListenerError ) ) );
+
+        // listen for connections
+        connect( server, SIGNAL( newConnection() ), this, SLOT( slotNewConnection() ) );
 
         // start the server
         if ( !server->listen( QHostAddress::LocalHost ) )
@@ -168,9 +172,7 @@ public:
             return;
         }
 
-        connect( server, SIGNAL( newConnection() ), this, SLOT( slotNewConnection() ) );
-        if ( server->hasPendingConnections() )
-            slotNewConnection();
+        qDebug() << Q_FUNC_INFO << "started listening socket";
     }
 
     ~OAuthListenerPrivate()
@@ -206,7 +208,9 @@ signals:
 ///
 OAuthListener::OAuthListener( QObject* parent )
     : m_impl( new OAuthListenerPrivate( this ) )
-{}
+{
+    qDebug() << Q_FUNC_INFO;
+}
 
 QString OAuthListener::getStringForError( OAuthListenerError e )
 {

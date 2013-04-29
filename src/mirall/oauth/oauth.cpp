@@ -131,6 +131,8 @@ private slots:
 
     void useRefreshToken()
     {
+        qDebug() << Q_FUNC_INFO;
+
         // construct payload for token request
         QByteArray payload;
         payload += "client_id=" + CLIENT_ID + "&";
