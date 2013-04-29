@@ -232,7 +232,6 @@ void CredentialStore::slotUserDialogDone( int result )
 
 void CredentialStore::slotOAuthAuthenticated( const OAuthConnectionData& d )
 {
-    _oauth->deleteLater();
     _state = Ok;
     _passwd = d.token;
     ownCloudInfo::instance()->setCredentials( d.user, d.token, d.connection );
@@ -243,7 +242,6 @@ void CredentialStore::slotOAuthAuthenticated( const OAuthConnectionData& d )
 
 void CredentialStore::slotOAuthError( OAuthError e )
 {
-    _oauth->deleteLater();
     QString errorString = OAuth::getStringForError( e );
     qWarning() << Q_FUNC_INFO << errorString;
     _state = Error;
