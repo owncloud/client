@@ -89,6 +89,9 @@ bool CredentialStore::canTryAgain()
     case CredentialStore::KeyChain:
         canDoIt = true;
         break;
+    case CredentialStore::UseOAuth:
+        canDoIt = true;
+        break;
     default:
         break;
     }
@@ -182,7 +185,9 @@ void CredentialStore::fetchCredentials()
             break;
         }
 
-        _oauth = new OAuth( this );
+        if ( !_oauth )
+            _oauth = new OAuth( this );
+
         _oauth->setAccessManager( ownCloudInfo::instance()->networkAccessManager() );
         connect( _oauth.data(), SIGNAL( authenticated( const OAuthConnectionData& ) ),
                  this, SLOT( slotOAuthAuthenticated( const OAuthConnectionData& ) ) );
