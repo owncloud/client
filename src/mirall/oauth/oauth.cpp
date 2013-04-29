@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QHostAddress>
 #include <QDesktopServices>
+#include <QPointer>
 
 #include <QDebug>
 
@@ -33,7 +34,6 @@ public:
     OAuthPrivate( OAuth* o )
         : QObject( o ),
           owner( o ),
-          listener( NULL ),
           nam( NULL )
     {
         connect( this, SIGNAL( error( OAuthError ) ), owner, SIGNAL( error( OAuthError ) ) );
@@ -45,8 +45,8 @@ public:
     {
         qDebug() << Q_FUNC_INFO;
         // shut down the listener
-        listener->deleteLater();
-        listener = NULL;
+        if ( listener )
+            listener->deleteLater();
     }
 
     QNetworkAccessManager* accessManager() const
@@ -77,8 +77,8 @@ public:
         {
             // kick off authentication
             listener = new OAuthListener( this );
-            connect( listener, SIGNAL( codeReceived( const QString& ) ), this, SLOT( slotCodeReceived( const QString& ) ) );
-            connect( listener, SIGNAL( error( OAuthListenerError ) ), this, SLOT( slotListenerError( OAuthListenerError ) ) );
+            connect( listener.data(), SIGNAL( codeReceived( const QString& ) ), this, SLOT( slotCodeReceived( const QString& ) ) );
+            connect( listener.data(), SIGNAL( error( OAuthError ) ), this, SLOT( slotListenerError( OAuthError ) ) );
             
             QUrl auth( AUTH_URL );
             auth.addQueryItem( "response_type", "code" );
@@ -91,7 +91,7 @@ public:
     }
 
     OAuth* owner;
-    OAuthListener* listener;
+    QPointer< OAuthListener > listener;
     QString user;
     QString pass;
     QString conn;
@@ -102,13 +102,16 @@ signals:
     void authenticated( const OAuthConnectionData& );
 
 private slots:
-    void slotListenerError( OAuthListenerError e )
+    void slotListenerError( OAuthError e )
     {
-        Q_UNUSED( e );
+        emit error( e );
+        listener->deleteLater();
     }
 
     void slotCodeReceived( const QString& code )
     {
+        listener->deleteLater();
+
         // should be here once we receive a code; we can now use this to get access and refresh tokens
         qDebug() << Q_FUNC_INFO << code;
 
@@ -236,11 +239,12 @@ QString OAuth::getStringForError( OAuthError e )
 {
     switch( e )
     {
-    case AuthorizationTokenFail: return tr( "Failed to get authorization token" );
-    case ListenerCouldntStart:   return OAuthListener::getStringForError( CouldntStartServer );
-    case ListenerTimeout:        return OAuthListener::getStringForError( CodeTimeout );
-    case TokenFetchError:        return tr( "Failed to get token from server" );
-    case TokenParseError:        return tr( "Token data returned from server is invalid" );
+    case AuthorizationNotGranted: return tr( "Authorization not granted by user" );
+    case AuthorizationTokenFail:  return tr( "Failed to get authorization token" );
+    case ListenerCouldntStart:    return tr( "Listener failed to start" );
+    case ListenerTimeout:         return tr( "Listener timed out" );
+    case TokenFetchError:         return tr( "Failed to get token from server" );
+    case TokenParseError:         return tr( "Token data returned from server is invalid" );
     default:
         break;
     }

@@ -5,10 +5,8 @@
 // qt
 #include <QObject>
 
-enum OAuthListenerError {
-    CouldntStartServer,
-    CodeTimeout
-};
+// oauth
+#include "oautherror.h"
 
 class OAuthListener : public QObject
 {
@@ -16,8 +14,6 @@ class OAuthListener : public QObject
 
 public:
     OAuthListener( QObject* parent = NULL );
-
-    static QString getStringForError( OAuthListenerError );
 
     /// timeout in ms
     int timeout() const;
@@ -27,7 +23,7 @@ public:
     quint16 port() const;
 
 signals:
-    void error( OAuthListenerError );
+    void error( OAuthError );
     void codeReceived( const QString& );
 
 private:

@@ -6,15 +6,10 @@
 #include <QObject>
 #include <QString>
 
-class QNetworkAccessManager;
+// oauth
+#include "oautherror.h"
 
-enum OAuthError {
-    AuthorizationTokenFail,
-    ListenerCouldntStart,
-    ListenerTimeout,
-    TokenFetchError,
-    TokenParseError
-};
+class QNetworkAccessManager;
 
 struct OAuthConnectionData {
     QString user;

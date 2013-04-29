@@ -74,7 +74,7 @@ private slots:
         qDebug() << Q_FUNC_INFO;
 
         writeErrorResponse();
-        emit error( CodeTimeout );
+        emit error( ListenerTimeout );
     }
 
     void slotReadyRead()
@@ -85,13 +85,21 @@ private slots:
         buffer += connection->readAll();
         qDebug() << Q_FUNC_INFO << "@" << (void*)this << buffer;
 
-        QRegExp re( ".*code=(\\S+)\\s.*", Qt::CaseInsensitive );
-        if ( re.exactMatch( buffer ) )
+        QRegExp codere( ".*code=(\\S+)\\s.*", Qt::CaseInsensitive );
+        QRegExp errorre( ".*error=(\\w+)\\s.*", Qt::CaseInsensitive );
+        if ( codere.exactMatch( buffer ) )
         {
             codeFound = true;
-            QString code = re.cap( 1 );
+            QString code = codere.cap( 1 );
             emit codeReceived( code );
             writeResponse();
+            return;
+        }
+        else if ( errorre.exactMatch( buffer ) )
+        {
+            codeFound = false;
+            emit error( AuthorizationNotGranted );
+            writeErrorResponse();
             return;
         }
 
@@ -141,7 +149,7 @@ private:
     }
 
 signals:
-    void error( OAuthListenerError );
+    void error( OAuthError );
     void codeReceived( const QString& );
 };
 
@@ -159,7 +167,7 @@ public:
     {
         // pass signals up the chain
         connect( this, SIGNAL( codeReceived( const QString& ) ), o, SIGNAL( codeReceived( const QString& ) ) );
-        connect( this, SIGNAL( error( OAuthListenerError ) ), o, SIGNAL( error( OAuthListenerError ) ) );
+        connect( this, SIGNAL( error( OAuthError ) ), o, SIGNAL( error( OAuthError ) ) );
 
         // listen for connections
         connect( server, SIGNAL( newConnection() ), this, SLOT( slotNewConnection() ) );
@@ -168,7 +176,7 @@ public:
         if ( !server->listen( QHostAddress::LocalHost ) )
         {
             qWarning() << Q_FUNC_INFO << "failed to start server";
-            emit error( CouldntStartServer );
+            emit error( ListenerCouldntStart );
             return;
         }
 
@@ -195,11 +203,11 @@ private slots:
         connections.push_back( handler );
 
         connect( handler, SIGNAL( codeReceived( const QString& ) ), this, SIGNAL( codeReceived( const QString& ) ) );
-        connect( handler, SIGNAL( error( OAuthListenerError ) ), this, SIGNAL( error( OAuthListenerError ) ) );        
+        connect( handler, SIGNAL( error( OAuthError ) ), this, SIGNAL( error( OAuthError ) ) );        
     }
 
 signals:
-    void error( OAuthListenerError );
+    void error( OAuthError );
     void codeReceived( const QString& );
 };
 
@@ -210,20 +218,6 @@ OAuthListener::OAuthListener( QObject* parent )
     : m_impl( new OAuthListenerPrivate( this ) )
 {
     qDebug() << Q_FUNC_INFO;
-}
-
-QString OAuthListener::getStringForError( OAuthListenerError e )
-{
-    switch( e )
-    {
-    case CouldntStartServer: return tr( "Failed to start server" );
-    case CodeTimeout:        return tr( "Didn't receive code within timeout period" );
-    default:
-        break;
-    }
-
-    Q_ASSERT( false );
-    return QString();
 }
 
 int OAuthListener::timeout() const
