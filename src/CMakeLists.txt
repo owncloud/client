@@ -152,6 +152,7 @@ endif()
 
 set(mirall_SRCS
     mirall/application.cpp
+    mirall/systray.cpp
     mirall/folderwizard.cpp
     mirall/statusdialog.cpp
     mirall/owncloudwizard.cpp
@@ -166,6 +167,7 @@ set(mirall_SRCS
 
 set(mirall_HEADERS
     mirall/application.h
+    mirall/systray.h
     mirall/folderwizard.h
     mirall/owncloudsetupwizard.h
     mirall/owncloudwizard.h
