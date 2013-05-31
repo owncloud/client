@@ -63,7 +63,7 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>mydomain.org</source>
-        <translation type="unfinished"/>
+        <translation>mi-dominio.org</translation>
     </message>
 </context>
 <context>
@@ -179,15 +179,15 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>Express Upload Target</source>
-        <translation type="unfinished"/>
+        <translation>Subida express</translation>
     </message>
     <message>
         <source>Pick a place where the data should go to:</source>
-        <translation type="unfinished"/>
+        <translation>Seleccione donde deberían ir los datos:</translation>
     </message>
     <message>
         <source>to your &amp;ownCloud</source>
-        <translation type="unfinished"/>
+        <translation>a tu &amp;ownCloud</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizardtargetpage.ui" line="29"/>
@@ -206,7 +206,7 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>Folder on ownCloud:</source>
-        <translation type="unfinished"/>
+        <translation>Carpeta en ownCloud:</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizardtargetpage.ui" line="100"/>
@@ -269,43 +269,43 @@ p, li { white-space: pre-wrap; }⏎
     <name>Mirall::Application</name>
     <message>
         <source>No ownCloud Configuration</source>
-        <translation type="unfinished"/>
+        <translation>No hay configuración de ownCloud</translation>
     </message>
     <message>
         <source>&lt;p&gt;No ownCloud connection was configured yet.&lt;/p&gt;&lt;p&gt;Please configure one by clicking on the tray icon!&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;No se ha configurado una conexión de ownCloud aún.&lt;/p&gt;&lt;p&gt;Por favor, configure una picando en el icono del tray!&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;The ownCloud at %1 could not be reached.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;El ownCloud en %1 no está accesible.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;The detailed error message is&lt;br/&gt;&lt;tt&gt;%1&lt;/tt&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;El mensaje de error detallado es&lt;br/&gt;&lt;tt&gt;%1&lt;/tt&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Please check your configuration by clicking on the tray icon.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Por favor, compruebe su configuración picando en el icono del tray.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>ownCloud Connection Failed</source>
-        <translation type="unfinished"/>
+        <translation>Conexión con ownCloud fallida</translation>
     </message>
     <message>
         <source>No ownCloud Connection</source>
-        <translation type="unfinished"/>
+        <translation>No hay conexión con ownCloud</translation>
     </message>
     <message>
         <source>&lt;p&gt;Your ownCloud credentials are not correct.&lt;/p&gt;&lt;p&gt;Please correct them by starting the configuration dialog from the tray!&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Sus credenciales de ownCloud no son correctas.&lt;/p&gt;&lt;p&gt;Por favor, corrijalas abriendo el dialogo de configuración del tray!&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Your ownCloud user name or password is not correct.&lt;/p&gt;&lt;p&gt;Please correct it by starting the configuration dialog from the tray!&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Su usuario o contraseña de ownCloud no son correctos.&lt;/p&gt;&lt;p&gt;Por favor, corrijalas abriendo el dialogo de configuración del tray!&lt;/p&gt;</translation>
     </message>
     <message>
         <source>ownCloud Sync Started</source>
-        <translation type="unfinished"/>
+        <translation>Sincronización con ownCloud iniciada</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="349"/>
@@ -314,7 +314,7 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>Open ownCloud...</source>
-        <translation type="unfinished"/>
+        <translation>Abrir ownCloud...</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="415"/>
@@ -343,7 +343,7 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>open folder %1</source>
-        <translation type="unfinished"/>
+        <translation>abrir carpeta %1</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="218"/>
@@ -439,11 +439,11 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>Undefined Folder State</source>
-        <translation type="unfinished"/>
+        <translation>Estado de la carpeta sin definir</translation>
     </message>
     <message>
         <source>The folder waits to start syncing.</source>
-        <translation type="unfinished"/>
+        <translation>La carpeta está en espera para ser sincronizada.</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="927"/>
@@ -477,26 +477,29 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>Folder information</source>
-        <translation type="unfinished"/>
+        <translation>Información de la carpeta</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Desconocido</translation>
     </message>
     <message>
         <source>Changed files:
 </source>
-        <translation type="unfinished"/>
+        <translation>Ficheros cambiados:
+</translation>
     </message>
     <message>
         <source>Added files:
 </source>
-        <translation type="unfinished"/>
+        <translation>Ficheros añadidos:
+</translation>
     </message>
     <message>
         <source>New files in the server, or files deleted locally:
 </source>
-        <translation type="unfinished"/>
+        <translation>Nuevos ficheros en el servidor, o ficheros borrados localmente:
+</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="794"/>
@@ -530,7 +533,7 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>Sync is paused.</source>
-        <translation type="unfinished"/>
+        <translation>Sincronización pausada</translation>
     </message>
     <message>
         <location filename="../src/mirall/application.cpp" line="973"/>
@@ -542,7 +545,7 @@ p, li { white-space: pre-wrap; }⏎
     <name>Mirall::CSyncThread</name>
     <message>
         <source>CSync create failed.</source>
-        <translation type="unfinished"/>
+        <translation>Fallo al crear CSync.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="73"/>
@@ -566,7 +569,7 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>The system time between the local machine and the server differs too much. Please use a time syncronization service (ntp) on both machines.</source>
-        <translation type="unfinished"/>
+        <translation>La hora entre el equipo local y el servidor difieren demasiado. Por favor, use un servicio de sincronización horaria (ntp) en ambas máquinas.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="82"/>
@@ -585,11 +588,11 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>&lt;p&gt;The target directory %1 does not exist.&lt;/p&gt;&lt;p&gt;Please create it and try again.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;El directorio destino %1 no existe.&lt;/p&gt;&lt;p&gt;Por favor, creelo e intentelo de nuevo.&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;The ownCloud plugin for csync could not be loaded.&lt;br/&gt;Please verify the installation!&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;No se puede cargar el plugin de ownCloud para csync.&lt;br/&gt;Por favor, verifique su instalación!&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="118"/>
@@ -703,13 +706,15 @@ p, li { white-space: pre-wrap; }⏎
     </message>
     <message>
         <source>CSync Update failed.</source>
-        <translation type="unfinished"/>
+        <translation>Actualización CSync fallida.</translation>
     </message>
     <message>
         <source>The local filesystem has directories which are write protected.
 That prevents ownCloud from successful syncing.
 Please make sure that all directories are writeable.</source>
-        <translation type="unfinished"/>
+        <translation>El sistema de ficheros local tiene directorios protegidos contra escritura.
+Esto bloquea la sincronización de ownCloud.
+Por favor, asegurese de que todos los directorios son escribibles.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="79"/>
@@ -719,24 +724,26 @@ Please make sure that all directories are writeable.</source>
     <message>
         <source>CSync encountered an error while examining the file system.
 Syncing is not possible.</source>
-        <translation type="unfinished"/>
+        <translation>CSync ha encontrado un error mientras examinaba el sistema de ficheros.
+La sincronización no es posible.</translation>
     </message>
     <message>
         <source>CSync update generated a strange instruction.
 Please write a bug report.</source>
-        <translation type="unfinished"/>
+        <translation>La actualización de CSync a generado una instrucción extraña.
+Por favor, escribe un informe de fallos.</translation>
     </message>
     <message>
         <source>Local filesystem problems. Better disable Syncing and check.</source>
-        <translation type="unfinished"/>
+        <translation>Problemas con el sistema de ficheros local. Desactive el sincronizado y compruebelo</translation>
     </message>
     <message>
         <source>CSync reconcile failed.</source>
-        <translation type="unfinished"/>
+        <translation>Reconciliación de CSync fallida.</translation>
     </message>
     <message>
         <source>CSync propagate failed.</source>
-        <translation type="unfinished"/>
+        <translation>Propagación de CSync fallida.</translation>
     </message>
 </context>
 <context>
@@ -954,15 +961,15 @@ Please write a bug report.</source>
     <name>Mirall::FolderWizardTargetPage</name>
     <message>
         <source>The folder is not available on your ownCloud.&lt;br/&gt;Click to let mirall create it.</source>
-        <translation type="unfinished"/>
+        <translation>La carpeta no está disponible en su ownCloud.&lt;br/&gt;Haga click para que mirall la cree.</translation>
     </message>
     <message>
         <source>Folder on ownCloud was successfully created.</source>
-        <translation type="unfinished"/>
+        <translation>Carpeta creada en ownCloud correctamente.</translation>
     </message>
     <message>
         <source>Failed to create the folder on ownCloud.&lt;br/&gt;Please check manually.</source>
-        <translation type="unfinished"/>
+        <translation>Fallo al crear la carpeta en ownCloud.&lt;br/&gt;Por favor, compruebelo manualmente.</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="218"/>
@@ -1001,15 +1008,15 @@ Please write a bug report.</source>
     </message>
     <message>
         <source>to your &lt;a href=&quot;%1&quot;&gt;ownCloud&lt;/a&gt; (version %2)</source>
-        <translation type="unfinished"/>
+        <translation>a su &lt;a href=&quot;%1&quot;&gt;ownCloud&lt;/a&gt; (version %2)</translation>
     </message>
     <message>
         <source>no configured ownCloud found!</source>
-        <translation type="unfinished"/>
+        <translation>No se ha encontrado ningún ownCloud configurado!</translation>
     </message>
     <message>
         <source>Your ownCloud could not be reached:&lt;br/&gt;&lt;tt&gt;%1&lt;/tt&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Su ownCloud no puede ser alcanzado:&lt;br/&gt;&lt;tt&gt;%1&lt;/tt&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="402"/>
@@ -1080,11 +1087,11 @@ Please write a bug report.</source>
     <name>Mirall::OwncloudCredentialsPage</name>
     <message>
         <source>john</source>
-        <translation type="unfinished"/>
+        <translation>juan</translation>
     </message>
     <message>
         <source>secret</source>
-        <translation type="unfinished"/>
+        <translation>secreta</translation>
     </message>
 </context>
 <context>
@@ -1096,22 +1103,22 @@ Please write a bug report.</source>
     </message>
     <message>
         <source>john</source>
-        <translation type="unfinished"/>
+        <translation>juan</translation>
     </message>
     <message>
         <source>secret</source>
-        <translation type="unfinished"/>
+        <translation>secreta</translation>
     </message>
 </context>
 <context>
     <name>Mirall::OwncloudSetupPage</name>
     <message>
         <source>john</source>
-        <translation type="unfinished"/>
+        <translation>juan</translation>
     </message>
     <message>
         <source>secret</source>
-        <translation type="unfinished"/>
+        <translation>secreta</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudwizard.cpp" line="86"/>
@@ -1128,15 +1135,15 @@ Please write a bug report.</source>
     </message>
     <message>
         <source>Trying to connect to ownCloud at %1...</source>
-        <translation type="unfinished"/>
+        <translation>Intentando conectar a ownCloud en %1...</translation>
     </message>
     <message>
         <source>&lt;font color=&quot;green&quot;&gt;Successfully connected to %1: ownCloud version %2 (%3)&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;font color=&quot;green&quot;&gt;Conectado correctamente a %1: versión de ownCloud %2 (%3)&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <source>&lt;font color=&quot;red&quot;&gt;Failed to connect to ownCloud!&lt;/font&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;font color=&quot;red&quot;&gt;Fallo al conectar a ownCloud!&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="143"/>
@@ -1165,11 +1172,11 @@ Please write a bug report.</source>
     </message>
     <message>
         <source>&lt;font color=&quot;red&quot;&gt;Installation of ownCloud failed!&lt;/font&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;font color=&quot;red&quot;&gt;Ha fallado la instalación de ownCloud!&lt;/font&gt;</translation>
     </message>
     <message>
         <source>&lt;font color=&quot;green&quot;&gt;Installation of ownCloud succeeded!&lt;/font&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;font color=&quot;green&quot;&gt;Instalación de ownCloud exitosa!&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="349"/>
@@ -1230,11 +1237,11 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>Skipping automatic setup of sync folders as there are already sync folders.</source>
-        <translation type="unfinished"/>
+        <translation>Saltando la configuración automática de las carpetas de sincronización ya que ya son carpetas de sincronización.</translation>
     </message>
     <message>
         <source>Checking local sync folder %1</source>
-        <translation type="unfinished"/>
+        <translation>Comprobando la carpeta de sincronización local %1</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="421"/>
@@ -1248,7 +1255,7 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>Creating local sync folder %1</source>
-        <translation type="unfinished"/>
+        <translation>Creando la carpeta de sincronización local %1</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="427"/>
@@ -1262,11 +1269,11 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>Start Creation of remote folder %1 failed.</source>
-        <translation type="unfinished"/>
+        <translation>Creación de la carpeta remota %1 fallida.</translation>
     </message>
     <message>
         <source>Remote folder %1 created sucessfully.</source>
-        <translation type="unfinished"/>
+        <translation>Carpeta remota %1 creada correctamente.</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="114"/>
@@ -1275,7 +1282,7 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>The remote folder %1 already exists. Automatic sync setup is skipped for security reasons. Please configure your sync folder manually.</source>
-        <translation type="unfinished"/>
+        <translation>La carpeta remota %1 ya existe. Se ha saltado la sincronización automática por razones de seguridad. Por favor, sincronize la carpeta manualmente.</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="480"/>
@@ -1310,12 +1317,12 @@ No se puede completar la instalación.</translation>
     <name>Mirall::OwncloudWizardResultPage</name>
     <message>
         <source>Congratulations! Your &lt;a href=&quot;%1&quot; title=&quot;%1&quot;&gt;new ownCloud&lt;/a&gt; is now up and running!</source>
-        <translation type="unfinished"/>
+        <translation>¡Felicidades! Su &lt;a href=&quot;%1&quot; title=&quot;%1&quot;&gt;nuevo ownCloud&lt;/a&gt; ya está en funcionando!</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudwizard.cpp" line="470"/>
         <source>Congratulations! Your &lt;a href=&quot;%1&quot; title=&quot;%1&quot;&gt;new %2&lt;/a&gt; is now up and running!</source>
-        <translation>¡Felicitaciones! Su &lt;a href=&quot;%1&quot; title=&quot;%1&quot;&gt;nuevo %2&lt;/a&gt; ya está funcionando.</translation>
+        <translation>¡Felicidades! Su &lt;a href=&quot;%1&quot; title=&quot;%1&quot;&gt;nuevo %2&lt;/a&gt; ya está funcionando.</translation>
     </message>
 </context>
 <context>
@@ -1514,19 +1521,19 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>Checking ownCloud connection...</source>
-        <translation type="unfinished"/>
+        <translation>Comprobando la conexión con ownCloud...</translation>
     </message>
     <message>
         <source>No ownCloud connection configured.</source>
-        <translation type="unfinished"/>
+        <translation>No hay conexión a ownCloud configurada.</translation>
     </message>
     <message>
         <source>Connected to &lt;a href=&quot;%1&quot;&gt;%2&lt;/a&gt;, ownCloud %3</source>
-        <translation type="unfinished"/>
+        <translation>Conectado a &lt;a href=&quot;%1&quot;&gt;%2&lt;/a&gt;, ownCloud %3</translation>
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"/>
+        <translation>Versión: %1</translation>
     </message>
     <message>
         <location filename="../src/mirall/statusdialog.cpp" line="528"/>
@@ -1535,34 +1542,34 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>&lt;p&gt;Failed to connect to ownCloud: &lt;tt&gt;%1&lt;/tt&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Fallo de conexión a ownCloud: &lt;tt&gt;%1&lt;/tt&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
     <name>Mirall::Theme</name>
     <message>
         <source>Status undefined</source>
-        <translation type="unfinished"/>
+        <translation>Estado no definido</translation>
     </message>
     <message>
         <source>Waiting to start sync</source>
-        <translation type="unfinished"/>
+        <translation>Esperando a empezar la sincronización</translation>
     </message>
     <message>
         <source>Sync is running</source>
-        <translation type="unfinished"/>
+        <translation>Sincronización en marcha</translation>
     </message>
     <message>
         <source>Sync Success</source>
-        <translation type="unfinished"/>
+        <translation>Sincronización correcta</translation>
     </message>
     <message>
         <source>Sync Error - Click info button for details.</source>
-        <translation type="unfinished"/>
+        <translation>Error de sincronización - Presione en el botón info para más detalles.</translation>
     </message>
     <message>
         <source>Setup Error</source>
-        <translation type="unfinished"/>
+        <translation>Error de configuración</translation>
     </message>
 </context>
 <context>
@@ -1579,7 +1586,7 @@ No se puede completar la instalación.</translation>
     </message>
     <message>
         <source>&lt;p&gt;A new version of the ownCloud Client is available.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Una nueva versión del cliente de ownCloud está disponible.</translation>
     </message>
     <message>
         <location filename="../src/mirall/updatedetector.cpp" line="118"/>
@@ -1599,11 +1606,11 @@ No se puede completar la instalación.</translation>
     <name>MirallConfigFile</name>
     <message>
         <source>ownCloud Password Required</source>
-        <translation type="unfinished"/>
+        <translation>Clave de ownCloud requerida</translation>
     </message>
     <message>
         <source>Please enter your ownCloud password:</source>
-        <translation type="unfinished"/>
+        <translation>Por favor, introduzca su contraseña de ownCloud:</translation>
     </message>
     <message>
         <location filename="../src/mirall/credentialstore.cpp" line="131"/>
@@ -1658,7 +1665,13 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; color:#585858;&quot;&gt;Provide username and password to connect your ownCloud Instance. &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt; color:#585858;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; color:#585858;&quot;&gt;If you do not want to store the credentials on your local machine, check the button. ownCloud will ask you for the passwort on every start than.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; color:#585858;&quot;&gt;Introduzca usuario y contraseña para conectar a su instancia de ownCloud. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt; color:#585858;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; color:#585858;&quot;&gt;Si usted no quiere almacenar las contraseñas en la máquina local, pique en el botón. ownCloud le preguntará por la clave en cada inicio.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudcredentialspage.ui" line="84"/>
@@ -1677,11 +1690,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>john</source>
-        <translation type="unfinished"/>
+        <translation>juan</translation>
     </message>
     <message>
         <source>secret</source>
-        <translation type="unfinished"/>
+        <translation>secreta</translation>
     </message>
 </context>
 <context>
@@ -1731,11 +1744,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>ftp.mydomain.org</source>
-        <translation type="unfinished"/>
+        <translation>ftp.mi-dominio.org</translation>
     </message>
     <message>
         <source>john</source>
-        <translation type="unfinished"/>
+        <translation>juan</translation>
     </message>
 </context>
 <context>
@@ -1907,11 +1920,17 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Select this option if you have an ownCloud instance running on a server.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#585858;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Enter the web address of your ownCloud below.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Seleccione esta opción si tiene una instancia de servidor ownCloud corriendo.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#585858;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Introduzca la dirección web de su ownCloud debajo.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>ownCloud-URL:</source>
-        <translation type="unfinished"/>
+        <translation>URL de ownCloud:</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudwizardselecttypepage.ui" line="120"/>
@@ -1931,22 +1950,28 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Select if you want to create a new ownCloud either on the local machine or on your server. &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#585858;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;This wizard will guide you through all neccessary steps.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Seleccione si quiere crear un nuevo ownCloud en la máquina local o en su servidor. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#585858;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#585858;&quot;&gt;Este asistente le guiará por los pasos necesarios.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>http://owncloud.mydomain.org</source>
-        <translation type="unfinished"/>
+        <translation>http://owncloud.mi-dominio.org</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>ownCloud Password Required</source>
-        <translation type="unfinished"/>
+        <translation>Clave de ownCloud requerida</translation>
     </message>
     <message>
         <source>Please enter your ownCloud password:</source>
-        <translation type="unfinished"/>
+        <translation>Por favor, introduzca la clave de ownCloud:</translation>
     </message>
     <message>
         <location filename="../src/mirall/theme.cpp" line="51"/>
@@ -2003,7 +2028,7 @@ p, li { white-space: pre-wrap; }
     <name>appname</name>
     <message>
         <source>ownCloud</source>
-        <translation type="unfinished"/>
+        <translation>ownCloud</translation>
     </message>
 </context>
 <context>
@@ -2089,15 +2114,15 @@ p, li { white-space: pre-wrap; }
     <name>sslErrorsDialog</name>
     <message>
         <source>Form</source>
-        <translation type="unfinished"/>
+        <translation>Formulario</translation>
     </message>
     <message>
         <source>Check if you want t continue via SSL and trust the shown certificates.</source>
-        <translation type="unfinished"/>
+        <translation>Seleccione si quiere continuar via SSL y confiar en los certificados mostrados.</translation>
     </message>
     <message>
         <source>SSL Connection</source>
-        <translation type="unfinished"/>
+        <translation>Conexión SSL</translation>
     </message>
 </context>
 <context>
