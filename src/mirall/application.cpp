@@ -379,7 +379,7 @@ void Application::setupContextMenu()
             Folder *folder = folderMan->map().value(li.first());
             if( folder ) {
                 // if there is singleFolder mode, a generic open action is displayed.
-                QAction *action = new QAction( tr("Open local folder '%1'").arg(_theme->appNameGUI()), this);
+                QAction *action = new QAction( tr("Open %1 folder").arg(_theme->appNameGUI()), this);
                 connect( action, SIGNAL(triggered()),_folderOpenActionMapper,SLOT(map()));
                 _folderOpenActionMapper->setMapping( action, folder->alias() );
 
@@ -392,7 +392,7 @@ void Application::setupContextMenu()
             _contextMenu->addAction(tr("Managed Folders:"))->setDisabled(true);
         }
         foreach (Folder *folder, folderMan->map() ) {
-            QAction *action = new QAction( tr("Open folder '%1'").arg(folder->alias()), this );
+            QAction *action = new QAction( tr("Open %1 folder").arg(folder->alias()), this );
             connect( action, SIGNAL(triggered()),_folderOpenActionMapper,SLOT(map()));
             _folderOpenActionMapper->setMapping( action, folder->alias() );
 
