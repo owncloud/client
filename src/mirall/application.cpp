@@ -329,7 +329,7 @@ void Application::setupActions()
     QObject::connect(_actionSettings, SIGNAL(triggered(bool)), SLOT(slotSettings()));
     _actionHelp = new QAction(tr("Help"), this);
     QObject::connect(_actionHelp, SIGNAL(triggered(bool)), SLOT(slotHelp()));
-    _actionQuit = new QAction(tr("Quit"), this);
+    _actionQuit = new QAction(tr("Quit ownCloud"), this);
     QObject::connect(_actionQuit, SIGNAL(triggered(bool)), SLOT(quit()));
 }
 
