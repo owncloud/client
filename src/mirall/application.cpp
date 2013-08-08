@@ -594,7 +594,7 @@ void Application::slotUpdateProgress(const QString &folder, const Progress::Info
 
 void Application::slotDisplayIdle()
 {
-    _actionStatus->setText(tr("In Sync"));
+    _actionStatus->setText(tr("Up to date"));
 }
 
 void Application::slotHelp()
