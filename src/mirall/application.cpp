@@ -520,9 +520,9 @@ void Application::slotRefreshQuotaDisplay( qint64 total, qint64 used )
     }
 
     double percent = used/(double)total*100;
-    QString percentFormatted = Utility::compactFormatDouble(percent, 1);
+    QString percentFormatted = Utility::compactFormatDouble(percent, 0);
     QString totalFormatted = Utility::octetsToString(total);
-    _actionQuota->setText(tr("%1% of %2 used").arg(percentFormatted).arg(totalFormatted));
+    _actionQuota->setText(tr("%1% of %2 in use").arg(percentFormatted).arg(totalFormatted));
 }
 
 void Application::slotUseMonoIconsChanged(bool)
