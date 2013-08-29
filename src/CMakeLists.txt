@@ -120,6 +120,11 @@ set(libsync_HEADERS
     creds/credentialscommon.h
 )
 
+if(IS_DIRECTORY ${OEM_THEME_DIR} AND EXISTS ${OEM_THEME_DIR}/${THEME_CLASS}.h AND EXISTS ${OEM_THEME_DIR}/${THEME_CLASS}.cpp)
+    list(APPEND libsync_HEADERS ${OEM_THEME_DIR}/${THEME_CLASS}.h)
+    list(APPEND libsync_SRCS ${OEM_THEME_DIR}/${THEME_CLASS}.cpp)
+endif()
+
 IF( INOTIFY_FOUND )
     set(libsync_SRCS ${libsync_SRCS} mirall/inotify.cpp)
     set(libsync_SRCS ${libsync_SRCS} mirall/folderwatcher_inotify.cpp)
