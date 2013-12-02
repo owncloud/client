@@ -1,0 +1,38 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ownCloud client installer 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-12-02 23:33\n"
+"PO-Revision-Date: 2013-12-02 23:42+0100\n"
+"Last-Translator: Thomas Müller <thomas.mueller@tmit.eu>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. MUI_FINISHPAGE_SHOWREADME_TEXT_STRING
+#: ../../../../cmake/modules/NSIS.template.in:113
+msgid "Show release notes"
+msgstr "Release-Notes anzeigen"
+
+#. ConfirmEndProcess_MESSAGEBOX_TEXT
+#: ../../../../cmake/modules/NSIS.template.in:172
+msgid ""
+"Found ${processName} process(s) which need to be stopped.$\n"
+"Do you want the installer to stop these for you?"
+msgstr ""
+"${processName}-Prozess(e) wurden gefunden, welche beendet werden müssen.$\n"
+"Soll der Installer diese für Sie beenden?"
+
+#. ConfirmEndProcess_KILLING_PROCESSES_TEXT
+#: ../../../../cmake/modules/NSIS.template.in:173
+msgid "Killing ${processName} processes."
+msgstr "Beende ${processName}-Prozesse."
+
+#. ConfirmEndProcess_KILL_NOT_FOUND_TEXT
+#: ../../../../cmake/modules/NSIS.template.in:174
+msgid "Process to kill not found!"
+msgstr "Prozess konnte nicht gefunden werden."
+

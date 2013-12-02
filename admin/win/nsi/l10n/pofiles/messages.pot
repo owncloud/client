@@ -1,0 +1,35 @@
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: ownCloud client installer 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-12-02 23:59\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+
+#. MUI_FINISHPAGE_SHOWREADME_TEXT_STRING
+#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:113
+msgid "Show release notes"
+msgstr ""
+
+#. ConfirmEndProcess_MESSAGEBOX_TEXT
+#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:172
+msgid ""
+"Found ${processName} process(s) which need to be stopped.$\n"
+"Do you want the installer to stop these for you?"
+msgstr ""
+
+#. ConfirmEndProcess_KILLING_PROCESSES_TEXT
+#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:173
+msgid "Killing ${processName} processes."
+msgstr ""
+
+#. ConfirmEndProcess_KILL_NOT_FOUND_TEXT
+#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:174
+msgid "Process to kill not found!"
+msgstr ""
