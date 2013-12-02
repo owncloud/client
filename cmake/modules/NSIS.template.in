@@ -110,7 +110,8 @@ ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
 !ifdef OPTION_FINISHPAGE_RELEASE_NOTES
    !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
    !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\NOTES.txt"
-   !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show release notes"
+   LangString 	MUI_FINISHPAGE_SHOWREADME_TEXT_STRING ${LANG_English} "Show release notes"
+   !define MUI_FINISHPAGE_SHOWREADME_TEXT "$(MUI_FINISHPAGE_SHOWREADME_TEXT_STRING)"
 !endif
 !ifdef OPTION_FINISHPAGE_LAUNCHER
    !define MUI_FINISHPAGE_NOAUTOCLOSE
@@ -140,6 +141,7 @@ UninstPage custom un.UnPageUserAppData un.UnPageUserAppDataLeave
 ; Other MUI macros.
 ;-----------------------------------------------------------------------------
 !insertmacro MUI_LANGUAGE "English"
+;@INSERT_TRANSLATIONS@
 
 ##############################################################################
 #                                                                            #
@@ -167,15 +169,19 @@ FunctionEnd
 !macroend
 
 !macro ConfirmEndProcess processName
+   LangString ConfirmEndProcess_MESSAGEBOX_TEXT ${LANG_English} "Found ${processName} process(s) which need to be stopped.$\nDo you want the installer to stop these for you?"
+   LangString ConfirmEndProcess_KILLING_PROCESSES_TEXT ${LANG_English} "Killing ${processName} processes."
+   LangString ConfirmEndProcess_KILL_NOT_FOUND_TEXT ${LANG_English} "Process to kill not found!"
+
    MessageBox MB_YESNO|MB_ICONEXCLAMATION \
-     "Found ${processName} process(s) which need to be stopped.$\nDo you want the installer to stop these for you?" \
+     "$(ConfirmEndProcess_MESSAGEBOX_TEXT)" \
      IDYES process_${processName}_kill IDNO process_${processName}_ended
    process_${processName}_kill:
-      DetailPrint "Killing ${processName} processes."
+      DetailPrint "$(ConfirmEndProcess_KILLING_PROCESSES_TEXT)"
       Processes::KillProcess ${processName}
       Sleep 1500
       StrCmp $R0 "1" process_${processName}_ended
-      DetailPrint "Process to kill not found!"
+      DetailPrint "$(ConfirmEndProcess_KILL_NOT_FOUND_TEXT)"
    process_${processName}_ended:
 !macroend
 
@@ -532,6 +538,7 @@ SectionEnd
 
 Function .onInit
    !insertmacro INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
+   !insertmacro MUI_LANGDLL_DISPLAY
 
    ;Remove Quick Launch option from Windows 7, as no longer applicable - usually.
    ${IfNot} ${AtMostWinVista}
