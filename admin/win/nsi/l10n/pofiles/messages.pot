@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ownCloud client installer 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-03 23:26\n"
+"POT-Creation-Date: 2013-12-04 00:11\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,9 +53,7 @@ msgid "Do not uninstall"
 msgstr ""
 
 #. PageReinstall_NEW_MUI_HEADER_TEXT_TITLE
-#. PageReinstall_SAME_MUI_HEADER_TEXT_SUBTITLE
 #: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:150
-#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:156
 msgid "Already Installed"
 msgstr ""
 
@@ -89,6 +87,11 @@ msgstr ""
 #: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:155
 #: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:168
 msgid "Uninstall ${APPLICATION_NAME}"
+msgstr ""
+
+#. PageReinstall_SAME_MUI_HEADER_TEXT_SUBTITLE
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:156
+msgid "Choose the maintenance option to perform."
 msgstr ""
 
 #. SEC_APPLICATION_DETAILS
