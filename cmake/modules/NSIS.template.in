@@ -141,7 +141,16 @@ UninstPage custom un.UnPageUserAppData un.UnPageUserAppDataLeave
 ; Other MUI macros.
 ;-----------------------------------------------------------------------------
 !insertmacro MUI_LANGUAGE "English"
-;@INSERT_TRANSLATIONS@
+LangString ConfirmEndProcess_MESSAGEBOX_TEXT ${LANG_English} "Found ${processName} process(s) which need to be stopped.$\nDo you want the installer to stop these for you?"
+LangString ConfirmEndProcess_KILLING_PROCESSES_TEXT ${LANG_English} "Killing ${processName} processes."
+LangString ConfirmEndProcess_KILL_NOT_FOUND_TEXT ${LANG_English} "Process to kill not found!"
+
+!insertmacro MUI_LANGUAGE "German"
+LangString LANGUAGE_CODE ${LANG_German} "de"
+LangString MUI_FINISHPAGE_SHOWREADME_TEXT_STRING ${LANG_German} "Release-Notes anzeigen"
+LangString ConfirmEndProcess_MESSAGEBOX_TEXT ${LANG_German} "${processName}-Prozess(e) wurden gefunden, welche beendet werden müssen.$\nSoll der Installer diese für Sie beenden?"
+LangString ConfirmEndProcess_KILLING_PROCESSES_TEXT ${LANG_German} "Beende ${processName}-Prozesse."
+LangString ConfirmEndProcess_KILL_NOT_FOUND_TEXT ${LANG_German} "Prozess konnte nicht gefunden werden."
 
 ##############################################################################
 #                                                                            #
@@ -169,10 +178,6 @@ FunctionEnd
 !macroend
 
 !macro ConfirmEndProcess processName
-   LangString ConfirmEndProcess_MESSAGEBOX_TEXT ${LANG_English} "Found ${processName} process(s) which need to be stopped.$\nDo you want the installer to stop these for you?"
-   LangString ConfirmEndProcess_KILLING_PROCESSES_TEXT ${LANG_English} "Killing ${processName} processes."
-   LangString ConfirmEndProcess_KILL_NOT_FOUND_TEXT ${LANG_English} "Process to kill not found!"
-
    MessageBox MB_YESNO|MB_ICONEXCLAMATION \
      "$(ConfirmEndProcess_MESSAGEBOX_TEXT)" \
      IDYES process_${processName}_kill IDNO process_${processName}_ended
