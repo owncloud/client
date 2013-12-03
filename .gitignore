@@ -10,3 +10,6 @@ doc/_build/*
 *.kate-swp
 *.kdev4
 win/
+
+admin/win/nsi/l10n/pofiles/*.pot
+admin/win/nsi/l10n/pofiles/*.po
