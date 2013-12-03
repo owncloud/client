@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ownCloud client installer 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-02 23:59\n"
+"POT-Creation-Date: 2013-12-03 23:26\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,23 +13,215 @@ msgstr ""
 "Language: \n"
 
 #. MUI_FINISHPAGE_SHOWREADME_TEXT_STRING
-#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:113
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:143
 msgid "Show release notes"
 msgstr ""
 
 #. ConfirmEndProcess_MESSAGEBOX_TEXT
-#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:172
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:144
 msgid ""
 "Found ${processName} process(s) which need to be stopped.$\n"
 "Do you want the installer to stop these for you?"
 msgstr ""
 
 #. ConfirmEndProcess_KILLING_PROCESSES_TEXT
-#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:173
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:145
 msgid "Killing ${processName} processes."
 msgstr ""
 
 #. ConfirmEndProcess_KILL_NOT_FOUND_TEXT
-#: /home/deepdiver/Development/ownCloud/mirall/cmake/modules/NSIS.template.in:174
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:146
 msgid "Process to kill not found!"
+msgstr ""
+
+#. PageReinstall_NEW_Field_1
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:147
+msgid ""
+"An older version of ${APPLICATION_NAME} is installed on your system. It is "
+"recommended that you uninstall the current version before installing. Select"
+" the operation you want to perform and click Next to continue."
+msgstr ""
+
+#. PageReinstall_NEW_Field_2
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:148
+msgid "Uninstall before installing"
+msgstr ""
+
+#. PageReinstall_NEW_Field_3
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:149
+msgid "Do not uninstall"
+msgstr ""
+
+#. PageReinstall_NEW_MUI_HEADER_TEXT_TITLE
+#. PageReinstall_SAME_MUI_HEADER_TEXT_SUBTITLE
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:150
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:156
+msgid "Already Installed"
+msgstr ""
+
+#. PageReinstall_NEW_MUI_HEADER_TEXT_SUBTITLE
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:151
+msgid "Choose how you want to install ${APPLICATION_NAME}."
+msgstr ""
+
+#. PageReinstall_OLD_Field_1
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:152
+msgid ""
+"A newer version of ${APPLICATION_NAME} is already installed! It is not "
+"recommended that you install an older version. If you really want to install"
+" this older version, it is better to uninstall the current version first. "
+"Select the operation you want to perform and click Next to continue."
+msgstr ""
+
+#. PageReinstall_SAME_Field_1
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:153
+msgid ""
+"${APPLICATION_NAME} ${VERSION} is already installed.\r\n"
+"Select the operation you want to perform and click Next to continue."
+msgstr ""
+
+#. PageReinstall_SAME_Field_2
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:154
+msgid "Add/Reinstall components"
+msgstr ""
+
+#. PageReinstall_SAME_Field_3 UNINSTALLER_APPDATA_TITLE
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:155
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:168
+msgid "Uninstall ${APPLICATION_NAME}"
+msgstr ""
+
+#. SEC_APPLICATION_DETAILS
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:157
+msgid "Installing ${APPLICATION_NAME} essentials."
+msgstr ""
+
+#. OPTION_SECTION_SC_START_MENU_SECTION
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:158
+msgid "Start Menu Program Shortcut"
+msgstr ""
+
+#. OPTION_SECTION_SC_START_MENU_DetailPrint
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:159
+msgid "Adding shortcut for ${APPLICATION_NAME} to the Start Menu."
+msgstr ""
+
+#. OPTION_SECTION_SC_DESKTOP_SECTION
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:160
+msgid "Desktop Shortcut"
+msgstr ""
+
+#. OPTION_SECTION_SC_DESKTOP_DetailPrint
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:161
+msgid "Creating Desktop Shortcuts"
+msgstr ""
+
+#. OPTION_SECTION_SC_QUICK_LAUNCH_SECTION
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:162
+msgid "Quick Launch Shortcut"
+msgstr ""
+
+#. OPTION_SECTION_SC_QUICK_LAUNCH_DetailPrint
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:163
+msgid "Creating Quick Launch Shortcut"
+msgstr ""
+
+#. OPTION_SECTION_SC_APPLICATION_Desc
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:164
+msgid "${APPLICATION_NAME} essentials."
+msgstr ""
+
+#. OPTION_SECTION_SC_START_MENU_Desc
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:165
+msgid "${APPLICATION_NAME} shortcut."
+msgstr ""
+
+#. OPTION_SECTION_SC_DESKTOP_Desc
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:166
+msgid "Desktop shortcut for ${APPLICATION_NAME}."
+msgstr ""
+
+#. OPTION_SECTION_SC_QUICK_LAUNCH_Desc
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:167
+msgid "Quick Launch shortcut for ${APPLICATION_NAME}."
+msgstr ""
+
+#. UNINSTALLER_APPDATA_SUBTITLE
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:169
+msgid "Remove ${APPLICATION_NAME}'s data folder from your computer."
+msgstr ""
+
+#. UNINSTALLER_APPDATA_LABEL_1
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:170
+msgid "Do you want to delete ${APPLICATION_NAME}'s data folder?"
+msgstr ""
+
+#. UNINSTALLER_APPDATA_LABEL_2
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:171
+msgid ""
+"Leave unchecked to keep the data folder for later use or check to delete the"
+" data folder."
+msgstr ""
+
+#. UNINSTALLER_APPDATA_CHECKBOX
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:172
+msgid "Yes, delete this data folder."
+msgstr ""
+
+#. UNINSTALLER_FILE_Detail
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:173
+msgid "Writing Uninstaller"
+msgstr ""
+
+#. UNINSTALLER_REGISTRY_Detail
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:174
+msgid "Writing Installer Registry Keys"
+msgstr ""
+
+#. UNINSTALLER_FINISHED_Detail
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:175
+msgid "Finished"
+msgstr ""
+
+#. UNINSTALL_MESSAGEBOX
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:176
+msgid ""
+"It does not appear that ${APPLICATION_NAME} is installed in the directory '$INSTDIR'.$\r"
+"$\n"
+"Continue anyway (not recommended)?"
+msgstr ""
+
+#. UNINSTALL_ABORT
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:177
+msgid "Uninstall aborted by user"
+msgstr ""
+
+#. INIT_NO_QUICK_LAUNCH
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:178
+msgid "Quick Launch Shortcut (N/A)"
+msgstr ""
+
+#. UAC_ERROR_ELEVATE
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:179
+msgid "Unable to elevate, error:"
+msgstr ""
+
+#. UAC_INSTALLER_REQUIRE_ADMIN
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:180
+msgid "This installer requires admin access, try again"
+msgstr ""
+
+#. INIT_INSTALLER_RUNNING
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:181
+msgid "The installer is already running."
+msgstr ""
+
+#. UAC_UNINSTALLER_REQUIRE_ADMIN
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:182
+msgid "This uninstaller requires admin access, try again"
+msgstr ""
+
+#. INIT_UNINSTALLER_RUNNING
+#: /home/deepdiver/Vagrant/dev/mirall/cmake/modules/NSIS.template.in:183
+msgid "The uninstaller is already running."
 msgstr ""
