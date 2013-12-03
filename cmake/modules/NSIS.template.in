@@ -153,7 +153,7 @@ LangString PageReinstall_OLD_Field_1 ${LANG_English} "A newer version of ${APPLI
 LangString PageReinstall_SAME_Field_1 ${LANG_English} "${APPLICATION_NAME} ${VERSION} is already installed.\r\nSelect the operation you want to perform and click Next to continue."
 LangString PageReinstall_SAME_Field_2 ${LANG_English} "Add/Reinstall components"
 LangString PageReinstall_SAME_Field_3 ${LANG_English} "Uninstall ${APPLICATION_NAME}"
-LangString PageReinstall_SAME_MUI_HEADER_TEXT_SUBTITLE ${LANG_English} "Already Installed" "Choose the maintenance option to perform."
+LangString PageReinstall_SAME_MUI_HEADER_TEXT_SUBTITLE ${LANG_English} "Choose the maintenance option to perform."
 LangString SEC_APPLICATION_DETAILS ${LANG_English} "Installing ${APPLICATION_NAME} essentials."
 LangString OPTION_SECTION_SC_START_MENU_SECTION ${LANG_English} "Start Menu Program Shortcut"
 LangString OPTION_SECTION_SC_START_MENU_DetailPrint ${LANG_English} "Adding shortcut for ${APPLICATION_NAME} to the Start Menu."
@@ -182,7 +182,7 @@ LangString INIT_INSTALLER_RUNNING ${LANG_English} "The installer is already runn
 LangString UAC_UNINSTALLER_REQUIRE_ADMIN ${LANG_English} "This uninstaller requires admin access, try again"
 LangString INIT_UNINSTALLER_RUNNING ${LANG_English} "The uninstaller is already running."
 
-!include Translations.nsh
+!include ${source_path}/admin/win/nsi/l10n/Translations.nsh
 
 ##############################################################################
 #                                                                            #
@@ -391,8 +391,6 @@ SectionEnd
 
 SectionGroup "Shortcuts"
 
-OPTION_SECTION_SC_QUICK_LAUNCH
-
 !ifdef OPTION_SECTION_SC_START_MENU
    ${MementoSection} "$(OPTION_SECTION_SC_START_MENU_SECTION)" SEC_START_MENU
       SectionIn 1 2 3
@@ -578,6 +576,7 @@ SectionEnd
 
 Function .onInit
    !insertmacro INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
+
    !insertmacro MUI_LANGDLL_DISPLAY
 
    ;Remove Quick Launch option from Windows 7, as no longer applicable - usually.
