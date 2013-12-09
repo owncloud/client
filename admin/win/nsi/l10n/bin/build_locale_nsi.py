@@ -1,12 +1,7 @@
 ##############################################################################
 #
-#  PROJECT:     Multi Theft Auto v1.0
+#  PROJECT:     ownCloud v1.0
 #  LICENSE:     See LICENSE in the top level directory
-#  FILE:        utils/build_gettext_catalog.py
-#  PURPOSE:     Build a multi-language .NSI script based upon input PO files
-#  DEVELOPERS:  Dan Chowdhury <>
-#
-#  Multi Theft Auto is available from http://www.multitheftauto.com/
 #
 ##############################################################################
 import collections
@@ -15,10 +10,8 @@ import polib
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option("-i", "--input", dest="input",
-                  help="nightly.nsi location", default="../Shared/installer/nightly.nsi" )
 parser.add_option("-o", "--output", dest="output",
-                  help="Localized nightly output location", default="../Shared/installer/nightly_localized.nsi")
+                  help="Directory for localized output", default="../Shared/installer/nightly_localized.nsi")
 parser.add_option("-p", "--podir", dest="podir",
                   help="Directory containing PO files", default="../Shared/installer/locale/")
 parser.add_option("-l", "--lang", dest="lang",
@@ -131,9 +124,6 @@ for root,dirs,files in os.walk(options.podir):
                 language = localeToName[filename]
                 translationCache[language] = collections.OrderedDict()
                 
-                # Let's add a default LANGUAGE_CODE LangString to be read
-                translationCache[language]["LANGUAGE_CODE"] = filename
-
                 po = polib.pofile(os.path.join(root,file))
                 for entry in po.translated_entries():
                     # Loop through all our labels and add translation (each translation may have multiple labels)
@@ -145,39 +135,48 @@ for root,dirs,files in os.walk(options.podir):
                         print("Warning: Label '%s' for language '%s' remains untranslated"%(label,language))
                         translationCache[language][label] = escapeNSIS(entry.msgid)
 
-
-# Open our source NSI, dump it to a list and close it
-NSISourceFile = open(options.input,"r")
-NSISourceLines = NSISourceFile.readlines()
-NSISourceFile.close()
-NSINewLines = []
-
 def tostr(obj):
     if type(obj) == unicode:
         return obj.encode("utf-8")
     else:
         return obj
 
-# Here we scan for ";@INSERT_TRANSLATIONS@" in the NSIS, and add MUI_LANGUAGE macros and LangString's for translation languages
+NSILanguages = []
+NSIDeclarations = []
+
+# file header
+NSILanguages.append( tostr('; Auto-generated - do not modify\n') )
+NSIDeclarations.append( tostr('; Auto-generated - do not modify\n') )
+
+# loopthrough the languages an generate one nsh files for each language
 lineNo = 1
-for line in NSISourceLines:
-    if line.find(";@INSERT_TRANSLATIONS@") == 0:
-        for language,translations in translationCache.iteritems():
-            count = 0
-            # if the language isn't the default, we add our MUI_LANGUAGE macro
-            if language.upper() != options.lang.upper():
-                NSINewLines.append( tostr('!insertmacro MUI_LANGUAGE "%s"\n'%language) )
-            # For every translation we grabbed from the .po, let's add our LangString
-            for label,value in translations.iteritems():
-                NSINewLines.append( tostr('LangString %s ${LANG_%s} "%s"\n' % (label,language,value)) )
-                count += 1
-            print ( "%i translations merged for language '%s'"%(count,language) )
-    else:
-        NSINewLines.append ( line )
+for language,translations in translationCache.iteritems():
+    NSINewLines = []
+    NSINewLines.append( tostr('# Auto-generated - do not modify\n') )
+    count = 0
+    # if the language isn't the default, we add our MUI_LANGUAGE macro
+    if language.upper() != options.lang.upper():
+        NSILanguages.append( tostr('!insertmacro MUI_LANGUAGE "%s"\n'%language) )
+
+    # For every translation we grabbed from the .po, let's add our StrCpy command
+    for label,value in translations.iteritems():
+        NSINewLines.append( tostr('StrCpy $%s "%s"\n' % (label,value)) )
+        if language.upper() == options.lang.upper():
+	    NSIDeclarations.append( tostr('Var %s\n' % label) )
+
+        count += 1
+    NSIWorkingFile = open('%s/%s.nsh' % (options.output, language),"w")
+    NSIWorkingFile.writelines(NSINewLines)
+    NSIWorkingFile.close()
+    print ( "%i translations merged for language '%s'"%(count,language) )
     
-# Finally, let's write our new .nsi to the desired target file
-NSIWorkingFile = open(options.output,"w")
-NSIWorkingFile.writelines(NSINewLines)
+# Finally, let's write languages.nsh and declarations.nsh
+NSIWorkingFile = open('%s/languages.nsh' % options.output,"w")
+NSIWorkingFile.writelines(NSILanguages)
+NSIWorkingFile.close()
+
+NSIWorkingFile = open('%s/declarations.nsh' % options.output,"w")
+NSIWorkingFile.writelines(NSIDeclarations)
 NSIWorkingFile.close()
     
 print ( "NSI Localization Operation Complete" )
