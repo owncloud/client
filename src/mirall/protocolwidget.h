@@ -22,6 +22,8 @@
 
 #include "ui_protocolwidget.h"
 
+class QPushButton;
+
 namespace Mirall {
 class SyncResult;
 
@@ -37,7 +39,7 @@ public:
     explicit ProtocolWidget(QWidget *parent = 0);
     ~ProtocolWidget();
 
-    void setupList();
+    void initializeList();
 
 signals:
 
@@ -48,21 +50,25 @@ public slots:
 
 protected slots:
     void copyToClipboard();
+    void slotClearBlacklist();
 
 signals:
     void guiLog(const QString&, const QString&);
 
 private:
     void setSyncResultStatus(const SyncResult& result );
-    void cleanErrors( const QString& folder );
+    void cleanErrorItems( const QString& folder );
+    void computeResyncButtonEnabled();
+
     QTreeWidgetItem* createProgressTreewidgetItem(const Progress::Info& progress );
     QTreeWidgetItem* createProblemTreewidgetItem( const Progress::SyncProblem& problem);
+    QList<QTreeWidgetItem*> errorItems(const QString &folder);
 
     QString timeString(QDateTime dt, QLocale::FormatType format = QLocale::NarrowFormat) const;
 
     const int ErrorIndicatorRole;
     Ui::ProtocolWidget *_ui;
-    int _problemCounter;
+    QPushButton *_clearBlacklistBtn;
 };
 
 }

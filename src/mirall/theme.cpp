@@ -57,7 +57,7 @@ QString Theme::statusHeaderText( SyncResult::Status status ) const
         resultStr = QCoreApplication::translate("theme", "Sync Success");
         break;
     case SyncResult::Problem:
-        resultStr = QCoreApplication::translate("theme", "Sync Success, problems with individual files.");
+        resultStr = QCoreApplication::translate("theme", "Sync Success, some files were ignored.");
         break;
     case SyncResult::Error:
         resultStr = QCoreApplication::translate("theme", "Sync Error");
@@ -191,6 +191,11 @@ void Theme::setSystrayUseMonoIcons(bool mono)
 bool Theme::systrayUseMonoIcons() const
 {
     return _mono;
+}
+
+QString Theme::updateCheckUrl() const
+{
+    return QLatin1String("https://updates.owncloud.com/client/");
 }
 
 QString Theme::about() const

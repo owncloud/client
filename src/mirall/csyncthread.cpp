@@ -235,7 +235,7 @@ bool CSyncThread::checkBlacklisting( SyncFileItem *item )
         if( re ) {
             qDebug() << "Item is on blacklist: " << entry._file << "retries:" << entry._retryCount;
             item->_instruction = CSYNC_INSTRUCTION_IGNORE;
-            item->_errorString = tr("The item is not synced because it is on the blacklist.");
+            item->_errorString = tr("The item is not synced because of previous errors.");
             slotProgress( Progress::SoftError, *item );
         }
     }
@@ -266,8 +266,21 @@ int CSyncThread::treewalkFile( TREE_WALK_FILE *file, bool remote )
     // record the seen files to be able to clean the journal later
     _seenFiles[item._file] = QString();
 
-    if(file->error_string) {
-        item._errorString = QString::fromUtf8(file->error_string);
+    switch(file->error_status) {
+    case CSYNC_STATUS_OK:
+        break;
+    case CSYNC_STATUS_INDIVIDUAL_IS_SYMLINK:
+        item._errorString = tr("Symbolic links are not supported in syncing.");
+        break;
+    case CSYNC_STATUS_INDIVIDUAL_IGNORE_LIST:
+        item._errorString = tr("File is listed on the ignore list.");
+        break;
+    case CSYNC_STATUS_INDIVIDUAL_IS_INVALID_CHARS:
+        item._errorString = tr("File contains invalid characters that can not be synced cross platform.");
+        break;
+    default:
+        Q_ASSERT("Non handled error-status");
+        /* No error string */
     }
 
     item._isDirectory = file->type == CSYNC_FTW_TYPE_DIR;
@@ -275,6 +288,19 @@ int CSyncThread::treewalkFile( TREE_WALK_FILE *file, bool remote )
     item._etag = file->etag;
     item._size = file->size;
     item._should_update_etag = file->should_update_etag;
+    switch( file->type ) {
+    case CSYNC_FTW_TYPE_DIR:
+        item._type = SyncFileItem::Directory;
+        break;
+    case CSYNC_FTW_TYPE_FILE:
+        item._type = SyncFileItem::File;
+        break;
+    case CSYNC_FTW_TYPE_SLINK:
+        item._type = SyncFileItem::SoftLink;
+        break;
+    default:
+        item._type = SyncFileItem::UnknownType;
+    }
 
     SyncFileItem::Direction dir;
 
@@ -306,6 +332,8 @@ int CSyncThread::treewalkFile( TREE_WALK_FILE *file, bool remote )
             dir = SyncFileItem::None;
         } else {
             // No need to do anything.
+            _hasFiles = true;
+
             return re;
         }
         break;
@@ -333,20 +361,6 @@ int CSyncThread::treewalkFile( TREE_WALK_FILE *file, bool remote )
     default:
         dir = remote ? SyncFileItem::Down : SyncFileItem::Up;
         break;
-    }
-
-    switch( file->type ) {
-    case CSYNC_FTW_TYPE_DIR:
-        item._type = SyncFileItem::Directory;
-        break;
-    case CSYNC_FTW_TYPE_FILE:
-        item._type = SyncFileItem::File;
-        break;
-    case CSYNC_FTW_TYPE_SLINK:
-        item._type = SyncFileItem::SoftLink;
-        break;
-    default:
-        item._type = SyncFileItem::UnknownType;
     }
 
     item._dir = dir;
@@ -650,6 +664,7 @@ void CSyncThread::slotProgress(Progress::Kind kind, const SyncFileItem& item, qu
     Progress::Info pInfo(_progressInfo);
     pInfo.kind                  = kind;
     pInfo.current_file          = item._file;
+    pInfo.rename_target         = item._renameTarget;
     pInfo.file_size             = total;
     pInfo.current_file_bytes    = curr;
     pInfo.current_file_no       = _currentFileNo;

@@ -130,6 +130,40 @@ ENDIF()
 
 qt_wrap_cpp(syncMoc ${libsync_HEADERS})
 
+# These headers are installed for libowncloudsync to be used by 3rd party apps
+set(owncloudsync_HEADERS
+    mirall/account.h
+    mirall/csyncthread.h
+    mirall/folder.h
+    mirall/folderman.h
+    mirall/folderwatcher.h
+    mirall/mirallconfigfile.h
+    mirall/networkjobs.h
+    mirall/progressdispatcher.h
+    mirall/syncfileitem.h
+    mirall/syncjournaldb.h
+    mirall/syncresult.h
+)
+
+INSTALL(
+  FILES
+    ${owncloudsync_HEADERS}
+  DESTINATION
+    ${INCLUDE_INSTALL_DIR}/owncloudsync/mirall
+)
+
+set(creds_HEADERS
+    creds/abstractcredentials.h
+    creds/httpcredentials.h
+)
+
+INSTALL(
+  FILES
+    ${creds_HEADERS}
+  DESTINATION
+    ${INCLUDE_INSTALL_DIR}/owncloudsync/creds
+)
+
 
 IF( DEFINED CSYNC_BUILD_PATH )
 SET(HTTPBF_LIBRARY ${CSYNC_BUILD_PATH}/src/httpbf/libhttpbf.a)
@@ -165,8 +199,8 @@ add_library(${synclib_NAME} SHARED ${libsync_SRCS} ${syncMoc})
 qt5_use_modules(${synclib_NAME} Widgets Network Xml WebKitWidgets Sql)
 
 set_target_properties( ${synclib_NAME}  PROPERTIES
-	VERSION ${VERSION}
-	SOVERSION ${SOVERSION}
+	VERSION ${MIRALL_VERSION}
+	SOVERSION ${MIRALL_SOVERSION}
 )
 
 target_link_libraries(${synclib_NAME} ${libsync_LINK_TARGETS} )
@@ -364,9 +398,7 @@ install(TARGETS ${APPLICATION_EXECUTABLE}
 # currently it needs to be done because the code right above needs to be executed no matter
 # if building a bundle or not and the install_qt4_executable needs to be called afterwards
 if(BUILD_OWNCLOUD_OSX_BUNDLE)
-    install_qt4_executable(${OWNCLOUD_OSX_BUNDLE})
-    install_qt4_plugin(qsqlite ${OWNCLOUD_OSX_BUNDLE} 0 "")
-    install_qt4_plugin(qtaccessiblewidgets ${OWNCLOUD_OSX_BUNDLE} 0 "")
+    install_qt4_executable(${OWNCLOUD_OSX_BUNDLE} "qtaccessiblewidgets;qsqlite")
 endif()
 
 find_program(KRAZY2_EXECUTABLE krazy2)

@@ -41,6 +41,11 @@
 
 #include <time.h>
 
+#ifdef Q_OS_WIN
+#include <windef.h>
+#include <winbase.h>
+#endif
+
 // We use some internals of csync:
 extern "C" int c_utimes(const char *, const struct timeval *);
 extern "C" void csync_win32_set_file_hidden( const char *file, bool h );
@@ -182,7 +187,7 @@ void PropagateLocalRemove::start()
         }
     }
     emit progress(Progress::StartDelete, _item, 0, _item._size);
-    _propagator->_journal->deleteFileRecord(_item._originalFile);
+    _propagator->_journal->deleteFileRecord(_item._originalFile, _item._isDirectory);
     _propagator->_journal->commit("Local remove");
     done(SyncFileItem::Success);
     emit progress(Progress::EndDelete, _item, _item._size, _item._size);
@@ -333,7 +338,7 @@ void PropagateUploadFile::start()
         state = hbf_splitlist(trans.data(), file.handle());
 
         if (progressInfo._valid) {
-            if (progressInfo._modtime.toTime_t() == _item._modtime) {
+            if (progressInfo._modtime.toTime_t() == (uint)_item._modtime) {
                 trans->start_id = progressInfo._chunk;
                 trans->transfer_id = progressInfo._transferid;
             }
@@ -703,11 +708,15 @@ void PropagateDownloadFile::start()
         ne_add_request_header( req.data(), "Accept-Encoding", "gzip" );
 
         if (tmpFile.size() > 0) {
-            char brange[64];
-            ne_snprintf(brange, sizeof brange, "bytes=%lld-", (long long) tmpFile.size());
-            ne_add_request_header(req.data(), "Range", brange);
+            quint64 done = tmpFile.size();
+            if (done == _item._size) {
+                qDebug() << "File is already complete, no need to download";
+                break;
+            }
+            QByteArray rangeRequest = "bytes=" + QByteArray::number(done) +'-';
+            ne_add_request_header(req.data(), "Range", rangeRequest.constData());
             ne_add_request_header(req.data(), "Accept-Ranges", "bytes");
-            qDebug("Retry with range %s", brange);
+            qDebug() << "Retry with range " << rangeRequest;
         }
 
         /* hook called before the content is parsed to set the correct reader,
@@ -719,6 +728,8 @@ void PropagateDownloadFile::start()
         _lastTime.start();
 
         int neon_stat = ne_request_dispatch(req.data());
+
+        _decompress.reset(); // Destroy the decompress after the request has been dispatched.
 
         /* delete the hook again, otherwise they get chained as they are with the session */
         ne_unhook_post_headers( _propagator->_session, install_content_reader, this );
@@ -782,7 +793,7 @@ void PropagateDownloadFile::start()
 
     csync_win32_set_file_hidden(tmpFileName.toUtf8().constData(), false);
 
-#ifndef QT_OS_WIN
+#ifndef Q_OS_WIN
     bool success;
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     success = tmpFile.fileEngine()->rename(fn);
@@ -800,10 +811,12 @@ void PropagateDownloadFile::start()
         done(SyncFileItem::NormalError, tmpFile.errorString());
         return;
     }
-#else //QT_OS_WIN
-    if (::MoveFileEx((wchar_t*)tmpFile.fileName().utf16(),
-                            (wchar_t*)QString(_localDir + item._file).utf16(),
-                        MOVEFILE_REPLACE_EXISTING) != 0) {
+#else //Q_OS_WIN
+    BOOL ok;
+    ok = MoveFileEx((wchar_t*)tmpFile.fileName().utf16(),
+                    (wchar_t*)QString(_propagator->_localDir + _item._file).utf16(),
+                    MOVEFILE_REPLACE_EXISTING+MOVEFILE_COPY_ALLOWED+MOVEFILE_WRITE_THROUGH);
+    if (!ok) {
         wchar_t *string = 0;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
                       NULL, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
@@ -830,10 +843,13 @@ DECLARE_JOB(PropagateLocalRename)
 
 void PropagateLocalRename::start()
 {
-    emit progress(Progress::StartRename, _item, 0, _item._size);
+    // if the file is a file underneath a moved dir, the _item.file is equal
+    // to _item.renameTarget and the file is not moved as a result.
     if (_item._file != _item._renameTarget) {
+        emit progress(Progress::StartRename, _item, 0, _item._size);
         qDebug() << "MOVE " << _propagator->_localDir + _item._file << " => " << _propagator->_localDir + _item._renameTarget;
         QFile::rename(_propagator->_localDir + _item._file, _propagator->_localDir + _item._renameTarget);
+        emit progress(Progress::EndRename, _item, _item._size, _item._size);
     }
 
     _item._instruction = CSYNC_INSTRUCTION_DELETED;
@@ -848,7 +864,6 @@ void PropagateLocalRename::start()
     _propagator->_journal->setFileRecord(record);
     _propagator->_journal->commit("localRename");
 
-    emit progress(Progress::EndRename, _item, _item._size, _item._size);
 
     done(SyncFileItem::Success);
 }

@@ -416,6 +416,16 @@ void Folder::createGuiLog( const QString& filename, const QString& verb, int cou
     }
 }
 
+int Folder::blackListEntryCount()
+{
+    return _journal.blackListEntryCount();
+}
+
+int Folder::slotWipeBlacklist()
+{
+    return _journal.wipeBlacklist();
+}
+
 void Folder::slotLocalPathChanged( const QString& dir )
 {
     QDir notifiedDir(dir);
@@ -487,6 +497,8 @@ void Folder::slotTerminateSync(bool block)
 void Folder::wipe()
 {
     QString stateDbFile = path()+QLatin1String(".csync_journal.db");
+
+    _journal.close(); // close the sync journal
 
     QFile file(stateDbFile);
     if( file.exists() ) {

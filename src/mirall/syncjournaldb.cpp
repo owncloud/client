@@ -50,7 +50,7 @@ void SyncJournalDb::startTransaction()
 {
     if( _transaction == 0 ) {
         if( !_db.transaction() ) {
-            qDebug() << "ERROR commiting to the database: " << _db.lastError().text();
+            qDebug() << "ERROR committing to the database: " << _db.lastError().text();
             return;
         }
         _transaction = 1;
@@ -64,7 +64,7 @@ void SyncJournalDb::commitTransaction()
 {
     if( _transaction == 1 ) {
         if( ! _db.commit() ) {
-            qDebug() << "ERROR commiting to the database: " << _db.lastError().text();
+            qDebug() << "ERROR committing to the database: " << _db.lastError().text();
             return;
         }
         _transaction = 0;
@@ -381,19 +381,21 @@ bool SyncJournalDb::deleteFileRecord(const QString& filename, bool recursively)
     QMutexLocker locker(&_mutex);
 
     if( checkConnect() ) {
-        if (!recursively) {
-            qlonglong phash = getPHash(filename);
-            _deleteFileRecordPhash->bindValue( 0, QString::number(phash) );
+        // if (!recursively) {
+        // always delete the actual file.
 
-            if( _deleteFileRecordPhash->exec() ) {
-                qWarning() << "Exec error of SQL statement: "
-                           << _deleteFileRecordPhash->lastQuery()
-                           <<  " : " << _deleteFileRecordPhash->lastError().text();
-                return false;
-            }
-            qDebug() <<  _deleteFileRecordPhash->executedQuery() << phash << filename;
-            _deleteFileRecordPhash->finish();
-        } else {
+        qlonglong phash = getPHash(filename);
+        _deleteFileRecordPhash->bindValue( 0, QString::number(phash) );
+
+        if( !_deleteFileRecordPhash->exec() ) {
+            qWarning() << "Exec error of SQL statement: "
+                       << _deleteFileRecordPhash->lastQuery()
+                       <<  " : " << _deleteFileRecordPhash->lastError().text();
+            return false;
+        }
+        qDebug() <<  _deleteFileRecordPhash->executedQuery() << phash << filename;
+        _deleteFileRecordPhash->finish();
+        if( recursively) {
             _deleteFileRecordRecursively->bindValue(0, filename);
             if( !_deleteFileRecordRecursively->exec() ) {
                 qWarning() << "Exec error of SQL statement: "
@@ -677,6 +679,40 @@ SyncJournalBlacklistRecord SyncJournalDb::blacklistEntry( const QString& file )
     return entry;
 }
 
+int SyncJournalDb::blackListEntryCount()
+{
+    int re = 0;
+
+    QMutexLocker locker(&_mutex);
+    if( checkConnect() ) {
+        QSqlQuery query(_db);
+        if( ! query.exec("SELECT count(*) FROM blacklist WHERE retrycount >= 0") ) {
+            sqlFail("Count number of blacklist entries failed", query);
+        }
+        if( query.next() ) {
+            re = query.value(0).toInt();
+        }
+    }
+    return re;
+}
+
+int SyncJournalDb::wipeBlacklist()
+{
+    QMutexLocker locker(&_mutex);
+    if( checkConnect() ) {
+        QSqlQuery query(_db);
+
+        query.prepare("DELETE FROM blacklist WHERE retrycount >= 0");
+
+        if( ! query.exec() ) {
+            sqlFail("Deletion of whole blacklist failed", query);
+            return -1;
+        }
+        return query.numRowsAffected();
+    }
+    return -1;
+}
+
 void SyncJournalDb::wipeBlacklistEntry( const QString& file )
 {
     QMutexLocker locker(&_mutex);
@@ -686,7 +722,7 @@ void SyncJournalDb::wipeBlacklistEntry( const QString& file )
         query.prepare("DELETE FROM blacklist WHERE path=:path");
         query.bindValue(":path", file);
         if( ! query.exec() ) {
-            qDebug() << "Deletion of blacklist item failed.";
+            sqlFail("Deletion of blacklist item failed.", query);
         }
     }
 }

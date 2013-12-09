@@ -326,7 +326,7 @@ void ownCloudGui::slotFolderOpenAction( const QString& alias )
         QUrl url(f->path(), QUrl::TolerantMode);
         url.setScheme( QLatin1String("file") );
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
         // work around a bug in QDesktopServices on Win32, see i-net
         QString filePath = f->path();
 
@@ -404,7 +404,7 @@ void ownCloudGui::slotRebuildRecentMenus()
 
         while(i.hasNext()) {
             Progress::Info info = i.next();
-            QString kindStr = Progress::asResultString(info.kind);
+            QString kindStr = Progress::asResultString(info);
             QString timeStr = info.timestamp.toString("hh:mm");
 
             QString actionText = tr("%1 (%2, %3)").arg(info.current_file).arg(kindStr).arg(timeStr);

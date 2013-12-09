@@ -156,7 +156,7 @@
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="102"/>
         <source>No account configured.</source>
-        <translation type="unfinished"/>
+        <translation>Учётная запись не настроена.</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="426"/>
@@ -166,7 +166,7 @@
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="755"/>
         <source>%1 of %2 (%3%) in use.</source>
-        <translation type="unfinished"/>
+        <translation>%1 из %2 (%3%) использовано.</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="786"/>
@@ -206,12 +206,12 @@
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="789"/>
         <source>Connected to &lt;a href=&quot;%1&quot;&gt;%2&lt;/a&gt; as &lt;i&gt;%3&lt;/i&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>Подключён к &lt;a href=&quot;%1&quot;&gt;%2&lt;/a&gt; как &lt;i&gt;%3&lt;/i&gt;.</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="793"/>
         <source>No connection to %1 at &lt;a href=&quot;%1&quot;&gt;%2&lt;/a&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>Нет связи с %1 по адресу &lt;a href=&quot;%1&quot;&gt;%2&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="759"/>
@@ -352,13 +352,28 @@
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="238"/>
-        <source>The item is not synced because it is on the blacklist.</source>
+        <source>The item is not synced because of previous errors.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/mirall/csyncthread.cpp" line="437"/>
-        <source>Unable to initialize a sync journal.</source>
+        <location filename="../src/mirall/csyncthread.cpp" line="273"/>
+        <source>Symbolic links are not supported in syncing.</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/mirall/csyncthread.cpp" line="276"/>
+        <source>File is listed on the ignore list.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/mirall/csyncthread.cpp" line="279"/>
+        <source>File contains invalid characters that can not be synced cross platform.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/mirall/csyncthread.cpp" line="451"/>
+        <source>Unable to initialize a sync journal.</source>
+        <translation>Не удалось инициализировать журнал синхронизации.</translation>
     </message>
     <message>
         <location filename="../src/mirall/csyncthread.cpp" line="149"/>
@@ -396,7 +411,7 @@
     <message>
         <location filename="../src/mirall/connectionvalidator.cpp" line="90"/>
         <source>No ownCloud account configured</source>
-        <translation type="unfinished"/>
+        <translation>Учётная запись OwnCloud не настроена</translation>
     </message>
     <message>
         <location filename="../src/mirall/connectionvalidator.cpp" line="105"/>
@@ -455,62 +470,62 @@
     <message>
         <location filename="../src/mirall/folder.cpp" line="386"/>
         <source>downloaded</source>
-        <translation type="unfinished"/>
+        <translation>скачано</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="387"/>
         <source>removed</source>
-        <translation type="unfinished"/>
+        <translation>удалено</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="388"/>
         <source>updated</source>
-        <translation type="unfinished"/>
+        <translation>обновлено</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="391"/>
         <source>renamed</source>
-        <translation type="unfinished"/>
+        <translation>переименовано</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="396"/>
         <source>moved</source>
-        <translation type="unfinished"/>
+        <translation>перемещено</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="398"/>
         <source>%1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 в %2</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="411"/>
         <source>&apos;%1&apos; has been %2.</source>
-        <translation type="unfinished"/>
+        <translation>%1&apos; был %2.</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="413"/>
         <source>Files %1</source>
-        <translation type="unfinished"/>
+        <translation>Файлы %1</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="414"/>
         <source>&apos;%1&apos; and %2 other files have been %3.</source>
-        <translation type="unfinished"/>
+        <translation>&apos;%1&apos; и ещё %2 других файлов было %3.</translation>
     </message>
     <message>
-        <location filename="../src/mirall/folder.cpp" line="456"/>
+        <location filename="../src/mirall/folder.cpp" line="466"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/mirall/folder.cpp" line="754"/>
+        <location filename="../src/mirall/folder.cpp" line="766"/>
         <source>This sync would remove all the files in the local sync folder '%1'.
 If you or your administrator have reset your account on the server, choose &quot;Keep files&quot;. If you want your data to be removed, choose &quot;Remove all files&quot;.</source>
         <translation>Это действие может удалить все файлы в локальной папке &apos;%1&apos;.
 Если вы или ваш администратор заново создали вашу учётную запись на сервере, выберите &quot;Сохранить файлы&quot;. Если вы хотите стереть всё - выберите &quot;Удалить все файлы&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/mirall/folder.cpp" line="757"/>
+        <location filename="../src/mirall/folder.cpp" line="769"/>
         <source>This sync would remove all the files in the sync folder '%1'.
 This might be because the folder was silently reconfigured, or that all the file were manually removed.
 Are you sure you want to perform this operation?</source>
@@ -519,17 +534,17 @@ Are you sure you want to perform this operation?</source>
 Вы уверены, что хотите выполнить операцию?</translation>
     </message>
     <message>
-        <location filename="../src/mirall/folder.cpp" line="761"/>
+        <location filename="../src/mirall/folder.cpp" line="773"/>
         <source>Remove All Files?</source>
         <translation>Удалить все файлы?</translation>
     </message>
     <message>
-        <location filename="../src/mirall/folder.cpp" line="763"/>
+        <location filename="../src/mirall/folder.cpp" line="775"/>
         <source>Remove all files</source>
         <translation>Удалить все файлы</translation>
     </message>
     <message>
-        <location filename="../src/mirall/folder.cpp" line="764"/>
+        <location filename="../src/mirall/folder.cpp" line="776"/>
         <source>Keep files</source>
         <translation>Сохранить файлы</translation>
     </message>
@@ -752,7 +767,7 @@ documentation for possible fixes.</source>
     <message>
         <location filename="../src/mirall/generalsettings.ui" line="20"/>
         <source>General Setttings</source>
-        <translation type="unfinished"/>
+        <translation>Общие настройки</translation>
     </message>
     <message>
         <location filename="../src/mirall/generalsettings.ui" line="26"/>
@@ -781,7 +796,7 @@ documentation for possible fixes.</source>
     <message>
         <location filename="../src/creds/httpcredentials.cpp" line="241"/>
         <source>Enter Password</source>
-        <translation type="unfinished"/>
+        <translation>Введите пароль</translation>
     </message>
     <message>
         <location filename="../src/creds/httpcredentials.cpp" line="242"/>
@@ -1048,12 +1063,12 @@ Checked items will also be deleted if they prevent a directory from being remove
         <translation>&lt;p&gt;&lt;small&gt;&lt;strong&gt;Внимание:&lt;/strong&gt; Локальная папка не пуста. Выберите разрешение&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.cpp" line="234"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.cpp" line="235"/>
         <source>Local Sync Folder</source>
         <translation>Локальная папка для синхронизации</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.cpp" line="247"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.cpp" line="248"/>
         <source>Update advanced setup</source>
         <translation>Обновить дополнительные настройки</translation>
     </message>
@@ -1117,8 +1132,8 @@ Checked items will also be deleted if they prevent a directory from being remove
         <translation>Невозможно стереть папку и создать её резервную копию так как папка или файл в ней открыты в другой программе. Пожалуйста закройте папку или файл и повторите попытку, либо прервите мастер настройки.</translation>
     </message>
     <message>
-        <location filename="../src/mirall/owncloudsetupwizard.cpp" line="413"/>
-        <location filename="../src/mirall/owncloudsetupwizard.cpp" line="422"/>
+        <location filename="../src/mirall/owncloudsetupwizard.cpp" line="412"/>
+        <location filename="../src/mirall/owncloudsetupwizard.cpp" line="421"/>
         <source>&lt;font color=&quot;green&quot;&gt;&lt;b&gt;Local sync folder %1 successfully created!&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&quot;green&quot;&gt;&lt;b&gt;Локальная папка для синхронизации %1 успешно создана!&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
@@ -1166,12 +1181,12 @@ Checked items will also be deleted if they prevent a directory from being remove
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="173"/>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="181"/>
         <source>Failed to connect to %1 at %2:&lt;br/&gt;%3</source>
-        <translation type="unfinished"/>
+        <translation>Не удалось подключиться к %1 в %2:&lt;br/&gt;%3</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="264"/>
         <source>No remote folder specified!</source>
-        <translation type="unfinished"/>
+        <translation>Не указана удалённая папка!</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetupwizard.cpp" line="270"/>
@@ -1270,13 +1285,13 @@ Checked items will also be deleted if they prevent a directory from being remove
 <context>
     <name>Mirall::PropagateUploadFile</name>
     <message>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="382"/>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="436"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="387"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="441"/>
         <source>Local file changed during sync, syncing once it arrived completely</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="385"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="390"/>
         <source>Sync was aborted by user.</source>
         <translation type="unfinished"/>
     </message>
@@ -1304,49 +1319,70 @@ Checked items will also be deleted if they prevent a directory from being remove
         <translation>4</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="47"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="48"/>
         <source>Time</source>
         <translation>Время</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="48"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="49"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="49"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="50"/>
         <source>Folder</source>
         <translation>Папка</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="50"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="51"/>
         <source>Action</source>
         <translation>Действие</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="51"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="52"/>
         <source>Size</source>
         <translation>Размер</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="60"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="62"/>
+        <source>Retry Sync</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/mirall/protocolwidget.cpp" line="66"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="126"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="67"/>
+        <source>Copy the activity list to the clipboard.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/mirall/protocolwidget.cpp" line="136"/>
         <source>Copied to clipboard</source>
         <translation>Скопировано в буфер обмена</translation>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="126"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="136"/>
         <source>The sync status has been copied to the clipboard.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/mirall/protocolwidget.cpp" line="177"/>
+        <location filename="../src/mirall/protocolwidget.cpp" line="208"/>
         <source>No more storage space available on server.</source>
         <translation>На сервере нет места для хранения информации.</translation>
+    </message>
+    <message>
+        <location filename="../src/mirall/protocolwidget.cpp" line="279"/>
+        <source>Currently no files are ignored because of previous errors.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/mirall/protocolwidget.cpp" line="281"/>
+        <source>%1 files are ignored because of previous errors.
+ Try to sync these again.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1364,7 +1400,7 @@ Checked items will also be deleted if they prevent a directory from being remove
     <message>
         <location filename="../src/mirall/settingsdialog.cpp" line="57"/>
         <source>Activity</source>
-        <translation type="unfinished"/>
+        <translation>Действие</translation>
     </message>
     <message>
         <location filename="../src/mirall/settingsdialog.cpp" line="64"/>
@@ -1526,7 +1562,7 @@ Please ensure that your network connection is working.</source>
     <message>
         <location filename="../src/mirall/owncloudgui.cpp" line="171"/>
         <source>Please sign in</source>
-        <translation type="unfinished"/>
+        <translation>Пожалуйста войдите в учётную запись</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudgui.cpp" line="203"/>
@@ -1601,12 +1637,12 @@ Please ensure that your network connection is working.</source>
     <message>
         <location filename="../src/mirall/owncloudgui.cpp" line="361"/>
         <source>Sign in...</source>
-        <translation type="unfinished"/>
+        <translation>Войти...</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudgui.cpp" line="363"/>
         <source>Sign out</source>
-        <translation type="unfinished"/>
+        <translation>Выйти</translation>
     </message>
     <message>
         <location filename="../src/mirall/owncloudgui.cpp" line="373"/>
@@ -1648,48 +1684,48 @@ Please ensure that your network connection is working.</source>
     </message>
     <message>
         <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="32"/>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="223"/>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="262"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="217"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="240"/>
         <source>TextLabel</source>
         <translation>TextLabel</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="75"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="69"/>
         <source>&amp;Local Folder</source>
         <translation>&amp;Локальная папка</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="91"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="85"/>
         <source>pbSelectLocalFolder</source>
         <translation>pbSelectLocalFolder</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="113"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="107"/>
         <source>&amp;Keep local data</source>
         <translation>&amp;Сохранить локальные данные</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="145"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="139"/>
         <source>&lt;small&gt;Syncs your existing data to new location.&lt;/small&gt;</source>
         <translation>&lt;small&gt;Синхронизирует ваши существующие данные с новым расположением.&lt;/small&gt;</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="164"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="158"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this box is checked, existing content in the local directory will be erased to start a clean sync from the server.&lt;/p&gt;&lt;p&gt;Do not check this if the local content should be uploaded to the servers directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если эта галочка установлена, существующее содержимое в локальной папке будет стёрто, чтобы начать чистую синхронизацию с сервером.&lt;/p&gt;&lt;p&gt;Не ставьте её, если локальное содержимое должно быть загружено на сервер.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="167"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="161"/>
         <source>&amp;Start a clean sync</source>
         <translation>&amp;Начать чистую синхронизацию</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="199"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="193"/>
         <source>&lt;small&gt;Erases the contents of the local folder before syncing using the new settings.&lt;/small&gt;</source>
         <translation>&lt;small&gt;Удаляет содержимое локальной папки перед синхронизацией с новыми настройками.&lt;/small&gt;</translation>
     </message>
     <message>
-        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="246"/>
+        <location filename="../src/wizard/owncloudadvancedsetuppage.ui" line="224"/>
         <source>Status message</source>
         <translation>Сообщение о состоянии</translation>
     </message>
@@ -1727,7 +1763,6 @@ Please ensure that your network connection is working.</source>
     <name>OwncloudSetupPage</name>
     <message>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="14"/>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="20"/>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="20"/>
         <source>Form</source>
         <translation>Форма</translation>
@@ -1741,8 +1776,6 @@ Please ensure that your network connection is working.</source>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="36"/>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="129"/>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="156"/>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="35"/>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="444"/>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="32"/>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="140"/>
         <source>TextLabel</source>
@@ -1765,7 +1798,6 @@ Please ensure that your network connection is working.</source>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="85"/>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="296"/>
         <source>Enter the ownCloud username.</source>
         <translation>Введите имя пользователя ownCloud.</translation>
     </message>
@@ -1776,7 +1808,6 @@ Please ensure that your network connection is working.</source>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="102"/>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="325"/>
         <source>Enter the ownCloud password.</source>
         <translation>Введите пароль ownCloud</translation>
     </message>
@@ -1797,82 +1828,23 @@ Please ensure that your network connection is working.</source>
     </message>
     <message>
         <location filename="../src/mirall/owncloudsetuppage.ui" line="147"/>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="270"/>
         <source>Enter the url of the ownCloud you want to connect to (without http or https).</source>
         <translation>Введите адрес ownCloud, к которому вы хотите подключиться (без http или https).</translation>
     </message>
     <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="107"/>
-        <source>&amp;Local Folder</source>
-        <translation>&amp;Локальная папка</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="123"/>
-        <source>pbSelectLocalFolder</source>
-        <translation>Выбрать локальную папку</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="139"/>
-        <source>&amp;Keep local data</source>
-        <translation>&amp;Сохранить локальные данные</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="171"/>
-        <source>&lt;small&gt;Syncs your existing data to new location.&lt;/small&gt;</source>
-        <translation>&lt;small&gt;Синхронизировать существующие данные в новое местоположение.&lt;/small&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="190"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this box is checked, existing content in the local directory will be erased to start a clean sync from the server.&lt;/p&gt;&lt;p&gt;Do not check this if the local content should be uploaded to the servers directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если этот флажок установлен, содержащийся контент в локальном каталоге будет стерт, чтобы начать чистую синхронизации с сервера.&lt;/p&gt;&lt;p&gt;Не ставить эту опцию, если местный контент должен быть загружен на серверы каталогов.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="193"/>
-        <source>&amp;Start a clean sync</source>
-        <translation>&amp;Синхронизировать заново</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="225"/>
-        <source>&lt;small&gt;Erases the contents of the local folder before syncing using the new settings.&lt;/small&gt;</source>
-        <translation>&lt;small&gt;Стереть содержимое локальной папки перед синхронизацией с новыми настройками.&lt;/small&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="254"/>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="63"/>
         <source>Server &amp;Address</source>
         <translation>&amp;Адрес сервера</translation>
     </message>
     <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="273"/>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="82"/>
         <source>https://...</source>
         <translation>https://...</translation>
     </message>
     <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="280"/>
-        <source>&amp;Username</source>
-        <translation>&amp;Имя пользователя</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="309"/>
-        <source>&amp;Password</source>
-        <translation>&amp;Пароль</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="347"/>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="113"/>
         <source>Error Label</source>
         <translation>Название ошибки</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="393"/>
-        <source>Advanced &amp;Settings</source>
-        <translation>Дополнительные &amp;Настройки</translation>
-    </message>
-    <message>
-        <location filename="../src/mirall/owncloudsetuppage_ng.ui" line="415"/>
-        <source>Status message</source>
-        <translation>Сообщение о статусе</translation>
     </message>
     <message>
         <location filename="../src/wizard/owncloudsetupnocredspage.ui" line="79"/>
@@ -1907,7 +1879,7 @@ Please ensure that your network connection is working.</source>
 <context>
     <name>PropagateLocalMkdir</name>
     <message>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="197"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="202"/>
         <source>could not create directory %1</source>
         <translation type="unfinished"/>
     </message>
@@ -1915,7 +1887,7 @@ Please ensure that your network connection is working.</source>
 <context>
     <name>PropagateLocalRemove</name>
     <message>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="174"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="179"/>
         <source>Could not remove directory %1</source>
         <translation>Невозможно удалить директорию %1</translation>
     </message>
@@ -1923,12 +1895,12 @@ Please ensure that your network connection is working.</source>
 <context>
     <name>PropagateRemoteRename</name>
     <message>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="873"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="888"/>
         <source>This folder must not be renamed. It is renamed back to its original name.</source>
         <translation>Эта папка не должна переименовываться. Ей будет присвоено изначальное имя. </translation>
     </message>
     <message>
-        <location filename="../src/mirall/owncloudpropagator.cpp" line="875"/>
+        <location filename="../src/mirall/owncloudpropagator.cpp" line="890"/>
         <source>This folder must not be renamed. Please name it back to Shared.</source>
         <translation>Эта папка не должна переименовываться. Пожалуйста, верните ей имя Shared</translation>
     </message>
@@ -2047,7 +2019,7 @@ Please ensure that your network connection is working.</source>
     <message>
         <location filename="../src/mirall/progressdispatcher.cpp" line="62"/>
         <location filename="../src/mirall/progressdispatcher.cpp" line="65"/>
-        <source>Move</source>
+        <source>Moved to %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2087,12 +2059,12 @@ Please ensure that your network connection is working.</source>
     <message>
         <location filename="../src/mirall/progressdispatcher.cpp" line="116"/>
         <source>move</source>
-        <translation type="unfinished"/>
+        <translation>переместить</translation>
     </message>
     <message>
         <location filename="../src/mirall/progressdispatcher.cpp" line="119"/>
         <source>moved</source>
-        <translation type="unfinished"/>
+        <translation>перемещено</translation>
     </message>
 </context>
 <context>
@@ -2119,8 +2091,8 @@ Please ensure that your network connection is working.</source>
     </message>
     <message>
         <location filename="../src/mirall/theme.cpp" line="60"/>
-        <source>Sync Success, problems with individual files.</source>
-        <translation>Синхронизация успешна, проблемы с отдельными файлами.</translation>
+        <source>Sync Success, some files were ignored.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/mirall/theme.cpp" line="63"/>

@@ -23,6 +23,7 @@
 #include "mirall/theme.h"
 #include "mirall/folderman.h"
 #include "mirall/syncfileitem.h"
+#include "mirall/folder.h"
 
 #include "ui_protocolwidget.h"
 
@@ -54,14 +55,21 @@ ProtocolWidget::ProtocolWidget(QWidget *parent) :
     _ui->_treeWidget->setColumnWidth(1, 180);
     _ui->_treeWidget->setColumnCount(5);
     _ui->_treeWidget->setRootIsDecorated(false);
+    _ui->_treeWidget->setTextElideMode(Qt::ElideMiddle);
 
     connect(this, SIGNAL(guiLog(QString,QString)), Logger::instance(), SIGNAL(guiLog(QString,QString)));
 
+    _clearBlacklistBtn = _ui->_dialogButtonBox->addButton(tr("Retry Sync"), QDialogButtonBox::ActionRole);
+    _clearBlacklistBtn->setEnabled(false);
+    connect(_clearBlacklistBtn, SIGNAL(clicked()), SLOT(slotClearBlacklist()));
+
     QPushButton *copyBtn = _ui->_dialogButtonBox->addButton(tr("Copy"), QDialogButtonBox::ActionRole);
+    copyBtn->setToolTip( tr("Copy the activity list to the clipboard."));
     connect(copyBtn, SIGNAL(clicked()), SLOT(copyToClipboard()));
+
 }
 
-void ProtocolWidget::setupList()
+void ProtocolWidget::initializeList()
 {
   QList<Progress::Info> progressList = ProgressDispatcher::instance()->recentChangedItems(0); // All.
   QList<QTreeWidgetItem*> items;
@@ -86,6 +94,8 @@ void ProtocolWidget::setupList()
       }
   }
   _ui->_treeWidget->addTopLevelItems(items);
+
+  computeResyncButtonEnabled();
 
 }
 
@@ -126,10 +136,23 @@ void ProtocolWidget::copyToClipboard()
     emit guiLog(tr("Copied to clipboard"), tr("The sync status has been copied to the clipboard."));
 }
 
-void ProtocolWidget::cleanErrors( const QString& folder ) // FIXME: Use the folder to detect which errors can be deleted.
+void ProtocolWidget::slotClearBlacklist()
 {
-    _problemCounter = 0;
-    QList<QTreeWidgetItem*> wipeList;
+    FolderMan *folderMan = FolderMan::instance();
+
+    Folder::Map folders = folderMan->map();
+
+    foreach( Folder *f, folders ) {
+        int num = f->slotWipeBlacklist();
+        qDebug() << num << "entries were removed from"<< f->alias() << "blacklist";
+    }
+
+    folderMan->slotScheduleAllFolders();
+}
+
+QList<QTreeWidgetItem*> ProtocolWidget::errorItems( const QString& folder )
+{
+    QList<QTreeWidgetItem*> list;
 
     int itemCnt = _ui->_treeWidget->topLevelItemCount();
 
@@ -138,10 +161,18 @@ void ProtocolWidget::cleanErrors( const QString& folder ) // FIXME: Use the fold
         bool isErrorItem = item->data(0, ErrorIndicatorRole).toBool();
         QString itemFolder = item->data(2, Qt::DisplayRole).toString();
         if( isErrorItem && itemFolder == folder ) {
-            wipeList.append(item);
+            list.append(item);
         }
     }
-    qDeleteAll(wipeList.begin(), wipeList.end());
+    return list;
+}
+
+void ProtocolWidget::cleanErrorItems( const QString& folder ) // FIXME: Use the folder to detect which errors can be deleted.
+{
+    QList<QTreeWidgetItem*> wipeList = errorItems(folder);
+    if( wipeList.count() > 0 ) {
+        qDeleteAll(wipeList.begin(), wipeList.end());
+    }
 }
 
 QString ProtocolWidget::timeString(QDateTime dt, QLocale::FormatType format) const
@@ -189,6 +220,7 @@ QTreeWidgetItem *ProtocolWidget::createProblemTreewidgetItem( const Progress::Sy
         item->setIcon(0, Theme::instance()->syncStateIcon(SyncResult::Error, true));
     }
     item->setToolTip(0, longTimeStr);
+    item->setToolTip(1, problem.current_file);
     item->setToolTip(3, errMsg );
 
     return item;
@@ -218,29 +250,51 @@ void ProtocolWidget::slotOpenFile( QTreeWidgetItem *item, int )
 QTreeWidgetItem* ProtocolWidget::createProgressTreewidgetItem( const Progress::Info& progress )
 {
     QStringList columns;
-    QString timeStr = timeString(progress.timestamp);
-    QString longTimeStr = timeString(progress.timestamp, QLocale::LongFormat);
+    const QString timeStr = timeString(progress.timestamp);
+    const QString longTimeStr = timeString(progress.timestamp, QLocale::LongFormat);
+    const QString actionStr = Progress::asResultString(progress);
 
     columns << timeStr;
     columns << progress.current_file;
     columns << progress.folder;
-    columns << Progress::asResultString(progress.kind);
+    columns << actionStr;
     columns << Utility::octetsToString( progress.file_size );
 
     QTreeWidgetItem *item = new QTreeWidgetItem(columns);
     item->setToolTip(0, longTimeStr);
-
+    item->setToolTip(3, actionStr);
     return item;
+}
+
+void ProtocolWidget::computeResyncButtonEnabled()
+{
+    FolderMan *folderMan = FolderMan::instance();
+    Folder::Map folders = folderMan->map();
+
+    int cnt = 0;
+    foreach( Folder *f, folders ) {
+        cnt += f->blackListEntryCount();
+    }
+
+    QString t = tr("Currently no files are ignored because of previous errors.");
+    if(cnt > 0) {
+        t = tr("%1 files are ignored because of previous errors.\n Try to sync these again.").arg(cnt);
+    }
+
+    _clearBlacklistBtn->setEnabled(cnt > 0);
+    _clearBlacklistBtn->setToolTip(t);
+
 }
 
 void ProtocolWidget::slotProgressInfo( const QString& folder, const Progress::Info& progress )
 {
     if( progress.kind == Progress::StartSync ) {
-      cleanErrors( folder );
+      cleanErrorItems( folder );
+      _clearBlacklistBtn->setEnabled(false);
     }
 
     if( progress.kind == Progress::EndSync ) {
-      // decorateFolderItem( folder );
+        computeResyncButtonEnabled();
     }
 
     // Ingore other events than finishing an individual up- or download.
