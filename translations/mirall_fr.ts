@@ -1959,7 +1959,7 @@ Veuillez vous assurer qu&apos;une connexion réseau est disponible.</translation
         <location filename="../src/mirall/owncloudtheme.cpp" line="90"/>
         <source>If you don&apos;t have an ownCloud server yet, see &lt;a href=&quot;https://owncloud.com&quot;&gt;owncloud.com&lt;/a&gt; for more info.</source>
         <comment>Top text in setup wizard. Keep short!</comment>
-        <translation>Si vous n&apos;avez pas encre de serveur ownCloud, consultez &lt;a href=&quot;https://owncloud.com&quot;&gt;owncloud.com&lt;/a&gt; pour obtenir plus d&apos;informations.</translation>
+        <translation>Si vous n&apos;avez pas encore de serveur ownCloud, consultez &lt;a href=&quot;https://owncloud.com&quot;&gt;owncloud.com&lt;/a&gt; pour obtenir plus d&apos;informations.</translation>
     </message>
 </context>
 <context>
