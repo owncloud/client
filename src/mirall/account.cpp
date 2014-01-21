@@ -14,6 +14,7 @@
 #include "mirall/account.h"
 #include "mirall/theme.h"
 #include "mirall/mirallconfigfile.h"
+#include "mirall/utility.h"
 #include "creds/abstractcredentials.h"
 #include "creds/credentialsfactory.h"
 
@@ -124,13 +125,6 @@ Account* Account::restore()
     return 0;
 }
 
-static bool isEqualExceptProtocol(const QUrl &url1, const QUrl &url2)
-{
-    return (url1.host() != url2.host() ||
-            url1.port() != url2.port() ||
-            url1.path() != url2.path());
-}
-
 bool Account::changed(Account *other, bool ignoreUrlProtocol) const
 {
     if (!other) {
@@ -138,7 +132,7 @@ bool Account::changed(Account *other, bool ignoreUrlProtocol) const
     }
     bool changes = false;
     if (ignoreUrlProtocol) {
-        changes = isEqualExceptProtocol(_url, other->_url);
+        changes = Utility::urlEqualExceptProtocol(_url, other->_url);
     } else {
         changes = (_url == other->_url);
     }

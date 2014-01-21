@@ -19,6 +19,7 @@
 #include <QByteArray>
 
 class QWidget;
+class QUrl;
 
 namespace Mirall {
 
@@ -49,6 +50,8 @@ namespace Utility
      * @return the formatted string.
      */
     QString compactFormatDouble(double value, int prec, const QString& unit = QString::null);
+
+    bool urlEqualExceptProtocol(const QUrl &url1, const QUrl &url2);
 
     // porting methods
     QString escape(const QString&);

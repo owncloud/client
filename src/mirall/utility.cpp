@@ -152,6 +152,13 @@ QString Utility::platform()
 #endif
 }
 
+bool Utility::urlEqualExceptProtocol(const QUrl &url1, const QUrl &url2)
+{
+    return (url1.host() != url2.host() ||
+            url1.port() != url2.port() ||
+            url1.path() != url2.path());
+}
+
 QByteArray Utility::userAgentString()
 {
     return QString::fromLatin1("Mozilla/5.0 (%1) mirall/%2")

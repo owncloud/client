@@ -17,7 +17,6 @@
 #include <QFileDialog>
 #include <QUrl>
 #include <QTimer>
-
 #include "QProgressIndicator.h"
 
 #include "wizard/owncloudwizard.h"
@@ -26,6 +25,7 @@
 #include "mirall/account.h"
 #include "mirall/theme.h"
 #include "mirall/mirallconfigfile.h"
+#include "mirall/utility.h"
 #include "creds/abstractcredentials.h"
 
 namespace Mirall
@@ -150,8 +150,10 @@ bool OwncloudAdvancedSetupPage::dataChanged()
     delete newCredentials;
     const QString newLocalFolder(QDir::toNativeSeparators(_ui.pbSelectLocalFolder->text()));
     const QString oldLocalFolder(QDir::toNativeSeparators(_oldLocalFolder));
+    bool urlChanged = Utility::urlEqualExceptProtocol(QUrl(url), oldAccount->url().toString());
+    bool localFolderChanged = (oldLocalFolder != newLocalFolder);
 
-    return ((url != oldAccount->url().toString()) || differentCreds || (oldLocalFolder != newLocalFolder));
+    return (urlChanged || differentCreds || localFolderChanged);
 }
 
 void OwncloudAdvancedSetupPage::startSpinner()
