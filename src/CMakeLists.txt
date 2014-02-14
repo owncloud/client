@@ -323,7 +323,7 @@ IF( APPLE )
 ENDIF()
 
 # csync is required.
-include_directories(../csync/src ../csync/src/httpbf/src ${CMAKE_CURRENT_BINARY_DIR}/../csync ${CMAKE_CURRENT_BINARY_DIR}/../csync/src )
+include_directories(${CSYNC_PUBLIC_INCLUDE_DIRS})
 include_directories(${3rdparty_INC})
 
 qt_wrap_cpp(updaterMoc ${updater_HEADERS})

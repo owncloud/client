@@ -51,11 +51,17 @@ endif (MEM_NULL_TESTS)
 
 add_subdirectory(src)
 
+set(CSYNC_PUBLIC_INCLUDE_DIRS
+   ${CMAKE_CURRENT_BINARY_DIR}
+   ${CSYNC_SRC_PUBLIC_INCLUDE_DIRS}
+   ${HTTPBF_PUBLIC_INCLUDE_DIRS}
+   CACHE INTERNAL "csync public include directories"
+)
+
 if (CMOCKA_FOUND AND UNIT_TESTING)
     add_subdirectory(tests)
 endif (CMOCKA_FOUND AND UNIT_TESTING)
 
 configure_file(config_csync.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config_csync.h)
 configure_file(config_test.h.cmake  ${CMAKE_CURRENT_BINARY_DIR}/config_test.h)
-
 
