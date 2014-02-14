@@ -12,7 +12,7 @@ macro(owncloud_add_test test_class)
 
     target_link_libraries(${OWNCLOUD_TEST_CLASS}Test
         updater
-        ${APPLICATION_EXECUTABLE}sync
+        ${OWNCLOUDSYNC_LIBRARY}
         ${QT_QTTEST_LIBRARY}
         ${QT_QTCORE_LIBRARY}
     )
