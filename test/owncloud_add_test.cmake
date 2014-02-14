@@ -9,12 +9,11 @@ macro(owncloud_add_test test_class)
 
     add_executable(${OWNCLOUD_TEST_CLASS}Test test${OWNCLOUD_TEST_CLASS_LOWERCASE}.cpp ${${OWNCLOUD_TEST_CLASS}_MOCS})
     qt5_use_modules(${OWNCLOUD_TEST_CLASS}Test Test Sql Xml)
+    qt4_use_modules(${OWNCLOUD_TEST_CLASS}Test Test Gui Core Sql Xml Network)
 
     target_link_libraries(${OWNCLOUD_TEST_CLASS}Test
         updater
         ${OWNCLOUDSYNC_LIBRARY}
-        ${QT_QTTEST_LIBRARY}
-        ${QT_QTCORE_LIBRARY}
     )
 
     add_test(NAME ${OWNCLOUD_TEST_CLASS}Test COMMAND ${OWNCLOUD_TEST_CLASS}Test)
