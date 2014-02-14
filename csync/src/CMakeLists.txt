@@ -3,15 +3,6 @@ project(libcsync)
 add_subdirectory(std)
 add_subdirectory(httpbf)
 
-# Statically include sqlite
-if (CSYNC_STATIC_COMPILE_DIR)
-    set(SQLITE3_INCLUDE_DIRS "")
-    set(SQLITE3_LIBRARIES "")
-    include_directories(${CSYNC_STATIC_COMPILE_DIR})
-else (CSYNC_STATIC_COMPILE_DIR)
-    find_package(SQLite3 3.3.9 REQUIRED)
-endif()
-
 set(CSYNC_PUBLIC_INCLUDE_DIRS
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}

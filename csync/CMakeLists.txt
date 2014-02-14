@@ -30,6 +30,14 @@ endif (CMOCKA_FOUND AND UNIT_TESTING)
 
 include(ConfigureChecks.cmake)
 
+# Statically include sqlite
+if (CSYNC_STATIC_COMPILE_DIR)
+    set(SQLITE3_INCLUDE_DIRS "")
+    set(SQLITE3_LIBRARIES "")
+    include_directories(${CSYNC_STATIC_COMPILE_DIR})
+else (CSYNC_STATIC_COMPILE_DIR)
+    find_package(SQLite3 3.3.9 REQUIRED)
+endif()
 
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR})
 
