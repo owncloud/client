@@ -1,3 +1,7 @@
+IF(CMAKE_VERSION VERSION_GREATER "2.8.11")
+   CMAKE_POLICY(SET CMP0022 OLD)
+ENDIF()
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 qt_add_resources(MIRALL_RC_SRC ../mirall.qrc)
@@ -9,7 +13,10 @@ else()
     set(theme_dir ${CMAKE_CURRENT_SOURCE_DIR}/../theme)
 endif()
 
-set(synclib_NAME ${APPLICATION_EXECUTABLE}sync)
+set(OWNCLOUDSYNC_LIBRARY
+   ${APPLICATION_EXECUTABLE}sync
+   CACHE INTERNAL "owncloudsync library"
+)
 
 if ( APPLE )
     list(APPEND OS_SPECIFIC_LINK_LIBRARIES
@@ -176,10 +183,9 @@ IF (NOT APPLE)
     )
 ENDIF(NOT APPLE)
 
-list(APPEND libsync_LINK_TARGETS
-    ${QT_LIBRARIES}
-    ocsync
-    httpbf
+set(libsync_LINK_TARGETS
+    ${HTTPBF_LIBRARY}
+    ${CSYNC_LIBRARY}
     ${OS_SPECIFIC_LINK_LIBRARIES}
 )
 
@@ -198,19 +204,22 @@ if(NEON_FOUND)
 
 endif()
 
-add_library(${synclib_NAME} SHARED ${libsync_SRCS} ${syncMoc})
+add_library(${OWNCLOUDSYNC_LIBRARY} SHARED ${libsync_SRCS} ${syncMoc})
 
-qt5_use_modules(${synclib_NAME} Widgets Network Xml WebKitWidgets Sql)
+qt5_use_modules(${OWNCLOUDSYNC_LIBRARY} Widgets Network Xml WebKitWidgets Sql)
+qt4_use_modules(${OWNCLOUDSYNC_LIBRARY} Gui Core Network WebKit Sql)
 
-set_target_properties( ${synclib_NAME}  PROPERTIES
+target_link_libraries(${OWNCLOUDSYNC_LIBRARY} ${libsync_LINK_TARGETS} )
+
+set_target_properties( ${OWNCLOUDSYNC_LIBRARY}  PROPERTIES
 	VERSION ${MIRALL_VERSION}
 	SOVERSION ${MIRALL_SOVERSION}
+   LINK_INTERFACE_LIBRARIES ""
 )
 
-target_link_libraries(${synclib_NAME} ${libsync_LINK_TARGETS} )
 
 if(NOT BUILD_OWNCLOUD_OSX_BUNDLE)
-    install(TARGETS ${synclib_NAME}
+    install(TARGETS ${OWNCLOUDSYNC_LIBRARY}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -221,7 +230,7 @@ if(NOT BUILD_OWNCLOUD_OSX_BUNDLE)
         install(FILES  ${CMAKE_CURRENT_BINARY_DIR}/${APPLICATION_EXECUTABLE}.desktop DESTINATION share/applications )
     endif()
 else()
-    install(TARGETS ${synclib_NAME} DESTINATION ${OWNCLOUD_OSX_BUNDLE}/Contents/MacOS)
+    install(TARGETS ${OWNCLOUDSYNC_LIBRARY} DESTINATION ${OWNCLOUD_OSX_BUNDLE}/Contents/MacOS)
     if (SPARKLE_FOUND)
         install(DIRECTORY "${SPARKLE_LIBRARY}"
 	        DESTINATION "${OWNCLOUD_OSX_BUNDLE}/Contents/Frameworks")
@@ -323,7 +332,7 @@ IF( APPLE )
 ENDIF()
 
 # csync is required.
-include_directories(../csync/src ../csync/src/httpbf/src ${CMAKE_CURRENT_BINARY_DIR}/../csync ${CMAKE_CURRENT_BINARY_DIR}/../csync/src )
+include_directories(${CSYNC_PUBLIC_INCLUDE_DIRS})
 include_directories(${3rdparty_INC})
 
 qt_wrap_cpp(updaterMoc ${updater_HEADERS})
@@ -381,7 +390,6 @@ endif(NOT WIN32)
 
     # add_executable( ${APPLICATION_EXECUTABLE} main.cpp ${final_src})
     add_executable( ${APPLICATION_EXECUTABLE} WIN32 main.cpp ${final_src})
-    qt5_use_modules(${APPLICATION_EXECUTABLE} Widgets Network Xml WebKitWidgets Sql ${ADDITIONAL_APP_MODULES})
 else()
     set(BIN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     include(DeployQt4)
@@ -391,7 +399,6 @@ else()
 
     # we must add MACOSX_BUNDLE only if building a bundle
     add_executable( ${APPLICATION_EXECUTABLE} WIN32 MACOSX_BUNDLE main.cpp ${final_src})
-    qt5_use_modules(${APPLICATION_EXECUTABLE} Widgets Network Xml WebKitWidgets Sql  ${ADDITIONAL_APP_MODULES})
 
     set (QM_DIR ${OWNCLOUD_OSX_BUNDLE}/Contents/Resources/Translations)
     install(FILES ${mirall_I18N} DESTINATION ${QM_DIR})
@@ -402,16 +409,20 @@ else()
 endif()
 
 add_library(updater STATIC ${updater_SRCS} ${updaterMoc})
-target_link_libraries(updater ${synclib_NAME})
+target_link_libraries(updater ${OWNCLOUDSYNC_LIBRARY})
 qt5_use_modules(updater Widgets Network Xml)
 
 set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY  ${BIN_OUTPUT_DIRECTORY}
 )
-target_link_libraries( ${APPLICATION_EXECUTABLE} ${QT_LIBRARIES} )
-target_link_libraries( ${APPLICATION_EXECUTABLE} ${synclib_NAME} )
-target_link_libraries( ${APPLICATION_EXECUTABLE} updater )
-target_link_libraries( ${APPLICATION_EXECUTABLE} ${OS_SPECIFIC_LINK_LIBRARIES} )
+
+qt5_use_modules(${APPLICATION_EXECUTABLE} Widgets Network Xml WebKitWidgets Sql  ${ADDITIONAL_APP_MODULES})
+qt4_use_modules(${APPLICATION_EXECUTABLE} Core Gui Network Xml ${ADDITIONAL_APP_MODULES})
+target_link_libraries( ${APPLICATION_EXECUTABLE}
+   ${OWNCLOUDSYNC_LIBRARY}
+   updater
+   ${OS_SPECIFIC_LINK_LIBRARIES}
+)
 
 install(TARGETS ${APPLICATION_EXECUTABLE}
         RUNTIME DESTINATION bin
@@ -441,9 +452,16 @@ set(owncloudcmd_NAME ${APPLICATION_EXECUTABLE}cmd)
 set(OWNCLOUDCMD_SRC owncloudcmd/owncloudcmd.cpp)
 add_executable(${owncloudcmd_NAME}  ${OWNCLOUDCMD_SRC})
 qt5_use_modules(${owncloudcmd_NAME} Network Sql)
+qt4_use_modules(${owncloudcmd_NAME} Core)
+
 set_target_properties(${owncloudcmd_NAME} PROPERTIES
 	        RUNTIME_OUTPUT_DIRECTORY  ${BIN_OUTPUT_DIRECTORY} )
-target_link_libraries(${owncloudcmd_NAME} ${synclib_NAME})
+target_link_libraries(${owncloudcmd_NAME}
+   ${OWNCLOUDSYNC_LIBRARY}
+   ${CSYNC_LIBRARY}
+   ${NEON_LIBRARIES}
+   ${OS_SPECIFIC_LINK_LIBRARIES}
+)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/mirall)
 if(BUILD_OWNCLOUD_OSX_BUNDLE)
     install(TARGETS ${owncloudcmd_NAME} DESTINATION ${OWNCLOUD_OSX_BUNDLE}/Contents/MacOS)

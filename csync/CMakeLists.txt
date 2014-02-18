@@ -1,16 +1,12 @@
-
-
 # global needed variables
 set(APPLICATION_NAME "ocsync")
+set(APPLICATION_VERSION_MAJOR ${MIRALL_VERSION_MAJOR})
+set(APPLICATION_VERSION_MINOR ${MIRALL_VERSION_MINOR})
+set(APPLICATION_VERSION_PATCH ${MIRALL_VERSION_PATCH})
+set(APPLICATION_VERSION ${MIRALL_VERSION})
 
-set(APPLICATION_VERSION_MAJOR "0")
-set(APPLICATION_VERSION_MINOR "91")
-set(APPLICATION_VERSION_PATCH "5")
-
-set(APPLICATION_VERSION "${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}")
-
-set(LIBRARY_VERSION "0.2.1")
-set(LIBRARY_SOVERSION "0")
+set(LIBRARY_VERSION ${MIRALL_VERSION})
+set(LIBRARY_SOVERSION ${MIRALL_SOVERSION})
 
 # add definitions
 include(DefineCMakeDefaults)
@@ -34,6 +30,14 @@ endif (CMOCKA_FOUND AND UNIT_TESTING)
 
 include(ConfigureChecks.cmake)
 
+# Statically include sqlite
+if (CSYNC_STATIC_COMPILE_DIR)
+    set(SQLITE3_INCLUDE_DIRS "")
+    set(SQLITE3_LIBRARIES "")
+    include_directories(${CSYNC_STATIC_COMPILE_DIR})
+else (CSYNC_STATIC_COMPILE_DIR)
+    find_package(SQLite3 3.3.9 REQUIRED)
+endif()
 
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR})
 
@@ -47,11 +51,17 @@ endif (MEM_NULL_TESTS)
 
 add_subdirectory(src)
 
+set(CSYNC_PUBLIC_INCLUDE_DIRS
+   ${CMAKE_CURRENT_BINARY_DIR}
+   ${CSYNC_SRC_PUBLIC_INCLUDE_DIRS}
+   ${HTTPBF_PUBLIC_INCLUDE_DIRS}
+   CACHE INTERNAL "csync public include directories"
+)
+
 if (CMOCKA_FOUND AND UNIT_TESTING)
     add_subdirectory(tests)
 endif (CMOCKA_FOUND AND UNIT_TESTING)
 
 configure_file(config_csync.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config_csync.h)
 configure_file(config_test.h.cmake  ${CMAKE_CURRENT_BINARY_DIR}/config_test.h)
-
 
