@@ -13,7 +13,7 @@
 			InstallerVersion="200"
 			Compressed="yes"
 			Comments="Windows Installer Package"/>
-		<Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
+		<Media Id="1" Cabinet="product.cab" EmbedCab="yes" CompressionLevel="high"/>
 		<Icon Id="ProductIcon" SourceFile="owncloud.ico"/>
 		<!-- Add/Remove Programs Info -->
 		<!-- Icon in Add/Remove Programs -->
@@ -61,7 +61,7 @@
 							Target="[INSTALLDIR]owncloud.exe"
 							WorkingDirectory="INSTALLDIR"/>
 						<RegistryValue Root="HKCU"
-							Key="Software\ownCloud\ownCloud Client"
+							Key="Software\ownCloud\ownCloud"
 							Name="installed"
 							Type="integer"
 							Value="1"
