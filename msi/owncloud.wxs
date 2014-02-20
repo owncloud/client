@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<?define ProductVersion = "0.0.1"?> <!-- For Testing Purposes -->
+<?define ProductUpgradeCode = "EB15081D-1892-4DB5-872C-9424BFFFF22D"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*"
+		UpgradeCode="$(var.ProductUpgradeCode)"
+		Name="ownCloud Test Package"
+		Version="$(var.ProductVersion)"
+		Manufacturer="ownCloud, Inc."
+		Language="1033">
+		<Package
+			Description='ownCloud Sync Client - Version $(var.ProductVersion)'
+			InstallerVersion="200"
+			Compressed="yes"
+			Comments="Windows Installer Package"/>
+		<Media Id="1" Cabinet="product.cab" EmbedCab="yes"/>
+		<Icon Id="ProductIcon" SourceFile="owncloud.ico"/>
+		<!-- Add/Remove Programs Info -->
+		<!-- Icon in Add/Remove Programs -->
+		<Property Id="ARPPRODUCTICON" Value="ProductIcon"/>
+		<!-- Help Link in Add/Remove Programs -->
+		<Property Id="ARPHELPLINK" Value="http://www.owncloud.org"/>
+		<!-- Info Link in Add/Remove Programs -->
+		<Property Id="ARPURLINFOABOUT" Value="http://www.owncloud.org"/>
+		<!-- Update Info in Add/Remove Programs -->
+		<Property Id="ARPURLUPDATEINFO" Value="http://www.owncloud.org/install" />
+		<!-- Disable 'Repair' application -->
+		<Property Id="ARPNOREPAIR" Value="1"/>
+		<!-- Disable 'Modify' application -->
+		<Property Id="ARPNOMODIFY" Value="1"/>
+		<Upgrade Id="$(var.ProductUpgradeCode)">
+			<UpgradeVersion
+				Minimum="$(var.ProductVersion)"
+				OnlyDetect="yes"
+				Property="NEWERVERSIONDETECTED"/>
+			<UpgradeVersion
+				Minimum="0.0.0"
+				Maximum="$(var.ProductVersion)"
+				IncludeMinimum="yes"
+				IncludeMaximum="no"
+				Property="OLDERVERSIONBEINGUPGRADED"/>
+		</Upgrade>
+		<Condition Message="A newer version of this software is already installed.">NOT NEWERVERSIONDETECTED</Condition>
+
+		<!-- System Files -->
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLDIR" Name="ownCloud">
+					<Component Id="ApplicationFiles" Guid="81951479-7546-4D57-8CB1-F3E317E2ADF5">
+						<File Id="ApplicationFile1" Source="owncloud.exe"/>
+					</Component>
+				</Directory>
+			</Directory>
+
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ProgramMenuSubfolder" Name="ownCloud">
+					<Component Id="ApplicationShortcuts" Guid="22B7F9AF-DEC1-4385-935E-E865CD938213">
+						<Shortcut Id="ApplicationShortcut1"
+							Name="ownCloud"
+							Description="ownCloud"
+							Target="[INSTALLDIR]owncloud.exe"
+							WorkingDirectory="INSTALLDIR"/>
+						<RegistryValue Root="HKCU"
+							Key="Software\ownCloud\ownCloud Client"
+							Name="installed"
+							Type="integer"
+							Value="1"
+							KeyPath="yes"/>
+						<RegistryValue Root="HKCU"
+							Key="Software\ownCloud\ownCloud"
+							Name="skipAutoUpdate"
+							Type="integer"
+							Value="1"/>
+						<RemoveFolder Id="ProgramMenuSubfolder" On="uninstall"/>
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<InstallExecuteSequence>
+			<RemoveExistingProducts After="InstallValidate"/>
+		</InstallExecuteSequence>
+
+		<Feature Id="DefaultFeature" Level="1">
+			<ComponentRef Id="ApplicationFiles"/>
+			<ComponentRef Id="ApplicationShortcuts"/>
+		</Feature>
+	</Product>
+</Wix>
