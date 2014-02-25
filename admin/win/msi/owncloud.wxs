@@ -46,12 +46,265 @@
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
 				<Directory Id="INSTALLDIR" Name="ownCloud">
-					<Component Id="ApplicationFiles" Guid="81951479-7546-4D57-8CB1-F3E317E2ADF5">
-						<File Id="ApplicationFile1" Source="owncloud.exe"/>
+					<Component Id="ZLIB1.DLLCOMP" Guid="{B6371BE1-0040-42A7-A8A1-B09500FDE655}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="zlib1.dll" Name="zlib1.dll" Source="SourceDir\File\zlib1.dll" />
 					</Component>
+					<Component Id="UNINSTALL.EXECOMP" Guid="{0658EC37-1612-4225-ADB7-0825CCA8AC99}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="uninstall.exe" Name="uninstall.exe" Source="SourceDir\File\uninstall.exe" />
+					</Component>
+					<Component Id="SYNC_EXCLUDE.LSTCOMP" Guid="{404E29FC-C4CC-4311-9850-515C2CB43D73}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="sync_exclude.lst" Name="sync-exclude.lst" Source="SourceDir\File\sync_exclude.lst" />
+					</Component>
+					<Component Id="QTKEYCHAIN_DE.QMCOMP" Guid="{F9E8A7D7-AD5A-4A8B-8CE3-A5A6D4205090}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qtkeychain_de.qm" Name="qtkeychain_de.qm" Source="SourceDir\File\qtkeychain_de.qm" />
+					</Component>
+					<Component Id="QT_ZH_TW.QMCOMP" Guid="{84D4C871-13F6-4343-84B3-CF3744FC1892}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_zh_TW.qm" Name="qt_zh_TW.qm" Source="SourceDir\File\qt_zh_TW.qm" />
+					</Component>
+					<Component Id="QT_ZH_CN.QMCOMP" Guid="{11E06B26-792C-40A9-980D-FD26D0F94625}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_zh_CN.qm" Name="qt_zh_CN.qm" Source="SourceDir\File\qt_zh_CN.qm" />
+					</Component>
+					<Component Id="QT_UK.QMCOMP" Guid="{D7DACA78-6A62-4615-A657-31B9745029E9}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_uk.qm" Name="qt_uk.qm" Source="SourceDir\File\qt_uk.qm" />
+					</Component>
+					<Component Id="QT_SV.QMCOMP" Guid="{5869489C-546D-47A1-BC5B-8272A5D36EE6}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_sv.qm" Name="qt_sv.qm" Source="SourceDir\File\qt_sv.qm" />
+					</Component>
+					<Component Id="QT_SL.QMCOMP" Guid="{4A0188B2-B700-487E-A98F-533CF7372DE9}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_sl.qm" Name="qt_sl.qm" Source="SourceDir\File\qt_sl.qm" />
+					</Component>
+					<Component Id="QT_SK.QMCOMP" Guid="{4638E9CD-176E-4C6E-A03B-8ED8B5E188BC}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_sk.qm" Name="qt_sk.qm" Source="SourceDir\File\qt_sk.qm" />
+					</Component>
+					<Component Id="QT_RU.QMCOMP" Guid="{62E072EE-F540-4AFC-9E33-4E59B4B21DA9}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_ru.qm" Name="qt_ru.qm" Source="SourceDir\File\qt_ru.qm" />
+					</Component>
+					<Component Id="QT_PT.QMCOMP" Guid="{46E5512B-2790-4FE0-A08F-DB721AAD126B}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_pt.qm" Name="qt_pt.qm" Source="SourceDir\File\qt_pt.qm" />
+					</Component>
+					<Component Id="QT_PL.QMCOMP" Guid="{03170C97-C704-4998-8C9E-A7FE303542A2}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_pl.qm" Name="qt_pl.qm" Source="SourceDir\File\qt_pl.qm" />
+					</Component>
+					<Component Id="QT_LT.QMCOMP" Guid="{084AF0FF-D6E1-43DE-AE1B-2DD19886F79B}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_lt.qm" Name="qt_lt.qm" Source="SourceDir\File\qt_lt.qm" />
+					</Component>
+					<Component Id="QT_KO.QMCOMP" Guid="{F2C8204D-05B5-4BD2-ABB5-7F59E72E9D4E}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_ko.qm" Name="qt_ko.qm" Source="SourceDir\File\qt_ko.qm" />
+					</Component>
+					<Component Id="QT_JA.QMCOMP" Guid="{4DC6061D-5C24-49C3-AA6C-1D545EC114AC}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_ja.qm" Name="qt_ja.qm" Source="SourceDir\File\qt_ja.qm" />
+					</Component>
+					<Component Id="QT_HU.QMCOMP" Guid="{A7E08DA5-6842-4E85-8AAC-8ABB017FC8DB}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_hu.qm" Name="qt_hu.qm" Source="SourceDir\File\qt_hu.qm" />
+					</Component>
+					<Component Id="QT_HE.QMCOMP" Guid="{B3CA8D1E-6441-44D0-B57E-E0A846F16B83}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_he.qm" Name="qt_he.qm" Source="SourceDir\File\qt_he.qm" />
+					</Component>
+					<Component Id="QT_GL.QMCOMP" Guid="{A28B385A-A01E-430C-A1B7-5E3A270BA056}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_gl.qm" Name="qt_gl.qm" Source="SourceDir\File\qt_gl.qm" />
+					</Component>
+					<Component Id="QT_FR.QMCOMP" Guid="{FAFCE3B1-C6D3-41A5-9CB5-606FCB7C588E}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_fr.qm" Name="qt_fr.qm" Source="SourceDir\File\qt_fr.qm" />
+					</Component>
+					<Component Id="QT_FA.QMCOMP" Guid="{01CF76FF-222B-43C6-9B0E-4624B1F8F295}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_fa.qm" Name="qt_fa.qm" Source="SourceDir\File\qt_fa.qm" />
+					</Component>
+					<Component Id="QT_ES.QMCOMP" Guid="{48BD7F9C-0F0D-44E5-907F-8B532F8A00BA}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_es.qm" Name="qt_es.qm" Source="SourceDir\File\qt_es.qm" />
+					</Component>
+					<Component Id="QT_DE.QMCOMP" Guid="{5BB35070-582B-4289-9622-A2B0BCC5044F}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_de.qm" Name="qt_de.qm" Source="SourceDir\File\qt_de.qm" />
+					</Component>
+					<Component Id="QT_DA.QMCOMP" Guid="{EAF504CB-C572-4C26-AA5A-59793E14AA11}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_da.qm" Name="qt_da.qm" Source="SourceDir\File\qt_da.qm" />
+					</Component>
+					<Component Id="QT_CS.QMCOMP" Guid="{C67FA04F-A2AE-4711-B605-EA186B6F4DCE}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_cs.qm" Name="qt_cs.qm" Source="SourceDir\File\qt_cs.qm" />
+					</Component>
+					<Component Id="QT_AR.QMCOMP" Guid="{6E5BF7A1-A9BF-4242-82E9-A67BF9820534}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="qt_ar.qm" Name="qt_ar.qm" Source="SourceDir\File\qt_ar.qm" />
+					</Component>
+					<Component Id="OWNCLOUD.EXECOMP" Guid="{88656DF5-254C-449C-96D3-9A84BA893C3C}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="owncloud.exe" Name="owncloud.exe" Vital="yes" Source="SourceDir\File\owncloud.exe" />
+						<Shortcut Id="Shortcut0" Directory="ProgramMenuFolder" Name="owncloud" Target="[#owncloud.exe]" Icon="Icon1" IconIndex="0"/>
+						<Shortcut Id="Shortcut1" Directory="DesktopFolder" Name="owncloud" Target="[#owncloud.exe]" Icon="Icon1" IconIndex="0" />
+					</Component>
+					<Component Id="MIRALL_ZH_TW.QMCOMP" Guid="{435224A2-3661-46A8-B015-B5BAAD003EE8}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_zh_TW.qm" Name="mirall_zh_TW.qm" Source="SourceDir\File\mirall_zh_TW.qm" />
+					</Component>
+					<Component Id="MIRALL_ZH_CN.QMCOMP" Guid="{67B075DA-4727-4B63-A63A-BCE51CDEB5B0}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_zh_CN.qm" Name="mirall_zh_CN.qm" Source="SourceDir\File\mirall_zh_CN.qm" />
+					</Component>
+					<Component Id="MIRALL_UK.QMCOMP" Guid="{5A67E4F1-A580-4122-BE12-152E28829397}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_uk.qm" Name="mirall_uk.qm" Source="SourceDir\File\mirall_uk.qm" />
+					</Component>
+					<Component Id="MIRALL_TH.QMCOMP" Guid="{3D7EA411-EBF3-4854-9ADF-14DACBBF33A4}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_th.qm" Name="mirall_th.qm" Source="SourceDir\File\mirall_th.qm" />
+					</Component>
+					<Component Id="MIRALL_SV.QMCOMP" Guid="{FF8EE4B5-7E73-4BE5-BB01-373CAF88F959}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_sv.qm" Name="mirall_sv.qm" Source="SourceDir\File\mirall_sv.qm" />
+					</Component>
+					<Component Id="MIRALL_SL.QMCOMP" Guid="{BF8D96E1-8280-4F5A-B6A8-D5C683D24946}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_sl.qm" Name="mirall_sl.qm" Source="SourceDir\File\mirall_sl.qm" />
+					</Component>
+					<Component Id="MIRALL_SK.QMCOMP" Guid="{FC623AA8-6A1E-4DA5-B4F4-019368B04512}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_sk.qm" Name="mirall_sk.qm" Source="SourceDir\File\mirall_sk.qm" />
+					</Component>
+					<Component Id="MIRALL_RU.QMCOMP" Guid="{BEB85E1C-6FE9-4041-B368-B8E660818651}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_ru.qm" Name="mirall_ru.qm" Source="SourceDir\File\mirall_ru.qm" />
+					</Component>
+					<Component Id="MIRALL_PT_BR.QMCOMP" Guid="{FC5B056C-B33D-4060-975A-A69FB57FFA9A}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_pt_BR.qm" Name="mirall_pt_BR.qm" Source="SourceDir\File\mirall_pt_BR.qm" />
+					</Component>
+					<Component Id="MIRALL_PT.QMCOMP" Guid="{D857446C-C0F5-4F46-B194-36A87A8B7E8D}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_pt.qm" Name="mirall_pt.qm" Source="SourceDir\File\mirall_pt.qm" />
+					</Component>
+					<Component Id="MIRALL_PL.QMCOMP" Guid="{9C495CA8-6A85-432C-B4D2-BA3D07C28D16}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_pl.qm" Name="mirall_pl.qm" Source="SourceDir\File\mirall_pl.qm" />
+					</Component>
+					<Component Id="MIRALL_NL.QMCOMP" Guid="{92871E56-A11A-4ED6-A00C-FBF9328CF2D5}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_nl.qm" Name="mirall_nl.qm" Source="SourceDir\File\mirall_nl.qm" />
+					</Component>
+					<Component Id="MIRALL_JA.QMCOMP" Guid="{5F716C63-FE18-4577-B5EC-4E262D387D32}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_ja.qm" Name="mirall_ja.qm" Source="SourceDir\File\mirall_ja.qm" />
+					</Component>
+					<Component Id="MIRALL_IT.QMCOMP" Guid="{5A826D32-AF44-4FB3-88C1-2BD9BE4F7711}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_it.qm" Name="mirall_it.qm" Source="SourceDir\File\mirall_it.qm" />
+					</Component>
+					<Component Id="MIRALL_HU.QMCOMP" Guid="{E0E41F5B-E313-49BF-BB6A-EB68E428CB0A}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_hu.qm" Name="mirall_hu.qm" Source="SourceDir\File\mirall_hu.qm" />
+					</Component>
+					<Component Id="MIRALL_GL.QMCOMP" Guid="{9D77F964-76B1-4663-98CF-D8C94EF2ABBF}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_gl.qm" Name="mirall_gl.qm" Source="SourceDir\File\mirall_gl.qm" />
+					</Component>
+					<Component Id="MIRALL_FR.QMCOMP" Guid="{35ACC137-F0F9-4AEF-B2CB-9D9633CB5377}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_fr.qm" Name="mirall_fr.qm" Source="SourceDir\File\mirall_fr.qm" />
+					</Component>
+					<Component Id="MIRALL_FI.QMCOMP" Guid="{F8B8A329-7D34-4B83-AA7E-D9040BB19012}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_fi.qm" Name="mirall_fi.qm" Source="SourceDir\File\mirall_fi.qm" />
+					</Component>
+					<Component Id="MIRALL_FA.QMCOMP" Guid="{95AEC502-807F-40EA-86EE-8F7B2A2D4CF3}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_fa.qm" Name="mirall_fa.qm" Source="SourceDir\File\mirall_fa.qm" />
+					</Component>
+					<Component Id="MIRALL_EU.QMCOMP" Guid="{0F6A4E73-86EC-4A58-9B5D-E92F48E38E54}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_eu.qm" Name="mirall_eu.qm" Source="SourceDir\File\mirall_eu.qm" />
+					</Component>
+					<Component Id="MIRALL_ET.QMCOMP" Guid="{F8D09BE8-626F-4233-8B4B-ED323A93B590}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_et.qm" Name="mirall_et.qm" Source="SourceDir\File\mirall_et.qm" />
+					</Component>
+					<Component Id="MIRALL_ES_AR.QMCOMP" Guid="{CB808B4B-DBDC-4C0F-B2B5-1C27A3B7C689}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_es_AR.qm" Name="mirall_es_AR.qm" Source="SourceDir\File\mirall_es_AR.qm" />
+					</Component>
+					<Component Id="MIRALL_ES.QMCOMP" Guid="{A1E18914-5B63-4A22-9240-EB763816B192}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_es.qm" Name="mirall_es.qm" Source="SourceDir\File\mirall_es.qm" />
+					</Component>
+					<Component Id="MIRALL_EN.QMCOMP" Guid="{431544FD-F185-480F-B7F3-38DBD2DBFC7E}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_en.qm" Name="mirall_en.qm" Source="SourceDir\File\mirall_en.qm" />
+					</Component>
+					<Component Id="MIRALL_EL.QMCOMP" Guid="{1B138B09-A29F-472B-849D-481179A4A82C}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_el.qm" Name="mirall_el.qm" Source="SourceDir\File\mirall_el.qm" />
+					</Component>
+					<Component Id="MIRALL_DE.QMCOMP" Guid="{9B69B743-85B9-435A-87CF-6EDD424C5BA4}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_de.qm" Name="mirall_de.qm" Source="SourceDir\File\mirall_de.qm" />
+					</Component>
+					<Component Id="MIRALL_CS.QMCOMP" Guid="{6126BAC8-909D-4084-8732-8B38D27D4EC6}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_cs.qm" Name="mirall_cs.qm" Source="SourceDir\File\mirall_cs.qm" />
+					</Component>
+					<Component Id="MIRALL_CA.QMCOMP" Guid="{917D61C5-6C18-42FD-9FE9-215145C90D90}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_ca.qm" Name="mirall_ca.qm" Source="SourceDir\File\mirall_ca.qm" />
+					</Component>
+					<Component Id="MIRALL_TW.QMCOMP" Guid="{93C71D0D-183A-488F-8459-136962231335}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="mirall_TW.qm" Name="mirall_TW.qm" Source="SourceDir\File\mirall_TW.qm" />
+					</Component>
+					<Component Id="LIBXML2_2.DLLCOMP" Guid="{A1F9E3D2-1768-43BA-B2DD-D3C6E77EFC9C}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libxml2_2.dll" Name="libxml2-2.dll" Source="SourceDir\File\libxml2_2.dll" />
+					</Component>
+					<Component Id="LIBSTDC___6.DLLCOMP" Guid="{A87F8CB3-21F6-499B-8A52-3B4EE6618656}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libstdc___6.dll" Name="libstdc++-6.dll" Source="SourceDir\File\libstdc___6.dll" />
+					</Component>
+					<Component Id="LIBSSL_10.DLLCOMP" Guid="{DAB36F0F-0D96-49F9-94FF-B987315BAB85}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libssl_10.dll" Name="libssl-10.dll" Source="SourceDir\File\libssl_10.dll" />
+					</Component>
+					<Component Id="LIBSQLITE3_0.DLLCOMP" Guid="{BBAF2CAE-62E0-4891-8137-2311A11D1633}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libsqlite3_0.dll" Name="libsqlite3-0.dll" Source="SourceDir\File\libsqlite3_0.dll" />
+					</Component>
+					<Component Id="LIBQTKEYCHAIN.DLLCOMP" Guid="{C6C88C23-07FD-4CD2-9688-BD4673DC93BF}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libqtkeychain.dll" Name="libqtkeychain.dll" Source="SourceDir\File\libqtkeychain.dll" />
+					</Component>
+					<Component Id="LIBPROXY.DLLCOMP" Guid="{C97084BA-E4AE-4BC6-98A0-9916B8900207}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libproxy.dll" Name="libproxy.dll" Source="SourceDir\File\libproxy.dll" />
+					</Component>
+					<Component Id="LIBPNG15_15.DLLCOMP" Guid="{6E497FCE-DB4C-47F1-A542-D464B3D1A7B1}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libpng15_15.dll" Name="libpng15-15.dll" Source="SourceDir\File\libpng15_15.dll" />
+					</Component>
+					<Component Id="LIBOWNCLOUDSYNC.DLLCOMP" Guid="{5F05B5E2-41D2-4638-AC8E-52C6B1B15FE4}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libowncloudsync.dll" Name="libowncloudsync.dll" Source="SourceDir\File\libowncloudsync.dll" />
+					</Component>
+					<Component Id="LIBOCSYNC.DLLCOMP" Guid="{2364B8D1-87E4-44F0-9FF6-4FBE6A42B85D}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libocsync.dll" Name="libocsync.dll" Source="SourceDir\File\libocsync.dll" />
+					</Component>
+					<Component Id="LIBNEON_27.DLLCOMP" Guid="{DA095A0B-64B8-40F4-AD99-F33C2F89EA40}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libneon_27.dll" Name="libneon-27.dll" Source="SourceDir\File\libneon_27.dll" />
+					</Component>
+					<Component Id="LIBMODMAN.DLLCOMP" Guid="{F173ABA5-F9F4-4EE7-898A-736EFD43D606}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libmodman.dll" Name="libmodman.dll" Source="SourceDir\File\libmodman.dll" />
+					</Component>
+					<Component Id="LIBJPEG_8.DLLCOMP" Guid="{FD0E0C8F-953F-49A4-8FAE-E6A007B38E25}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libjpeg_8.dll" Name="libjpeg-8.dll" Source="SourceDir\File\libjpeg_8.dll" />
+					</Component>
+					<Component Id="LIBINTL_8.DLLCOMP" Guid="{901751C7-DECB-4064-B77D-B749CCD5070F}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libintl_8.dll" Name="libintl-8.dll" Source="SourceDir\File\libintl_8.dll" />
+					</Component>
+					<Component Id="LIBGCC_S_SJLJ_1.DLLCOMP" Guid="{3BF279F1-1117-46BC-9C07-8EC5CFAD6AC8}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libgcc_s_sjlj_1.dll" Name="libgcc_s_sjlj-1.dll" Source="SourceDir\File\libgcc_s_sjlj_1.dll" />
+					</Component>
+					<Component Id="LIBCRYPTO_10.DLLCOMP" Guid="{72C56291-ABA9-41E6-BBCC-DEB31459ECEC}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="libcrypto_10.dll" Name="libcrypto-10.dll" Source="SourceDir\File\libcrypto_10.dll" />
+					</Component>
+					<Component Id="QTXML4.DLLCOMP" Guid="{0D7A2B10-83AE-4812-94E3-D238EEE3C877}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="QtXml4.dll" Name="QtXml4.dll" Source="SourceDir\File\QtXml4.dll" />
+					</Component>
+					<Component Id="QTWEBKIT4.DLLCOMP" Guid="{F15D5486-C429-4837-912F-B252063F0DD3}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="QtWebKit4.dll" Name="QtWebKit4.dll" Source="SourceDir\File\QtWebKit4.dll" />
+					</Component>
+					<Component Id="QTSQL4.DLLCOMP" Guid="{E5F88480-BC93-4EEE-ACBB-3CB4161CB040}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="QtSql4.dll" Name="QtSql4.dll" Source="SourceDir\File\QtSql4.dll" />
+					</Component>
+					<Component Id="QTNETWORK4.DLLCOMP" Guid="{C34CE47A-D4A4-481E-A8EF-6958D40AD4AC}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="QtNetwork4.dll" Name="QtNetwork4.dll" Source="SourceDir\File\QtNetwork4.dll" />
+					</Component>
+					<Component Id="QTGUI4.DLLCOMP" Guid="{12008DB8-26B1-46C9-90BD-6B40E6CB44B4}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="QtGui4.dll" Name="QtGui4.dll" Source="SourceDir\File\QtGui4.dll" />
+					</Component>
+					<Component Id="QTCORE4.DLLCOMP" Guid="{8507BF8A-12BF-46E5-946F-2CFA02303753}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="QtCore4.dll" Name="QtCore4.dll" Source="SourceDir\File\QtCore4.dll" />
+					</Component>
+					<Component Id="CPACK.GENERICLICENSE.TXTCOMP" Guid="{B731087C-DF1F-462A-945F-E2A7290FF936}" KeyPath="yes" SharedDllRefCount="yes">
+						<File Id="CPack.GenericLicense.txt" Name="CPack.GenericLicense.txt" Source="SourceDir\File\CPack.GenericLicense.txt" />
+					</Component>
+					<Directory Id="SQLDRIVERS" Name="sqldrivers">
+						<Component Id="QSQLITE4.DLLCOMP" Guid="{1BCD8406-7DA8-4D90-9F17-8656933243CF}" KeyPath="yes" SharedDllRefCount="yes">
+							<File Id="qsqlite4.dll" Name="qsqlite4.dll" Source="SourceDir\File\qsqlite4.dll" />
+						</Component>
+					</Directory>
+					<Directory Id="IMAGEFORMATS" Name="imageformats">
+						<Component Id="QJPEG4.DLLCOMP" Guid="{AC9C1B28-CAAB-480D-A57E-4BD359F41ADE}" KeyPath="yes" SharedDllRefCount="yes">
+							<File Id="qjpeg4.dll" Name="qjpeg4.dll" Source="SourceDir\File\qjpeg4.dll" />
+						</Component>
+						<Component Id="QICO4.DLLCOMP" Guid="{6C586BCA-68C1-47E4-9459-9D998CA56089}" KeyPath="yes" SharedDllRefCount="yes">
+							<File Id="qico4.dll" Name="qico4.dll" Source="SourceDir\File\qico4.dll" />
+						</Component>
+						<Component Id="QGIF4.DLLCOMP" Guid="{39F4634F-663B-4D6C-B568-D20EA19D8DF8}" KeyPath="yes" SharedDllRefCount="yes">
+							<File Id="qgif4.dll" Name="qgif4.dll" Source="SourceDir\File\qgif4.dll" />
+						</Component>
+					</Directory>
+					<Directory Id="ACCESSIBLE" Name="accessible">
+						<Component Id="QTACCESSIBLEWIDGETS4.DLLCOMP" Guid="{9B5432E9-EEA8-4FF2-8CEB-D714A2273DE7}" KeyPath="yes" SharedDllRefCount="yes">
+							<File Id="qtaccessiblewidgets4.dll" Name="qtaccessiblewidgets4.dll" Source="SourceDir\File\qtaccessiblewidgets4.dll" />
+						</Component>
+					</Directory>
 				</Directory>
 			</Directory>
-
 			<Directory Id="ProgramMenuFolder">
 				<Directory Id="ProgramMenuSubfolder" Name="ownCloud">
 					<Component Id="ApplicationShortcuts" Guid="22B7F9AF-DEC1-4385-935E-E865CD938213">
