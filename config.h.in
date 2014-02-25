@@ -19,6 +19,11 @@
 #cmakedefine SYSCONFDIR "@SYSCONFDIR@"
 #cmakedefine DATADIR "@DATADIR@"
 
+//debian specific
+#cmakedefine DEBIAN_VERSION "@DEBIAN_VERSION@"
+#cmakedefine DEBIAN_URL "@DEBIAN_URL@"
+#cmakedefine DEBIAN_DOMAIN "@DEBIAN_DOMAIN@"
+
 #ifndef NEON_WITH_LFS
 #cmakedefine NEON_WITH_LFS "@NEON_WITH_LFS@"
 #endif
