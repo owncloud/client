@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+version 1.5.4 (release 2014-04-11 )
+  * Source identical release, with only version number bumped
+
 version 1.5.3 (release 2014-03-10 )
   * Fix usage of proxies after first sync run (#1502, #1524, #1459, #1521)
   * Do not wipe the credentials from config for reconnect (#1499, #1503)
