@@ -47,6 +47,9 @@ IgnoreListEditor::IgnoreListEditor(QWidget *parent) :
     connect(ui->removePushButton, SIGNAL(clicked()), SLOT(slotRemoveCurrentItem()));
     connect(ui->addPushButton, SIGNAL(clicked()), SLOT(slotAddPattern()));
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(slotEditPattern(QListWidgetItem*)));
+
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
+    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 }
 
 static void setupItemFlags(QListWidgetItem* item)

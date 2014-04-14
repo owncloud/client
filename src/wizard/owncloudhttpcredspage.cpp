@@ -45,6 +45,9 @@ OwncloudHttpCredsPage::OwncloudHttpCredsPage()
     _ui.resultLayout->addWidget( _progressIndi );
     stopSpinner();
     setupCustomization();
+    setButtonText(QWizard::NextButton, tr("&Next >"));
+    setButtonText(QWizard::BackButton, tr("< &Back"));
+    setButtonText(QWizard::FinishButton, tr("Finish"));
 }
 
 void OwncloudHttpCredsPage::setupCustomization()
