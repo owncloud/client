@@ -55,6 +55,7 @@ OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
     setupCustomization();
 
     connect( _ui.pbSelectLocalFolder, SIGNAL(clicked()), SLOT(slotSelectFolder()));
+    setButtonText(QWizard::BackButton, tr("< &Back"));
     setButtonText(QWizard::NextButton, tr("Connect..."));
 }
 

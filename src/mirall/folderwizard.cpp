@@ -69,6 +69,10 @@ FolderWizardLocalPath::FolderWizardLocalPath()
     _ui.aliasLineEdit->setToolTip(tr("The directory alias is a descriptive name for this sync connection."));
     _ui.warnLabel->setTextFormat(Qt::RichText);
     _ui.warnLabel->hide();
+
+    setButtonText(QWizard::NextButton, tr("&Next >"));
+    setButtonText(QWizard::BackButton, tr("< &Back"));
+    setButtonText(QWizard::CancelButton, tr("Cancel"));
 }
 
 FolderWizardLocalPath::~FolderWizardLocalPath()
@@ -234,6 +238,9 @@ FolderWizardRemotePath::FolderWizardRemotePath()
     connect(_ui.folderTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*,int)), SIGNAL(completeChanged()));
     connect(_ui.folderTreeWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)), SIGNAL(completeChanged()));
     connect(_ui.folderTreeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), SLOT(slotItemExpanded(QTreeWidgetItem*)));
+
+    setButtonText(QWizard::CancelButton, tr("Cancel"));
+    setButtonText(QWizard::BackButton, tr("< &Back"));
 
 }
 

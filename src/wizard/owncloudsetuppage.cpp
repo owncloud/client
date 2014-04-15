@@ -43,6 +43,8 @@ OwncloudSetupPage::OwncloudSetupPage()
     Theme *theme = Theme::instance();
     setTitle(WizardCommon::titleTemplate().arg(tr("Connect to %1").arg(theme->appNameGUI())));
     setSubTitle(WizardCommon::subTitleTemplate().arg(tr("Setup %1 server").arg(theme->appNameGUI())));
+    setButtonText(QWizard::NextButton, tr("&Next >"));
+    setButtonText(QWizard::BackButton, tr("< &Back"));
 
     registerField( QLatin1String("OCUrl*"), _ui.leUrl );
 
