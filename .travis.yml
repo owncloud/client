@@ -1,0 +1,34 @@
+language: cpp
+
+compiler: 
+  - gcc
+  - clang
+
+env:
+  - QT=qt4
+  - QT=qt5
+
+os:
+  - linux
+  - osx
+
+before_install:
+  - sh -c "if [ '$QT' = 'qt4' ]; then wget http://download.opensuse.org/repositories/isv:ownCloud:desktop/xUbuntu_12.04/Release.key; sudo apt-key add - < Release.key; fi"
+  - sudo sh -c "if [ '$QT' = 'qt4' ]; then echo 'deb http://download.opensuse.org/repositories/isv:/ownCloud:/desktop/xUbuntu_12.04/ /' > /etc/apt/sources.list.d/qtkeychain.list; fi"
+  - sh -c "if [ '$QT' = 'qt4' ]; then sudo apt-get update -qq; sudo apt-get install -qq libqt4-dev qt4-dev-tools libqtkeychain-dev; fi"
+  - sh -c "if [ '$QT' = 'qt5' ]; then sudo apt-add-repository -y ppa:canonical-qt5-edgers/qt5-daily; sudo apt-get update -qq; sudo apt-get install -qq qtdeclarative5-dev libqt5webkit5-dev qttools5-dev; fi"
+  - sh -c "if [ '$QT' = 'qt5' ]; then wget http://download.opensuse.org/repositories/home:/DeepDiver1975:/branches:/isv:/ownCloud:/desktop/xUbuntu_13.10/Release.key; sudo apt-key add - < Release.key; fi"
+  - sudo sh -c "if [ '$QT' = 'qt5' ]; then echo 'deb http://download.opensuse.org/repositories/home:/DeepDiver1975:/branches:/isv:/ownCloud:/desktop/xUbuntu_13.10/ /' > /etc/apt/sources.list.d/qt5keychain.list; fi"
+  - sh -c "if [ '$QT' = 'qt5' ]; then sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa; sudo apt-get update -qq; sudo apt-get install -qq qtdeclarative5-dev libqt5webkit5-dev qttools5-dev libqt5keychain-dev; fi"
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq cmake sqlite3 libneon27-gnutls-dev
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -DUNIT_TESTING=1 ..
+
+script: 
+  - make
+  - ctest --output-on-failure
+
