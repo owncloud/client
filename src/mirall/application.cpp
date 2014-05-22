@@ -62,6 +62,7 @@ static const char optionsC[] =
         "                         (to be used with --logdir)\n"
         "  --logflush           : flush the log file after every write.\n"
         "  --confdir <dirname>  : Use the given configuration directory.\n"
+        "  --instance <name>    : Use a new instance.\n"
         ;
 
 QString applicationTrPath()
@@ -78,8 +79,8 @@ QString applicationTrPath()
 
 // ----------------------------------------------------------------------------------
 
-Application::Application(int &argc, char **argv) :
-    SharedTools::QtSingleApplication(Theme::instance()->appName() ,argc, argv),
+Application::Application(QString instance, int &argc, char **argv) :
+    SharedTools::QtSingleApplication(QString("%1/%2").arg(Theme::instance()->appName()).arg(instance), argc, argv),
     _gui(0),
     _theme(Theme::instance()),
     _helpOnly(false),
@@ -399,7 +400,14 @@ void Application::parseOptions(const QStringList &options)
             } else {
                 showHelp();
             }
-        } else {
+        } else if (option == QLatin1String("--instance")) {
+            if (it.hasNext() && !it.peekNext().startsWith(QLatin1String("--"))) {
+               QString instance = it.next();
+               MirallConfigFile::setInstance( instance );
+            } else {
+                setHelp();
+            }
+	} else {
             setHelp();
             break;
         }
