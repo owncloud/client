@@ -46,12 +46,39 @@
 
 #include <time.h>
 
+#include "syncengine.h" // for SyncEngine::_syncTimeStarted;
+
+bool TRASHBIN_ENABLED=1;
 
 namespace Mirall {
+
+
+
+  QString make_trashbin(const QString &localDir)
+  {
+    QDir d(localDir);
+    QString trashpath(".trash/"+SyncEngine::_syncTimeStarted.toString("yyMMdd-hhmmss"));
+    d.mkpath(trashpath);
+    return trashpath;
+  }
+
+  bool move_to_trashbin(const QString&localDir, const QString&path)
+  {
+    QDir d(localDir);
+    QString destpath = make_trashbin(localDir) + "/" + path;
+
+    qDebug() << "KUBA: move to trash path: "<< path << " destpath: " << destpath;
+
+    d.mkpath(QFileInfo(destpath).dir().path()); // create a parent directory for the destpath
+    return d.rename(path,destpath);
+  }
 
 // Code copied from Qt5's QDir::removeRecursively
 static bool removeRecursively(const QString &path)
 {
+
+  //#  if (TRASHBIN_ENABLED)
+  qDebug() << "KUBA: removeRecursively: " << path << " move to trash: " << SyncEngine::_syncTimeStarted;
     bool success = true;
     QDirIterator di(path, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
     while (di.hasNext()) {
@@ -74,6 +101,8 @@ void PropagateLocalRemove::start()
 {
     if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
         return;
+    
+    qDebug() << "KUBA: PropagateLocalRemove::start(): " << _propagator->_localDir << " "  << _item._file << " move to trash: " << SyncEngine::_syncTimeStarted;
 
     QString filename = _propagator->_localDir +  _item._file;
     if( _propagator->localFileNameClash(_item._file)) {
@@ -83,14 +112,15 @@ void PropagateLocalRemove::start()
     }
 
     if (_item._isDirectory) {
-        if (QDir(filename).exists() && !removeRecursively(filename)) {
+      if (QDir(filename).exists() && !move_to_trashbin( _propagator->_localDir,_item._file )) { //removeRecursively(filename)) {
             done(SyncFileItem::NormalError, tr("Could not remove directory %1")
                  .arg(QDir::toNativeSeparators(filename)));
             return;
         }
     } else {
         QFile file(filename);
-        if (file.exists() && !file.remove()) {
+	qDebug() << "KUBA: remove file: " << filename << " move to trash: " << SyncEngine::_syncTimeStarted;
+        if (file.exists() && !move_to_trashbin( _propagator->_localDir,_item._file) ) { //!file.remove()) {
             done(SyncFileItem::NormalError, file.errorString());
             return;
         }
