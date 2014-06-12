@@ -53,6 +53,7 @@ void csyncLogCatcher(int /*verbosity*/,
 }
 
 bool SyncEngine::_syncRunning = false;
+QDateTime SyncEngine::_syncTimeStarted = QDateTime(); //= QDateTime::currentDateTime();
 
 SyncEngine::SyncEngine(CSYNC *ctx, const QString& localPath, const QString& remoteURL, const QString& remotePath, Mirall::SyncJournalDb* journal)
 {
@@ -426,6 +427,7 @@ void SyncEngine::startSync()
 {
     Q_ASSERT(!_syncRunning);
     _syncRunning = true;
+    _syncTimeStarted = QDateTime::currentDateTime();
 
     if( ! _csync_ctx ) {
         qDebug() << "XXXXXXXXXXXXXXXX FAIL: do not have csync_ctx!";

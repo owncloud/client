@@ -93,6 +93,10 @@ private slots:
     void slotAdjustTotalTransmissionSize(qint64 change);
     void slotUpdateFinished(int updateResult);
 
+ public:
+
+    static QDateTime _syncTimeStarted; // identifier of the sync run (set alongside of the _syncRunning)
+
 private:
     void handleSyncError(CSYNC *ctx, const char *state);
 
@@ -105,6 +109,8 @@ private:
     void finalize();
 
     static bool _syncRunning; //true when one sync is running somewhere (for debugging)
+
+
     SyncFileItemVector _syncedItems;
 
     CSYNC *_csync_ctx;
