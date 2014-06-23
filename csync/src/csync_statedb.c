@@ -69,12 +69,11 @@ static void _csync_win32_hide_file( const char *file ) {
   fileName = c_utf8_to_locale( file );
   dwAttrs = GetFileAttributesW(fileName);
 
-  if (dwAttrs==INVALID_FILE_ATTRIBUTES) return;
-
-  if (!(dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
-     SetFileAttributesW(fileName, dwAttrs | FILE_ATTRIBUTE_HIDDEN );
+  if (dwAttrs != INVALID_FILE_ATTRIBUTES) {
+      if (!(dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
+          SetFileAttributesW(fileName, dwAttrs | FILE_ATTRIBUTE_HIDDEN );
+      }
   }
-
   c_free_locale_string(fileName);
 #else
     (void) file;
@@ -156,6 +155,8 @@ static int _csync_statedb_check(const char *statedb) {
                     }
                 }
             }
+        } else {
+            close(fd);
         }
         /* if it comes here, the database is broken and should be recreated. */
         _tunlink(wstatedb);

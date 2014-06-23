@@ -104,7 +104,7 @@ bool FolderWizardLocalPath::isComplete() const
   }
 
   // check if the local directory isn't used yet in another ownCloud sync
-  Folder::Map map = _folderMap;
+  Folder::Map map = FolderMan::instance()->map();
 
   if( isOk ) {
     Folder::Map::const_iterator i = map.constBegin();
@@ -170,8 +170,8 @@ bool FolderWizardLocalPath::isComplete() const
   bool goon = true;
   while( goon && i != map.constEnd() ) {
     Folder *f = i.value();
-    qDebug() << "Checking local alias: " << f->alias();
     if( f ) {
+      qDebug() << "Checking local alias: " << f->alias();
       if( f->alias() == alias ) {
         warnStrings.append( tr("The alias <i>%1</i> is already in use. Please pick another alias.").arg(alias) );
         isOk = false;
@@ -224,7 +224,10 @@ void FolderWizardLocalPath::slotChooseLocalFolder()
 // =================================================================================
 FolderWizardRemotePath::FolderWizardRemotePath()
     : FormatWarningsWizardPage()
+    , _ownCloudDirCheck(0)
+    , _dirChecked(false)
     ,_warnWasVisible(false)
+
 {
     _ui.setupUi(this);
     _ui.warnFrame->hide();
@@ -374,7 +377,7 @@ bool FolderWizardRemotePath::isComplete() const
     }
     wizard()->setProperty("targetPath", dir);
 
-    Folder::Map map = _folderMap;
+    Folder::Map map = FolderMan::instance()->map();
     Folder::Map::const_iterator i = map.constBegin();
     for(i = map.constBegin();i != map.constEnd(); i++ ) {
         Folder *f = static_cast<Folder*>(i.value());
@@ -448,13 +451,6 @@ FolderWizard::~FolderWizard()
 {
 }
 
-void FolderWizard::setFolderMap( const Folder::Map& fm)
-{
-    _folderWizardSourcePage->setFolderMap( fm );
-    if (!Theme::instance()->singleSyncFolder()) {
-       _folderWizardTargetPage->setFolderMap( fm );
-    }
-}
 
 } // end namespace
 
