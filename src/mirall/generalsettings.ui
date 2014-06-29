@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Mirall::GeneralSettings</class>
+ <class>Mirall::Generaltings</class>
  <widget class="QWidget" name="Mirall::GeneralSettings">
   <property name="geometry">
    <rect>
@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="generalGroupBox">
      <property name="title">
-      <string>General Setttings</string>
+      <string>General Settings</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
