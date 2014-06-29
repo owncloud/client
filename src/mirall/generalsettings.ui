@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Mirall::Generaltings</class>
+ <class>Mirall::GeneralSettings</class>
  <widget class="QWidget" name="Mirall::GeneralSettings">
   <property name="geometry">
    <rect>
