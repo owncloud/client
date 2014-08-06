@@ -44,6 +44,7 @@
 namespace Mirall {
 
 bool SyncEngine::_syncRunning = false;
+QDateTime SyncEngine::_syncTimeStarted = QDateTime(); //= QDateTime::currentDateTime();
 
 SyncEngine::SyncEngine(CSYNC *ctx, const QString& localPath, const QString& remoteURL, const QString& remotePath, Mirall::SyncJournalDb* journal)
   : _csync_ctx(ctx)
@@ -432,6 +433,7 @@ void SyncEngine::startSync()
 {
     Q_ASSERT(!_syncRunning);
     _syncRunning = true;
+    _syncTimeStarted = QDateTime::currentDateTime();
 
     Q_ASSERT(_csync_ctx);
 
