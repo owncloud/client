@@ -64,7 +64,6 @@ private:
     const int IgnoredIndicatorRole;
     Ui::ProtocolWidget *_ui;
     QPushButton *_clearBlacklistBtn;
-    QPushButton *_copyBtn;
 };
 
 }
