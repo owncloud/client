@@ -46,6 +46,8 @@ public slots:
     void slotRegisterPath( const QString& alias );
     void slotReadExcludes();
     void slotClearExcludesList();
+    void slotEnableServer(bool enable);
+
 private slots:
     void slotNewConnection();
     void onLostConnection();

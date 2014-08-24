@@ -56,7 +56,6 @@ namespace Mirall {
 #define DEBUG qDebug() << "SocketApi: "
 
 namespace SocketApiHelper {
-
 SyncFileStatus fileStatus(Folder *folder, const QString& systemFileName, c_strlist_t *excludes );
 
 /**
@@ -65,6 +64,7 @@ SyncFileStatus fileStatus(Folder *folder, const QString& systemFileName, c_strli
  * @return the resulting status
  *
  * The resulting status can only be either SYNC which means all files
+
  * are in sync, ERROR if an error occured, or EVAL if something needs
  * to be synced underneath this dir.
  */
@@ -183,16 +183,29 @@ SocketApi::SocketApi(QObject* parent)
     , _excludes(0)
 {
     // setup socket
-    DEBUG << "Establishing SocketAPI server at" << PORT;
-    if (!_localServer->listen(QHostAddress::LocalHost, PORT)) {
-        DEBUG << "Failed to bind to port" << PORT;
-    }
-    connect(_localServer, SIGNAL(newConnection()), this, SLOT(slotNewConnection()));
-
     // folder watcher
     connect(FolderMan::instance(), SIGNAL(folderSyncStateChange(QString)), this, SLOT(slotUpdateFolderView(QString)));
     connect(ProgressDispatcher::instance(), SIGNAL(jobCompleted(QString,SyncFileItem)),
             SLOT(slotJobCompleted(QString,SyncFileItem)));
+
+}
+
+void SocketApi::slotEnableServer( bool enable)
+{
+    if( enable ) {
+        DEBUG << "Establishing SocketAPI server at" << PORT;
+        if (!_localServer->listen(QHostAddress::LocalHost, PORT)) {
+            DEBUG << "Failed to bind to port" << PORT;
+        }
+        connect(_localServer, SIGNAL(newConnection()), this, SLOT(slotNewConnection()));
+    } else {
+        // send an unregister message over the wire
+        foreach( const QString alias, FolderMan::instance()->map().keys() ) {
+            slotUnregisterPath(alias);
+        }
+
+        _localServer->close();
+    }
 }
 
 SocketApi::~SocketApi()
@@ -291,6 +304,10 @@ void SocketApi::slotUnregisterPath( const QString& alias )
 
 void SocketApi::slotUpdateFolderView(const QString& alias)
 {
+    if( !_localServer->isListening() ) {
+        return;
+    }
+
     Folder *f = FolderMan::instance()->folder(alias);
     if (f) {
         // do only send UPDATE_VIEW for a couple of status
@@ -311,6 +328,11 @@ void SocketApi::slotUpdateFolderView(const QString& alias)
 
 void SocketApi::slotJobCompleted(const QString &folder, const SyncFileItem &item)
 {
+    if( !_localServer->isListening() ) {
+        // the api is disabled.
+        return;
+    }
+
     Folder *f = FolderMan::instance()->folder(folder);
     if (!f)
         return;
