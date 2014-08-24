@@ -126,6 +126,9 @@ public slots:
     // slot to add a folder to the syncing queue
     void slotScheduleSync( const QString & );
 
+    // Switch the socket Api on and off. Used from General Settings dialog
+    void slotEnableSocketApi(bool enable);
+
 private slots:
 
     // slot to take the next folder from queue and start syncing.
