@@ -102,6 +102,23 @@ void MirallConfigFile::setConfDir(const QString &value)
     }
 }
 
+void MirallConfigFile::setInstance(const QString &value)
+{
+    QString instance = value;
+    if ( instance.isEmpty() ) return;
+
+    QString dir = Utility::dataLocation();
+    if( !dir.endsWith(QLatin1Char('/')) ) dir.append(QLatin1Char('/'));
+
+    dir.append(QString("%1/").arg(instance));
+
+    QFileInfo fi(dir);
+    if ( !fi.exists() )
+        QDir::current().mkdir(dir);
+
+    setConfDir(dir);
+}
+
 bool MirallConfigFile::optionalDesktopNotifications() const
 {
     QSettings settings(configFile(), QSettings::IniFormat);

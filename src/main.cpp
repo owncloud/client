@@ -47,10 +47,21 @@ int main(int argc, char **argv)
 {
     Q_INIT_RESOURCE(mirall);
 
+    int i;
+    const char *instance = "";
+
+    for ( i = 0; i < argc - 1; i++ ) {
+        if ( strcmp( argv[ i ], "--instance" ) )
+            continue;
+
+        instance = argv[ i + 1 ];
+        break;
+    }
+
 #ifdef Q_OS_MAC
     Mac::CocoaInitializer cocoaInit; // RIIA
 #endif
-    Mirall::Application app(argc, argv);
+    Mirall::Application app(instance, argc, argv);
 #ifndef Q_OS_WIN
     signal(SIGPIPE, SIG_IGN);
 #endif

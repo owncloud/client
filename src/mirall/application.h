@@ -43,7 +43,7 @@ class Application : public SharedTools::QtSingleApplication
 {
     Q_OBJECT
 public:
-    explicit Application(int &argc, char **argv);
+    explicit Application(QString instance, int &argc, char **argv);
     ~Application();
 
     bool giveHelp();
