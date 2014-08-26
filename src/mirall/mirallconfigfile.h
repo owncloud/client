@@ -94,6 +94,9 @@ public:
 
     static void setConfDir(const QString &value);
 
+    bool optionalOverlayIcons() const;
+    void setOptionalOverlayIcons(bool enable);
+
     bool optionalDesktopNotifications() const;
     void setOptionalDesktopNotifications(bool show);
 

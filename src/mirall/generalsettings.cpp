@@ -36,7 +36,8 @@ GeneralSettings::GeneralSettings(QWidget *parent) :
 
     connect(_ui->desktopNotificationsCheckBox, SIGNAL(toggled(bool)),
             SLOT(slotToggleOptionalDesktopNotifications(bool)));
-
+    connect(_ui->overlayIconsCheckBox ,SIGNAL(toggled(bool)),
+            SLOT(slotToggleOptionalOverlayIcons(bool)));
     _ui->autostartCheckBox->setChecked(Utility::hasLaunchOnStartup(Theme::instance()->appName()));
     connect(_ui->autostartCheckBox, SIGNAL(toggled(bool)), SLOT(slotToggleLaunchOnStartup(bool)));
 
@@ -73,6 +74,7 @@ void GeneralSettings::loadMiscSettings()
     MirallConfigFile cfgFile;
     _ui->monoIconsCheckBox->setChecked(cfgFile.monoIcons());
     _ui->desktopNotificationsCheckBox->setChecked(cfgFile.optionalDesktopNotifications());
+    _ui->overlayIconsCheckBox->setChecked(cfgFile.optionalOverlayIcons());
 }
 
 void GeneralSettings::slotUpdateInfo()
@@ -102,6 +104,14 @@ void GeneralSettings::slotToggleLaunchOnStartup(bool enable)
 {
     Theme *theme = Theme::instance();
     Utility::setLaunchOnStartup(theme->appName(), theme->appNameGUI(), enable);
+}
+
+void GeneralSettings::slotToggleOptionalOverlayIcons(bool enable)
+{
+    MirallConfigFile cfgFile;
+    cfgFile.setOptionalOverlayIcons(enable);
+
+    FolderMan::instance()->slotEnableSocketApi(enable);
 }
 
 void GeneralSettings::slotToggleOptionalDesktopNotifications(bool enable)

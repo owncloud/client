@@ -54,6 +54,9 @@ FolderMan::FolderMan(QObject *parent) :
 
     _socketApi = new SocketApi(this);
     _socketApi->slotReadExcludes();
+
+    MirallConfigFile cfg;
+    slotEnableSocketApi( cfg.optionalOverlayIcons() );
 }
 
 FolderMan *FolderMan::instance()
@@ -71,6 +74,12 @@ FolderMan::~FolderMan()
 Mirall::Folder::Map FolderMan::map()
 {
     return _folderMap;
+}
+
+void FolderMan::slotEnableSocketApi(bool enable)
+{
+    _socketApi->slotEnableServer(enable);
+    qDebug() << "Set socket Api enabled: " << enable;
 }
 
 // Attention: this function deletes the folder object to which

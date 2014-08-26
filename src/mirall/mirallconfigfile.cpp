@@ -46,6 +46,7 @@ static const char remotePollIntervalC[] = "remotePollInterval";
 static const char forceSyncIntervalC[] = "forceSyncInterval";
 static const char monoIconsC[] = "monoIcons";
 static const char optionalDesktopNoficationsC[] = "optionalDesktopNotifications";
+static const char optionalOverlayIconsC[] = "optionalOverlayIcons";
 static const char skipUpdateCheckC[] = "skipUpdateCheck";
 static const char geometryC[] = "geometry";
 static const char timeoutC[] = "timeout";
@@ -102,6 +103,12 @@ void MirallConfigFile::setConfDir(const QString &value)
     }
 }
 
+bool MirallConfigFile::optionalOverlayIcons() const
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    return settings.value(QLatin1String(optionalOverlayIconsC), true).toBool();
+}
+
 bool MirallConfigFile::optionalDesktopNotifications() const
 {
     QSettings settings(configFile(), QSettings::IniFormat);
@@ -112,6 +119,13 @@ int MirallConfigFile::timeout() const
 {
     QSettings settings(configFile(), QSettings::IniFormat);
     return settings.value(QLatin1String(timeoutC), 300).toInt(); // default to 5 min
+}
+
+void MirallConfigFile::setOptionalOverlayIcons(bool enable)
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    settings.setValue(QLatin1String(optionalOverlayIconsC), enable);
+    settings.sync();
 }
 
 void MirallConfigFile::setOptionalDesktopNotifications(bool show)
