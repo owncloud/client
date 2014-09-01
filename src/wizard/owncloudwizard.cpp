@@ -67,6 +67,8 @@ OwncloudWizard::OwncloudWizard(QWidget *parent)
     connect( _shibbolethCredsPage, SIGNAL(connectToOCUrl(QString)), SIGNAL(connectToOCUrl(QString)));
     connect( _advancedSetupPage, SIGNAL(createLocalAndRemoteFolders(QString, QString)),
              SIGNAL(createLocalAndRemoteFolders(QString, QString)));
+    connect(this, SIGNAL(customButtonClicked(int)), this, SIGNAL(skipFolderConfiguration()));
+
 
     Theme *theme = Theme::instance();
     setWindowTitle( tr("%1 Connection Wizard").arg(theme->appNameGUI()));
@@ -78,6 +80,8 @@ OwncloudWizard::OwncloudWizard(QWidget *parent)
     setOption( QWizard::NoCancelButton );
     setTitleFormat(Qt::RichText);
     setSubTitleFormat(Qt::RichText);
+    setButtonText(QWizard::CustomButton1, tr("Skip folders configuration"));
+
 }
 
 void OwncloudWizard::setAccount(Account *account)
@@ -99,6 +103,12 @@ QString OwncloudWizard::localFolder() const
 {
     return(_advancedSetupPage->localFolder());
 }
+
+QStringList OwncloudWizard::blacklist() const
+{
+    return _advancedSetupPage->blacklist();
+}
+
 
 QString OwncloudWizard::ocUrl() const
 {
@@ -161,7 +171,6 @@ void OwncloudWizard::slotCurrentPageChanged( int id )
 
     if( id == WizardCommon::Page_ServerSetup ) {
         emit clearPendingRequests();
-        _setupPage->initializePage();
     }
 
     if( id == WizardCommon::Page_Result ) {
@@ -169,6 +178,8 @@ void OwncloudWizard::slotCurrentPageChanged( int id )
         emit basicSetupFinished(QDialog::Accepted);
         appendToConfigurationLog( QString::null );
     }
+
+    setOption(QWizard::HaveCustomButton1, id == WizardCommon::Page_AdvancedSetup);
 }
 
 void OwncloudWizard::displayError( const QString& msg )

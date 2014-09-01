@@ -54,7 +54,7 @@ Folder::Folder(const QString &alias, const QString &path, const QString& secondP
       , _path(path)
       , _remotePath(secondPath)
       , _alias(alias)
-      , _enabled(true)
+      , _paused(false)
       , _csyncError(false)
       , _csyncUnavail(false)
       , _wipeDb(false)
@@ -215,16 +215,16 @@ QString Folder::nativePath() const
     return QDir::toNativeSeparators(_path);
 }
 
-bool Folder::syncEnabled() const
+bool Folder::syncPaused() const
 {
-  return _enabled;
+  return _paused;
 }
 
-void Folder::setSyncEnabled( bool doit )
+void Folder::setSyncPaused( bool paused )
 {
-  _enabled = doit;
+  _paused = paused;
 
-  if( doit ) {
+  if( !paused ) {
       // qDebug() << "Syncing enabled on folder " << name();
   } else {
       // do not stop or start the watcher here, that is done internally by
@@ -255,11 +255,17 @@ void Folder::slotPollTimerTimeout()
 {
     qDebug() << "* Polling" << alias() << "for changes. (time since last sync:" << (_timeSinceLastSync.elapsed() / 1000) << "s)";
 
+    if (_paused || AccountManager::instance()->account()->state() != Account::Connected) {
+        qDebug() << "Not syncing.  :" << _paused << AccountManager::instance()->account()->state();
+        return;
+    }
+
     if (quint64(_timeSinceLastSync.elapsed()) > MirallConfigFile().forceSyncInterval() ||
             !(_syncResult.status() == SyncResult::Success ||_syncResult.status() == SyncResult::Problem)) {
         qDebug() << "** Force Sync now, state is " << _syncResult.statusString();
         emit scheduleToSync(alias());
     } else {
+        // do the ordinary etag chech for the root folder.
         RequestEtagJob* job = new RequestEtagJob(AccountManager::instance()->account(), remotePath(), this);
         // check if the etag is different
         QObject::connect(job, SIGNAL(etagRetreived(QString)), this, SLOT(etagRetreived(QString)));
@@ -287,7 +293,6 @@ void Folder::slotNetworkUnavailable()
     if (account && account->state() == Account::Connected) {
         account->setState(Account::Disconnected);
     }
-    _syncResult.setStatus(SyncResult::Unavailable);
     emit syncStateChange();
 }
 
@@ -483,7 +488,7 @@ void Folder::slotTerminateSync()
         // Do not display an error message, user knows his own actions.
         // _errors.append( tr("The CSync thread terminated.") );
         // _csyncError = true;
-        setSyncEnabled(false);
+        FolderMan::instance()->slotSetFolderPaused(alias(), true);
         setSyncState(SyncResult::SyncAbortRequested);
         return;
     }
@@ -592,10 +597,13 @@ void Folder::startSync(const QStringList &pathList)
     //direct connection so the message box is blocking the sync.
     connect(_engine.data(), SIGNAL(aboutToRemoveAllFiles(SyncFileItem::Direction,bool*)),
                     SLOT(slotAboutToRemoveAllFiles(SyncFileItem::Direction,bool*)));
+    connect(_engine.data(), SIGNAL(folderDiscovered(bool,QString)), this, SLOT(slotFolderDiscovered(bool,QString)));
     connect(_engine.data(), SIGNAL(transmissionProgress(Progress::Info)), this, SLOT(slotTransmissionProgress(Progress::Info)));
     connect(_engine.data(), SIGNAL(jobCompleted(SyncFileItem)), this, SLOT(slotJobCompleted(SyncFileItem)));
+    connect(_engine.data(), SIGNAL(syncItemDiscovered(SyncFileItem)), this, SLOT(slotSyncItemDiscovered(SyncFileItem)));
 
     setDirtyNetworkLimits();
+    _engine->setSelectiveSyncBlackList(selectiveSyncBlackList());
 
     QMetaObject::invokeMethod(_engine.data(), "startSync", Qt::QueuedConnection);
 
@@ -662,7 +670,8 @@ void Folder::slotSyncFinished()
         _syncResult.setErrorStrings( _errors );
         qDebug() << "    * owncloud csync thread finished with error";
     } else if (_csyncUnavail) {
-        _syncResult.setStatus(SyncResult::Unavailable);
+        _syncResult.setStatus(SyncResult::Error);
+        qDebug() << "  ** csync not available.";
     } else if( _syncResult.warnCount() > 0 ) {
         // there have been warnings on the way.
         _syncResult.setStatus(SyncResult::Problem);
@@ -688,6 +697,13 @@ void Folder::slotEmitFinishedDelayed()
 }
 
 
+void Folder::slotFolderDiscovered(bool, QString folderName)
+{
+    Progress::Info pi;
+    pi._currentDiscoveredFolder = folderName;
+    ProgressDispatcher::instance()->setProgressInfo(alias(), pi);
+}
+
 
 // the progress comes without a folder and the valid path set. Add that here
 // and hand the result over to the progress dispatcher.
@@ -710,8 +726,13 @@ void Folder::slotJobCompleted(const SyncFileItem &item)
     emit ProgressDispatcher::instance()->jobCompleted(alias(), item);
 }
 
+void Folder::slotSyncItemDiscovered(const SyncFileItem & item)
+{
+    emit ProgressDispatcher::instance()->syncItemDiscovered(alias(), item);
+}
 
-void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction, bool *cancel)
+
+void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction, bool *cancel)
 {
     QString msg =
         tr("This sync would remove all the files in the sync folder '%1'.\n"

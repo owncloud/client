@@ -45,6 +45,7 @@ if (APPLE)
         list(APPEND 3rdparty_SRC
         3rdparty/qtmacgoodies/src/macpreferenceswindow.mm
         3rdparty/qtmacgoodies/src/macstandardicon.mm
+        3rdparty/qtmacgoodies/src/macwindow.mm
         )
 endif()
 
@@ -64,6 +65,7 @@ set(3rdparty_INC
     )
 
 set(libsync_SRCS
+    mirall/authenticationdialog.cpp
     mirall/syncresult.cpp
     mirall/mirallconfigfile.cpp
     mirall/syncengine.cpp
@@ -87,6 +89,7 @@ set(libsync_SRCS
     mirall/clientproxy.cpp
     mirall/cookiejar.cpp
     mirall/syncfilestatus.cpp
+    mirall/discoveryphase.cpp
     creds/dummycredentials.cpp
     creds/abstractcredentials.cpp
     creds/credentialsfactory.cpp
@@ -106,7 +109,6 @@ else()
         creds/shibbolethcredentials.cpp
         creds/shibboleth/shibbolethwebview.cpp
         creds/shibboleth/shibbolethrefresher.cpp
-        creds/shibboleth/authenticationdialog.cpp
         creds/shibboleth/shibbolethuserjob.cpp
     )
 endif()
@@ -214,7 +216,7 @@ else()
     install(TARGETS ${synclib_NAME} DESTINATION ${OWNCLOUD_OSX_BUNDLE}/Contents/MacOS)
     if (SPARKLE_FOUND)
         install(DIRECTORY "${SPARKLE_LIBRARY}"
-	        DESTINATION "${OWNCLOUD_OSX_BUNDLE}/Contents/Frameworks")
+	        DESTINATION "${OWNCLOUD_OSX_BUNDLE}/Contents/Frameworks" USE_SOURCE_PERMISSIONS)
     endif (SPARKLE_FOUND)
 
 endif()
@@ -267,6 +269,8 @@ set(mirall_SRCS
     mirall/socketapi.cpp
     mirall/sslbutton.cpp
     mirall/syncrunfilelog.cpp
+    mirall/selectivesyncdialog.cpp
+    mirall/accountmigrator.cpp
 )
 
 

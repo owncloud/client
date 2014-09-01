@@ -54,6 +54,7 @@ OwncloudSetupWizard::OwncloudSetupWizard(QObject* parent) :
     connect( _ocWizard, SIGNAL(basicSetupFinished(int)),
              this, SLOT(slotAssistantFinished(int)), Qt::QueuedConnection);
     connect( _ocWizard, SIGNAL(finished(int)), SLOT(deleteLater()));
+    connect( _ocWizard, SIGNAL(skipFolderConfiguration()), SLOT(slotSkipFolderConfigruation()));
 }
 
 OwncloudSetupWizard::~OwncloudSetupWizard()
@@ -420,7 +421,7 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
         // 1. Initial setup, no prior account exists
         if (isInitialSetup) {
             folderMan->addFolderDefinition(Theme::instance()->appName(),
-                                           localFolder, _remoteFolder );
+                                           localFolder, _remoteFolder, _ocWizard->blacklist() );
             replaceDefaultAccountWith(newAccount);
         }
         // 2. Server URL or user changed, requires reinit of folders
@@ -429,7 +430,7 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
             if (startFromScratch) {
                 if (ensureStartFromScratch(localFolder)) {
                     folderMan->addFolderDefinition(Theme::instance()->appName(),
-                                                   localFolder, _remoteFolder );
+                                                   localFolder, _remoteFolder, _ocWizard->blacklist() );
                     _ocWizard->appendToConfigurationLog(tr("<font color=\"green\"><b>Local sync folder %1 successfully created!</b></font>").arg(localFolder));
                     replaceDefaultAccountWith(newAccount);
                 }
@@ -438,7 +439,7 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
             else {
                 folderMan->removeAllFolderDefinitions();
                 folderMan->addFolderDefinition(Theme::instance()->appName(),
-                                               localFolder, _remoteFolder );
+                                               localFolder, _remoteFolder, _ocWizard->blacklist() );
                 _ocWizard->appendToConfigurationLog(tr("<font color=\"green\"><b>Local sync folder %1 successfully created!</b></font>").arg(localFolder));
                 replaceDefaultAccountWith(newAccount);
             }
@@ -453,6 +454,16 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
     // notify others.
     emit ownCloudWizardDone( result );
 }
+
+void OwncloudSetupWizard::slotSkipFolderConfigruation()
+{
+    replaceDefaultAccountWith(_ocWizard->account());
+    _ocWizard->blockSignals(true);
+    _ocWizard->close();
+    _ocWizard->blockSignals(false);
+    emit ownCloudWizardDone( QDialog::Accepted );
+}
+
 
 DetermineAuthTypeJob::DetermineAuthTypeJob(Account *account, QObject *parent)
     : AbstractNetworkJob(account, QString(), parent)

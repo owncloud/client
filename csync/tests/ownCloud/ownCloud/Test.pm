@@ -27,7 +27,6 @@ use Exporter;
 use HTTP::DAV 0.47;
 use Data::Dumper;
 use File::Glob ':glob';
-use Carp::Assert;
 use Digest::MD5;
 use Unicode::Normalize;
 use LWP::UserAgent;
@@ -35,6 +34,8 @@ use LWP::Protocol::https;
 use HTTP::Request::Common qw( POST GET DELETE );
 use File::Basename;
 use IO::Handle;
+use POSIX qw/strftime/;
+use Carp;
 
 use Encode qw(from_to);
 use utf8;
@@ -65,7 +66,7 @@ our %config;
                   assertLocalDirs assertLocalAndRemoteDir glob_put put_to_dir 
                   putToDirLWP localDir remoteDir localCleanup createLocalFile md5OfFile
                   remoteCleanup server initLocalDir initRemoteDir moveRemoteFile
-                  printInfo remoteFileId createShare removeShare
+                  printInfo remoteFileId createShare removeShare assert
                   configValue testDirUrl getToFileLWP getToFileCurl);
 
 sub server
@@ -129,8 +130,9 @@ sub initTesting(;$)
   # $d->DebugLevel(3);
   $prefix = "t1" unless( defined $prefix );
   
-  my $dirId = sprintf("%#.3o", rand(1000));
-  my $dir = sprintf( "%s-%s/", $prefix, $dirId );
+  my $dirId = sprintf("%02d", rand(100));
+  my $dateTime = strftime('%Y%m%d%H%M%S',localtime);
+  my $dir = sprintf( "%s-%s-%s/", $prefix, $dateTime, $dirId );
   
   $localDir = $dir;
   $localDir .= "/" unless( $localDir =~ /\/$/ );
@@ -303,7 +305,7 @@ sub csync( ;$ )
 
     print "CSync URL: $url\n";
 
-    my $args = "--trust"; # Trust crappy SSL certificates
+    my $args = "--trust --exclude exclude.cfg"; # Trust crappy SSL certificates
     my $cmd = "LD_LIBRARY_PATH=$ld_libpath $csync $args $localDir $url";
     print "Starting: $cmd\n";
 
@@ -779,6 +781,14 @@ sub removeShare($$)
     my $req = DELETE $owncloud . $dir;
     $req->authorization_basic($share_user, $share_passwd);
     my $response = $ua->request($req);
+}
+
+sub assert($;$)
+{
+    unless( $_[0] ) {
+      print Carp::confess(@_);
+      exit(1);
+    }
 }
 
 #

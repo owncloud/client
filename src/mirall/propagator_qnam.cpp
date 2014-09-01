@@ -27,15 +27,24 @@
 
 namespace Mirall {
 
-static uint chunkSize() {
+static qint64 chunkSize() {
     static uint chunkSize;
     if (!chunkSize) {
         chunkSize = qgetenv("OWNCLOUD_CHUNK_SIZE").toUInt();
         if (chunkSize == 0) {
-            chunkSize = 10*1024*1024; // default to 10 MiB
+            chunkSize = 20*1024*1024; // default to 20 MiB
         }
     }
     return chunkSize;
+}
+
+static QByteArray get_etag_from_reply(QNetworkReply *reply)
+{
+    QByteArray ret = parseEtag(reply->rawHeader("OC-ETag"));
+    if (ret.isEmpty()) {
+        ret = parseEtag(reply->rawHeader("ETag"));
+    }
+    return ret;
 }
 
 /**
@@ -231,7 +240,7 @@ void PropagateUploadFileQNAM::startNextChunk()
                 currentChunkSize = chunkSize();
             }
         }
-        device = new ChunkDevice(_file, chunkSize() * sendingChunk, currentChunkSize);
+        device = new ChunkDevice(_file, chunkSize() * quint64(sendingChunk), currentChunkSize);
     } else {
         device = _file;
     }
@@ -294,7 +303,8 @@ void PropagateUploadFileQNAM::slotPutFinished()
         return;
     }
 
-    bool finished = job->reply()->hasRawHeader("ETag");
+    bool finished = job->reply()->hasRawHeader("ETag")
+            || job->reply()->hasRawHeader("OC-ETag");
 
     if (!finished) {
         QFileInfo fi(_propagator->_localDir + _item._file);
@@ -343,7 +353,9 @@ void PropagateUploadFileQNAM::slotPutFinished()
         _item._fileId = fid;
     }
 
-    _item._etag = parseEtag(job->reply()->rawHeader("ETag"));
+    QByteArray etag = get_etag_from_reply(job->reply());
+    _item._etag = etag;
+
     _item._responseTimeStamp = job->responseTimestamp();
 
     if (job->reply()->rawHeader("X-OC-MTime") != "accepted") {
@@ -382,7 +394,7 @@ void PropagateUploadFileQNAM::slotUploadProgress(qint64 sent, qint64)
     int progressChunk = _currentChunk + _startChunk;
     if (progressChunk >= _chunkCount)
         progressChunk = _currentChunk;
-    emit progress(_item, sent + _currentChunk * chunkSize());
+    emit progress(_item, sent + progressChunk * chunkSize());
 }
 
 
@@ -449,8 +461,8 @@ void GETFileJob::slotMetaDataChanged()
         // We will handle the error when the job is finished.
         return;
     }
+    _etag = get_etag_from_reply(reply());
 
-    _etag = parseEtag(reply()->rawHeader("Etag"));
     if (!_directDownloadUrl.isEmpty() && !_etag.isEmpty()) {
         qDebug() << Q_FUNC_INFO << "Direct download used, ignoring server ETag" << _etag;
         _etag = QByteArray(); // reset received ETag
@@ -472,7 +484,7 @@ void GETFileJob::slotMetaDataChanged()
     }
 
     quint64 start = 0;
-    QByteArray ranges = parseEtag(reply()->rawHeader("Content-Range"));
+    QByteArray ranges = reply()->rawHeader("Content-Range");
     if (!ranges.isEmpty()) {
         QRegExp rx("bytes (\\d+)-");
         if (rx.indexIn(ranges) >= 0) {
@@ -490,6 +502,7 @@ void GETFileJob::slotMetaDataChanged()
                 reply()->abort();
                 return;
             }
+            _resumeStart = 0;
         } else {
             _errorString = tr("Server returned wrong content-range");
             _errorStatus = SyncFileItem::NormalError;
@@ -594,6 +607,7 @@ void PropagateDownloadFileQNAM::start()
 
     QMap<QByteArray, QByteArray> headers;
 
+    quint64 startSize = 0;
     if (_tmpFile.size() > 0) {
         quint64 done = _tmpFile.size();
         if (done == _item._size) {
@@ -604,14 +618,14 @@ void PropagateDownloadFileQNAM::start()
         headers["Range"] = "bytes=" + QByteArray::number(done) +'-';
         headers["Accept-Ranges"] = "bytes";
         qDebug() << "Retry with range " << headers["Range"];
-        _startSize = done;
+        startSize = done;
     }
 
     if (_item._directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
         _job = new GETFileJob(AccountManager::instance()->account(),
                             _propagator->_remoteFolder + _item._file,
-                            &_tmpFile, headers, expectedEtagForResume, _startSize);
+                            &_tmpFile, headers, expectedEtagForResume, startSize);
     } else {
         // We were provided a direct URL, use that one
         if (!_item._directDownloadCookies.isEmpty()) {
@@ -736,7 +750,8 @@ void PropagateDownloadFileQNAM::downloadFinished()
 
 void PropagateDownloadFileQNAM::slotDownloadProgress(qint64 received, qint64)
 {
-    emit progress(_item, received + _startSize);
+    if (!_job) return;
+    emit progress(_item, received + _job->resumeStart());
 }
 
 

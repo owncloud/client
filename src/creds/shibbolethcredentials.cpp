@@ -20,7 +20,6 @@
 #include <QDebug>
 
 #include "creds/shibbolethcredentials.h"
-#include "creds/shibboleth/authenticationdialog.h"
 #include "creds/shibboleth/shibbolethwebview.h"
 #include "creds/shibboleth/shibbolethrefresher.h"
 #include "creds/shibbolethcredentials.h"
@@ -173,8 +172,6 @@ QNetworkAccessManager* ShibbolethCredentials::getQNAM() const
     QNetworkAccessManager* qnam(new MirallAccessManager);
     connect(qnam, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(slotReplyFinished(QNetworkReply*)));
-    connect(qnam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
-            SLOT(slotHandleAuthentication(QNetworkReply*,QAuthenticator*)));
     return qnam;
 }
 
@@ -319,23 +316,6 @@ void ShibbolethCredentials::invalidateAndFetch(Account* account)
     job->start();
 }
 
-void ShibbolethCredentials::slotHandleAuthentication(QNetworkReply *reply, QAuthenticator *authenticator)
-{
-    Q_UNUSED(reply)
-    QUrl url = reply->url();
-    // show only scheme, host and port
-    QUrl reducedUrl;
-    reducedUrl.setScheme(url.scheme());
-    reducedUrl.setHost(url.host());
-    reducedUrl.setPort(url.port());
-
-    AuthenticationDialog dialog(authenticator->realm(), reducedUrl.toString());
-    if (dialog.exec() == QDialog::Accepted) {
-        authenticator->setUser(dialog.user());
-        authenticator->setPassword(dialog.password());
-    }
-}
-
 void ShibbolethCredentials::slotInvalidateAndFetchInvalidateDone(QKeychain::Job* job)
 {
     Account *account = qvariant_cast<Account*>(job->property("account"));
@@ -405,7 +385,7 @@ void ShibbolethCredentials::showLoginWindow(Account* account)
 
 QList<QNetworkCookie> ShibbolethCredentials::accountCookies(Account *account)
 {
-    return account->networkAccessManager()->cookieJar()->cookiesForUrl(account->url());
+    return account->networkAccessManager()->cookieJar()->cookiesForUrl(account->davUrl());
 }
 
 QNetworkCookie ShibbolethCredentials::findShibCookie(Account *account, QList<QNetworkCookie> cookies)

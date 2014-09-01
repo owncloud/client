@@ -21,6 +21,7 @@
 #include "mirall/owncloudsetupwizard.h"
 #if defined(Q_OS_MAC)
 #    include "mirall/settingsdialogmac.h"
+#    include "macwindow.h" // qtmacgoodies
 #else
 #    include "mirall/settingsdialog.h"
 #endif
@@ -33,6 +34,10 @@
 #include <QDesktopServices>
 #include <QMessageBox>
 #include <QSignalMapper>
+
+#if defined(Q_OS_X11)
+#include <QX11Info>
+#endif
 
 namespace Mirall {
 
@@ -53,7 +58,9 @@ ownCloudGui::ownCloudGui(Application *parent) :
 {
     _tray = new Systray();
     _tray->setParent(this);
-    _tray->setIcon( Theme::instance()->syncStateIcon( SyncResult::NotYetStarted, true ) );
+
+    // for the beginning, set the offline icon until the account was verified
+    _tray->setIcon( Theme::instance()->folderOfflineIcon(true));
 
     connect(_tray.data(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             SLOT(slotTrayClicked(QSystemTrayIcon::ActivationReason)));
@@ -96,10 +103,10 @@ ownCloudGui::ownCloudGui(Application *parent) :
 void ownCloudGui::setupOverlayIcons()
 {
 
-    if( Utility::isMac() && QFile::exists("/Library/ScriptingAdditions/LiferayNativity.osax") ) {
+    if( Utility::isMac() && QFile::exists("/Library/ScriptingAdditions/OwnCloudFinder.osax") ) {
         QString aScript = QString::fromUtf8("tell application \"Finder\"\n"
                                             "  try\n"
-                                            "    «event NVTYload»\n"
+                                            "    «event OWNCload»\n"
                                             "  end try\n"
                                             "end tell\n");
 
@@ -145,6 +152,14 @@ void ownCloudGui::slotTrayClicked( QSystemTrayIcon::ActivationReason reason )
     if( reason == QSystemTrayIcon::Trigger ) {
         slotOpenSettingsDialog(true); // start settings if config is existing.
     }
+#else
+    // On Mac, if the settings dialog is already visible but hidden
+    // by other applications, this will bring it to the front.
+    if( reason == QSystemTrayIcon::Trigger ) {
+        if (!_settingsDialog.isNull() && _settingsDialog->isVisible()) {
+            slotShowSettings();
+        }
+    }
 #endif
 }
 
@@ -155,12 +170,12 @@ void ownCloudGui::slotSyncStateChange( const QString& alias )
 
     slotComputeOverallSyncStatus();
 
+    if( alias.isEmpty() ) {
+        return; // Valid, just a general GUI redraw was needed.
+    }
+
     qDebug() << "Sync state changed for folder " << alias << ": "  << result.statusString();
 
-    // Promote sync result to settings-dialog for sync protocol?
-    // if( _progressDialog ) {
-    //     _progressDialog->setSyncResult(result);
-    // }
     if (result.status() == SyncResult::Success || result.status() == SyncResult::Error) {
         Logger::instance()->enterNextLogFile();
     }
@@ -190,25 +205,28 @@ void ownCloudGui::startupConnected( bool connected, const QStringList& fails )
     if( connected ) {
         qDebug() << "######## connected to ownCloud Server!";
         folderMan->setSyncEnabled(true);
-        _tray->setIcon( Theme::instance()->syncStateIcon( SyncResult::NotYetStarted, true ) );
-        _tray->show();
+        // _tray->setIcon( Theme::instance()->syncStateIcon( SyncResult::NotYetStarted, true ) );
+        // _tray->show();
     }
 
     _startupFails = fails; // store that for the settings dialog once it appears.
-    if( !_settingsDialog.isNull() )
+    if( !_settingsDialog.isNull() ) {
         _settingsDialog->setGeneralErrors( _startupFails );
+    }
+
+    slotComputeOverallSyncStatus();
 }
 
 void ownCloudGui::slotComputeOverallSyncStatus()
 {
     if (Account *a = AccountManager::instance()->account()) {
         if (a->state() == Account::SignedOut) {
-            _tray->setIcon(Theme::instance()->syncStateIcon( SyncResult::Unavailable, true));
+            _tray->setIcon(Theme::instance()->folderOfflineIcon(true));
             _tray->setToolTip(tr("Please sign in"));
             return;
         }
         if (a->state() == Account::Disconnected) {
-            _tray->setIcon(Theme::instance()->syncStateIcon( SyncResult::Unavailable, true));
+            _tray->setIcon(Theme::instance()->folderOfflineIcon(true));
             _tray->setToolTip(tr("Disconnected from server"));
             return;
         }
@@ -240,7 +258,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             QStringList allStatusStrings;
             foreach(Folder* folder, map.values()) {
                 qDebug() << "Folder in overallStatus Message: " << folder << " with name " << folder->alias();
-                QString folderMessage = folderMan->statusToString(folder->syncResult().status(), folder->syncEnabled());
+                QString folderMessage = folderMan->statusToString(folder->syncResult().status(), folder->syncPaused());
                 allStatusStrings += tr("Folder %1: %2").arg(folder->alias(), folderMessage);
             }
 
@@ -252,6 +270,16 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             QIcon statusIcon = Theme::instance()->syncStateIcon( overallResult.status(), true);
             _tray->setIcon( statusIcon );
             _tray->setToolTip(trayMessage);
+        } else {
+            // undefined because there are no folders.
+            QIcon icon = Theme::instance()->syncStateIcon(SyncResult::Problem);
+            _tray->setIcon( icon );
+            _tray->setToolTip(tr("There are no sync folders configured."));
+#if !defined Q_OS_MAC
+            if( _settingsDialog ) {
+                _settingsDialog->slotUpdateAccountIcon(icon);
+            }
+#endif
         }
     }
 }
@@ -435,13 +463,16 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const Progress::Info
 {
     Q_UNUSED(folder);
 
-     QString totalSizeStr = Utility::octetsToString( progress._totalSize );
-        if(progress._totalSize == 0 ) {
+     if (!progress._currentDiscoveredFolder.isEmpty()) {
+                 _actionStatus->setText( tr("Discovering %1")
+                     .arg( progress._currentDiscoveredFolder ));
+     } else if (progress._totalSize == 0 ) {
             quint64 currentFile =  progress._completedFileCount + progress._currentItems.count();           
             _actionStatus->setText( tr("Syncing %1 of %2  (%3 left)")
                 .arg( currentFile ).arg( progress._totalFileCount )
                  .arg( Utility::timeToDescriptiveString(progress.totalEstimate().getEtaEstimate(), 2, " ",true) ) );
         } else {
+         QString totalSizeStr = Utility::octetsToString( progress._totalSize );
             _actionStatus->setText( tr("Syncing %1 (%2 left)")
                 .arg( totalSizeStr )
                 .arg( Utility::timeToDescriptiveString(progress.totalEstimate().getEtaEstimate(), 2, " ",true) ) );
@@ -482,7 +513,8 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const Progress::Info
         slotRebuildRecentMenus();
     }
 
-    if (progress._completedFileCount == progress._totalFileCount) {
+    if (progress._completedFileCount == progress._totalFileCount
+            && progress._currentDiscoveredFolder.isEmpty()) {
         QTimer::singleShot(2000, this, SLOT(slotDisplayIdle()));
     }
 }
@@ -504,6 +536,7 @@ void ownCloudGui::slotShowGuiMessage(const QString &title, const QString &messag
 
 void ownCloudGui::slotShowSettings()
 {
+    qDebug() << Q_FUNC_INFO;
     if (_settingsDialog.isNull()) {
         _settingsDialog =
 #if defined(Q_OS_MAC)
@@ -566,6 +599,27 @@ void ownCloudGui::raiseDialog( QWidget *raiseWidget )
         raiseWidget->showNormal();
         raiseWidget->raise();
         raiseWidget->activateWindow();
+
+#if defined(Q_OS_MAC)
+        // viel hilft viel ;-)
+        MacWindow::bringToFront(raiseWidget);
+#endif
+#if defined(Q_OS_X11)
+        WId wid = widget->winId();
+        NETWM::init();
+
+        XEvent e;
+        e.xclient.type = ClientMessage;
+        e.xclient.message_type = NETWM::NET_ACTIVE_WINDOW;
+        e.xclient.display = QX11Info::display();
+        e.xclient.window = wid;
+        e.xclient.format = 32;
+        e.xclient.data.l[0] = 2;
+        e.xclient.data.l[1] = QX11Info::appTime();
+        e.xclient.data.l[2] = 0;
+        e.xclient.data.l[3] = 0l;
+        e.xclient.data.l[4] = 0l;
+#endif
     }
 }
 
