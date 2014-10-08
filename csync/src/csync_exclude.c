@@ -169,14 +169,16 @@ CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path
 
     for (p = path; *p; p++) {
       switch (*p) {
-        case '\\':
-        case ':':
         case '?':
         case '*':
         case '"':
         case '>':
         case '<':
+#ifdef _WIN32
+        case ':':
         case '|':
+        case '\\':
+#endif
           return CSYNC_FILE_EXCLUDE_INVALID_CHAR;
         default:
           break;
