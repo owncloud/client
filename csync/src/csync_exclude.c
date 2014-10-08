@@ -196,21 +196,23 @@ CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path
   CSYNC_EXCLUDE_TYPE match = CSYNC_NOT_EXCLUDED;
   CSYNC_EXCLUDE_TYPE type  = CSYNC_NOT_EXCLUDED;
 
+#ifdef _WIN32
     for (p = path; *p; p++) {
       switch (*p) {
-        case '\\':
-        case ':':
         case '?':
         case '*':
         case '"':
         case '>':
         case '<':
+        case ':':
         case '|':
+        case '\\':
           return CSYNC_FILE_EXCLUDE_INVALID_CHAR;
         default:
           break;
       }
     }
+#endif
 
   /* split up the path */
   dname = c_dirname(path);
