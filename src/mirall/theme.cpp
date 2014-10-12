@@ -93,7 +93,7 @@ QString Theme::appName() const
 
 QString Theme::version() const
 {
-    return QString::fromLocal8Bit( MIRALL_STRINGIFY( MIRALL_VERSION_STRING ));
+    return QString::fromLocal8Bit( MIRALL_VERSION_STRING );
 }
 
 #ifndef TOKEN_AUTH_ONLY

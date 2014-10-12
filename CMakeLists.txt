@@ -19,10 +19,6 @@ if (NOT DEFINED APPLICATION_SHORTNAME)
      set ( APPLICATION_SHORTNAME ${APPLICATION_NAME} )
 endif()
 
-include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
-configure_file( ${CMAKE_SOURCE_DIR}/src/mirall/version.h.in "${CMAKE_CURRENT_BINARY_DIR}/src/mirall/version.h" )
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_BINARY_DIR}/src/mirall/")
-
 #####
 ## handle DBUS for Fdo notifications
 if( UNIX AND NOT APPLE )
@@ -53,6 +49,11 @@ if (${GIT_SHA1} STREQUAL "GITDIR-NOTFOUND")
     endif()
 endif()
 endif()
+
+# moved after GIT_SHA1 code, so that we can use it in VERSION.cmake
+include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
+configure_file( ${CMAKE_SOURCE_DIR}/src/mirall/version.h.in "${CMAKE_CURRENT_BINARY_DIR}/src/mirall/version.h" )
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_BINARY_DIR}/src/mirall/")
 
 set(SYSCONFDIR ${SYSCONF_INSTALL_DIR})
 set(DATADIR ${DATA_INSTALL_DIR})
