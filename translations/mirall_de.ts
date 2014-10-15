@@ -2607,5 +2607,10 @@ Versuchen Sie diese nochmals zu synchronisieren.</translation>
         <source>Sync is paused</source>
         <translation>Synchronisation wurde angehalten</translation>
     </message>
+    <message>
+        <location filename="../src/mirall/settingsdialog.cpp" line="101"/>
+        <source>Close</source>
+        <translation>Schließen</translation>
+    </message> 
 </context>
 </TS>
