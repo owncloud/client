@@ -96,6 +96,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent) :
 
     QPushButton *closeButton = _ui->buttonBox->button(QDialogButtonBox::Close);
     connect(closeButton, SIGNAL(clicked()), SLOT(accept()));
+    put closeButton->setText(tr("Close"));
 
     QAction *showLogWindow = new QAction(this);
     showLogWindow->setShortcut(QKeySequence("F12"));
