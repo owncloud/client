@@ -1,0 +1,221 @@
+/* This css file should only be used for Documentation. Do not replace styles.css in owncloud.org website with this file */
+
+/* -- Start specific css for documentation -- */
+
+ul#menu-support.menu {
+  padding-left: 0;
+}
+ul#menu-support.menu ul {
+  padding-left: 20px;
+}
+.headerlink {
+  color: rgba(66, 139, 202,0.5);
+  display: none;
+  margin-left: 5px;
+}
+.section:hover > * > .headerlink {
+  display: inline-block;
+}
+.section:hover > dl > dt > .headerlink {
+  display: inline-block;
+}
+.method:hover .headerlink {
+  display: inline-block;
+}
+a:hover, a:active {
+  color: #3276B1;
+}
+li.next {
+  float: right;
+}
+.page-content img {
+  max-width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .banner ul#menu-header.nav>li:not(.menu-install)>a {
+	width: auto;
+	margin-bottom: 19px;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .banner ul#menu-header.nav {
+	width: 49%;
+	padding-top: 0;
+   }
+   .banner ul#menu-header.nav>li:not(.menu-install)>a {
+	height: 1.5em;
+	margin-bottom: 10px;
+   }
+    body.install div#instructions-server div.instructions,
+    body.install div#instructions-web div.instructions,
+    body.install div#instructions-packages div.instructions {
+    margin-top: 11%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .banner ul#menu-header.nav {
+	width: 64%;
+	padding-top: 0;
+   }
+   .banner ul#menu-header.nav>li:not(.menu-install)>a {
+	height: 1.5em;
+	margin-bottom: 10px;
+   }
+    body.install div#instructions-server div.instructions,
+    body.install div#instructions-web div.instructions,
+    body.install div#instructions-packages div.instructions {
+    margin-top: 16%;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 767px) {
+    body.install div#instructions-server div.instructions,
+    body.install div#instructions-web div.instructions,
+    body.install div#instructions-packages div.instructions {
+    margin-top: 20%;
+  }
+}
+
+@media (max-width: 499px) {
+    body.install div#instructions-server div.instructions,
+    body.install div#instructions-web div.instructions,
+    body.install div#instructions-packages div.instructions {
+    margin-top: 32%;
+  }
+}
+
+@media (max-width: 767px) {
+  a.brand {
+    padding-left: 15px;
+  }
+  .banner ul#menu-header.nav {
+    float: left;
+  }
+  .banner ul#menu-header.nav > li {
+      padding-top: 0px;
+  }
+  .banner ul#menu-header.nav > li.menu-install {
+      margin-top: 23px;
+      margin-bottom: 10px;
+  }
+  .banner ul#menu-header.nav > li:not(.menu-install) > a {
+      line-height: 1.5em;
+      margin-bottom: 14px;
+      padding-bottom: 0;
+  }
+  .navbar-collapse.in {
+    overflow-y: visible;
+   }
+}
+
+/*  --  End specific css for documentation --  */
+
+.navbar-header .logo {
+	width: 121px;
+}
+
+.banner img {
+	padding: 15px 0;
+}
+
+#appstore, #googleplay, #desktopclient {
+	text-align: center;
+	display: block;
+	opacity: 0.9;
+	height: 60px;
+}
+
+div.footer-text {
+	color: #AAAAAA;
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.banner ul#menu-header.nav>li.menu-get-owncloud {
+	padding: 0 0 0 15px;
+	margin-top: 7px;
+	margin-left: 10px;
+	background-color: #428BCA;
+	border-radius: 6px;
+	border-color: #357EBD}
+
+.banner ul#menu-header.nav>li.menu-get-owncloud a{
+	padding: 7px 16px 7px 0;
+	line-height: 1.25;
+	border-bottom: 0
+}
+
+.contribook_bloguserpicture img {
+	margin-right: 0;
+}
+
+footer div.footer-nav>h4 {
+	font-size: 1.125em;
+	color: #FFFFFF;
+}
+
+i[class*='icon-'] {
+	font-style: normal;
+}
+
+.home .row {
+	padding-bottom: 20px;
+}
+
+p.socialicons > a > img {
+	margin: 0 4px;
+}
+
+div.thumbnail > img {
+	margin-bottom: 0;
+}
+
+.page.install h3 {
+	margin-top: 0;
+}
+
+.home div.wrap > .content {
+	background-size: 85% auto;
+	background-position: top center;
+}
+
+.page-content-header > div > h1 {
+	display: inline;
+	margin-top: 0;
+}
+
+.page-content-header > div > a.rss-button {
+	vertical-align: baseline;
+	margin-left: 20px;
+	color: rgb(206, 91, 0);
+}
+
+.page-content-header > div > form > input[type=text] {
+	display: inline;
+	width: 78%;
+}
+
+.banner ul#menu-header.nav>li.menu-commercial>a{
+	border-bottom: 2px solid #e8733b;
+
+}
+
+.banner ul#menu-header.nav>li:not(.menu-install) >a:hover {
+	border-bottom: 2px solid white;
+}
+
+.banner ul#menu-header.nav>li>a {
+	padding-bottom: 6px;
+}
+
+/* make links discoverable in note boxes */
+.note a {
+  border-bottom: 1px dotted #428bca;
+}
+.note a:hover, .note a:focus {
+  border-bottom: 1px solid #428bca;
+  text-decoration: none;
+}
