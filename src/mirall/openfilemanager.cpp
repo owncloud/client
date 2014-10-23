@@ -95,6 +95,7 @@ void showInFileManager(const QString &localPath)
             explorer += QLatin1String("/select,");
         }
         explorer += QLatin1Char('"');
+        localPath.replace(QString("//"), QString("/")); //Windows cannot handle double \. Fixes issue https://github.com/owncloud/mirall/issues/2299
         explorer += QDir::toNativeSeparators(localPath);
         explorer += QLatin1Char('"');
 
