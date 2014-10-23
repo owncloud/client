@@ -1,0 +1,31 @@
+//
+// Responsive: Tablet to desktop
+// --------------------------------------------------
+
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+  // Fixed grid
+  #grid > .core(@gridColumnWidth768, @gridGutterWidth768);
+
+  // Fluid grid
+  #grid > .fluid(@fluidGridColumnWidth768, @fluidGridGutterWidth768);
+
+  // Input grid
+  #grid > .input(@gridColumnWidth768, @gridGutterWidth768);
+
+  // No need to reset .thumbnails here since it's the same @gridGutterWidth
+  
+  //header
+  .follow .visible { padding:0 5px; font-size: 11px;}
+  .follow .visible:last-child { padding-right: 0;}
+  
+  .page-content { margin-left: 10px;}
+  
+  //Footer
+  ul#menu-footer-navigation {margin-top: 10px; float: left;}
+  ul#menu-footer-navigation li a {float: none; display: inherit;}
+  ul#menu-footer-navigation li { float: none;}
+  footer p.copyright { margin-top: 10px;}
+
+}

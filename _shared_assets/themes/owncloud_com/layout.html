@@ -1,0 +1,196 @@
+{% extends "basic/layout.html" %}
+{% set script_files = script_files + ['_static/bootstrap.js'] %}
+{% set css_files = [ '_static/css/bootstrap.css', '_static/css/responsive.css'] + css_files %}
+
+{# Sidebar: Rework into our Boostrap nav section. #}
+{% macro navBar() %}
+  {#
+  <div id="navbar" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <a class="brand" href="{{ pathto(master_doc) }}">{{ project|e }}</a>
+        <span class="navbar-text pull-left"><b>{{ version|e }}</b></span>
+          <ul class="nav">
+            <li class="divider-vertical"></li>
+            {% block sidebartoc %}
+              {% include "globaltoc.html" %}
+              {% include "localtoc.html" %}
+            {% endblock %}
+            {% block sidebarrel %}
+              {% include "relations.html" %}
+            {% endblock %}
+            {% block sidebarsourcelink %}
+              {% include "sourcelink.html" %}
+            {% endblock %}
+          </ul>
+          {% block sidebarsearch %}
+            {% include "searchbox.html" %}
+          {% endblock %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  #}
+{% endmacro %}
+
+{%- block extrahead %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript">
+(function () {
+  /**
+   * Patch TOC list.
+   *
+   * Will mutate the underlying span to have a correct ul for nav.
+   *
+   * @param $span: Span containing nested UL's to mutate.
+   * @param minLevel: Starting level for nested lists. (1: global, 2: local).
+   */
+  var patchToc = function ($ul, minLevel) {
+    var findA;
+
+    // Find all a "internal" tags, traversing recursively.
+    findA = function ($elem, level) {
+      var level = level || 0,
+        $items = $elem.find("> li > a.internal, > ul, > li > ul");
+
+      // Iterate everything in order.
+      $items.each(function (index, item) {
+        var $item = $(item),
+          tag = item.tagName.toLowerCase(),
+          pad = 15 + ((level - minLevel) * 10);
+
+        if (tag === 'a' && level >= minLevel) {
+          // Add to existing padding.
+          $item.css('padding-left', pad + "px");
+          console.log(level, $item, 'padding-left', pad + "px");
+        } else if (tag === 'ul') {
+          // Recurse.
+          findA($item, level + 1);
+        }
+      });
+    };
+
+    console.log("HERE");
+    findA($ul);
+  };
+
+  $(document).ready(function () {
+    // Add styling, structure to TOC's.
+    $(".dropdown-menu").each(function () {
+      $(this).find("ul").each(function (index, item){
+        var $item = $(item);
+        $item.addClass('unstyled');
+      });
+      $(this).find("li").each(function () {
+        $(this).parent().append(this);
+      });
+    });
+
+    // Patch in level.
+    patchToc($("ul.globaltoc"), 2);
+    patchToc($("ul.localtoc"), 2);
+
+    // Enable dropdown.
+    $('.dropdown-toggle').dropdown();
+  });
+}());
+</script>
+{% endblock %}
+
+{% block header %}{{ navBar() }}{% endblock %}
+
+{# Silence the sidebar's, relbar's #}
+{% block sidebar1 %}{% endblock %}
+{% block sidebar2 %}{% endblock %}
+{% block relbar1 %}{% endblock %}
+{% block relbar2 %}{% endblock %}
+
+{%- block content %}
+<div class="header_con">
+<div class="container">
+<h1 id="site-title"><a href="http://doc.owncloud.com" title="ownCloud" rel="home">ownCloud</a></h1>	
+{% include "searchbox.html" %}
+
+<div class="follow">
+<p><a class="visible" href="https://owncloud.com" title="ownCloud">Back to owncloud.com</a>|<span class="visible">Follow us:</span></p>  
+<a class="twitter" href="https://twitter.com/#!/owncloudcom" target="_blank">Twitter</a>
+<a class="facebook" href="http://www.facebook.com/owncloud" target="_blank">Facebook</a>
+<a class="google" href="https://plus.google.com/b/102805591550379137055/" target="_blank">Google</a>
+</div>
+
+</div>
+</div>
+
+<div id="main">
+<div class="container">
+  <div class="content">
+
+    </div>
+    {% block sidebartoc %}
+			<div class="row">
+				<div class="span3">
+					<div class="sidebar">
+						<div class="box sidenavi">
+							<div class="menu-support-container">
+								<ul id="menu-support" class="menu">
+									<ul>
+										<li><a href="{{ pathto(master_doc) }}">Overview</a></li>
+									</ul>
+                  {{ toctree(maxdepth=3) }}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+        {% endblock %}
+
+				<div class="span9">
+					<div class="page-content">
+						{% block body %}{% endblock %}
+					</div>
+				</div>
+			</div>
+    
+  </div>
+</div>
+</div>
+{%- endblock %}
+
+
+
+
+{%- block footer %}
+<footer class="footer">
+  <div class="container">
+  <div class="footer_navi">
+  
+  <div class="menu-footer-navigation-container">
+  	<ul id="menu-footer-navigation" class="menu">
+  		<li><a href="https://owncloud.com">Home</a></li>
+  		<li><a href="https://owncloud.com/about">About ownCloud</a></li>
+  		<li><a href="https://owncloud.com/event/events">Events</a></li>
+  		<li><a href="https://owncloud.com/become-partner">Become a Partner</a></li>
+  		<li><a href="https://owncloud.org">Community</a></li>
+  		<li><a href="https://owncloud.com/blog">Blog</a></li>
+  		<li><a href="https://owncloud.com/jobs">Jobs</a></li>
+  		<li><a href="https://owncloud.com/contact">Contact</a></li>
+  	</ul>
+  </div>
+  
+  <div class="follow_f">
+  	<ul>
+  		<li><a class="twitter" target="_blank" href="https://twitter.com/#!/owncloudcom">Twitter</a></li>
+  		<li><a class="facebook" target="_blank" href="http://www.facebook.com/owncloud">Facebook</a></li>
+  		<li><a class="google" target="_blank" href="https://plus.google.com/b/102805591550379137055/">Google</a></li>
+  	</ul>
+  </div>
+  
+  <p class="copyright">© ownCloud 2011-2013</p>
+  
+  </div>
+  </div>
+</footer>
+{%- endblock %}
+
+
