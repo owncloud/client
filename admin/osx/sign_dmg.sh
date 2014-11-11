@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/bash
 
 [ "$#" -lt 2 ] && echo "Usage: sign_dmg.sh <dmg> <identity>" && exit
 
@@ -6,34 +6,41 @@ src_dmg="$1"
 tmp_dmg="writable_$1"
 signed_dmg="signed_$1"
 identity="$2"
-
-QT_FMWKS=`basename ${TMP_APP}/Contents/Frameworks`/Qt*
-QT_FMWK_VERSION="5"
-
-fix_frameworks() {
-    TMP_APP=$1
-    QT_FMWK_PATH=$2
-    QT_FMWKS=$3/Qt*.framework
-
-    echo "Patching Qt frameworks..."
-    for FMWK in $QT_FMWKS; do
-        FMWK_NAME=`basename -s .framework $FMWK`
-        FMWK=`basename $FMWK`
-        FMWK_PATH="${TMP_APP}/Contents/Frameworks/${FMWK}"
-        mkdir -p "${FMWK_PATH}/Versions/${QT_FMWK_VERSION}/Resources/"
-        cp -avf "${QT_FMWK_PATH}/${FMWK}/Contents/Info.plist" "${FMWK_PATH}/Versions/${QT_FMWK_VERSION}/Resources"
-        (cd "${FMWK_PATH}" && ln -sf "Versions/${QT_FMWK_VERSION}/Resources" "Resources")
-        perl -pi -e "s/${FMWK_NAME}_debug/${FMWK_NAME}/" "${FMWK_PATH}/Resources/Info.plist"
-    done
-}
-
 mount="/Volumes/$(basename "$src_dmg"|sed 's,-\([0-9]\)\(.*\),,')"
 test -e "$tmp_dmg" && rm -rf "$tmp_dmg"
 hdiutil convert "$src_dmg" -format UDRW -o "$tmp_dmg"
 hdiutil attach "$tmp_dmg"
 pushd "$mount"
-fix_frameworks "$mount"/*.app `qmake -query QT_INSTALL_LIBS` "$mount"/*.app/Contents/Frameworks
+
+# Qt frameworks are not packaged according to Apple Spec with some files in the
+# wrong locations. Because of this the build process doesn't copy all the right
+# files when building the app bundle.
+#
+# codesign requires all frameworks, plugins, etc to be signed within an app
+# bundle and won't sign these frameworks if they are not in the correct form. So
+# these commands copy the needed files.
+#
+# Change the paths if using Qt 5 or if Qt 4 is installed elsewhere.
+# Remove this section entirely when Qt fix this issue.
+
+qtfwpath="/usr/local/Cellar/qt/4.8.5/lib"
+fwarray=(QtCore QtGui QtNetwork QtSql QtWebKit QtXml QtXmlPatterns)
+
+for curfw in "${fwarray[@]}"
+do
+    appfwrespath="${mount}/owncloud.app/Contents/Frameworks/${curfw}.framework/Resources"
+    infoplistpath="${qtfwpath}/${curfw}.framework/Contents/Info.plist"
+
+    if [ ! -f "${appfwrespath}/Info.plist" ]; then
+        if [ ! -d "$appfwrespath" ]; then
+            mkdir "$appfwrespath"
+        fi
+        cp "$infoplistpath" "$appfwrespath"
+    fi
+done
+
 codesign -s "$identity" --deep "$mount"/*.app
+bless --openfolder "$mount"
 popd
 diskutil eject "$mount"
 test -e "$signed_dmg" && rm -rf "$signed_dmg"
