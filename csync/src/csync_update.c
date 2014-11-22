@@ -266,7 +266,7 @@ static int _csync_detect_update(CSYNC *ctx, const char *file,
             goto out;
         }
         if((ctx->current == REMOTE_REPLICA && !c_streq(fs->etag, tmp->etag ))
-            || (ctx->current == LOCAL_REPLICA && (fs->mtime != tmp->modtime
+            || (ctx->current == LOCAL_REPLICA && ((fs->mtime != tmp->modtime && tmp->type != 2)
                                                   // zero size in statedb can happen during migration
                                                   || (tmp->size != 0 && fs->size != tmp->size)
 #if 0
