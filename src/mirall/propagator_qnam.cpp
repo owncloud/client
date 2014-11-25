@@ -24,6 +24,9 @@
 #include <QFileInfo>
 #include <QDir>
 #include <cmath>
+#include <qtconcurrentrun.h>
+
+using namespace QtConcurrent;
 
 namespace Mirall {
 
@@ -780,6 +783,27 @@ QString makeConflictFileName(const QString &fn, const QDateTime &dt)
     return conflictFileName;
 }
 
+QByteArray calcMd5( const QString& file )
+{
+    QByteArray arr;
+
+    return arr;
+}
+
+bool checkMd5OfFile( const QString& fileName, const QByteArray& sum )
+{
+    QFuture<QByteArray> f1 = run(calcMd5, fileName );
+    f1.waitForFinished();
+
+    QByteArray md5 = f1.result();
+
+    if( !md5.isEmpty() && md5 == sum ) {
+        return true;
+    }
+    return false;
+
+}
+
 void PropagateDownloadFileQNAM::downloadFinished()
 {
 
@@ -810,6 +834,16 @@ void PropagateDownloadFileQNAM::downloadFinished()
     QFileInfo existingFile(fn);
     if(existingFile.exists() && existingFile.permissions() != _tmpFile.permissions()) {
         _tmpFile.setPermissions(existingFile.permissions());
+    }
+
+    QByteArray etag = _item._etag;
+    int pos = etag.indexOf(':');
+    if( pos > -1 ) {
+        QByteArray sum = etag.mid(pos+1,-1);
+
+        if( ! checkMd5OfFile(_tmpFile.fileName(), sum) ) {
+            // File is invalid because the MD5 sum is wrong
+        }
     }
 
     FileSystem::setFileHidden(_tmpFile.fileName(), false);
