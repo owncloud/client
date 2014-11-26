@@ -62,6 +62,38 @@ static QByteArray get_etag_from_reply(QNetworkReply *reply)
     return ret;
 }
 
+QByteArray calcMd5( const QString& filename )
+{
+    QByteArray arr;
+
+    QCryptographicHash crypto( QCryptographicHash::Md5 );
+
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray data;
+        while (!file.atEnd()) {
+            data = file.read(1024*1024*10);
+            crypto.addData(data);
+        }
+        arr = crypto.result();
+    }
+    return arr;
+}
+
+bool checkMd5OfFile( const QString& fileName, const QByteArray& sum )
+{
+    QFuture<QByteArray> f1 = run(calcMd5, fileName );
+    f1.waitForFinished();
+
+    QByteArray md5 = f1.result();
+
+    if( !md5.isEmpty() && md5 == sum ) {
+        return true;
+    }
+    return false;
+
+}
+
 /**
  * Fiven an error from the network, map to a SyncFileItem::Status error
  */
@@ -759,6 +791,25 @@ void PropagateDownloadFileQNAM::slotGetFinished()
         return;
     }
 
+    /* Check if a checksum was transmitted */
+    if( 1 || job->reply()->hasRawHeader("OC-Checksum")) {
+        QByteArray header = job->reply()->rawHeader("OC-Checksum");
+        header = "MD5:0859f426133522886f378979b8681e68";
+        int indx = header.indexOf(':');
+        if( indx > 1 ) {
+            const QByteArray type = header.left(indx);
+            const QByteArray sum  = header.mid(indx+1);
+            if( type == "MD5" ) {
+                if( ! checkMd5OfFile(_tmpFile.fileName(), sum )) {
+                    _tmpFile.remove();
+                    done(SyncFileItem::SoftError, tr("The file downloaded with a broken checksum."));
+                    return;
+                }
+            } else {
+                qDebug() << "Unknown checksum type: " << type;
+            }
+        }
+    }
     downloadFinished();
 }
 
@@ -781,27 +832,6 @@ QString makeConflictFileName(const QString &fn, const QDateTime &dt)
         conflictFileName.insert(dotLocation, "_conflict_" + QString::fromUtf8(conflictFileUserName)  + "-" + timeString);
 
     return conflictFileName;
-}
-
-QByteArray calcMd5( const QString& file )
-{
-    QByteArray arr;
-
-    return arr;
-}
-
-bool checkMd5OfFile( const QString& fileName, const QByteArray& sum )
-{
-    QFuture<QByteArray> f1 = run(calcMd5, fileName );
-    f1.waitForFinished();
-
-    QByteArray md5 = f1.result();
-
-    if( !md5.isEmpty() && md5 == sum ) {
-        return true;
-    }
-    return false;
-
 }
 
 void PropagateDownloadFileQNAM::downloadFinished()
@@ -834,16 +864,6 @@ void PropagateDownloadFileQNAM::downloadFinished()
     QFileInfo existingFile(fn);
     if(existingFile.exists() && existingFile.permissions() != _tmpFile.permissions()) {
         _tmpFile.setPermissions(existingFile.permissions());
-    }
-
-    QByteArray etag = _item._etag;
-    int pos = etag.indexOf(':');
-    if( pos > -1 ) {
-        QByteArray sum = etag.mid(pos+1,-1);
-
-        if( ! checkMd5OfFile(_tmpFile.fileName(), sum) ) {
-            // File is invalid because the MD5 sum is wrong
-        }
     }
 
     FileSystem::setFileHidden(_tmpFile.fileName(), false);
