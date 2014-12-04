@@ -49,4 +49,10 @@ bool setModTime(const QString &filename, time_t modTime);
 bool renameReplace(const QString &originFileName, const QString &destinationFileName,
                    QString *errorString);
 
+/**
+ * Calculate the MD5 checksum of a file in a worker thread. This function waits
+ * until that is finished.
+ */
+QByteArray calcMd5( const QString& fileName );
+QByteArray calcSha1( const QString& fileName );
 }}

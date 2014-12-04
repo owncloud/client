@@ -821,8 +821,7 @@ void SyncEngine::finalize()
     _thread.wait();
     csync_commit(_csync_ctx);
 
-    qDebug() << "CSync run took " << _stopWatch.addLapTime(QLatin1String("Sync Finished"));
-    _stopWatch.stop();
+    qDebug() << "CSync run took " << _stopWatch.stop();
 
     _propagator.reset(0);
     _syncRunning = false;

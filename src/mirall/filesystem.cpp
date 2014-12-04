@@ -17,6 +17,10 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <QCryptographicHash>
+#include <QFuture>
+#include <qtconcurrentrun.h>
+
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <qabstractfileengine.h>
@@ -26,6 +30,8 @@
 #include <windef.h>
 #include <winbase.h>
 #endif
+
+using namespace QtConcurrent;
 
 // We use some internals of csync:
 extern "C" int c_utimes(const char *, const struct timeval *);
@@ -149,6 +155,60 @@ bool FileSystem::renameReplace(const QString& originFileName, const QString& des
     return true;
 }
 
+QByteArray calcMd5Worker( const QString& filename )
+{
+    QByteArray arr;
 
+    QCryptographicHash crypto( QCryptographicHash::Md5 );
+
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray data;
+        while (!file.atEnd()) {
+            data = file.read(1024*1024*10);
+            crypto.addData(data);
+        }
+        arr = crypto.result().toHex();
+    }
+    return arr;
+}
+
+QByteArray calcSha1Worker( const QString& filename )
+{
+    QByteArray arr;
+
+    QCryptographicHash crypto( QCryptographicHash::Sha1 );
+
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray data;
+        while (!file.atEnd()) {
+            data = file.read(1024*1024*10);
+            crypto.addData(data);
+        }
+        arr = crypto.result().toHex();
+    }
+    return arr;
+}
+
+QByteArray FileSystem::calcMd5( const QString& fileName )
+{
+    QFuture<QByteArray> f1 = run(calcMd5Worker, fileName );
+    f1.waitForFinished();
+
+    const QByteArray md5 = f1.result();
+
+    return md5;
+}
+
+QByteArray FileSystem::calcSha1( const QString& fileName )
+{
+    QFuture<QByteArray> f1 = run(calcSha1Worker, fileName );
+    f1.waitForFinished();
+
+    const QByteArray md5 = f1.result();
+
+    return md5;
+}
 
 }

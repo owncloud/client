@@ -24,9 +24,6 @@
 #include <QFileInfo>
 #include <QDir>
 #include <cmath>
-#include <qtconcurrentrun.h>
-
-using namespace QtConcurrent;
 
 namespace Mirall {
 
@@ -62,36 +59,34 @@ static QByteArray get_etag_from_reply(QNetworkReply *reply)
     return ret;
 }
 
-QByteArray calcMd5( const QString& filename )
+
+
+bool checkHashSumOfFile( const QString& fileName, const QByteArray& header )
 {
-    QByteArray arr;
+    int indx = header.indexOf(':');
+    const QByteArray type = header.left(indx).toUpper();
+    const QByteArray sum  = header.mid(indx+1);
 
-    QCryptographicHash crypto( QCryptographicHash::Md5 );
-
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly)) {
-        QByteArray data;
-        while (!file.atEnd()) {
-            data = file.read(1024*1024*10);
-            crypto.addData(data);
-        }
-        arr = crypto.result();
+    Utility::StopWatch watch;
+    watch.start();
+    // start the calculation in different thread
+    QByteArray hash("notfound");
+    if( type == "MD5" ) {
+         hash = FileSystem::calcMd5(fileName);
+    } else if( type == "SHA1" ) {
+        hash = FileSystem::calcSha1(fileName);
     }
-    return arr;
-}
+    qDebug() << "Calculation of checksum took" << watch.stop();
 
-bool checkMd5OfFile( const QString& fileName, const QByteArray& sum )
-{
-    QFuture<QByteArray> f1 = run(calcMd5, fileName );
-    f1.waitForFinished();
-
-    QByteArray md5 = f1.result();
-
-    if( !md5.isEmpty() && md5 == sum ) {
+    // if the hashtype is not know, lets assume the check is positive
+    if( hash == "notfound" ) {
+        qDebug() << "Unknown hash type: "  << type;
+        return true;
+    }
+    if( !hash.isEmpty() && hash == sum ) {
         return true;
     }
     return false;
-
 }
 
 /**
@@ -794,19 +789,16 @@ void PropagateDownloadFileQNAM::slotGetFinished()
     /* Check if a checksum was transmitted */
     if( 1 || job->reply()->hasRawHeader("OC-Checksum")) {
         QByteArray header = job->reply()->rawHeader("OC-Checksum");
-        header = "MD5:0859f426133522886f378979b8681e68";
-        int indx = header.indexOf(':');
-        if( indx > 1 ) {
-            const QByteArray type = header.left(indx);
-            const QByteArray sum  = header.mid(indx+1);
-            if( type == "MD5" ) {
-                if( ! checkMd5OfFile(_tmpFile.fileName(), sum )) {
-                    _tmpFile.remove();
-                    done(SyncFileItem::SoftError, tr("The file downloaded with a broken checksum."));
-                    return;
-                }
+        header = "MD5:bcc8326e48ff057a63f003c342406ac1";
+
+        if( header.indexOf(':') > 1 ) {
+            if( ! checkHashSumOfFile(_tmpFile.fileName(), header)) {
+                _tmpFile.remove();
+                _propagator->_anotherSyncNeeded = true;
+                done(SyncFileItem::SoftError, tr("The file downloaded with a broken checksum."));
+                return;
             } else {
-                qDebug() << "Unknown checksum type: " << type;
+                qDebug() << "Checksum checked and matching: " << header;
             }
         }
     }
