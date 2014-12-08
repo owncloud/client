@@ -110,11 +110,29 @@ void PropagateUploadFileQNAM::start()
         return;
 
     _file = new QFile(_propagator->getFilePath(_item._file), this);
+#ifdef Q_OS_WIN
+    // The sharing flag allow other applications to read/delete the file while we upload it.
+    // FIXME For 1.8 where we have better checks for file modification during upload, we could also allow FILE_SHARE_WRITE? Although
+    // I'm worried about strange race conditions. Maybe a file should be deleted from the server if the local mtime has changed after the upload?
+    HANDLE h = CreateFileW(wchar_t*)_file.fileName().utf16(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_DELETE, NULL, OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL+FILE_FLAG_BACKUP_SEMANTICS, NULL);
+    if (h == INVALID_HANDLE_VALUE) {
+        done(SyncFileItem::NormalError, QString("Windows Error: %1").arg(GetLastError()));
+        delete _file;
+        return;
+    }
+    if (!_file->open(h, QIODevice::ReadOnly, QFile::AutoCloseHandle)) {
+        done(SyncFileItem::NormalError, _file->errorString());
+        delete _file;
+        return;
+    }
+#else
     if (!_file->open(QIODevice::ReadOnly)) {
         done(SyncFileItem::NormalError, _file->errorString());
         delete _file;
         return;
     }
+#endif
 
     // Update the mtime and size, it might have changed since discovery.
     _item._modtime = FileSystem::getModTime(_file->fileName());
