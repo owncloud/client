@@ -139,6 +139,9 @@ void PropagateUploadFileQNAM::start()
     if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
+    // calculate the files checksum
+    _item._checksum = FileSystem::calcMd5(_item._file );
+
     _file = new QFile(_propagator->getFilePath(_item._file), this);
     if (!_file->open(QIODevice::ReadOnly)) {
         done(SyncFileItem::NormalError, _file->errorString());
@@ -283,10 +286,16 @@ void PropagateUploadFileQNAM::startNextChunk()
             if( currentChunkSize == 0 ) { // if the last chunk pretents to be 0, its actually the full chunk size.
                 currentChunkSize = chunkSize();
             }
+            if( !_item._checksum.isEmpty() ) {
+                headers["OC-MD5"] = _item._checksum;
+            }
         }
         device = new ChunkDevice(_file, chunkSize() * quint64(sendingChunk), currentChunkSize);
     } else {
         device = _file;
+        if( !_item._checksum.isEmpty() ) {
+            headers["OC-MD5"] = _item._checksum;
+        }
     }
 
     bool isOpen = true;
