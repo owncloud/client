@@ -99,6 +99,7 @@ public:
     bool                 _should_update_etag;
     QByteArray           _fileId;
     QByteArray           _remotePerm;
+    QByteArray           _checksum;
     QString              _directDownloadUrl;
     QString              _directDownloadCookies;
 
