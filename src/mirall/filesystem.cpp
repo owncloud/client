@@ -206,9 +206,9 @@ QByteArray FileSystem::calcSha1( const QString& fileName )
     QFuture<QByteArray> f1 = run(calcSha1Worker, fileName );
     f1.waitForFinished();
 
-    const QByteArray md5 = f1.result();
+    const QByteArray sha1 = f1.result();
 
-    return md5;
+    return sha1;
 }
 
 }
