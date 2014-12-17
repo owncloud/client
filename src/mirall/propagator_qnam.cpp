@@ -798,11 +798,10 @@ void PropagateDownloadFileQNAM::slotGetFinished()
     }
 
     /* Check if a checksum was transmitted */
-    if( 1 || job->reply()->hasRawHeader("OC-Checksum")) {
+    if( job->reply()->hasRawHeader("OC-Checksum")) {
         QByteArray header = job->reply()->rawHeader("OC-Checksum");
-        header = "MD5:bcc8326e48ff057a63f003c342406ac1";
 
-        if( header.indexOf(':') > 1 ) {
+        if( !header.isNull() && header.indexOf(':') > 1 ) {
             if( ! checkHashSumOfFile(_tmpFile.fileName(), header)) {
                 _tmpFile.remove();
                 _propagator->_anotherSyncNeeded = true;
