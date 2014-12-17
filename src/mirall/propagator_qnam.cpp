@@ -139,10 +139,12 @@ void PropagateUploadFileQNAM::start()
     if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
-    // calculate the files checksum
-    _item._checksum = FileSystem::calcMd5(_item._file );
+    const QString filePath = _propagator->getFilePath(_item._file);
 
-    _file = new QFile(_propagator->getFilePath(_item._file), this);
+    // calculate the files checksum
+    _item._checksum = FileSystem::calcMd5( filePath );
+
+    _file = new QFile( filePath, this );
     if (!_file->open(QIODevice::ReadOnly)) {
         done(SyncFileItem::NormalError, _file->errorString());
         delete _file;
