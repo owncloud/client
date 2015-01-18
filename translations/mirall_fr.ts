@@ -141,7 +141,7 @@
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="375"/>
         <source>Confirm Folder Reset</source>
-        <translation>Confirmation de la réinitialisation du dossier</translation>
+        <translation>Confirmez la réinitialisation du dossier</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="376"/>
