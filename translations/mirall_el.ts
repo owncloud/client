@@ -37,7 +37,7 @@
     <message>
         <location filename="../src/mirall/folderwizardtargetpage.ui" line="140"/>
         <source>Create Folder</source>
-        <translation>Δημιουργια φακελου</translation>
+        <translation>Δημιουργία Φακέλου</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizardtargetpage.ui" line="160"/>
@@ -1120,7 +1120,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/wizard/owncloudsetuppage.cpp" line="233"/>
         <source>&lt;p&gt;Could not connect securely:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;&lt;p&gt;Do you want to connect unencrypted instead (not recommended)?&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Αδυναμία ασφαλούς σύνδεσης:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;&lt;p&gt;Θα θέλατε  παρ&apos;όλα αυτά να συνδεθείτε χωρίς κρυπτογράφηση (δεν προτείνεται);&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Αδυναμία ασφαλούς σύνδεσης:&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;&lt;p&gt;Θα θέλατε παρ&apos;όλα αυτά να συνδεθείτε χωρίς κρυπτογράφηση (δεν προτείνεται);&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/wizard/owncloudsetuppage.cpp" line="234"/>
@@ -1332,7 +1332,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/propagator_qnam.cpp" line="755"/>
         <source>The file could not be downloaded completely.</source>
-        <translation>Η λήψη του αρχείου δεν ολοκληρώθηκε πλήρως.</translation>
+        <translation>Η λήψη του αρχείου δεν ολοκληρώθηκε.</translation>
     </message>
     <message>
         <location filename="../src/mirall/propagator_qnam.cpp" line="791"/>
@@ -2027,7 +2027,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="184"/>
         <source>The mounted directory is temporary not available on the server</source>
-        <translation>Ο προσαρτημένος φάκελος προσωρινά δεν είναι διαθέσιμος στο διακομιστή</translation>
+        <translation>Ο προσαρτημένος φάκελος δεν είναι διαθέσιμος προσωρινά στο διακομιστή</translation>
     </message>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="187"/>
@@ -2062,7 +2062,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="397"/>
         <source>Filename encoding is not valid</source>
-        <translation type="unfinished"/>
+        <translation>Η κωδικοποίηση του ονόματος αρχείου δεν είναι έγκυρη</translation>
     </message>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="580"/>
@@ -2155,7 +2155,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/theme.cpp" line="239"/>
         <source>&lt;p&gt;Distributed by %1 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%2 and the %2 logo are registered trademarks of %1 in the United States, other countries, or both.&lt;/p&gt;</source>
-        <translation>&lt;p&gt; Διανέμεται από 1% και υπό την άδεια GNU General Public License (GPL) έκδοση 2.0. &lt;br/&gt;% 2 και το 2% το λογότυπο είναι σήματα κατατεθέντα της 1% στις Ηνωμένες Πολιτείες, άλλες χώρες, ή και τα δύο. &lt;/ p&gt;</translation>
+        <translation>&lt;p&gt;Διανέμεται από 1% και υπό την άδεια GNU General Public License (GPL) έκδοση 2.0.&lt;br/&gt;% 2 και το 2% το λογότυπο είναι σήματα κατατεθέντα της 1% στις Ηνωμένες Πολιτείες, άλλες χώρες, ή και τα δύο.&lt;/ p&gt;</translation>
     </message>
 </context>
 <context>

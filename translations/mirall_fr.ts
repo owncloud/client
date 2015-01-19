@@ -193,7 +193,7 @@
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="487"/>
         <source>The syncing operation is running.&lt;br/&gt;Do you want to terminate it?</source>
-        <translation>La synchronisation est en cours.&lt;br/&gt;Voulez-vous y mettre un terme?</translation>
+        <translation>La synchronisation est en cours.&lt;br/&gt;Voulez-vous l&apos;arrêter ?</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="607"/>
@@ -204,7 +204,7 @@
         <location filename="../src/mirall/accountsettings.cpp" line="647"/>
         <source>%1 %2 (%3 of %4) %5 left at a rate of %6/s</source>
         <extracomment>Example text: &quot;uploading foobar.png (1MB of 2MB) time left 2 minutes at a rate of 24Kb/s&quot;</extracomment>
-        <translation>%1 %2 (%3 de %4) %5 restant à un débit de %6/s</translation>
+        <translation>%1 %2 (%3 sur %4) %5 restante(s) à un débit de %6/s</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.cpp" line="672"/>
