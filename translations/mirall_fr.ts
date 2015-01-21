@@ -101,7 +101,7 @@
     <message>
         <location filename="../src/mirall/accountsettings.ui" line="55"/>
         <source>Add Folder...</source>
-        <translation>Ajouter un dossier ...</translation>
+        <translation>Ajouter un dossier...</translation>
     </message>
     <message>
         <location filename="../src/mirall/accountsettings.ui" line="76"/>
@@ -546,12 +546,12 @@ Voulez-vous réellement effectuer cette opération ?</translation>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="141"/>
         <source>The selected folder is a symbolic link. An already configured folder is contained in the folder this link is pointing to.</source>
-        <translation>Le dossier sélectionné est un lien symbolique. Une configuration du dossier existe déjà dans le dossier portant vers ce même lien.</translation>
+        <translation>Le dossier sélectionné est un lien symbolique. Un dossier configuré existe déjà dans le répertoire vers lequel le lien pointe.</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="148"/>
         <source>An already configured folder contains the currently entered folder.</source>
-        <translation>Le dossier saisi est déjà contenu dans un dossier configuré.</translation>
+        <translation>Le dossier saisi est contenu dans un dossier déjà configuré.</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="154"/>
