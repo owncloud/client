@@ -10,21 +10,43 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-
+#define NTDDI_VERSION 0x06010000
 #include <shlobj.h>
 #include <winbase.h>
 #include <windows.h>
 
 static const char runPathC[] = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
+static bool isWinVistaOrHigher() {
+    OSVERSIONINFO osvi;
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osvi);
+    if (osvi.dwMajorVersion < 6) 
+       return false;
+    return true;
+
+}
+
 static void setupFavLink_private(const QString &folder)
 {
     // Windows Explorer: Place under "Favorites" (Links)
-    wchar_t path[MAX_PATH];
-    SHGetSpecialFolderPath(0, path, CSIDL_PROFILE, FALSE);
-    QString profile =  QDir::fromNativeSeparators(QString::fromWCharArray(path));
+    QString profile;
+    if (isWinVistaOrHigher()) {
+        wchar_t *path;
+        SHGetKnownFolderPath(FOLDERID_Links, 0, NULL, &path);
+        profile =  QDir::fromNativeSeparators(QString::fromWCharArray(path));
+    } else {
+        wchar_t path[MAX_PATH];
+        SHGetSpecialFolderPath(0, path, CSIDL_PROFILE, FALSE); 
+        profile =  QDir::fromNativeSeparators(QString::fromWCharArray(path));
+    }
     QDir folderDir(QDir::fromNativeSeparators(folder));
-    QString linkName = profile+QLatin1String("/Links/") + folderDir.dirName() + QLatin1String(".lnk");
+    if (isWinVistaOrHigher()) {
+        QString linkName = profile + QLatin1String("/") + folderDir.dirName() + QLatin1String(".lnk");
+    } else {
+        QString linkName = profile+QLatin1String("/Links/") + folderDir.dirName() + QLatin1String(".lnk");
+    }
     if (!QFile::link(folder, linkName))
         qDebug() << Q_FUNC_INFO << "linking" << folder << "to" << linkName << "failed!";
 }
