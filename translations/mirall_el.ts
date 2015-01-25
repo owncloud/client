@@ -2150,7 +2150,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/theme.cpp" line="238"/>
         <source>&lt;p&gt;Copyright ownCloud, Incorparated&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Πνευματικά δικαιώματα ownCloud, Ανώνυμη Εταιρία&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Πνευματικά δικαιώματα ownCloud, Ε.Π.Ε.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/theme.cpp" line="239"/>
