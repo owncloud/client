@@ -296,7 +296,7 @@ Tiempo restante %5</translation>
     <message>
         <location filename="../src/mirall/folder.cpp" line="160"/>
         <source>Local folder %1 does not exist.</source>
-        <translation>Carpeta local %1 no existe.</translation>
+        <translation>La carpeta local %1 no existe.</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="163"/>
@@ -1298,7 +1298,7 @@ No se recomienda usarla.</translation>
     <message>
         <location filename="../src/mirall/propagator_legacy.cpp" line="363"/>
         <source>Sync was aborted by user.</source>
-        <translation>El usuario ha interrumpiado la sincronización.</translation>
+        <translation>El usuario ha interrumpido la sincronización.</translation>
     </message>
     <message>
         <location filename="../src/mirall/propagator_legacy.cpp" line="416"/>
@@ -1396,7 +1396,7 @@ No se recomienda usarla.</translation>
     <message>
         <location filename="../src/mirall/propagatorjobs.cpp" line="152"/>
         <source>The file has been removed from a read only share. It was restored.</source>
-        <translation>El archvo fue eliminado de una carpeta compartida en modo de solo lectura. Ha sido recuperado.</translation>
+        <translation>El archivo fue eliminado de una carpeta compartida en modo de solo lectura. Ha sido recuperado.</translation>
     </message>
 </context>
 <context>
@@ -2147,7 +2147,7 @@ No se recomienda usarla.</translation>
     <message>
         <location filename="../src/mirall/theme.cpp" line="238"/>
         <source>&lt;p&gt;Copyright ownCloud, Incorparated&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Copyright ownCloud, Incorparated&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Copyright ownCloud, Incorporated&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/mirall/theme.cpp" line="239"/>
