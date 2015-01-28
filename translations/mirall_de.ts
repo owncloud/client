@@ -527,7 +527,7 @@ Sind Sie sicher, dass sie diese Operation durchführen wollen?</translation>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="100"/>
         <source>No valid local folder selected!</source>
-        <translation>Keinen gültigen lokales Ordner gewählt!</translation>
+        <translation>Keinen gültigen lokalen Ordner gewählt!</translation>
     </message>
     <message>
         <location filename="../src/mirall/folderwizard.cpp" line="105"/>
