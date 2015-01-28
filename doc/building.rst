@@ -139,26 +139,26 @@ To cross-compile:
 Generic Build Instructions
 --------------------------
 
-Compared to previous versions, building Mirall has become easier. Unlike
-earlier versions, CSync, which is the sync engine library of Mirall, is now
-part of the Mirall source repository and not a separate module.
+Compared to previous versions, building the desktop sync client has become 
+easier. Unlike earlier versions, CSync, which is the sync engine library of the 
+client, is now part of the client source repository and not a separate module.
 
-You can download Mirall from the ownCloud `Client Download Page`_.
+You can download the client from the ownCloud `Client Download Page`_.
 
 To build the most up to date version of the client:
 
-1. Clone the latest versions of Mirall from Git_ as follows:
+1. Clone the latest versions of the client from Git_ as follows:
 
-  ``git clone git://github.com/owncloud/mirall.git``
+  ``git clone git://github.com/owncloud/client.git``
 
 2. Create build directories:
 
-  ``mkdir mirall-build``
+  ``mkdir client-build``
 
-3. Build mirall:
+3. Build the client:
 
-  ``cd ../mirall-build``
-  ``cmake -DCMAKE_BUILD_TYPE="Debug" ../mirall``
+  ``cd ../client-build``
+  ``cmake -DCMAKE_BUILD_TYPE="Debug" ../client``
 
   ..note:: You must use absolute paths for the ``include`` and ``library``
            directories.
