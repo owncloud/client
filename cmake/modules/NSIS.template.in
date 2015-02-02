@@ -396,8 +396,6 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
 
    SetOutPath "$INSTDIR\platforms"
    File "${PLATFORMS_DLL_PATH}\qwindows.dll"
-   SetOutPath "$INSTDIR\accessible"
-   File "${ACCESSIBLE_DLL_PATH}\qtaccessiblewidgets.dll"
    SetOutPath "$INSTDIR\imageformats"
    File "${IMAGEFORMATS_DLL_PATH}\qgif.dll"
    File "${IMAGEFORMATS_DLL_PATH}\qjpeg.dll"
@@ -419,12 +417,16 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
    File "${QT_DLL_PATH}\Qt5PrintSupport.dll"
    File "${QT_DLL_PATH}\Qt5Qml.dll"
    File "${QT_DLL_PATH}\Qt5Quick.dll"
-   File "${QT_DLL_PATH}\Qt5Sensors.dll"
    File "${QT_DLL_PATH}\Qt5Sql.dll"
    File "${QT_DLL_PATH}\Qt5WebKit.dll"
    File "${QT_DLL_PATH}\Qt5WebKitWidgets.dll"
    File "${QT_DLL_PATH}\Qt5Widgets.dll"
    File "${QT_DLL_PATH}\Qt5Xml.dll"
+
+   ;QtWebKit dependencies
+   File "${QT_DLL_PATH}\Qt5Multimedia.dll"
+   File "${QT_DLL_PATH}\Qt5MultimediaWidgets.dll"
+   File "${QT_DLL_PATH}\Qt5Sensors.dll"
 
    ;Qt deps
    File "${MING_BIN}\libpng16-16.dll"
@@ -456,7 +458,6 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
    File "${MING_BIN}\libproxy.dll"
    File "${MING_BIN}\libmodman.dll"
    File "${MING_BIN}\libxml2-2.dll"
-
    ;MinGW stuff
    File "${MING_BIN}\libgcc_s_sjlj-1.dll"
    File "${MING_BIN}\libstdc++-6.dll"
