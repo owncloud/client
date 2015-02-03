@@ -712,7 +712,7 @@ Sind Sie sicher, dass sie diese Operation durchführen wollen?</translation>
     <message>
         <location filename="../src/creds/httpcredentials.cpp" line="375"/>
         <source>Please enter %1 password for user &apos;%2&apos;:</source>
-        <translation>Bitte %1 Passwort für den Nutzer &apos;%2&apos; eingeben:</translation>
+        <translation>Bitte %1 Passwort für den Benutzer &apos;%2&apos; eingeben:</translation>
     </message>
 </context>
 <context>
@@ -1299,7 +1299,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/mirall/propagator_legacy.cpp" line="363"/>
         <source>Sync was aborted by user.</source>
-        <translation>Synchronisation wurde durch den Nutzer abgebrochen.</translation>
+        <translation>Synchronisation wurde durch den Benutzer abgebrochen.</translation>
     </message>
     <message>
         <location filename="../src/mirall/propagator_legacy.cpp" line="416"/>
@@ -1429,7 +1429,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/mirall/propagator_legacy.cpp" line="174"/>
         <source>Sync was aborted by user.</source>
-        <translation>Synchronisation wurde durch den Nutzer abgebrochen.</translation>
+        <translation>Synchronisation wurde durch den Benutzer abgebrochen.</translation>
     </message>
     <message>
         <location filename="../src/mirall/propagator_legacy.cpp" line="180"/>
@@ -1609,7 +1609,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/mirall/settingsdialog.cpp" line="60"/>
         <source>Account</source>
-        <translation>Nutzerkonto</translation>
+        <translation>Benutzerkonto</translation>
     </message>
 </context>
 <context>
@@ -1622,7 +1622,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/mirall/settingsdialogmac.cpp" line="67"/>
         <source>Account</source>
-        <translation>Nutzerkonto</translation>
+        <translation>Benutzerkonto</translation>
     </message>
     <message>
         <location filename="../src/mirall/settingsdialogmac.cpp" line="71"/>

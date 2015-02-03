@@ -210,7 +210,7 @@
         <location filename="../src/mirall/accountsettings.cpp" line="672"/>
         <source>%1 of %2, file %3 of %4
 Total time left %5</source>
-        <translation>%2 のうち %1 , ファイル %4 のうち %3
+        <translation>%2 のうち %1 , ファイル%4個のうち%3個
 残り時間 %5</translation>
     </message>
     <message>
@@ -367,7 +367,7 @@ Total time left %5</source>
     <message>
         <location filename="../src/mirall/folder.cpp" line="485"/>
         <source>%1 has been moved to %2.</source>
-        <translation>%1 は %2 に移されました。</translation>
+        <translation>%1 は %2 に移動しました。</translation>
     </message>
     <message>
         <location filename="../src/mirall/folder.cpp" line="490"/>
@@ -1448,7 +1448,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/propagator_qnam.cpp" line="327"/>
         <source>The local file was removed during sync.</source>
-        <translation>ローカルファイルを同期時に削除します。</translation>
+        <translation>ローカルファイルを同期中に削除します。</translation>
     </message>
     <message>
         <location filename="../src/mirall/propagator_qnam.cpp" line="130"/>
@@ -2101,17 +2101,17 @@ It is not advisable to use it.</source>
         <location filename="../src/mirall/syncengine.cpp" line="968"/>
         <location filename="../src/mirall/syncengine.cpp" line="988"/>
         <source>Not allowed to remove, restoring</source>
-        <translation>削除できません、復元しています</translation>
+        <translation>削除できないので復元しています</translation>
     </message>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="1003"/>
         <source>Local files and share folder removed.</source>
-        <translation>ローカルファイルと共有フォルダが削除されました。</translation>
+        <translation>ローカルファイルと共有フォルダーを削除しました。</translation>
     </message>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="1058"/>
         <source>Move not allowed, item restored</source>
-        <translation>移動できません、項目を復元しました</translation>
+        <translation>移動できないので項目を復元しました</translation>
     </message>
     <message>
         <location filename="../src/mirall/syncengine.cpp" line="1067"/>
@@ -2573,7 +2573,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/mirall/progressdispatcher.cpp" line="40"/>
         <source>Moved to %1</source>
-        <translation>%1　へ移動完了</translation>
+        <translation>%1に移動済み</translation>
     </message>
     <message>
         <location filename="../src/mirall/progressdispatcher.cpp" line="42"/>
