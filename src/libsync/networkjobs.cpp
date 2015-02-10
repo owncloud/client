@@ -555,6 +555,7 @@ bool CheckServerJob::finished()
                 && status.contains("versionstring") ) {
 
             QString versionString = status.value("version").toString();
+            AccountManager::instance()->account()->setVersionString(versionString);
             if (versionString.contains('.') && versionString.split('.')[0].toInt() < 7) {
                 AbstractNetworkJob::preOc7WasDetected = true;
             }
