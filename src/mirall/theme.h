@@ -16,6 +16,7 @@
 #define _THEME_H
 
 #include "mirall/syncresult.h"
+#include <QObject>
 
 
 class QIcon;
