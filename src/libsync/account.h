@@ -151,6 +151,9 @@ public:
     void setCapabilities(const QVariantMap &caps);
     QVariantMap capabilities();
 
+    void setVersionString(const QString &versionString);
+    QString versionString();
+
     void clearCookieJar();
 
     QNetworkAccessManager* networkAccessManager();
@@ -187,6 +190,7 @@ private:
     QString _pemPrivateKey;  
     QString _davPath; // default "remote.php/webdav/";
     bool _wasMigrated;
+    QString _versionString;
 };
 
 }
