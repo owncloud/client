@@ -75,6 +75,8 @@ bool checkHashSumOfFile( const QString& fileName, const QByteArray& header )
          hash = FileSystem::calcMd5(fileName);
     } else if( type == "SHA1" ) {
         hash = FileSystem::calcSha1(fileName);
+    } else if( type == "Adler32" ) {
+        hash = FileSystem::calcAdler32(fileName);
     }
     qDebug() << "Calculation of checksum took" << watch.stop();
 
@@ -142,7 +144,17 @@ void PropagateUploadFileQNAM::start()
     const QString filePath = _propagator->getFilePath(_item._file);
 
     // calculate the files checksum
-    _item._checksum = FileSystem::calcMd5( filePath );
+
+    //TODO: this is temporary, should be set from the server
+    if(qgetenv("OWNCLOUD_CHECKSUM_TYPE") == "Adler32")
+      {
+	_item._checksum = "Adler32:"+FileSystem::calcAdler32( filePath );
+      }
+    else
+      {
+	_item._checksum = "MD5:"+FileSystem::calcMd5( filePath );
+      }
+
 
     _file = new QFile( filePath, this );
     if (!_file->open(QIODevice::ReadOnly)) {
@@ -289,14 +301,14 @@ void PropagateUploadFileQNAM::startNextChunk()
                 currentChunkSize = chunkSize();
             }
             if( !_item._checksum.isEmpty() ) {
-                headers["OC-MD5"] = _item._checksum;
+                headers["OC-Checksum"] = _item._checksum;
             }
         }
         device = new ChunkDevice(_file, chunkSize() * quint64(sendingChunk), currentChunkSize);
     } else {
         device = _file;
         if( !_item._checksum.isEmpty() ) {
-            headers["OC-MD5"] = _item._checksum;
+            headers["OC-Checksum"] = _item._checksum;
         }
     }
 
