@@ -27,7 +27,7 @@
 #endif
 #include "configfile.h"
 #include "utility.h"
-#include "theme.h"
+#include "account.h"
 
 #include <json.h>
 
@@ -343,7 +343,8 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
 bool OwncloudPropagator::isInSharedDirectory(const QString& file)
 {
     bool re = false;
-    if( _remoteDir.contains( Theme::instance()->webDavPath() + QLatin1String("Shared") ) ) {
+    const QString webDavPath = _account->davPath();
+    if( _remoteDir.contains( webDavPath + QLatin1String("Shared") ) ) {
         // The Shared directory is synced as its own sync connection
         re = true;
     } else {
