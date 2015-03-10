@@ -25,6 +25,7 @@
 #include <QBuffer>
 #include <QFileIconProvider>
 #include <QClipboard>
+#include <QInputDialog>
 
 namespace {
     int SHARETYPE_PUBLIC = 3;
@@ -106,6 +107,11 @@ ShareDialog::ShareDialog(AccountPtr account, const QString &sharePath, const QSt
     _ui->errorLabel->setFrameShape(QFrame::Box);
     _ui->errorLabel->setContentsMargins(QMargins(12,12,12,12));
     _ui->errorLabel->hide();
+
+    _caps.reset(new OcsCapabilities(_account->capabilities()));
+    if (_caps->isValid() && !_caps->sharingEnabled()) {
+        close();
+    }
 }
 
 void ShareDialog::setExpireDate(const QDate &date)
@@ -248,6 +254,24 @@ void ShareDialog::slotSharesFetched(const QString &reply)
             _ui->widget_shareLink->show();
             _ui->checkBox_shareLink->setChecked(true);
 
+            //Set requirements as listed in capabilities
+            if (_caps->isValid()) {
+                if (_caps->passwordEnforced()) {
+                    _ui->checkBox_password->setVisible(false);
+                }
+
+                if (_caps->expireEnabled()) {
+                    _ui->calendar->setSelectedDate(QDate::currentDate().addDays(_caps->expireDays()));
+
+                    if (_caps->expireEnforced()) {
+                        _ui->checkBox_expire->setVisible(false);
+                        _ui->calendar->setMaximumDate(QDate::currentDate().addDays(_caps->expireDays()));
+                    }
+
+                    _ui->calendar->show();
+                }
+            }
+
             if (data.value("share_with").isValid())
             {
                 _ui->checkBox_password->setChecked(true);
@@ -292,6 +316,7 @@ void ShareDialog::slotDeleteShareFetched(const QString &reply)
 
     _public_share_id = 0;
     _pi_link->stopAnimation();
+
     _ui->lineEdit_password->clear();
     _ui->lineEdit_shareLink->clear();
     _ui->widget_shareLink->hide();
@@ -309,10 +334,34 @@ void ShareDialog::slotCheckBoxShareLinkClicked()
         QList<QPair<QString, QString> > postParams;
         postParams.append(qMakePair(QString::fromLatin1("path"), _sharePath));
         postParams.append(qMakePair(QString::fromLatin1("shareType"), QString::number(SHARETYPE_PUBLIC)));
+
+        /*
+         * Check if the server requires a password
+         * If so ask for it
+         */
+        if (_caps->isValid() && _caps->passwordEnforced()) {
+            bool ok;
+            const QString pass = QInputDialog::getText(this,
+                                                       tr("Password for share by link"),
+                                                       tr("Sharing by link requires a password:"),
+                                                       QLineEdit::Password,
+                                                       QString(),
+                                                       &ok);
+
+            if (!ok) {
+                _pi_link->stopAnimation();
+                _ui->checkBox_shareLink->setChecked(false);
+                return;
+            }
+
+            postParams.append(qMakePair(QString::fromLatin1("password"), pass));
+        }
+
         OcsShareJob *job = new OcsShareJob("POST", url, _account, this);
         job->setPostParams(postParams);
         connect(job, SIGNAL(jobFinished(QString)), this, SLOT(slotCreateShareFetched(QString)));
         job->start();
+
     }
     else
     {
@@ -345,13 +394,9 @@ void ShareDialog::slotCreateShareFetched(const QString &reply)
         return;
     }
 
-    bool success;
-    QVariantMap json = QtJson::parse(reply, success).toMap();
-    _public_share_id = json.value("ocs").toMap().values("data")[0].toMap().value("id").toULongLong();
-    QString url = json.value("ocs").toMap().values("data")[0].toMap().value("url").toString();
-    _ui->lineEdit_shareLink->setText(url);
-
-    _ui->widget_shareLink->show();
+    //To avoid duplication just refetch the shares here
+    //TODO: maybe only fetch on id?
+    getShares();
 }
 
 void ShareDialog::slotCheckBoxPasswordClicked()
@@ -582,6 +627,34 @@ bool OcsShareJob::finished()
 {
     emit jobFinished(reply()->readAll());
     return true;
+}
+
+OcsCapabilities::OcsCapabilities(const QVariantMap &capabilities) {
+    _capabilities = capabilities["files_sharing"].toMap();
+}
+
+bool OcsCapabilities::isValid() {
+    return !_capabilities.empty();
+}
+
+bool OcsCapabilities::sharingEnabled() {
+    return _capabilities["public"].toMap()["enabled"].toBool();
+}
+
+bool OcsCapabilities::passwordEnforced() {
+    return _capabilities["public"].toMap()["password_enforced"].toBool();
+}
+
+bool OcsCapabilities::expireEnabled() {
+    return _capabilities["public"].toMap()["expire_date"].toMap()["enabled"].toBool();
+}
+
+bool OcsCapabilities::expireEnforced() {
+     return _capabilities["public"].toMap()["expire_date"].toMap()["enforce"].toBool();
+}
+
+int OcsCapabilities::expireDays() {
+    return _capabilities["public"].toMap()["expire_date"].toMap()["days"].toInt();
 }
 
 }

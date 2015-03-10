@@ -19,6 +19,7 @@
 #include "QProgressIndicator.h"
 #include <QDialog>
 #include <QTreeWidgetItem>
+#include <QScopedPointer>
 
 namespace OCC {
 
@@ -41,6 +42,21 @@ private:
     QList<QPair<QString, QString> > _postParams;
 };
 
+class OcsCapabilities {
+
+public:
+    OcsCapabilities(const QVariantMap &capabilities);
+
+    bool isValid();
+    bool sharingEnabled();
+    bool passwordEnforced();
+    bool expireEnabled();
+    bool expireEnforced();
+    int expireDays();
+
+private:
+    QVariantMap _capabilities;
+};
 
 namespace Ui {
 class ShareDialog;
@@ -94,6 +110,8 @@ private:
     QProgressIndicator *_pi_link;
     QProgressIndicator *_pi_password;
     QProgressIndicator *_pi_date;
+
+    QScopedPointer<OcsCapabilities> _caps;
 };
 
 }
