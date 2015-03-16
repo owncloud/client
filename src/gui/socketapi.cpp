@@ -1,6 +1,7 @@
 /*
  * Copyright (C) by Dominik Schmidt <dev@dominik-schmidt.de>
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
+ * Copyright (C) by Roeland Jago Douma <roeland@famdouma.nl>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@
 #include "syncfileitem.h"
 #include "filesystem.h"
 #include "version.h"
+#include "accountstate.h"
 
 #include <QDebug>
 #include <QUrl>
@@ -415,6 +417,14 @@ void SocketApi::command_SHARE(const QString& localFile, SocketType* socket)
     qDebug() << Q_FUNC_INFO << localFile;
 
     Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+
+    if (!shareFolder->accountState()->isConnected()) {
+         const QString message = QLatin1String("SHARE:NOTCONNECTED:")+QDir::toNativeSeparators(localFile);
+        // files that are not within a sync folder are not synced.
+        sendMessage(socket, message);
+        return;
+    }
+
     if (!shareFolder) {
         const QString message = QLatin1String("SHARE:NOP:")+QDir::toNativeSeparators(localFile);
         // files that are not within a sync folder are not synced.
