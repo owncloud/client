@@ -195,6 +195,14 @@ public:
      */
     virtual bool wizardSelectiveSyncDefaultNothing() const;
 
+    /**
+     * Alternative path on the server that provides access to the webdav capabilities
+     *
+     * Attention: Make sure that this string does NOT have a leading slash and that
+     * it has a trailing slash, for example "remote.php/webdav/".
+     */
+    virtual QString webDavPath() const;
+
 protected:
     QIcon themeIcon(const QString& name, bool sysTray = false) const;
     Theme();

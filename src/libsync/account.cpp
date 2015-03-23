@@ -73,7 +73,7 @@ Account::Account(QObject *parent)
     , _am(0)
     , _credentials(0)
     , _treatSslErrorsAsFailure(false)
-    , _davPath("remote.php/webdav/")
+    , _davPath( Theme::instance()->webDavPath() )
     , _wasMigrated(false)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
