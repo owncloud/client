@@ -101,7 +101,8 @@ ShareDialog::ShareDialog(AccountPtr account, const QString &sharePath, const QSt
     _ui->label_sharePath->setWordWrap(true);
     _ui->label_sharePath->setText(tr("%1 path: %2").arg(Theme::instance()->appNameGUI()).arg(_sharePath));
     this->setWindowTitle(tr("%1 Sharing").arg(Theme::instance()->appNameGUI()));
-    _ui->label_password->setText(tr("Set p&assword"));
+    _ui->checkBox_password->setText(tr("Set p&assword"));
+	_ui->label_password->setVisible(false);
     // check if the file is already inside of a synced folder
     if( sharePath.isEmpty() ) {
         // The file is not yet in an ownCloud synced folder. We could automatically
@@ -408,6 +409,7 @@ void ShareDialog::slotCreateShareFetched(const QString &reply)
         _ui->checkBox_password->setChecked(true);
         _ui->checkBox_password->setVisible(false);
         _ui->label_password->setText(tr("Public sh&aring requires a password:"));
+		_ui->label_password->setVisible(true);
         _ui->lineEdit_password->setFocus();
         _ui->widget_shareLink->show();
 
