@@ -286,6 +286,7 @@ void ShareDialog::slotSharesFetched(const QString &reply)
 				_ui->checkBox_password->setEnabled(false);
 				_ui->checkBox_password->setText(tr("Set p&assword (unshare to remove)"));
                 _ui->lineEdit_password->setPlaceholderText("********");
+				_ui->pushButton_setPassword->setText(tr("Change p&assword"));
                 _ui->lineEdit_password->show();
                 _ui->pushButton_setPassword->show();
 				_ui->checkBox_expire->setEnabled(true);
