@@ -288,6 +288,7 @@ void ShareDialog::slotSharesFetched(const QString &reply)
                 _ui->lineEdit_password->setPlaceholderText("********");
                 _ui->lineEdit_password->show();
                 _ui->pushButton_setPassword->show();
+				_ui->checkBox_expire->setEnabled(true);
             } else {
                 _ui->checkBox_password->setChecked(false);
                 _ui->lineEdit_password->hide();
@@ -412,6 +413,7 @@ void ShareDialog::slotCreateShareFetched(const QString &reply)
         // there needs to be a password
 		_ui->checkBox_password->setEnabled(false);
         _ui->checkBox_password->setChecked(true);
+		_ui->checkBox_expire->setEnabled(false);
         _ui->_labelShareLink->setText(tr("Public sharing requires a password"));
         _ui->lineEdit_password->setFocus();
         _ui->widget_shareLink->show();
