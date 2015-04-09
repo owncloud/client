@@ -129,6 +129,7 @@ endif()
 find_package(Sphinx)
 find_package(PdfLatex)
 
+find_package(ZLIB)
 
 find_package(SQLite3 3.8.0 REQUIRED)
 # On some OS, we want to use our own, not the system sqlite

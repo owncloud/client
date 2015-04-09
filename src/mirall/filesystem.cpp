@@ -11,6 +11,7 @@
  * for more details.
  */
 
+#include "config.h"
 #include "filesystem.h"
 
 #include "utility.h"
@@ -21,9 +22,9 @@
 #include <QFuture>
 #include <qtconcurrentrun.h>
 
-
+#ifdef ZLIB_FOUND
 #include <zlib.h>
-
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <qabstractfileengine.h>
@@ -194,7 +195,7 @@ QByteArray calcSha1Worker( const QString& filename )
     return arr;
 }
 
-
+#ifdef ZLIB_FOUND
 QByteArray calcAdler32Worker( const QString& filename )
 {
   unsigned int adler = adler32(0L, Z_NULL, 0);
@@ -210,7 +211,7 @@ QByteArray calcAdler32Worker( const QString& filename )
 
   return QString::number( adler, 16 ).toUtf8();
 }
-
+#endif
 
 
 QByteArray FileSystem::calcMd5( const QString& fileName )
@@ -233,7 +234,7 @@ QByteArray FileSystem::calcSha1( const QString& fileName )
     return sha1;
 }
 
-
+#ifdef ZLIB_FOUND
 QByteArray FileSystem::calcAdler32( const QString& fileName )
 {
     QFuture<QByteArray> f1 = run(calcAdler32Worker, fileName );
@@ -243,5 +244,5 @@ QByteArray FileSystem::calcAdler32( const QString& fileName )
 
     return checksum;
 }
-
+#endif
 }
