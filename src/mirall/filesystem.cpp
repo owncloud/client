@@ -22,6 +22,9 @@
 #include <qtconcurrentrun.h>
 
 
+#include <zlib.h>
+
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <qabstractfileengine.h>
 #endif
@@ -191,6 +194,25 @@ QByteArray calcSha1Worker( const QString& filename )
     return arr;
 }
 
+
+QByteArray calcAdler32Worker( const QString& filename )
+{
+  unsigned int adler = adler32(0L, Z_NULL, 0);
+
+  QFile file(filename);
+  if (file.open(QIODevice::ReadOnly)) {
+    QByteArray data;
+    while (!file.atEnd()) {
+      data = file.read(1024*1024*10);   
+      adler = adler32(adler, (const Bytef*) data.data(), data.size());
+    }
+  }
+
+  return QString::number( adler, 16 ).toUtf8();
+}
+
+
+
 QByteArray FileSystem::calcMd5( const QString& fileName )
 {
     QFuture<QByteArray> f1 = run(calcMd5Worker, fileName );
@@ -209,6 +231,17 @@ QByteArray FileSystem::calcSha1( const QString& fileName )
     const QByteArray sha1 = f1.result();
 
     return sha1;
+}
+
+
+QByteArray FileSystem::calcAdler32( const QString& fileName )
+{
+    QFuture<QByteArray> f1 = run(calcAdler32Worker, fileName );
+    f1.waitForFinished();
+
+    const QByteArray checksum = f1.result();
+
+    return checksum;
 }
 
 }
