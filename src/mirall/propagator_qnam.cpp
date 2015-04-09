@@ -27,6 +27,56 @@
 
 namespace Mirall {
 
+
+QStringList parseRecallFile(QString fn) {
+
+  qDebug() << "parsingRecallFile: " << fn;
+
+  QStringList result;
+
+  QFile file(fn);
+  if (!file.open(QIODevice::ReadOnly)) {
+    qDebug() << file.errorString();
+    return result;
+  }
+
+  while (!file.atEnd()) {
+    QByteArray line = file.readLine();
+    
+    line.chop(1); // remove trailing \n
+
+    qDebug() << "recall item: " << line;
+
+    result.append(line);
+  }
+  
+  return result;
+
+}
+
+QString makeRecallFileName(const QString &fn)
+{
+    QString recallFileName(fn);
+    // Add _recall-XXXX  before the extention.
+    int dotLocation = recallFileName.lastIndexOf('.');
+    // If no extention, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
+    if (dotLocation <= recallFileName.lastIndexOf('/') + 1) {
+        dotLocation = recallFileName.size();
+    }
+
+    QString timeString = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss");
+
+    // Additional marker
+    QByteArray recallFileUserName = qgetenv("CSYNC_RECALL_FILE_USERNAME");
+    if (recallFileUserName.isEmpty())
+        recallFileName.insert(dotLocation, "_.sys.admin#recall#-" + timeString);
+    else
+        recallFileName.insert(dotLocation, "_.sys.admin#recall#_" + QString::fromUtf8(recallFileUserName)  + "-" + timeString);
+
+    return recallFileName;
+}
+
+
 /**
  * The mtime of a file must be at least this many milliseconds in
  * the past for an upload to be started. Otherwise the propagator will
@@ -272,12 +322,27 @@ void PropagateUploadFileQNAM::startNextChunk()
     if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
+
     quint64 fileSize = _item._size;
     QMap<QByteArray, QByteArray> headers;
     headers["OC-Total-Length"] = QByteArray::number(fileSize);
     headers["OC-Chunk-Size"]= QByteArray::number(quint64(chunkSize()));
     headers["Content-Type"] = "application/octet-stream";
     headers["X-OC-Mtime"] = QByteArray::number(qint64(_item._modtime));
+
+    if(_item._file.contains(".sys.admin#recall#"))
+      {
+	// This is a file recall triggered by the admin.  Note: the
+	// recall list file created by the admin and downloaded by the
+	// client (.sys.admin#recall#) also falls into this category
+	// (albeit users are not supposed to mess up with it)
+
+	// We use a special tag header so that the server may decide to store this file away in some admin stage area
+	// And not directly in the user's area (what would trigger redownloads etc).
+	headers["OC-Tag"] = ".sys.admin#recall#";
+      }
+
+
     if (!_item._etag.isEmpty() && _item._etag != "empty_etag" &&
             _item._instruction != CSYNC_INSTRUCTION_NEW  // On new files never send a If-Match
             ) {
@@ -848,6 +913,7 @@ QString makeConflictFileName(const QString &fn, const QDateTime &dt)
     return conflictFileName;
 }
 
+
 void PropagateDownloadFileQNAM::downloadFinished()
 {
 
@@ -911,6 +977,30 @@ void PropagateDownloadFileQNAM::downloadFinished()
     _propagator->_journal->setDownloadInfo(_item._file, SyncJournalDb::DownloadInfo());
     _propagator->_journal->commit("download file start2");
     done(isConflict ? SyncFileItem::Conflict : SyncFileItem::Success);
+
+    // handle the special recall file
+    if(existingFile.fileName()==".sys.admin#recall#")
+      {
+	//FileSystem::setFileHidden(existingFile.fileName(), true);
+
+	QDir thisDir = existingFile.dir();
+
+	QStringList recall_files = parseRecallFile(existingFile.filePath());
+
+	for (int i = 0; i < recall_files.size(); ++i)
+	  {
+	    QString fpath = thisDir.filePath(recall_files.at(i));
+	    QString rpath = thisDir.filePath(makeRecallFileName(recall_files.at(i)));
+
+	    // if previously recalled file exists then remove it (copy will not overwrite it)
+	    QFile(rpath).remove();
+
+	    qDebug() << "Copy recall file: " << fpath << " -> " << rpath;
+
+	    QFile::copy(fpath,rpath);
+	  }
+	
+      }
 }
 
 void PropagateDownloadFileQNAM::slotDownloadProgress(qint64 received, qint64)
