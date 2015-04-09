@@ -12,6 +12,8 @@
  * for more details.
  */
 
+#include "config.h"
+
 #include "propagator_qnam.h"
 #include "networkjobs.h"
 #include "account.h"
@@ -20,6 +22,7 @@
 #include "utility.h"
 #include "filesystem.h"
 #include "propagatorjobs.h"
+#include "mirallconfigfile.h"
 #include <QNetworkAccessManager>
 #include <QFileInfo>
 #include <QDir>
@@ -75,9 +78,12 @@ bool checkHashSumOfFile( const QString& fileName, const QByteArray& header )
          hash = FileSystem::calcMd5(fileName);
     } else if( type == "SHA1" ) {
         hash = FileSystem::calcSha1(fileName);
-    } else if( type == "Adler32" ) {
+    }
+#if ZLIB_FOUND
+    else if( type == "Adler32" ) {
         hash = FileSystem::calcAdler32(fileName);
     }
+#endif
     qDebug() << "Calculation of checksum took" << watch.stop();
 
     // if the hashtype is not know, lets assume the check is positive
@@ -138,23 +144,30 @@ void PUTFileJob::slotTimeout() {
 
 void PropagateUploadFileQNAM::start()
 {
+    MirallConfigFile cfg; // FIXME: Do not open it for each and every propagation.
+
     if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
     const QString filePath = _propagator->getFilePath(_item._file);
 
-    // calculate the files checksum
+    // calculate the files checksum    
+    const QString transChecksum = cfg.transmissionChecksum();
 
-    //TODO: this is temporary, should be set from the server
-    if(qgetenv("OWNCLOUD_CHECKSUM_TYPE") == "Adler32")
-      {
-	_item._checksum = "Adler32:"+FileSystem::calcAdler32( filePath );
-      }
-    else
-      {
-	_item._checksum = "MD5:"+FileSystem::calcMd5( filePath );
-      }
+    if( !transChecksum.isEmpty() ) {
+        if( transChecksum == "MD5" ) {
+            _item._checksum = "MD5:"+FileSystem::calcMd5( filePath );
 
+        } else if( transChecksum == "SHA1" ) {
+            _item._checksum = "MD5:"+FileSystem::calcSha1( filePath );
+
+        }
+#ifdef ZLIB_FOUND
+        else if( transChecksum == "Adler32" ) {
+            _item._checksum = "Adler32:"+FileSystem::calcAdler32( filePath );
+        }
+#endif
+    }
 
     _file = new QFile( filePath, this );
     if (!_file->open(QIODevice::ReadOnly)) {
