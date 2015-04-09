@@ -26,6 +26,7 @@
 #include <QBuffer>
 #include <QFileIconProvider>
 #include <QClipboard>
+#include <QDesktopServices>
 
 namespace {
     int SHARETYPE_PUBLIC = 3;
@@ -77,7 +78,8 @@ ShareDialog::ShareDialog(AccountPtr account, const QString &sharePath, const QSt
     _ui->pushButton_setPassword->hide();
 
     _ui->calendar->setDate(QDate::currentDate().addDays(1));
-    _ui->calendar->setEnabled(false);
+    //_ui->calendar->setEnabled(false);
+	_ui->calendar->hide();
 
     QFileInfo f_info(_localPath);
     QFileIconProvider icon_provider;
@@ -101,7 +103,8 @@ ShareDialog::ShareDialog(AccountPtr account, const QString &sharePath, const QSt
     _ui->label_sharePath->setWordWrap(true);
     _ui->label_sharePath->setText(tr("%1 path: %2").arg(Theme::instance()->appNameGUI()).arg(_sharePath));
     this->setWindowTitle(tr("%1 Sharing").arg(Theme::instance()->appNameGUI()));
-    _ui->label_password->setText(tr("Set p&assword"));
+    _ui->checkBox_password->setText(tr("P&assword protect"));
+	
     // check if the file is already inside of a synced folder
     if( sharePath.isEmpty() ) {
         // The file is not yet in an ownCloud synced folder. We could automatically
@@ -281,12 +284,19 @@ void ShareDialog::slotSharesFetched(const QString &reply)
 
             if (data.value("share_with").isValid()) {
                 _ui->checkBox_password->setChecked(true);
+				_ui->checkBox_password->setEnabled(false);
+				_ui->checkBox_password->setText(tr("P&assword protect (unshare to remove)"));
                 _ui->lineEdit_password->setPlaceholderText("********");
+				_ui->pushButton_setPassword->setText(tr("Change p&assword"));
                 _ui->lineEdit_password->show();
                 _ui->pushButton_setPassword->show();
+				_ui->checkBox_expire->setEnabled(true);
             } else {
                 _ui->checkBox_password->setChecked(false);
-                // _ui->lineEdit_password->setPlaceholderText("********");
+				_ui->checkBox_password->setEnabled(true);
+				_ui->checkBox_password->setText(tr("P&assword protect"));
+				_ui->lineEdit_password->setPlaceholderText(tr("Choose a password for the public link"));
+				_ui->pushButton_setPassword->setText(tr("Set p&assword"));
                 _ui->lineEdit_password->hide();
                 _ui->pushButton_setPassword->hide();
             }
@@ -294,10 +304,12 @@ void ShareDialog::slotSharesFetched(const QString &reply)
             if (data.value("expiration").isValid()) {
                 _ui->calendar->setDate(QDate::fromString(data.value("expiration").toString(), "yyyy-MM-dd 00:00:00"));
                 _ui->calendar->setMinimumDate(QDate::currentDate().addDays(1));
-                _ui->calendar->setEnabled(true);
+				_ui->calendar->show();
+                //_ui->calendar->setEnabled(true);
                 _ui->checkBox_expire->setChecked(true);
             } else {
-                _ui->calendar->setEnabled(false);
+                //_ui->calendar->setEnabled(false);
+				_ui->calendar->hide();
                 _ui->checkBox_expire->setChecked(false);
             }
 
@@ -366,10 +378,11 @@ void ShareDialog::slotDeleteShareFetched(const QString &reply)
     _ui->lineEdit_password->hide();
     _ui->pushButton_setPassword->setEnabled(false);
     _ui->pushButton_setPassword->hide();
+	_ui->calendar->hide();
     _ui->checkBox_expire->setChecked(false);
     _ui->checkBox_password->setChecked(false);
-    _ui->calendar->setEnabled(false);
-
+    //_ui->calendar->setEnabled(false);
+	
     _shareUrl.clear();
 
     setShareCheckBoxTitle(false);
@@ -405,9 +418,13 @@ void ShareDialog::slotCreateShareFetched(const QString &reply)
 
     if (code == 403) {
         // there needs to be a password
+		_ui->checkBox_password->setEnabled(false);
         _ui->checkBox_password->setChecked(true);
-        _ui->checkBox_password->setVisible(false);
-        _ui->label_password->setText(tr("Public sh&aring requires a password:"));
+		_ui->checkBox_expire->setEnabled(false);
+        _ui->_labelShareLink->setText(tr("Public sharing requires a password"));
+		_ui->checkBox_password->setText(tr("P&assword protect"));
+		_ui->pushButton_setPassword->setText(tr("Set p&assword"));
+		_ui->lineEdit_password->setPlaceholderText(tr("Choose a password for the public link"));
         _ui->lineEdit_password->setFocus();
         _ui->widget_shareLink->show();
 
@@ -429,7 +446,6 @@ void ShareDialog::slotCheckBoxPasswordClicked()
     if (_ui->checkBox_password->checkState() == Qt::Checked) {
         _ui->lineEdit_password->show();
         _ui->pushButton_setPassword->show();
-        _ui->lineEdit_password->setPlaceholderText(tr("Choose a password for the public link"));
         _ui->lineEdit_password->setFocus();
     } else {
         ShareDialog::setPassword(QString());
@@ -448,12 +464,13 @@ void ShareDialog::slotCheckBoxExpireClicked()
         ShareDialog::setExpireDate(date);
         _ui->calendar->setDate(date);
         _ui->calendar->setMinimumDate(date);
-        _ui->calendar->setEnabled(true);
+        //_ui->calendar->setEnabled(true);
+		_ui->calendar->show();
     }
     else
     {
         ShareDialog::setExpireDate(QDate());
-        _ui->calendar->setEnabled(false);
+        _ui->calendar->hide();
     }
 }
 
@@ -461,6 +478,7 @@ void ShareDialog::slotPushButtonCopyLinkPressed()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(_shareUrl);
+	QDesktopServices::openUrl(QUrl("mailto:?subject=&body=" + _shareUrl));
 }
 
 int ShareDialog::checkJsonReturnCode(const QString &reply, QString &message)
