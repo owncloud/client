@@ -26,6 +26,7 @@
 #include <QBuffer>
 #include <QFileIconProvider>
 #include <QClipboard>
+#include <QDesktopServices>
 
 namespace {
     int SHARETYPE_PUBLIC = 3;
@@ -102,7 +103,7 @@ ShareDialog::ShareDialog(AccountPtr account, const QString &sharePath, const QSt
     _ui->label_sharePath->setWordWrap(true);
     _ui->label_sharePath->setText(tr("%1 path: %2").arg(Theme::instance()->appNameGUI()).arg(_sharePath));
     this->setWindowTitle(tr("%1 Sharing").arg(Theme::instance()->appNameGUI()));
-    _ui->checkBox_password->setText(tr("Set p&assword"));
+    _ui->checkBox_password->setText(tr("P&assword protect"));
 	
     // check if the file is already inside of a synced folder
     if( sharePath.isEmpty() ) {
@@ -284,7 +285,7 @@ void ShareDialog::slotSharesFetched(const QString &reply)
             if (data.value("share_with").isValid()) {
                 _ui->checkBox_password->setChecked(true);
 				_ui->checkBox_password->setEnabled(false);
-				_ui->checkBox_password->setText(tr("Set p&assword (unshare to remove)"));
+				_ui->checkBox_password->setText(tr("P&assword protect (unshare to remove)"));
                 _ui->lineEdit_password->setPlaceholderText("********");
 				_ui->pushButton_setPassword->setText(tr("Change p&assword"));
                 _ui->lineEdit_password->show();
@@ -293,7 +294,7 @@ void ShareDialog::slotSharesFetched(const QString &reply)
             } else {
                 _ui->checkBox_password->setChecked(false);
 				_ui->checkBox_password->setEnabled(true);
-				_ui->checkBox_password->setText(tr("Set p&assword"));
+				_ui->checkBox_password->setText(tr("P&assword protect"));
 				_ui->lineEdit_password->setPlaceholderText(tr("Choose a password for the public link"));
 				_ui->pushButton_setPassword->setText(tr("Set p&assword"));
                 _ui->lineEdit_password->hide();
@@ -421,8 +422,9 @@ void ShareDialog::slotCreateShareFetched(const QString &reply)
         _ui->checkBox_password->setChecked(true);
 		_ui->checkBox_expire->setEnabled(false);
         _ui->_labelShareLink->setText(tr("Public sharing requires a password"));
-		_ui->checkBox_password->setText(tr("Set p&assword"));
+		_ui->checkBox_password->setText(tr("P&assword protect"));
 		_ui->pushButton_setPassword->setText(tr("Set p&assword"));
+		_ui->lineEdit_password->setPlaceholderText(tr("Choose a password for the public link"));
         _ui->lineEdit_password->setFocus();
         _ui->widget_shareLink->show();
 
@@ -476,6 +478,7 @@ void ShareDialog::slotPushButtonCopyLinkPressed()
 {
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(_shareUrl);
+	QDesktopServices::openUrl(QUrl("mailto:?subject=&body=" + _shareUrl));
 }
 
 int ShareDialog::checkJsonReturnCode(const QString &reply, QString &message)
