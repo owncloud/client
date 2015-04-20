@@ -15,6 +15,7 @@
 #include "utility.h"
 
 #include "version.h"
+#include "theme.h"
 
 // Note:  This file must compile without QtGui
 #include <QCoreApplication>
@@ -154,8 +155,9 @@ QString Utility::platform()
 
 QByteArray Utility::userAgentString()
 {
-    return QString::fromLatin1("Mozilla/5.0 (%1) mirall/%2")
+    return QString::fromLatin1("Mozilla/5.0 (%1) %2/%3")
             .arg(Utility::platform())
+            .arg(Theme::instance()->appName())
             .arg(QLatin1String(MIRALL_STRINGIFY(MIRALL_VERSION)))
             .toLatin1();
 }
