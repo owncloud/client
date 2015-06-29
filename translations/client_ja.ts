@@ -1888,7 +1888,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="114"/>
         <source>P&amp;assword protect</source>
-        <translation type="unfinished"/>
+        <translation>パスワード保護(&amp;A)</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="203"/>
