@@ -2481,7 +2481,7 @@ Recomendámoslle que non o use.</translation>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="226"/>
         <source>Server is temporarily unavailable</source>
-        <translation>O servidor está temporalmente inaccesíbel.</translation>
+        <translation>O servidor non está accesíbel temporalmente.</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="231"/>
