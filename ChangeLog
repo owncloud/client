@@ -1,5 +1,9 @@
 ChangeLog
 =========
+version 1.8.4 (release 2015-07-09)
+  * Release to ship a security release of openSSL
+    No source changes of the ownCloud Client code.
+
 version 1.8.3 (release 2015-06-23)
   * Fix a bug in the Windows Installer that could crash explorer (#3320)
   * Reduce 'Connection closed' errors (#3318, #3313, #3298)
