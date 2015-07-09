@@ -2482,7 +2482,7 @@ Det er ikke tilrådelig å bruke den.</translation>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="226"/>
         <source>Server is temporarily unavailable</source>
-        <translation type="unfinished"/>
+        <translation>Serveren er midlertidig utilgjengelig</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="231"/>

@@ -318,7 +318,7 @@ Aega kokku jäänud %5</translation>
     <message>
         <location filename="../src/libsync/connectionvalidator.cpp" line="144"/>
         <source>Authentication error: Either username or password are wrong.</source>
-        <translation type="unfinished"/>
+        <translation>Autentimise tõrge: Kasutajanimi või parool on vale</translation>
     </message>
     <message>
         <location filename="../src/libsync/connectionvalidator.cpp" line="146"/>
@@ -1139,7 +1139,7 @@ for additional privileges during the process.</source>
     <message>
         <location filename="../src/gui/wizard/owncloudadvancedsetuppage.cpp" line="138"/>
         <source>Sync the directory &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Sünkrooni kaust &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/wizard/owncloudadvancedsetuppage.cpp" line="142"/>
@@ -1266,7 +1266,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="324"/>
         <source>Creating local sync folder %1...</source>
-        <translation type="unfinished"/>
+        <translation>Kohaliku kausta %1 sünkroonimise loomine ... </translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="328"/>
@@ -1446,7 +1446,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="485"/>
         <source>The file could not be downloaded completely.</source>
-        <translation type="unfinished"/>
+        <translation>Faili täielik allalaadimine ebaõnnestus.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="580"/>
@@ -1456,7 +1456,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="620"/>
         <source>File has changed since discovery</source>
-        <translation type="unfinished"/>
+        <translation>Faili on pärast avastamist muudetud</translation>
     </message>
 </context>
 <context>
@@ -1469,7 +1469,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="109"/>
         <source>Continue blacklisting:</source>
-        <translation type="unfinished"/>
+        <translation>Jätka mustas nimekirjas hoidmist:</translation>
     </message>
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="205"/>
@@ -1526,7 +1526,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/propagateremotedelete.cpp" line="114"/>
         <source>Wrong HTTP code returned by server. Expected 204, but received &quot;%1 %2&quot;.</source>
-        <translation type="unfinished"/>
+        <translation>Server saatis vale HTTP koodi. Ootuspärane kood oli 204, aga saadeti kood &quot;%1 %2&quot;.</translation>
     </message>
 </context>
 <context>
@@ -1534,7 +1534,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/propagateremotemkdir.cpp" line="71"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
-        <translation type="unfinished"/>
+        <translation>Server saatis vale HTTP koodi. Ootuspärane kood oli 201, aga saadeti kood &quot;%1 %2&quot;.</translation>
     </message>
 </context>
 <context>
@@ -1557,7 +1557,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/propagateremotemove.cpp" line="143"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
-        <translation type="unfinished"/>
+        <translation>Server saatis vale HTTP koodi. Ootuspärane kood oli 201, aga saadeti kood &quot;%1 %2&quot;.</translation>
     </message>
 </context>
 <context>
@@ -1589,7 +1589,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="238"/>
         <source>Local file changed during syncing. It will be resumed.</source>
-        <translation type="unfinished"/>
+        <translation>Kohalik fail muutus sünkroniseeringu käigus. See taastakse.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="250"/>
@@ -1752,7 +1752,7 @@ Selle kasutamine pole soovitatav.</translation>
         <location filename="../src/gui/selectivesyncdialog.cpp" line="167"/>
         <location filename="../src/gui/selectivesyncdialog.cpp" line="214"/>
         <source>No subfolders currently on the server.</source>
-        <translation type="unfinished"/>
+        <translation>Serveris pole praegu alamkaustasid.</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncdialog.cpp" line="216"/>
@@ -1821,7 +1821,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/sharedialog.ui" line="14"/>
         <source>Share NewDocument.odt</source>
-        <translation type="unfinished"/>
+        <translation>Jaga faili NewDocument.odt</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.ui" line="22"/>
@@ -1908,12 +1908,12 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="525"/>
         <source>OCS API error code: %1</source>
-        <translation type="unfinished"/>
+        <translation>OCS API veakood: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="547"/>
         <source>There is no sync folder configured.</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseeritavat kausta pole määratud.</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="559"/>
@@ -1928,7 +1928,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="626"/>
         <source>The file cannot be synced.</source>
-        <translation type="unfinished"/>
+        <translation>Faili ei saa sünkroonida.</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="566"/>
@@ -1938,7 +1938,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="448"/>
         <source>Public sh&amp;aring requires a password</source>
-        <translation type="unfinished"/>
+        <translation>Avalik j&amp;agamine nõuab parooli</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="470"/>
@@ -2703,7 +2703,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/wizard/owncloudconnectionmethoddialog.ui" line="55"/>
         <source>Select a different URL</source>
-        <translation type="unfinished"/>
+        <translation>Vali teine URL</translation>
     </message>
     <message>
         <location filename="../src/gui/wizard/owncloudconnectionmethoddialog.ui" line="62"/>
@@ -2713,7 +2713,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/gui/wizard/owncloudconnectionmethoddialog.ui" line="69"/>
         <source>Configure client-side TLS certificate</source>
-        <translation type="unfinished"/>
+        <translation>Seadista kliendipoolne TLS sertifikaat</translation>
     </message>
     <message>
         <location filename="../src/gui/wizard/owncloudconnectionmethoddialog.cpp" line="35"/>
@@ -2926,7 +2926,7 @@ Selle kasutamine pole soovitatav.</translation>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="36"/>
         <source>Downloaded, renamed conflicting file</source>
-        <translation type="unfinished"/>
+        <translation>Alla laaditud, konfliktse faili ümbernimetamine</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="38"/>
