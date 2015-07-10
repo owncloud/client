@@ -2143,7 +2143,7 @@ Non è consigliabile utilizzarlo.</translation>
     <message>
         <location filename="../src/gui/sslerrordialog.cpp" line="135"/>
         <source>Warnings about current SSL Connection:</source>
-        <translation>Errori sulla connessione SSL corrente:</translation>
+        <translation>Avvisi sulla connessione SSL attuale:</translation>
     </message>
     <message>
         <location filename="../src/gui/sslerrordialog.cpp" line="170"/>

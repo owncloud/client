@@ -1834,7 +1834,7 @@ Il est déconseillé de l&apos;utiliser.</translation>
         <location filename="../src/gui/sharedialog.ui" line="22"/>
         <location filename="../src/gui/sharedialog.ui" line="234"/>
         <source>TextLabel</source>
-        <translation>Zone de texte</translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location filename="../src/gui/sharedialog.ui" line="41"/>
@@ -2344,7 +2344,7 @@ Il est déconseillé de l&apos;utiliser.</translation>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="367"/>
         <source>Hard links are not supported in syncing.</source>
-        <translation>Les liens durs (hard links) ne sont pas pris en charge par la synchronisation.</translation>
+        <translation>Les liens durs (hard links) ne peuvent pas être synchronisés.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="370"/>
@@ -2647,7 +2647,7 @@ Il est déconseillé de l&apos;utiliser.</translation>
         <location filename="../src/gui/wizard/owncloudadvancedsetuppage.ui" line="299"/>
         <location filename="../src/gui/wizard/owncloudadvancedsetuppage.ui" line="322"/>
         <source>TextLabel</source>
-        <translation>Zone de texte</translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location filename="../src/gui/wizard/owncloudadvancedsetuppage.ui" line="88"/>
@@ -2907,7 +2907,7 @@ Il est déconseillé de l&apos;utiliser.</translation>
     <message>
         <location filename="../src/gui/main.cpp" line="39"/>
         <source>%1 requires on a working system tray. If you are running XFCE, please follow &lt;a href=&quot;http://docs.xfce.org/xfce/xfce4-panel/systray&quot;&gt;these instructions&lt;/a&gt;. Otherwise, please install a system tray application such as &apos;trayer&apos; and try again.</source>
-        <translation>%1 nécessite la présence d&apos;une zone de notification système. Si vous utilisez XFCE, veuillez suivre &lt;a href=&quot;http://docs.xfce.org/xfce/xfce4-panel/systray&quot;&gt;ces instructions&lt;/a&gt;. Sinon, installez une application mettant en place une zone de notification, telle que &apos;trayer&apos;, et essayez à nouveau.</translation>
+        <translation>%1 nécessite la présence d&apos;une zone de notification système. Si vous utilisez XFCE, veuillez suivre &lt;a href=&quot;http://docs.xfce.org/xfce/xfce4-panel/systray&quot;&gt;ces instructions&lt;/a&gt;. Sinon, installez une application fournissant une zone de notification, telle que &apos;trayer&apos;, et essayez à nouveau.</translation>
     </message>
 </context>
 <context>
