@@ -2481,7 +2481,7 @@ Kullanmanız önerilmez.</translation>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="226"/>
         <source>Server is temporarily unavailable</source>
-        <translation type="unfinished"/>
+        <translation>Sunucu geçici olarak kullanılamıyor</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="231"/>
