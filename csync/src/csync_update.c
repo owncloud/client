@@ -171,8 +171,12 @@ static int _csync_detect_update(CSYNC *ctx, const char *file,
       return 0;
   }
 
-  /* Check if file is excluded */
-  excluded = csync_excluded(ctx, path,type);
+  if (type == CSYNC_FTW_TYPE_SKIP) {
+      excluded =CSYNC_FILE_EXCLUDE_STAT_FAILED;
+  } else {
+    /* Check if file is excluded */
+    excluded = csync_excluded(ctx, path,type);
+  }
 
   if (excluded != CSYNC_NOT_EXCLUDED) {
     CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "%s excluded  (%d)", path, excluded);
@@ -241,11 +245,6 @@ static int _csync_detect_update(CSYNC *ctx, const char *file,
     }
   }
 
-  /* Ignore non statable files and other strange cases. */
-  if (type == CSYNC_FTW_TYPE_SKIP) {
-    st->instruction = CSYNC_INSTRUCTION_NONE;
-    goto out;
-  }
   if (excluded > CSYNC_NOT_EXCLUDED || type == CSYNC_FTW_TYPE_SLINK) {
       if( type == CSYNC_FTW_TYPE_SLINK ) {
           st->error_status = CSYNC_STATUS_INDIVIDUAL_IS_SYMLINK; /* Symbolic links are ignored. */
@@ -418,6 +417,8 @@ out:
       st->error_status = CSYNC_STATUS_INDIVIDUAL_IS_INVALID_CHARS;  /* File contains invalid characters. */
     } else if (excluded == CSYNC_FILE_EXCLUDE_LONG_FILENAME) {
       st->error_status = CSYNC_STATUS_INDIVIDUAL_EXCLUDE_LONG_FILENAME; /* File name is too long. */
+    } else if (excluded == CSYNC_FILE_EXCLUDE_STAT_FAILED) {
+      st->error_status = CSYNC_STATUS_INDIVIDUAL_STAT_FAILED;
     }
   }
   if (st->instruction != CSYNC_INSTRUCTION_NONE && st->instruction != CSYNC_INSTRUCTION_IGNORE
