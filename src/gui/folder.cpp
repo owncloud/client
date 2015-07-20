@@ -1061,11 +1061,10 @@ void Folder::slotNewSharedBigFolderDiscovered(const QString &newF)
     if (!undecidedList.contains(newFolder)) {
         undecidedList.append(newFolder);
         journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, undecidedList);
-        emit newSharedBigFolderDiscovered(newFolder);
     }
+
+    emit newSharedBigFolderDiscovered(newFolder);
 }
-
-
 
 void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction, bool *cancel)
 {

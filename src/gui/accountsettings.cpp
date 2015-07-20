@@ -28,6 +28,7 @@
 #include "quotainfo.h"
 #include "accountmanager.h"
 #include "creds/abstractcredentials.h"
+#include <logger.h>
 
 #include <math.h>
 
@@ -472,6 +473,10 @@ void AccountSettings::refreshSelectiveSyncStatus()
             tr("There are new shared folders that were not synchronized because they are too big: %1")
                 .arg(undecidedFolder.join(tr(", "))));
         shouldBeVisible = true;
+
+        if (!_newBigFolderNotificationTimer) {
+            newBigFolderNotificationTimeout();
+        }
     }
 
     ui->selectiveSyncApply->setEnabled(_model->isDirty() || !undecidedFolder.isEmpty());
@@ -491,6 +496,49 @@ void AccountSettings::refreshSelectiveSyncStatus()
         }
     }
 }
+
+/**
+ * From the acceptence criteria of issue #3148:
+ *
+ * - The notification includes a message “A Folder larger than [setting] has been shared with you.
+ * Do you want to sync this folder to this device?".
+ * - This notification appears every 15 minutes as long as there is a decision in the activity list
+ * for the user to make. When the activity menu is viewed the notification can go away.
+ * (this is so users will be forced to decide what to do)
+ */
+void AccountSettings::newBigFolderNotificationTimeout()
+{
+    bool hasUndecidedFolder = false;
+    foreach (Folder *folder, FolderMan::instance()->map().values()) {
+        if (folder->accountState() != _accountState) { continue; }
+        auto undecidedList =  folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList);
+        if (!undecidedList.isEmpty()) {
+            hasUndecidedFolder = true;
+            break;
+        }
+    }
+
+    if (!hasUndecidedFolder) {
+        delete _newBigFolderNotificationTimer;
+        return;
+    }
+
+    if (!_newBigFolderNotificationTimer) {
+        // Repeat every 15 minutes
+        _newBigFolderNotificationTimer = new QTimer(this);
+        connect(_newBigFolderNotificationTimer,SIGNAL(timeout()),this, SLOT(newBigFolderNotificationTimeout()));
+        _newBigFolderNotificationTimer->start(15 * 60 * 1000);
+    }
+
+    QString message = tr("A Folder larger than %1 MB has been shared with you. "
+                         "Do you want to sync this folder to this device?")
+                            .arg(ConfigFile().newSharedFolderSizeLimit().second);
+
+    auto logger = Logger::instance();
+    logger->postOptionalGuiLog(Theme::instance()->appNameGUI(), message);
+
+}
+
 
 void AccountSettings::slotDeleteAccount()
 {
