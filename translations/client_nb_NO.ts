@@ -1071,8 +1071,8 @@ Valgte oppføringer vil også bli slettet dersom de hindrer fjerning av en mappe
         <location filename="../src/gui/updater/ocupdater.cpp" line="57"/>
         <source>A new update for %1 is about to be installed. The updater may ask
 for additional privileges during the process.</source>
-        <translation>En ny oppdatering for %1 er i ferd med å bli installert. Oppdateringen kan be
-om ytterligere rettigheter under behandlingen.</translation>
+        <translation>En ny oppdatering for %1 er i ferd med å bli installert. Oppdateringen
+kan be om ytterligere rettigheter under behandlingen.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="78"/>
