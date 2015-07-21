@@ -2483,7 +2483,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="226"/>
         <source>Server is temporarily unavailable</source>
-        <translation>Der Server ist vorübergehend nicht erreichbar</translation>
+        <translation>Der Server ist vorübergehend nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="231"/>
