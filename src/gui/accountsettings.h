@@ -82,6 +82,7 @@ protected slots:
     void slotDeleteAccount();
     void refreshSelectiveSyncStatus();
     void slotCustomContextMenuRequested(const QPoint&);
+    void newBigFolderNotificationTimeout();
 
 private:
     void showConnectionLabel(const QString& message,
@@ -96,6 +97,7 @@ private:
     AccountState *_accountState;
     QLabel *_quotaLabel;
     QuotaInfo _quotaInfo;
+    QPointer<QTimer> _newBigFolderNotificationTimer;
 };
 
 } // namespace OCC
