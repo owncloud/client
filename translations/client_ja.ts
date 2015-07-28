@@ -661,7 +661,7 @@ Are you sure you want to perform this operation?</source>
     <message>
         <location filename="../src/gui/folderwizard.cpp" line="309"/>
         <source>Authentication failed accessing %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 アクセス中に認証に失敗しました</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard.cpp" line="311"/>
@@ -1245,12 +1245,12 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="258"/>
         <source>The authenticated request to the server was redirected to &apos;%1&apos;. The URL is bad, the server is misconfigured.</source>
-        <translation type="unfinished"/>
+        <translation>サーバーへの認証リクエストは &apos;%1&apos; へリダイレクトされました。URLは不正です、サーバーの設定に誤りがあります。</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="280"/>
         <source>There was an invalid response to an authenticated webdav request</source>
-        <translation type="unfinished"/>
+        <translation>認証された WebDav リクエストに不正な応答がありました</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="271"/>
