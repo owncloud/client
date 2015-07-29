@@ -2362,74 +2362,79 @@ Nie je vhodné ju používať.</translation>
         <translation>Meno súboru je veľmi dlhé.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="397"/>
+        <location filename="../src/libsync/syncengine.cpp" line="382"/>
+        <source>Stat failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/syncengine.cpp" line="400"/>
         <source>Filename encoding is not valid</source>
         <translation>Kódovanie znakov názvu súboru je neplatné</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="601"/>
+        <location filename="../src/libsync/syncengine.cpp" line="604"/>
         <source>Unable to initialize a sync journal.</source>
         <translation>Nemôžem inicializovať synchronizačný žurnál.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="680"/>
+        <location filename="../src/libsync/syncengine.cpp" line="683"/>
         <source>Cannot open the sync journal</source>
         <translation>Nemožno otvoriť sync žurnál</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="941"/>
-        <location filename="../src/libsync/syncengine.cpp" line="948"/>
+        <location filename="../src/libsync/syncengine.cpp" line="944"/>
+        <location filename="../src/libsync/syncengine.cpp" line="951"/>
         <source>Ignored because of the &quot;choose what to sync&quot; blacklist</source>
         <translation>Ignorované podľa nastavenia &quot;vybrať čo synchronizovať&quot;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="966"/>
+        <location filename="../src/libsync/syncengine.cpp" line="969"/>
         <source>Not allowed because you don&apos;t have permission to add sub-directories in that directory</source>
         <translation>Nie je dovolené, pretože nemáte oprávnenie pridávať do tohto priečinka podpriečinky</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="972"/>
+        <location filename="../src/libsync/syncengine.cpp" line="975"/>
         <source>Not allowed because you don&apos;t have permission to add parent directory</source>
         <translation>Nie je dovolené, pretože nemáte oprávnenie pridať nadradený priečinok.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="979"/>
+        <location filename="../src/libsync/syncengine.cpp" line="982"/>
         <source>Not allowed because you don&apos;t have permission to add files in that directory</source>
         <translation>Nie je dovolené, pretože nemáte oprávnenie pridávať do tohto priečinka súbory.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="999"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1002"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>Nie je dovolené tento súbor nahrať, pretože je na serveri iba na čítanie. Obnovuje sa.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1016"/>
-        <location filename="../src/libsync/syncengine.cpp" line="1036"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1019"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1039"/>
         <source>Not allowed to remove, restoring</source>
         <translation>Nie je dovolené odstrániť. Obnovuje sa.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1049"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1052"/>
         <source>Local files and share folder removed.</source>
         <translation>Lokálne súbory a zdieľaný priečinok boli odstránené.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1104"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1107"/>
         <source>Move not allowed, item restored</source>
         <translation>Presunutie nie je dovolené. Položka obnovená.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1113"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1116"/>
         <source>Move not allowed because %1 is read-only</source>
         <translation>Presunutie nie je dovolené, pretože %1 je na serveri iba na čítanie</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1114"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1117"/>
         <source>the destination</source>
         <translation>cieľ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1114"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1117"/>
         <source>the source</source>
         <translation>zdroj</translation>
     </message>

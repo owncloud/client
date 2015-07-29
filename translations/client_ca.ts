@@ -2357,74 +2357,79 @@ No és aconsellada usar-la.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="397"/>
+        <location filename="../src/libsync/syncengine.cpp" line="382"/>
+        <source>Stat failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/syncengine.cpp" line="400"/>
         <source>Filename encoding is not valid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="601"/>
+        <location filename="../src/libsync/syncengine.cpp" line="604"/>
         <source>Unable to initialize a sync journal.</source>
         <translation>No es pot inicialitzar un periòdic de sincronització</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="680"/>
+        <location filename="../src/libsync/syncengine.cpp" line="683"/>
         <source>Cannot open the sync journal</source>
         <translation>No es pot obrir el diari de sincronització</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="941"/>
-        <location filename="../src/libsync/syncengine.cpp" line="948"/>
+        <location filename="../src/libsync/syncengine.cpp" line="944"/>
+        <location filename="../src/libsync/syncengine.cpp" line="951"/>
         <source>Ignored because of the &quot;choose what to sync&quot; blacklist</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="966"/>
+        <location filename="../src/libsync/syncengine.cpp" line="969"/>
         <source>Not allowed because you don&apos;t have permission to add sub-directories in that directory</source>
         <translation>No es permet perquè no teniu permisos per afegir subcarpetes en aquesta carpeta</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="972"/>
+        <location filename="../src/libsync/syncengine.cpp" line="975"/>
         <source>Not allowed because you don&apos;t have permission to add parent directory</source>
         <translation>No es permet perquè no teniu permisos per afegir una carpeta inferior</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="979"/>
+        <location filename="../src/libsync/syncengine.cpp" line="982"/>
         <source>Not allowed because you don&apos;t have permission to add files in that directory</source>
         <translation>No es permet perquè no teniu permisos per afegir fitxers en aquesta carpeta</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="999"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1002"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>No es permet pujar aquest fitxer perquè només és de lectura en el servidor, es restaura</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1016"/>
-        <location filename="../src/libsync/syncengine.cpp" line="1036"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1019"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1039"/>
         <source>Not allowed to remove, restoring</source>
         <translation>No es permet l&apos;eliminació, es restaura</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1049"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1052"/>
         <source>Local files and share folder removed.</source>
         <translation>Fitxers locals i carpeta compartida esborrats.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1104"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1107"/>
         <source>Move not allowed, item restored</source>
         <translation>No es permet moure&apos;l, l&apos;element es restaura</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1113"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1116"/>
         <source>Move not allowed because %1 is read-only</source>
         <translation>No es permet moure perquè %1 només és de lectura</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1114"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1117"/>
         <source>the destination</source>
         <translation>el destí</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="1114"/>
+        <location filename="../src/libsync/syncengine.cpp" line="1117"/>
         <source>the source</source>
         <translation>l&apos;origen</translation>
     </message>
