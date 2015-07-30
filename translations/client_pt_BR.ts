@@ -2360,7 +2360,7 @@ It is not advisable to use it.</source>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="382"/>
         <source>Stat failed.</source>
-        <translation type="unfinished"/>
+        <translation>Stat falhou.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="400"/>

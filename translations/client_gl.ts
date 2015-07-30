@@ -2361,7 +2361,7 @@ Recomendámoslle que non o use.</translation>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="382"/>
         <source>Stat failed.</source>
-        <translation type="unfinished"/>
+        <translation>Fallou a obtención de estatísticas.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="400"/>
