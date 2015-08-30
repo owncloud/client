@@ -78,6 +78,10 @@ void OwncloudHttpCredsPage::initializePage()
         if (!user.isEmpty()) {
             _ui.leUsername->setText(user);
         }
+        const QString password = httpCreds->password();
+        if (!password.isEmpty()) {
+            _ui.lePassword->setText(password);
+        }
     }
     _ui.leUsername->setFocus();
 }

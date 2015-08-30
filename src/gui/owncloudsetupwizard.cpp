@@ -34,6 +34,7 @@
 #include "creds/credentialsfactory.h"
 #include "creds/abstractcredentials.h"
 #include "creds/dummycredentials.h"
+#include "creds/httpcredentialsgui.h"
 
 namespace OCC {
 
@@ -124,12 +125,21 @@ void OwncloudSetupWizard::slotDetermineAuthType(const QString &urlString)
         url.setScheme("https");
     }
     AccountPtr account = _ocWizard->account();
+
+    // Detect a Sandstorm web key and derive the credentials from it.
+    if (url.hasFragment() && url.path() == "") {
+      account->setCredentials(new HttpCredentialsGui("sandstorm", url.fragment(), NULL, NULL));
+      account->setCredentialSetting("user", "sandstorm");
+      account->setCredentialSetting("password", url.fragment());
+    } else {
+      // Set fake credentials beforfe we check what credential it actually is.
+      account->setCredentials(CredentialsFactory::create("dummy"));
+    }
     account->setUrl(url);
+
     // Reset the proxy which might had been determined previously in ConnectionValidator::checkServerAndAuth()
     // when there was a previous account.
     account->networkAccessManager()->setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
-    // Set fake credentials beforfe we check what credential it actually is.
-    account->setCredentials(CredentialsFactory::create("dummy"));
     CheckServerJob *job = new CheckServerJob(_ocWizard->account(), this);
     job->setIgnoreCredentialFailure(true);
     connect(job, SIGNAL(instanceFound(QUrl,QVariantMap)), SLOT(slotOwnCloudFoundAuth(QUrl,QVariantMap)));
