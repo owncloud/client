@@ -49,16 +49,21 @@ To set up your build enviroment for development using HomeBrew_:
 
     brew tap owncloud/owncloud
 
+   Since those formulae are in a Tap, you might need to use long names like
+   ``owncloud/owncloud/client`` to refer to the ownCloud formulae (to
+   distinguish them form the one provided by the system).
+
+   After this, you will be able to change the formulae provided by ownCloud. If
+   you are already a Qt developer you might want to use a Qt installation that
+   you already have, for example. Run ``brew edit formula-name`` to edit a
+   formula, and change parameters, like the ``CMAKE_PREFIX_PATH``.
+
+   The Qt dependency is marked as optional, so to use it you will need to do
+   ``brew install --with-qt5`` if you want to install Qt from Homebrew.
+
 2. Install any missing dependencies::
 
-    brew install $(brew deps owncloud-client)
-
-3. Add Qt from brew to the path::
-
-    export PATH=/usr/local/Cellar/qt5/5.x.y/bin/qmake
-
-   Where ``x.z`` is the current version of Qt 5 that brew has installed
-   on your machine.
+    brew install --only-dependencies owncloud/owncloud/client
 
 5. For compilation of the client, follow the `generic build instructions`_.
 
