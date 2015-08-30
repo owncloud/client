@@ -73,7 +73,7 @@ To set up your build enviroment for development using HomeBrew_:
           work correctly.
 
 Windows Development Build
------------------------
+-------------------------
 
 If you want to test some changes and deploy them locally, you can build natively
 on Windows using MinGW. If you want to generate an installer for deployment, please
@@ -125,7 +125,7 @@ follow `Windows Installer Build (Cross-Compile)`_ instead.
   The owncloud binary will appear in the ``bin`` directory.
 
 Windows Installer Build (Cross-Compile)
------------------------
+---------------------------------------
 
 Due to the large number of dependencies, building the client installer for Windows
 is **currently only officially supported on openSUSE**, by using the MinGW cross compiler.
@@ -140,7 +140,7 @@ To cross-compile:
 
 2. Install the cross-compiler packages and the cross-compiled dependencies::
 
-   zypper install cmake make mingw32-cross-binutils mingw32-cross-cpp mingw32-cross-gcc \
+    zypper install cmake make mingw32-cross-binutils mingw32-cross-cpp mingw32-cross-gcc \
                 mingw32-cross-gcc-c++ mingw32-cross-pkg-config mingw32-filesystem \
                 mingw32-headers mingw32-runtime site-config mingw32-libwebp \
                 mingw32-cross-libqt5-qmake mingw32-cross-libqt5-qttools mingw32-libqt5*
@@ -180,6 +180,7 @@ To cross-compile:
 
 
 .. _`generic build instructions`:
+
 Generic Build Instructions
 --------------------------
 
@@ -191,27 +192,27 @@ You can download the desktop sync client from the ownCloud `Client Download Page
 
 To build the most up to date version of the client:
 
-1. Clone the latest versions of the client from Git_ as follows:
+1. Clone the latest versions of the client from Git_ as follows::
 
-  ``git clone git://github.com/owncloud/client.git``
-  ``git submodule init``
-  ``git submodule update``
+    git clone git://github.com/owncloud/client.git
+    git submodule init
+    git submodule update
 
-2. Create the build directory:
+2. Create the build directory::
 
-  ``mkdir client-build``
-  ``cd client-build``
+    mkdir client-build
+    cd client-build
 
 3. Configure the client build:
 
-  ``cmake -DCMAKE_BUILD_TYPE="Debug" ../client``
+   ``cmake -DCMAKE_BUILD_TYPE="Debug" ../client``
 
-  ..note:: You must use absolute paths for the ``include`` and ``library``
-           directories.
+   .. note:: You must use absolute paths for the ``include`` and ``library``
+             directories.
 
-  ..note:: On Mac OS X, you need to specify ``-DCMAKE_INSTALL_PREFIX=target``,
-           where ``target`` is a private location, i.e. in parallel to your build
-           dir by specifying ``../install``.
+   .. note:: On Mac OS X, you need to specify ``-DCMAKE_INSTALL_PREFIX=target``,
+             where ``target`` is a private location, i.e. in parallel to your
+             build dir by specifying ``../install``.
 
 4. Call ``make``.
 
