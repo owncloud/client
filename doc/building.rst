@@ -89,7 +89,7 @@ follow `Windows Installer Build (Cross-Compile)`_ instead.
    from Git as follows::
 
     git clone https://github.com/frankosterfeld/qtkeychain.git
-    git clone git://github.com/owncloud/client.git
+    git clone https://github.com/owncloud/client.git
 
 3. Open the Qt MinGW shortcut console from the Start Menu
 
@@ -194,7 +194,7 @@ To build the most up to date version of the client:
 
 1. Clone the latest versions of the client from Git_ as follows::
 
-    git clone git://github.com/owncloud/client.git
+    git clone https://github.com/owncloud/client.git
     git submodule init
     git submodule update
 
