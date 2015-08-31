@@ -49,16 +49,21 @@ To set up your build enviroment for development using HomeBrew_:
 
     brew tap owncloud/owncloud
 
+   Since those formulae are in a Tap, you might need to use long names like
+   ``owncloud/owncloud/client`` to refer to the ownCloud formulae (to
+   distinguish them form the one provided by the system).
+
+   After this, you will be able to change the formulae provided by ownCloud. If
+   you are already a Qt developer you might want to use a Qt installation that
+   you already have, for example. Run ``brew edit formula-name`` to edit a
+   formula, and change parameters, like the ``CMAKE_PREFIX_PATH``.
+
+   The Qt dependency is marked as optional, so to use it you will need to do
+   ``brew install --with-qt5`` if you want to install Qt from Homebrew.
+
 2. Install any missing dependencies::
 
-    brew install $(brew deps owncloud-client)
-
-3. Add Qt from brew to the path::
-
-    export PATH=/usr/local/Cellar/qt5/5.x.y/bin/qmake
-
-   Where ``x.z`` is the current version of Qt 5 that brew has installed
-   on your machine.
+    brew install --only-dependencies owncloud/owncloud/client
 
 5. For compilation of the client, follow the `generic build instructions`_.
 
@@ -73,7 +78,7 @@ To set up your build enviroment for development using HomeBrew_:
           work correctly.
 
 Windows Development Build
------------------------
+-------------------------
 
 If you want to test some changes and deploy them locally, you can build natively
 on Windows using MinGW. If you want to generate an installer for deployment, please
@@ -89,7 +94,7 @@ follow `Windows Installer Build (Cross-Compile)`_ instead.
    from Git as follows::
 
     git clone https://github.com/frankosterfeld/qtkeychain.git
-    git clone git://github.com/owncloud/client.git
+    git clone https://github.com/owncloud/client.git
 
 3. Open the Qt MinGW shortcut console from the Start Menu
 
@@ -125,7 +130,7 @@ follow `Windows Installer Build (Cross-Compile)`_ instead.
   The owncloud binary will appear in the ``bin`` directory.
 
 Windows Installer Build (Cross-Compile)
------------------------
+---------------------------------------
 
 Due to the large number of dependencies, building the client installer for Windows
 is **currently only officially supported on openSUSE**, by using the MinGW cross compiler.
@@ -140,7 +145,7 @@ To cross-compile:
 
 2. Install the cross-compiler packages and the cross-compiled dependencies::
 
-   zypper install cmake make mingw32-cross-binutils mingw32-cross-cpp mingw32-cross-gcc \
+    zypper install cmake make mingw32-cross-binutils mingw32-cross-cpp mingw32-cross-gcc \
                 mingw32-cross-gcc-c++ mingw32-cross-pkg-config mingw32-filesystem \
                 mingw32-headers mingw32-runtime site-config mingw32-libwebp \
                 mingw32-cross-libqt5-qmake mingw32-cross-libqt5-qttools mingw32-libqt5*
@@ -180,6 +185,7 @@ To cross-compile:
 
 
 .. _`generic build instructions`:
+
 Generic Build Instructions
 --------------------------
 
@@ -191,27 +197,27 @@ You can download the desktop sync client from the ownCloud `Client Download Page
 
 To build the most up to date version of the client:
 
-1. Clone the latest versions of the client from Git_ as follows:
+1. Clone the latest versions of the client from Git_ as follows::
 
-  ``git clone git://github.com/owncloud/client.git``
-  ``git submodule init``
-  ``git submodule update``
+    git clone https://github.com/owncloud/client.git
+    git submodule init
+    git submodule update
 
-2. Create the build directory:
+2. Create the build directory::
 
-  ``mkdir client-build``
-  ``cd client-build``
+    mkdir client-build
+    cd client-build
 
 3. Configure the client build:
 
-  ``cmake -DCMAKE_BUILD_TYPE="Debug" ../client``
+   ``cmake -DCMAKE_BUILD_TYPE="Debug" ../client``
 
-  ..note:: You must use absolute paths for the ``include`` and ``library``
-           directories.
+   .. note:: You must use absolute paths for the ``include`` and ``library``
+             directories.
 
-  ..note:: On Mac OS X, you need to specify ``-DCMAKE_INSTALL_PREFIX=target``,
-           where ``target`` is a private location, i.e. in parallel to your build
-           dir by specifying ``../install``.
+   .. note:: On Mac OS X, you need to specify ``-DCMAKE_INSTALL_PREFIX=target``,
+             where ``target`` is a private location, i.e. in parallel to your
+             build dir by specifying ``../install``.
 
 4. Call ``make``.
 
