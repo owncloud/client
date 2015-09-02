@@ -42,6 +42,9 @@ class PropagateLocalRemove : public PropagateItemJob {
 public:
     PropagateLocalRemove (OwncloudPropagator* propagator,const SyncFileItem& item)  : PropagateItemJob(propagator, item) {}
     void start() Q_DECL_OVERRIDE;
+private:
+    bool removeRecursively(const QString &path);
+    QString _error;
 };
 class PropagateLocalMkdir : public PropagateItemJob {
     Q_OBJECT
