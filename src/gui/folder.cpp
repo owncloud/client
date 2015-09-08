@@ -168,7 +168,7 @@ void Folder::checkLocalPath()
             _syncResult.setErrorString(tr("Local folder %1 does not exist.").arg(_definition.localPath));
             _syncResult.setStatus( SyncResult::SetupError );
         } else if( !fi.isDir() ) {
-            _syncResult.setErrorString(tr("%1 should be a directory but is not.").arg(_definition.localPath));
+            _syncResult.setErrorString(tr("%1 should be a folder but is not.").arg(_definition.localPath));
             _syncResult.setStatus( SyncResult::SetupError );
         } else if( !fi.isReadable() ) {
             _syncResult.setErrorString(tr("%1 is not readable.").arg(_definition.localPath));
@@ -441,9 +441,11 @@ void Folder::bubbleUpSyncResult()
                     break;
                 case CSYNC_INSTRUCTION_CONFLICT:
                 case CSYNC_INSTRUCTION_SYNC:
-                    updatedItems++;
-                    if (!firstItemUpdated)
-                        firstItemUpdated = item;
+                    if (!item->_isDirectory) {
+                        updatedItems++;
+                        if (!firstItemUpdated)
+                            firstItemUpdated = item;
+                    }
                     break;
                 case CSYNC_INSTRUCTION_ERROR:
                     qDebug() << "Got Instruction ERROR. " << _syncResult.errorString();
@@ -1140,7 +1142,7 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction, bool *cancel)
 
 void FolderDefinition::save(QSettings& settings, const FolderDefinition& folder)
 {
-    settings.beginGroup(folder.alias);
+    settings.beginGroup(FolderMan::escapeAlias(folder.alias));
     settings.setValue(QLatin1String("localPath"), folder.localPath);
     settings.setValue(QLatin1String("targetPath"), folder.targetPath);
     settings.setValue(QLatin1String("paused"), folder.paused);
@@ -1152,7 +1154,7 @@ bool FolderDefinition::load(QSettings& settings, const QString& alias,
                             FolderDefinition* folder)
 {
     settings.beginGroup(alias);
-    folder->alias = alias;
+    folder->alias = FolderMan::unescapeAlias(alias);
     folder->localPath = settings.value(QLatin1String("localPath")).toString();
     folder->targetPath = settings.value(QLatin1String("targetPath")).toString();
     folder->paused = settings.value(QLatin1String("paused")).toBool();

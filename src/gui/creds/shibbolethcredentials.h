@@ -55,7 +55,8 @@ public:
     QString user() const Q_DECL_OVERRIDE;
     QNetworkAccessManager* getQNAM() const Q_DECL_OVERRIDE;
     bool ready() const Q_DECL_OVERRIDE;
-    void fetch() Q_DECL_OVERRIDE;
+    void fetchFromKeychain() Q_DECL_OVERRIDE;
+    void askFromUser();
     bool stillValid(QNetworkReply *reply) Q_DECL_OVERRIDE;
     void persist() Q_DECL_OVERRIDE;
     void invalidateToken() Q_DECL_OVERRIDE;
@@ -66,15 +67,10 @@ public:
     static QNetworkCookie findShibCookie(Account *, QList<QNetworkCookie> cookies = QList<QNetworkCookie>());
     static QByteArray shibCookieName();
 
-public Q_SLOTS:
-    void invalidateAndFetch() Q_DECL_OVERRIDE;
-
 private Q_SLOTS:
     void onShibbolethCookieReceived(const QNetworkCookie&);
     void slotBrowserRejected();
-    void onFetched();
     void slotReadJobDone(QKeychain::Job*);
-    void slotInvalidateAndFetchInvalidateDone(QKeychain::Job*);
     void slotReplyFinished(QNetworkReply*);
     void slotUserFetched(const QString& user);
     void slotFetchUser();
@@ -82,7 +78,6 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     void newCookie(const QNetworkCookie& cookie);
-    void invalidatedAndFetched(const QByteArray& cookieData);
 
 private:
     void storeShibCookie(const QNetworkCookie &cookie);
@@ -93,7 +88,6 @@ private:
 
     bool _ready;
     bool _stillValid;
-    bool _fetchJobInProgress;
     QPointer<ShibbolethWebView> _browser;
     QNetworkCookie _shibCookie;
     QString _user;

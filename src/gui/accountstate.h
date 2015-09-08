@@ -19,6 +19,7 @@
 #include <QPointer>
 #include "utility.h"
 #include "connectionvalidator.h"
+#include "creds/abstractcredentials.h"
 #include <memory>
 
 class QSettings;
@@ -27,7 +28,6 @@ namespace OCC {
 
 class AccountState;
 class Account;
-class AbstractCredentials;
 
 /**
  * @brief Extra info about an ownCloud server account.
@@ -59,6 +59,7 @@ public:
         /// An error like invalid credentials where retrying won't help.
         ConfigurationError
     };
+    enum CredentialFetchMode { Interactive, NonInteractive };
 
     /// The actual current connectivity status.
     typedef ConnectionValidator::Status ConnectionStatus;
@@ -84,13 +85,15 @@ public:
 
     /// Triggers a ping to the server to update state and
     /// connection status and errors.
-    void checkConnectivity();
+    void checkConnectivity(CredentialFetchMode credentialsFetchMode);
 
     /** Returns a new settings object for this account, already in the right groups. */
     std::unique_ptr<QSettings> settings();
 
-    /** display name with two lines that is displayed in the settings  */
-    QString shortDisplayNameForSettings() const;
+    /** display name with two lines that is displayed in the settings
+     * If width is bigger than 0, the string will be ellided so it does not exceed that width
+     */
+    QString shortDisplayNameForSettings(int width = 0) const;
 
 private:
     void setState(State state);
@@ -102,6 +105,7 @@ protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList& errors);
     void slotInvalidCredentials();
     void slotCredentialsFetched(AbstractCredentials* creds);
+    void slotCredentialsAsked(AbstractCredentials* creds);
 
 private:
     AccountPtr _account;
@@ -109,6 +113,7 @@ private:
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
+    CredentialFetchMode _credentialsFetchMode;
     QPointer<ConnectionValidator> _connectionValidator;
 };
 

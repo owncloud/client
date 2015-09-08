@@ -49,7 +49,6 @@ public:
     void fetchMore(const QModelIndex& parent) Q_DECL_OVERRIDE;
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-
     struct SubFolderInfo {
         SubFolderInfo()
             : _folder(0), _size(0), _fetched(false), _fetching(false), _isUndecided(false),
@@ -87,6 +86,12 @@ public:
     // If the selective sync check boxes were changed
     bool isDirty() { return _dirty; }
 
+    /**
+     * return a QModelIndex for the given path within the given folder.
+     * Note: this method returns an invalid index if the path was not fetch from the server before
+     */
+    QModelIndex indexForPath(Folder *f, const QString &path) const;
+
 public slots:
     void slotUpdateFolderState(Folder *);
     void slotApplySelectiveSync();
@@ -96,7 +101,8 @@ public slots:
 private slots:
     void slotUpdateDirectories(const QStringList &);
     void slotLscolFinishedWithError(QNetworkReply *r);
-    void slotFolderSyncStateChange();
+    void slotFolderSyncStateChange(Folder* f);
+    void slotFolderScheduleQueueChanged();
     void slotNewBigFolder();
 
 private:

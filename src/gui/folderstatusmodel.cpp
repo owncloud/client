@@ -45,6 +45,11 @@ void FolderStatusModel::setAccountState(const AccountState* accountState)
     _folders.clear();
     _accountState = accountState;
 
+    connect(FolderMan::instance(), SIGNAL(folderSyncStateChange(Folder*)),
+            SLOT(slotFolderSyncStateChange(Folder*)), Qt::UniqueConnection);
+    connect(FolderMan::instance(), SIGNAL(scheduleQueueChanged()),
+            SLOT(slotFolderScheduleQueueChanged()), Qt::UniqueConnection);
+
     auto folders = FolderMan::instance()->map();
     foreach (auto f, folders) {
         if (f->accountState() != accountState)
@@ -58,7 +63,6 @@ void FolderStatusModel::setAccountState(const AccountState* accountState)
         _folders << info;
 
         connect(f, SIGNAL(progressInfo(ProgressInfo)), this, SLOT(slotSetProgress(ProgressInfo)), Qt::UniqueConnection);
-        connect(f, SIGNAL(syncStateChange()), this, SLOT(slotFolderSyncStateChange()), Qt::UniqueConnection);
         connect(f, SIGNAL(newBigFolderDiscovered(QString)), this, SLOT(slotNewBigFolder()), Qt::UniqueConnection);
     }
 
@@ -172,7 +176,10 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     case FolderStatusDelegate::FolderSyncPaused       : return  f->syncPaused();
     case FolderStatusDelegate::FolderAccountConnected : return  accountConnected;
     case Qt::ToolTipRole:
-        return Theme::instance()->statusHeaderText(f->syncResult().status());
+        if ( accountConnected )
+            return Theme::instance()->statusHeaderText(f->syncResult().status());
+        else
+            return tr("Signed out");
     case FolderStatusDelegate::FolderStatusIconRole:
         if ( accountConnected ) {
             auto theme = Theme::instance();
@@ -330,6 +337,45 @@ FolderStatusModel::SubFolderInfo* FolderStatusModel::infoForIndex(const QModelIn
     }
 }
 
+QModelIndex FolderStatusModel::indexForPath(Folder *f, const QString& path) const
+{
+    int slashPos = path.lastIndexOf('/');
+    if (slashPos == -1) {
+        // first level folder
+        for (int i = 0; i < _folders.size(); ++i) {
+            if (_folders.at(i)._folder == f) {
+                for (int j = 0; j < _folders.at(i)._subs.size(); ++j) {
+                    if (_folders.at(i)._subs.at(j)._name == path) {
+                        return index(j, 0, index(i));
+                    }
+                }
+                return QModelIndex();
+            }
+        }
+        return QModelIndex();
+    }
+
+    auto parent = indexForPath(f, path.left(slashPos));
+    if (!parent.isValid())
+        return parent;
+
+    if (slashPos == path.size() - 1) {
+        // The slash is the last part, we found our index
+        return parent;
+    }
+
+    auto parentInfo = infoForIndex(parent);
+    if (!parentInfo) {
+        return QModelIndex();
+    }
+    for (int i = 0; i < parentInfo->_subs.size(); ++i) {
+        if (parentInfo->_subs.at(i)._name == path.mid(slashPos  + 1)) {
+            return index(i, 0, parent);
+        }
+    }
+
+    return QModelIndex();
+}
 
 QModelIndex FolderStatusModel::index(int row, int column, const QModelIndex& parent) const
 {
@@ -798,9 +844,8 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress)
     emit dataChanged(index(folderIndex), index(folderIndex), roles);
 }
 
-void FolderStatusModel::slotFolderSyncStateChange()
+void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
 {
-    Folder *f = qobject_cast<Folder*>(sender());
     if( !f ) { return; }
 
     int folderIndex = -1;
@@ -813,10 +858,26 @@ void FolderStatusModel::slotFolderSyncStateChange()
     if (folderIndex < 0) { return; }
 
     SyncResult::Status state = f->syncResult().status();
-    if (state == SyncResult::SyncPrepare
-            || state == SyncResult::Problem
-            || state == SyncResult::Success)  {
-        // Reset the progress info before and after a sync.
+    if (state == SyncResult::NotYetStarted) {
+        FolderMan* folderMan = FolderMan::instance();
+        int pos = folderMan->scheduleQueue().indexOf(f);
+        if (folderMan->currentSyncFolder()
+                && folderMan->currentSyncFolder() != f) {
+            pos += 1;
+        }
+        QString message;
+        if (pos <= 0) {
+            message = tr("Waiting...");
+        } else {
+            message = tr("Waiting for %n other folder(s)...", "", pos);
+        }
+        _folders[folderIndex]._progress = SubFolderInfo::Progress();
+        _folders[folderIndex]._progress._progressString = message;
+    } else if (state == SyncResult::SyncPrepare) {
+        _folders[folderIndex]._progress = SubFolderInfo::Progress();
+        _folders[folderIndex]._progress._progressString = tr("Preparing to sync...");
+    } else if (state == SyncResult::Problem || state == SyncResult::Success) {
+        // Reset the progress info after a sync.
         _folders[folderIndex]._progress = SubFolderInfo::Progress();
     } else if (state == SyncResult::Error) {
         _folders[folderIndex]._progress._progressString = f->syncResult().errorString();
@@ -840,6 +901,16 @@ void FolderStatusModel::slotFolderSyncStateChange()
                 return;
             }
         }
+    }
+}
+
+void FolderStatusModel::slotFolderScheduleQueueChanged()
+{
+    // Update messages on waiting folders.
+    // It's ok to only update folders currently in the queue, because folders
+    // are only removed from the queue if they are deleted.
+    foreach (Folder* f, FolderMan::instance()->scheduleQueue()) {
+        slotFolderSyncStateChange(f);
     }
 }
 

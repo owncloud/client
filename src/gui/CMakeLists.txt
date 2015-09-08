@@ -62,7 +62,6 @@ set(client_SRCS
     sslerrordialog.cpp
     syncrunfilelog.cpp
     systray.cpp
-    accountmigrator.cpp
     quotainfo.cpp
     accountstate.cpp
     addcertificatedialog.cpp
@@ -73,7 +72,6 @@ set(client_SRCS
     creds/httpcredentialsgui.cpp
     creds/shibbolethcredentials.cpp
     creds/shibboleth/shibbolethwebview.cpp
-    creds/shibboleth/shibbolethrefresher.cpp
     creds/shibboleth/shibbolethuserjob.cpp
     wizard/abstractcredswizardpage.cpp
     wizard/owncloudadvancedsetuppage.cpp
@@ -222,7 +220,7 @@ if(NOT BUILD_OWNCLOUD_OSX_BUNDLE)
         endforeach( _file )
     endif(NOT WIN32)
 
-    install(FILES ${client_I18N} DESTINATION ${DATADIR}/${APPLICATION_EXECUTABLE}/i18n)
+    install(FILES ${client_I18N} DESTINATION ${SHAREDIR}/${APPLICATION_EXECUTABLE}/i18n)
 
     # we may not add MACOSX_BUNDLE here, if not building one
 

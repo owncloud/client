@@ -48,21 +48,18 @@ public:
     virtual QString user() const = 0;
     virtual QNetworkAccessManager* getQNAM() const = 0;
     virtual bool ready() const = 0;
-    virtual void fetch() = 0;
+    virtual void fetchFromKeychain() = 0;
+    virtual void askFromUser() = 0;
     virtual bool stillValid(QNetworkReply *reply) = 0;
     virtual void persist() = 0;
     /** Invalidates auth token, or password for basic auth */
     virtual void invalidateToken() = 0;
-    virtual void invalidateAndFetch() {
-        invalidateToken();
-        fetch();
-    }
-
 
     static QString keychainKey(const QString &url, const QString &user);
 
 Q_SIGNALS:
     void fetched();
+    void asked();
 
 protected:
     Account* _account;

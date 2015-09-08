@@ -77,6 +77,7 @@ protected slots:
     void slotOpenCurrentFolder();
     void slotFolderWizardAccepted();
     void slotFolderWizardRejected();
+    void slotSignInAccount();
     void slotDeleteAccount();
     void refreshSelectiveSyncStatus();
     void slotCustomContextMenuRequested(const QPoint&);
@@ -92,7 +93,6 @@ private:
     QUrl   _OCUrl;
     bool _wasDisabledBefore;
     AccountState *_accountState;
-    QLabel *_quotaLabel;
     QuotaInfo _quotaInfo;
 };
 

@@ -62,11 +62,11 @@ static const char optionsC[] =
         "  --logwindow          : open a window to show log output.\n"
         "  --logfile <filename> : write log output to file <filename>.\n"
         "  --logdir <name>      : write each sync log output in a new file\n"
-        "                         in directory <name>.\n"
+        "                         in folder <name>.\n"
         "  --logexpire <hours>  : removes logs older than <hours> hours.\n"
         "                         (to be used with --logdir)\n"
         "  --logflush           : flush the log file after every write.\n"
-        "  --confdir <dirname>  : Use the given configuration directory.\n"
+        "  --confdir <dirname>  : Use the given configuration folder.\n"
         ;
 
 QString applicationTrPath()
@@ -223,13 +223,13 @@ void Application::slotCheckConnection()
         // when the error is permanent.
         if (state != AccountState::SignedOut
                 && state != AccountState::ConfigurationError) {
-            accountState->checkConnectivity();
+            accountState->checkConnectivity(AccountState::NonInteractive);
         }
     }
 
     if (list.isEmpty()) {
         // let gui open the setup wizard
-        _gui->slotOpenSettingsDialog( true );
+        _gui->slotOpenSettingsDialog();
 
         _checkConnectionTimer.stop(); // don't popup the wizard on interval;
     }
