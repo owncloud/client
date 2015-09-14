@@ -245,7 +245,7 @@ void AccountSettings::slotRemoveCurrentFolder()
         qDebug() << "Remove Folder alias " << alias;
         if( !alias.isEmpty() ) {
             QMessageBox messageBox(QMessageBox::Question,
-                                   tr("Confirm Folder Remove"),
+                                   tr("Confirm Sync Removal"),
                                    tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
                                       "<p><b>Note:</b> This will <b>not</b> delete any files.</p>").arg(alias),
                                    QMessageBox::NoButton,
@@ -519,7 +519,7 @@ void AccountSettings::slotDeleteAccount()
     // the QMessageBox should be destroyed before that happens.
     {
         QMessageBox messageBox(QMessageBox::Question,
-                               tr("Confirm Account Delete"),
+                               tr("Confirm Account Removal"),
                                tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
                                   "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
                                  .arg(_accountState->account()->displayName()),

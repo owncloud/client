@@ -64,14 +64,6 @@
     </message>
 </context>
 <context>
-    <name>OCC::Account</name>
-    <message>
-        <location filename="../src/libsync/account.cpp" line="77"/>
-        <source>%1@%2</source>
-        <translation>%1@%2</translation>
-    </message>
-</context>
-<context>
     <name>OCC::AccountSettings</name>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="14"/>
@@ -197,8 +189,8 @@
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="522"/>
-        <source>Confirm Account Delete</source>
-        <translation>Επιβεβαίωση Διαγραφής Λογαριασμού</translation>
+        <source>Confirm Account Removal</source>
+        <translation>Επιβεβαίωση Αφαίρεσης Λογαριασμού</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="523"/>
@@ -228,7 +220,7 @@
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="148"/>
         <source>Remove sync</source>
-        <translation type="unfinished"/>
+        <translation>Αφαίρεση συγχρονισμού</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="249"/>
@@ -376,12 +368,6 @@
         <location filename="../src/libsync/connectionvalidator.cpp" line="143"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>Σφάλμα Πιστοποίησης: Το όνομα χρήστη ή ο κωδικός πρόσβασης είναι λανθασμένα.</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/connectionvalidator.cpp" line="145"/>
-        <location filename="../src/libsync/connectionvalidator.cpp" line="153"/>
-        <source>Unable to connect to %1</source>
-        <translation>Αδυναμία σύνδεσης με %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/connectionvalidator.cpp" line="154"/>
@@ -636,27 +622,27 @@ Are you sure you want to perform this operation?</source>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1157"/>
         <source>The local folder %1 is already used in a folder sync connection. Please pick another one!</source>
-        <translation type="unfinished"/>
+        <translation>Ο τοπικός φάκελος %1 χρησιμοποιείται ήδη σε μια σύνδεση συγχρονισμού φακέλου. Παρακαλώ επιλέξτε άλλον!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1162"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another one!</source>
-        <translation type="unfinished"/>
+        <translation>Ο τοπικός φάκελος %1 περιέχει ήδη ένα φάκελο που χρησιμοποιείται σε μια σύνδεση συγχρονισμού φακέλου. Παρακαλώ επιλέξτε άλλον!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1169"/>
         <source>The local folder %1 is a symbolic link. The link target already contains a folder used in a folder sync connection. Please pick another one!</source>
-        <translation type="unfinished"/>
+        <translation>Ο τοπικός φάκελος %1 είναι συμβολικός σύνδεσμος. Ο σύνδεσμος που παραπέμπει περιέχει ήδη ένα φάκελο που βρίσκεται σε συγχρονισμό. Παρακαλώ επιλέξτε άλλον!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1176"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another one!</source>
-        <translation type="unfinished"/>
+        <translation>Ο τοπικός φάκελος %1 περιέχεται ήδη σε φάκελο που χρησιμοποιείται σε μια σύνδεση συγχρονισμού. Παρακαλώ επιλέξτε άλλον!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1182"/>
         <source>The local folder %1 is a symbolic link. The link target is already contained in a folder used in a folder sync connection. Please pick another one!</source>
-        <translation type="unfinished"/>
+        <translation>Ο τοπικός φάκελος %1 είναι συμβολικός σύνδεσμος. Ο σύνδεσμος που παραπέμπει περιέχεται ήδη σε φάκελο που βρίσκεται σε συγχρονισμό. Παρακαλώ επιλέξτε άλλον!</translation>
     </message>
 </context>
 <context>
@@ -664,7 +650,7 @@ Are you sure you want to perform this operation?</source>
     <message>
         <location filename="../src/gui/folderstatusdelegate.cpp" line="33"/>
         <source>Add Folder Sync Connection</source>
-        <translation type="unfinished"/>
+        <translation>Προσθήκη Σύνδεσης Συγχρονισμού Φακέλου</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusdelegate.cpp" line="85"/>
@@ -1473,29 +1459,29 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::OwncloudSetupPage</name>
     <message>
-        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="50"/>
+        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="51"/>
         <source>Connect to %1</source>
         <translation>Σύνδεση με %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="51"/>
+        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="52"/>
         <source>Setup %1 server</source>
         <translation>Ρύθμιση %1 διακομιστή</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="121"/>
+        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="127"/>
         <source>This url is NOT secure as it is not encrypted.
 It is not advisable to use it.</source>
         <translation>Αυτή η ιστοσελίδα ΔΕΝ είναι ασφαλής καθώς δεν είναι κρυπτογραφημένη.
 Δεν προτείνεται να τη χρησιμοποιήσετε.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="125"/>
+        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="131"/>
         <source>This url is secure. You can use it.</source>
         <translation>Αυτή η url είναι ασφαλής. Μπορείτε να τη χρησιμοποιήσετε. </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="164"/>
+        <location filename="../src/gui/wizard/owncloudsetuppage.cpp" line="170"/>
         <source>&amp;Next &gt;</source>
         <translation>&amp;Επόμενο &gt;</translation>
     </message>
@@ -2309,7 +2295,7 @@ It is not advisable to use it.</source>
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi.cpp" line="451"/>
+        <location filename="../src/gui/socketapi.cpp" line="452"/>
         <source>Share with %1</source>
         <comment>parameter is ownCloud</comment>
         <translation>Διαμοιρασμός με %1</translation>
@@ -2828,6 +2814,20 @@ It is not advisable to use it.</source>
         <translation>Άνοιγμα στον περιηγητή ιστού</translation>
     </message>
     <message>
+        <location filename="../src/gui/owncloudgui.cpp" line="322"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="457"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="524"/>
+        <source>Log in...</source>
+        <translation>Σύνδεση...</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/owncloudgui.cpp" line="326"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="449"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="526"/>
+        <source>Log out</source>
+        <translation>Αποσύνδεση</translation>
+    </message>
+    <message>
         <location filename="../src/gui/owncloudgui.cpp" line="385"/>
         <source>None.</source>
         <translation>Καμμία.</translation>
@@ -2851,6 +2851,16 @@ It is not advisable to use it.</source>
         <location filename="../src/gui/owncloudgui.cpp" line="314"/>
         <source>Open %1 in browser</source>
         <translation>Άνοιγμα %1 στον περιηγητή</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/owncloudgui.cpp" line="447"/>
+        <source>Log out everywhere</source>
+        <translation>Αποσύνδεση από παντού</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/owncloudgui.cpp" line="455"/>
+        <source>Log in everywhere...</source>
+        <translation>Συνδεση παντού...</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="511"/>
@@ -2878,13 +2888,6 @@ It is not advisable to use it.</source>
         <translation>Κλείσιμο %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="322"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="457"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="524"/>
-        <source>Sign in...</source>
-        <translation>Σύνδεση...</translation>
-    </message>
-    <message>
         <location filename="../src/gui/owncloudgui.cpp" line="247"/>
         <source>Disconnected from %1</source>
         <translation>Αποσυνδέθηκε από %1</translation>
@@ -2898,23 +2901,6 @@ It is not advisable to use it.</source>
         <location filename="../src/gui/owncloudgui.cpp" line="253"/>
         <source>Account %1: %2</source>
         <translation>Λογαριασμός %1: %2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="326"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="449"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="526"/>
-        <source>Sign out</source>
-        <translation>Αποσύνδεση</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="447"/>
-        <source>Sign out everywhere</source>
-        <translation>Αποσύνδεση από παντού</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="455"/>
-        <source>Sign in everywhere...</source>
-        <translation>Συνδεση παντού...</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="530"/>
@@ -3169,67 +3155,62 @@ It is not advisable to use it.</source>
 <context>
     <name>Utility</name>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="114"/>
-        <source>%L1 TB</source>
-        <translation>%L1 TB</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/utility.cpp" line="117"/>
+        <location filename="../src/libsync/utility.cpp" line="119"/>
         <source>%L1 GB</source>
         <translation>%L1 GB</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="120"/>
+        <location filename="../src/libsync/utility.cpp" line="122"/>
         <source>%L1 MB</source>
         <translation>%L1 MB</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="123"/>
-        <source>%L1 kB</source>
-        <translation>%L1 kB</translation>
+        <location filename="../src/libsync/utility.cpp" line="125"/>
+        <source>%L1 KB</source>
+        <translation>%L1 KB</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="126"/>
+        <location filename="../src/libsync/utility.cpp" line="128"/>
         <source>%L1 B</source>
         <translation>%L1 B</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="304"/>
+        <location filename="../src/libsync/utility.cpp" line="306"/>
         <source>%Ln year(s)</source>
         <translation>%Ln έτος(η)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="305"/>
+        <location filename="../src/libsync/utility.cpp" line="307"/>
         <source>%Ln month(s)</source>
         <translation>%Ln μήνας(ες)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="306"/>
+        <location filename="../src/libsync/utility.cpp" line="308"/>
         <source>%Ln day(s)</source>
         <translation>%Ln ημέρα(ες)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="307"/>
+        <location filename="../src/libsync/utility.cpp" line="309"/>
         <source>%Ln hour(s)</source>
         <translation>%Ln ώρα(ες)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="308"/>
+        <location filename="../src/libsync/utility.cpp" line="310"/>
         <source>%Ln minute(s)</source>
         <translation>%Ln λεπτό(ά)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="309"/>
+        <location filename="../src/libsync/utility.cpp" line="311"/>
         <source>%Ln second(s)</source>
         <translation>%Ln δευτερόλεπτο(α)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="319"/>
+        <location filename="../src/libsync/utility.cpp" line="321"/>
         <source>0 seconds</source>
         <translation>0 δευτερόλεπτα</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="334"/>
+        <location filename="../src/libsync/utility.cpp" line="336"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
