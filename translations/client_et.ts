@@ -97,8 +97,8 @@
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="198"/>
-        <location filename="../src/gui/accountsettings.cpp" line="255"/>
-        <location filename="../src/gui/accountsettings.cpp" line="530"/>
+        <location filename="../src/gui/accountsettings.cpp" line="268"/>
+        <location filename="../src/gui/accountsettings.cpp" line="543"/>
         <source>Cancel</source>
         <translation>Loobu</translation>
     </message>
@@ -113,137 +113,142 @@
         <translation>Ühtegi kontot pole seadistatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="200"/>
+        <location filename="../src/gui/accountsettings.cpp" line="213"/>
         <source>Folder creation failed</source>
         <translation>Kausta loomine ebaõnnestus</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="201"/>
+        <location filename="../src/gui/accountsettings.cpp" line="214"/>
         <source>&lt;p&gt;Could not create local folder &lt;i&gt;%1&lt;/i&gt;.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="248"/>
-        <source>Confirm Folder Remove</source>
-        <translation>Kinnita kausta eemaldamist</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="254"/>
+        <location filename="../src/gui/accountsettings.cpp" line="267"/>
         <source>Stop syncing</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="280"/>
+        <location filename="../src/gui/accountsettings.cpp" line="293"/>
         <source>Confirm Folder Reset</source>
         <translation>Kinnita kataloogi algseadistus</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="281"/>
+        <location filename="../src/gui/accountsettings.cpp" line="294"/>
         <source>&lt;p&gt;Do you really want to reset folder &lt;i&gt;%1&lt;/i&gt; and rebuild your client database?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This function is designed for maintenance purposes only. No files will be removed, but this can cause significant data traffic and take several minutes or hours to complete, depending on the size of the folder. Only use this option if advised by your administrator.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kas tõesti soovid kataloogi &lt;i&gt;%1&lt;/i&gt; algseadistada ning uuesti luua oma kliendi andmebaasi?&lt;/p&gt;&lt;p&gt;&lt;b&gt;See funktsioon on mõeldud peamiselt ainult hooldustöödeks. Märkus:&lt;/b&gt;Kuigi ühtegi faili ei eemaldata, siis see võib põhjustada märkimisväärset andmeliiklust ja võtta mitu minutit või tundi, sõltuvalt kataloogi suurusest. Kasuta seda võimalust ainult siis kui seda soovitab süsteemihaldur.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="362"/>
+        <location filename="../src/gui/accountsettings.cpp" line="375"/>
         <source>Sync Running</source>
         <translation>Sünkroniseerimine on käimas</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="363"/>
+        <location filename="../src/gui/accountsettings.cpp" line="376"/>
         <source>The syncing operation is running.&lt;br/&gt;Do you want to terminate it?</source>
         <translation>Sünkroniseerimine on käimas.&lt;br/&gt;Kas sa soovid seda lõpetada?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="443"/>
+        <location filename="../src/gui/accountsettings.cpp" line="456"/>
         <source>%1 as &lt;i&gt;%2&lt;/i&gt;</source>
         <translation>%1 as &lt;i&gt;%2&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="447"/>
+        <location filename="../src/gui/accountsettings.cpp" line="460"/>
         <source>Connected to %1.</source>
         <translation>Ühendatud %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="449"/>
+        <location filename="../src/gui/accountsettings.cpp" line="462"/>
         <source>Server %1 is temporarily unavailable.</source>
         <translation>Server %1 pole ajutiselt saadaval.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="451"/>
+        <location filename="../src/gui/accountsettings.cpp" line="464"/>
         <source>Signed out from %1.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="453"/>
+        <location filename="../src/gui/accountsettings.cpp" line="466"/>
         <source>No connection to %1 at %2.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="494"/>
+        <location filename="../src/gui/accountsettings.cpp" line="507"/>
         <source>There are new folders that were not synchronized because they are too big: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="495"/>
+        <location filename="../src/gui/accountsettings.cpp" line="508"/>
         <source>, </source>
         <translation>, </translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="522"/>
+        <location filename="../src/gui/accountsettings.cpp" line="535"/>
         <source>Confirm Account Removal</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="523"/>
+        <location filename="../src/gui/accountsettings.cpp" line="536"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="529"/>
+        <location filename="../src/gui/accountsettings.cpp" line="542"/>
         <source>Remove connection</source>
         <translation>Eemalda ühendus</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="144"/>
+        <location filename="../src/gui/accountsettings.cpp" line="154"/>
         <source>Open folder</source>
         <translation>Ava kaust</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="146"/>
+        <location filename="../src/gui/accountsettings.cpp" line="156"/>
+        <source>Choose What to Sync</source>
+        <translation>Vali, mida sünkroniseerida</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="158"/>
         <source>Resume sync</source>
         <translation>Taasta sünroonimist</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="146"/>
+        <location filename="../src/gui/accountsettings.cpp" line="158"/>
         <source>Pause sync</source>
         <translation>Peata sünkroonimine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="148"/>
+        <location filename="../src/gui/accountsettings.cpp" line="160"/>
         <source>Remove sync</source>
         <translation>Eemalda sünkroonimine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="249"/>
+        <location filename="../src/gui/accountsettings.cpp" line="261"/>
+        <source>Confirm Sync Removal</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="262"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="418"/>
+        <location filename="../src/gui/accountsettings.cpp" line="431"/>
         <source>%1 (%3%) of %2 in use. Some folders, including network mounted or shared folders, might have different limits.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="419"/>
+        <location filename="../src/gui/accountsettings.cpp" line="432"/>
         <source>%1 of %2 in use</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="424"/>
+        <location filename="../src/gui/accountsettings.cpp" line="437"/>
         <source>Currently there is no storage usage information available.</source>
         <translation>Hetkel pole mahu kasutuse info saadaval.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="459"/>
+        <location filename="../src/gui/accountsettings.cpp" line="472"/>
         <source>No %1 connection configured.</source>
         <translation>Ühtegi %1 ühendust pole seadistatud.</translation>
     </message>
@@ -370,12 +375,12 @@
         <translation>Autentimise tõrge: Kasutajanimi või parool on vale</translation>
     </message>
     <message>
-        <location filename="../src/libsync/connectionvalidator.cpp" line="154"/>
+        <location filename="../src/libsync/connectionvalidator.cpp" line="155"/>
         <source>timeout</source>
         <translation>aegumine</translation>
     </message>
     <message>
-        <location filename="../src/libsync/connectionvalidator.cpp" line="185"/>
+        <location filename="../src/libsync/connectionvalidator.cpp" line="186"/>
         <source>The provided credentials are not correct</source>
         <translation>Sisestatud kasutajatunnused pole õiged</translation>
     </message>
@@ -496,37 +501,35 @@
         <translation>Sünkroniseerimise tegevus</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="849"/>
+        <location filename="../src/gui/folder.cpp" line="852"/>
         <source>Could not read system exclude file</source>
         <translation>Süsteemi väljajätmiste faili lugemine ebaõnnestus</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1106"/>
+        <location filename="../src/gui/folder.cpp" line="1109"/>
         <source>A new folder larger than %1 MB has been added: %2.
 Please go in the settings to select it if you wish to download it.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1119"/>
+        <location filename="../src/gui/folder.cpp" line="1122"/>
         <source>This sync would remove all the files in the sync folder '%1'.
-This might be because the folder was silently reconfigured, or that all the file were manually removed.
+This might be because the folder was silently reconfigured, or that all the files were manually removed.
 Are you sure you want to perform this operation?</source>
-        <translation>See sünkroniseering kustutab kõik failid sünkroniseeritavast &apos;%1&apos; kataloogist.⏎
-See võib olla põhjustatud kataloogi ümberseadistusest või on toimunud kõikide failid käsitsi eemaldamine⏎
-Oled kindel, et soovid seda operatsiooni teostada?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1123"/>
+        <location filename="../src/gui/folder.cpp" line="1126"/>
         <source>Remove All Files?</source>
         <translation>Kustutada kõik failid?</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1125"/>
+        <location filename="../src/gui/folder.cpp" line="1128"/>
         <source>Remove all files</source>
         <translation>Kustutada kõik failid</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1126"/>
+        <location filename="../src/gui/folder.cpp" line="1129"/>
         <source>Keep files</source>
         <translation>Säilita failid</translation>
     </message>
@@ -544,102 +547,102 @@ Oled kindel, et soovid seda operatsiooni teostada?</translation>
         <translation>Leiti vana sünkroniseeringu zurnaal &apos;%1&apos;, kuid selle eemaldamine ebaõnnenstus. Palun veendu, et seda kasutaks ükski programm.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="873"/>
+        <location filename="../src/gui/folderman.cpp" line="877"/>
         <source> (backup)</source>
         <translation>(varukoopia)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="878"/>
+        <location filename="../src/gui/folderman.cpp" line="882"/>
         <source> (backup %1)</source>
         <translation> (varukoopia %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1087"/>
+        <location filename="../src/gui/folderman.cpp" line="1091"/>
         <source>Undefined State.</source>
         <translation>Määramata staatus.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1090"/>
+        <location filename="../src/gui/folderman.cpp" line="1094"/>
         <source>Waits to start syncing.</source>
         <translation>Ootab sünkroniseerimise alustamist.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1093"/>
+        <location filename="../src/gui/folderman.cpp" line="1097"/>
         <source>Preparing for sync.</source>
         <translation>Valmistun sünkroniseerima.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1096"/>
+        <location filename="../src/gui/folderman.cpp" line="1100"/>
         <source>Sync is running.</source>
         <translation>Sünkroniseerimine on käimas.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1099"/>
+        <location filename="../src/gui/folderman.cpp" line="1103"/>
         <source>Last Sync was successful.</source>
         <translation>Viimane sünkroniseerimine oli edukas.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1104"/>
+        <location filename="../src/gui/folderman.cpp" line="1108"/>
         <source>Last Sync was successful, but with warnings on individual files.</source>
         <translation>Viimane sünkroniseering oli edukas, kuid mõned failid põhjustasid tõrkeid.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1107"/>
+        <location filename="../src/gui/folderman.cpp" line="1111"/>
         <source>Setup Error.</source>
         <translation>Seadistamise viga.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1110"/>
+        <location filename="../src/gui/folderman.cpp" line="1114"/>
         <source>User Abort.</source>
         <translation>Kasutaja tühistamine.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1113"/>
+        <location filename="../src/gui/folderman.cpp" line="1117"/>
         <source>Sync is paused.</source>
         <translation>Sünkroniseerimine on peatatud.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1119"/>
+        <location filename="../src/gui/folderman.cpp" line="1123"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (Sünkroniseerimine on peatatud)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1127"/>
+        <location filename="../src/gui/folderman.cpp" line="1131"/>
         <source>No valid folder selected!</source>
         <translation>Sobilikku kausta pole valitud!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1138"/>
+        <location filename="../src/gui/folderman.cpp" line="1142"/>
         <source>The selected path is not a folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1142"/>
+        <location filename="../src/gui/folderman.cpp" line="1146"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>Sul puuduvad õigused valitud kataloogi kirjutamiseks!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1157"/>
+        <location filename="../src/gui/folderman.cpp" line="1161"/>
         <source>The local folder %1 is already used in a folder sync connection. Please pick another one!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1162"/>
+        <location filename="../src/gui/folderman.cpp" line="1166"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another one!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1169"/>
+        <location filename="../src/gui/folderman.cpp" line="1173"/>
         <source>The local folder %1 is a symbolic link. The link target already contains a folder used in a folder sync connection. Please pick another one!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1176"/>
+        <location filename="../src/gui/folderman.cpp" line="1180"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another one!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1182"/>
+        <location filename="../src/gui/folderman.cpp" line="1186"/>
         <source>The local folder %1 is a symbolic link. The link target is already contained in a folder used in a folder sync connection. Please pick another one!</source>
         <translation type="unfinished"/>
     </message>
@@ -1612,7 +1615,7 @@ Selle kasutamine pole soovitatav.</translation>
         <translation>Ei suuda eemaldada ning varundada kataloogi kuna kataloog või selles asuv fail on avatud mõne teise programmi poolt. Palun sulge kataloog või fail ning proovi uuesti või katkesta paigaldus.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudsetupwizard.cpp" line="484"/>
+        <location filename="../src/gui/owncloudsetupwizard.cpp" line="481"/>
         <source>&lt;font color=&quot;green&quot;&gt;&lt;b&gt;Local sync folder %1 successfully created!&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&quot;green&quot;&gt;&lt;b&gt;Kohalik kataloog %1 edukalt loodud!&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
@@ -2579,11 +2582,6 @@ Selle kasutamine pole soovitatav.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="988"/>
-        <source>Not allowed because you don&apos;t have permission to add subfolders that folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/libsync/syncengine.cpp" line="994"/>
         <source>Not allowed because you don&apos;t have permission to add parent folder</source>
         <translation type="unfinished"/>
@@ -2693,6 +2691,11 @@ Selle kasutamine pole soovitatav.</translation>
         <location filename="../src/libsync/syncengine.cpp" line="970"/>
         <source>Ignored because of the &quot;choose what to sync&quot; blacklist</source>
         <translation>&quot;Vali, mida sünkroniseerida&quot; musta nimekirja tõttu vahele jäetud</translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/syncengine.cpp" line="988"/>
+        <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="1021"/>

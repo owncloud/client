@@ -121,6 +121,16 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
             this, SLOT(slotUpdateQuota(qint64,qint64)));
 
     connect(ui->deleteButton, SIGNAL(clicked()) , this, SLOT(slotDeleteAccount()));
+
+    // Expand already on single click
+    ui->_folderList->setExpandsOnDoubleClick(false);
+    QObject::connect(ui->_folderList, SIGNAL(clicked(const QModelIndex &)),
+        ui->_folderList, SLOT(expand(const QModelIndex &)));
+}
+
+void AccountSettings::doExpand()
+{
+    ui->_folderList->expandToDepth(0);
 }
 
 void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
@@ -143,6 +153,8 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     menu->setAttribute(Qt::WA_DeleteOnClose);
     connect(menu->addAction(tr("Open folder")), SIGNAL(triggered(bool)),
             this, SLOT(slotOpenCurrentFolder()));
+    connect(menu->addAction(tr("Choose What to Sync")), SIGNAL(triggered(bool)),
+            this, SLOT(doExpand()));
     connect(menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync")), SIGNAL(triggered(bool)),
             this, SLOT(slotEnableCurrentFolder()));
     connect(menu->addAction(tr("Remove sync")), SIGNAL(triggered(bool)),
@@ -189,7 +201,8 @@ void AccountSettings::slotFolderWizardAccepted()
 
     FolderDefinition definition;
     definition.alias        = folderWizard->field(QLatin1String("alias")).toString();
-    definition.localPath    = folderWizard->field(QLatin1String("sourceFolder")).toString();
+    definition.localPath    = FolderDefinition::prepareLocalPath(
+            folderWizard->field(QLatin1String("sourceFolder")).toString());
     definition.targetPath   = folderWizard->property("targetPath").toString();
 
     {
