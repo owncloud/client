@@ -19,6 +19,7 @@
 #include <QUrl>
 #include <QFile>
 #include <qdebug.h>
+#include <csync_private.h>
 
 #include "account.h"
 #include "clientproxy.h"

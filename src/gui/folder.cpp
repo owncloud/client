@@ -34,6 +34,7 @@
 #include "excludedfiles.h"
 
 #include "creds/abstractcredentials.h"
+#include <csync_private.h>
 
 #include <QDebug>
 #include <QTimer>

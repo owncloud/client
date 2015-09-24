@@ -13,8 +13,8 @@
  */
 
 #include "discoveryphase.h"
-#include <csync_private.h>
 #include <qdebug.h>
+#include <csync_private.h>
 
 #include <QUrl>
 #include "account.h"

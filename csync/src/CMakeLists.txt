@@ -73,9 +73,7 @@ configure_file(csync_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h)
 set(csync_HDRS
   ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h
   csync.h
-  vio/csync_vio.h
-  vio/csync_vio_method.h
-  vio/csync_vio_module.h
+  csync_private.h
 )
 
 # Statically include sqlite
@@ -126,12 +124,12 @@ else()
   RUNTIME DESTINATION
     ${BIN_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
   )
+  INSTALL(
+  FILES
+    ${csync_HDRS}
+  DESTINATION
+    ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}
+  )
 endif()
 
-# INSTALL(
-#   FILES
-#     ${csync_HDRS}
-#   DESTINATION
-#     ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}
-# )
 
