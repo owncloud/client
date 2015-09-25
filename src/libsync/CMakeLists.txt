@@ -95,6 +95,8 @@ set(owncloudsync_HEADERS
     ownsql.h
     clientproxy.h
     accountfwd.h
+    capabilities.h
+    connectionvalidator.h
 )
 
 set(creds_HEADERS

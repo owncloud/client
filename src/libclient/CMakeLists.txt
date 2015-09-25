@@ -46,6 +46,8 @@ set(libowncloudclient_SRCS
     ../gui/folderwatcher_linux.cpp
     ../gui/accountstate.cpp
     ../gui/accountmanager.cpp
+    ../gui/proxyauthhandler.cpp
+    ../gui/proxyauthdialog.cpp
     ../gui/sslerrordialog.cpp
     ../gui/creds/httpcredentialsgui.cpp
     ../gui/creds/credentialsfactory.cpp
@@ -65,7 +67,7 @@ set(libowncloudclient_SRCS
 # endif(USE_NEON)
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
-set(owncloudsync_HEADERS
+set(owncloudclient_HEADERS
     ../gui/accountmanager.h
     ../gui/accountstate.h
     ../gui/folder.h
@@ -75,7 +77,7 @@ set(owncloudsync_HEADERS
 
 IF (NOT APPLE)
     INSTALL(
-        FILES ${owncloudsync_HEADERS}
+        FILES ${owncloudclient_HEADERS}
 	DESTINATION ${INCLUDE_INSTALL_DIR}/${owncloudclientlib_NAME}
     )
     INSTALL(
