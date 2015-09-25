@@ -22,6 +22,8 @@
 #include "creds/abstractcredentials.h"
 #include "syncfilestatus.h"
 
+#include <csync_private.h>
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 #else
