@@ -6,12 +6,17 @@ configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/version.h" )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 # # csync is required.
-# include_directories(${CMAKE_SOURCE_DIR}/csync/src
-#                     ${CMAKE_SOURCE_DIR}/csync/src/httpbf/src
-#                     ${CMAKE_BINARY_DIR}/csync
-#                     ${CMAKE_BINARY_DIR}/csync/src
-#                    )
-# include_directories(${CMAKE_SOURCE_DIR}/src/3rdparty/qjson)
+include_directories(
+                    ${CMAKE_SOURCE_DIR}/csync/src
+                    #${CMAKE_SOURCE_DIR}/csync/src/httpbf/src
+                    ${CMAKE_SOURCE_DIR}/src/gui
+                    ${CMAKE_BINARY_DIR}/src/gui # for ui_sslerrordialog.h
+                    ${CMAKE_SOURCE_DIR}/src/libsync
+                    ${CMAKE_BINARY_DIR}/src/libsync # for owncloudlib.h
+                    ${CMAKE_BINARY_DIR}/csync
+#                    ${CMAKE_BINARY_DIR}/csync/src
+                   )
+include_directories(${CMAKE_SOURCE_DIR}/src/3rdparty/qjson)
 # include_directories(${OPENSSL_INCLUDE_DIR})
 #
 if ( APPLE )
@@ -34,7 +39,22 @@ set(owncloudclientlib_NAME "owncloudclient")
 # endif()
 
 set(libowncloudclient_SRCS
-    account.cpp
+    #account.cpp
+    ../gui/folder.cpp
+    ../gui/folderman.cpp
+    ../gui/folderwatcher.cpp
+    ../gui/folderwatcher_linux.cpp
+    ../gui/accountstate.cpp
+    ../gui/accountmanager.cpp
+    ../gui/sslerrordialog.cpp
+    ../gui/creds/httpcredentialsgui.cpp
+    ../gui/creds/credentialsfactory.cpp
+    ../gui/creds/shibbolethcredentials.cpp
+    ../gui/creds/shibboleth/shibbolethwebview.cpp
+#    ../gui/creds/shibboleth/shibbolethrefresher.cpp
+    ../gui/creds/shibboleth/shibbolethuserjob.cpp
+    ../gui/socketapi.cpp
+    ../gui/syncrunfilelog.cpp
 )
 
 # if(USE_NEON)
@@ -46,13 +66,17 @@ set(libowncloudclient_SRCS
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
 set(owncloudsync_HEADERS
-    account.h
+    ../gui/accountmanager.h
+    ../gui/accountstate.h
+    ../gui/folder.h
+    ../gui/folderman.h
+    ../gui/folderwatcher.h
 )
 
 IF (NOT APPLE)
     INSTALL(
         FILES ${owncloudsync_HEADERS}
-	DESTINATION ${INCLUDE_INSTALL_DIR}/${owncloudclientlib_NAME}/mirall
+	DESTINATION ${INCLUDE_INSTALL_DIR}/${owncloudclientlib_NAME}
     )
     INSTALL(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/owncloudclientlib.h
