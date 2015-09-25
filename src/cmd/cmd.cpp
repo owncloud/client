@@ -42,6 +42,8 @@
 #include <termios.h>
 #endif
 
+#include <csync_private.h>
+
 using namespace OCC;
 
 struct CmdOptions {
