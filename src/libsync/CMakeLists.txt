@@ -105,6 +105,10 @@ IF (NOT APPLE)
         FILES ${creds_HEADERS}
 	DESTINATION ${INCLUDE_INSTALL_DIR}/${synclib_NAME}/creds
     )
+    INSTALL(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h
+        DESTINATION ${INCLUDE_INSTALL_DIR}/${synclib_NAME}
+    )
 ENDIF(NOT APPLE)
 
 list(APPEND libsync_LINK_TARGETS
