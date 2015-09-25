@@ -81,14 +81,20 @@ endif(USE_NEON)
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
 set(owncloudsync_HEADERS
+    abstractnetworkjob.h
     account.h
     syncengine.h
     configfile.h
     networkjobs.h
     progressdispatcher.h
     syncfileitem.h
+    syncfilestatus.h
     syncjournaldb.h
     syncresult.h
+    utility.h
+    ownsql.h
+    clientproxy.h
+    accountfwd.h
 )
 
 set(creds_HEADERS
