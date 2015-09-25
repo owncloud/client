@@ -563,6 +563,5 @@ time_t oc_httpdate_parse( const char *date );
 /**
  * }@
  */
-#include <csync_private.h>
 #endif /* _CSYNC_H */
 /* vim: set ft=c.doxygen ts=8 sw=2 et cindent: */

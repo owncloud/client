@@ -88,8 +88,8 @@ configure_file(csync_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h)
 
 set(csync_HDRS
   ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h
+  ${CMAKE_CURRENT_BINARY_DIR}/../config_csync.h
   csync.h
-  csync_private.h
 )
 
 # Statically include sqlite
@@ -145,6 +145,12 @@ else()
     ${csync_HDRS}
   DESTINATION
     ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}
+  )
+  INSTALL(
+  FILES
+    std/c_private.h
+  DESTINATION
+    ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}/std
   )
 endif()
 
