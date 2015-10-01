@@ -1,10 +1,31 @@
+/*
+ * libcsync -- a library to sync a directory with another
+ *
+ * Copyright (c) 2013 by Klaas Freitag <freitag@owncloud.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 #include "torture.h"
-
+#include <stdio.h>
 #include "c_string.h"
+#include "c_path.h"
 
 #ifdef _WIN32
 #include <string.h>
 #endif
+
 
 static void setup(void **state)
 {
@@ -44,7 +65,7 @@ static void check_iconv_to_native_normalization(void **state)
     const char *exp_out = "\x48\xc3\xa4"; // UTF8
 #endif
 
-    out = c_utf8_to_locale(in);
+    out = c_utf8_path_to_locale(in);
     assert_string_equal(out, exp_out);
 
     c_free_locale_string(out);
@@ -106,8 +127,8 @@ static void check_to_multibyte(void **state)
 {
     int rc = -1;
 
-    mbchar_t *mb_string = c_utf8_to_locale( TESTSTRING );
-    mbchar_t *mb_null   = c_utf8_to_locale( NULL );
+    mbchar_t *mb_string = c_utf8_path_to_locale( TESTSTRING );
+    mbchar_t *mb_null   = c_utf8_path_to_locale( NULL );
 
     (void) state;
 
@@ -123,13 +144,78 @@ static void check_to_multibyte(void **state)
     c_free_locale_string(mb_null);
 }
 
+static void check_long_win_path(void **state)
+{
+    (void) state; /* unused */
+
+    {
+        const char *path = "C://DATA/FILES/MUSIC/MY_MUSIC.mp3"; // check a short path
+        const char *exp_path = "\\\\?\\C:\\\\DATA\\FILES\\MUSIC\\MY_MUSIC.mp3";
+        const char *new_short = c_path_to_UNC(path);
+        assert_string_equal(new_short, exp_path);
+        SAFE_FREE(new_short);
+    }
+
+    {
+        const char *path = "\\\\foo\\bar/MY_MUSIC.mp3";
+        const char *exp_path = "\\\\foo\\bar\\MY_MUSIC.mp3";
+        const char *new_short = c_path_to_UNC(path);
+        assert_string_equal(new_short, exp_path);
+        SAFE_FREE(new_short);
+    }
+
+    {
+        const char *path = "//foo\\bar/MY_MUSIC.mp3";
+        const char *exp_path = "\\\\foo\\bar\\MY_MUSIC.mp3";
+        const char *new_short = c_path_to_UNC(path);
+        assert_string_equal(new_short, exp_path);
+        SAFE_FREE(new_short);
+    }
+
+    {
+        const char *path = "\\foo\\bar";
+        const char *exp_path = "\\\\?\\foo\\bar";
+        const char *new_short = c_path_to_UNC(path);
+        assert_string_equal(new_short, exp_path);
+        SAFE_FREE(new_short);
+    }
+
+    {
+        const char *path = "/foo/bar";
+        const char *exp_path = "\\\\?\\foo\\bar";
+        const char *new_short = c_path_to_UNC(path);
+        assert_string_equal(new_short, exp_path);
+        SAFE_FREE(new_short);
+    }
+
+    const char *longPath = "D://alonglonglonglong/blonglonglonglong/clonglonglonglong/dlonglonglonglong/"
+            "elonglonglonglong/flonglonglonglong/glonglonglonglong/hlonglonglonglong/ilonglonglonglong/"
+            "jlonglonglonglong/klonglonglonglong/llonglonglonglong/mlonglonglonglong/nlonglonglonglong/"
+            "olonglonglonglong/file.txt";
+    const char *longPathConv = "\\\\?\\D:\\\\alonglonglonglong\\blonglonglonglong\\clonglonglonglong\\dlonglonglonglong\\"
+            "elonglonglonglong\\flonglonglonglong\\glonglonglonglong\\hlonglonglonglong\\ilonglonglonglong\\"
+            "jlonglonglonglong\\klonglonglonglong\\llonglonglonglong\\mlonglonglonglong\\nlonglonglonglong\\"
+            "olonglonglonglong\\file.txt";
+
+    const char *new_long = c_path_to_UNC(longPath);
+    // printf( "XXXXXXXXXXXX %s %d\n", new_long, mem_reserved);
+
+    assert_string_equal(new_long, longPathConv);
+
+    // printf( "YYYYYYYYYYYY %ld\n", strlen(new_long));
+    assert_int_equal( strlen(new_long), 286);
+    SAFE_FREE(new_long);
+}
+
 int torture_run_tests(void)
 {
     const UnitTest tests[] = {
+        unit_test_setup_teardown(check_long_win_path,                    setup, teardown),
         unit_test_setup_teardown(check_to_multibyte,                    setup, teardown),
         unit_test_setup_teardown(check_iconv_ascii,                     setup, teardown),
         unit_test_setup_teardown(check_iconv_to_native_normalization,   setup, teardown),
         unit_test_setup_teardown(check_iconv_from_native_normalization, setup, teardown),
+
     };
 
     return run_tests(tests);

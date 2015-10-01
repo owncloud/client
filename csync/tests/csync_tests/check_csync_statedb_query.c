@@ -1,3 +1,22 @@
+/*
+ * libcsync -- a library to sync a directory with another
+ *
+ * Copyright (c) 2008-2013 by Andreas Schneider <asn@cryptomilk.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 #include "torture.h"
 
 #define CSYNC_TEST 1
@@ -25,10 +44,14 @@ static void setup(void **state)
     assert_int_equal(rc, 0);
     rc = csync_create(&csync, "/tmp/check_csync1", "/tmp/check_csync2");
     assert_int_equal(rc, 0);
-    rc = csync_set_config_dir(csync, "/tmp/check_csync/");
-    assert_int_equal(rc, 0);
     rc = csync_init(csync);
     assert_int_equal(rc, 0);
+
+    sqlite3 *db = NULL;
+    rc = sqlite3_open_v2(TESTDB, &db, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL);
+    assert_int_equal(rc, SQLITE_OK);
+    rc = sqlite3_close(db);
+    assert_int_equal(rc, SQLITE_OK);
 
     rc = csync_statedb_load(csync, TESTDB, &csync->statedb.db);
     assert_int_equal(rc, 0);
@@ -38,19 +61,11 @@ static void setup(void **state)
 
 static void setup_db(void **state)
 {
-    CSYNC *csync;
-    char *stmt = NULL;
+    char *errmsg;
     int rc = 0;
-    c_strlist_t *result = NULL;
+    sqlite3 *db = NULL;
 
-    setup(state);
-    csync = *state;
-
-    // rc = csync_statedb_create_tables(csync->statedb.db);
-    assert_int_equal(rc, 0);
-
-    result = csync_statedb_query(csync->statedb.db,
-        "CREATE TABLE IF NOT EXISTS metadata ("
+    const char *sql = "CREATE TABLE IF NOT EXISTS metadata ("
         "phash INTEGER(8),"
         "pathlen INTEGER,"
         "path VARCHAR(4096),"
@@ -62,29 +77,25 @@ static void setup_db(void **state)
         "type INTEGER,"
         "md5 VARCHAR(32),"
         "PRIMARY KEY(phash)"
-        ");"
-        );
+        ");";
 
-    assert_non_null(result);
-    c_strlist_destroy(result);
-
-
-    stmt = sqlite3_mprintf("INSERT INTO metadata"
+        const char *sql2 = "INSERT INTO metadata"
                            "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5) VALUES"
-                           "(%lu, %d, '%q', %d, %d, %d, %d, %lu, %d, %lu);",
-                           42,
-                           42,
-                           "It's a rainy day",
-                           23,
-                           42,
-                           42,
-                           42,
-                           42,
-                           2,
-                           43);
+                           "(42, 42, 'Its funny stuff', 23, 42, 43, 55, 66, 2, 54);";
 
-    // rc = csync_statedb_insert(csync->statedb.db, stmt);
-    sqlite3_free(stmt);
+
+    setup(state);
+    rc = sqlite3_open( TESTDB, &db);
+    assert_int_equal(rc, SQLITE_OK);
+
+    rc = sqlite3_exec( db, sql, NULL, NULL, &errmsg );
+    assert_int_equal(rc, SQLITE_OK);
+
+    rc = sqlite3_exec( db, sql2, NULL, NULL, &errmsg );
+    assert_int_equal(rc, SQLITE_OK);
+
+    sqlite3_close(db);
+
 }
 
 static void teardown(void **state) {
@@ -121,41 +132,6 @@ static void check_csync_statedb_query_statement(void **state)
       c_strlist_destroy(result);
     }
 }
-
-static void check_csync_statedb_create_error(void **state)
-{
-    CSYNC *csync = *state;
-    c_strlist_t *result;
-
-    result = csync_statedb_query(csync->statedb.db, "CREATE TABLE test(phash INTEGER, text VARCHAR(10));");
-    assert_non_null(result);
-    c_strlist_destroy(result);
-
-    result = csync_statedb_query(csync->statedb.db, "CREATE TABLE test(phash INTEGER, text VARCHAR(10));");
-    assert_null(result);
-
-    c_strlist_destroy(result);
-}
-
-static void check_csync_statedb_insert_statement(void **state)
-{
-    CSYNC *csync = *state;
-    c_strlist_t *result;
-    int rc = 0;
-
-    result = csync_statedb_query(csync->statedb.db, "CREATE TABLE test(phash INTEGER, text VARCHAR(10));");
-    assert_non_null(result);
-    c_strlist_destroy(result);
-
-    // rc = csync_statedb_insert(csync->statedb.db, "INSERT;");
-    assert_int_equal(rc, 0);
-    // rc = csync_statedb_insert(csync->statedb.db, "INSERT");
-    assert_int_equal(rc, 0);
-    // rc = csync_statedb_insert(csync->statedb.db, "");
-    assert_int_equal(rc, 0);
-}
-
-
 
 static void check_csync_statedb_drop_tables(void **state)
 {
@@ -218,32 +194,19 @@ static void check_csync_statedb_get_stat_by_hash_not_found(void **state)
     CSYNC *csync = *state;
     csync_file_stat_t *tmp;
 
-    tmp = csync_statedb_get_stat_by_hash(csync->statedb.db, (uint64_t) 666);
+    tmp = csync_statedb_get_stat_by_hash(csync, (uint64_t) 666);
     assert_null(tmp);
 
     free(tmp);
 }
 
-static void check_csync_statedb_get_stat_by_inode(void **state)
-{
-    CSYNC *csync = *state;
-    csync_file_stat_t *tmp;
-
-    tmp = csync_statedb_get_stat_by_inode(csync->statedb.db, (ino_t) 23);
-    assert_non_null(tmp);
-
-    assert_int_equal(tmp->phash, 42);
-    assert_int_equal(tmp->inode, 23);
-
-    free(tmp);
-}
 
 static void check_csync_statedb_get_stat_by_inode_not_found(void **state)
 {
     CSYNC *csync = *state;
     csync_file_stat_t *tmp;
 
-    tmp = csync_statedb_get_stat_by_inode(csync->statedb.db, (ino_t) 666);
+    tmp = csync_statedb_get_stat_by_inode(csync, (ino_t) 666);
     assert_null(tmp);
 }
 
@@ -251,16 +214,10 @@ int torture_run_tests(void)
 {
     const UnitTest tests[] = {
         unit_test_setup_teardown(check_csync_statedb_query_statement, setup, teardown),
-        unit_test_setup_teardown(check_csync_statedb_create_error, setup, teardown),
-        unit_test_setup_teardown(check_csync_statedb_insert_statement, setup, teardown),
-      /*  unit_test_setup_teardown(check_csync_statedb_is_empty, setup, teardown), */
-      /*  unit_test_setup_teardown(check_csync_statedb_create_tables, setup, teardown), */
         unit_test_setup_teardown(check_csync_statedb_drop_tables, setup, teardown),
         unit_test_setup_teardown(check_csync_statedb_insert_metadata, setup, teardown),
         unit_test_setup_teardown(check_csync_statedb_write, setup, teardown),
-     /*   unit_test_setup_teardown(check_csync_statedb_get_stat_by_hash, setup_db, teardown), */
         unit_test_setup_teardown(check_csync_statedb_get_stat_by_hash_not_found, setup_db, teardown),
-      /* unit_test_setup_teardown(check_csync_statedb_get_stat_by_inode, setup_db, teardown), */
         unit_test_setup_teardown(check_csync_statedb_get_stat_by_inode_not_found, setup_db, teardown),
     };
 

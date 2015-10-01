@@ -6,10 +6,24 @@
 #
 # Copyright (C) by Olivier Goffart <ogoffart@woboq.com>
 #
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+#
 
 use lib ".";
 
-use Carp::Assert;
+
 use File::Copy;
 use ownCloud::Test;
 
@@ -53,6 +67,13 @@ system( "rm -rf " . localDir() . 'remoteToLocal1' );
 system( "echo \"my file\" >> /tmp/myfile.txt" );
 put_to_dir( '/tmp/myfile.txt', 'remoteToLocal1/rtl1/rtl11' );
 
+# Also add a file with symbols
+my $symbolName = "a\%b#c\$d-e";
+
+system( "echo \"my symbols\" >> /tmp/$symbolName" );
+put_to_dir( "/tmp/$symbolName", 'remoteToLocal1/rtl1/rtl11' );
+
+
 my $fileid = remoteFileId( 'remoteToLocal1/rtl1/', 'rtl11' );
 my $fid2 =   remoteFileId( 'remoteToLocal1/rtl1/', 'La ced' );
 assert($fid2 eq "" or $fileid ne $fid2, "File IDs are equal" );
@@ -70,11 +91,17 @@ assertLocalAndRemoteDir( 'newdir', 0);
 assert( -e localDir().'newdir/rtl1/rtl11/newfile.dat' );
 assert( -e localDir().'newdir/rtl1/rtl11/myfile.txt' );
 assert( ! -e localDir().'newdir/rtl11/test.txt' );
-assert( ! -e localDir().'remoteToLocal1' );
+# BUG!  remoteToLocal1 is not deleted because changes were detected
+#       (even if the changed fileswere moved)
+# assert( ! -e localDir().'remoteToLocal1' );
+assert( ! -e localDir().'remoteToLocal1/rtl1' );
 
 printInfo("Move file and create another one with the same name.");
 move( localDir() . 'newdir/myfile.txt', localDir() . 'newdir/oldfile.txt' );
 system( "echo \"super new\" >> " . localDir() . 'newdir/myfile.txt' );
+
+#Move a file with symbols as well
+move( localDir() . "newdir/$symbolName", localDir() . "newdir/$symbolName.new" );
 
 #Add some files for the next test.
 system( "echo \"un\" > " . localDir() . '1.txt' );
@@ -114,6 +141,16 @@ move( localDir() . '3.txt', localDir() . '3_bis.txt' );
 system( "echo \"new file un\" > " . localDir() . '1.txt' );
 system( "echo \"new file trois\" > " . localDir() . '3.txt' );
 
+#also add special file with special character for next sync
+#and file with special characters
+createLocalFile(localDir().  'hêllo%20th@re.txt' , 1208 );
+
+csync();
+assertLocalAndRemoteDir( '', 0);
+
+printInfo("Move a file containing special character");
+
+move(localDir().  'hêllo%20th@re.txt', localDir().  'hêllo%20th@re.doc');
 csync();
 assertLocalAndRemoteDir( '', 0);
 

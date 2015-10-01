@@ -32,65 +32,60 @@
 #ifndef _CSYNC_H
 #define _CSYNC_H
 
+#include "std/c_private.h"
+#include <sys/stat.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <config_csync.h>
 
-#include "csync_version.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
- * csync file declarations
- */
-#define CSYNC_CONF_DIR ".ocsync"
-#define CSYNC_CONF_FILE "ocsync.conf"
-#define CSYNC_EXCLUDE_FILE "ocsync_exclude.conf"
-
-/**
-  * Instruction enum. In the file traversal structure, it describes
-  * the csync state of a file.
-  */
+struct csync_client_certs_s {
+  char *certificatePath;
+  char *certificatePasswd;
+};  
+  
 enum csync_status_codes_e {
   CSYNC_STATUS_OK         = 0,
 
   CSYNC_STATUS_ERROR      = 1024, /* don't use this code,
-                                     just use in csync_status_ok */
-  CSYNC_STATUS_UNSUCCESSFUL,
-  CSYNC_STATUS_NO_LOCK, /* OBSOLETE  does not happen anymore */
-  CSYNC_STATUS_STATEDB_LOAD_ERROR,
-  CSYNC_STATUS_STATEDB_WRITE_ERROR,
-  CSYNC_STATUS_NO_MODULE,
-  CSYNC_STATUS_TIMESKEW,
-  CSYNC_STATUS_FILESYSTEM_UNKNOWN,
-  CSYNC_STATUS_TREE_ERROR,
-  CSYNC_STATUS_MEMORY_ERROR,
-  CSYNC_STATUS_PARAM_ERROR,
-  CSYNC_STATUS_UPDATE_ERROR,
-  CSYNC_STATUS_RECONCILE_ERROR,
-  CSYNC_STATUS_PROPAGATE_ERROR,
-  CSYNC_STATUS_REMOTE_ACCESS_ERROR,
-  CSYNC_STATUS_REMOTE_CREATE_ERROR,
-  CSYNC_STATUS_REMOTE_STAT_ERROR,
-  CSYNC_STATUS_LOCAL_CREATE_ERROR,
-  CSYNC_STATUS_LOCAL_STAT_ERROR,
-  CSYNC_STATUS_PROXY_ERROR,
-  CSYNC_STATUS_LOOKUP_ERROR,
-  CSYNC_STATUS_SERVER_AUTH_ERROR,
-  CSYNC_STATUS_PROXY_AUTH_ERROR,
-  CSYNC_STATUS_CONNECT_ERROR,
-  CSYNC_STATUS_TIMEOUT,
-  CSYNC_STATUS_HTTP_ERROR,
-  CSYNC_STATUS_PERMISSION_DENIED,
+                                     */
+  CSYNC_STATUS_UNSUCCESSFUL,       /* Unspecific problem happend */
+  CSYNC_STATUS_NO_LOCK,            /* OBSOLETE  does not happen anymore */
+  CSYNC_STATUS_STATEDB_LOAD_ERROR, /* Statedb can not be loaded. */
+  CSYNC_STATUS_STATEDB_CORRUPTED,  /* Statedb is corrupted */
+  CSYNC_STATUS_NO_MODULE,          /* URL passed to csync does not start with owncloud:// or ownclouds:// */
+  CSYNC_STATUS_TIMESKEW,           /* OBSOLETE */
+  CSYNC_STATUS_FILESYSTEM_UNKNOWN, /* UNUSED */
+  CSYNC_STATUS_TREE_ERROR,         /* csync trees could not be created */
+  CSYNC_STATUS_MEMORY_ERROR,       /* not enough memory problem */
+  CSYNC_STATUS_PARAM_ERROR,        /* parameter is zero where not expected */
+  CSYNC_STATUS_UPDATE_ERROR,       /* general update or discovery error */
+  CSYNC_STATUS_RECONCILE_ERROR,    /* general reconcile error */
+  CSYNC_STATUS_PROPAGATE_ERROR,    /* OBSOLETE */
+  CSYNC_STATUS_REMOTE_ACCESS_ERROR, /* UNUSED */
+  CSYNC_STATUS_REMOTE_CREATE_ERROR, /* UNUSED */
+  CSYNC_STATUS_REMOTE_STAT_ERROR,  /* UNUSED */
+  CSYNC_STATUS_LOCAL_CREATE_ERROR, /* UNUSED */
+  CSYNC_STATUS_LOCAL_STAT_ERROR,   /* UNUSED */
+  CSYNC_STATUS_PROXY_ERROR,        /* UNUSED */
+  CSYNC_STATUS_LOOKUP_ERROR,       /* Neon fails to find proxy. Almost OBSOLETE */
+  CSYNC_STATUS_SERVER_AUTH_ERROR,  /* UNUSED */
+  CSYNC_STATUS_PROXY_AUTH_ERROR,   /* UNUSED */
+  CSYNC_STATUS_CONNECT_ERROR,      /* neon driven connection failed */
+  CSYNC_STATUS_TIMEOUT,            /* UNUSED */
+  CSYNC_STATUS_HTTP_ERROR,         /* UNUSED */
+  CSYNC_STATUS_PERMISSION_DENIED,  /*  */
   CSYNC_STATUS_NOT_FOUND,
   CSYNC_STATUS_FILE_EXISTS,
   CSYNC_STATUS_OUT_OF_SPACE,
-  CSYNC_STATUS_QUOTA_EXCEEDED,
+  CSYNC_STATUS_QUOTA_EXCEEDED, /* UNUSED */
   CSYNC_STATUS_SERVICE_UNAVAILABLE,
+  CSYNC_STATUS_STORAGE_UNAVAILABLE,
   CSYNC_STATUS_FILE_SIZE_ERROR,
   CSYNC_STATUS_CONTEXT_LOST,
   CSYNC_STATUS_MERGE_FILETREE_ERROR,
@@ -102,7 +97,12 @@ enum csync_status_codes_e {
     /* Codes for file individual status: */
     CSYNC_STATUS_INDIVIDUAL_IS_SYMLINK,
     CSYNC_STATUS_INDIVIDUAL_IGNORE_LIST,
-    CSYNC_STATUS_INDIVIDUAL_IS_INVALID_CHARS
+    CSYNC_STATUS_INDIVIDUAL_IS_INVALID_CHARS,
+    CSYNC_STATUS_INDIVIDUAL_EXCLUDE_LONG_FILENAME,
+    CYSNC_STATUS_FILE_LOCKED_OR_OPEN,
+    CSYNC_STATUS_INDIVIDUAL_EXCLUDE_HIDDEN,
+    CSYNC_STATUS_INVALID_CHARACTERS,
+    CSYNC_STATUS_INDIVIDUAL_STAT_FAILED
 };
 
 typedef enum csync_status_codes_e CSYNC_STATUS;
@@ -118,7 +118,10 @@ typedef enum csync_status_codes_e CSYNC_STATUS;
 #define CSYNC_STATUS_IS_ERR(x) (unlikely((x) >= CSYNC_STATUS_ERROR))
 #define CSYNC_STATUS_IS_EQUAL(x, y) ((x) == (y))
 
-
+/**
+  * Instruction enum. In the file traversal structure, it describes
+  * the csync state of a file.
+  */
 enum csync_instructions_e {
   CSYNC_INSTRUCTION_NONE       = 0x00000000,  /* Nothing to do (UPDATE|RECONCILE) */
   CSYNC_INSTRUCTION_EVAL       = 0x00000001,  /* There was changed compared to the DB (UPDATE) */
@@ -130,10 +133,7 @@ enum csync_instructions_e {
   CSYNC_INSTRUCTION_IGNORE     = 0x00000020,  /* The file is ignored (UPDATE|RECONCILE) */
   CSYNC_INSTRUCTION_SYNC       = 0x00000040,  /* The file need to be pushed to the other remote (RECONCILE) */
   CSYNC_INSTRUCTION_STAT_ERROR = 0x00000080,
-  CSYNC_INSTRUCTION_ERROR      = 0x00000100,
-  /* instructions for the propagator */
-  CSYNC_INSTRUCTION_DELETED    = 0x00000200,
-  CSYNC_INSTRUCTION_UPDATED    = 0x00000400
+  CSYNC_INSTRUCTION_ERROR      = 0x00000100
 };
 
 enum csync_ftw_type_e {
@@ -143,40 +143,95 @@ enum csync_ftw_type_e {
     CSYNC_FTW_TYPE_SKIP
 };
 
-enum csync_notify_type_e {
-  CSYNC_NOTIFY_INVALID,
-  CSYNC_NOTIFY_START_SYNC_SEQUENCE,
-  CSYNC_NOTIFY_START_DOWNLOAD,
-  CSYNC_NOTIFY_START_UPLOAD,
-  CSYNC_NOTIFY_PROGRESS,
-  CSYNC_NOTIFY_FINISHED_DOWNLOAD,
-  CSYNC_NOTIFY_FINISHED_UPLOAD,
-  CSYNC_NOTIFY_FINISHED_SYNC_SEQUENCE,
-  CSYNC_NOTIFY_START_DELETE,
-  CSYNC_NOTIFY_END_DELETE,
-  CSYNC_NOTIFY_ERROR,
-  CSYNC_NOTIFY_START_LOCAL_UPDATE,
-  CSYNC_NOTIFY_FINISHED_LOCAL_UPDATE,
-  CSYNC_NOTIFY_START_REMOTE_UPDATE,
-  CSYNC_NOTIFY_FINISHED_REMOTE_UPDATE
+
+#define FILE_ID_BUF_SIZE 21
+
+// currently specified at https://github.com/owncloud/core/issues/8322 are 9 to 10
+#define REMOTE_PERM_BUF_SIZE 15
+
+typedef struct csync_vio_file_stat_s csync_vio_file_stat_t;
+
+enum csync_vio_file_flags_e {
+  CSYNC_VIO_FILE_FLAGS_NONE = 0,
+  CSYNC_VIO_FILE_FLAGS_SYMLINK = 1 << 0,
+  CSYNC_VIO_FILE_FLAGS_HIDDEN = 1 << 1
 };
 
-struct csync_progress_s {
-  enum csync_notify_type_e kind;
+enum csync_vio_file_type_e {
+  CSYNC_VIO_FILE_TYPE_UNKNOWN,
+  CSYNC_VIO_FILE_TYPE_REGULAR,
+  CSYNC_VIO_FILE_TYPE_DIRECTORY,
+  CSYNC_VIO_FILE_TYPE_FIFO,
+  CSYNC_VIO_FILE_TYPE_SOCKET,
+  CSYNC_VIO_FILE_TYPE_CHARACTER_DEVICE,
+  CSYNC_VIO_FILE_TYPE_BLOCK_DEVICE,
+  CSYNC_VIO_FILE_TYPE_SYMBOLIC_LINK
+};
 
-  /* individual file progress information */
-  const char *path;
-  int64_t curr_bytes;
-  int64_t file_size;
-
-  /* overall progress */
-  int64_t overall_transmission_size;
-  int64_t current_overall_bytes;
-  int64_t overall_file_count;
-  int64_t current_file_no;
+enum csync_vio_file_stat_fields_e {
+  CSYNC_VIO_FILE_STAT_FIELDS_NONE = 0,
+  CSYNC_VIO_FILE_STAT_FIELDS_TYPE = 1 << 0,
+  CSYNC_VIO_FILE_STAT_FIELDS_MODE = 1 << 1, // local POSIX mode
+  CSYNC_VIO_FILE_STAT_FIELDS_FLAGS = 1 << 2,
+  CSYNC_VIO_FILE_STAT_FIELDS_DEVICE = 1 << 3,
+  CSYNC_VIO_FILE_STAT_FIELDS_INODE = 1 << 4,
+//  CSYNC_VIO_FILE_STAT_FIELDS_LINK_COUNT = 1 << 5,
+  CSYNC_VIO_FILE_STAT_FIELDS_SIZE = 1 << 6,
+//  CSYNC_VIO_FILE_STAT_FIELDS_BLOCK_COUNT = 1 << 7, /* will be removed */
+//  CSYNC_VIO_FILE_STAT_FIELDS_BLOCK_SIZE = 1 << 8,  /* will be removed */
+  CSYNC_VIO_FILE_STAT_FIELDS_ATIME = 1 << 9,
+  CSYNC_VIO_FILE_STAT_FIELDS_MTIME = 1 << 10,
+  CSYNC_VIO_FILE_STAT_FIELDS_CTIME = 1 << 11,
+//  CSYNC_VIO_FILE_STAT_FIELDS_SYMLINK_NAME = 1 << 12,
+//  CSYNC_VIO_FILE_STAT_FIELDS_CHECKSUM = 1 << 13,
+//  CSYNC_VIO_FILE_STAT_FIELDS_ACL = 1 << 14,
+//  CSYNC_VIO_FILE_STAT_FIELDS_UID = 1 << 15,
+//  CSYNC_VIO_FILE_STAT_FIELDS_GID = 1 << 16,
+  CSYNC_VIO_FILE_STAT_FIELDS_ETAG = 1 << 17,
+  CSYNC_VIO_FILE_STAT_FIELDS_FILE_ID = 1 << 18,
+  CSYNC_VIO_FILE_STAT_FIELDS_DIRECTDOWNLOADURL = 1 << 19,
+  CSYNC_VIO_FILE_STAT_FIELDS_DIRECTDOWNLOADCOOKIES = 1 << 20,
+  CSYNC_VIO_FILE_STAT_FIELDS_PERM = 1 << 21 // remote oC perm
 
 };
-typedef struct csync_progress_s CSYNC_PROGRESS;
+
+
+struct csync_vio_file_stat_s {
+  char *name;
+  char *etag; // FIXME: Should this be inlined like file_id and perm?
+  char file_id[FILE_ID_BUF_SIZE+1];
+  char *directDownloadUrl;
+  char *directDownloadCookies;
+  char remotePerm[REMOTE_PERM_BUF_SIZE+1];
+
+  time_t atime;
+  time_t mtime;
+  time_t ctime;
+
+  int64_t size;
+
+  mode_t mode;
+
+  dev_t device;
+  uint64_t inode;
+
+  int fields; // actually enum csync_vio_file_stat_fields_e fields;
+  enum csync_vio_file_type_e type;
+
+  enum csync_vio_file_flags_e flags;
+
+  char *original_name; // only set if locale conversion fails
+};
+
+csync_vio_file_stat_t *csync_vio_file_stat_new(void);
+csync_vio_file_stat_t *csync_vio_file_stat_copy(csync_vio_file_stat_t *file_stat);
+
+void csync_vio_file_stat_destroy(csync_vio_file_stat_t *fstat);
+
+void csync_vio_file_stat_set_file_id( csync_vio_file_stat_t* dst, const char* src );
+
+void csync_vio_set_file_id(char* dst, const char *src );
+
 
 /**
  * CSync File Traversal structure.
@@ -189,24 +244,32 @@ typedef struct csync_progress_s CSYNC_PROGRESS;
 struct csync_tree_walk_file_s {
     const char *path;
     int64_t     size;
+    int64_t     inode;
     time_t      modtime;
-#ifdef _WIN32
-    uint32_t    uid;
-    uint32_t    gid;
-#else
-    uid_t       uid;
-    gid_t       gid;
-#endif
     mode_t      mode;
     enum csync_ftw_type_e     type;
     enum csync_instructions_e instruction;
 
     /* For directories: If the etag has been updated and need to be writen on the db */
-    int         should_update_etag;
+    int         should_update_metadata;
+
+    /* For directories: Does it have children that were ignored (hidden or ignore pattern) */
+    int         has_ignored_files;
 
     const char *rename_path;
     const char *etag;
     const char *file_id;
+    const char *remotePerm;
+    char *directDownloadUrl;
+    char *directDownloadCookies;
+    struct {
+        int64_t     size;
+        time_t      modtime;
+        const char *etag;
+        const char *file_id;
+        enum csync_instructions_e instruction;
+    } other;
+
     CSYNC_STATUS error_status;
 };
 typedef struct csync_tree_walk_file_s TREE_WALK_FILE;
@@ -224,14 +287,19 @@ typedef void (*csync_log_callback) (int verbosity,
                                     const char *buffer,
                                     void *userdata);
 
-/**
- * @brief Check internal csync status.
- *
- * @param csync  The context to check.
- *
- * @return  true if status is error free, false for error states.
- */
-bool csync_status_ok(CSYNC *ctx);
+typedef void (*csync_update_callback) (bool local,
+                                    const char *dirUrl,
+                                    void *userdata);
+
+typedef void csync_vio_handle_t;
+typedef csync_vio_handle_t* (*csync_vio_opendir_hook) (const char *url,
+                                    void *userdata);
+typedef csync_vio_file_stat_t* (*csync_vio_readdir_hook) (csync_vio_handle_t *dhhandle,
+                                                              void *userdata);
+typedef void (*csync_vio_closedir_hook) (csync_vio_handle_t *dhhandle,
+                                                              void *userdata);
+typedef int (*csync_vio_stat_hook) (csync_vio_handle_t *dhhandle,
+                                                              void *userdata);
 
 /**
  * @brief Allocate a csync context.
@@ -272,16 +340,7 @@ int csync_update(CSYNC *ctx);
 int csync_reconcile(CSYNC *ctx);
 
 /**
- * @brief Propagation
- *
- * @param ctx  The context to run the propagation on.
- *
- * @return  0 on success, less than 0 if an error occured.
- */
-int csync_propagate(CSYNC *ctx);
-
-/**
- * @brief Commit the sync results to journal
+ * @brief Re-initializes the csync context
  *
  * @param ctx  The context to commit.
  *
@@ -301,31 +360,6 @@ int csync_commit(CSYNC *ctx);
 int csync_destroy(CSYNC *ctx);
 
 /**
- * @brief Check if csync is the required version or get the version
- * string.
- *
- * @param req_version   The version required.
- *
- * @return              If the version of csync is newer than the version
- *                      required it will return a version string.
- *                      NULL if the version is older.
- *
- * Example:
- *
- * @code
- *  if (csync_version(CSYNC_VERSION_INT(0,42,1)) == NULL) {
- *    fprintf(stderr, "libcsync version is too old!\n");
- *    exit(1);
- *  }
- *
- *  if (debug) {
- *    printf("csync %s\n", csync_version(0));
- *  }
- * @endcode
- */
-const char *csync_version(int req_version);
-
-/**
  * @brief Add an additional exclude list.
  *
  * @param ctx           The context to add the exclude list.
@@ -342,62 +376,6 @@ int csync_add_exclude_list(CSYNC *ctx, const char *path);
  * @param ctx           The context to add the exclude list.
  */
 void csync_clear_exclude_list(CSYNC *ctx);
-
-/**
- * @brief Get the config directory.
- *
- * @param ctx          The csync context.
- *
- * @return             The path of the config directory or NULL on error.
- */
-const char *csync_get_config_dir(CSYNC *ctx);
-
-/**
- * @brief Change the config directory.
- *
- * @param ctx           The csync context.
- *
- * @param path          The path to the new config directory.
- *
- * @return              0 on success, less than 0 if an error occured.
- */
-int csync_set_config_dir(CSYNC *ctx, const char *path);
-
-/**
- * @brief Remove the complete config directory.
- *
- * @param ctx           The csync context.
- *
- * @return              0 on success, less than 0 if an error occured.
- */
-int csync_remove_config_dir(CSYNC *ctx);
-
-/**
- * @brief Enable the usage of the statedb. It is enabled by default.
- *
- * @param ctx           The csync context.
- *
- * @return              0 on success, less than 0 if an error occured.
- */
-int csync_enable_statedb(CSYNC *ctx);
-
-/**
- * @brief Disable the usage of the statedb. It is enabled by default.
- *
- * @param ctx           The csync context.
- *
- * @return              0 on success, less than 0 if an error occured.
- */
-int csync_disable_statedb(CSYNC *ctx);
-
-/**
- * @brief Check if the statedb usage is enabled.
- *
- * @param ctx           The csync context.
- *
- * @return              1 if it is enabled, 0 if it is disabled.
- */
-int csync_is_statedb_disabled(CSYNC *ctx);
 
 /**
  * @brief Get the userdata saved in the context.
@@ -491,40 +469,6 @@ void *csync_get_log_userdata(void);
  */
 int csync_set_log_userdata(void *data);
 
-/**
- * @brief Get the path of the statedb file used.
- *
- * @param ctx           The csync context.
- *
- * @return              The path to the statedb file, NULL if an error occured.
- */
-const char *csync_get_statedb_file(CSYNC *ctx);
-
-/**
- * @brief Enable the creation of backup copys if files are changed on both sides
- *
- * @param ctx           The csync context.
- *
- * @return              0 on success, less than 0 if an error occured.
- */
-int csync_enable_conflictcopys(CSYNC *ctx);
-
-/**
-  * @brief Flag to tell csync that only a local run is intended. Call before csync_init
-  *
-  * @param local_only   Bool flag to indicate local only mode.
-  *
-  * @return             0 on success, less than 0 if an error occured.
-  */
-int csync_set_local_only( CSYNC *ctx, bool local_only );
-
-/**
-  * @brief Retrieve the flag to tell csync that only a local run is intended.
-  *
-  * @return             1: stay local only, 0: local and remote mode
-  */
-bool csync_get_local_only( CSYNC *ctx );
-
 /* Used for special modes or debugging */
 CSYNC_STATUS csync_get_status(CSYNC *ctx);
 
@@ -589,25 +533,6 @@ int csync_set_iconv_codec(const char *from);
 int csync_set_module_property(CSYNC *ctx, const char *key, void *value);
 
 /**
- * @brief Callback definition for file progress callback.
- *
- * @param progress  A struct containing progress information.
- *
- * @param userdata  User defined data for the callback.
- */
-typedef void (*csync_progress_callback)( CSYNC_PROGRESS *progress, void *userdata);
-
-/**
- * @brief Set a progress callback.
- *
- * This callback reports about up- or download progress of a individual file
- * as well as overall progress.
- */
-int csync_set_progress_callback( CSYNC *ctx, csync_progress_callback cb);
-
-csync_progress_callback csync_get_progress_callback(CSYNC *ctx);
-
-/**
  * @brief Aborts the current sync run as soon as possible. Can be called from another thread.
  *
  * @param ctx           The csync context.
@@ -627,6 +552,9 @@ void csync_resume(CSYNC *ctx);
  * @param ctx           The csync context.
  */
 int  csync_abort_requested(CSYNC *ctx);
+
+char *csync_normalize_etag(const char *);
+time_t oc_httpdate_parse( const char *date );
 
 #ifdef __cplusplus
 }

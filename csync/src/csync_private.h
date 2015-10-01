@@ -37,11 +37,10 @@
 #include <sqlite3.h>
 
 #include "config_csync.h"
-#include "c_lib.h"
-#include "c_private.h"
+#include "std/c_lib.h"
+#include "std/c_private.h"
 #include "csync.h"
 #include "csync_misc.h"
-#include "vio/csync_vio_file_stat.h"
 
 #ifdef WITH_ICONV
 #include <iconv.h>
@@ -54,25 +53,12 @@
 #include <sys/iconv.h>
 #endif
 
-#include "vio/csync_vio_method.h"
 #include "csync_macros.h"
 
 /**
  * How deep to scan directories.
  */
 #define MAX_DEPTH 50
-
-/**
- * Maximum time difference between two replicas in seconds
- */
-#define MAX_TIME_DIFFERENCE 10
-
-/**
- * Maximum size of a buffer for transfer
- */
-#ifndef MAX_XFER_BUF_SIZE
-#define MAX_XFER_BUF_SIZE (16 * 1024)
-#endif
 
 #define CSYNC_STATUS_INIT 1 << 0
 #define CSYNC_STATUS_UPDATE 1 << 1
@@ -91,69 +77,66 @@ enum csync_replica_e {
 
 typedef struct csync_file_stat_s csync_file_stat_t;
 
+struct csync_owncloud_ctx_s; // csync_owncloud.c
+
+
 /**
  * @brief csync public structure
  */
 struct csync_s {
   struct {
       csync_auth_callback auth_function;
-      csync_progress_callback progress_cb;
       void *userdata;
+      csync_update_callback update_callback;
+      void *update_callback_userdata;
+
+      /* hooks for checking the white list (uses the update_callback_userdata) */
+      int (*checkSelectiveSyncBlackListHook)(void*, const char*);
+      int (*checkSelectiveSyncNewFolderHook)(void*, const char*);
+
+
+      csync_vio_opendir_hook remote_opendir_hook;
+      csync_vio_readdir_hook remote_readdir_hook;
+      csync_vio_closedir_hook remote_closedir_hook;
+      void *vio_userdata;
   } callbacks;
   c_strlist_t *excludes;
 
+  // needed for SSL client certificate support
+  struct csync_client_certs_s *clientCerts;
+  
   struct {
     char *file;
     sqlite3 *db;
     int exists;
-    int disabled;
+
+    sqlite3_stmt* by_hash_stmt;
+    sqlite3_stmt* by_fileid_stmt;
+    sqlite3_stmt* by_inode_stmt;
+
+    int lastReturnValue;
   } statedb;
 
   struct {
     char *uri;
     c_rbtree_t *tree;
-    c_list_t *list;
     enum csync_replica_e type;
-    c_list_t *ignored_cleanup;
   } local;
 
   struct {
     char *uri;
     c_rbtree_t *tree;
-    c_list_t *list;
     enum csync_replica_e type;
     int  read_from_db;
-    c_list_t *ignored_cleanup;
+    const char *root_perms; /* Permission of the root folder. (Since the root folder is not in the db tree, we need to keep a separate entry.) */
   } remote;
 
-  struct {
-    csync_vio_method_t *method;
-    csync_vio_method_finish_fn finish_fn;
-    csync_vio_capabilities_t capabilities;
-  } module;
 
-  struct {
-    int max_depth;
-    int max_time_difference;
-    int sync_symbolic_links;
-    int unix_extensions;
-    char *config_dir;
-    bool with_conflict_copys;
-    bool local_only_mode;
-    int timeout;
 #if defined(HAVE_ICONV) && defined(WITH_ICONV)
-    iconv_t iconv_cd;
-#endif
-  } options;
-
   struct {
-    uid_t uid;
-    uid_t euid;
-  } pwd;
-
-  csync_overall_progress_t overall_progress;
-
-  struct csync_progressinfo_s *progress_info;
+    iconv_t iconv_cd;
+  } options;
+#endif
 
   /* replica we are currently walking */
   enum csync_replica_e current;
@@ -173,6 +156,22 @@ struct csync_s {
   int status;
   volatile int abort;
   void *rename_info;
+
+  /**
+   * Specify if it is allowed to read the remote tree from the DB (default to enabled)
+   */
+  bool read_remote_from_db;
+
+  /**
+   * If true, the DB is considered empty and all reads are skipped. (default is false)
+   * This is useful during the initial local discovery as it speeds it up significantly.
+   */
+  bool db_is_empty;
+
+  bool ignore_hidden_files;
+
+  struct csync_owncloud_ctx_s *owncloud_context;
+
 };
 
 
@@ -185,17 +184,20 @@ struct csync_file_stat_s {
   int64_t size;       /* u64 */
   size_t pathlen;   /* u64 */
   uint64_t inode;   /* u64 */
-  uid_t uid;        /* u32 */
-  gid_t gid;        /* u32 */
   mode_t mode;      /* u32 */
-  int nlink;        /* u32 */
   int type;         /* u32 */
   int child_modified;/*bool*/
-  int should_update_etag; /*bool */
+  int should_update_metadata; /*bool: specify that the etag, or the remote perm or fileid has
+                                changed and need to be updated on the db even for INSTRUCTION_NONE */
+  int has_ignored_files; /*bool: specify that a directory, or child directory contains ignored files */
 
   char *destpath;   /* for renames */
   const char *etag;
   char file_id[FILE_ID_BUF_SIZE+1];  /* the ownCloud file id is fixed width of 21 byte. */
+  char *directDownloadUrl;
+  char *directDownloadCookies;
+  char remotePerm[REMOTE_PERM_BUF_SIZE+1];
+
   CSYNC_STATUS error_status;
 
   enum csync_instructions_e instruction; /* u32 */
@@ -221,6 +223,11 @@ struct _csync_treewalk_context_s
     void *userdata;
 };
 typedef struct _csync_treewalk_context_s _csync_treewalk_context;
+
+
+time_t oc_httpdate_parse( const char *date );
+
+void set_errno_from_http_errcode( int err );
 
 /**
  * }@

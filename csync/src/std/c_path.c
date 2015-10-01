@@ -32,6 +32,7 @@
 #include "c_private.h"
 #include "c_alloc.h"
 #include "c_path.h"
+#include "c_string.h"
 
 /*
  * dirname - parse directory component.
@@ -67,9 +68,6 @@ char *c_dirname (const char *path) {
   while(len > 0 && path[len - 1] == '/') --len;
 
   newbuf = c_malloc(len + 1);
-  if (newbuf == NULL) {
-    return NULL;
-  }
 
   strncpy(newbuf, path, len);
   newbuf[len] = '\0';
@@ -107,89 +105,11 @@ char *c_basename (const char *path) {
   }
 
   newbuf = c_malloc(len + 1);
-  if (newbuf == NULL) {
-    return NULL;
-  }
 
   strncpy(newbuf, s, len);
   newbuf[len] = '\0';
 
   return newbuf;
-}
-
-
-char *c_tmpname(const char *templ) {
-  char *tmp = NULL;
-  char *target = NULL;
-  int rc;
-  int i = 0;
-
-  if (!templ) {
-    goto err;
-  }
-
-  /* If the template does not contain the XXXXXX it will be appended. */
-  if( !strstr( templ, "XXXXXX" )) {
-      /* split up the path */
-      char *path = c_dirname(templ);
-      char *base = c_basename(templ);
-
-      if (!base) {
-        if (path) {
-          SAFE_FREE(path);
-        }
-        goto err;
-      }
-      /* Create real hidden files for unixoide. */
-      if( path ) {
-#ifdef _WIN32
-	rc = asprintf(&target, "%s/%s.~XXXXXX", path, base);
-#else
-        rc = asprintf(&target, "%s/.%s.~XXXXXX", path, base);
-#endif
-      } else {
-#ifdef _WIN32
-	rc = asprintf(&target, "%s.~XXXXXX", base);
-#else
-        rc = asprintf(&target, ".%s.~XXXXXX", base);
-#endif
-
-      }
-      SAFE_FREE(path);
-      SAFE_FREE(base);
-
-      if (rc < 0) {
-        goto err;
-      }
-  } else {
-    target = c_strdup(templ);
-  }
-
-  if (!target) {
-    goto err;
-  }
-  tmp = strstr( target, "XXXXXX" );
-  if (!tmp) {
-    goto err;
-  }
-
-  for (i = 0; i < 6; ++i) {
-#ifdef _WIN32
-    /* in win32 MAX_RAND is 32767, thus we can not shift that far,
-     * otherwise the last three chars are 0
-     */
-    int hexdigit = (rand() >> (i * 2)) & 0x1f;
-#else
-    int hexdigit = (rand() >> (i * 5)) & 0x1f;
-#endif
-    tmp[i] = hexdigit > 9 ? hexdigit + 'a' - 10 : hexdigit + '0';
-  }
-
-  return target;
-
-err:
-  errno = EINVAL;
-  return NULL;
 }
 
 int c_parse_uri(const char *uri,
@@ -472,82 +392,60 @@ int c_parse_uri(const char *uri,
 
 
 /*
- * http://refactormycode.com/codes/1345-extracting-directory-filename-and-extension-from-a-path
- * Allocate a block of memory that holds the PATHINFO at the beginning
- * followed by the actual path. Two extra bytes are allocated (+3 instead
- * of just +1) to deal with shifting the filename and extension to protect the trailing '/'
- * and the leading '.'. These extra bytes also double as the empty string, as
- * well as a pad to keep from reading past the memory block.
- * 
+ * This function takes a path and converts it to a UNC representation of the
+ * string. That means that it prepends a \\?\ (unless already UNC) and converts
+ * all slashes to backslashes.
+ *
+ * Note the following:
+ *  - The string must be absolute.
+ *  - it needs to contain a drive character to be a valid UNC
+ *  - A conversion is only done if the path len is larger than 245. Otherwise
+ *    the windows API functions work with the normal "unixoid" representation too.
+ *
+ *  This function allocates memory that must be freed by the caller.
  */
-C_PATHINFO * c_split_path(const char* pathSrc)
-{
-    size_t length = strlen(pathSrc);
-	size_t len=0;
-    C_PATHINFO * pathinfo = (C_PATHINFO *) c_malloc(sizeof(C_PATHINFO) + length + 3);
+ const char *c_path_to_UNC(const char *str)
+ {
+     int len = 0;
+     char *longStr = NULL;
 
-    if (pathinfo)
-    {
-        char * path = (char *) &pathinfo[1];    // copy of the path
-        char * theEnd = &path[length + 1];      // second null terminator
-        char * extension;
-        char * lastSep;
+     len = strlen(str);
+     longStr = c_malloc(len+5);
+     *longStr = '\0';
 
-        // Copy the original string and double null terminate it.
-        strcpy(path, pathSrc);
-        *theEnd = '\0';
-        pathinfo->directory = theEnd;   // Assume no path
-        pathinfo->extension = theEnd;   // Assume no extension
-        pathinfo->filename = path;      // Assume filename only
+     // prepend \\?\ and convert '/' => '\' to support long names
+     if( str[0] == '/' || str[0] == '\\' ) {
+         // Don't prepend if already UNC
+         if( !(len > 1 && (str[1] == '/' || str[1] == '\\')) ) {
+            strcpy( longStr, "\\\\?");
+         }
+     } else {
+         strcpy( longStr, "\\\\?\\"); // prepend string by this four magic chars.
+     }
+     strncat( longStr, str, len );
 
-        lastSep = strrchr(path, '/');
-        if (lastSep)
-        {
-            pathinfo->directory = path;     // Pick up the path
+     /* replace all occurences of / with the windows native \ */
+     char *c = longStr;
+     for (; *c; ++c) {
+         if(*c == '/') {
+             *c = '\\';
+         }
+     }
+     return longStr;
+ }
 
-            memmove(lastSep + 1, lastSep, strlen(lastSep));
-            *lastSep++ ='/';
-            *lastSep++ ='\0';  // Truncate directory
-
-            pathinfo->filename = lastSep;  // Pick up name after path 
-        }
-    
-        // Start at the second character of the filename to handle
-        // filenames that start with '.' like ".login".
-        // We don't overrun the buffer in the cases of an empty path
-        // or a path that looks like "/usr/bin/" because of the extra
-        // byte.
-        
-        
-        extension = strrchr(&pathinfo->filename[1], '.');
-        if (extension)
-        {
-            // Shift the extension over to protect the leading '.' since
-            // we need to truncate the filename.
-            memmove(extension + 1, extension, strlen(extension));
-            pathinfo->extension = extension + 1;
-
-            *extension = '\0';          // Truncate filename
-        }
-        else
-        {
-            len=strlen(pathinfo->filename);
-            if(len>1)
-            {
-                //tmp files from kate/kwrite "somefile~": '~' should be the extension
-                if(pathinfo->filename[len-1]=='~')
-                {
-                    extension = &pathinfo->filename[len-1];
-                    memmove(extension + 1, extension, strlen(extension));
-                    pathinfo->extension = extension + 1;
-                    *extension = '\0';          // Truncate filename
-                }
-            }
-        }
-        
-    }
-
-    return pathinfo;
-}
-
-
+ mbchar_t* c_utf8_path_to_locale(const char *str)
+ {
+     if( str == NULL ) {
+         return NULL;
+     } else {
+ #ifdef _WIN32
+         const char *unc_str = c_path_to_UNC(str);
+         mbchar_t *dst = c_utf8_string_to_locale(unc_str);
+         SAFE_FREE(unc_str);
+         return dst;
+ #else
+         return c_utf8_string_to_locale(str);
+ #endif
+     }
+ }

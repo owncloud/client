@@ -32,12 +32,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <inttypes.h>
 
 #include "c_lib.h"
 #include "csync_private.h"
 #include "csync_statedb.h"
 #include "csync_util.h"
 #include "csync_misc.h"
+#include "csync_exclude.h"
 
 #include "c_string.h"
 #include "c_jhash.h"
@@ -48,9 +50,22 @@
 #include "csync_rename.h"
 
 #define BUF_SIZE 16
-#define HASH_QUERY "SELECT * FROM metadata WHERE phash=?1"
 
-static sqlite3_stmt* _by_hash_stmt = NULL;
+#define sqlite_open(A, B) sqlite3_open_v2(A,B, SQLITE_OPEN_READONLY+SQLITE_OPEN_NOMUTEX, NULL)
+
+#define SQLTM_TIME 150000
+#define SQLTM_COUNT 10
+
+#define SQLITE_BUSY_HANDLED(F) if(1) { \
+    int n = 0; \
+    do { rc = F ; \
+      if( (rc == SQLITE_BUSY) || (rc == SQLITE_LOCKED) ) { \
+         n++; \
+         usleep(SQLTM_TIME); \
+      } \
+    }while( (n < SQLTM_COUNT) && ((rc == SQLITE_BUSY) || (rc == SQLITE_LOCKED))); \
+  }
+
 
 void csync_set_statedb_exists(CSYNC *ctx, int val) {
   ctx->statedb.exists = val;
@@ -58,29 +73,6 @@ void csync_set_statedb_exists(CSYNC *ctx, int val) {
 
 int csync_get_statedb_exists(CSYNC *ctx) {
   return ctx->statedb.exists;
-}
-
-/* Set the hide attribute in win32. That makes it invisible in normal explorers */
-static void _csync_win32_hide_file( const char *file ) {
-#ifdef _WIN32
-  mbchar_t *fileName;
-  DWORD dwAttrs;
-
-  if( !file ) return;
-
-  fileName = c_utf8_to_locale( file );
-  dwAttrs = GetFileAttributesW(fileName);
-
-  if (dwAttrs==INVALID_FILE_ATTRIBUTES) return;
-
-  if (!(dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
-     SetFileAttributesW(fileName, dwAttrs | FILE_ATTRIBUTE_HIDDEN );
-  }
-
-  c_free_locale_string(fileName);
-#else
-    (void) file;
-#endif
 }
 
 static int _csync_check_db_integrity(sqlite3 *db) {
@@ -98,83 +90,12 @@ static int _csync_check_db_integrity(sqlite3 *db) {
         c_strlist_destroy(result);
     }
 
-    return rc;
-
-}
-
-static int _csync_statedb_check(const char *statedb) {
-  int fd = -1, rc;
-  ssize_t r;
-  char buf[BUF_SIZE] = {0};
-  sqlite3 *db = NULL;
-  csync_stat_t sb;
-
-  mbchar_t *wstatedb = c_utf8_to_locale(statedb);
-
-  if (wstatedb == NULL) {
-    return -1;
-  }
-
-  /* check db version */
-#ifdef _WIN32
-    _fmode = _O_BINARY;
-#endif
-
-    fd = _topen(wstatedb, O_RDONLY);
-
-    if (fd >= 0) {
-        /* Check size. Size of zero is a valid database actually. */
-        rc = _tfstat(fd, &sb);
-
-        if (rc == 0) {
-            if (sb.st_size == 0) {
-                CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "Database size is zero byte!");
-                close(fd);
-            } else {
-                r = read(fd, (void *) buf, sizeof(buf) - 1);
-                close(fd);
-                if (r >= 0) {
-                    buf[BUF_SIZE - 1] = '\0';
-                    if (c_streq(buf, "SQLite format 3")) {
-                        if (sqlite3_open(statedb, &db ) == SQLITE_OK) {
-                            rc = _csync_check_db_integrity(db);
-                            if( sqlite3_close(db) != 0 ) {
-                                CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "WARN: sqlite3_close error!");
-                            }
-
-                            if( rc >= 0 ) {
-                                /* everything is fine */
-                                c_free_locale_string(wstatedb);
-                                return 0;
-                            }
-                            CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "Integrity check failed!");
-                        } else {
-                            /* resources need to be freed even when open failed */
-                            sqlite3_close(db);
-                            CSYNC_LOG(CSYNC_LOG_PRIORITY_WARN, "database corrupted, removing!");
-                        }
-                    } else {
-                        CSYNC_LOG(CSYNC_LOG_PRIORITY_WARN, "sqlite version mismatch");
-                    }
-                }
-            }
-        }
-        /* if it comes here, the database is broken and should be recreated. */
-        _tunlink(wstatedb);
+    if( sqlite3_threadsafe() == 0 ) {
+        CSYNC_LOG(CSYNC_LOG_PRIORITY_WARN, "* WARNING: SQLite module is not threadsafe!");
+        rc = -1;
     }
 
-  c_free_locale_string(wstatedb);
-
-  /* create database */
-  rc = sqlite3_open(statedb, &db);
-  if (rc == SQLITE_OK) {
-    sqlite3_close(db);
-    _csync_win32_hide_file(statedb);
-    return 1;
-  }
-  sqlite3_close(db);
-   CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "sqlite3_open failed: %s %s", sqlite3_errmsg(db), statedb);
-   return -1;
+    return rc;
 }
 
 static int _csync_statedb_is_empty(sqlite3 *db) {
@@ -202,142 +123,105 @@ static void sqlite_profile( void *x, const char* sql, sqlite3_uint64 time)
 
 int csync_statedb_load(CSYNC *ctx, const char *statedb, sqlite3 **pdb) {
   int rc = -1;
-  int check_rc = -1;
   c_strlist_t *result = NULL;
-  char *statedb_tmp = NULL;
   sqlite3 *db = NULL;
 
-  /* csync_statedb_check tries to open the statedb and creates it in case
-   * its not there.
-   */
-  check_rc = _csync_statedb_check(statedb);
-  if (check_rc < 0) {
-    CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "ERR: checking csync database failed - bail out.");
-
-    rc = -1;
-    goto out;
+  if( !ctx ) {
+      return -1;
   }
 
-  /*
-   * We want a two phase commit for the jounal, so we create a temporary copy
-   * of the database.
-   * The intention is that if something goes wrong we will not loose the
-   * statedb.
-   */
-  rc = asprintf(&statedb_tmp, "%s.ctmp", statedb);
-  if (rc < 0) {
-    CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "ERR: could not create statedb name - bail out.");
-    rc = -1;
-    goto out;
+  if (ctx->statedb.db) {
+      CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "ERR: DB already open");
+      ctx->status_code = CSYNC_STATUS_PARAM_ERROR;
+      return -1;
   }
 
-  if (c_copy(statedb, statedb_tmp, 0644) < 0) {
-    CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "ERR: Failed to copy statedb -> statedb_tmp - bail out.");
+  ctx->statedb.lastReturnValue = SQLITE_OK;
 
-    rc = -1;
-    goto out;
-  }
-
-  _csync_win32_hide_file( statedb_tmp );
-
-  /* Open or create the temporary database */
-  if (sqlite3_open(statedb_tmp, &db) != SQLITE_OK) {
+  /* Openthe database */
+  if (sqlite_open(statedb, &db) != SQLITE_OK) {
     const char *errmsg= sqlite3_errmsg(ctx->statedb.db);
     CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "ERR: Failed to sqlite3 open statedb - bail out: %s.",
               errmsg ? errmsg : "<no sqlite3 errormsg>");
 
     rc = -1;
+    ctx->status_code = CSYNC_STATUS_STATEDB_LOAD_ERROR;
     goto out;
   }
-  SAFE_FREE(statedb_tmp);
 
-  /* If check_rc == 1 the database is new and empty as a result. */
-  if ((check_rc == 1) || _csync_statedb_is_empty(db)) {
-    CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "statedb doesn't exist");
+  if (_csync_check_db_integrity(db) != 0) {
+      const char *errmsg= sqlite3_errmsg(db);
+      CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "ERR: sqlite3 integrity check failed - bail out: %s.",
+                errmsg ? errmsg : "<no sqlite3 errormsg>");
+      rc = -1;
+      ctx->status_code = CSYNC_STATUS_STATEDB_CORRUPTED;
+      goto out;
+  }
+
+  if (_csync_statedb_is_empty(db)) {
+    CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "statedb contents doesn't exist");
     csync_set_statedb_exists(ctx, 0);
   } else {
     csync_set_statedb_exists(ctx, 1);
   }
 
+  /* Print out the version */
+  //
+  result = csync_statedb_query(db, "SELECT sqlite_version();");
+  if (result && result->count >= 1) {
+      CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "sqlite3 version \"%s\"", *result->vector);
+  }
+  c_strlist_destroy(result);
+
   /* optimization for speeding up SQLite */
-  result = csync_statedb_query(db, "PRAGMA synchronous = FULL;");
+  result = csync_statedb_query(db, "PRAGMA synchronous = NORMAL;");
   c_strlist_destroy(result);
   result = csync_statedb_query(db, "PRAGMA case_sensitive_like = ON;");
   c_strlist_destroy(result);
+
+  /* set a busy handler with 5 seconds timeout */
+  sqlite3_busy_timeout(db, 5000);
 
 #ifndef NDEBUG
   sqlite3_profile(db, sqlite_profile, 0 );
 #endif
   *pdb = db;
 
+   CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "Success");
+
   return 0;
 out:
   sqlite3_close(db);
-  SAFE_FREE(statedb_tmp);
   return rc;
 }
 
-int csync_statedb_close(const char *statedb, sqlite3 *db, int jwritten) {
-  char *statedb_tmp = NULL;
-  mbchar_t* wstatedb_tmp = NULL;
+int csync_statedb_close(CSYNC *ctx) {
   int rc = 0;
 
-  mbchar_t *mb_statedb = NULL;
+  if (!ctx) {
+      return -1;
+  }
 
   /* deallocate query resources */
-  rc = sqlite3_finalize(_by_hash_stmt);
-  _by_hash_stmt = NULL;
-
-  /* close the temporary database */
-  sqlite3_close(db);
-
-  if (asprintf(&statedb_tmp, "%s.ctmp", statedb) < 0) {
-    return -1;
+  if( ctx->statedb.by_fileid_stmt ) {
+      sqlite3_finalize(ctx->statedb.by_fileid_stmt);
+      ctx->statedb.by_fileid_stmt = NULL;
+  }
+  if( ctx->statedb.by_hash_stmt ) {
+      sqlite3_finalize(ctx->statedb.by_hash_stmt);
+      ctx->statedb.by_hash_stmt = NULL;
+  }
+  if( ctx->statedb.by_inode_stmt) {
+      sqlite3_finalize(ctx->statedb.by_inode_stmt);
+      ctx->statedb.by_inode_stmt = NULL;
   }
 
-  /* If we successfully synchronized, overwrite the original statedb */
+  ctx->statedb.lastReturnValue = SQLITE_OK;
 
-  /*
-   * Check the integrity of the tmp db. If ok, overwrite the old database with
-   * the tmp db.
-   */
-  if (jwritten) {
-      /* statedb check returns either
-       * 0  : database exists and is fine
-       * 1  : new database was set up
-       * -1 : error.
-       */
-      if (_csync_statedb_check(statedb_tmp) >= 0) {
-          /* New statedb is valid. */
-          mb_statedb = c_utf8_to_locale(statedb);
+  int sr = sqlite3_close(ctx->statedb.db);
+  CSYNC_LOG(CSYNC_LOG_PRIORITY_NOTICE, "sqlite3_close=%d", sr);
 
-          /* Move the tmp-db to the real one. */
-          if (c_rename(statedb_tmp, statedb) < 0) {
-              CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG,
-                        "Renaming tmp db to original db failed. (errno=%d)", errno);
-              rc = -1;
-          } else {
-              CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG,
-                        "Successfully moved tmp db to original db.");
-          }
-      } else {
-          mb_statedb = c_utf8_to_locale(statedb_tmp);
-          _tunlink(mb_statedb);
-
-          /* new statedb_tmp is not integer. */
-          CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "  ## csync tmp statedb corrupt. Original one is not replaced. ");
-          rc = -1;
-      }
-      c_free_locale_string(mb_statedb);
-  }
-
-  wstatedb_tmp = c_utf8_to_locale(statedb_tmp);
-  if (wstatedb_tmp) {
-      _tunlink(wstatedb_tmp);
-      c_free_locale_string(wstatedb_tmp);
-  }
-
-  SAFE_FREE(statedb_tmp);
+  ctx->statedb.db = 0;
 
   return rc;
 }
@@ -352,11 +236,14 @@ static int _csync_file_stat_from_metadata_table( csync_file_stat_t **st, sqlite3
     int column_count;
     int len;
 
-    if( ! stmt ) return -1;
+    if( ! stmt ) {
+       CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "Fatal: Statement is NULL.");
+       return SQLITE_ERROR;
+    }
 
     column_count = sqlite3_column_count(stmt);
 
-    rc = sqlite3_step(stmt);
+    SQLITE_BUSY_HANDLED( sqlite3_step(stmt) );
 
     if( rc == SQLITE_ROW ) {
         if(column_count > 7) {
@@ -365,9 +252,6 @@ static int _csync_file_stat_from_metadata_table( csync_file_stat_t **st, sqlite3
             /* phash, pathlen, path, inode, uid, gid, mode, modtime */
             len = sqlite3_column_int(stmt, 1);
             *st = c_malloc(sizeof(csync_file_stat_t) + len + 1);
-            if (*st == NULL) {
-                return -1;
-            }
             /* clear the whole structure */
             ZERO_STRUCTP(*st);
 
@@ -378,8 +262,6 @@ static int _csync_file_stat_from_metadata_table( csync_file_stat_t **st, sqlite3
             name = (const char*) sqlite3_column_text(stmt, 2);
             memcpy((*st)->path, (len ? name : ""), len + 1);
             (*st)->inode = sqlite3_column_int64(stmt,3);
-            (*st)->uid = sqlite3_column_int(stmt, 4);
-            (*st)->gid = sqlite3_column_int(stmt, 5);
             (*st)->mode = sqlite3_column_int(stmt, 6);
             (*st)->modtime = strtoul((char*)sqlite3_column_text(stmt, 7), NULL, 10);
 
@@ -393,187 +275,170 @@ static int _csync_file_stat_from_metadata_table( csync_file_stat_t **st, sqlite3
             if(column_count > 10 && sqlite3_column_text(stmt,10)) {
                 csync_vio_set_file_id((*st)->file_id, (char*) sqlite3_column_text(stmt, 10));
             }
+            if(column_count > 11 && sqlite3_column_text(stmt,11)) {
+                strncpy((*st)->remotePerm,
+                        (char*) sqlite3_column_text(stmt, 11),
+                        REMOTE_PERM_BUF_SIZE);
+            }
+            if(column_count > 12 && sqlite3_column_int64(stmt,12)) {
+                (*st)->size = sqlite3_column_int64(stmt, 12);
+            }
+            if(column_count > 13) {
+                (*st)->has_ignored_files = sqlite3_column_int(stmt, 13);
+            }
+        }
+    } else {
+        if( rc != SQLITE_DONE ) {
+            CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "WARN: Query results in %d", rc);
         }
     }
     return rc;
 }
 
 /* caller must free the memory */
-csync_file_stat_t *csync_statedb_get_stat_by_hash(sqlite3 *db,
+csync_file_stat_t *csync_statedb_get_stat_by_hash(CSYNC *ctx,
                                                   uint64_t phash)
 {
   csync_file_stat_t *st = NULL;
   int rc;
 
-  if( _by_hash_stmt == NULL ) {
-    rc = sqlite3_prepare_v2(db, HASH_QUERY, strlen(HASH_QUERY), &_by_hash_stmt, NULL);
-    if( rc != SQLITE_OK ) {
-      CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Unable to create stmt for hash query.");
+  if( !ctx || ctx->db_is_empty ) {
       return NULL;
-    }
   }
 
-  if( _by_hash_stmt == NULL ) {
+  if( ctx->statedb.by_hash_stmt == NULL ) {
+      const char *hash_query = "SELECT * FROM metadata WHERE phash=?1";
+
+      SQLITE_BUSY_HANDLED(sqlite3_prepare_v2(ctx->statedb.db, hash_query, strlen(hash_query), &ctx->statedb.by_hash_stmt, NULL));
+      ctx->statedb.lastReturnValue = rc;
+      if( rc != SQLITE_OK ) {
+          CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Unable to create stmt for hash query.");
+          return NULL;
+      }
+  }
+
+  if( ctx->statedb.by_hash_stmt == NULL ) {
     return NULL;
   }
 
-  sqlite3_bind_int64(_by_hash_stmt, 1, (long long signed int)phash);
+  sqlite3_bind_int64(ctx->statedb.by_hash_stmt, 1, (long long signed int)phash);
 
-  if( _csync_file_stat_from_metadata_table(&st, _by_hash_stmt) < 0 ) {
-      CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Could not get line from metadata!");
+  rc = _csync_file_stat_from_metadata_table(&st, ctx->statedb.by_hash_stmt);
+  ctx->statedb.lastReturnValue = rc;
+  if( !(rc == SQLITE_ROW || rc == SQLITE_DONE) )  {
+      CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Could not get line from metadata: %d!", rc);
   }
-  sqlite3_reset(_by_hash_stmt);
+  sqlite3_reset(ctx->statedb.by_hash_stmt);
 
   return st;
 }
 
-csync_file_stat_t *csync_statedb_get_stat_by_file_id( sqlite3 *db,
-                                                     const char *file_id ) {
-   csync_file_stat_t *st = NULL;
-   c_strlist_t *result = NULL;
-   char *stmt = NULL;
-   size_t len = 0;
+csync_file_stat_t *csync_statedb_get_stat_by_file_id(CSYNC *ctx,
+                                                      const char *file_id ) {
+    csync_file_stat_t *st = NULL;
+    int rc = 0;
 
-   if (!file_id) {
-       return 0;
-   }
-   if (c_streq(file_id, "")) {
-       return 0;
-   }
-   stmt = sqlite3_mprintf("SELECT * FROM metadata WHERE fileid='%q'",
-                          file_id);
+    if (!file_id) {
+        return 0;
+    }
+    if (c_streq(file_id, "")) {
+        return 0;
+    }
 
-   if (stmt == NULL) {
-     return NULL;
-   }
+    if( !ctx || ctx->db_is_empty ) {
+        return NULL;
+    }
 
-   result = csync_statedb_query(db, stmt);
-   sqlite3_free(stmt);
-   if (result == NULL) {
-     return NULL;
-   }
+    if( ctx->statedb.by_fileid_stmt == NULL ) {
+        const char *query = "SELECT * FROM metadata WHERE fileid=?1";
 
-   if (result->count <= 6) {
-     c_strlist_destroy(result);
-     return NULL;
-   }
+        SQLITE_BUSY_HANDLED(sqlite3_prepare_v2(ctx->statedb.db, query, strlen(query), &ctx->statedb.by_fileid_stmt, NULL));
+        ctx->statedb.lastReturnValue = rc;
+        if( rc != SQLITE_OK ) {
+            CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Unable to create stmt for file id query.");
+            return NULL;
+        }
+    }
 
-   /* phash, pathlen, path, inode, uid, gid, mode, modtime */
-   len = strlen(result->vector[2]);
-   st = c_malloc(sizeof(csync_file_stat_t) + len + 1);
-   if (st == NULL) {
-     c_strlist_destroy(result);
-     return NULL;
-   }
-   /* clear the whole structure */
-   ZERO_STRUCTP(st);
+    /* bind the query value */
+    sqlite3_bind_text(ctx->statedb.by_fileid_stmt, 1, file_id, -1, SQLITE_STATIC);
 
-   st->phash    = atoll(result->vector[0]);
-   st->pathlen  = atoi(result->vector[1]);
-   memcpy(st->path, (len ? result->vector[2] : ""), len + 1);
-   st->inode    = atoll(result->vector[3]);
-   st->uid      = atoi(result->vector[4]);
-   st->gid      = atoi(result->vector[5]);
-   st->mode     = atoi(result->vector[6]);
-   st->modtime  = strtoul(result->vector[7], NULL, 10);
-   st->type     = atoi(result->vector[8]);
-   if( result->vector[9] )
-     st->etag = c_strdup(result->vector[9]);
+    rc = _csync_file_stat_from_metadata_table(&st, ctx->statedb.by_fileid_stmt);
+    ctx->statedb.lastReturnValue = rc;
+    if( !(rc == SQLITE_ROW || rc == SQLITE_DONE) ) {
+        CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Could not get line from metadata: %d!", rc);
+    }
+    // clear the resources used by the statement.
+    sqlite3_reset(ctx->statedb.by_fileid_stmt);
 
-   csync_vio_set_file_id(st->file_id, file_id);
-
-   c_strlist_destroy(result);
-
-   return st;
- }
-
+    return st;
+}
 
 /* caller must free the memory */
-csync_file_stat_t *csync_statedb_get_stat_by_inode(sqlite3 *db,
-                                                   uint64_t inode) {
+csync_file_stat_t *csync_statedb_get_stat_by_inode(CSYNC *ctx,
+                                                  uint64_t inode)
+{
   csync_file_stat_t *st = NULL;
-  c_strlist_t *result = NULL;
-  char *stmt = NULL;
-  size_t len = 0;
+  int rc;
 
   if (!inode) {
       return NULL;
   }
 
-  stmt = sqlite3_mprintf("SELECT * FROM metadata WHERE inode='%lld'",
-             (long long signed int) inode);
-  if (stmt == NULL) {
+  if( !ctx || ctx->db_is_empty ) {
+      return NULL;
+  }
+
+  if( ctx->statedb.by_inode_stmt == NULL ) {
+      const char *inode_query = "SELECT * FROM metadata WHERE inode=?1";
+
+      SQLITE_BUSY_HANDLED(sqlite3_prepare_v2(ctx->statedb.db, inode_query, strlen(inode_query), &ctx->statedb.by_inode_stmt, NULL));
+      ctx->statedb.lastReturnValue = rc;
+      if( rc != SQLITE_OK ) {
+          CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Unable to create stmt for inode query.");
+          return NULL;
+      }
+  }
+
+  if( ctx->statedb.by_inode_stmt == NULL ) {
     return NULL;
   }
 
-  result = csync_statedb_query(db, stmt);
-  sqlite3_free(stmt);
-  if (result == NULL) {
-    return NULL;
+  sqlite3_bind_int64(ctx->statedb.by_inode_stmt, 1, (long long signed int)inode);
+
+  rc = _csync_file_stat_from_metadata_table(&st, ctx->statedb.by_inode_stmt);
+  ctx->statedb.lastReturnValue = rc;
+  if( !(rc == SQLITE_ROW || rc == SQLITE_DONE) ) {
+      CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Could not get line from metadata by inode: %d!", rc);
   }
-
-  if (result->count <= 6) {
-    c_strlist_destroy(result);
-    return NULL;
-  }
-
-  /* phash, pathlen, path, inode, uid, gid, mode, modtime */
-  len = strlen(result->vector[2]);
-  st = c_malloc(sizeof(csync_file_stat_t) + len + 1);
-  if (st == NULL) {
-    c_strlist_destroy(result);
-    return NULL;
-  }
-  /* clear the whole structure */
-  ZERO_STRUCTP(st);
-
-  st->phash = atoll(result->vector[0]);
-  st->pathlen = atoi(result->vector[1]);
-  memcpy(st->path, (len ? result->vector[2] : ""), len + 1);
-  st->inode = atoll(result->vector[3]);
-  st->uid = atoi(result->vector[4]);
-  st->gid = atoi(result->vector[5]);
-  st->mode = atoi(result->vector[6]);
-  st->modtime = strtoul(result->vector[7], NULL, 10);
-  st->type = atoi(result->vector[8]);
-  if( result->vector[9] )
-    st->etag = c_strdup(result->vector[9]);
-  csync_vio_set_file_id( st->file_id, result->vector[10]);
-
-  c_strlist_destroy(result);
+  sqlite3_reset(ctx->statedb.by_inode_stmt);
 
   return st;
 }
 
-/* Get the etag.  (it is called unique id for legacy reason
- * and it is the field md5 in the database for legacy reason */
-char *csync_statedb_get_uniqId( CSYNC *ctx, uint64_t jHash, csync_vio_file_stat_t *buf ) {
+/* Get the etag. */
+char *csync_statedb_get_etag( CSYNC *ctx, uint64_t jHash ) {
     char *ret = NULL;
-    c_strlist_t *result = NULL;
-    char *stmt = NULL;
-    (void)buf;
+    csync_file_stat_t *fs = NULL;
+
+    if( !ctx ) {
+        return NULL;
+    }
 
     if( ! csync_get_statedb_exists(ctx)) return ret;
 
-    stmt = sqlite3_mprintf("SELECT md5, fileid FROM metadata WHERE phash='%lld'", jHash);
-
-    result = csync_statedb_query(ctx->statedb.db, stmt);
-    sqlite3_free(stmt);
-    if (result == NULL) {
-      return NULL;
+    fs = csync_statedb_get_stat_by_hash(ctx, jHash );
+    if( fs ) {
+        if( fs->etag ) {
+            ret = c_strdup(fs->etag);
+        }
+        csync_file_stat_free(fs);
     }
-
-    if (result->count == 2) {
-        ret = c_strdup( result->vector[0] );
-        csync_vio_file_stat_set_file_id(buf, result->vector[1]);
-    }
-
-    c_strlist_destroy(result);
 
     return ret;
 }
 
-#define BELOW_PATH_QUERY "SELECT phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid FROM metadata WHERE path LIKE(?)"
+#define BELOW_PATH_QUERY "SELECT phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote FROM metadata WHERE pathlen>? AND path LIKE(?)"
 
 int csync_statedb_get_below_path( CSYNC *ctx, const char *path ) {
     int rc;
@@ -581,14 +446,20 @@ int csync_statedb_get_below_path( CSYNC *ctx, const char *path ) {
     int64_t cnt = 0;
     char *likepath;
     int asp;
+    int min_path_len;
 
     if( !path ) {
         return -1;
     }
 
-    rc = sqlite3_prepare_v2(ctx->statedb.db, BELOW_PATH_QUERY, -1, &stmt, NULL);
+    if( !ctx || ctx->db_is_empty ) {
+        return -1;
+    }
+
+    SQLITE_BUSY_HANDLED(sqlite3_prepare_v2(ctx->statedb.db, BELOW_PATH_QUERY, -1, &stmt, NULL));
+    ctx->statedb.lastReturnValue = rc;
     if( rc != SQLITE_OK ) {
-      CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Unable to create stmt for hash query.");
+      CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "WRN: Unable to create stmt for below path query.");
       return -1;
     }
 
@@ -602,15 +473,34 @@ int csync_statedb_get_below_path( CSYNC *ctx, const char *path ) {
         return -1;
     }
 
-    sqlite3_bind_text(stmt, 1, likepath, -1, SQLITE_STATIC);
+    min_path_len = strlen(path);
+    sqlite3_bind_int(stmt, 1, min_path_len);
+    sqlite3_bind_text(stmt, 2, likepath, -1, SQLITE_STATIC);
 
     cnt = 0;
 
+    ctx->statedb.lastReturnValue = rc;
     do {
         csync_file_stat_t *st = NULL;
 
         rc = _csync_file_stat_from_metadata_table( &st, stmt);
         if( st ) {
+            /* Check for exclusion from the tree.
+             * Note that this is only a safety net in case the ignore list changes
+             * without a full remote discovery being triggered. */
+            CSYNC_EXCLUDE_TYPE excluded = csync_excluded_traversal(ctx->excludes, st->path, st->type);
+            if (excluded != CSYNC_NOT_EXCLUDED) {
+                CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "%s excluded (%d)", st->path, excluded);
+
+                if (excluded == CSYNC_FILE_EXCLUDE_AND_REMOVE
+                        || excluded == CSYNC_FILE_SILENTLY_EXCLUDED) {
+                    SAFE_FREE(st);
+                    continue;
+                }
+
+                st->instruction = CSYNC_INSTRUCTION_IGNORE;
+            }
+
             /* store into result list. */
             if (c_rbtree_insert(ctx->remote.tree, (void *) st) < 0) {
                 SAFE_FREE(st);
@@ -621,10 +511,11 @@ int csync_statedb_get_below_path( CSYNC *ctx, const char *path ) {
         }
     } while( rc == SQLITE_ROW );
 
+    ctx->statedb.lastReturnValue = rc;
     if( rc != SQLITE_DONE ) {
         ctx->status_code = CSYNC_STATUS_TREE_ERROR;
     } else {
-        CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "%ld entries read below path %s from db.", cnt, path);
+        CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "%" PRId64 " entries read below path %s from db.", cnt, path);
     }
     sqlite3_finalize(stmt);
     SAFE_FREE(likepath);

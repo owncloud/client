@@ -6,10 +6,24 @@
 #
 # Copyright (C) by Klaas Freitag <freitag@owncloud.com>
 #
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+#
 
 use lib ".";
 
-use Carp::Assert;
+
 use File::Copy;
 use ownCloud::Test;
 
@@ -66,7 +80,6 @@ assert( $inode == $inode2, "Inode has changed!");
 
 printInfo("Move a file into a sub directory.");
 # now move the file into a sub directory
-$inode = getInode('remoteToLocal1/kernel.txt');
 moveRemoteFile( 'remoteToLocal1/kernel.txt', 'remoteToLocal1/rtl1/');
 
 csync();
@@ -160,6 +173,47 @@ createLocalFile( localDir(). 'remoteToLocal1/rtl2/newRemoteDir/donat.txt', 8021 
 
 csync();
 assertLocalAndRemoteDir( 'remoteToLocal1', 1);
+
+printInfo("simulate a owncloud 5 update by removing all the fileid");
+## simulate a owncloud 5 update by removing all the fileid
+system( "sqlite3 " . localDir() . ".csync_journal.db \"UPDATE metadata SET fileid='';\"");
+#refresh the ids
+csync();
+assertLocalAndRemoteDir( 'remoteToLocal1', 1);
+
+
+printInfo("Move a file from the server");
+$inode = getInode('remoteToLocal1/rtl2/kb1_local_gone.jpg');
+moveRemoteFile( 'remoteToLocal1/rtl2/kb1_local_gone.jpg', 'remoteToLocal1/rtl2/kb1_local_gone2.jpg');
+
+#also create a new directory localy for the next test
+mkdir( localDir().'superNewDir' );
+createLocalFile(localDir().  'superNewDir/f1', 1234 );
+createLocalFile(localDir().  'superNewDir/f2', 1324 );
+my $superNewDirInode = getInode('superNewDir');
+
+
+csync();
+assertLocalAndRemoteDir( '', 1);
+$inode2 = getInode('remoteToLocal1/rtl2/kb1_local_gone2.jpg');
+assert( $inode == $inode2, "Inode has changed 3!");
+
+
+printInfo("Move a newly created directory");
+moveRemoteFile('superNewDir', 'superNewDirRenamed');
+#also add new files in new directory
+createLocalFile(localDir().  'superNewDir/f3' , 2456 );
+$inode = getInode('superNewDir/f3');
+
+csync();
+assertLocalAndRemoteDir( '', 1);
+my $file = localDir() . 'superNewDir';
+assert( ! -e $file );
+
+$inode2 = getInode('superNewDirRenamed/f3');
+assert( $inode == $inode2, "Inode of f3 changed");
+$inode2 = getInode('superNewDirRenamed');
+assert( $superNewDirInode == $inode2, "Inode of superNewDir changed");
 
 cleanup();
 

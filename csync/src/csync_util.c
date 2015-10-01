@@ -55,8 +55,6 @@ static const _instr_code_struct _instr[] =
   { "INSTRUCTION_SYNC", CSYNC_INSTRUCTION_SYNC },
   { "INSTRUCTION_STAT_ERR", CSYNC_INSTRUCTION_STAT_ERROR },
   { "INSTRUCTION_ERROR", CSYNC_INSTRUCTION_ERROR },
-  { "INSTRUCTION_DELETED", CSYNC_INSTRUCTION_DELETED },
-  { "INSTRUCTION_UPDATED", CSYNC_INSTRUCTION_UPDATED },
   { NULL, CSYNC_INSTRUCTION_ERROR }
 };
 
@@ -106,113 +104,108 @@ void csync_memstat_check(void) {
                  m.size * 4, m.resident * 4, m.shared * 4);
 }
 
-int csync_unix_extensions(CSYNC *ctx) {
-  int rc = -1;
-  char *uri = NULL;
-  csync_vio_handle_t *fp = NULL;
-
-  ctx->options.unix_extensions = 0;
-
-  rc = asprintf(&uri, "%s/csync_unix_extension*test.ctmp", ctx->remote.uri);
-  if (rc < 0) {
-    goto out;
-  }
-
-  ctx->replica = ctx->remote.type;
-  fp = csync_vio_creat(ctx, uri, 0644);
-  if (fp == NULL) {
-    rc = 0;
-    CSYNC_LOG(CSYNC_LOG_PRIORITY_INFO,
-        "Disabled unix filesystem synchronization");
-    goto out;
-  }
-  csync_vio_close(ctx, fp);
-
-  ctx->options.unix_extensions = 1;
-  CSYNC_LOG(CSYNC_LOG_PRIORITY_INFO, "Enabled unix filesystem synchronization");
-
-  rc = 1;
-
-out:
-  csync_vio_unlink(ctx, uri);
-  SAFE_FREE(uri);
-
-  return rc;
+bool (*csync_file_locked_or_open_ext) (const char*) = 0; // filled in by library user
+void set_csync_file_locked_or_open_ext(bool (*f) (const char*));
+void set_csync_file_locked_or_open_ext(bool (*f) (const char*)) {
+    csync_file_locked_or_open_ext = f;
 }
 
-void csync_win32_set_file_hidden( const char *file, bool h ) {
+bool csync_file_locked_or_open( const char *dir, const char *fname) {
+    char *tmp_uri = NULL;
+    bool ret;
+    if (!csync_file_locked_or_open_ext) {
+        return false;
+    }
+    if (asprintf(&tmp_uri, "%s/%s", dir, fname) < 0) {
+        return -1;
+    }
+    CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "csync_file_locked_or_open %s", tmp_uri);
+    ret = csync_file_locked_or_open_ext(tmp_uri);
+    SAFE_FREE(tmp_uri);
+    return ret;
+}
+
+#ifndef HAVE_TIMEGM
 #ifdef _WIN32
-  const mbchar_t *fileName;
-  DWORD dwAttrs;
-  if( !file ) return;
-
-  fileName = c_utf8_to_locale( file );
-  dwAttrs = GetFileAttributesW(fileName);
-
-  if (dwAttrs==INVALID_FILE_ATTRIBUTES) return;
-
-  if (h && !(dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
-     SetFileAttributesW(fileName, dwAttrs | FILE_ATTRIBUTE_HIDDEN );
-  } else if (!h && (dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
-     SetFileAttributesW(fileName, dwAttrs & ~FILE_ATTRIBUTE_HIDDEN );
-  }
-
-  c_free_locale_string(fileName);
-#else
-    (void) h;
-    (void) file;
-#endif
+static int is_leap(unsigned y) {
+    y += 1900;
+    return (y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0);
 }
 
-csync_vio_file_stat_t *csync_vio_convert_file_stat(csync_file_stat_t *st) {
-  csync_vio_file_stat_t *vfs = NULL;
+static time_t timegm(struct tm *tm) {
+    static const unsigned ndays[2][12] = {
+    {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+    {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31} };
 
-  if (st == NULL) {
-    return NULL;
-  }
+    time_t res = 0;
+    int i;
 
-  vfs = csync_vio_file_stat_new();
-  if (vfs == NULL) {
-    return NULL;
-  }
-  vfs->acl = NULL;
-  if (st->pathlen > 0) {
-    vfs->name = c_strdup(st->path);
-  }
-  vfs->uid   = st->uid;
-  vfs->gid   = st->gid;
+    for (i = 70; i < tm->tm_year; ++i)
+        res += is_leap(i) ? 366 : 365;
 
-  vfs->atime = 0;
-  vfs->mtime = st->modtime;
-  vfs->ctime = 0;
+    for (i = 0; i < tm->tm_mon; ++i)
+        res += ndays[is_leap(tm->tm_year)][i];
+     res += tm->tm_mday - 1;
+     res *= 24;
+     res += tm->tm_hour;
+     res *= 60;
+     res += tm->tm_min;
+     res *= 60;
+     res += tm->tm_sec;
+     return res;
+}
+#else
+/* A hopefully portable version of timegm */
+static time_t timegm(struct tm *tm ) {
+     time_t ret;
+     char *tz;
 
-  vfs->size  = st->size;
-  vfs->blksize  = 0;  /* Depricated. */
-  vfs->blkcount = 0;
+     tz = getenv("TZ");
+     setenv("TZ", "", 1);
+     tzset();
+     ret = mktime(tm);
+     if (tz)
+         setenv("TZ", tz, 1);
+     else
+         unsetenv("TZ");
+     tzset();
+     return ret;
+}
+#endif /* Platform switch */
+#endif /* HAVE_TIMEGM */
 
-  vfs->mode  = st->mode;
-  vfs->device = 0;
-  vfs->inode = st->inode;
-  vfs->nlink = st->nlink;
+#define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
+static const char short_months[12][4] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+/*
+ * This function is borrowed from libneon's ne_httpdate_parse.
+ * Unfortunately that one converts to local time but here UTC is
+ * needed.
+ * This one uses timegm instead, which returns UTC.
+ */
+time_t oc_httpdate_parse( const char *date ) {
+    struct tm gmt;
+    char wkday[4], mon[4];
+    int n;
+    time_t result = 0;
 
-  /* fields. */
-  vfs->fields = CSYNC_VIO_FILE_STAT_FIELDS_TYPE
-      + CSYNC_VIO_FILE_STAT_FIELDS_PERMISSIONS
-      + CSYNC_VIO_FILE_STAT_FIELDS_INODE
-      + CSYNC_VIO_FILE_STAT_FIELDS_LINK_COUNT
-      + CSYNC_VIO_FILE_STAT_FIELDS_SIZE
-      + CSYNC_VIO_FILE_STAT_FIELDS_MTIME
-      + CSYNC_VIO_FILE_STAT_FIELDS_UID
-      + CSYNC_VIO_FILE_STAT_FIELDS_GID;
+    memset(&gmt, 0, sizeof(struct tm));
 
-  if (st->type == CSYNC_FTW_TYPE_DIR)
-    vfs->type = CSYNC_VIO_FILE_TYPE_DIRECTORY;
-  else if (st->type == CSYNC_FTW_TYPE_FILE)
-    vfs->type = CSYNC_VIO_FILE_TYPE_REGULAR;
-  else if (st->type == CSYNC_FTW_TYPE_SLINK)
-    vfs->type = CSYNC_VIO_FILE_TYPE_SYMBOLIC_LINK;
-  else
-    vfs->type = CSYNC_VIO_FILE_TYPE_UNKNOWN;
-
-  return vfs;
+    /*  it goes: Sun, 06 Nov 1994 08:49:37 GMT */
+    n = sscanf(date, RFC1123_FORMAT,
+               wkday, &gmt.tm_mday, mon, &gmt.tm_year, &gmt.tm_hour,
+               &gmt.tm_min, &gmt.tm_sec);
+    /* Is it portable to check n==7 here? */
+    gmt.tm_year -= 1900;
+    for (n=0; n<12; n++)
+        if (strcmp(mon, short_months[n]) == 0)
+            break;
+    /* tm_mon comes out as 12 if the month is corrupt, which is desired,
+     * since the mktime will then fail */
+    gmt.tm_mon = n;
+    gmt.tm_isdst = -1;
+    result = timegm(&gmt);
+    return result;
 }

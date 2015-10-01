@@ -9,9 +9,11 @@
 
 #include <QtTest>
 
-#include "mirall/utility.h"
+#include "utility.h"
 
-using namespace Mirall::Utility;
+#include "oc_bin.h"
+
+using namespace OCC::Utility;
 
 class TestUtility : public QObject
 {
@@ -28,29 +30,24 @@ private slots:
     {
         QLocale::setDefault(QLocale("en"));
         QCOMPARE(octetsToString(999) , QString("999 B"));
-        QCOMPARE(octetsToString(1000) , QString("1,000 B"));
-        QCOMPARE(octetsToString(1010) , QString("1,010 B"));
-        QCOMPARE(octetsToString(1024) , QString("1 kB"));
-        QCOMPARE(octetsToString(1110) , QString("1.1 kB"));
+        QCOMPARE(octetsToString(1024) , QString("1 KB"));
+        QCOMPARE(octetsToString(1364) , QString("1.3 KB"));
 
-        QCOMPARE(octetsToString(9110) , QString("8.9 kB"));
-        QCOMPARE(octetsToString(9910) , QString("9.7 kB"));
-        QCOMPARE(octetsToString(9999) , QString("9.8 kB"));
-        QCOMPARE(octetsToString(10240) , QString("10 kB"));
+        QCOMPARE(octetsToString(9110) , QString("8.9 KB"));
+        QCOMPARE(octetsToString(9910) , QString("9.7 KB"));
+        QCOMPARE(octetsToString(10240) , QString("10 KB"));
 
-        QCOMPARE(octetsToString(123456) , QString("121 kB"));
+        QCOMPARE(octetsToString(123456) , QString("121 KB"));
         QCOMPARE(octetsToString(1234567) , QString("1.2 MB"));
         QCOMPARE(octetsToString(12345678) , QString("12 MB"));
         QCOMPARE(octetsToString(123456789) , QString("118 MB"));
         QCOMPARE(octetsToString(1000LL*1000*1000 * 5) , QString("4.7 GB"));
-        QCOMPARE(octetsToString(1024LL*1024*1024 * 5) , QString("5 GB"));
 
         QCOMPARE(octetsToString(1), QString("1 B"));
         QCOMPARE(octetsToString(2), QString("2 B"));
-        QCOMPARE(octetsToString(1024), QString("1 kB"));
+        QCOMPARE(octetsToString(1024), QString("1 KB"));
         QCOMPARE(octetsToString(1024*1024), QString("1 MB"));
         QCOMPARE(octetsToString(1024LL*1024*1024), QString("1 GB"));
-        QCOMPARE(octetsToString(1024LL*1024*1024*1024), QString("1 TB"));
     }
 
     void testLaunchOnStartup()
@@ -74,6 +71,52 @@ private slots:
                               "owncloud://example.com/owncloud/");
         QVERIFY(toCSyncScheme("https://example.com/owncloud/") ==
                               "ownclouds://example.com/owncloud/");
+    }
+
+    void testDurationToDescriptiveString()
+    {
+        QLocale::setDefault(QLocale("C"));
+        //NOTE: in order for the plural to work we would need to load the english translation
+
+        quint64 sec = 1000;
+        quint64 hour = 3600 * sec;
+
+        QDateTime current = QDateTime::currentDateTime();
+
+        QCOMPARE(durationToDescriptiveString(0), QString("0 seconds") );
+        QCOMPARE(durationToDescriptiveString(5), QString("0 seconds") );
+        QCOMPARE(durationToDescriptiveString(1000), QString("1 second(s)") );
+        QCOMPARE(durationToDescriptiveString(1005), QString("1 second(s)") );
+        QCOMPARE(durationToDescriptiveString(56123), QString("56 second(s)") );
+        QCOMPARE(durationToDescriptiveString(90*sec), QString("1 minute(s) 30 second(s)") );
+        QCOMPARE(durationToDescriptiveString(3*hour), QString("3 hour(s)") );
+        QCOMPARE(durationToDescriptiveString(3*hour + 20*sec), QString("3 hour(s)") );
+        QCOMPARE(durationToDescriptiveString(3*hour + 70*sec), QString("3 hour(s) 1 minute(s)") );
+        QCOMPARE(durationToDescriptiveString(3*hour + 100*sec), QString("3 hour(s) 2 minute(s)") );
+        QCOMPARE(durationToDescriptiveString(current.msecsTo(current.addYears(4).addMonths(5).addDays(2).addSecs(23*60*60))),
+                 QString("4 year(s) 5 month(s)") );
+        QCOMPARE(durationToDescriptiveString(current.msecsTo(current.addDays(2).addSecs(23*60*60))),
+                 QString("2 day(s) 23 hour(s)") );
+
+
+    }
+
+    void testVersionOfInstalledBinary()
+    {
+	if( isLinux() ) {
+            if ( qgetenv("DISPLAY").isEmpty() ) {
+                // Current requires an X-Server
+                return;
+            }
+            QString ver = versionOfInstalledBinary(OWNCLOUD_BIN);
+	    qDebug() << "Version of installed ownCloud Binary: " << ver;
+	    QVERIFY( !ver.isEmpty());
+
+	    QRegExp rx( "ownCloud version \\d+\\.\\d+\\.\\d+.+" );
+            QVERIFY( rx.exactMatch(ver));
+	} else {
+	    QVERIFY( versionOfInstalledBinary().isEmpty());
+	}
     }
 };
 

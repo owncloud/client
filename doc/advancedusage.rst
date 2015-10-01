@@ -1,3 +1,4 @@
+==============
 Advanced Usage
 ==============
 
@@ -12,3 +13,8 @@ Config File
 -----------
 .. index:: config file
 .. include:: conffile.rst
+
+ownCloud Commandline Client
+---------------------------
+.. index:: owncloudcmd
+.. include:: owncloudcmd.rst

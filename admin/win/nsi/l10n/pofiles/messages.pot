@@ -65,9 +65,9 @@ msgstr "A newer version of ${APPLICATION_NAME} is already installed! It is not r
 
 #. PageReinstall_SAME_Field_1
 msgid ""
-"${APPLICATION_NAME} ${VERSION} is already installed.\r\n"
+"${APPLICATION_NAME} ${VERSION} is already installed.$\r$\n"
 "Select the operation you want to perform and click Next to continue."
-msgstr "${APPLICATION_NAME} ${VERSION} is already installed.\r\nSelect the operation you want to perform and click Next to continue."
+msgstr "${APPLICATION_NAME} ${VERSION} is already installed.$\r$\nSelect the operation you want to perform and click Next to continue."
 
 #. PageReinstall_SAME_Field_2
 msgid "Add/Reinstall components"
@@ -84,6 +84,14 @@ msgstr "Choose the maintenance option to perform."
 #. SEC_APPLICATION_DETAILS
 msgid "Installing ${APPLICATION_NAME} essentials."
 msgstr "Installing ${APPLICATION_NAME} essentials."
+
+#. OPTION_SECTION_SC_SHELL_EXT_SECTION
+msgid "Integration for Windows Explorer"
+msgstr "Integration for Windows Explorer"
+
+#. OPTION_SECTION_SC_SHELL_EXT_DetailPrint
+msgid "Installing Integration for Windows Explorer"
+msgstr "Installing Integration for Windows Explorer"
 
 #. OPTION_SECTION_SC_START_MENU_SECTION
 msgid "Start Menu Program Shortcut"
@@ -124,24 +132,6 @@ msgstr "Desktop shortcut for ${APPLICATION_NAME}."
 #. OPTION_SECTION_SC_QUICK_LAUNCH_Desc
 msgid "Quick Launch shortcut for ${APPLICATION_NAME}."
 msgstr "Quick Launch shortcut for ${APPLICATION_NAME}."
-
-#. UNINSTALLER_APPDATA_SUBTITLE
-msgid "Remove ${APPLICATION_NAME}'s data folder from your computer."
-msgstr "Remove ${APPLICATION_NAME}'s data folder from your computer."
-
-#. UNINSTALLER_APPDATA_LABEL_1
-msgid "Do you want to delete ${APPLICATION_NAME}'s data folder?"
-msgstr "Do you want to delete ${APPLICATION_NAME}'s data folder?"
-
-#. UNINSTALLER_APPDATA_LABEL_2
-msgid ""
-"Leave unchecked to keep the data folder for later use or check to delete the"
-" data folder."
-msgstr "Leave unchecked to keep the data folder for later use or check to delete the data folder."
-
-#. UNINSTALLER_APPDATA_CHECKBOX
-msgid "Yes, delete this data folder."
-msgstr "Yes, delete this data folder."
 
 #. UNINSTALLER_FILE_Detail
 msgid "Writing Uninstaller"
@@ -189,6 +179,10 @@ msgstr "The installer is already running."
 #. UAC_UNINSTALLER_REQUIRE_ADMIN
 msgid "This uninstaller requires admin access, try again"
 msgstr "This uninstaller requires admin access, try again"
+
+#. UAC_ERROR_LOGON_SERVICE
+msgid "Logon service is not running, aborting!"
+msgstr "Logon service is not running, aborting!"
 
 #. INIT_UNINSTALLER_RUNNING
 msgid "The uninstaller is already running."

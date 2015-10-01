@@ -60,6 +60,17 @@ struct c_strlist_s {
 };
 
 /**
+ * @brief Compare to strings case insensitively.
+ *
+ * @param a  First string to compare.
+ * @param b  Second string to compare.
+ * @param n  Max comparison length.
+ *
+ * @return see strncasecmp
+ */
+int c_strncasecmp(const char *a, const char *b, size_t n);
+
+/**
  * @brief Compare to strings if they are equal.
  *
  * @param a  First string to compare.
@@ -102,6 +113,19 @@ c_strlist_t *c_strlist_expand(c_strlist_t *strlist, size_t size);
 int c_strlist_add(c_strlist_t *strlist, const char *string);
 
 /**
+ * @brief  Add a string to the stringlist, growing it if necessary
+ *
+ * Duplicates the string and stores it in the stringlist.
+ * It also initializes the stringlist if it starts out as null.
+ *
+ * @param strlist  Stringlist to add the string.
+ * @param string   String to add.
+ *
+ * @return  0 on success, less than 0 and errno set if an error occured.
+ */
+int c_strlist_add_grow(c_strlist_t **strlist, const char *string);
+
+/**
  * @brief Removes all strings from the list.
  *
  * Frees the strings.
@@ -118,37 +142,6 @@ void c_strlist_clear(c_strlist_t *strlist);
  * @param strlist  Stringlist to destroy
  */
 void c_strlist_destroy(c_strlist_t *strlist);
-
-/**
- * @breif Replace a string with another string in a source string.
- *
- * @param src      String to search for pattern.
- *
- * @param pattern  Pattern to search for in the source string.
- *
- * @param repl     The string which which should replace pattern if found.
- *
- * @return  Return a pointer to the source string.
- */
-char *c_strreplace(char *src, const char *pattern, const char *repl);
-
-/**
- * @brief Uppercase a string.
- *
- * @param  str     The String to uppercase.
- *
- * @return The malloced uppered string or NULL on error.
- */
-char *c_uppercase(const char* str);
-
-/**
- * @brief Lowercase a string.
- *
- * @param  str     The String to lowercase.
- *
- * @return The malloced lowered string or NULL on error.
- */
-char *c_lowercase(const char* str);
 
 /**
  * @brief Convert a platform locale string to utf8.
@@ -183,11 +176,13 @@ char *c_lowercase(const char* str);
  * Instead of using the standard file operations the multi platform aliases
  * defined in c_private.h have to be used instead.
  *
- * To convert path names as input for the cross platform functions from the
+ * To convert strings as input for the cross platform functions from the
  * internally used utf8 format, this function has to be used.
  * The returned string has to be freed by c_free_locale_string(). On some
  * platforms this method allocates memory and on others not but it has never
  * sto be cared about.
+ *
+ * If the string to convert is a path, consider using c_utf8_path_to_locale().
  *
  * @param  str     The utf8 string to convert.
  *
@@ -197,7 +192,7 @@ char *c_lowercase(const char* str);
  * @see c_utf8_from_locale()
  *
  */
-mbchar_t* c_utf8_to_locale(const char *wstr);
+mbchar_t* c_utf8_string_to_locale(const char *wstr);
 
 #if defined(_WIN32) || defined(WITH_ICONV)
 

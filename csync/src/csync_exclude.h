@@ -26,9 +26,17 @@ enum csync_exclude_type_e {
   CSYNC_FILE_SILENTLY_EXCLUDED,
   CSYNC_FILE_EXCLUDE_AND_REMOVE,
   CSYNC_FILE_EXCLUDE_LIST,
-  CSYNC_FILE_EXCLUDE_INVALID_CHAR
+  CSYNC_FILE_EXCLUDE_INVALID_CHAR,
+  CSYNC_FILE_EXCLUDE_LONG_FILENAME,
+  CSYNC_FILE_EXCLUDE_HIDDEN,
+  CSYNC_FILE_EXCLUDE_STAT_FAILED
 };
 typedef enum csync_exclude_type_e CSYNC_EXCLUDE_TYPE;
+
+#ifdef NDEBUG
+int _csync_exclude_add(c_strlist_t **inList, const char *string);
+#endif
+
 /**
  * @brief Load exclude list
  *
@@ -37,7 +45,7 @@ typedef enum csync_exclude_type_e CSYNC_EXCLUDE_TYPE;
  *
  * @return  0 on success, -1 if an error occured with errno set.
  */
-int csync_exclude_load(CSYNC *ctx, const char *fname);
+int csync_exclude_load(const char *fname, c_strlist_t **list);
 
 /**
  * @brief Clear the exclude list in memory.
@@ -58,6 +66,11 @@ void csync_exclude_destroy(CSYNC *ctx);
  *
  * This excludes also paths which can't be used without unix extensions.
  *
+ * The exclude list is checked against the full path, each component of
+ * the path and all leading directory strings, e.g.
+ * '/foo/bar/file' checks ('/foo/bar/file', 'foo', 'bar', 'file',
+ * '/foo/bar', '/foo').
+ *
  * @param ctx   The synchronizer context.
  * @param path  The patch to check.
  *
@@ -65,6 +78,39 @@ void csync_exclude_destroy(CSYNC *ctx);
  */
 CSYNC_EXCLUDE_TYPE csync_excluded(CSYNC *ctx, const char *path, int filetype);
 
+/**
+ * @brief Check if the given path should be excluded in a traversal situation.
+ *
+ * It does only part of the work that csync_excluded does because it's assumed
+ * that all leading directories have been run through csync_excluded_traversal()
+ * before. This can be significantly faster.
+ *
+ * That means for '/foo/bar/file' only ('/foo/bar/file', 'file') is checked
+ * against the exclude patterns.
+ *
+ * @param ctx   The synchronizer context.
+ * @param path  The patch to check.
+ *
+ * @return  2 if excluded and needs cleanup, 1 if excluded, 0 if not.
+ */
+CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype);
+
+/**
+ * @brief csync_excluded_no_ctx
+ * @param excludes
+ * @param path
+ * @param filetype
+ * @return
+ */
+CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path, int filetype);
 #endif /* _CSYNC_EXCLUDE_H */
+
+/**
+ * @brief Checks if filename is considered reserved by Windows
+ * @param file_name filename
+ * @return true if file is reserved, false otherwise
+ */
+bool csync_is_windows_reserved_word(const char *file_name);
+
 
 /* vim: set ft=c.doxygen ts=8 sw=2 et cindent: */

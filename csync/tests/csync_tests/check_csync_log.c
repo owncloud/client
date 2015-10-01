@@ -1,3 +1,22 @@
+/*
+ * libcsync -- a library to sync a directory with another
+ *
+ * Copyright (c) 2008-2013 by Andreas Schneider <asn@cryptomilk.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -19,9 +38,6 @@ static void setup(void **state) {
     assert_int_equal(rc, 0);
 
     rc = csync_create(&csync, "/tmp/check_csync1", "/tmp/check_csync2");
-    assert_int_equal(rc, 0);
-
-    rc = csync_set_config_dir(csync, "/tmp/check_csync");
     assert_int_equal(rc, 0);
 
     *state = csync;
@@ -103,7 +119,7 @@ static void check_logging(void **state)
     int rc;
     csync_stat_t sb;
     mbchar_t *path;
-    path = c_utf8_to_locale("/tmp/check_csync1/cb_called");
+    path = c_utf8_path_to_locale("/tmp/check_csync1/cb_called");
 
     (void) state; /* unused */
 
@@ -115,7 +131,7 @@ static void check_logging(void **state)
     rc = csync_set_log_callback(check_log_callback);
     assert_int_equal(rc, 0);
 
-    csync_log(1, __FUNCTION__, "rc = %d", rc);
+    csync_log(1, __func__, "rc = %d", rc);
 
     rc = _tstat(path, &sb);
 

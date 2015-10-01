@@ -1,0 +1,189 @@
+/*
+ * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ */
+
+#ifndef SYNCJOURNALDB_H
+#define SYNCJOURNALDB_H
+
+#include <QObject>
+#include <qmutex.h>
+#include <QDateTime>
+#include <QHash>
+
+#include "utility.h"
+#include "ownsql.h"
+
+namespace OCC {
+class SyncJournalFileRecord;
+class SyncJournalErrorBlacklistRecord;
+
+/**
+ * @brief Class that handle the sync database
+ *
+ * This class is thread safe. All public function are locking the mutex.
+ * @ingroup libsync
+ */
+class OWNCLOUDSYNC_EXPORT SyncJournalDb : public QObject
+{
+    Q_OBJECT
+public:
+    explicit SyncJournalDb(const QString& path, QObject *parent = 0);
+    virtual ~SyncJournalDb();
+    SyncJournalFileRecord getFileRecord( const QString& filename );
+    bool setFileRecord( const SyncJournalFileRecord& record );
+    bool deleteFileRecord( const QString& filename, bool recursively = false );
+    int getFileRecordCount();
+    bool exists();
+    void walCheckpoint();
+
+    QString databaseFilePath();
+    static qint64 getPHash(const QString& );
+
+    void updateErrorBlacklistEntry( const SyncJournalErrorBlacklistRecord& item );
+    void wipeErrorBlacklistEntry(const QString& file);
+    int wipeErrorBlacklist();
+    int errorBlackListEntryCount();
+
+    struct DownloadInfo {
+        DownloadInfo() : _errorCount(0), _valid(false) {}
+        QString _tmpfile;
+        QByteArray _etag;
+        int _errorCount;
+        bool _valid;
+    };
+    struct UploadInfo {
+        UploadInfo() : _chunk(0), _transferid(0), _size(0), _errorCount(0), _valid(false) {}
+        int _chunk;
+        int _transferid;
+        quint64 _size; //currently unused
+        QDateTime _modtime;
+        int _errorCount;
+        bool _valid;
+    };
+
+    struct PollInfo {
+        QString _file;
+        QString _url;
+        time_t _modtime;
+    };
+
+    DownloadInfo getDownloadInfo(const QString &file);
+    void setDownloadInfo(const QString &file, const DownloadInfo &i);
+    QVector<DownloadInfo> getAndDeleteStaleDownloadInfos(const QSet<QString>& keep);
+    int downloadInfoCount();
+
+    UploadInfo getUploadInfo(const QString &file);
+    void setUploadInfo(const QString &file, const UploadInfo &i);
+    bool deleteStaleUploadInfos(const QSet<QString>& keep);
+
+    SyncJournalErrorBlacklistRecord errorBlacklistEntry( const QString& );
+    bool deleteStaleErrorBlacklistEntries(const QSet<QString>& keep);
+
+    void avoidRenamesOnNextSync(const QString &path);
+    void setPollInfo(const PollInfo &);
+    QVector<PollInfo> getPollInfos();
+
+    enum SelectiveSyncListType {
+        /** The black list is the list of folders that are unselected in the selective sync dialog.
+         * For the sync engine, those folders are considered as if they were not there, so the local
+         * folders will be deleted */
+        SelectiveSyncBlackList = 1,
+        /** When a shared flder has a size bigger than a configured size, it is by default not sync'ed
+         * Unless it is in the white list, in which case the folder is sync'ed and all its children.
+         * If a folder is both on the black and the white list, the black list wins */
+        SelectiveSyncWhiteList = 2,
+        /** List of big sync folder that have not been confirmed by the user yet and that the UI
+         * should notify about */
+        SelectiveSyncUndecidedList = 3
+    };
+    /* return the specified list from the database */
+    QStringList getSelectiveSyncList(SelectiveSyncListType type);
+    /* Write the selective sync list (remove all other entries of that list */
+    void setSelectiveSyncList(SelectiveSyncListType type, const QStringList &list);
+
+    /**
+     * Make sure that on the next sync, filName is not read from the DB but use the PROPFIND to
+     * get the info from the server
+     */
+    void avoidReadFromDbOnNextSync(const QString& fileName);
+
+    /**
+     * Ensures full remote discovery happens on the next sync.
+     *
+     * Equivalent to calling avoidReadFromDbOnNextSync() for all files.
+     */
+    void forceRemoteDiscoveryNextSync();
+
+    bool postSyncCleanup(const QSet<QString>& filepathsToKeep,
+                         const QSet<QString>& prefixesToKeep);
+
+    /* Because sqlite transactions is really slow, we encapsulate everything in big transactions
+     * Commit will actually commit the transaction and create a new one.
+     */
+    void commit(const QString &context, bool startTrans = true);
+    void commitIfNeededAndStartNewTransaction(const QString &context);
+
+    void close();
+
+    /**
+     * return true if everything is correct
+     */
+    bool isConnected();
+
+private:
+    bool updateDatabaseStructure();
+    bool updateMetadataTableStructure();
+    bool updateErrorBlacklistTableStructure();
+    bool sqlFail(const QString& log, const SqlQuery &query );
+    void commitInternal(const QString &context, bool startTrans = true);
+    void startTransaction();
+    void commitTransaction();
+    QStringList tableColumns( const QString& table );
+    bool checkConnect();
+
+    // Same as forceRemoteDiscoveryNextSync but without acquiring the lock
+    void forceRemoteDiscoveryNextSyncLocked();
+
+    SqlDatabase _db;
+    QString _dbFile;
+    QMutex _mutex; // Public functions are protected with the mutex.
+    int _transaction;
+    QScopedPointer<SqlQuery> _getFileRecordQuery;
+    QScopedPointer<SqlQuery> _setFileRecordQuery;
+    QScopedPointer<SqlQuery> _getDownloadInfoQuery;
+    QScopedPointer<SqlQuery> _setDownloadInfoQuery;
+    QScopedPointer<SqlQuery> _deleteDownloadInfoQuery;
+    QScopedPointer<SqlQuery> _getUploadInfoQuery;
+    QScopedPointer<SqlQuery> _setUploadInfoQuery;
+    QScopedPointer<SqlQuery> _deleteUploadInfoQuery;
+    QScopedPointer<SqlQuery> _deleteFileRecordPhash;
+    QScopedPointer<SqlQuery> _deleteFileRecordRecursively;
+    QScopedPointer<SqlQuery> _getErrorBlacklistQuery;
+    QScopedPointer<SqlQuery> _setErrorBlacklistQuery;
+    QScopedPointer<SqlQuery> _getSelectiveSyncListQuery;
+
+    /* This is the list of paths we called avoidReadFromDbOnNextSync on.
+     * It means that they should not be written to the DB in any case since doing
+     * that would write the etag and would void the purpose of avoidReadFromDbOnNextSync
+     */
+    QList<QString> _avoidReadFromDbOnNextSyncFilter;
+};
+
+bool OWNCLOUDSYNC_EXPORT
+operator==(const SyncJournalDb::DownloadInfo & lhs,
+           const SyncJournalDb::DownloadInfo & rhs);
+bool OWNCLOUDSYNC_EXPORT
+operator==(const SyncJournalDb::UploadInfo & lhs,
+           const SyncJournalDb::UploadInfo & rhs);
+
+}  // namespace OCC
+#endif // SYNCJOURNALDB_H

@@ -33,6 +33,7 @@
 #define _C_PATH_H
 
 #include "c_macro.h"
+#include "c_private.h"
 
 /**
  * @brief Parse directory component.
@@ -67,19 +68,6 @@ char *c_dirname(const char *path);
 char *c_basename (const char *path);
 
 /**
- * @brief Make a temporary filename.
- *
- * @param templ  The template to replace. If the template contains six X like
- *               'XXXXXX', these are replaced by a random string. If not, the
- *               templ is interpreted as a path, and a name to a hidden file
- *               with six random is returned.
- *               The caller has to free the memory.
- *
- * @return a poitner to the random hidden filename or NULL.
- */
-char *c_tmpname(const char *templ);
-
-/**
  * @brief parse a uri and split it into components.
  *
  * parse_uri parses an uri in the format
@@ -109,9 +97,9 @@ int c_parse_uri(const char *uri, char **scheme, char **user, char **passwd,
  * @param directory '\0' terminated path including the final '/'
  *
  * @param filename '\0' terminated string
- * 
+ *
  * @param extension '\0' terminated string
- * 
+ *
  */
 typedef struct
 {
@@ -121,14 +109,32 @@ typedef struct
 } C_PATHINFO;
 
 /**
- * @brief Extracting directory, filename and extension from a path.
+ * @brief c_path_to_UNC converts a unixoid path to UNC format.
  *
- * @param pathSrc The path to parse.
+ * It converts the '/' to '\' and prepends \\?\ to the path.
  *
- * @return Returns a C_PATHINFO structure that should be freed using SAFE_FREE().
+ * A proper windows path has to have a drive letter, otherwise it is not
+ * valid UNC.
+ *
+ * @param str The path to convert
+ *
+ * @return a pointer to the converted string. Caller has to free it.
  */
-C_PATHINFO * c_split_path(const char* pathSrc);
+const char *c_path_to_UNC(const char *str);
 
+/**
+ * @brief c_utf8_path_to_locale converts a unixoid path to the locale aware format
+ *
+ * On windows, it converts to UNC and multibyte.
+ * On Mac, it converts to the correct utf8 using iconv.
+ * On Linux, it returns utf8
+ *
+ * @param str The path to convert
+ *
+ * @return a pointer to the converted string. Caller has to free it using the
+ *         function c_free_locale_string.
+ */
+mbchar_t* c_utf8_path_to_locale(const char *str);
 
 /**
  * }@

@@ -1,19 +1,19 @@
 .. _contents:
 
-Contents
-========
+ownCloud Desktop Client Manual
+==============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    introduction
-   accountsetup
-   visualtour
+   installing
+   navigating
    advancedusage
    autoupdate
 
    building 
    architecture
    troubleshooting
-   glossary 
-
+   faq
+   glossary

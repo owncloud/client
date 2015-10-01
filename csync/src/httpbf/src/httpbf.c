@@ -42,7 +42,7 @@
 #define DEBUG_HBF(...) { if(transfer->log_cb) { \
         char buf[1024];                         \
         snprintf(buf, 1024, __VA_ARGS__);       \
-        transfer->log_cb(__FUNCTION__, buf, transfer->user_data);    \
+        transfer->log_cb(__func__, buf, transfer->user_data);    \
   }  }
 
 // #endif
@@ -96,6 +96,7 @@ hbf_transfer_t *hbf_init_transfer( const char *dest_uri ) {
     transfer->block_size = DEFAULT_BLOCK_SIZE;
     transfer->threshold = transfer->block_size;
     transfer->modtime_accepted = 0;
+    transfer->oc_header_modtime = 0;
 
     return transfer;
 }
@@ -204,9 +205,9 @@ void hbf_free_transfer( hbf_transfer_t *transfer ) {
 
     for( cnt = 0; cnt < transfer->block_cnt; cnt++ ) {
         hbf_block_t *block = transfer->block_arr[cnt];
+        if( !block ) continue;
         if( block->http_error_msg ) free( block->http_error_msg );
         if( block->etag ) free( block->etag );
-        if( block ) free(block);
     }
     free( transfer->block_arr );
     free( transfer->url );
@@ -259,9 +260,6 @@ static char* get_transfer_url( hbf_transfer_t *transfer, int indx ) {
       len += strlen("-chunking---");
 
       res = malloc(len);
-      if( res == NULL ) {
-        return NULL;
-      }
 
       /* Note: must be %u for unsigned because one does not want '--' */
       if( sprintf(res, "%s-chunking-%u-%u-%u", transfer->url, transfer->transfer_id,
@@ -491,8 +489,8 @@ Hbf_State hbf_transfer( ne_session *session, hbf_transfer_t *transfer, const cha
 
                 snprintf(buf, sizeof(buf), "%"PRId64, transfer->stat_size);
                 ne_add_request_header(req, "OC-Total-Length", buf);
-                if( transfer->modtime > 0 ) {
-                    snprintf(buf, sizeof(buf), "%"PRId64, transfer->modtime);
+                if( transfer->oc_header_modtime > 0 ) {
+                    snprintf(buf, sizeof(buf), "%"PRId64, transfer->oc_header_modtime);
                     ne_add_request_header(req, "X-OC-Mtime", buf);
                 }
 
@@ -502,6 +500,8 @@ Hbf_State hbf_transfer( ne_session *session, hbf_transfer_t *transfer, const cha
 
                 if( transfer->block_cnt > 1 ) {
                   ne_add_request_header(req, "OC-Chunked", "1");
+                  snprintf(buf, sizeof(buf), "%"PRId64, transfer->threshold);
+                  ne_add_request_header(req, "OC-Chunk-Size", buf);
                 }
                 ne_add_request_header( req, "Content-Type", "application/octet-stream");
 
@@ -536,8 +536,8 @@ Hbf_State hbf_transfer( ne_session *session, hbf_transfer_t *transfer, const cha
             } else {
                 state = HBF_MEMORY_FAIL;
             }
-            free( transfer_url );
         }
+        free( transfer_url );
     }
 
     /* do the source file validation finally (again). */

@@ -1,3 +1,7 @@
+# (c) 2014 Copyright ownCloud, Inc.
+# Redistribution and use is allowed according to the terms of the BSD license.
+# For details see the accompanying COPYING* file.
+
 # define system dependent compiler flags
 
 include(CheckCCompilerFlag)
@@ -10,10 +14,11 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "(GNU|Clang)")
 
     # add -Wconversion ?
     # cannot be pedantic with sqlite3 directly linked
-    if (NOT CSYNC_STATIC_COMPILE_DIR)
+    # FIXME Can we somehow not use those flags for sqlite3.* but use them for the rest of csync?
+    if (NOT USE_OUR_OWN_SQLITE3)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -pedantic -pedantic-errors")
     endif()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wshadow -Wmissing-prototypes -Wdeclaration-after-statement")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wshadow -Wmissing-prototypes")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused -Wfloat-equal -Wpointer-arith -Wwrite-strings -Wformat-security")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-format-attribute")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-format-attribute -D_GNU_SOURCE")
@@ -80,7 +85,7 @@ else(UNIX AND NOT WIN32)
 endif (UNIX AND NOT WIN32)
 
 if (MSVC)
-    # Use secure functions by defaualt and suppress warnings about
+    # Use secure functions by default and suppress warnings about
     #"deprecated" functions
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1")

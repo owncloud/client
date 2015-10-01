@@ -47,94 +47,6 @@
 #include "csync_macros.h"
 #include "csync_log.h"
 
-#ifdef _WIN32
-char *csync_get_user_home_dir(void) {
-    wchar_t tmp[MAX_PATH];
-    char *szPath = NULL;
-
-    if( SHGetFolderPathW( NULL,
-                          CSIDL_PROFILE|CSIDL_FLAG_CREATE,
-                          NULL,
-                          0,
-                          tmp) == S_OK ) {
-        szPath = c_utf8_from_locale(tmp);
-        return szPath;
-    }
-
-    return NULL;
-}
-
-char *csync_get_local_username(void) {
-    DWORD size = 0;
-    wchar_t *user;
-
-    /* get the size */
-    GetUserName(NULL, &size);
-
-    user = (wchar_t *) c_malloc(2*size);
-    if (user == NULL) {
-        return NULL;
-    }
-
-    if (GetUserName(user, &size)) {
-	char *uuser = c_utf8_from_locale(user);
-	SAFE_FREE(user);
-        return uuser;
-    }
-
-    return NULL;
-}
-
-#else /* ************* !WIN32 ************ */
-
-#ifndef NSS_BUFLEN_PASSWD
-#define NSS_BUFLEN_PASSWD 4096
-#endif /* NSS_BUFLEN_PASSWD */
-
-char *csync_get_user_home_dir(void) {
-    const char *envp;
-    struct passwd pwd;
-    struct passwd *pwdbuf;
-    char buf[NSS_BUFLEN_PASSWD];
-    int rc;
-
-    envp = getenv("HOME");
-    if (envp != NULL && envp[0] != '\0') {
-        return c_strdup(envp);
-    }
-
-    /* Still nothing found, read the password file */
-    rc = getpwuid_r(getuid(), &pwd, buf, NSS_BUFLEN_PASSWD, &pwdbuf);
-    if (rc != 0) {
-        return c_strdup(pwd.pw_dir);
-    }
-
-    return NULL;
-}
-
-char *csync_get_local_username(void) {
-    struct passwd pwd;
-    struct passwd *pwdbuf;
-    char buf[NSS_BUFLEN_PASSWD];
-    char *name;
-    int rc;
-
-    rc = getpwuid_r(getuid(), &pwd, buf, NSS_BUFLEN_PASSWD, &pwdbuf);
-    if (rc != 0) {
-        return NULL;
-    }
-
-    name = c_strdup(pwd.pw_name);
-
-    if (name == NULL) {
-        return NULL;
-    }
-
-    return name;
-}
-
-#endif /* ************* WIN32 ************ */
-
 #ifdef HAVE_FNMATCH
 #include <fnmatch.h>
 
@@ -152,10 +64,10 @@ int csync_fnmatch(__const char *__pattern, __const char *__name, int __flags) {
 
     (void) __flags;
 
-    name = c_utf8_to_locale(__name);
-    pat = c_utf8_to_locale(__pattern);
+    name = c_utf8_string_to_locale(__name);
+    pat  = c_utf8_string_to_locale(__pattern);
 
-    match = PathMatchSpec(name, pat);
+    match = PathMatchSpecW(name, pat);
 
     c_free_locale_string(pat);
     c_free_locale_string(name);
@@ -193,11 +105,11 @@ CSYNC_STATUS csync_errno_to_status(int error, CSYNC_STATUS default_status)
   case ERRNO_TIMEOUT:
     status = CSYNC_STATUS_TIMEOUT; /* Network: Timeout error */
     break;
-  case ERRNO_QUOTA_EXCEEDED:
-    status = CSYNC_STATUS_QUOTA_EXCEEDED;   /* Quota exceeded */
-    break;
   case ERRNO_SERVICE_UNAVAILABLE:
     status = CSYNC_STATUS_SERVICE_UNAVAILABLE;  /* Service temporarily down */
+    break;
+  case ERRNO_STORAGE_UNAVAILABLE:
+    status = CSYNC_STATUS_STORAGE_UNAVAILABLE;  /* Storage temporarily unavailable */
     break;
   case EFBIG:
     status = CSYNC_STATUS_FILE_SIZE_ERROR;          /* File larger than 2MB */
@@ -209,9 +121,6 @@ CSYNC_STATUS csync_errno_to_status(int error, CSYNC_STATUS default_status)
     status = CSYNC_STATUS_HTTP_ERROR;
     break;
 
-  case ERRNO_TIMEDELTA:
-    status = CSYNC_STATUS_TIMESKEW;
-    break;
   case EPERM:                  /* Operation not permitted */
   case EACCES:                /* Permission denied */
     status = CSYNC_STATUS_PERMISSION_DENIED;
@@ -271,7 +180,7 @@ CSYNC_STATUS csync_errno_to_status(int error, CSYNC_STATUS default_status)
 }
 
 /* Remove possible quotes, and also the -gzip at the end
- * Remove "-gzip" at the end (cf. https://github.com/owncloud/mirall/issues/1195)
+ * Remove "-gzip" at the end (cf. https://github.comowncloud/client/issues/1195)
  * The caller must take ownership of the resulting string.
  */
 char *csync_normalize_etag(const char *etag)

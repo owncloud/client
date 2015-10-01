@@ -1,14 +1,86 @@
+/*
+ * libcsync -- a library to sync a directory with another
+ *
+ * Copyright (c) 2008-2013 by Andreas Schneider <asn@cryptomilk.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 #include "torture.h"
 
 #include "csync_update.c"
 
 #define TESTDB "/tmp/check_csync/journal.db"
 
+static int firstrun = 1;
+
+static void statedb_create_metadata_table(sqlite3 *db)
+{
+    int rc = 0;
+
+    if( db ) {
+        const char *sql = "CREATE TABLE IF NOT EXISTS metadata("
+                          "phash INTEGER(8),"
+                          "pathlen INTEGER,"
+                          "path VARCHAR(4096),"
+                          "inode INTEGER,"
+                          "uid INTEGER,"
+                          "gid INTEGER,"
+                          "mode INTEGER,"
+                          "modtime INTEGER(8),"
+                          "type INTEGER,"
+                          "md5 VARCHAR(32),"
+                          "PRIMARY KEY(phash));";
+
+        rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
+        //const char *msg = sqlite3_errmsg(db);
+        assert_int_equal( rc, SQLITE_OK );
+    }
+}
+
+static void statedb_insert_metadata(sqlite3 *db)
+{
+    int rc = 0;
+
+    if( db ) {
+        char *stmt = sqlite3_mprintf("INSERT INTO metadata"
+                                     "(phash, pathlen, path, inode, uid, gid, mode, modtime,type,md5) VALUES"
+                                     "(%lld, %d, '%q', %d, %d, %d, %d, %lld, %d, '%q');",
+                                     (long long signed int)42,
+                                     42,
+                                     "I_was_wurst_before_I_became_wurstsalat",
+                                     619070,
+                                     42,
+                                     42,
+                                     42,
+                                     (long long signed int)42,
+                                     0,
+                                     "4711");
+
+        char *errmsg;
+        rc = sqlite3_exec(db, stmt, NULL, NULL, &errmsg);
+        sqlite3_free(stmt);
+        assert_int_equal( rc, SQLITE_OK );
+    }
+}
+
 static void setup(void **state)
 {
     CSYNC *csync;
     int rc;
 
+    unlink(TESTDB);
     rc = system("mkdir -p /tmp/check_csync");
     assert_int_equal(rc, 0);
     rc = system("mkdir -p /tmp/check_csync1");
@@ -17,13 +89,22 @@ static void setup(void **state)
     assert_int_equal(rc, 0);
     rc = csync_create(&csync, "/tmp/check_csync1", "/tmp/check_csync2");
     assert_int_equal(rc, 0);
-    rc = csync_set_config_dir(csync, "/tmp/check_csync");
-    assert_int_equal(rc, 0);
     rc = csync_init(csync);
     assert_int_equal(rc, 0);
+
+    /* Create a new db with metadata */
+    sqlite3 *db;
+    csync->statedb.file = c_strdup(TESTDB);
+    rc = sqlite3_open(csync->statedb.file, &db);
+    statedb_create_metadata_table(db);
+    if( firstrun ) {
+        statedb_insert_metadata(db);
+        firstrun = 0;
+    }
+    sqlite3_close(db);
+
     rc = csync_statedb_load(csync, TESTDB, &csync->statedb.db);
     assert_int_equal(rc, 0);
-
 
     *state = csync;
 }
@@ -41,13 +122,20 @@ static void setup_ftw(void **state)
     assert_int_equal(rc, 0);
     rc = csync_create(&csync, "/tmp", "/tmp");
     assert_int_equal(rc, 0);
-    rc = csync_set_config_dir(csync, "/tmp/check_csync");
-    assert_int_equal(rc, 0);
     rc = csync_init(csync);
     assert_int_equal(rc, 0);
+
+    sqlite3 *db = NULL;
+    rc = sqlite3_open_v2(TESTDB, &db, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL);
+    assert_int_equal(rc, SQLITE_OK);
+    statedb_create_metadata_table(db);
+    rc = sqlite3_close(db);
+    assert_int_equal(rc, SQLITE_OK);
+
     rc = csync_statedb_load(csync, TESTDB, &csync->statedb.db);
     assert_int_equal(rc, 0);
 
+    csync->statedb.file = c_strdup( TESTDB );
     *state = csync;
 }
 
@@ -56,6 +144,7 @@ static void teardown(void **state)
     CSYNC *csync = *state;
     int rc;
 
+    unlink( csync->statedb.file);
     rc = csync_destroy(csync);
     assert_int_equal(rc, 0);
 
@@ -78,7 +167,6 @@ static void teardown_rm(void **state) {
 /* create a file stat, caller must free memory */
 static csync_vio_file_stat_t* create_fstat(const char *name,
                                            ino_t inode,
-                                           nlink_t nlink,
                                            time_t mtime)
 {
     csync_vio_file_stat_t *fs = NULL;
@@ -105,8 +193,6 @@ static csync_vio_file_stat_t* create_fstat(const char *name,
     fs->type = CSYNC_VIO_FILE_TYPE_REGULAR;
     fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_TYPE;
 
-    fs->mode = 0644;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_PERMISSIONS;
 
     if (inode == 0) {
         fs->inode = 619070;
@@ -120,24 +206,7 @@ static csync_vio_file_stat_t* create_fstat(const char *name,
     fs->size = 157459;
     fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_SIZE;
 
-    if (nlink == 0) {
-        fs->nlink = 1;
-    } else {
-        fs->nlink = nlink;
-    }
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_LINK_COUNT;
 
-    fs->uid = 1000;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_UID;
-
-    fs->gid = 1000;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_GID;
-
-    fs->blkcount = 312;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_BLOCK_COUNT;
-
-    fs->blksize = 4096;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_BLOCK_SIZE;
 
     if (mtime == 0) {
         fs->atime = fs->ctime = fs->mtime = time(&t);
@@ -172,7 +241,7 @@ static void check_csync_detect_update(void **state)
     csync_vio_file_stat_t *fs;
     int rc;
 
-    fs = create_fstat("file.txt", 0, 1, 1217597845);
+    fs = create_fstat("file.txt", 0, 1217597845);
     assert_non_null(fs);
 
     rc = _csync_detect_update(csync,
@@ -201,7 +270,7 @@ static void check_csync_detect_update_db_none(void **state)
     csync_vio_file_stat_t *fs;
     int rc;
 
-    fs = create_fstat("file.txt", 0, 1, 1217597845);
+    fs = create_fstat("file.txt", 0, 1217597845);
     assert_non_null(fs);
 
     rc = _csync_detect_update(csync,
@@ -214,8 +283,6 @@ static void check_csync_detect_update_db_none(void **state)
     st = c_rbtree_node_data(csync->local.tree->root);
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
-    /* set the instruction to UPDATED that it gets written to the statedb */
-    st->instruction = CSYNC_INSTRUCTION_UPDATED;
 
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
@@ -230,7 +297,7 @@ static void check_csync_detect_update_db_eval(void **state)
     csync_vio_file_stat_t *fs;
     int rc;
 
-    fs = create_fstat("file.txt", 0, 1, 42);
+    fs = create_fstat("file.txt", 0, 42);
     assert_non_null(fs);
 
     rc = _csync_detect_update(csync,
@@ -243,14 +310,12 @@ static void check_csync_detect_update_db_eval(void **state)
     st = c_rbtree_node_data(csync->local.tree->root);
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
-    /* set the instruction to UPDATED that it gets written to the statedb */
-    st->instruction = CSYNC_INSTRUCTION_UPDATED;
-
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
 
     csync_vio_file_stat_destroy(fs);
 }
+
 
 static void check_csync_detect_update_db_rename(void **state)
 {
@@ -259,29 +324,8 @@ static void check_csync_detect_update_db_rename(void **state)
 
     csync_vio_file_stat_t *fs;
     int rc = 0;
-    char *stmt = NULL;
 
-    // rc = csync_statedb_create_tables(csync->statedb.db);
-
-    assert_int_equal(rc, 0);
-    stmt = sqlite3_mprintf("INSERT INTO metadata"
-                           "(phash, pathlen, path, inode, uid, gid, mode, modtime,type,md5) VALUES"
-                           "(%lld, %d, '%q', %d, %d, %d, %d, %lld, %d, '%q');",
-                           (long long signed int)42,
-                           42,
-                           "I_was_wurst_before_I_became_wurstsalat",
-                           619070,
-                           42,
-                           42,
-                           42,
-                           (long long signed int)42,
-                           0,
-                           "4711");
-
-    // rc = csync_statedb_insert(csync->statedb.db, stmt);
-    sqlite3_free(stmt);
-
-    fs = create_fstat("wurst.txt", 0, 1, 42);
+    fs = create_fstat("wurst.txt", 0, 42);
     assert_non_null(fs);
     csync_set_statedb_exists(csync, 1);
 
@@ -312,7 +356,7 @@ static void check_csync_detect_update_db_new(void **state)
     csync_vio_file_stat_t *fs;
     int rc;
 
-    fs = create_fstat("file.txt", 42000, 1, 0);
+    fs = create_fstat("file.txt", 42000, 0);
     assert_non_null(fs);
 
     rc = _csync_detect_update(csync,
@@ -325,36 +369,9 @@ static void check_csync_detect_update_db_new(void **state)
     st = c_rbtree_node_data(csync->local.tree->root);
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
-    /* set the instruction to UPDATED that it gets written to the statedb */
-    st->instruction = CSYNC_INSTRUCTION_UPDATED;
 
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
-
-    csync_vio_file_stat_destroy(fs);
-}
-
-static void check_csync_detect_update_nlink(void **state)
-{
-    CSYNC *csync = *state;
-    csync_file_stat_t *st;
-    csync_vio_file_stat_t *fs;
-    int rc;
-
-    /* create vio file stat with nlink greater than 1 */
-    fs = create_fstat("file.txt", 0, 7, 0);
-    assert_non_null(fs);
-
-    /* add it to local tree */
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/file.txt",
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
-    assert_int_equal(rc, 0);
-
-    /* the instruction should be set to ignore */
-    st = c_rbtree_node_data(csync->local.tree->root);
-    assert_int_equal(st->instruction, CSYNC_INSTRUCTION_IGNORE);
 
     csync_vio_file_stat_destroy(fs);
 }
@@ -365,7 +382,7 @@ static void check_csync_detect_update_null(void **state)
     csync_vio_file_stat_t *fs;
     int rc;
 
-    fs = create_fstat("file.txt", 0, 1, 0);
+    fs = create_fstat("file.txt", 0, 0);
     assert_non_null(fs);
 
     rc = _csync_detect_update(csync,
@@ -418,7 +435,6 @@ int torture_run_tests(void)
         unit_test_setup_teardown(check_csync_detect_update_db_eval, setup, teardown),
         unit_test_setup_teardown(check_csync_detect_update_db_rename, setup, teardown),
         unit_test_setup_teardown(check_csync_detect_update_db_new, setup, teardown_rm),
-        unit_test_setup_teardown(check_csync_detect_update_nlink, setup, teardown_rm),
         unit_test_setup_teardown(check_csync_detect_update_null, setup, teardown_rm),
 
         unit_test_setup_teardown(check_csync_ftw, setup_ftw, teardown_rm),

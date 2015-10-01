@@ -35,9 +35,6 @@
 #define FNM_PATHNAME    (1 << 0) /* No wildcard can ever match `/'.  */
 #endif
 
-char *csync_get_user_home_dir(void);
-char *csync_get_local_username(void);
-
 int csync_fnmatch(__const char *__pattern, __const char *__name, int __flags);
 
 /**
@@ -49,21 +46,5 @@ int csync_fnmatch(__const char *__pattern, __const char *__name, int __flags);
  * @return the corresponding csync error code.
  */
 CSYNC_STATUS csync_errno_to_status(int error, CSYNC_STATUS default_status);
-
-struct csync_hbf_info_s {
-    int start_id;
-    int transfer_id;
-};
-typedef struct csync_hbf_info_s csync_hbf_info_t;
-
-typedef struct {
-    int64_t file_count;
-    int64_t current_file_no;
-    int64_t byte_sum;
-    int64_t byte_current;
-} csync_overall_progress_t;
-
-
-char *csync_normalize_etag(const char *);
 
 #endif /* _CSYNC_MISC_H */

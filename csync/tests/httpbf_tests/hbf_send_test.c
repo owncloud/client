@@ -1,3 +1,22 @@
+/*
+ * libcsync -- a library to sync a directory with another
+ *
+ * Copyright (c) 2013 by Klaas Freitag <freitag@owncloud.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 #include <stdio.h>
 
 #include <sys/types.h>
@@ -14,14 +33,16 @@
 
 #include "config_test.h"
 
+#if USE_NEON
 #include "httpbf.c"
-
+#endif
 
 // A test case that does nothing and succeeds.
 static void null_test_success(void **state) {
     (void) state;
 }
 
+#if USE_NEON
 
 static char* test_file( const char* name ) {
     char path[260];
@@ -201,16 +222,20 @@ static void test_hbf_splitlist_zero( void **state ){
     hbf_free_transfer( list );
 }
 
+#endif
 
 
 int main(void) {
     const UnitTest tests[] = {
         unit_test(null_test_success),
+#if USE_NEON
         unit_test(test_hbf_splitlist_odd),
         unit_test(test_hbf_splitlist_zero),
         unit_test(test_hbf_init_transfer),
         unit_test(test_get_transfer_url),
         unit_test(test_get_transfer_url_bigfile)
+#endif
     };
     return run_tests(tests);
 }
+

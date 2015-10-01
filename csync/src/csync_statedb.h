@@ -33,6 +33,10 @@
 #ifndef _CSYNC_STATEDB_H
 #define _CSYNC_STATEDB_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "c_lib.h"
 #include "csync_private.h"
 
@@ -54,16 +58,15 @@ int csync_get_statedb_exists(CSYNC *ctx);
  */
 int csync_statedb_load(CSYNC *ctx, const char *statedb, sqlite3 **pdb);
 
-int csync_statedb_close(const char *statedb, sqlite3 *db, int jwritten);
+int csync_statedb_close(CSYNC *ctx);
 
-csync_file_stat_t *csync_statedb_get_stat_by_hash(sqlite3 *db, uint64_t phash);
+csync_file_stat_t *csync_statedb_get_stat_by_hash(CSYNC *ctx, uint64_t phash);
 
-csync_file_stat_t *csync_statedb_get_stat_by_inode(sqlite3 *db, uint64_t inode);
+csync_file_stat_t *csync_statedb_get_stat_by_inode(CSYNC *ctx, uint64_t inode);
 
-csync_file_stat_t *csync_statedb_get_stat_by_file_id( sqlite3 *db,
-                                                     const char *file_id );
+csync_file_stat_t *csync_statedb_get_stat_by_file_id(CSYNC *ctx, const char *file_id);
 
-char *csync_statedb_get_uniqId(CSYNC *ctx, uint64_t jHash, csync_vio_file_stat_t *buf);
+char *csync_statedb_get_etag(CSYNC *ctx, uint64_t jHash);
 
 /**
  * @brief Query all files metadata inside and below a path.
@@ -95,26 +98,9 @@ int csync_statedb_get_below_path(CSYNC *ctx, const char *path);
  */
 c_strlist_t *csync_statedb_query(sqlite3 *db, const char *statement);
 
-/**
- * @brief Insert function for the statedb.
- *
- * @param ctx        The csync context.
- * @param statement  The SQL statement to insert into the statedb.
- *
- * @return  The rowid of the most recent INSERT on success, 0 if the query
- *          wasn't successful.
- */
-typedef struct csync_progressinfo_s {
-  struct csync_progressinfo_s *next;
-  uint64_t phash;
-  uint64_t modtime;
-  char *md5;
-  int error;
-  int chunk;
-  int transferId;
-  char *tmpfile;
-  char *error_string;
-} csync_progressinfo_t;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * }@

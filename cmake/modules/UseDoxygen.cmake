@@ -1,3 +1,7 @@
+# (c) 2014 Copyright ownCloud, Inc.
+# Redistribution and use is allowed according to the terms of the BSD license.
+# For details see the accompanying COPYING* file.
+
 # -helper macro to add a "doc" target with CMake build system. 
 # and configure doxy.config.in to doxy.config
 #
@@ -33,7 +37,7 @@ IF (DOXYGEN_FOUND)
   # we need latex for doxygen because of the formulas
   FIND_PACKAGE(LATEX)
   IF    (NOT LATEX_COMPILER)
-    MESSAGE(STATUS "latex command LATEX_COMPILER not found but usually required. You will probably get warnings and user inetraction on doxy run.")
+    MESSAGE(STATUS "latex command LATEX_COMPILER not found but usually required. You will probably get warnings and user interaction on doxy run.")
   ENDIF (NOT LATEX_COMPILER)
   IF    (NOT MAKEINDEX_COMPILER)
     MESSAGE(STATUS "makeindex command MAKEINDEX_COMPILER not found but usually required.")

@@ -1,16 +1,11 @@
 project(libcsync)
 
 add_subdirectory(std)
-add_subdirectory(httpbf)
+if(USE_NEON)
+    add_subdirectory(httpbf)
+endif()
 
 # Statically include sqlite
-if (CSYNC_STATIC_COMPILE_DIR)
-    set(SQLITE3_INCLUDE_DIRS "")
-    set(SQLITE3_LIBRARIES "")
-    include_directories(${CSYNC_STATIC_COMPILE_DIR})
-else (CSYNC_STATIC_COMPILE_DIR)
-    find_package(SQLite3 3.3.9 REQUIRED)
-endif()
 
 set(CSYNC_PUBLIC_INCLUDE_DIRS
   ${CMAKE_CURRENT_BINARY_DIR}
@@ -22,7 +17,6 @@ set(CSYNC_PUBLIC_INCLUDE_DIRS
 set(CSYNC_PRIVATE_INCLUDE_DIRS
   ${SQLITE3_INCLUDE_DIRS}
   ${CSTDLIB_PUBLIC_INCLUDE_DIRS}
-  ${HTTPBF_PUBLIC_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}
 )
 
@@ -32,12 +26,9 @@ set(CSYNC_LIBRARY
 )
 
 set(CSYNC_LINK_LIBRARIES
-  ${CSYNC_LIBRARY}
   ${CSTDLIB_LIBRARY}
   ${CSYNC_REQUIRED_LIBRARIES}
   ${SQLITE3_LIBRARIES}
-  ${NEON_LIBRARIES}
-  ${HTTPBF_LIBRARY}
 )
 
 if(HAVE_ICONV AND WITH_ICONV)
@@ -45,11 +36,10 @@ if(HAVE_ICONV AND WITH_ICONV)
     list(APPEND CSYNC_LINK_LIBRARIES ${ICONV_LIBRARIES})
 endif()
 
-set(BLACKLIST_ON_ERROR 0 CACHE BOOL
-  "If an errors occurs three times on the same file, do not attempt to process that file any further.")
-
-if(BLACKLIST_ON_ERROR)
-    add_definitions(-DBLACKLIST_ON_ERROR)
+# Specific option for builds tied to servers that do not support renaming extensions
+set(NO_RENAME_EXTENSION 0 CACHE BOOL "Do not issue rename if the extension changes")
+if(NO_RENAME_EXTENSION)
+    add_definitions(-DNO_RENAME_EXTENSION)
 endif()
 
 set(csync_SRCS
@@ -67,14 +57,32 @@ set(csync_SRCS
   csync_rename.cc
 
   vio/csync_vio.c
-  vio/csync_vio_handle.c
   vio/csync_vio_file_stat.c
-  vio/csync_vio_local.c
-
-  csync_owncloud.c
-  csync_owncloud_recursive_propfind.c
-  csync_owncloud_util.c
 )
+
+if (WIN32)
+    list(APPEND csync_SRCS
+        vio/csync_vio_local_win.c
+    )
+else()
+    list(APPEND csync_SRCS
+        vio/csync_vio_local_unix.c
+    )
+endif()
+
+
+if(USE_NEON)
+    list(APPEND csync_SRCS
+        csync_owncloud.c
+        csync_owncloud_util.c
+    )
+    list(APPEND CSYNC_LINK_LIBRARIES
+        ${NEON_LIBRARIES}
+    )
+    include_directories(${NEON_INCLUDE_DIRS})
+    add_definitions(-DUSE_NEON)
+endif(USE_NEON)
+
 
 configure_file(csync_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h)
 
@@ -82,15 +90,13 @@ set(csync_HDRS
   ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h
   csync.h
   vio/csync_vio.h
-  vio/csync_vio_file_stat.h
-  vio/csync_vio_handle.h
   vio/csync_vio_method.h
   vio/csync_vio_module.h
 )
 
 # Statically include sqlite
-if (CSYNC_STATIC_COMPILE_DIR)
-    list(APPEND csync_SRCS ${CSYNC_STATIC_COMPILE_DIR}/dictionary.c  ${CSYNC_STATIC_COMPILE_DIR}/sqlite3.c)
+if (USE_OUR_OWN_SQLITE3)
+    list(APPEND csync_SRCS ${SQLITE3_SOURCE})
 endif()
 
 include_directories(
@@ -99,8 +105,10 @@ include_directories(
 )
 
 add_library(${CSYNC_LIBRARY} SHARED ${csync_SRCS})
+#add_library(${CSYNC_LIBRARY}_static STATIC ${csync_SRCS})
 
-target_link_libraries(${CSYNC_LINK_LIBRARIES})
+target_link_libraries(${CSYNC_LIBRARY} ${CSYNC_LINK_LIBRARIES})
+#target_link_libraries(${CSYNC_LIBRARY}_static ${CSYNC_LINK_LIBRARIES})
 
 set_target_properties(
   ${CSYNC_LIBRARY}
@@ -109,18 +117,32 @@ set_target_properties(
         ${LIBRARY_VERSION}
       SOVERSION
         ${LIBRARY_SOVERSION}
+      RUNTIME_OUTPUT_DIRECTORY
+        ${BIN_OUTPUT_DIRECTORY}
 )
-
-INSTALL(
+if(BUILD_OWNCLOUD_OSX_BUNDLE)
+  INSTALL(
+    TARGETS
+      ${CSYNC_LIBRARY}
+    LIBRARY DESTINATION
+	${LIB_INSTALL_DIR}
+    ARCHIVE DESTINATION
+	${LIB_INSTALL_DIR}
+    RUNTIME DESTINATION
+	${BIN_INSTALL_DIR}
+    )
+else()
+  INSTALL(
   TARGETS
     ${CSYNC_LIBRARY}
   LIBRARY DESTINATION
-    ${LIB_INSTALL_DIR}
+    ${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
   ARCHIVE DESTINATION
-    ${LIB_INSTALL_DIR}
+    ${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
   RUNTIME DESTINATION
-    ${BIN_INSTALL_DIR}
-)
+    ${BIN_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
+  )
+endif()
 
 # INSTALL(
 #   FILES

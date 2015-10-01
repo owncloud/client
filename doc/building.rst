@@ -1,154 +1,243 @@
 .. _building-label:
 
+===============================
 Appendix A: Building the Client
 ===============================
 
-This section explains how to build the ownCloud Client from source
-for all major platforms. You should read this section if you want
-to development on the desktop client.
+This section explains how to build the ownCloud Client from source for all
+major platforms. You should read this section if you want to develop for the
+desktop client.
 
-Note that the building instruction are subject to change as development 
-proceeds. It is important to check the version which is to built.
+.. note:: Build instructions are subject to change as development proceeds.
+  Please check the version for which you want to build.
 
-This instructions were updated to work with ownCloud Client 1.5.
+The instructions contained in this topic were updated to work with version 1.7 of the ownCloud Client.
 
 Linux
 -----
 
 1. Add the `ownCloud repository from OBS`_.
-2. Install the dependencies (as root, or via sudo):
+2. Install the dependencies (as root, or using ``sudo``) using the following 
+   commands for your specific Linux distribution:
+  
+   * Debian/Ubuntu: ``apt-get update; apt-get build-dep owncloud-client``
+   * openSUSE: ``zypper ref; zypper si -d owncloud-client``
+   * Fedora/CentOS: ``yum install yum-utils; yum-builddep owncloud-client``
 
-  * Debian/Ubuntu: ``apt-get update; apt-get build-dep owncloud-client``
-  * openSUSE: ``zypper ref; zypper si -d owncloud-client``
-  * Fedora/CentOS: ``yum install yum-utils; yum-builddep owncloud-client``
+3. Follow the :ref:`generic-build-instructions`.
 
-3. Follow the `generic build instructions`_.
+4. (Optional) Call ``make install`` to install the client to the ``/usr/local/bin`` directory.
+
+.. note:: This step requires the ``mingw32-cross-nsis`` packages be installed on
+          Windows.
 
 Mac OS X
 --------
 
-Next to XCode (and the command line tools!), you will need some
-extra dependencies.
+In additon to needing XCode (along with the command line tools), developing in
+the Mac OS X environment requires extra dependencies.  You can install these
+dependencies through MacPorts_ or Homebrew_.  These dependencies are required
+only on the build machine, because non-standard libs are deployed in the app
+bundle.
 
-You can install these dependencies via MacPorts_ or Homebrew_.
-This is only needed on the build machine, since non-standard libs
-will be deployed in the app bundle.
+The tested and preferred way to develop in this environment is through the use
+of HomeBrew_. The ownCloud team has its own repository containing non-standard
+recipes.
 
-The tested and preferred way is to use HomeBrew_. The ownCloud team has
-its own repository which contains non-standard recipes.  Add it with::
+To set up your build environment for development using HomeBrew_:
 
-  brew tap owncloud/owncloud
+1. Add the ownCloud repository using the following command::
 
-Next, install the missing dependencies::
+    brew tap owncloud/owncloud
 
-  brew install $(brew deps mirall)
+2. Install any missing dependencies::
 
-  
-To build mirall, follow the `generic build instructions`_.
+    brew install $(brew deps owncloud-client)
 
-.. note::
-  You should not call ``make install`` at any time, since the product of the
-  mirall build is an app bundle. Call ``make package`` instead to create an
-  install-ready disk image.
+3. Add Qt from brew to the path::
 
-Windows (cross-compile)
+    export PATH=/usr/local/Cellar/qt5/5.x.y/bin/qmake
+
+   Where ``x.z`` is the current version of Qt 5 that brew has installed
+   on your machine.
+
+5. For compilation of the client, follow the :ref:`generic-build-instructions`.
+
+6. In the build directory, run ``admin/osx/create_mac.sh <build_dir>
+   <install_dir>``. If you have a developer signing certificate, you can specify
+   its Common Name as a third parameter (use quotes) to have the package
+   signed automatically.
+
+.. note:: Contrary to earlier versions, ownCloud 1.7 and later are packaged
+          as a ``pkg`` installer. Do not call "make package" at any time when
+          compiling for OS X, as this will build a disk image, and will not
+          work correctly.
+
+Windows Development Build
 -----------------------
 
-Due to the amount of dependencies, building the client for Windows
-is **currently only supported on openSUSE**, by using the MinGW
-cross compiler. You can set up openSUSE 12.1, 12.2 or 13.1 in a virtual machine
-if you do not have it installed already.
+If you want to test some changes and deploy them locally, you can build natively
+on Windows using MinGW. If you want to generate an installer for deployment, please
+follow `Windows Installer Build (Cross-Compile)`_ instead.
 
-In order to cross-compile, the following repositories need to be added
-via YaST or ``zypper ar`` (adjust when using openSUSE 12.2 or 13.1)::
+1. Get the required dependencies:
 
-  zypper ar http://download.opensuse.org/repositories/windows:/mingw:/win32/openSUSE_12.1/windows:mingw:win32.repo
-  zypper ar http://download.opensuse.org/repositories/windows:/mingw/openSUSE_12.1/windows:mingw.repo
+   * Make sure that you have CMake_ and Git_.
+   * Download the Qt_ MinGW package. You will use the MinGW version bundled with it.
+   * Download an `OpenSSL Windows Build`_ (the non-"Light" version)
 
-Next, install the cross-compiler packages and the cross-compiled dependencies::
+2. Get the QtKeychain_ sources as well as the latest versions of the ownCloud client
+   from Git as follows::
 
-  zypper install cmake make mingw32-cross-binutils mingw32-cross-cpp mingw32-cross-gcc \
-                 mingw32-cross-gcc-c++ mingw32-cross-pkg-config mingw32-filesystem \
-                 mingw32-headers mingw32-runtime site-config mingw32-libqt4-sql \
-                 mingw32-libqt4-sql-sqlite mingw32-libsqlite-devel \
-                 mingw32-dlfcn-devel mingw32-libssh2-devel kdewin-png2ico \
-                 mingw32-libqt4 mingw32-libqt4-devel mingw32-libgcrypt \
-                 mingw32-libgnutls mingw32-libneon-openssl mingw32-libneon-devel \
-                 mingw32-libbeecrypt mingw32-libopenssl mingw32-openssl \
-                 mingw32-libpng-devel mingw32-libsqlite mingw32-qtkeychain \
-                 mingw32-qtkeychain-devel mingw32-dlfcn mingw32-libintl-devel \
-                 mingw32-libneon-devel mingw32-libopenssl-devel mingw32-libproxy-devel \
-                 mingw32-libxml2-devel mingw32-zlib-devel
+    git clone https://github.com/frankosterfeld/qtkeychain.git
+    git clone git://github.com/owncloud/client.git
 
-For the installer, the NSIS installer package is also required::
+3. Open the Qt MinGW shortcut console from the Start Menu
 
-  zypper install mingw32-cross-nsis
+4. Make sure that OpenSSL's ``bin`` directory as well as your qtkeychain source
+   directories are in your PATH. This will allow CMake to find the library and
+   headers, as well as allow the ownCloud client to find the DLLs at runtime::
 
-..  Usually, the following would be needed as well, but due to a bug in mingw, they
-    will currently not build properly from source.
+    set PATH=C:\<OpenSSL Install Dir>\bin;%PATH%
+    set PATH=C:\<qtkeychain Clone Dir>;%PATH%
 
-    mingw32-cross-nsis-plugin-processes mingw32-cross-nsis-plugin-uac
+5. Build qtkeychain **directly in the source directory** so that the DLL is built
+   in the same directory as the headers to let CMake find them together through PATH::
 
-You will also need to manually download and install the following files with
-``rpm -ivh <package>`` (They will also work with openSUSE 12.2 and newer)::
+    cd <qtkeychain Clone Dir>
+    cmake -G "MinGW Makefiles" .
+    mingw32-make
+    cd ..
 
-  rpm -ihv http://download.tomahawk-player.org/packman/mingw:32/openSUSE_12.1/x86_64/mingw32-cross-nsis-plugin-processes-0-1.1.x86_64.rpm
-  rpm -ihv http://download.tomahawk-player.org/packman/mingw:32/openSUSE_12.1/x86_64/mingw32-cross-nsis-plugin-uac-0-3.1.x86_64.rpm
+6. Create the build directory::
 
-Now, follow the `generic build instructions`_, but pay attention to
-the following differences:
+    mkdir client-build
+    cd client-build
 
-1. For building ``libocsync``, you need to use ``mingw32-cmake`` instead
-   of cmake.
-2. for building ``mirall``, you need to use ``cmake`` again, but make sure
-   to append the following parameter::
-3. Also, you need to specify *absolute pathes* for ``CSYNC_LIBRARY_PATH``
-   and ``CSYNC_LIBRARY_PATH`` when running ``cmake`` on mirall.
+7. Build the client::
 
-  ``-DCMAKE_TOOLCHAIN_FILE=../mirall/admin/win/Toolchain-mingw32-openSUSE.cmake``
+    cmake -G "MinGW Makefiles" ../client
+    mingw32-make
 
-Finally, just build by running ``make``. ``make package`` will produce
-an NSIS-based installer, provided the NSIS mingw32 packages are installed.
+  .. note:: You can try using ninja to build in parallel using
+     ``cmake -G Ninja ../client`` and ``ninja`` instead.
+  .. note:: Refer to the :ref:`generic-build-instructions` section for additional options.
+
+  The ownCloud binary will appear in the ``bin`` directory.
+
+Windows Installer Build (Cross-Compile)
+---------------------------------------
+
+Due to the large number of dependencies, building the client installer for Windows
+is **currently only officially supported on openSUSE**, by using the MinGW cross compiler.
+You can set up openSUSE 13.1, 13.2 or openSUSE Factory in a virtual machine if you do not
+have it installed already.
+
+To cross-compile:
+
+1. Add the following repository using YaST or ``zypper ar`` (adjust when using another openSUSE version)::
+
+    zypper ar https://build.opensuse.org/project/show/isv:ownCloud:toolchains:mingw:win32:stable
+
+2. Install the cross-compiler packages and the cross-compiled dependencies::
+
+   zypper install cmake make mingw32-cross-binutils mingw32-cross-cpp mingw32-cross-gcc \
+                mingw32-cross-gcc-c++ mingw32-cross-pkg-config mingw32-filesystem \
+                mingw32-headers mingw32-runtime site-config mingw32-libwebp \
+                mingw32-cross-libqt5-qmake mingw32-cross-libqt5-qttools mingw32-libqt5*
+
+3. For the installer, install the NSIS installer package::
+
+    zypper install mingw32-cross-nsis mingw32-cross-nsis-plugin-uac mingw32-cross-nsis-plugin-nsprocess
+
+4. Follow the :ref:`generic-build-instructions`
+
+.. note:: When building for Windows platforms, you must specify a special
+     toolchain file that enables cmake to locate the platform-specific tools. To add
+     this parameter to the call to cmake, enter
+     ``-DCMAKE_TOOLCHAIN_FILE=../client/admin/win/Toolchain-mingw32-openSUSE.cmake``.
+
+5. Build by running ``make``.
+
+.. note:: Using ``make package`` produces an NSIS-based installer, provided
+    the NSIS mingw32 packages are installed.
+
+6. If you want to sign the installer, acquire a `Microsoft Authenticode`_ Certificate and install ``osslsigncode`` to sign the installer::
+
+    zypper install osslsigncode
+
+7. Sign the package::
+
+    osslsigncode -pkcs12 $HOME/.codesign/packages.pfx -h sha1 \
+               -pass yourpass \
+               -n "ACME Client" \
+               -i "http://acme.com" \
+               -ts "http://timestamp.server/" \
+               -in ${unsigned_file} \
+               -out ${installer_file}
+
+   for ``-in``, use the URL to the time stamping server provided by your CA along with the Authenticode certificate. Alternatively,
+   you may use the official Microsoft ``signtool`` utility on Microsoft Windows.
+
+
+.. _generic-build-instructions:
 
 Generic Build Instructions
 --------------------------
-.. _`generic build instructions`
 
-If you want to build the leading edge version of the client, you should
-use the latest versions of Mirall and CSync via Git_, like so::
+Compared to previous versions, building the desktop sync client has become easier. Unlike
+earlier versions, CSync, which is the sync engine library of the client, is now
+part of the client source repository and not a separate module.
 
-  git clone git://github.com/owncloud/mirall.git
+You can download the desktop sync client from the ownCloud `Client Download Page`_.
 
+To build the most up to date version of the client:
 
-Next, build it::
+1. Clone the latest versions of the client from Git_ as follows:
 
-  mkdir mirall-build
-  cd mirall-build
-  cmake -DCMAKE_BUILD_TYPE="Debug" ../mirall
+  ``git clone git://github.com/owncloud/client.git``
+  ``git submodule init``
+  ``git submodule update``
 
-You probably have to satisfy some dependencies. Make sure to install all the
-needed development packages. You will need ``qtkeychain``, ``sqlite3`` and ``neon``.
+2. Create the build directory:
 
-Note that it is important to use absolute pathes for the include- and library
-directories. If this succeeds, call ``make``. The owncloud binary should appear
-in the ``bin`` directory. You can also run ``make install`` to install the client to
-``/usr/local/bin``.
+  ``mkdir client-build``
+  ``cd client-build``
 
-To build an installer/app bundle (requires the mingw32-cross-nsis packages on Windows)::
+3. Configure the client build:
 
-  make package
+  ``cmake -DCMAKE_BUILD_TYPE="Debug" ../client``
 
-Known cmake parameters:
+  ..note:: You must use absolute paths for the ``include`` and ``library``
+           directories.
 
-* QTKEYCHAIN_LIBRARY=/path/to/qtkeychain.dylib -DQTKEYCHAIN_INCLUDE_DIR=/path/to/qtkeychain/: Use QtKeychain for stored credentials. When compiling with Qt5, the library is called qt5keychain.dylib. You need to compile QtKeychain with the same Qt version.
-* WITH_DOC=TRUE: create doc and manpages via running ``make``; also adds install statements to be able to install it via ``make install``.
-* CMAKE_PREFIX_PATH=/path/to/Qt5.2.0/5.2.0/yourarch/lib/cmake/ : to build with Qt5
-* BUILD_WITH_QT4=ON : to build with Qt4 even if Qt5 is found
+  ..note:: On Mac OS X, you need to specify ``-DCMAKE_INSTALL_PREFIX=target``,
+           where ``target`` is a private location, i.e. in parallel to your build
+           dir by specifying ``../install``.
 
-.. _`ownCloud repository from OBS`: http://software.opensuse.org/download/package?project=isv:ownCloud:devel&package=owncloud-client
+4. Call ``make``.
+
+  The owncloud binary will appear in the ``bin`` directory.
+
+The following are known cmake parameters:
+
+* ``QTKEYCHAIN_LIBRARY=/path/to/qtkeychain.dylib -DQTKEYCHAIN_INCLUDE_DIR=/path/to/qtkeychain/``:
+   Used for stored credentials.  When compiling with Qt5, the library is called ``qt5keychain.dylib.``
+   You need to compile QtKeychain with the same Qt version.
+* ``WITH_DOC=TRUE``: Creates doc and manpages through running ``make``; also adds install statements,
+  providing the ability to install using ``make install``.
+* ``CMAKE_PREFIX_PATH=/path/to/Qt5.2.0/5.2.0/yourarch/lib/cmake/``: Builds using Qt5.
+* ``BUILD_WITH_QT4=ON``: Builds using Qt4 (even if Qt5 is found).
+* ``CMAKE_INSTALL_PREFIX=path``: Set an install prefix. This is mandatory on Mac OS
+
+.. _`ownCloud repository from OBS`: http://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
+.. _CMake: http://www.cmake.org/download
 .. _CSync: http://www.csync.org
 .. _`Client Download Page`: http://owncloud.org/sync-clients/
 .. _Git: http://git-scm.com
 .. _MacPorts: http://www.macports.org
 .. _Homebrew: http://mxcl.github.com/homebrew/
-.. _QtKeychain https://github.com/frankosterfeld/qtkeychain
+.. _`OpenSSL Windows Build`: http://slproweb.com/products/Win32OpenSSL.html
+.. _Qt: http://www.qt.io/download
+.. _`Microsoft Authenticode`: https://msdn.microsoft.com/en-us/library/ie/ms537361%28v=vs.85%29.aspx
+.. _QtKeychain: https://github.com/frankosterfeld/qtkeychain

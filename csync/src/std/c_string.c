@@ -32,6 +32,7 @@
 #include <wchar.h>
 
 #include "c_string.h"
+#include "c_path.h"
 #include "c_alloc.h"
 #include "c_macro.h"
 
@@ -115,10 +116,6 @@ static char *c_iconv(const char* str, enum iconv_direction dir)
   out = c_malloc(outsize);
   out_in = out;
 
-  if (out == NULL) {
-      return NULL;
-  }
-
   if (dir == iconv_to_native) {
       ret = iconv(_iconvs.to, &in, &size, &out, &outsize);
   } else {
@@ -126,13 +123,21 @@ static char *c_iconv(const char* str, enum iconv_direction dir)
   }
 
   if (ret == (size_t)-1) {
-      SAFE_FREE(out);
+      SAFE_FREE(out_in);
       return NULL;
   }
 
   return out_in;
 }
 #endif /* defined(HAVE_ICONV) && defined(WITH_ICONV) */
+
+int c_strncasecmp(const char *a, const char *b, size_t n) {
+#ifdef _WIN32
+    return _strnicmp(a, b, n);
+#else
+    return strncasecmp(a, b, n);
+#endif
+}
 
 int c_streq(const char *a, const char *b) {
   register const char *s1 = a;
@@ -165,10 +170,6 @@ c_strlist_t *c_strlist_new(size_t size) {
   }
 
   strlist->vector = (char **) c_malloc(size * sizeof(char *));
-  if (strlist->vector == NULL) {
-    SAFE_FREE(strlist);
-    return NULL;
-  }
   strlist->count = 0;
   strlist->size = size;
 
@@ -214,6 +215,25 @@ int c_strlist_add(c_strlist_t *strlist, const char *string) {
   return 0;
 }
 
+int c_strlist_add_grow(c_strlist_t **strlist, const char *string) {
+  if (*strlist == NULL) {
+    *strlist = c_strlist_new(32);
+    if (*strlist == NULL) {
+      return -1;
+    }
+  }
+
+  if ((*strlist)->count == (*strlist)->size) {
+    c_strlist_t *list = c_strlist_expand(*strlist, 2 * (*strlist)->size);
+    if (list == NULL) {
+      return -1;
+    }
+    *strlist = list;
+  }
+
+  return c_strlist_add(*strlist, string);
+}
+
 void c_strlist_clear(c_strlist_t *strlist) {
   size_t i = 0;
 
@@ -239,69 +259,6 @@ void c_strlist_destroy(c_strlist_t *strlist) {
   SAFE_FREE(strlist);
 }
 
-char *c_strreplace(char *src, const char *pattern, const char *repl) {
-  char *p = NULL;
-
-  while ((p = strstr(src, pattern)) != NULL) {
-     size_t of = p - src;
-     size_t l  = strlen(src);
-     size_t pl = strlen(pattern);
-     size_t rl = strlen(repl);
-
-     if (rl > pl) {
-        src = (char *) c_realloc(src, strlen(src) + rl - pl + 1);
-     }
-
-     if (rl != pl) {
-        memmove(src + of + rl, src + of + pl, l - of - pl + 1);
-     }
-
-     strncpy(src + of, repl, rl);
-  }
-
-  return src;
-}
-
-char *c_uppercase(const char* str) {
-  char *new;
-  char *p;
-
-  if (str == NULL) {
-    return NULL;
-  }
-
-  new = c_strdup(str);
-  if (new == NULL) {
-    return NULL;
-  }
-
-  for (p = new; *p; p++) {
-    *p = toupper(*p);
-  }
-
-  return new;
-}
-
-char *c_lowercase(const char* str) {
-  char *new;
-  char *p;
-
-  if (str == NULL) {
-    return NULL;
-  }
-
-  new = c_strdup(str);
-  if (new == NULL) {
-    return NULL;
-  }
-
-  for (p = new; *p; p++) {
-    *p = tolower(*p);
-  }
-
-  return new;
-}
-
 /* Convert a wide multibyte String to UTF8 */
 char* c_utf8_from_locale(const mbchar_t *wstr)
 {
@@ -322,10 +279,6 @@ char* c_utf8_from_locale(const mbchar_t *wstr)
   size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr, len, NULL, 0, NULL, NULL);
   if (size_needed > 0) {
     mdst = c_malloc(size_needed + 1);
-    if (mdst == NULL) {
-      errno = ENOMEM;
-      return NULL;
-    }
 
     memset(mdst, 0, size_needed + 1);
     WideCharToMultiByte(CP_UTF8, 0, wstr, len, mdst, size_needed, NULL, NULL);
@@ -342,38 +295,33 @@ char* c_utf8_from_locale(const mbchar_t *wstr)
 }
 
 /* Convert a an UTF8 string to multibyte */
-mbchar_t* c_utf8_to_locale(const char *str)
+mbchar_t* c_utf8_string_to_locale(const char *str)
 {
-  mbchar_t *dst = NULL;
+    mbchar_t *dst = NULL;
 #ifdef _WIN32
-  size_t len;
-  int size_needed;
+    size_t len;
+    int size_needed;
 #endif
 
-  if (str == NULL ) {
-    return NULL;
-  }
-
-#ifdef _WIN32
-  len = strlen(str);
-  size_needed = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
-  if (size_needed > 0) {
-    int size_char = (size_needed + 1) * sizeof(mbchar_t);
-    dst = c_malloc(size_char);
-    if (dst == NULL) {
-      errno = ENOMEM;
-      return NULL;
+    if (str == NULL ) {
+        return NULL;
     }
 
-    memset((void*)dst, 0, size_char);
-    MultiByteToWideChar(CP_UTF8, 0, str, -1, dst, size_needed);
-  }
+#ifdef _WIN32
+    len = strlen(str);
+    size_needed = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
+    if (size_needed > 0) {
+        int size_char = (size_needed + 1) * sizeof(mbchar_t);
+        dst = c_malloc(size_char);
+        memset((void*)dst, 0, size_char);
+        MultiByteToWideChar(CP_UTF8, 0, str, -1, dst, size_needed);
+    }
 #else
 #ifdef WITH_ICONV
-  dst = c_iconv(str, iconv_to_native);
+    dst = c_iconv(str, iconv_to_native);
 #else
-  dst = (_TCHAR*) str;
+    dst = (_TCHAR*) str;
 #endif
 #endif
-  return dst;
+    return dst;
 }
