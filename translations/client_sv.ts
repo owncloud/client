@@ -4,7 +4,7 @@
     <message>
         <location filename="../src/libsync/filesystem.cpp" line="227"/>
         <source>The destination file has an unexpected size or modification time</source>
-        <translation type="unfinished"/>
+        <translation>Målfilen har en oväntad storlek eller ändringstid</translation>
     </message>
 </context>
 <context>
@@ -81,7 +81,7 @@
     <message>
         <location filename="../src/gui/accountsettings.ui" line="73"/>
         <source>Remove the account configuration from the client</source>
-        <translation type="unfinished"/>
+        <translation>Ta bort kontots konfiguration från klienten.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="76"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../src/gui/accountsettings.ui" line="97"/>
         <source>Storage space: ...</source>
-        <translation type="unfinished"/>
+        <translation>Utrymme: ...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="167"/>
@@ -123,12 +123,12 @@
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="148"/>
         <source>Remove folder</source>
-        <translation type="unfinished"/>
+        <translation>Ta bort mapp</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="200"/>
         <source>Folder creation failed</source>
-        <translation type="unfinished"/>
+        <translation>Mappen kunde inte skapas</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="201"/>
@@ -143,7 +143,7 @@
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="254"/>
         <source>Stop syncing</source>
-        <translation type="unfinished"/>
+        <translation>Avbryt synkronisering</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="280"/>
@@ -173,17 +173,17 @@
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="447"/>
         <source>Connected to %1.</source>
-        <translation type="unfinished"/>
+        <translation>Anslut till %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="449"/>
         <source>Server %1 is temporarily unavailable.</source>
-        <translation type="unfinished"/>
+        <translation>Servern %1 är inte tillgänglig för tillfället</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="451"/>
         <source>Signed out from %1.</source>
-        <translation type="unfinished"/>
+        <translation>Loggade ut från %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="453"/>
