@@ -49,7 +49,9 @@ inline QByteArray getEtagFromReply(QNetworkReply *reply)
 /**
  * Fiven an error from the network, map to a SyncFileItem::Status error
  */
-inline SyncFileItem::Status classifyError(QNetworkReply::NetworkError nerror, int httpCode) {
+inline SyncFileItem::Status classifyError(QNetworkReply::NetworkError nerror,
+                                          int httpCode,
+                                          bool* anotherSyncNeeded = NULL) {
     Q_ASSERT (nerror != QNetworkReply::NoError); // we should only be called when there is an error
 
     if (nerror > QNetworkReply::NoError && nerror <= QNetworkReply::UnknownProxyError) {
@@ -66,6 +68,13 @@ inline SyncFileItem::Status classifyError(QNetworkReply::NetworkError nerror, in
     if (httpCode == 412) {
         // "Precondition Failed"
         // Happens when the e-tag has changed
+        return SyncFileItem::SoftError;
+    }
+
+    if (httpCode == 423) {
+        // "Locked"
+        // Should be temporary.
+        if (anotherSyncNeeded) { *anotherSyncNeeded = true; }
         return SyncFileItem::SoftError;
     }
 

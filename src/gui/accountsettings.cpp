@@ -121,6 +121,25 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
             this, SLOT(slotUpdateQuota(qint64,qint64)));
 
     connect(ui->deleteButton, SIGNAL(clicked()) , this, SLOT(slotDeleteAccount()));
+
+    // Expand already on single click
+    ui->_folderList->setExpandsOnDoubleClick(false);
+    QObject::connect(ui->_folderList, SIGNAL(clicked(const QModelIndex &)),
+                     this, SLOT(slotFolderListClicked(const QModelIndex&)));
+}
+
+void AccountSettings::doExpand()
+{
+    ui->_folderList->expandToDepth(0);
+}
+
+void AccountSettings::slotFolderListClicked( const QModelIndex& indx )
+{
+    if( _model->classify(indx) == FolderStatusModel::RootFolder  &&
+            _accountState && _accountState->state() == AccountState::Connected ) {
+        bool expanded = ! (ui->_folderList->isExpanded(indx));
+        ui->_folderList->setExpanded(indx, expanded);
+    }
 }
 
 void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
@@ -138,15 +157,24 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 
     tv->setCurrentIndex(index);
     bool folderPaused = _model->data( index, FolderStatusDelegate::FolderSyncPaused).toBool();
+    bool folderConnected = _model->data( index, FolderStatusDelegate::FolderAccountConnected ).toBool();
 
     QMenu *menu = new QMenu(tv);
     menu->setAttribute(Qt::WA_DeleteOnClose);
-    connect(menu->addAction(tr("Open folder")), SIGNAL(triggered(bool)),
-            this, SLOT(slotOpenCurrentFolder()));
-    connect(menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync")), SIGNAL(triggered(bool)),
-            this, SLOT(slotEnableCurrentFolder()));
-    connect(menu->addAction(tr("Remove sync")), SIGNAL(triggered(bool)),
-            this, SLOT(slotRemoveCurrentFolder()));
+
+    QAction *ac = menu->addAction(tr("Open folder"));
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotOpenCurrentFolder()));
+
+    ac = menu->addAction(tr("Choose What to Sync"));
+    ac->setEnabled(folderConnected);
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(doExpand()));
+
+    ac = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
+    ac->setEnabled(folderConnected);
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotEnableCurrentFolder()));
+
+    ac = menu->addAction(tr("Remove sync"));
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotRemoveCurrentFolder()));
     menu->exec(tv->mapToGlobal(pos));
 }
 
@@ -189,7 +217,8 @@ void AccountSettings::slotFolderWizardAccepted()
 
     FolderDefinition definition;
     definition.alias        = folderWizard->field(QLatin1String("alias")).toString();
-    definition.localPath    = folderWizard->field(QLatin1String("sourceFolder")).toString();
+    definition.localPath    = FolderDefinition::prepareLocalPath(
+            folderWizard->field(QLatin1String("sourceFolder")).toString());
     definition.targetPath   = folderWizard->property("targetPath").toString();
 
     {
@@ -245,7 +274,7 @@ void AccountSettings::slotRemoveCurrentFolder()
         qDebug() << "Remove Folder alias " << alias;
         if( !alias.isEmpty() ) {
             QMessageBox messageBox(QMessageBox::Question,
-                                   tr("Confirm Folder Remove"),
+                                   tr("Confirm Sync Removal"),
                                    tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
                                       "<p><b>Note:</b> This will <b>not</b> delete any files.</p>").arg(alias),
                                    QMessageBox::NoButton,
@@ -458,6 +487,18 @@ void AccountSettings::slotAccountStateChanged(int state)
         // ownCloud is not yet configured.
         showConnectionLabel( tr("No %1 connection configured.").arg(Theme::instance()->appNameGUI()) );
     }
+
+    /* Allow to expand the item if the account is connected. */
+    ui->_folderList->setItemsExpandable( state == AccountState::Connected );
+
+    /* check if there are expanded root items, if so, close them, if the state is different from being Connected. */
+    if( state != AccountState::Connected ) {
+        int i;
+        for (i = 0; i < _model->rowCount(); ++i) {
+            if (ui->_folderList->isExpanded(_model->index(i)))
+                ui->_folderList->setExpanded(_model->index(i), false);
+        }
+    }
 }
 
 AccountSettings::~AccountSettings()
@@ -519,7 +560,7 @@ void AccountSettings::slotDeleteAccount()
     // the QMessageBox should be destroyed before that happens.
     {
         QMessageBox messageBox(QMessageBox::Question,
-                               tr("Confirm Account Delete"),
+                               tr("Confirm Account Removal"),
                                tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
                                   "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
                                  .arg(_accountState->account()->displayName()),
