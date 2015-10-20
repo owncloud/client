@@ -28,9 +28,6 @@
 
 #include <csync.h>
 
-// when do we go away with this private/public separation?
-#include <csync_private.h>
-
 #include "syncfileitem.h"
 #include "progressdispatcher.h"
 #include "utility.h"

@@ -13,12 +13,13 @@
  */
 
 #include "discoveryphase.h"
-#include <csync_private.h>
 #include <qdebug.h>
 
 #include <QUrl>
 #include "account.h"
 #include <QFileInfo>
+
+#include <csync_private.h>
 
 namespace OCC {
 
