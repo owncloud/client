@@ -44,9 +44,9 @@ AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QString &path, 
     : QObject(parent)
     , _timedout(false)
     , _followRedirects(false)
+    , _account(account)
     , _ignoreCredentialFailure(false)
     , _reply(0)
-    , _account(account)
     , _path(path)
     , _redirectCount(0)
 {
@@ -263,13 +263,21 @@ QString extractErrorMessage(const QByteArray& errorResponse)
         return QString::null;
     }
 
+    QString exception;
     while (!reader.atEnd() && reader.error() == QXmlStreamReader::NoError) {
         reader.readNextStartElement();
         if (reader.name() == QLatin1String("message")) {
-            return reader.readElementText();
+            QString message = reader.readElementText();
+            if (!message.isEmpty()) {
+                return message;
+            }
+        } else if (reader.name() == QLatin1String("exception")) {
+            exception = reader.readElementText();
         }
+
     }
-    return QString::null;
+    // Fallback, if message could not be found
+    return exception;
 }
 
 QString errorMessage(const QString& baseError, const QByteArray& body)

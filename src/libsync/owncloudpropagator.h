@@ -37,6 +37,17 @@ typedef struct ne_prop_result_set_s ne_prop_result_set;
 
 namespace OCC {
 
+/** Free disk space threshold below which syncs will abort and not even start.
+ */
+qint64 criticalFreeSpaceLimit();
+
+/** The client will not intentionally reduce the available free disk space below
+ *  this limit.
+ *
+ * Uploads will still run and downloads that are small enough will continue too.
+ */
+qint64 freeSpaceLimit();
+
 class SyncJournalDb;
 class OwncloudPropagator;
 
@@ -44,7 +55,7 @@ class OwncloudPropagator;
  * @brief the base class of propagator jobs
  *
  * This can either be a job, or a container for jobs.
- * If it is a composite jobs, it then inherits from PropagateDirectory
+ * If it is a composite job, it then inherits from PropagateDirectory
  *
  * @ingroup libsync
  */
@@ -67,16 +78,23 @@ public:
 
         /** Jobs can be run in parallel to this job */
         FullParallelism,
-        /** This job do not support parallelism, and no other job shall
+        /** This job does not support parallelism, and no other job shall
             be started until this one has finished */
         WaitForFinished,
 
-        /** This job support paralelism with other jobs in the same directory, but it should
-             not be paralelized with jobs in other directories  (typically a move operation) */
+        /** This job supports parallelism with other jobs in the same directory, but it should
+             not be parallelized with jobs in other directories  (typically a move operation) */
         WaitForFinishedInParentDirectory
     };
 
     virtual JobParallelism parallelism() { return FullParallelism; }
+
+    /** The space that the running jobs need to complete but don't actually use yet.
+     *
+     * Note that this does *not* include the disk space that's already
+     * in use by running jobs for things like a download-in-progress.
+     */
+    virtual qint64 committedDiskSpace() const { return 0; }
 
 public slots:
     virtual void abort() {}
@@ -171,13 +189,13 @@ public:
 
     SyncFileItemPtr _item;
 
-    int _current; // index of the current running job
-    int _runningNow; // number of subJob running now
+    int _jobsFinished; // number of jobs that have completed
+    int _runningNow; // number of subJobs running right now
     SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
 
     explicit PropagateDirectory(OwncloudPropagator *propagator, const SyncFileItemPtr &item = SyncFileItemPtr(new SyncFileItem))
         : PropagatorJob(propagator)
-        , _firstJob(0), _item(item),  _current(-1), _runningNow(0), _hasError(SyncFileItem::NoStatus)
+        , _firstJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus)
     { }
 
     virtual ~PropagateDirectory() {
@@ -202,6 +220,8 @@ public:
     }
 
     void finalize();
+
+    qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
 private slots:
     bool possiblyRunNextJob(PropagatorJob *next) {
@@ -249,11 +269,11 @@ public:
     ne_session_s * const _session;
 
     const QString _localDir; // absolute path to the local directory. ends with '/'
-    const QString _remoteDir; // path to the root of the remote. ends with '/'  (include remote.php/webdav)
-    const QString _remoteFolder; // folder. (same as remoteDir but without remote.php/webdav)
+    const QString _remoteDir; // path to the root of the remote. ends with '/'  (include WebDAV path)
+    const QString _remoteFolder; // folder. (same as remoteDir but without the WebDAV path)
 
     SyncJournalDb * const _journal;
-    bool _finishedEmited; // used to ensure that finished is only emit once
+    bool _finishedEmited; // used to ensure that finished is only emitted once
 
 
 public:
@@ -289,7 +309,7 @@ public:
     /** We detected that another sync is required after this one */
     bool _anotherSyncNeeded;
 
-    /* The maximum number of active job in parallel  */
+    /* The maximum number of active jobs in parallel  */
     int maximumActiveJob();
 
     bool isInSharedDirectory(const QString& file);
@@ -321,10 +341,21 @@ public:
 
     AccountPtr account() const;
 
+    enum DiskSpaceResult
+    {
+        DiskSpaceOk,
+        DiskSpaceFailure,
+        DiskSpaceCritical
+    };
+
+    /** Checks whether there's enough disk space available to complete
+     *  all jobs that are currently running.
+     */
+    DiskSpaceResult diskSpaceCheck() const;
 
 private slots:
 
-    /** Emit the finished signal and make sure it is only emit once */
+    /** Emit the finished signal and make sure it is only emitted once */
     void emitFinished() {
         if (!_finishedEmited)
             emit finished();

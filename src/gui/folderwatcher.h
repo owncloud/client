@@ -28,16 +28,17 @@ class QTimer;
 namespace OCC {
 
 class FolderWatcherPrivate;
+class Folder;
 
 /**
- * @brief Montiors a directory recursively for changes
+ * @brief Monitors a directory recursively for changes
  *
  * Folder Watcher monitors a directory and its sub directories
  * for changes in the local file system. Changes are signalled
  * through the pathChanged() signal.
  *
  * Note that if new folders are created, this folderwatcher class
- * does not automatically adds them to the list of monitored
+ * does not automatically add them to the list of monitored
  * dirs. That is the responsibility of the user of this class to
  * call addPath() with the new dir.
  *
@@ -51,33 +52,19 @@ public:
     /**
      * @param root Path of the root of the folder
      */
-    FolderWatcher(const QString &root, QObject *parent = 0L);
+    FolderWatcher(const QString &root, Folder* folder = 0L);
     virtual ~FolderWatcher();
-
-    /**
-      * Set a file name to load a file with ignore patterns.
-      *
-      * Valid entries do not start with a hash sign (#)
-      * and may contain wildcards
-      */
-    void addIgnoreListFile( const QString& );
-
-    QStringList ignores() const;
 
     /**
      * Not all backends are recursive by default.
      * Those need to be notified when a directory is added or removed while the watcher is disabled.
-     * This is a no-op for backend that are recursive
+     * This is a no-op for backends that are recursive
      */
     void addPath(const QString&);
     void removePath(const QString&);
 
     /* Check if the path is ignored. */
     bool pathIsIgnored( const QString& path );
-
-    /* set if the folderwatcher ignores events of hidden files */
-    void setIgnoreHidden(bool ignore);
-    bool ignoreHidden();
 
 signals:
     /** Emitted when one of the watched directories or one
@@ -97,10 +84,9 @@ protected:
 
 private:
     QScopedPointer<FolderWatcherPrivate> _d;
-    QStringList _ignores;
     QTime _timer;
     QSet<QString> _lastPaths;
-    bool  _ignoreHidden;
+    Folder* _folder;
 
     friend class FolderWatcherPrivate;
 };

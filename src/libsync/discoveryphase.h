@@ -29,8 +29,8 @@ namespace OCC {
 class Account;
 
 /**
- * The Discovery Phase was once called "update" phase in csync therms.
- * Its goal is to look at the files in one of the remote and check comared to the db
+ * The Discovery Phase was once called "update" phase in csync terms.
+ * Its goal is to look at the files in one of the remote and check compared to the db
  * if the files are new, or changed.
  */
 
@@ -87,6 +87,7 @@ public:
 signals:
     void firstDirectoryPermissions(const QString &);
     void etagConcatenation(const QString &);
+    void etag(const QString &);
     void finishedWithResult(const QList<FileStatPointer> &);
     void finishedWithError(int csyncErrnoCode, QString msg);
 private slots:
@@ -97,6 +98,7 @@ private:
     QList<FileStatPointer> _results;
     QString _subPath;
     QString _etagConcatenation;
+    QString _firstEtag;
     AccountPtr _account;
     bool _ignoredFirst;
     QPointer<LsColJob> _lsColJob;
@@ -134,7 +136,8 @@ public slots:
     void slotGetSizeFinishedWithError();
     void slotGetSizeResult(const QVariantMap&);
 signals:
-    void etagConcatenation(QString);
+    void etag(const QString &);
+    void etagConcatenation(const QString &);
 public:
     void setupHooks(DiscoveryJob* discoveryJob, const QString &pathPrefix);
 };

@@ -43,7 +43,7 @@ class GETFileJob : public AbstractNetworkJob {
     time_t _lastModified;
 public:
 
-    // DOES NOT take owncership of the device.
+    // DOES NOT take ownership of the device.
     explicit GETFileJob(AccountPtr account, const QString& path, QFile *device,
                         const QMap<QByteArray, QByteArray> &headers, const QByteArray &expectedEtagForResume,
                         quint64 resumeStart, QObject* parent = 0);
@@ -110,8 +110,9 @@ class PropagateDownloadFileQNAM : public PropagateItemJob {
     Q_OBJECT
 public:
     PropagateDownloadFileQNAM(OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item) {}
+        : PropagateItemJob(propagator, item), _resumeStart(0), _downloadProgress(0) {}
     void start() Q_DECL_OVERRIDE;
+    qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
 private slots:
     void slotGetFinished();
@@ -121,6 +122,8 @@ private slots:
     void slotChecksumFail( const QString& errMsg );
 
 private:
+    quint64 _resumeStart;
+    qint64 _downloadProgress;
     QPointer<GETFileJob> _job;
     QFile _tmpFile;
 };

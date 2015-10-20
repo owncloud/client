@@ -35,6 +35,7 @@
 #include "accountmanager.h"
 #include "creds/abstractcredentials.h"
 #include "updater/ocupdater.h"
+#include "excludedfiles.h"
 
 #include "config.h"
 
@@ -71,6 +72,12 @@ static const char optionsC[] =
 
 QString applicationTrPath()
 {
+    QString devTrPath = qApp->applicationDirPath() + QString::fromLatin1("/../src/gui/");
+    if (QDir(devTrPath).exists()) {
+        // might miss Qt, QtKeyChain, etc.
+        qDebug() << "Running from build location! Translations may be incomplete!";
+        return devTrPath;
+    }
 #if defined(Q_OS_WIN)
    return QApplication::applicationDirPath();
 #elif defined(Q_OS_MAC)
@@ -95,7 +102,9 @@ Application::Application(int &argc, char **argv) :
     _userTriggeredConnect(false),
     _debugMode(false)
 {
-// TODO: Can't set this without breaking current config pathes
+    _startedAt.start();
+
+// TODO: Can't set this without breaking current config paths
 //    setOrganizationName(QLatin1String(APPLICATION_VENDOR));
     setOrganizationDomain(QLatin1String(APPLICATION_REV_DOMAIN));
     setApplicationName( _theme->appNameGUI() );
@@ -127,6 +136,13 @@ Application::Application(int &argc, char **argv) :
     setupLogging();
     setupTranslations();
 
+    // Setup global excludes
+    ConfigFile cfg;
+    ExcludedFiles& excludes = ExcludedFiles::instance();
+    excludes.addExcludeFilePath( cfg.excludeFile(ConfigFile::SystemScope) );
+    excludes.addExcludeFilePath( cfg.excludeFile(ConfigFile::UserScope) );
+    excludes.reloadExcludes();
+
     _folderManager.reset(new FolderMan);
 
     connect(this, SIGNAL(messageReceived(QString, QObject*)), SLOT(slotParseMessage(QString, QObject*)));
@@ -137,7 +153,6 @@ Application::Application(int &argc, char **argv) :
 
     setQuitOnLastWindowClosed(false);
 
-    ConfigFile cfg;
     _theme->setSystrayUseMonoIcons(cfg.monoIcons());
     connect (_theme, SIGNAL(systrayUseMonoIconsChanged(bool)), SLOT(slotUseMonoIconsChanged(bool)));
 
@@ -164,7 +179,7 @@ Application::Application(int &argc, char **argv) :
     connect(&_checkConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCheckConnection()));
     _checkConnectionTimer.setInterval(32 * 1000); // check for connection every 32 seconds.
     _checkConnectionTimer.start();
-    // Also check immediatly
+    // Also check immediately
     QTimer::singleShot( 0, this, SLOT( slotCheckConnection() ));
 
     // Update checks
@@ -180,6 +195,12 @@ Application::Application(int &argc, char **argv) :
 
 Application::~Application()
 {
+    // Make sure all folders are gone, otherwise removing the
+    // accounts will remove the associated folders from the settings.
+    if (_folderManager) {
+        _folderManager->unloadAndDeleteAllFolders();
+    }
+
     // Remove the account from the account manager so it can be deleted.
     AccountManager::instance()->shutdown();
 }
@@ -291,6 +312,12 @@ void Application::slotParseMessage(const QString &msg, QObject*)
         parseOptions(options);
         setupLogging();
     } else if (msg.startsWith(QLatin1String("MSG_SHOWSETTINGS"))) {
+        qDebug() << "Running for" << _startedAt.elapsed()/1000.0 << "sec";
+        if (_startedAt.elapsed() < 10*1000) {
+            // This call is mirrored with the one in int main()
+            qWarning() << "Ignoring MSG_SHOWSETTINGS, possibly double-invocation of client via session restore and auto start";
+            return;
+        }
         showSettingsDialog();
     }
 }
@@ -424,7 +451,7 @@ void Application::setHelp()
 
 QString substLang(const QString &lang)
 {
-    // Map the more apropriate script codes
+    // Map the more appropriate script codes
     // to country codes as used by Qt and
     // transifex translation conventions.
 
@@ -466,7 +493,7 @@ void Application::setupTranslations()
             // Permissive approach: Qt and keychain translations
             // may be missing, but Qt translations must be there in order
             // for us to accept the language. Otherwise, we try with the next.
-            // "en" is an exeption as it is the default language and may not
+            // "en" is an exception as it is the default language and may not
             // have a translation file provided.
             qDebug() << Q_FUNC_INFO << "Using" << lang << "translation";
             setProperty("ui_lang", lang);

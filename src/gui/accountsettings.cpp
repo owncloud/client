@@ -42,6 +42,7 @@
 #include <QKeySequence>
 #include <QIcon>
 #include <QVariant>
+#include <QToolTip>
 #include <qstringlistmodel.h>
 #include <qpropertyanimation.h>
 
@@ -90,6 +91,8 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
     connect(_model, SIGNAL(suggestExpand(QModelIndex)), ui->_folderList, SLOT(expand(QModelIndex)));
     connect(_model, SIGNAL(dirtyChanged()), this, SLOT(refreshSelectiveSyncStatus()));
     refreshSelectiveSyncStatus();
+    connect(_model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(refreshSelectiveSyncStatus()));
 
     QAction *resetFolderAction = new QAction(this);
     resetFolderAction->setShortcut(QKeySequence(Qt::Key_F5));
@@ -101,7 +104,8 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
     connect(syncNowAction, SIGNAL(triggered()), SLOT(slotSyncCurrentFolderNow()));
     addAction(syncNowAction);
 
-    connect(ui->_folderList, SIGNAL(clicked(QModelIndex)), SLOT(slotFolderActivated(QModelIndex)));
+    connect(ui->_folderList, SIGNAL(clicked(const QModelIndex &)),
+            this, SLOT(slotFolderListClicked(const QModelIndex&)));
 
     connect(ui->selectiveSyncApply, SIGNAL(clicked()), _model, SLOT(slotApplySelectiveSync()));
     connect(ui->selectiveSyncCancel, SIGNAL(clicked()), _model, SLOT(resetFolders()));
@@ -124,6 +128,11 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
     connect(ui->deleteButton, SIGNAL(clicked()) , this, SLOT(slotDeleteAccount()));
 }
 
+void AccountSettings::doExpand()
+{
+    ui->_folderList->expandToDepth(0);
+}
+
 void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 {
     QTreeView *tv = ui->_folderList;
@@ -139,23 +148,38 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 
     tv->setCurrentIndex(index);
     bool folderPaused = _model->data( index, FolderStatusDelegate::FolderSyncPaused).toBool();
+    bool folderConnected = _model->data( index, FolderStatusDelegate::FolderAccountConnected ).toBool();
 
     QMenu *menu = new QMenu(tv);
     menu->setAttribute(Qt::WA_DeleteOnClose);
-    connect(menu->addAction(tr("Open folder")), SIGNAL(triggered(bool)),
-            this, SLOT(slotOpenCurrentFolder()));
-    connect(menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync")), SIGNAL(triggered(bool)),
-            this, SLOT(slotEnableCurrentFolder()));
-    connect(menu->addAction(tr("Remove folder")), SIGNAL(triggered(bool)),
-            this, SLOT(slotRemoveCurrentFolder()));
+
+    QAction *ac = menu->addAction(tr("Open folder"));
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotOpenCurrentFolder()));
+
+    ac = menu->addAction(tr("Choose What to Sync"));
+    ac->setEnabled(folderConnected);
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(doExpand()));
+
+    ac = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
+    ac->setEnabled(folderConnected);
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotEnableCurrentFolder()));
+
+    ac = menu->addAction(tr("Remove sync"));
+    connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotRemoveCurrentFolder()));
     menu->exec(tv->mapToGlobal(pos));
 }
 
-void AccountSettings::slotFolderActivated( const QModelIndex& indx )
+void AccountSettings::slotFolderListClicked(const QModelIndex& indx)
 {
-    if (indx.data(FolderStatusDelegate::AddButton).toBool()
-            && indx.flags() & Qt::ItemIsEnabled) {
-        slotAddFolder();
+    if (indx.data(FolderStatusDelegate::AddButton).toBool()) {
+        if (indx.flags() & Qt::ItemIsEnabled) {
+            slotAddFolder();
+        } else {
+            QToolTip::showText(
+                    QCursor::pos(),
+                    _model->data(indx, Qt::ToolTipRole).toString(),
+                    this);
+        }
         return;
     }
     if (_model->classify(indx) == FolderStatusModel::RootFolder) {
@@ -164,6 +188,13 @@ void AccountSettings::slotFolderActivated( const QModelIndex& indx )
         auto pos = tv->mapFromGlobal(QCursor::pos());
         if (FolderStatusDelegate::optionsButtonRect(tv->visualRect(indx)).contains(pos)) {
             slotCustomContextMenuRequested(pos);
+            return;
+        }
+
+        // Expand root items on single click
+        if(_accountState && _accountState->state() == AccountState::Connected ) {
+            bool expanded = ! (ui->_folderList->isExpanded(indx));
+            ui->_folderList->setExpanded(indx, expanded);
         }
     }
 }
@@ -190,7 +221,8 @@ void AccountSettings::slotFolderWizardAccepted()
 
     FolderDefinition definition;
     definition.alias        = folderWizard->field(QLatin1String("alias")).toString();
-    definition.localPath    = folderWizard->field(QLatin1String("sourceFolder")).toString();
+    definition.localPath    = FolderDefinition::prepareLocalPath(
+            folderWizard->field(QLatin1String("sourceFolder")).toString());
     definition.targetPath   = folderWizard->property("targetPath").toString();
 
     {
@@ -246,7 +278,7 @@ void AccountSettings::slotRemoveCurrentFolder()
         qDebug() << "Remove Folder alias " << alias;
         if( !alias.isEmpty() ) {
             QMessageBox messageBox(QMessageBox::Question,
-                                   tr("Confirm Folder Remove"),
+                                   tr("Confirm Sync Removal"),
                                    tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
                                       "<p><b>Note:</b> This will <b>not</b> delete any files.</p>").arg(alias),
                                    QMessageBox::NoButton,
@@ -444,6 +476,11 @@ void AccountSettings::slotAccountStateChanged(int state)
            serverWithUser = tr("%1 as <i>%2</i>").arg(server, cred->user());
         }
 
+        if (state != AccountState::SignedOut && ui->signInButton->hasFocus()) {
+            // The button is about to be hidden, clear the focus so the focus don't go to the
+            // "remove account" button
+            ui->signInButton->clearFocus();
+        }
         ui->signInButton->setVisible(state == AccountState::SignedOut);
         if (state == AccountState::Connected) {
             showConnectionLabel( tr("Connected to %1.").arg(serverWithUser) );
@@ -460,6 +497,18 @@ void AccountSettings::slotAccountStateChanged(int state)
         // ownCloud is not yet configured.
         showConnectionLabel( tr("No %1 connection configured.").arg(Theme::instance()->appNameGUI()) );
     }
+
+    /* Allow to expand the item if the account is connected. */
+    ui->_folderList->setItemsExpandable( state == AccountState::Connected );
+
+    /* check if there are expanded root items, if so, close them, if the state is different from being Connected. */
+    if( state != AccountState::Connected ) {
+        int i;
+        for (i = 0; i < _model->rowCount(); ++i) {
+            if (ui->_folderList->isExpanded(_model->index(i)))
+                ui->_folderList->setExpanded(_model->index(i), false);
+        }
+    }
 }
 
 AccountSettings::~AccountSettings()
@@ -472,17 +521,23 @@ void AccountSettings::refreshSelectiveSyncStatus()
     bool shouldBeVisible = _model->isDirty();
     QStringList undecidedFolder;
     for (int i = 0; !shouldBeVisible && i < _model->rowCount(); ++i) {
-        if (ui->_folderList->isExpanded(_model->index(i)))
+        auto index = _model->index(i);
+        if (ui->_folderList->isExpanded(index) && _model->rowCount(index) > 0) {
             shouldBeVisible = true;
+        }
     }
 
     foreach (Folder *folder, FolderMan::instance()->map().values()) {
-        if (folder->accountState() != _accountState) { continue; }
+        if (folder->accountState() != _accountState) {
+            continue;
+        }
+
         auto undecidedList =  folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList);
         foreach(const auto &it, undecidedList) {
-            undecidedFolder += ( folder->alias() + QLatin1String("/") + it);
+            undecidedFolder.append(it);
         }
     }
+
     if (undecidedFolder.isEmpty()) {
         ui->selectiveSyncNotification->setVisible(false);
         ui->selectiveSyncNotification->setText(QString());
@@ -522,7 +577,7 @@ void AccountSettings::slotDeleteAccount()
     // the QMessageBox should be destroyed before that happens.
     {
         QMessageBox messageBox(QMessageBox::Question,
-                               tr("Confirm Account Delete"),
+                               tr("Confirm Account Removal"),
                                tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
                                   "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
                                  .arg(_accountState->account()->displayName()),
@@ -553,6 +608,9 @@ bool AccountSettings::event(QEvent* e)
 {
     if (e->type() == QEvent::Hide || e->type() == QEvent::Show) {
         _quotaInfo.setActive(isVisible());
+    }
+    if (e->type() == QEvent::Show) {
+        ui->_folderList->setExpanded(_model->index(0, 0), true);
     }
     return QWidget::event(e);
 }

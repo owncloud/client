@@ -107,7 +107,7 @@ ownCloudGui::ownCloudGui(Application *parent) :
 
 // Use this to do platform specific code to make overlay icons appear
 // in the gui
-// MacOSX: perform a AppleScript code peace to load the Finder Plugin.
+// MacOSX: perform a AppleScript code piece to load the Finder Plugin.
 
 
 void ownCloudGui::setupOverlayIcons()
@@ -136,7 +136,7 @@ void ownCloudGui::setupOverlayIcons()
               p.waitForFinished(5000);
               QByteArray result = p.readAll();
               QString resultAsString(result); // if appropriate
-              qDebug() << "Laod Finder Overlay-Plugin: " << resultAsString << ": " << p.exitCode()
+              qDebug() << "Load Finder Overlay-Plugin: " << resultAsString << ": " << p.exitCode()
                        << (p.exitCode() != 0 ? p.errorString() : QString::null);
         } else  {
             qDebug() << finderExtension << "does not exist! Finder Overlay Plugin loading failed";
@@ -269,7 +269,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         return;
     }
 
-    // display the info of the least successful sync (eg. not just display the result of the latest sync
+    // display the info of the least successful sync (eg. do not just display the result of the latest sync)
     QString trayMessage;
     FolderMan *folderMan = FolderMan::instance();
     Folder::Map map = folderMan->map();
@@ -317,18 +317,6 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
     actionOpenoC->setProperty(propertyAccountC, QVariant::fromValue(accountState->account()));
     QObject::connect(actionOpenoC, SIGNAL(triggered(bool)), SLOT(slotOpenOwnCloud()));
 
-    if (separateMenu) {
-        if (accountState->isSignedOut()) {
-            QAction* signin = menu->addAction(tr("Sign in..."));
-            signin->setProperty(propertyAccountC, QVariant::fromValue(accountState));
-            connect(signin, SIGNAL(triggered()), this, SLOT(slotLogin()));
-        } else {
-            QAction* signout = menu->addAction(tr("Sign out"));
-            signout->setProperty(propertyAccountC, QVariant::fromValue(accountState));
-            connect(signout, SIGNAL(triggered()), this, SLOT(slotLogout()));
-        }
-    }
-
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
     bool singleSyncFolder = folderMan->map().size() == 1 && Theme::instance()->singleSyncFolder();
@@ -355,6 +343,20 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
         _folderOpenActionMapper->setMapping( action, folder->alias() );
         menu->addAction(action);
     }
+
+     menu->addSeparator();
+     if (separateMenu) {
+         if (accountState->isSignedOut()) {
+             QAction* signin = menu->addAction(tr("Log in..."));
+             signin->setProperty(propertyAccountC, QVariant::fromValue(accountState));
+             connect(signin, SIGNAL(triggered()), this, SLOT(slotLogin()));
+         } else {
+             QAction* signout = menu->addAction(tr("Log out"));
+             signout->setProperty(propertyAccountC, QVariant::fromValue(accountState));
+             connect(signout, SIGNAL(triggered()), this, SLOT(slotLogout()));
+         }
+     }
+
 }
 
 void ownCloudGui::setupContextMenu()
@@ -410,7 +412,7 @@ void ownCloudGui::setupContextMenu()
 #endif
     }
     _contextMenu->setTitle(Theme::instance()->appNameGUI() );
-    // We must call deleteLater because we might be called from the press in one of the action.
+    // We must call deleteLater because we might be called from the press in one of the actions.
     foreach (auto menu, _accountMenus) { menu->deleteLater(); }
     _accountMenus.clear();
     if (accountList.count() > 1) {
@@ -444,17 +446,17 @@ void ownCloudGui::setupContextMenu()
     _contextMenu->addSeparator();
     if (atLeastOneSignedIn) {
         if (accountList.count() > 1) {
-            _actionLogout->setText(tr("Sign out everywhere"));
+            _actionLogout->setText(tr("Log out of all accounts"));
         } else {
-            _actionLogout->setText(tr("Sign out"));
+            _actionLogout->setText(tr("Log out"));
         }
         _contextMenu->addAction(_actionLogout);
     }
     if (atLeastOneSignedOut) {
         if (accountList.count() > 1) {
-            _actionLogin->setText(tr("Sign in everywhere..."));
+            _actionLogin->setText(tr("Log in to all accounts..."));
         } else {
-            _actionLogin->setText(tr("Sign in..."));
+            _actionLogin->setText(tr("Log in..."));
         }
         _contextMenu->addAction(_actionLogin);
     }
@@ -484,7 +486,7 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
 
 
 /*
- * open the folder with the given Alais
+ * open the folder with the given Alias
  */
 void ownCloudGui::slotFolderOpenAction( const QString& alias )
 {
@@ -521,9 +523,9 @@ void ownCloudGui::setupActions()
     _actionQuit = new QAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), this);
     QObject::connect(_actionQuit, SIGNAL(triggered(bool)), _app, SLOT(quit()));
 
-    _actionLogin = new QAction(tr("Sign in..."), this);
+    _actionLogin = new QAction(tr("Log in..."), this);
     connect(_actionLogin, SIGNAL(triggered()), this, SLOT(slotLogin()));
-    _actionLogout = new QAction(tr("Sign out"), this);
+    _actionLogout = new QAction(tr("Log out"), this);
     connect(_actionLogout, SIGNAL(triggered()), this, SLOT(slotLogout()));
 
     if(_app->debugMode()) {
@@ -556,7 +558,7 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo& 
     Q_UNUSED(folder);
 
     if (!progress._currentDiscoveredFolder.isEmpty()) {
-        _actionStatus->setText( tr("Discovering '%1'")
+        _actionStatus->setText( tr("Checking for changes in '%1'")
                                 .arg( progress._currentDiscoveredFolder ));
     } else if (progress.totalSize() == 0 ) {
         quint64 currentFile = progress.currentFile();
@@ -578,7 +580,7 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo& 
     if (!progress._lastCompletedItem.isEmpty() && !Progress::isIgnoredKind(progress._lastCompletedItem._status)) {
 
         if (Progress::isWarningKind(progress._lastCompletedItem._status)) {
-            // display a warn icon if warnings happend.
+            // display a warn icon if warnings happened.
             QIcon warnIcon(":/client/resources/warning");
             _actionRecent->setIcon(warnIcon);
         }
@@ -765,6 +767,10 @@ void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &l
         qDebug() << "Could not open share dialog for" << localPath << "no responsible folder found";
         return;
     }
+
+    // For https://github.com/owncloud/client/issues/3783
+    _settingsDialog->hide();
+
     const auto accountState = folder->accountState();
 
     qDebug() << Q_FUNC_INFO << "Opening share dialog" << sharePath << localPath;

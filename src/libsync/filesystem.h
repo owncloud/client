@@ -18,6 +18,7 @@
 #include <QString>
 #include <ctime>
 #include <QCryptographicHash>
+#include <QFileInfo>
 
 #include <owncloudlib.h>
 
@@ -73,7 +74,7 @@ qint64 OWNCLOUDSYNC_EXPORT getSize(const QString& filename);
  * Use this over QFileInfo::exists() and QFile::exists() to avoid bugs with lnk
  * files, see above.
  */
-bool OWNCLOUDSYNC_EXPORT fileExists(const QString& filename);
+bool OWNCLOUDSYNC_EXPORT fileExists(const QString& filename,  const QFileInfo& = QFileInfo() );
 
 /**
  * @brief Rename the file \a originFileName to \a destinationFileName.
@@ -85,7 +86,7 @@ bool OWNCLOUDSYNC_EXPORT rename(const QString& originFileName,
                                 QString* errorString = NULL);
 
 /**
- * @brief Check if \a fileName chas changed given previous size and mtime
+ * @brief Check if \a fileName has changed given previous size and mtime
  *
  * Nonexisting files are covered through mtime: they have an mtime of -1.
  *
@@ -131,7 +132,7 @@ bool uncheckedRenameReplace(const QString &originFileName,
  * Replacement for QFile::open(ReadOnly) followed by a seek().
  * This version sets a more permissive sharing mode on Windows.
  *
- * Warning: The resuting file may have an empty fileName and be unsuitable for use
+ * Warning: The resulting file may have an empty fileName and be unsuitable for use
  * with QFileInfo! Calling seek() on the QFile with >32bit signed values will fail!
  */
 bool openAndSeekFileSharedRead(QFile* file, QString* error, qint64 seek);

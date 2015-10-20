@@ -46,11 +46,16 @@ RequestEtagJob::RequestEtagJob(AccountPtr account, const QString &path, QObject 
 void RequestEtagJob::start()
 {
     QNetworkRequest req;
-    // Let's always request all entries inside a directory. There are/were bugs in the server
-    // where a root or root-folder ETag is not updated when its contents change. We work around
-    // this by concatenating the ETags of the root and its contents.
-    req.setRawHeader("Depth", "1");
-    // See https://github.com/owncloud/core/issues/5255 and others
+    if (_account && _account->rootEtagChangesNotOnlySubFolderEtags()) {
+        // Fixed from 8.1 https://github.com/owncloud/client/issues/3730
+        req.setRawHeader("Depth", "0");
+    } else {
+        // Let's always request all entries inside a directory. There are/were bugs in the server
+        // where a root or root-folder ETag is not updated when its contents change. We work around
+        // this by concatenating the ETags of the root and its contents.
+        req.setRawHeader("Depth", "1");
+        // See https://github.com/owncloud/core/issues/5255 and others
+    }
 
     QByteArray xml("<?xml version=\"1.0\" ?>\n"
                    "<d:propfind xmlns:d=\"DAV:\">\n"
@@ -311,7 +316,7 @@ void LsColJob::start()
 
 // TODO: Instead of doing all in this slot, we should iteratively parse in readyRead(). This
 // would allow us to be more asynchronous in processing while data is coming from the network,
-// not in all in one big blobb at the end.
+// not all in one big blob at the end.
 bool LsColJob::finished()
 {
     QString contentType = reply()->header(QNetworkRequest::ContentTypeHeader).toString();
@@ -432,7 +437,7 @@ bool CheckServerJob::finished()
 
     mergeSslConfigurationForSslButton(reply()->sslConfiguration(), account());
 
-    // The serverInstalls to /owncloud. Let's try that if the file wasn't found
+    // The server installs to /owncloud. Let's try that if the file wasn't found
     // at the original location
     if ((reply()->error() == QNetworkReply::ContentNotFoundError) && (!_subdirFallback)) {
         _subdirFallback = true;

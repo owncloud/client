@@ -38,7 +38,7 @@ public:
     QStringList createBlackList(QTreeWidgetItem* root = 0) const;
     QStringList oldBlackList() const;
 
-    //Estimate the total size of checked item (recursively)
+    // Estimates the total size of checked items (recursively)
     qint64 estimatedSize(QTreeWidgetItem *root = 0);
     void refreshFolders();
 
@@ -48,7 +48,7 @@ public:
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
 private slots:
-    void slotUpdateDirectories(const QStringList &);
+    void slotUpdateDirectories(QStringList);
     void slotItemExpanded(QTreeWidgetItem *);
     void slotItemChanged(QTreeWidgetItem*,int);
     void slotLscolFinishedWithError(QNetworkReply*);

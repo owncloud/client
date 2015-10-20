@@ -61,7 +61,6 @@ signals:
     void openFolderAlias( const QString& );
 
 public slots:
-    void slotFolderActivated( const QModelIndex& );
     void slotOpenOC();
     void slotUpdateQuota( qint64,qint64 );
     void slotAccountStateChanged(int state);
@@ -81,6 +80,8 @@ protected slots:
     void slotDeleteAccount();
     void refreshSelectiveSyncStatus();
     void slotCustomContextMenuRequested(const QPoint&);
+    void slotFolderListClicked( const QModelIndex& indx );
+    void doExpand();
 
 private:
     void showConnectionLabel(const QString& message,

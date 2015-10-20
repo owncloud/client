@@ -213,6 +213,18 @@ void PropagateUploadFileQNAM::start()
     // in any case, the validator will emit signal startUpload to let the flow
     // continue in slotStartUpload here.
     TransmissionChecksumValidator *validator = new TransmissionChecksumValidator(filePath, this);
+
+    // If the config file does not specify a checksum type but the
+    // server supports it choose a type based on that.
+    if (validator->checksumType().isEmpty()) {
+        QStringList checksumTypes = _propagator->account()->capabilities().supportedChecksumTypes();
+        if (!checksumTypes.isEmpty()) {
+            // TODO: We might want to prefer some types over others instead
+            // of choosing the first.
+            validator->setChecksumType(checksumTypes.first());
+        }
+    }
+
     connect(validator, SIGNAL(validated(QByteArray)), this, SLOT(slotStartUpload(QByteArray)));
     validator->uploadValidation();
 }
@@ -413,8 +425,8 @@ void PropagateUploadFileQNAM::startNextChunk()
     if (! _jobs.isEmpty() &&  _currentChunk + _startChunk >= _chunkCount - 1) {
         // Don't do parallel upload of chunk if this might be the last chunk because the server cannot handle that
         // https://github.com/owncloud/core/issues/11106
-        // We return now and when the _jobs will be finished we will proceed the last chunk
-        // NOTE: Some other part of the code such as slotUploadProgress assume also that the last chunk
+        // We return now and when the _jobs are finished we will proceed with the last chunk
+        // NOTE: Some other parts of the code such as slotUploadProgress also assume that the last chunk
         // is sent last.
         return;
     }
@@ -433,15 +445,15 @@ void PropagateUploadFileQNAM::startNextChunk()
         // (albeit users are not supposed to mess up with it)
 
         // We use a special tag header so that the server may decide to store this file away in some admin stage area
-        // And not directly in the user's area (what would trigger redownloads etc).
+        // And not directly in the user's area (which would trigger redownloads etc).
         headers["OC-Tag"] = ".sys.admin#recall#";
     }
 
     if (!_item->_etag.isEmpty() && _item->_etag != "empty_etag" &&
             _item->_instruction != CSYNC_INSTRUCTION_NEW  // On new files never send a If-Match
             ) {
-        // We add quotes because the owncloud server always add quotes around the etag, and
-        //  csync_owncloud.c's owncloud_file_id always strip the quotes.
+        // We add quotes because the owncloud server always adds quotes around the etag, and
+        //  csync_owncloud.c's owncloud_file_id always strips the quotes.
         headers["If-Match"] = '"' + _item->_etag + '"';
     }
 
@@ -452,7 +464,7 @@ void PropagateUploadFileQNAM::startNextChunk()
     qint64 currentChunkSize = fileSize;
     if (_chunkCount > 1) {
         int sendingChunk = (_currentChunk + _startChunk) % _chunkCount;
-        // XOR with chunk size to make sure everything goes well if chunk size change between runs
+        // XOR with chunk size to make sure everything goes well if chunk size changes between runs
         uint transid = _transferId ^ chunkSize();
         qDebug() << "Upload chunk" << sendingChunk << "of" << _chunkCount << "transferid(remote)=" << transid;
         path +=  QString("-chunking-%1-%2-%3").arg(transid).arg(_chunkCount).arg(sendingChunk);
@@ -463,7 +475,7 @@ void PropagateUploadFileQNAM::startNextChunk()
         currentChunkSize = chunkSize();
         if (sendingChunk == _chunkCount - 1) { // last chunk
             currentChunkSize = (fileSize % chunkSize());
-            if( currentChunkSize == 0 ) { // if the last chunk pretents to be 0, its actually the full chunk size.
+            if( currentChunkSize == 0 ) { // if the last chunk pretends to be 0, its actually the full chunk size.
                 currentChunkSize = chunkSize();
             }
             if( !_item->_checksum.isEmpty() ) {
@@ -501,11 +513,7 @@ void PropagateUploadFileQNAM::startNextChunk()
     if (!env.isEmpty()) {
         parallelChunkUpload = env != "false" && env != "0";
     } else {
-        auto version = _propagator->account()->serverVersion();
-        auto components = version.split('.');
-        int versionNum = (components.value(0).toInt() << 16)
-                       + (components.value(1).toInt() << 8)
-                       + components.value(2).toInt();
+        int versionNum = _propagator->account()->serverVersionInt();
         if (versionNum < 0x080003) {
             // Disable parallel chunk upload severs older than 8.0.3 to avoid too many
             // internal sever errors (#2743, #2938)
@@ -543,7 +551,7 @@ void PropagateUploadFileQNAM::slotPutFinished()
     _propagator->_activeJobs--;
 
     if (_finished) {
-        // We have send the finished signal already. We don't need to handle any remaining jobs
+        // We have sent the finished signal already. We don't need to handle any remaining jobs
         return;
     }
 
@@ -582,12 +590,14 @@ void PropagateUploadFileQNAM::slotPutFinished()
             _propagator->_anotherSyncNeeded = true;
         }
 
-        abortWithError(classifyError(err, _item->_httpErrorCode), errorString);
+        SyncFileItem::Status status = classifyError(err, _item->_httpErrorCode,
+                                                    &_propagator->_anotherSyncNeeded);
+        abortWithError(status, errorString);
         return;
     }
 
     _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    // The server needs some time to process the request and provide with a poll URL
+    // The server needs some time to process the request and provide us with a poll URL
     if (_item->_httpErrorCode == 202) {
         _finished = true;
         QString path =  QString::fromUtf8(job->reply()->rawHeader("OC-Finish-Poll"));
@@ -641,7 +651,7 @@ void PropagateUploadFileQNAM::slotPutFinished()
                 return;
             }
             _finished = true;
-            done(SyncFileItem::NormalError, tr("The server did not acknowledge the last chunk. (No e-tag were present)"));
+            done(SyncFileItem::NormalError, tr("The server did not acknowledge the last chunk. (No e-tag was present)"));
             return;
         }
 
@@ -655,6 +665,7 @@ void PropagateUploadFileQNAM::slotPutFinished()
         pi._chunk = (currentChunk + _startChunk + 1) % _chunkCount ; // next chunk to start with
         pi._transferid = _transferId;
         pi._modtime =  Utility::qDateTimeFromTime_t(_item->_modtime);
+        _propagator->_journal->wipeErrorBlacklistEntry(_item->_file);
         _propagator->_journal->setUploadInfo(_item->_file, pi);
         _propagator->_journal->commit("Upload info");
         startNextChunk();
@@ -678,8 +689,8 @@ void PropagateUploadFileQNAM::slotPutFinished()
 
     if (job->reply()->rawHeader("X-OC-MTime") != "accepted") {
         // X-OC-MTime is supported since owncloud 5.0.   But not when chunking.
-        // Normaly Owncloud 6 always put X-OC-MTime
-        qWarning() << "Server do not support X-OC-MTime" << job->reply()->rawHeader("X-OC-MTime");
+        // Normally Owncloud 6 always puts X-OC-MTime
+        qWarning() << "Server does not support X-OC-MTime" << job->reply()->rawHeader("X-OC-MTime");
 #ifdef USE_NEON
         PropagatorJob *newJob = new UpdateMTimeAndETagJob(_propagator, _item);
         QObject::connect(newJob, SIGNAL(itemCompleted(SyncFileItem, PropagatorJob)),
@@ -732,7 +743,7 @@ void PropagateUploadFileQNAM::slotUploadProgress(qint64 sent, qint64 total)
 
     // amount is the number of bytes already sent by all the other chunks that were sent
     // not including this one.
-    // FIXME: this assume all chunks have the same size, which is true only if the last chunk
+    // FIXME: this assumes all chunks have the same size, which is true only if the last chunk
     // has not been finished (which should not happen because the last chunk is sent sequentially)
     quint64 amount = progressChunk * chunkSize();
 

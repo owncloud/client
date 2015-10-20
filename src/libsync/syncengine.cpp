@@ -141,7 +141,7 @@ QString SyncEngine::csyncErrorToString(CSYNC_STATUS err)
         errStr = tr("A HTTP transmission error happened.");
         break;
     case CSYNC_STATUS_PERMISSION_DENIED:
-        errStr = tr("CSync failed due to not handled permission deniend.");
+        errStr = tr("CSync failed due to unhandled permission denied.");
         break;
     case CSYNC_STATUS_NOT_FOUND:
         errStr = tr("CSync failed to access") + " "; // filename gets added.
@@ -320,7 +320,7 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
         }
     }
 
-    // Gets a default-contructed SyncFileItemPtr or the one from the first walk (=local walk)
+    // Gets a default-constructed SyncFileItemPtr or the one from the first walk (=local walk)
     SyncFileItemPtr item = _syncItemMap.value(key);
     if (!item)
         item = SyncFileItemPtr(new SyncFileItem);
@@ -359,7 +359,7 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
 
     /* The flag "serverHasIgnoredFiles" is true if item in question is a directory
      * that has children which are ignored in sync, either because the files are
-     * matched by an ignore pattern, or because they are  hidden.
+     * matched by an ignore pattern, or because they are hidden.
      *
      * Only the information about the server side ignored files is stored to the
      * database and thus written to the item here. For the local repository its
@@ -375,7 +375,7 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
     // record the seen files to be able to clean the journal later
     _seenFiles.insert(item->_file);
     if (!renameTarget.isEmpty()) {
-        // Yes, this record both the rename renameTarget and the original so we keep both in case of a rename
+        // Yes, this records both the rename renameTarget and the original so we keep both in case of a rename
         _seenFiles.insert(renameTarget);
     }
 
@@ -414,6 +414,10 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
         item->_errorString = QLatin1String("Directory temporarily not available on server.");
         item->_status = SyncFileItem::SoftError;
         _temporarilyUnavailablePaths.insert(item->_file);
+        break;
+    case CSYNC_STATUS_PERMISSION_DENIED:
+        item->_errorString = QLatin1String("Directory not accessible on client, permission denied.");
+        item->_status = SyncFileItem::SoftError;
         break;
     default:
         Q_ASSERT("Non handled error-status");
@@ -461,8 +465,8 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
             // Or for files that were detected as "resolved conflict".
             // They should have been a conflict because they both were new, or both
             // had their local mtime or remote etag modified, but the size and mtime
-            // is the same on the server.  This typically happen when the database is removed.
-            // Nothing will be done for those file, but we still need to update the database.
+            // is the same on the server.  This typically happens when the database is removed.
+            // Nothing will be done for those files, but we still need to update the database.
 
             // Even if the mtime is different on the server, we always want to keep the mtime from
             // the file system in the DB, this is to avoid spurious upload on the next sync
@@ -472,11 +476,13 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
             item->_should_update_metadata = false;
         }
         if (item->_isDirectory && file->should_update_metadata) {
-            // Because we want still to update etags of directories
+            // Because we want to still update etags of directories
             dir = SyncFileItem::None;
         } else {
             // No need to do anything.
-            if (file->other.instruction == CSYNC_INSTRUCTION_NONE) {
+            if (file->other.instruction == CSYNC_INSTRUCTION_NONE
+                    // Directories with ignored files does not count as 'None'
+                    && (file->type != CSYNC_FTW_TYPE_DIR || !file->has_ignored_files)) {
                 _hasNoneFiles = true;
             }
 
@@ -506,7 +512,7 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
         dir = remote ? SyncFileItem::Down : SyncFileItem::Up;
         if (!remote && file->instruction == CSYNC_INSTRUCTION_SYNC) {
             // An upload of an existing file means that the file was left unchanged on the server
-            // This count as a NONE for detecting if all the file on the server were changed
+            // This counts as a NONE for detecting if all the files on the server were changed
             _hasNoneFiles = true;
         }
         break;
@@ -600,6 +606,23 @@ void SyncEngine::startSync()
         return;
     }
 
+    // Check free size on disk first.
+    const qint64 minFree = criticalFreeSpaceLimit();
+    const qint64 freeBytes = Utility::freeDiskSpace(_localPath);
+    if (freeBytes >= 0) {
+        qDebug() << "There are" << freeBytes << "bytes available at" << _localPath
+                 << "and at least" << minFree << "are required";
+        if (freeBytes < minFree) {
+            emit csyncError(tr("Only %1 are available, need at least %2 to start").arg(
+                                Utility::octetsToString(freeBytes),
+                                Utility::octetsToString(minFree)));
+            finalize();
+            return;
+        }
+    } else {
+        qDebug() << "Could not determine free space available at" << _localPath;
+    }
+
     _syncedItems.clear();
     _syncItemMap.clear();
     _needsUpdate = false;
@@ -638,14 +661,6 @@ void SyncEngine::startSync()
     auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList);
     bool usingSelectiveSync = (!selectiveSyncBlackList.isEmpty());
     qDebug() << (usingSelectiveSync ? "====Using Selective Sync" : "====NOT Using Selective Sync");
-    if (fileRecordCount >= 0 && fileRecordCount < 50 && !usingSelectiveSync) {
-        qDebug() << "===== Activating recursive PROPFIND (currently" << fileRecordCount << "file records)";
-        bool no_recursive_propfind = false;
-        csync_set_module_property(_csync_ctx, "no_recursive_propfind", &no_recursive_propfind);
-    } else {
-        bool no_recursive_propfind = true;
-        csync_set_module_property(_csync_ctx, "no_recursive_propfind", &no_recursive_propfind);
-    }
 
     csync_set_userdata(_csync_ctx, this);
     _account->credentials()->syncContextPreStart(_csync_ctx);
@@ -662,8 +677,13 @@ void SyncEngine::startSync()
     _discoveryMainThread = new DiscoveryMainThread(account());
     _discoveryMainThread->setParent(this);
     connect(this, SIGNAL(finished()), _discoveryMainThread, SLOT(deleteLater()));
-    connect(_discoveryMainThread, SIGNAL(etagConcatenation(QString)), this, SLOT(slotRootEtagReceived(QString)));
-
+    qDebug() << "=====Server" << account()->serverVersion()
+             <<  QString("rootEtagChangesNotOnlySubFolderEtags=%1").arg(account()->rootEtagChangesNotOnlySubFolderEtags());
+    if (account()->rootEtagChangesNotOnlySubFolderEtags()) {
+        connect(_discoveryMainThread, SIGNAL(etag(QString)), this, SLOT(slotRootEtagReceived(QString)));
+    } else {
+        connect(_discoveryMainThread, SIGNAL(etagConcatenation(QString)), this, SLOT(slotRootEtagReceived(QString)));
+    }
 
     DiscoveryJob *discoveryJob = new DiscoveryJob(_csync_ctx);
     discoveryJob->_selectiveSyncBlackList = selectiveSyncBlackList;
@@ -982,7 +1002,7 @@ void SyncEngine::checkForPermission()
                     qDebug() << "checkForPermission: ERROR" << (*it)->_file;
                     (*it)->_instruction = CSYNC_INSTRUCTION_ERROR;
                     (*it)->_status = SyncFileItem::NormalError;
-                    (*it)->_errorString = tr("Not allowed because you don't have permission to add subfolders that folder");
+                    (*it)->_errorString = tr("Not allowed because you don't have permission to add subfolders to that folder");
 
                     for (SyncFileItemVector::iterator it_next = it + 1; it_next != _syncedItems.end() && (*it_next)->_file.startsWith(path); ++it_next) {
                         it = it_next;
@@ -1063,7 +1083,7 @@ void SyncEngine::checkForPermission()
                     // delete jobs intact. It is not physically tried to remove this files
                     // underneath, propagator sees that.
                     if( (*it)->_isDirectory ) {
-                        // put a more descriptive message if really a top level share dir is removed.
+                        // put a more descriptive message if a top level share dir really is removed.
                         if( it == _syncedItems.begin() || !(path.startsWith((*(it-1))->_file)) ) {
                             (*it)->_errorString = tr("Local files and share folder removed.");
                         }

@@ -25,7 +25,14 @@ inline QByteArray parseEtag(const char *header) {
     if (!header)
         return QByteArray();
     QByteArray arr = header;
-    arr.replace("-gzip", ""); // https://github.comowncloud/client/issues/1195
+
+    // Weak E-Tags can appear when gzip compression is on, see #3946
+    if (arr.startsWith("W/"))
+        arr = arr.mid(2);
+
+    // https://github.com/owncloud/client/issues/1195
+    arr.replace("-gzip", "");
+
     if(arr.length() >= 2 && arr.startsWith('"') && arr.endsWith('"')) {
         arr = arr.mid(1, arr.length() - 2);
     }
@@ -47,9 +54,11 @@ inline QByteArray getEtagFromReply(QNetworkReply *reply)
 }
 
 /**
- * Fiven an error from the network, map to a SyncFileItem::Status error
+ * Given an error from the network, map to a SyncFileItem::Status error
  */
-inline SyncFileItem::Status classifyError(QNetworkReply::NetworkError nerror, int httpCode) {
+inline SyncFileItem::Status classifyError(QNetworkReply::NetworkError nerror,
+                                          int httpCode,
+                                          bool* anotherSyncNeeded = NULL) {
     Q_ASSERT (nerror != QNetworkReply::NoError); // we should only be called when there is an error
 
     if (nerror > QNetworkReply::NoError && nerror <= QNetworkReply::UnknownProxyError) {
@@ -66,6 +75,13 @@ inline SyncFileItem::Status classifyError(QNetworkReply::NetworkError nerror, in
     if (httpCode == 412) {
         // "Precondition Failed"
         // Happens when the e-tag has changed
+        return SyncFileItem::SoftError;
+    }
+
+    if (httpCode == 423) {
+        // "Locked"
+        // Should be temporary.
+        if (anotherSyncNeeded) { *anotherSyncNeeded = true; }
         return SyncFileItem::SoftError;
     }
 

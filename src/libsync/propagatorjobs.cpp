@@ -42,7 +42,7 @@ namespace OCC {
 /**
  * Code inspired from Qt5's QDir::removeRecursively
  * The code will update the database in case of error.
- * If everything goes well (no error, returns true), the caller is responsible of removing the entries
+ * If everything goes well (no error, returns true), the caller is responsible for removing the entries
  * in the database.  But in case of error, we need to remove the entries from the database of the files
  * that were deleted.
  *
@@ -95,7 +95,7 @@ bool PropagateLocalRemove::removeRecursively(const QString& path)
     if (success) {
         success = QDir().rmdir(absolute);
         if (!success) {
-            _error += PropagateLocalRemove::tr("Could not remove folder '%1';")
+            _error += PropagateLocalRemove::tr("Could not remove folder '%1'")
                 .arg(QDir::toNativeSeparators(absolute)) + " ";
             qDebug() << "Error removing folder" << absolute;
         }
@@ -208,7 +208,7 @@ void PropagateLocalRename::start()
     SyncJournalFileRecord record(*_item, targetFile);
     record._path = _item->_renameTarget;
 
-    if (!_item->_isDirectory) { // Directory are saved at the end
+    if (!_item->_isDirectory) { // Directories are saved at the end
         _propagator->_journal->setFileRecord(record);
     }
     _propagator->_journal->commit("localRename");

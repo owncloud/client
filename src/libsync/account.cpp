@@ -19,6 +19,7 @@
 #include "creds/abstractcredentials.h"
 #include "../3rdparty/certificates/p12topem.h"
 #include "capabilities.h"
+#include "theme.h"
 
 #include <QSettings>
 #include <QMutex>
@@ -40,7 +41,7 @@ Account::Account(QObject *parent)
     , _am(0)
     , _credentials(0)
     , _treatSslErrorsAsFailure(false)
-    , _davPath("remote.php/webdav/")
+    , _davPath( Theme::instance()->webDavPath() )
     , _wasMigrated(false)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
@@ -60,6 +61,17 @@ Account::~Account()
     delete _am;
 }
 
+QString Account::davPath() const
+{
+    // make sure to have a trailing slash
+    if( !_davPath.endsWith('/') ) {
+        QString dp(_davPath);
+        dp.append('/');
+        return dp;
+    }
+    return _davPath;
+}
+
 void Account::setSharedThis(AccountPtr sharedThis)
 {
     _sharedThis = sharedThis.toWeakRef();
@@ -74,7 +86,13 @@ AccountPtr Account::sharedFromThis()
 QString Account::displayName() const
 {
     auto user = _credentials->user();
-    return tr("%1@%2").arg(user, _url.host());
+    QString dn = QString("%1@%2").arg(user, _url.host());
+    int port = url().port();
+    if (port > 0 && port != 80 && port != 443) {
+        dn.append(QLatin1Char(':'));
+        dn.append(QString::number(port));
+    }
+    return dn;
 }
 
 QString Account::id() const
@@ -163,7 +181,7 @@ void Account::clearCookieJar()
 
 /*! This shares our official cookie jar (containing all the tasty
     authentication cookies) with another QNAM while making sure
-    of not loosing its ownership. */
+    of not losing its ownership. */
 void Account::lendCookieJarTo(QNetworkAccessManager *guest)
 {
     auto jar = _am->cookieJar();
@@ -460,9 +478,25 @@ QString Account::serverVersion()
     return _serverVersion;
 }
 
+int Account::serverVersionInt()
+{
+    // FIXME: Use Qt 5.5 QVersionNumber
+    auto components = serverVersion().split('.');
+    return  (components.value(0).toInt() << 16)
+                   + (components.value(1).toInt() << 8)
+                   + components.value(2).toInt();
+}
+
 void Account::setServerVersion(const QString& version)
 {
     _serverVersion = version;
 }
+
+bool Account::rootEtagChangesNotOnlySubFolderEtags()
+{
+    return (serverVersionInt() >= 0x080100);
+}
+
+
 
 } // namespace OCC

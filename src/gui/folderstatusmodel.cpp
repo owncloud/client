@@ -90,7 +90,7 @@ Qt::ItemFlags FolderStatusModel::flags ( const QModelIndex &index  ) const
             }
             return Qt::ItemIsEnabled | ret;
         }
-        case ErrorLabel:
+        case FetchLabel:
             return Qt::ItemIsEnabled
 #if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
                     | Qt::ItemNeverHasChildren
@@ -123,7 +123,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
                 auto remotePath = _folders.at(0)._folder->remotePath();
                 if (remotePath.isEmpty() || remotePath == QLatin1String("/")) {
                     // Syncing the entire owncloud: disable the add folder button (#3438)
-                    return tr("Adding folder is disabled because your are already syncing all your files. "
+                    return tr("Adding folder is disabled because you are already syncing all your files. "
                             "If you want to sync multiple folders, please remove the currently "
                             "configured root folder.");
                 }
@@ -151,11 +151,20 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
         }
     }
         return QVariant();
-    case ErrorLabel:
+    case FetchLabel:
+    {
+        const auto x = static_cast<SubFolderInfo *>(index.internalPointer());
         switch(role) {
-            case Qt::DisplayRole: return tr("Error while loading the list of folders from the server.");
+            case Qt::DisplayRole:
+                if (x->_hasError) {
+                    return tr("Error while loading the list of folders from the server.");
+                } else {
+                    return tr("Fetching folder list from server...");
+                }
+                break;
             default: return QVariant();
         }
+    }
     case RootFolder:
         break;
     }
@@ -192,7 +201,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
                 } else if( status == SyncResult::Undefined ) {
                     return theme->syncStateIcon( SyncResult::SyncRunning);
                 } else {
-                    // kepp the previous icon for the prepare phase.
+                    // keep the previous icon for the prepare phase.
                     if( status == SyncResult::Problem) {
                         return theme->syncStateIcon( SyncResult::Success);
                     } else {
@@ -227,7 +236,7 @@ bool FolderStatusModel::setData(const QModelIndex& index, const QVariant& value,
             info->_checked = checked;
             if (checked == Qt::Checked) {
                 // If we are checked, check that we may need to check the parent as well if
-                // all the sibilings are also checked
+                // all the siblings are also checked
                 QModelIndex parent = index.parent();
                 auto parentInfo = infoForIndex(parent);
                 if (parentInfo && parentInfo->_checked != Qt::Checked) {
@@ -302,7 +311,7 @@ int FolderStatusModel::rowCount(const QModelIndex& parent) const
     auto info = infoForIndex(parent);
     if (!info)
         return 0;
-    if (info->_hasError)
+    if (info->hasLabel())
         return 1;
     return info->_subs.count();
 }
@@ -310,7 +319,11 @@ int FolderStatusModel::rowCount(const QModelIndex& parent) const
 FolderStatusModel::ItemType FolderStatusModel::classify(const QModelIndex& index) const
 {
     if (auto sub = static_cast<SubFolderInfo*>(index.internalPointer())) {
-        return sub->_hasError ? ErrorLabel : SubFolder;
+        if (sub->hasLabel()) {
+            return FetchLabel;
+        } else {
+            return SubFolder;
+        }
     }
     if (index.row() < _folders.count()) {
         return RootFolder;
@@ -323,8 +336,7 @@ FolderStatusModel::SubFolderInfo* FolderStatusModel::infoForIndex(const QModelIn
     if (!index.isValid())
         return 0;
     if (auto parentInfo = static_cast<SubFolderInfo*>(index.internalPointer())) {
-        if (parentInfo->_hasError) {
-            // Error label
+        if (parentInfo->hasLabel()) {
             return 0;
         }
         return &parentInfo->_subs[index.row()];
@@ -384,20 +396,21 @@ QModelIndex FolderStatusModel::index(int row, int column, const QModelIndex& par
     }
     switch(classify(parent)) {
         case AddButton:
-        case ErrorLabel:
+        case FetchLabel:
             return QModelIndex();
         case RootFolder:
             if (_folders.count() <= parent.row())
                 return QModelIndex(); // should not happen
             return createIndex(row, column, const_cast<SubFolderInfo *>(&_folders[parent.row()]));
         case SubFolder: {
-            auto info = static_cast<SubFolderInfo*>(parent.internalPointer());
-            if (info->_subs.count() <= parent.row())
+            auto pinfo = static_cast<SubFolderInfo*>(parent.internalPointer());
+            if (pinfo->_subs.count() <= parent.row())
                 return QModelIndex(); // should not happen
-            if (!info->_subs.at(parent.row())._hasError
-                    && info->_subs.at(parent.row())._subs.count() <= row)
+            auto & info = pinfo->_subs[parent.row()];
+            if (!info.hasLabel()
+                    && info._subs.count() <= row)
                 return QModelIndex(); // should not happen
-            return createIndex(row, column, &info->_subs[parent.row()]);
+            return createIndex(row, column, &info);
         }
     }
     return QModelIndex();
@@ -413,7 +426,7 @@ QModelIndex FolderStatusModel::parent(const QModelIndex& child) const
         case AddButton:
             return QModelIndex();
         case SubFolder:
-        case ErrorLabel:
+        case FetchLabel:
             break;
     }
     auto pathIdx = static_cast<SubFolderInfo*>(child.internalPointer())->_pathIdx;
@@ -453,6 +466,9 @@ bool FolderStatusModel::hasChildren(const QModelIndex& parent) const
 
 bool FolderStatusModel::canFetchMore(const QModelIndex& parent) const
 {
+    if (_accountState->state() != AccountState::Connected) {
+        return false;
+    }
     auto info = infoForIndex(parent);
     if (!info || info->_fetched || info->_fetching)
         return false;
@@ -467,7 +483,9 @@ void FolderStatusModel::fetchMore(const QModelIndex& parent)
     if (!info || info->_fetched || info->_fetching)
         return;
 
+    info->_hasError = false;
     info->_fetching = true;
+    info->_fetchingLabel = false;
     QString path = info->_folder->remotePath();
     if (info->_path != QLatin1String("/")) {
         if (!path.endsWith(QLatin1Char('/'))) {
@@ -477,13 +495,18 @@ void FolderStatusModel::fetchMore(const QModelIndex& parent)
     }
     LsColJob *job = new LsColJob(_accountState->account(), path, this);
     job->setProperties(QList<QByteArray>() << "resourcetype" << "quota-used-bytes");
-    job->setTimeout(5 * 1000);
+    job->setTimeout(60 * 1000);
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotUpdateDirectories(QStringList)));
     connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
             this, SLOT(slotLscolFinishedWithError(QNetworkReply*)));
     job->start();
-    job->setProperty(propertyParentIndexC , QVariant::fromValue<QPersistentModelIndex>(parent));
+    QPersistentModelIndex persistentIndex(parent);
+    job->setProperty(propertyParentIndexC , QVariant::fromValue(persistentIndex));
+
+    // Show 'fetching data...' hint after a while.
+    _fetchingItems[persistentIndex].start();
+    QTimer::singleShot(1000, this, SLOT(slotShowFetchProgress()));
 }
 
 void FolderStatusModel::slotUpdateDirectories(const QStringList &list_)
@@ -496,24 +519,35 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list_)
         return;
     }
 
-    auto list = list_;
-    list.removeFirst(); // remove the parent item
-
-    if (parentInfo->_hasError) {
+    if (parentInfo->hasLabel()) {
         beginRemoveRows(idx, 0 ,0);
         parentInfo->_hasError = false;
+        parentInfo->_fetchingLabel = false;
         endRemoveRows();
     }
 
-    beginInsertRows(idx, 0, list.count() - 1);
+    parentInfo->_fetching = false;
+    parentInfo->_fetched = true;
+
+    auto list = list_;
+    list.removeFirst(); // remove the parent item
 
     QUrl url = parentInfo->_folder->remoteUrl();
     QString pathToRemove = url.path();
     if (!pathToRemove.endsWith('/'))
         pathToRemove += '/';
 
-    parentInfo->_fetched = true;
-    parentInfo->_fetching = false;
+    // Drop the folder base path and check for excludes.
+    QMutableListIterator<QString> it(list);
+    while (it.hasNext()) {
+        it.next();
+        it.value().remove(pathToRemove);
+        if (parentInfo->_folder->isFileExcludedRelative(it.value())) {
+            it.remove();
+        }
+    }
+
+    beginInsertRows(idx, 0, list.count() - 1);
 
     QStringList selectiveSyncBlackList;
     if (parentInfo->_checked == Qt::PartiallyChecked) {
@@ -531,7 +565,6 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list_)
         newInfo._pathIdx << i++;
         auto size = job ? job->_sizes.value(path) : 0;
         newInfo._size = size;
-        path.remove(pathToRemove);
         newInfo._path = path;
         newInfo._name = path.split('/', QString::SkipEmptyParts).last();
 
@@ -580,14 +613,17 @@ void FolderStatusModel::slotLscolFinishedWithError(QNetworkReply* r)
     }
     auto parentInfo = infoForIndex(idx);
     if (parentInfo) {
-        parentInfo->_fetching = false;
         if (r->error() == QNetworkReply::ContentNotFoundError) {
             parentInfo->_fetched = true;
-        } else if (!parentInfo->_hasError) {
-            beginInsertRows(idx, 0, 0);
+        } else {
+            if (!parentInfo->hasLabel()) {
+                beginInsertRows(idx, 0, 0);
+                endInsertRows();
+            }
             parentInfo->_hasError = true;
-            endInsertRows();
         }
+        parentInfo->_fetching = false;
+        parentInfo->_fetchingLabel = false;
     }
 }
 
@@ -661,7 +697,7 @@ void FolderStatusModel::slotApplySelectiveSync()
         // clear the undecided list
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, QStringList());
 
-        // do the sync if there was changes
+        // do the sync if there were changes
         auto changes = (oldBlackListSet - blackListSet) + (blackListSet - oldBlackListSet);
         if (!changes.isEmpty()) {
             if (folder->isBusy()) {
@@ -724,7 +760,7 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress)
         << FolderStatusDelegate::WarningCount;
 
     if (!progress._currentDiscoveredFolder.isEmpty()) {
-        pi->_progressString = tr("Discovering '%1'").arg(progress._currentDiscoveredFolder);
+        pi->_progressString = tr("Checking for changes in '%1'").arg(progress._currentDiscoveredFolder);
         emit dataChanged(index(folderIndex), index(folderIndex), roles);
         return;
     }
@@ -829,7 +865,7 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress)
             .arg(currentFile).arg(totalFileCount)
             .arg( Utility::durationToDescriptiveString(progress.totalProgress().estimatedEta) );
     } else if (totalFileCount > 0) {
-        // Don't attemt to estimate the time left if there is no kb to transfer.
+        // Don't attempt to estimate the time left if there is no kb to transfer.
         overallSyncString = tr("file %1 of %2") .arg(currentFile).arg(totalFileCount);
     }
 
@@ -837,7 +873,7 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress)
 
     int overallPercent = 0;
     if( totalFileCount > 0 ) {
-        // Add one 'byte' for each files so the percentage is moving when deleting or renaming files
+        // Add one 'byte' for each file so the percentage is moving when deleting or renaming files
         overallPercent = qRound(double(completedSize + completedFile)/double(totalSize + totalFileCount) * 100.0);
     }
     pi->_overallPercent = qBound(0, overallPercent, 100);
@@ -891,13 +927,8 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
             if (i->_isDirectory && (i->_instruction == CSYNC_INSTRUCTION_NEW
                     || i->_instruction == CSYNC_INSTRUCTION_REMOVE)) {
                 // There is a new or a removed folder. reset all data
-                _folders[folderIndex]._fetched = false;
-                _folders[folderIndex]._fetching = false;
-                if (!_folders.at(folderIndex)._subs.isEmpty()) {
-                    beginRemoveRows(index(folderIndex), 0, _folders.at(folderIndex)._subs.count() - 1);
-                    _folders[folderIndex]._subs.clear();
-                    endRemoveRows();
-                }
+                auto & info = _folders[folderIndex];
+                info.resetSubs(this, index(folderIndex));
                 return;
             }
         }
@@ -933,16 +964,52 @@ void FolderStatusModel::slotNewBigFolder()
     }
     if (folderIndex < 0) { return; }
 
-    _folders[folderIndex]._fetched = false;
-    _folders[folderIndex]._fetching = false;
-    if (!_folders.at(folderIndex)._subs.isEmpty()) {
-        beginRemoveRows(index(folderIndex), 0, _folders.at(folderIndex)._subs.count() - 1);
-        _folders[folderIndex]._subs.clear();
-        endRemoveRows();
-    }
+    _folders[folderIndex].resetSubs(this, index(folderIndex));
 
     emit suggestExpand(index(folderIndex));
     emit dirtyChanged();
+}
+
+void FolderStatusModel::slotShowFetchProgress()
+{
+    QMutableMapIterator<QPersistentModelIndex, QElapsedTimer> it(_fetchingItems);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value().elapsed() > 800)
+        {
+            auto idx = it.key();
+            auto* info = infoForIndex(idx);
+            if (info && info->_fetching) {
+                if (!info->hasLabel()) {
+                    beginInsertRows(idx, 0, 0);
+                    endInsertRows();
+                }
+                info->_fetchingLabel = true;
+            }
+            it.remove();
+        }
+    }
+}
+
+bool FolderStatusModel::SubFolderInfo::hasLabel() const
+{
+    return _hasError || _fetchingLabel;
+}
+
+void FolderStatusModel::SubFolderInfo::resetSubs(FolderStatusModel* model, QModelIndex index)
+{
+    _fetched = false;
+    _fetching = false;
+    if (hasLabel()) {
+        model->beginRemoveRows(index, 0 ,0);
+        _fetchingLabel = false;
+        _hasError = false;
+        model->endRemoveRows();
+    } else if (!_subs.isEmpty()) {
+        model->beginRemoveRows(index, 0, _subs.count() - 1);
+        _subs.clear();
+        model->endRemoveRows();
+    }
 }
 
 

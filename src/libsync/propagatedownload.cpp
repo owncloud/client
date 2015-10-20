@@ -35,7 +35,7 @@ namespace OCC {
 
 // Always coming in with forward slashes.
 // In csync_excluded_no_ctx we ignore all files with longer than 254 chars
-// This function also adds a dot at the begining of the filename to hide the file on OS X and Linux
+// This function also adds a dot at the beginning of the filename to hide the file on OS X and Linux
 QString OWNCLOUDSYNC_EXPORT createDownloadTmpFileName(const QString &previous) {
     QString tmpFileName;
     QString tmpPath;
@@ -57,7 +57,7 @@ QString OWNCLOUDSYNC_EXPORT createDownloadTmpFileName(const QString &previous) {
     }
 }
 
-// DOES NOT take owncership of the device.
+// DOES NOT take ownership of the device.
 GETFileJob::GETFileJob(AccountPtr account, const QString& path, QFile *device,
                     const QMap<QByteArray, QByteArray> &headers, const QByteArray &expectedEtagForResume,
                     quint64 resumeStart,  QObject* parent)
@@ -171,7 +171,7 @@ void GETFileJob::slotMetaDataChanged()
     if (start != _resumeStart) {
         qDebug() << Q_FUNC_INFO <<  "Wrong content-range: "<< ranges << " while expecting start was" << _resumeStart;
         if (ranges.isEmpty()) {
-            // device don't support range, just stry again from scratch
+            // device doesn't support range, just try again from scratch
             _device->close();
             if (!_device->open(QIODevice::WriteOnly)) {
                 _errorString = _device->errorString();
@@ -346,6 +346,30 @@ void PropagateDownloadFileQNAM::start()
 
     FileSystem::setFileHidden(_tmpFile.fileName(), true);
 
+    _resumeStart = _tmpFile.size();
+    if (_resumeStart > 0) {
+        if (_resumeStart == _item->_size) {
+            qDebug() << "File is already complete, no need to download";
+            _tmpFile.close();
+            downloadFinished();
+            return;
+        }
+    }
+
+    // If there's not enough space to fully download this file, stop.
+    const auto diskSpaceResult = _propagator->diskSpaceCheck();
+    if (diskSpaceResult == OwncloudPropagator::DiskSpaceFailure) {
+        done(SyncFileItem::NormalError,
+             tr("The download would reduce free disk space below %1").arg(
+                 Utility::octetsToString(freeSpaceLimit())));
+        return;
+    } else if (diskSpaceResult == OwncloudPropagator::DiskSpaceCritical) {
+        done(SyncFileItem::FatalError,
+             tr("Free space on disk is less than %1").arg(
+                 Utility::octetsToString(criticalFreeSpaceLimit())));
+        return;
+    }
+
     {
         SyncJournalDb::DownloadInfo pi;
         pi._etag = _item->_etag;
@@ -355,24 +379,13 @@ void PropagateDownloadFileQNAM::start()
         _propagator->_journal->commit("download file start");
     }
 
-
     QMap<QByteArray, QByteArray> headers;
-
-    quint64 startSize = _tmpFile.size();
-    if (startSize > 0) {
-        if (startSize == _item->_size) {
-            qDebug() << "File is already complete, no need to download";
-            _tmpFile.close();
-            downloadFinished();
-            return;
-        }
-    }
 
     if (_item->_directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
         _job = new GETFileJob(_propagator->account(),
                             _propagator->_remoteFolder + _item->_file,
-                            &_tmpFile, headers, expectedEtagForResume, startSize);
+                            &_tmpFile, headers, expectedEtagForResume, _resumeStart);
     } else {
         // We were provided a direct URL, use that one
         qDebug() << Q_FUNC_INFO << "directDownloadUrl given for " << _item->_file << _item->_directDownloadUrl;
@@ -384,13 +397,21 @@ void PropagateDownloadFileQNAM::start()
         QUrl url = QUrl::fromUserInput(_item->_directDownloadUrl);
         _job = new GETFileJob(_propagator->account(),
                               url,
-                              &_tmpFile, headers, expectedEtagForResume, startSize);
+                              &_tmpFile, headers, expectedEtagForResume, _resumeStart);
     }
     _job->setBandwidthManager(&_propagator->_bandwidthManager);
     connect(_job, SIGNAL(finishedSignal()), this, SLOT(slotGetFinished()));
     connect(_job, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(slotDownloadProgress(qint64,qint64)));
     _propagator->_activeJobs ++;
     _job->start();
+}
+
+qint64 PropagateDownloadFileQNAM::committedDiskSpace() const
+{
+    if (_state == Running) {
+        return qBound(0ULL, _item->_size - _resumeStart - _downloadProgress, _item->_size);
+    }
+    return 0;
 }
 
 const char owncloudCustomSoftErrorStringC[] = "owncloud-custom-soft-error-string";
@@ -460,7 +481,8 @@ void PropagateDownloadFileQNAM::slotGetFinished()
 
         SyncFileItem::Status status = job->errorStatus();
         if (status == SyncFileItem::NoStatus) {
-            status = classifyError(err, _item->_httpErrorCode);
+            status = classifyError(err, _item->_httpErrorCode,
+                                   &_propagator->_anotherSyncNeeded);
         }
 
         done(status, job->errorString());
@@ -526,9 +548,9 @@ void PropagateDownloadFileQNAM::slotChecksumFail( const QString& errMsg )
 QString makeConflictFileName(const QString &fn, const QDateTime &dt)
 {
     QString conflictFileName(fn);
-    // Add _conflict-XXXX  before the extention.
+    // Add _conflict-XXXX  before the extension.
     int dotLocation = conflictFileName.lastIndexOf('.');
-    // If no extention, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
+    // If no extension, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
     if (dotLocation <= conflictFileName.lastIndexOf('/') + 1) {
         dotLocation = conflictFileName.size();
     }
@@ -549,9 +571,9 @@ namespace { // Anonymous namespace for the recall feature
 static QString makeRecallFileName(const QString &fn)
 {
     QString recallFileName(fn);
-    // Add _recall-XXXX  before the extention.
+    // Add _recall-XXXX  before the extension.
     int dotLocation = recallFileName.lastIndexOf('.');
-    // If no extention, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
+    // If no extension, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
     if (dotLocation <= recallFileName.lastIndexOf('/') + 1) {
         dotLocation = recallFileName.size();
     }
@@ -618,7 +640,7 @@ void PropagateDownloadFileQNAM::downloadFinished()
     }
 
     FileSystem::setModTime(_tmpFile.fileName(), _item->_modtime);
-    // We need to fetch the time again because some file system such as FAT have a less than a second
+    // We need to fetch the time again because some file systems such as FAT have worse than a second
     // Accuracy, and we really need the time from the file system. (#3103)
     _item->_modtime = FileSystem::getModTime(_tmpFile.fileName());
 
@@ -684,7 +706,8 @@ void PropagateDownloadFileQNAM::downloadFinished()
 void PropagateDownloadFileQNAM::slotDownloadProgress(qint64 received, qint64)
 {
     if (!_job) return;
-    emit progress(*_item, received + _job->resumeStart());
+    _downloadProgress = received;
+    emit progress(*_item, _resumeStart + received);
 }
 
 

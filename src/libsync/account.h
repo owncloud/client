@@ -60,7 +60,12 @@ public:
 class OWNCLOUDSYNC_EXPORT Account : public QObject {
     Q_OBJECT
 public:
-    QString davPath() const { return _davPath; }
+    /**
+     * @brief The possibly themed dav path for the account. It has
+     *        a trailing slash.
+     * @returns the (themeable) dav path for the account.
+     */
+    QString davPath() const;
     void setDavPath(const QString&s) { _davPath = s; }
 
     static AccountPtr create();
@@ -136,7 +141,7 @@ public:
                               const QList< QPair<QString, QString> > &queryItems = (QList<QPair<QString, QString>>()));
 
     /**  Returns a new settings pre-set in a specific group.  The Settings will be created
-         with the given parent. If no parents is specified, the caller must destroy the settings */
+         with the given parent. If no parent is specified, the caller must destroy the settings */
     static std::unique_ptr<QSettings> settingsWithGroup(const QString& group, QObject* parent = 0);
 
     // to be called by credentials only
@@ -149,6 +154,10 @@ public:
     const Capabilities &capabilities() const;
     void setServerVersion(const QString &version);
     QString serverVersion();
+    int serverVersionInt();
+
+    // Fixed from 8.1 https://github.com/owncloud/client/issues/3730
+    bool rootEtagChangesNotOnlySubFolderEtags();
 
     void clearCookieJar();
     void lendCookieJarTo(QNetworkAccessManager *guest);
@@ -195,7 +204,7 @@ private:
     static QString _configFileName;
     QByteArray _pemCertificate; 
     QString _pemPrivateKey;  
-    QString _davPath; // default "remote.php/webdav/";
+    QString _davPath; // defaults to value from theme, might be overwritten in brandings
     bool _wasMigrated;
     friend class AccountManager;
 };

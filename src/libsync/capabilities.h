@@ -18,11 +18,12 @@
 #include "owncloudlib.h"
 
 #include <QVariantMap>
+#include <QStringList>
 
 namespace OCC {
 
 /**
- * @brief The Capabilities class represent the capabilities of an ownCloud
+ * @brief The Capabilities class represents the capabilities of an ownCloud
  * server
  * @ingroup libsync
  */
@@ -31,9 +32,14 @@ class OWNCLOUDSYNC_EXPORT Capabilities {
 public:
     Capabilities(const QVariantMap &capabilities);
 
-    bool publicLinkEnforcePassword() const;
-    bool publicLinkEnforceExpireDate() const;
-    int  publicLinkExpireDateDays() const;
+    bool shareAPI() const;
+    bool sharePublicLink() const;
+    bool sharePublicLinkAllowUpload() const;
+    bool sharePublicLinkEnforcePassword() const;
+    bool sharePublicLinkEnforceExpireDate() const;
+    int  sharePublicLinkExpireDateDays() const;
+    bool shareResharing() const;
+    QStringList supportedChecksumTypes() const;
 
 private:
     QVariantMap _capabilities;

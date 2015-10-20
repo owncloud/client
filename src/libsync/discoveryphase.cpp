@@ -301,7 +301,7 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file,QMap
         }
 
     } else {
-        // Remove /remote.php/webdav/folder/ from /remote.php/webdav/folder/subfile.txt
+        // Remove <webDAV-Url>/folder/ from <webDAV-Url>/folder/subfile.txt
         file.remove(0, _lsColJob->reply()->request().url().path().length());
         // remove trailing slash
         while (file.endsWith('/')) {
@@ -328,6 +328,10 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file,QMap
     //This works in concerto with the RequestEtagJob and the Folder object to check if the remote folder changed.
     if (map.contains("getetag")) {
        _etagConcatenation += map.value("getetag");
+
+       if (_firstEtag.isEmpty()) {
+           _firstEtag = map.value("getetag"); // for directory itself
+       }
     }
 }
 
@@ -340,6 +344,7 @@ void DiscoverySingleDirectoryJob::lsJobFinishedWithoutErrorSlot()
         deleteLater();
         return;
     }
+    emit etag(_firstEtag);
     emit etagConcatenation(_etagConcatenation);
     emit finishedWithResult(_results);
     deleteLater();
@@ -411,6 +416,8 @@ void DiscoveryMainThread::doOpendirSlot(QString subPath, DiscoveryDirectoryResul
                      this, SLOT(singleDirectoryJobFirstDirectoryPermissionsSlot(QString)));
     QObject::connect(_singleDirJob, SIGNAL(etagConcatenation(QString)),
                      this, SIGNAL(etagConcatenation(QString)));
+    QObject::connect(_singleDirJob, SIGNAL(etag(QString)),
+                     this, SIGNAL(etag(QString)));
     _singleDirJob->start();
 }
 

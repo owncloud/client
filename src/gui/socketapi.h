@@ -16,10 +16,6 @@
 #ifndef SOCKETAPI_H
 #define SOCKETAPI_H
 
-extern "C" {
-#include <std/c_string.h>
-}
-
 #include "syncfileitem.h"
 #include "syncjournalfilerecord.h"
 #include "ownsql.h"
@@ -56,8 +52,6 @@ public slots:
     void slotUpdateFolderView(Folder *f);
     void slotUnregisterPath( const QString& alias );
     void slotRegisterPath( const QString& alias );
-    void slotReadExcludes();
-    void slotClearExcludesList();
 
 signals:
     void shareCommandReceived(const QString &sharePath, const QString &localPath, bool resharingAllowed);
@@ -70,7 +64,7 @@ private slots:
     void slotSyncItemDiscovered(const QString &, const SyncFileItem &);
 
 private:
-    SyncFileStatus fileStatus(Folder *folder, const QString& systemFileName, c_strlist_t *excludes );
+    SyncFileStatus fileStatus(Folder *folder, const QString& systemFileName);
     SyncJournalFileRecord dbFileRecord_capi( Folder *folder, QString fileName );
     SqlQuery *getSqlQuery( Folder *folder );
 
@@ -83,12 +77,12 @@ private:
 
     Q_INVOKABLE void command_VERSION(const QString& argument, QIODevice* socket);
 
+    Q_INVOKABLE void command_SHARE_STATUS(const QString& localFile, QIODevice *socket);
     Q_INVOKABLE void command_SHARE_MENU_TITLE(const QString& argument, QIODevice* socket);
     QString buildRegisterPathMessage(const QString& path);
 
     QList<QIODevice*> _listeners;
     SocketApiServer _localServer;
-    c_strlist_t *_excludes;
     QHash<Folder*, QSharedPointer<SqlQuery>> _dbQueries;
     QHash<Folder*, QSharedPointer<SqlDatabase>> _openDbs;
 };

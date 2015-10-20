@@ -30,6 +30,7 @@
 #include "syncrunfilelog.h"
 #include "theme.h"
 #include "filesystem.h"
+#include "excludedfiles.h"
 
 #include <csync_private.h>
 
@@ -89,14 +90,14 @@ Folder::Folder(const FolderDefinition& definition,
 
 bool Folder::init()
 {
-    // We need to reconstruct the url because the path need to be fully decoded, as csync will  re-encode the path:
+    // We need to reconstruct the url because the path needs to be fully decoded, as csync will re-encode the path:
     //  Remember that csync will just append the filename to the path and pass it to the vio plugin.
     //  csync_owncloud will then re-encode everything.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QUrl url = remoteUrl();
     QString url_string = url.scheme() + QLatin1String("://") + url.authority(QUrl::EncodeDelimiters) + url.path(QUrl::FullyDecoded);
 #else
-    // Qt4 was broken anyway as it did not encode the '#' as it should have done  (it was actually a provlem when parsing the path from QUrl::setPath
+    // Qt4 was broken anyway as it did not encode the '#' as it should have done  (it was actually a problem when parsing the path from QUrl::setPath
     QString url_string = remoteUrl().toString();
 #endif
     url_string = Utility::toCSyncScheme(url_string);
@@ -157,15 +158,8 @@ void Folder::checkLocalPath()
     if( fi.isDir() && fi.isReadable() ) {
         qDebug() << "Checked local path ok";
     } else {
-        if( !FileSystem::fileExists(_definition.localPath) ) {
-            // try to create the local dir
-            QDir d(_definition.localPath);
-            if( d.mkpath(_definition.localPath) ) {
-                qDebug() << "Successfully created the local dir " << _definition.localPath;
-            }
-        }
         // Check directory again
-        if( !FileSystem::fileExists(_definition.localPath) ) {
+        if( !FileSystem::fileExists(_definition.localPath, fi) ) {
             _syncResult.setErrorString(tr("Local folder %1 does not exist.").arg(_definition.localPath));
             _syncResult.setStatus( SyncResult::SetupError );
         } else if( !fi.isDir() ) {
@@ -694,6 +688,9 @@ void Folder::saveToSettings() const
     auto settings = _accountState->settings();
     settings->beginGroup(QLatin1String("Folders"));
     FolderDefinition::save(*settings, _definition);
+
+    settings->sync();
+    qDebug() << "Saved folder" << _definition.alias << "to settings, status" << settings->status();
 }
 
 void Folder::removeFromSettings() const
@@ -703,6 +700,28 @@ void Folder::removeFromSettings() const
     auto  settings = _accountState->settings();
     settings->beginGroup(QLatin1String("Folders"));
     settings->remove(_definition.alias);
+}
+
+bool Folder::isFileExcludedAbsolute(const QString& fullPath) const
+{
+    QString myFullPath = fullPath;
+    if (myFullPath.endsWith(QLatin1Char('/'))) {
+        myFullPath.chop(1);
+    }
+
+    if (!myFullPath.startsWith(path())) {
+        // Mark paths we're not responsible for as excluded...
+        return true;
+    }
+
+    QString relativePath = myFullPath.mid(path().size());
+    auto excl = ExcludedFiles::instance().isExcluded(myFullPath, relativePath, _definition.ignoreHiddenFiles);
+    return excl != CSYNC_NOT_EXCLUDED;
+}
+
+bool Folder::isFileExcludedRelative(const QString& relativePath) const
+{
+    return isFileExcludedAbsolute(path() + relativePath);
 }
 
 void Folder::watcherSlot(QString fn)
@@ -998,14 +1017,14 @@ void Folder::slotSyncFinished()
     }
 
     if (_syncResult.status() == SyncResult::Success) {
-        // Clear the white list as all the folder that should be on that list are sync-ed
+        // Clear the white list as all the folders that should be on that list are sync-ed
         journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, QStringList());
     }
 
     emit syncStateChange();
 
     // The syncFinished result that is to be triggered here makes the folderman
-    // clearing the current running sync folder marker.
+    // clear the current running sync folder marker.
     // Lets wait a bit to do that because, as long as this marker is not cleared,
     // file system change notifications are ignored for that folder. And it takes
     // some time under certain conditions to make the file system notifications
@@ -1119,7 +1138,7 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction, bool *cancel)
     QString msg =
         tr("This sync would remove all the files in the sync folder '%1'.\n"
            "This might be because the folder was silently reconfigured, or that all "
-           "the file were manually removed.\n"
+           "the files were manually removed.\n"
            "Are you sure you want to perform this operation?");
     QMessageBox msgBox(QMessageBox::Warning, tr("Remove All Files?"),
                        msg.arg(alias()));
@@ -1161,7 +1180,21 @@ bool FolderDefinition::load(QSettings& settings, const QString& alias,
     folder->paused = settings.value(QLatin1String("paused")).toBool();
     folder->ignoreHiddenFiles = settings.value(QLatin1String("ignoreHiddenFiles"), QVariant(true)).toBool();
     settings.endGroup();
+
+    // Old settings can contain paths with native separators. In the rest of the
+    // code we assum /, so clean it up now.
+    folder->localPath = prepareLocalPath(folder->localPath);
+
     return true;
+}
+
+QString FolderDefinition::prepareLocalPath(const QString& path)
+{
+    QString p = QDir::fromNativeSeparators(path);
+    if (!p.endsWith(QLatin1Char('/'))) {
+        p.append(QLatin1Char('/'));
+    }
+    return p;
 }
 
 } // namespace OCC

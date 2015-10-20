@@ -129,7 +129,7 @@ void OwncloudSetupWizard::slotDetermineAuthType(const QString &urlString)
     // Reset the proxy which might had been determined previously in ConnectionValidator::checkServerAndAuth()
     // when there was a previous account.
     account->networkAccessManager()->setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
-    // Set fake credentials beforfe we check what credential it actually is.
+    // Set fake credentials before we check what credential it actually is.
     account->setCredentials(CredentialsFactory::create("dummy"));
     CheckServerJob *job = new CheckServerJob(_ocWizard->account(), this);
     job->setIgnoreCredentialFailure(true);
@@ -439,7 +439,7 @@ bool OwncloudSetupWizard::ensureStartFromScratch(const QString &localFolder) {
     return renameOk;
 }
 
-// Method executed when the user ends has finished the basic setup.
+// Method executed when the user end has finished the basic setup.
 void OwncloudSetupWizard::slotAssistantFinished( int result )
 {
     FolderMan *folderMan = FolderMan::instance();
@@ -453,10 +453,7 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
         // is changed.
         auto account = applyAccountChanges();
 
-        QString localFolder = QDir::fromNativeSeparators(_ocWizard->localFolder());
-        if( !localFolder.endsWith(QLatin1Char('/'))) {
-            localFolder.append(QLatin1Char('/'));
-        }
+        QString localFolder = FolderDefinition::prepareLocalPath(_ocWizard->localFolder());
 
         bool startFromScratch = _ocWizard->field("OCSyncFromScratch").toBool();
         if (!startFromScratch || ensureStartFromScratch(localFolder)) {

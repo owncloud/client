@@ -73,6 +73,9 @@ public:
     /// Reads a folder definition from a settings group with the name 'alias'.
     static bool load(QSettings& settings, const QString& alias,
                      FolderDefinition* folder);
+
+    /// Ensure / as separator and trailing /.
+    static QString prepareLocalPath(const QString& path);
 };
 
 /**
@@ -193,6 +196,16 @@ public:
      void saveToSettings() const;
      /// Removes the folder from the account's settings.
      void removeFromSettings() const;
+
+     /**
+      * Returns whether a file inside this folder should be excluded.
+      */
+     bool isFileExcludedAbsolute(const QString& fullPath) const;
+
+     /**
+      * Returns whether a file inside this folder should be excluded.
+      */
+     bool isFileExcludedRelative(const QString& relativePath) const;
 
 signals:
     void syncStateChange();

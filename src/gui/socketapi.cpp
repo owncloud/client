@@ -26,7 +26,10 @@
 #include "syncfileitem.h"
 #include "filesystem.h"
 #include "version.h"
+#include "account.h"
 #include "accountstate.h"
+#include "account.h"
+#include "capabilities.h"
 
 #include <QDebug>
 #include <QUrl>
@@ -37,6 +40,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QLocalSocket>
+#include <QStringBuilder>
 
 #include <sqlite3.h>
 
@@ -51,30 +55,12 @@
 // The second number should be changed when there are new features.
 #define MIRALL_SOCKET_API_VERSION "1.0"
 
-extern "C" {
-
-enum csync_exclude_type_e {
-  CSYNC_NOT_EXCLUDED   = 0,
-  CSYNC_FILE_SILENTLY_EXCLUDED,
-  CSYNC_FILE_EXCLUDE_AND_REMOVE,
-  CSYNC_FILE_EXCLUDE_LIST,
-  CSYNC_FILE_EXCLUDE_INVALID_CHAR,
-  CSYNC_FILE_EXCLUDE_LONG_FILENAME,
-  CSYNC_FILE_EXCLUDE_HIDDEN
-};
-typedef enum csync_exclude_type_e CSYNC_EXCLUDE_TYPE;
-
-CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path, int filetype);
-int csync_exclude_load(const char *fname, c_strlist_t **list);
-}
-
 namespace OCC {
 
 #define DEBUG qDebug() << "SocketApi: "
 
 SocketApi::SocketApi(QObject* parent)
     : QObject(parent)
-    , _excludes(0)
 {
     QString socketPath;
 
@@ -140,29 +126,6 @@ SocketApi::~SocketApi()
     // All remaining sockets will be destroyed with _localServer, their parent
     Q_ASSERT(_listeners.isEmpty() || _listeners.first()->parent() == &_localServer);
     _listeners.clear();
-    slotClearExcludesList();
-    c_strlist_destroy(_excludes);
-}
-
-void SocketApi::slotClearExcludesList()
-{
-    c_strlist_clear(_excludes);
-}
-
-void SocketApi::slotReadExcludes()
-{
-    ConfigFile cfgFile;
-    slotClearExcludesList();
-    QString excludeList = cfgFile.excludeFile( ConfigFile::SystemScope );
-    if( !excludeList.isEmpty() ) {
-        qDebug() << "==== added system ignore list to socketapi:" << excludeList.toUtf8();
-        csync_exclude_load(excludeList.toUtf8(), &_excludes);
-    }
-    excludeList = cfgFile.excludeFile( ConfigFile::UserScope );
-    if( !excludeList.isEmpty() ) {
-        qDebug() << "==== added user defined ignore list to csync:" << excludeList.toUtf8();
-        csync_exclude_load(excludeList.toUtf8(), &_excludes);
-    }
 }
 
 void SocketApi::slotNewConnection()
@@ -267,7 +230,7 @@ void SocketApi::slotUpdateFolderView(Folder *f)
                 f->syncResult().status() == SyncResult::SetupError ) {
 
             broadcastMessage(QLatin1String("STATUS"), f->path() ,
-                             this->fileStatus(f, "", _excludes).toSocketAPIString());
+                             this->fileStatus(f, "").toSocketAPIString());
 
             broadcastMessage(QLatin1String("UPDATE_VIEW"), f->path() );
         } else {
@@ -310,7 +273,7 @@ void SocketApi::slotSyncItemDiscovered(const QString &folder, const SyncFileItem
     QString path = f->path() + item.destination();
 
     // the trailing slash for directories must be appended as the filenames coming in
-    // from the plugins have that too. Otherwise the according entry item is not found
+    // from the plugins have that too. Otherwise the matching entry item is not found
     // in the plugin.
     if( item._type == SyncFileItem::Type::Directory ) {
         path += QLatin1Char('/');
@@ -386,13 +349,12 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString& argument, QIODevice*
         statusString = QLatin1String("NOP");
     } else {
         const QString file = QDir::cleanPath(argument).mid(syncFolder->cleanPath().length()+1);
-        SyncFileStatus fileStatus = this->fileStatus(syncFolder, file, _excludes);
+        SyncFileStatus fileStatus = this->fileStatus(syncFolder, file);
 
         statusString = fileStatus.toSocketAPIString();
     }
 
-    QString message = QLatin1String("STATUS:")+statusString+QLatin1Char(':')
-            +QDir::toNativeSeparators(argument);
+    const QString message = QLatin1String("STATUS:") % statusString % QLatin1Char(':') %  QDir::toNativeSeparators(argument);
     sendMessage(socket, message);
 }
 
@@ -444,6 +406,39 @@ void SocketApi::command_SHARE(const QString& localFile, QIODevice* socket)
 void SocketApi::command_VERSION(const QString&, QIODevice* socket)
 {
     sendMessage(socket, QLatin1String("VERSION:" MIRALL_VERSION_STRING ":" MIRALL_SOCKET_API_VERSION));
+}
+
+void SocketApi::command_SHARE_STATUS(const QString &localFile, QIODevice *socket)
+{
+    if (!socket) {
+        qDebug() << Q_FUNC_INFO << "No valid socket object.";
+        return;
+    }
+
+    qDebug() << Q_FUNC_INFO << localFile;
+
+    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+
+    if (!shareFolder) {
+        const QString message = QLatin1String("SHARE_STATUS:NOP:")+QDir::toNativeSeparators(localFile);
+        sendMessage(socket, message);
+    } else {
+        const Capabilities capabilities = shareFolder->accountState()->account()->capabilities();
+
+        if (!capabilities.shareAPI()) {
+            const QString message = QLatin1String("SHARE_STATUS:DISABLED:")+QDir::toNativeSeparators(localFile);
+            sendMessage(socket, message);
+        } else {
+            QString available = "USER,GROUP";
+
+            if (capabilities.sharePublicLink()) {
+                available += ",LINK";
+            }
+
+            const QString message = QLatin1String("SHARE_STATUS:") + available + ":" + QDir::toNativeSeparators(localFile);
+            sendMessage(socket, message);
+        }
+    }
 }
 
 void SocketApi::command_SHARE_MENU_TITLE(const QString &, QIODevice* socket)
@@ -540,7 +535,7 @@ SyncJournalFileRecord SocketApi::dbFileRecord_capi( Folder *folder, QString file
 /**
  * Get status about a single file.
  */
-SyncFileStatus SocketApi::fileStatus(Folder *folder, const QString& systemFileName, c_strlist_t *excludes )
+SyncFileStatus SocketApi::fileStatus(Folder *folder, const QString& systemFileName)
 {
     QString file = folder->path();
     QString fileName = systemFileName.normalized(QString::NormalizationForm_C);
@@ -557,7 +552,8 @@ SyncFileStatus SocketApi::fileStatus(Folder *folder, const QString& systemFileNa
         fileNameSlash += QLatin1Char('/');
     }
 
-    if( !FileSystem::fileExists(file) ) {
+    const QFileInfo fi(file);
+    if( !FileSystem::fileExists(file, fi) ) {
         qDebug() << "OO File " << file << " is not existing";
         return SyncFileStatus(SyncFileStatus::STATUS_STAT_ERROR);
     }
@@ -565,7 +561,6 @@ SyncFileStatus SocketApi::fileStatus(Folder *folder, const QString& systemFileNa
     // file is ignored?
     // Qt considers .lnk files symlinks on Windows so we need to work
     // around that here.
-    const QFileInfo fi(file);
     if( fi.isSymLink()
 #ifdef Q_OS_WIN
             && fi.suffix() != "lnk"
@@ -580,17 +575,11 @@ SyncFileStatus SocketApi::fileStatus(Folder *folder, const QString& systemFileNa
     }
 
     // Is it excluded?
-    CSYNC_EXCLUDE_TYPE excl = csync_excluded_no_ctx(excludes, fileName.toUtf8(), type);
-    if( folder->ignoreHiddenFiles()
-            && (fi.isHidden()
-                || fi.fileName().startsWith(QLatin1Char('.'))) ) {
-        excl = CSYNC_FILE_EXCLUDE_HIDDEN;
-    }
-    if( excl != CSYNC_NOT_EXCLUDED ) {
+    if( folder->isFileExcludedAbsolute(file) ) {
         return SyncFileStatus(SyncFileStatus::STATUS_IGNORE);
     }
 
-    // Error if it is in the selective sync blacklistr
+    // Error if it is in the selective sync blacklist
     foreach(const auto &s, folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList)) {
         if (fileNameSlash.startsWith(s)) {
             return SyncFileStatus(SyncFileStatus::STATUS_ERROR);
@@ -655,7 +644,7 @@ SyncFileStatus SocketApi::fileStatus(Folder *folder, const QString& systemFileNa
         if (rec._remotePerm.isNull()) {
             // probably owncloud 6, that does not have permissions flag yet.
             QString url = folder->remoteUrl().toString() + fileName;
-            if (url.contains(QLatin1String("/remote.php/webdav/Shared/"))) {
+            if (url.contains( folder->accountState()->account()->davPath() + QLatin1String("Shared/") )) {
                 status.setSharedWithMe(true);
             }
         } else if (rec._remotePerm.contains("S")) {

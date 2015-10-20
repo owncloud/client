@@ -156,10 +156,9 @@ void SelectiveSyncTreeView::recursiveInsert(QTreeWidgetItem* parent, QStringList
     }
 }
 
-void SelectiveSyncTreeView::slotUpdateDirectories(const QStringList&list)
+void SelectiveSyncTreeView::slotUpdateDirectories(QStringList list)
 {
     auto job = qobject_cast<LsColJob *>(sender());
-
     QScopedValueRollback<bool> isInserting(_inserting);
     _inserting = true;
 
@@ -174,12 +173,29 @@ void SelectiveSyncTreeView::slotUpdateDirectories(const QStringList&list)
     if (!_folderPath.isEmpty())
         pathToRemove.append('/');
 
+    // Check for excludes.
+    //
+    // We would like to use Folder::isFileExcluded, but the folder doesn't
+    // exist yet. So we just create one temporarily...
+    FolderDefinition def;
+    def.localPath = pathToRemove;
+    def.ignoreHiddenFiles = FolderMan::instance()->ignoreHiddenFiles();
+    Folder f(def);
+    QMutableListIterator<QString> it(list);
+    while (it.hasNext()) {
+        it.next();
+        QString path = it.value();
+        path.remove(pathToRemove);
+        if (f.isFileExcludedRelative(path)) {
+            it.remove();
+        }
+    }
+
     // Since / cannot be in the blacklist, expand it to the actual
     // list of top-level folders as soon as possible.
     if (_oldBlackList == QStringList("/")) {
         _oldBlackList.clear();
         foreach (QString path, list) {
-            path.remove(pathToRemove);
             if (path.isEmpty()) {
                 continue;
             }
@@ -204,6 +220,11 @@ void SelectiveSyncTreeView::slotUpdateDirectories(const QStringList&list)
             root->setCheckState(0, Qt::Checked);
         } else {
             root->setCheckState(0, Qt::PartiallyChecked);
+        }
+        qint64 size = job ? job->_sizes.value(pathToRemove, -1) : -1;
+        if (size >= 0) {
+            root->setText(1, Utility::octetsToString(size));
+            root->setData(1, Qt::UserRole, size);
         }
     }
 
@@ -255,7 +276,7 @@ void SelectiveSyncTreeView::slotItemChanged(QTreeWidgetItem *item, int col)
 
     if (item->checkState(0) == Qt::Checked) {
         // If we are checked, check that we may need to check the parent as well if
-        // all the sibilings are also checked
+        // all the siblings are also checked
         QTreeWidgetItem *parent = item->parent();
         if (parent && parent->checkState(0) != Qt::Checked) {
             bool hasUnchecked = false;
