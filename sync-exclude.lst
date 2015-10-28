@@ -37,3 +37,5 @@ desktop.ini
 .sync.ffs_db
 .symform
 .symform-store
+
+.nfs*
