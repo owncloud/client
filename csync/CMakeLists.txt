@@ -4,7 +4,7 @@
 set(APPLICATION_NAME "ocsync")
 
 set(LIBRARY_VERSION ${MIRALL_VERSION})
-set(LIBRARY_SOVERSION "0")
+set(LIBRARY_SOVERSION "2")
 
 # add definitions
 include(DefineCMakeDefaults)
