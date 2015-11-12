@@ -226,7 +226,7 @@ int csync_statedb_close(CSYNC *ctx) {
   return rc;
 }
 
-#define METADATA_COLUMNS "phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, transmissionChecksum, transmissionChecksumTypeId"
+#define METADATA_COLUMNS "phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId"
 
 // This funciton parses a line from the metadata table into the given csync_file_stat
 // structure which it is also allocating.

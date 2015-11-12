@@ -36,8 +36,6 @@ SyncJournalFileRecord::SyncJournalFileRecord(const SyncFileItem &item, const QSt
     : _path(item._file), _modtime(Utility::qDateTimeFromTime_t(item._modtime)),
       _type(item._type), _etag(item._etag), _fileId(item._fileId), _fileSize(item._size),
       _remotePerm(item._remotePerm), _serverHasIgnoredFiles(item._serverHasIgnoredFiles),
-      _transmissionChecksum(item._transmissionChecksum),
-      _transmissionChecksumType(item._transmissionChecksumType),
       _contentChecksum(item._contentChecksum),
       _contentChecksumType(item._contentChecksumType)
 {
@@ -99,8 +97,6 @@ SyncFileItem SyncJournalFileRecord::toSyncFileItem()
     item._size = _fileSize;
     item._remotePerm = _remotePerm;
     item._serverHasIgnoredFiles = _serverHasIgnoredFiles;
-    item._transmissionChecksum = _transmissionChecksum;
-    item._transmissionChecksumType = _transmissionChecksumType;
     item._contentChecksum = _contentChecksum;
     item._contentChecksumType = _contentChecksumType;
     return item;
@@ -180,8 +176,8 @@ bool operator==(const SyncJournalFileRecord & lhs,
             && lhs._fileSize == rhs._fileSize
             && lhs._remotePerm == rhs._remotePerm
             && lhs._serverHasIgnoredFiles == rhs._serverHasIgnoredFiles
-            && lhs._transmissionChecksum == rhs._transmissionChecksum
-            && lhs._transmissionChecksumType == rhs._transmissionChecksumType;
+            && lhs._contentChecksum == rhs._contentChecksum
+            && lhs._contentChecksumType == rhs._contentChecksumType;
 }
 
 }

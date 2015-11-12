@@ -209,8 +209,6 @@ bool SyncJournalDb::checkConnect()
                         // remotePerm
                         // filesize
                         // ignoredChildrenRemote
-                        // transmissionChecksum
-                        // transmissionChecksumTypeId
                         // contentChecksum
                         // contentChecksumTypeId
                          "PRIMARY KEY(phash)"
@@ -363,17 +361,15 @@ bool SyncJournalDb::checkConnect()
     _getFileRecordQuery.reset(new SqlQuery(_db));
     _getFileRecordQuery->prepare(
             "SELECT path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize,"
-            "  ignoredChildrenRemote, transmissionChecksum, transmissionchecksumtype.name,"
-            "  contentChecksum, contentchecksumtype.name"
+            "  ignoredChildrenRemote, contentChecksum, contentchecksumtype.name"
             " FROM metadata"
-            "  LEFT JOIN checksumtype as transmissionchecksumtype ON metadata.transmissionChecksumTypeId == transmissionchecksumtype.id"
             "  LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id"
             " WHERE phash=?1" );
 
     _setFileRecordQuery.reset(new SqlQuery(_db) );
     _setFileRecordQuery->prepare("INSERT OR REPLACE INTO metadata "
-                                 "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, transmissionChecksum, transmissionChecksumTypeId, contentChecksum, contentChecksumTypeId) "
-                                 "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);" );
+                                 "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId) "
+                                 "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16);" );
 
     _setFileRecordChecksumQuery.reset(new SqlQuery(_db) );
     _setFileRecordChecksumQuery->prepare(
@@ -564,24 +560,6 @@ bool SyncJournalDb::updateMetadataTableStructure()
         commitInternal("update database structure: add ignoredChildrenRemote col");
     }
 
-    if( columns.indexOf(QLatin1String("transmissionChecksum")) == -1 ) {
-        SqlQuery query(_db);
-        query.prepare("ALTER TABLE metadata ADD COLUMN transmissionChecksum TEXT;");
-        if( !query.exec()) {
-            sqlFail("updateMetadataTableStructure: add transmissionChecksum column", query);
-            re = false;
-        }
-        commitInternal("update database structure: add transmissionChecksum col");
-    }
-    if( columns.indexOf(QLatin1String("transmissionChecksumTypeId")) == -1 ) {
-        SqlQuery query(_db);
-        query.prepare("ALTER TABLE metadata ADD COLUMN transmissionChecksumTypeId INTEGER;");
-        if( !query.exec()) {
-            sqlFail("updateMetadataTableStructure: add transmissionChecksumTypeId column", query);
-            re = false;
-        }
-        commitInternal("update database structure: add transmissionChecksumTypeId col");
-    }
     if( columns.indexOf(QLatin1String("contentChecksum")) == -1 ) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN contentChecksum TEXT;");
@@ -702,7 +680,6 @@ bool SyncJournalDb::setFileRecord( const SyncJournalFileRecord& _record )
         if( fileId.isEmpty() ) fileId = "";
         QString remotePerm (record._remotePerm);
         if (remotePerm.isEmpty()) remotePerm = QString(); // have NULL in DB (vs empty)
-        int transmissionChecksumTypeId = mapChecksumType(record._transmissionChecksumType);
         int contentChecksumTypeId = mapChecksumType(record._contentChecksumType);
         _setFileRecordQuery->reset();
         _setFileRecordQuery->bindValue(1, QString::number(phash));
@@ -719,8 +696,6 @@ bool SyncJournalDb::setFileRecord( const SyncJournalFileRecord& _record )
         _setFileRecordQuery->bindValue(12, remotePerm );
         _setFileRecordQuery->bindValue(13, record._fileSize );
         _setFileRecordQuery->bindValue(14, record._serverHasIgnoredFiles ? 1:0);
-        _setFileRecordQuery->bindValue(15, record._transmissionChecksum );
-        _setFileRecordQuery->bindValue(16, transmissionChecksumTypeId );
         _setFileRecordQuery->bindValue(15, record._contentChecksum );
         _setFileRecordQuery->bindValue(16, contentChecksumTypeId );
 
@@ -733,7 +708,6 @@ bool SyncJournalDb::setFileRecord( const SyncJournalFileRecord& _record )
         qDebug() <<  _setFileRecordQuery->lastQuery() << phash << plen << record._path << record._inode
                  << QString::number(Utility::qDateTimeToTime_t(record._modtime)) << QString::number(record._type)
                  << record._etag << record._fileId << record._remotePerm << record._fileSize << (record._serverHasIgnoredFiles ? 1:0)
-                 << record._transmissionChecksum << record._transmissionChecksumType << transmissionChecksumTypeId
                  << record._contentChecksum << record._contentChecksumType << contentChecksumTypeId;
 
         _setFileRecordQuery->reset();
@@ -814,13 +788,9 @@ SyncJournalFileRecord SyncJournalDb::getFileRecord( const QString& filename )
             rec._remotePerm = _getFileRecordQuery->baValue(9);
             rec._fileSize   = _getFileRecordQuery->int64Value(10);
             rec._serverHasIgnoredFiles = (_getFileRecordQuery->intValue(11) > 0);
-            rec._transmissionChecksum = _getFileRecordQuery->baValue(12);
+            rec._contentChecksum = _getFileRecordQuery->baValue(12);
             if( !_getFileRecordQuery->nullValue(13) ) {
-                rec._transmissionChecksumType = _getFileRecordQuery->baValue(13);
-            }
-            rec._contentChecksum = _getFileRecordQuery->baValue(14);
-            if( !_getFileRecordQuery->nullValue(15) ) {
-                rec._contentChecksumType = _getFileRecordQuery->baValue(15);
+                rec._contentChecksumType = _getFileRecordQuery->baValue(13);
             }
         } else {
             QString err = _getFileRecordQuery->error();
