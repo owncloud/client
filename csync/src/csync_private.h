@@ -196,6 +196,9 @@ struct csync_file_stat_s {
 
   enum csync_instructions_e instruction; /* u32 */
   char path[1]; /* u8 */
+
+  char *checksum;
+  uint32_t checksumTypeId;
 }
 #if !defined(__SUNPRO_C) && !defined(_MSC_VER)
 __attribute__ ((packed))

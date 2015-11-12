@@ -204,10 +204,13 @@ bool SyncJournalDb::checkConnect()
                          "modtime INTEGER(8),"
                          "type INTEGER,"
                          "md5 VARCHAR(32)," /* This is the etag.  Called md5 for compatibility */
-                        // updateDatabaseStructure() will add a fileid column
-                        // updateDatabaseStructure() will add a remotePerm column
-                        // updateDatabaseStructure() will add a transmissionChecksum column
-                        // updateDatabaseStructure() will add a transmissionChecksumTypeId column
+                        // updateDatabaseStructure() will add
+                        // fileid
+                        // remotePerm
+                        // filesize
+                        // ignoredChildrenRemote
+                        // transmissionChecksum
+                        // transmissionChecksumTypeId
                          "PRIMARY KEY(phash)"
                          ");");
 
