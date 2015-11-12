@@ -294,14 +294,16 @@ static int _csync_detect_update(CSYNC *ctx, const char *file,
 #endif
                  )) {
 
-//            if (fs->size == tmp->size) {
-
-//                // ### compare checksums
-
-//                st->instruction = CSYNC_INSTRUCTION_NONE;
-//                st->should_update_metadata = true;
-//                goto out;
-//            }
+            if (fs->size == tmp->size && tmp->checksumTypeId) {
+                // ### figure out the right checksum type string by db lookup
+                // ### run the checksum computation
+                bool checksumIdentical = false;
+                if (checksumIdentical) {
+                    st->instruction = CSYNC_INSTRUCTION_NONE;
+                    st->should_update_metadata = true;
+                    goto out;
+                }
+            }
             st->instruction = CSYNC_INSTRUCTION_EVAL;
             goto out;
         }

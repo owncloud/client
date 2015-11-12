@@ -211,19 +211,6 @@ void PropagateUploadFileQNAM::start()
     const QString filePath = _propagator->getFilePath(_item->_file);
     QByteArray checksumType = "MD5"; //_propagator->account()->capabilities().preferredChecksumType();
 
-    // If the file size is unchanged, compare checksums to determine whether this was a
-    // real change or just a mtime change
-    const quint64 currentSize = FileSystem::getSize(filePath);
-    if (currentSize == _item->_size) {
-        auto record = _propagator->_journal->getFileRecord(_item->_file);
-        if (!record._transmissionChecksumType.isEmpty()) {
-            _checksumCheckBeforeUpload = true;
-            checksumType = record._transmissionChecksumType;
-            _item->_transmissionChecksum = record._transmissionChecksum;
-            _item->_transmissionChecksumType = record._transmissionChecksumType;
-        }
-    }
-
     // remember the modtime before checksumming to be able to detect a file
     // change during the checksum calculation
     _item->_modtime = FileSystem::getModTime(filePath);
@@ -305,14 +292,6 @@ void PropagateUploadFileQNAM::slotStartUpload(const QByteArray& checksumType, co
         return;
     }
 
-    // If the checksum check is enabled and the checksums are identical, don't
-    // upload the file again. Instead, just update the remote metadata!
-    if (_checksumCheckBeforeUpload && !checksumChanged) {
-        qDebug() << "ZZZZZ" << "Remote metadata for" << fullFilePath;
-        slotStartRemoteMetadataUpdate();
-        return;
-    }
-
     _chunkCount = std::ceil(fileSize/double(chunkSize()));
     _startChunk = 0;
     _transferId = qrand() ^ _item->_modtime ^ (_item->_size << 16);
@@ -330,12 +309,6 @@ void PropagateUploadFileQNAM::slotStartUpload(const QByteArray& checksumType, co
 
     emit progress(*_item, 0);
     this->startNextChunk();
-}
-
-void PropagateUploadFileQNAM::slotStartRemoteMetadataUpdate()
-{
-    // Just write the new metadata to the database and be done
-    finalize(*_item);
 }
 
 UploadDevice::UploadDevice(BandwidthManager *bwm)

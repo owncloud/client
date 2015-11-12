@@ -466,10 +466,11 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
 
     int re = 0;
     switch(file->instruction) {
-    case CSYNC_INSTRUCTION_NONE:
+    case CSYNC_INSTRUCTION_NONE: {
         if (remote && item->_should_update_metadata && !item->_isDirectory && item->_instruction == CSYNC_INSTRUCTION_NONE) {
-            // Update the database now already:  New fileid or Etag or RemotePerm
+            // Update the database now already:  New remote fileid or Etag or RemotePerm
             // Or for files that were detected as "resolved conflict".
+            // Or a local inode/mtime change (see localMetadataUpdate below)
 
             // In case of "resolved conflict": there should have been a conflict because they
             // both were new, or both had their local mtime or remote etag modified, but the
@@ -496,21 +497,28 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
 
             _journal->setFileRecordMetadata(SyncJournalFileRecord(*item, filePath));
             item->_should_update_metadata = false;
-        }
-        if (item->_isDirectory && file->should_update_metadata) {
-            // Because we want to still update etags of directories
-            dir = SyncFileItem::None;
-        } else {
-            // No need to do anything.
-            if (file->other.instruction == CSYNC_INSTRUCTION_NONE
-                    // Directories with ignored files does not count as 'None'
-                    && (file->type != CSYNC_FTW_TYPE_DIR || !file->has_ignored_files)) {
-                _hasNoneFiles = true;
-            }
 
+            // Technically we're done with this item. See localMetadataUpdate hack below.
+            _syncItemMap.remove(key);
+        }
+        // Any files that are instruction NONE?
+        if (!item->_isDirectory && file->other.instruction == CSYNC_INSTRUCTION_NONE) {
+            _hasNoneFiles = true;
+        }
+        // We want to still update etags of directories, other NONE
+        // items can be ignored.
+        bool directoryEtagUpdate = item->_isDirectory && file->should_update_metadata;
+        bool localMetadataUpdate = !remote && file->should_update_metadata;
+        if (!directoryEtagUpdate) {
+            if (localMetadataUpdate) {
+                // Hack, we want a local metadata update to happen, but only if the
+                // remote tree doesn't ask us to do some kind of propagation.
+                _syncItemMap.insert(key, item);
+            }
             return re;
         }
         break;
+    }
     case CSYNC_INSTRUCTION_RENAME:
         dir = !remote ? SyncFileItem::Down : SyncFileItem::Up;
         item->_renameTarget = renameTarget;
