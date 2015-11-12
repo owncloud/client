@@ -209,6 +209,20 @@ void PropagateUploadFileQNAM::start()
     }
 
     const QString filePath = _propagator->getFilePath(_item->_file);
+    QByteArray checksumType = "MD5"; //_propagator->account()->capabilities().preferredChecksumType();
+
+    // If the file size is unchanged, compare checksums to determine whether this was a
+    // real change or just a mtime change
+    const quint64 currentSize = FileSystem::getSize(filePath);
+    if (currentSize == _item->_size) {
+        auto record = _propagator->_journal->getFileRecord(_item->_file);
+        if (!record._transmissionChecksumType.isEmpty()) {
+            _checksumCheckBeforeUpload = true;
+            checksumType = record._transmissionChecksumType;
+            _item->_transmissionChecksum = record._transmissionChecksum;
+            _item->_transmissionChecksumType = record._transmissionChecksumType;
+        }
+    }
 
     // remember the modtime before checksumming to be able to detect a file
     // change during the checksum calculation
@@ -216,7 +230,7 @@ void PropagateUploadFileQNAM::start()
 
     _stopWatch.start();
 
-    auto supportedChecksumTypes = _propagator->account()->capabilities().supportedChecksumTypes();
+//    auto supportedChecksumTypes = _propagator->account()->capabilities().supportedChecksumTypes();
 
     // If we already have a checksum header and the checksum type is supported
     // by the server, we keep that - otherwise recompute.
@@ -224,19 +238,19 @@ void PropagateUploadFileQNAM::start()
     // Note: Currently we *always* recompute because we usually only upload
     // files that have changed and thus have a new checksum. But if an earlier
     // phase computed a checksum, this is where we would make use of it.
-    if (!_item->_transmissionChecksumType.isEmpty()) {
-        if (supportedChecksumTypes.contains(_item->_transmissionChecksumType)) {
-            // TODO: We could validate the old checksum and thereby determine whether
-            // an upload is necessary or not.
-            slotStartUpload(_item->_transmissionChecksumType, _item->_transmissionChecksum);
-            return;
-        }
-    }
+//    if (!_item->_transmissionChecksumType.isEmpty()) {
+//        if (supportedChecksumTypes.contains(_item->_transmissionChecksumType)) {
+//            // TODO: We could validate the old checksum and thereby determine whether
+//            // an upload is necessary or not.
+//            slotStartUpload(_item->_transmissionChecksumType, _item->_transmissionChecksum);
+//            return;
+//        }
+//    }
 
     // Compute a new checksum.
     auto computeChecksum = new ComputeChecksum(this);
     if (uploadChecksumEnabled()) {
-        computeChecksum->setChecksumType(_propagator->account()->capabilities().preferredChecksumType());
+        computeChecksum->setChecksumType(checksumType);
     } else {
         computeChecksum->setChecksumType(QByteArray());
     }
@@ -248,9 +262,12 @@ void PropagateUploadFileQNAM::start()
 
 void PropagateUploadFileQNAM::slotStartUpload(const QByteArray& checksumType, const QByteArray& checksum)
 {
+    const bool checksumChanged =
+            checksumType != _item->_transmissionChecksumType
+         || checksum != _item->_transmissionChecksum;
+
     // Store the computed checksum in the database, if different
-    if (checksumType != _item->_transmissionChecksumType
-            || checksum != _item->_transmissionChecksum) {
+    if (checksumChanged) {
         _item->_transmissionChecksum = checksum;
         _item->_transmissionChecksumType = checksumType;
         _propagator->_journal->updateFileRecordChecksum(
@@ -288,6 +305,14 @@ void PropagateUploadFileQNAM::slotStartUpload(const QByteArray& checksumType, co
         return;
     }
 
+    // If the checksum check is enabled and the checksums are identical, don't
+    // upload the file again. Instead, just update the remote metadata!
+    if (_checksumCheckBeforeUpload && !checksumChanged) {
+        qDebug() << "ZZZZZ" << "Remote metadata for" << fullFilePath;
+        slotStartRemoteMetadataUpdate();
+        return;
+    }
+
     _chunkCount = std::ceil(fileSize/double(chunkSize()));
     _startChunk = 0;
     _transferId = qrand() ^ _item->_modtime ^ (_item->_size << 16);
@@ -305,6 +330,12 @@ void PropagateUploadFileQNAM::slotStartUpload(const QByteArray& checksumType, co
 
     emit progress(*_item, 0);
     this->startNextChunk();
+}
+
+void PropagateUploadFileQNAM::slotStartRemoteMetadataUpdate()
+{
+    // Just write the new metadata to the database and be done
+    finalize(*_item);
 }
 
 UploadDevice::UploadDevice(BandwidthManager *bwm)
