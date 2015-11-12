@@ -47,8 +47,8 @@ public:
     bool deleteFileRecord( const QString& filename, bool recursively = false );
     int getFileRecordCount();
     bool updateFileRecordChecksum(const QString& filename,
-                                  const QByteArray& transmisisonChecksum,
-                                  const QByteArray& transmissionChecksumType);
+                                  const QByteArray& contentChecksum,
+                                  const QByteArray& contentChecksumType);
     bool exists();
     void walCheckpoint();
 

@@ -167,6 +167,8 @@ public:
     QByteArray           _remotePerm;
     QByteArray           _transmissionChecksum;
     QByteArray           _transmissionChecksumType;
+    QByteArray           _contentChecksum;
+    QByteArray           _contentChecksumType;
     QString              _directDownloadUrl;
     QString              _directDownloadCookies;
 
