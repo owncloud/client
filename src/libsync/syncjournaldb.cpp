@@ -429,6 +429,9 @@ bool SyncJournalDb::checkConnect()
     _getChecksumTypeIdQuery.reset(new SqlQuery(_db));
     _getChecksumTypeIdQuery->prepare("SELECT id FROM checksumtype WHERE name=?1");
 
+    _getChecksumTypeQuery.reset(new SqlQuery(_db));
+    _getChecksumTypeQuery->prepare("SELECT name FROM checksumtype WHERE id=?1");
+
     _insertChecksumTypeQuery.reset(new SqlQuery(_db));
     _insertChecksumTypeQuery->prepare("INSERT OR IGNORE INTO checksumtype (name) VALUES (?1)");
 
@@ -466,6 +469,7 @@ void SyncJournalDb::close()
     _setErrorBlacklistQuery.reset(0);
     _getSelectiveSyncListQuery.reset(0);
     _getChecksumTypeIdQuery.reset(0);
+    _getChecksumTypeQuery.reset(0);
     _insertChecksumTypeQuery.reset(0);
 
     _db.close();
@@ -1502,6 +1506,32 @@ void SyncJournalDb::forceRemoteDiscoveryNextSyncLocked()
     } else {
         qDebug() << "Cleared" << deleteRemoteFolderEtagsQuery.numRowsAffected() << "folder ETags";
     }
+}
+
+
+QByteArray SyncJournalDb::getChecksumType(int checksumTypeId)
+{
+    QMutexLocker locker(&_mutex);
+    if( !checkConnect() ) {
+        return QByteArray();
+    }
+
+    // Retrieve the id
+    auto & query = *_getChecksumTypeQuery;
+    query.reset();
+    query.bindValue(1, checksumTypeId);
+    if( !query.exec() ) {
+        qWarning() << "Error SQL statement getChecksumType: "
+                   << query.lastQuery() <<  " :"
+                   << query.error();
+        return 0;
+    }
+
+    if( !query.next() ) {
+        qDebug() << "No checksum type mapping found for" << checksumTypeId;
+        return 0;
+    }
+    return query.baValue(0);
 }
 
 int SyncJournalDb::mapChecksumType(const QByteArray& checksumType)

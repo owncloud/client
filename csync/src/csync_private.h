@@ -96,6 +96,11 @@ struct csync_s {
       csync_vio_readdir_hook remote_readdir_hook;
       csync_vio_closedir_hook remote_closedir_hook;
       void *vio_userdata;
+
+      /* hook for comparing checksums of files during discovery */
+      csync_checksum_hook checksum_hook;
+      void *checksum_userdata;
+
   } callbacks;
   c_strlist_t *excludes;
 

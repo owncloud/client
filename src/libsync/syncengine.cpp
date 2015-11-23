@@ -71,6 +71,7 @@ SyncEngine::SyncEngine(AccountPtr account, CSYNC *ctx, const QString& localPath,
   , _uploadLimit(0)
   , _downloadLimit(0)
   , _newBigFolderSizeLimit(-1)
+  , _checksum_hook(journal)
   , _anotherSyncNeeded(false)
 {
     qRegisterMetaType<SyncFileItem>("SyncFileItem");
@@ -693,6 +694,10 @@ void SyncEngine::startSync()
     qDebug() << (usingSelectiveSync ? "====Using Selective Sync" : "====NOT Using Selective Sync");
 
     csync_set_userdata(_csync_ctx, this);
+
+    // Set up checksumming hook
+    _csync_ctx->callbacks.checksum_hook = &CSyncChecksumHook::hook;
+    _csync_ctx->callbacks.checksum_userdata = &_checksum_hook;
 
     _stopWatch.start();
 

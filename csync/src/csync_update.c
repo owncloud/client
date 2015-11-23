@@ -295,9 +295,12 @@ static int _csync_detect_update(CSYNC *ctx, const char *file,
                  )) {
 
             if (fs->size == tmp->size && tmp->checksumTypeId) {
-                // ### figure out the right checksum type string by db lookup
-                // ### run the checksum computation
                 bool checksumIdentical = false;
+                if (ctx->callbacks.checksum_hook) {
+                    checksumIdentical = ctx->callbacks.checksum_hook(
+                                file, tmp->checksumTypeId, tmp->checksum,
+                                ctx->callbacks.checksum_userdata);
+                }
                 if (checksumIdentical) {
                     st->instruction = CSYNC_INSTRUCTION_NONE;
                     st->should_update_metadata = true;
