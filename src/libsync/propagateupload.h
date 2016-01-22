@@ -126,9 +126,9 @@ class PollJob : public AbstractNetworkJob {
     SyncJournalDb *_journal;
     QString _localPath;
 public:
-    SyncFileItem _item;
+    SyncFileItem &_item;
     // Takes ownership of the device
-    explicit PollJob(AccountPtr account, const QString &path, const SyncFileItem &item,
+    explicit PollJob(AccountPtr account, const QString &path, SyncFileItem &item,
                      SyncJournalDb *journal, const QString &localPath, QObject *parent)
         : AbstractNetworkJob(account, path, parent), _journal(journal), _localPath(localPath), _item(item) {}
 
