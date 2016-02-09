@@ -195,7 +195,7 @@
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="548"/>
         <source>Signed out from %1.</source>
-        <translation>Assibndado por %1.</translation>
+        <translation>Saiu de %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="550"/>
@@ -1118,7 +1118,7 @@ Total de tempo que falta %5</translation>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="81"/>
         <source>Ask &amp;confirmation before downloading folders larger than</source>
-        <translation>Solicitar &amp;confirmação entes de baixar pastas maiores que</translation>
+        <translation>Solicitar &amp;confirmação antes de baixar pastas maiores que</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="129"/>
