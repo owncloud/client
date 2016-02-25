@@ -33,6 +33,7 @@
 #include "openfilemanager.h"
 #include "accountmanager.h"
 #include "creds/abstractcredentials.h"
+#include "windowraiser.h"
 
 #include <QDesktopServices>
 #include <QMessageBox>
@@ -673,7 +674,7 @@ void ownCloudGui::slotShowSettings()
         _settingsDialog->setAttribute( Qt::WA_DeleteOnClose, true );
         _settingsDialog->show();
     }
-    raiseDialog(_settingsDialog.data());
+    WindowRaiser::raiseDialog(_settingsDialog.data());
 }
 
 void ownCloudGui::slotShowSyncProtocol()
@@ -704,7 +705,7 @@ void ownCloudGui::slotToggleLogBrowser()
     if (_logBrowser->isVisible() ) {
         _logBrowser->hide();
     } else {
-        raiseDialog(_logBrowser);
+        WindowRaiser::raiseDialog(_logBrowser);
     }
 }
 
@@ -719,44 +720,6 @@ void ownCloudGui::slotHelp()
 {
     QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
 }
-
-void ownCloudGui::raiseDialog( QWidget *raiseWidget )
-{
-    if( raiseWidget && raiseWidget->parentWidget() == 0) {
-        // Qt has a bug which causes parent-less dialogs to pop-under.
-        raiseWidget->showNormal();
-        raiseWidget->raise();
-        raiseWidget->activateWindow();
-
-#if defined(Q_OS_MAC)
-        // viel hilft viel ;-)
-        MacWindow::bringToFront(raiseWidget);
-#endif
-#if defined(Q_OS_X11)
-        WId wid = widget->winId();
-        NETWM::init();
-
-        XEvent e;
-        e.xclient.type = ClientMessage;
-        e.xclient.message_type = NETWM::NET_ACTIVE_WINDOW;
-        e.xclient.display = QX11Info::display();
-        e.xclient.window = wid;
-        e.xclient.format = 32;
-        e.xclient.data.l[0] = 2;
-        e.xclient.data.l[1] = QX11Info::appTime();
-        e.xclient.data.l[2] = 0;
-        e.xclient.data.l[3] = 0l;
-        e.xclient.data.l[4] = 0l;
-        Display *display = QX11Info::display();
-        XSendEvent(display,
-                   RootWindow(display, DefaultScreen(display)),
-                   False, // propagate
-                   SubstructureRedirectMask|SubstructureNotifyMask,
-                   &e);
-#endif
-    }
-}
-
 
 void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &localPath, bool resharingAllowed)
 {
@@ -784,7 +747,7 @@ void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &l
         _shareDialogs[localPath] = w;
         connect(w, SIGNAL(destroyed(QObject*)), SLOT(slotRemoveDestroyedShareDialogs()));
     }
-    raiseDialog(w);
+    WindowRaiser::raiseDialog(w);
 }
 
 void ownCloudGui::slotRemoveDestroyedShareDialogs()
