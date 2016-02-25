@@ -79,14 +79,22 @@ endif()
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
 set(owncloudsync_HEADERS
+    abstractnetworkjob.h
     account.h
     syncengine.h
     configfile.h
     networkjobs.h
     progressdispatcher.h
     syncfileitem.h
+    syncfilestatus.h
     syncjournaldb.h
     syncresult.h
+    utility.h
+    ownsql.h
+    clientproxy.h
+    accountfwd.h
+    capabilities.h
+    connectionvalidator.h
 )
 
 set(creds_HEADERS
@@ -102,6 +110,10 @@ IF (NOT APPLE)
     INSTALL(
         FILES ${creds_HEADERS}
 	DESTINATION ${INCLUDE_INSTALL_DIR}/${synclib_NAME}/creds
+    )
+    INSTALL(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h
+        DESTINATION ${INCLUDE_INSTALL_DIR}/${synclib_NAME}
     )
 ENDIF(NOT APPLE)
 
@@ -147,7 +159,7 @@ set_target_properties( ${synclib_NAME}  PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${BIN_OUTPUT_DIRECTORY}
 )
 set_target_properties( ${synclib_NAME} PROPERTIES
-	INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}" )
+	INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" )
 
 target_link_libraries(${synclib_NAME} ${libsync_LINK_TARGETS} )
 
