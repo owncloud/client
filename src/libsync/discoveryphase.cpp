@@ -20,6 +20,8 @@
 #include "account.h"
 #include <QFileInfo>
 
+#include <csync_private.h>
+
 namespace OCC {
 
 
