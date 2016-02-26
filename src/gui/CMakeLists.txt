@@ -31,7 +31,6 @@ set(client_UI
     sslerrordialog.ui
     owncloudsetuppage.ui
     addcertificatedialog.ui
-    proxyauthdialog.ui
     wizard/owncloudadvancedsetuppage.ui
     wizard/owncloudconnectionmethoddialog.ui
     wizard/owncloudhttpcredspage.ui
@@ -42,14 +41,10 @@ set(client_UI
 qt_wrap_ui(client_UI_SRCS ${client_UI})
 
 set(client_SRCS
-    accountmanager.cpp
     accountsettings.cpp
     application.cpp
-    folder.cpp
-    folderman.cpp
     folderstatusmodel.cpp
     folderstatusdelegate.cpp
-    folderwatcher.cpp
     folderwizard.cpp
     generalsettings.cpp
     ignorelisteditor.cpp
@@ -74,12 +69,9 @@ set(client_SRCS
     sharee.cpp
     socketapi.cpp
     sslbutton.cpp
-    sslerrordialog.cpp
-    syncrunfilelog.cpp
     systray.cpp
     thumbnailjob.cpp
     quotainfo.cpp
-    accountstate.cpp
     addcertificatedialog.cpp
     authenticationdialog.cpp
     proxyauthhandler.cpp
@@ -121,16 +113,6 @@ IF( APPLE )
        add_definitions( -DHAVE_SPARKLE )
        list(APPEND updater_SRCS updater/sparkleupdater_mac.mm)
    endif()
-ENDIF()
-
-IF( NOT WIN32 AND NOT APPLE )
-set(client_SRCS ${client_SRCS} folderwatcher_linux.cpp)
-ENDIF()
-IF( WIN32 )
-set(client_SRCS ${client_SRCS} folderwatcher_win.cpp)
-ENDIF()
-IF( APPLE )
-list(APPEND client_SRCS folderwatcher_mac.cpp)
 ENDIF()
 
 set(3rdparty_SRC
@@ -175,7 +157,7 @@ include_directories(${CMAKE_SOURCE_DIR}/csync/src
                     ${CMAKE_BINARY_DIR}/csync/src
                    )
 
-include_directories(../libsync ${CMAKE_CURRENT_BINARY_DIR}/../libsync)
+include_directories(../libsync ${CMAKE_CURRENT_BINARY_DIR}/../libsync ${CMAKE_CURRENT_BINARY_DIR}/../libclient)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
                    )
@@ -269,7 +251,7 @@ else()
 endif()
 
 add_library(updater STATIC ${updater_SRCS} ${updaterMoc})
-target_link_libraries(updater ${synclib_NAME})
+target_link_libraries(updater ${synclib_NAME} ${clientlib_NAME})
 qt5_use_modules(updater Widgets Network Xml)
 
 set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
@@ -277,10 +259,11 @@ set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
 )
 # Only relevant for Linux? On OS X it by default properly checks in the bundle directory next to the exe
 set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
-	INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}" )
+	INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" )
 
+message("CLIENT LIB: ${synclib_NAME} ${clientlib_NAME}")
 target_link_libraries( ${APPLICATION_EXECUTABLE} ${QT_LIBRARIES} )
-target_link_libraries( ${APPLICATION_EXECUTABLE} ${synclib_NAME} )
+target_link_libraries( ${APPLICATION_EXECUTABLE} ${synclib_NAME} ${clientlib_NAME})
 target_link_libraries( ${APPLICATION_EXECUTABLE} updater )
 target_link_libraries( ${APPLICATION_EXECUTABLE} ${OS_SPECIFIC_LINK_LIBRARIES} )
 
