@@ -1,4 +1,4 @@
-project(libowncloudclient)
+project(libsyncclient)
 set(CMAKE_AUTOMOC TRUE)
 include(GenerateExportHeader)
 
@@ -25,16 +25,16 @@ if ( APPLE )
     )
 endif()
 
-set(owncloudclientlib_NAME "owncloudclient")
+set(syncclientlib_NAME "syncclient")
 
-set(owncloudclient_UI
+set(syncclient_UI
     ../gui/sslerrordialog.ui
     ../gui/proxyauthdialog.ui
 )
 
-qt_wrap_ui(clientlib_UI_SRCS ${owncloudclient_UI})
+qt_wrap_ui(clientlib_UI_SRCS ${syncclient_UI})
 
-set(libowncloudclient_SRCS
+set(libsyncclient_SRCS
     ../gui/folder.cpp
     ../gui/folderman.cpp
     ../gui/folderwatcher.cpp
@@ -55,18 +55,18 @@ set(libowncloudclient_SRCS
 )
 
 IF( NOT WIN32 AND NOT APPLE )
-set(libowncloudclient_SRCS ${libowncloudclient_SRCS} ../gui/folderwatcher_linux.cpp)
+set(libsyncclient_SRCS ${libsyncclient_SRCS} ../gui/folderwatcher_linux.cpp)
 ENDIF()
 IF( WIN32 )
-set(libowncloudclient_SRCS ${libowncloudclient_SRCS} ../gui/folderwatcher_win.cpp)
+set(libsyncclient_SRCS ${libsyncclient_SRCS} ../gui/folderwatcher_win.cpp)
 ENDIF()
 IF( APPLE )
-list(APPEND libowncloudclient_SRCS ../gui/folderwatcher_mac.cpp)
+list(APPEND libsyncclient_SRCS ../gui/folderwatcher_mac.cpp)
 ENDIF()
 
 
-# These headers are installed for libowncloudclient to be used by 3rd party apps
-set(owncloudclient_HEADERS
+# These headers are installed for libsyncclient to be used by 3rd party apps
+set(syncclient_HEADERS
     ../gui/accountmanager.h
     ../gui/accountstate.h
     ../gui/folder.h
@@ -76,58 +76,58 @@ set(owncloudclient_HEADERS
 
 IF (NOT APPLE)
     INSTALL(
-        FILES ${owncloudclient_HEADERS}
-        DESTINATION ${INCLUDE_INSTALL_DIR}/${owncloudclientlib_NAME}
+        FILES ${syncclient_HEADERS}
+        DESTINATION ${INCLUDE_INSTALL_DIR}/${syncclientlib_NAME}
     )
     INSTALL(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/owncloudclientlib.h
-        DESTINATION ${INCLUDE_INSTALL_DIR}/${owncloudclientlib_NAME}
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/syncclientlib.h
+        DESTINATION ${INCLUDE_INSTALL_DIR}/${syncclientlib_NAME}
     )
 ENDIF(NOT APPLE)
 
-list(APPEND libowncloudclient_LINK_TARGETS
+list(APPEND libsyncclient_LINK_TARGETS
 #    ${QT_LIBRARIES}
 #    ocsync
     owncloudsync
 )
 
 if(QTKEYCHAIN_FOUND OR QT5KEYCHAIN_FOUND)
-    list(APPEND libowncloudclient_LINK_TARGETS ${QTKEYCHAIN_LIBRARY})
+    list(APPEND libsyncclient_LINK_TARGETS ${QTKEYCHAIN_LIBRARY})
     include_directories(${QTKEYCHAIN_INCLUDE_DIR})
 endif()
 
-add_library(${owncloudclientlib_NAME} SHARED ${libowncloudclient_SRCS} ${syncMoc})
-GENERATE_EXPORT_HEADER( ${owncloudclientlib_NAME}
-    BASE_NAME ${owncloudclientlib_NAME}
+add_library(${syncclientlib_NAME} SHARED ${libsyncclient_SRCS} ${syncMoc})
+GENERATE_EXPORT_HEADER( ${syncclientlib_NAME}
+    BASE_NAME ${syncclientlib_NAME}
     EXPORT_MACRO_NAME OWNCLOUDSYNC_EXPORT
-        EXPORT_FILE_NAME owncloudclientlib.h
+        EXPORT_FILE_NAME syncclientlib.h
     STATIC_DEFINE OWNCLOUD_BUILT_AS_STATIC
 )
 
-qt5_use_modules(${owncloudclientlib_NAME} Network)
+qt5_use_modules(${syncclientlib_NAME} Network)
 
-set_target_properties( ${owncloudclientlib_NAME}  PROPERTIES
+set_target_properties( ${syncclientlib_NAME}  PROPERTIES
     VERSION ${MIRALL_VERSION}
     SOVERSION ${MIRALL_SOVERSION}
     RUNTIME_OUTPUT_DIRECTORY ${BIN_OUTPUT_DIRECTORY}
 )
-set_target_properties( ${owncloudclientlib_NAME} PROPERTIES
+set_target_properties( ${syncclientlib_NAME} PROPERTIES
     INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}" )
 
-target_link_libraries(${owncloudclientlib_NAME} ${libowncloudclient_LINK_TARGETS} )
+target_link_libraries(${syncclientlib_NAME} ${libsyncclient_LINK_TARGETS} )
 
 if(INOTIFY_FOUND)
-    target_link_libraries(${owncloudclientlib_NAME} ${INOTIFY_LIBRARY} )
+    target_link_libraries(${syncclientlib_NAME} ${INOTIFY_LIBRARY} )
 endif()
 
 if(NOT BUILD_OWNCLOUD_OSX_BUNDLE)
-    install(TARGETS ${owncloudclientlib_NAME}
+    install(TARGETS ${syncclientlib_NAME}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
 else()
-    install(TARGETS ${owncloudclientlib_NAME} DESTINATION ${OWNCLOUD_OSX_BUNDLE}/Contents/MacOS)
+    install(TARGETS ${syncclientlib_NAME} DESTINATION ${OWNCLOUD_OSX_BUNDLE}/Contents/MacOS)
     if (SPARKLE_FOUND)
         install(DIRECTORY "${SPARKLE_LIBRARY}"
             DESTINATION "${OWNCLOUD_OSX_BUNDLE}/Contents/Frameworks" USE_SOURCE_PERMISSIONS)
