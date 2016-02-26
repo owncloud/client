@@ -32,6 +32,7 @@ ProxyAuthHandler* ProxyAuthHandler::instance()
 
 ProxyAuthHandler::ProxyAuthHandler()
     : _blocked(false)
+    , _dialog(0)
     , _waitingForDialog(0)
     , _waitingForKeychain(0)
     , _keychainJobRunning(false)
