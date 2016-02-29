@@ -110,8 +110,8 @@ ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
 ; Modern User Interface (MUI) definitions and setup.
 ;-----------------------------------------------------------------------------
 !define MUI_ABORTWARNING
-!define MUI_ICON ${NSI_PATH}\installer.ico
-!define MUI_UNICON ${NSI_PATH}\installer.ico
+!define MUI_ICON ${WIN_SETUP_BITMAP_PATH}\skylagring.ico
+!define MUI_UNICON ${WIN_SETUP_BITMAP_PATH}\skylagring.ico
 !define MUI_WELCOMEFINISHPAGE_BITMAP ${WIN_SETUP_BITMAP_PATH}/welcome.bmp
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP  ${WIN_SETUP_BITMAP_PATH}/page_header.bmp
@@ -432,9 +432,9 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
 
    ;Qt deps
    File "${MING_BIN}\libpng16-16.dll"
-   File "${MING_BIN}\icudata53.dll"
-   File "${MING_BIN}\icui18n53.dll"
-   File "${MING_BIN}\icuuc53.dll"
+   File "${MING_BIN}\icudata56.dll"
+   File "${MING_BIN}\icui18n56.dll"
+   File "${MING_BIN}\icuuc56.dll"
    File "${MING_BIN}\libEGL.dll"
    File "${MING_BIN}\libGLESv2.dll"
    File "${MING_BIN}\libjpeg-8.dll"
@@ -443,11 +443,17 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
    File "${MING_BIN}\libcrypto-10.dll"
    File "${MING_BIN}\libssl-10.dll"
    File "${MING_BIN}\libstdc++-6.dll"
-   File "${MING_BIN}\libwebp-4.dll"
+   File "${MING_BIN}\libwebp-5.dll"
    File "${MING_BIN}\libxslt-1.dll"
    File "${MING_BIN}\libxml2-2.dll"
    File "${MING_BIN}\zlib1.dll"
    File "${MING_BIN}\libsqlite3-0.dll"
+   
+   File "${MING_BIN}\libharfbuzz-0.dll"
+   File "${MING_BIN}\Qt5Positioning.dll"
+   File "${MING_BIN}\libfreetype-6.dll"
+   File "${MING_BIN}\libglib-2.0-0.dll"
+   File "${MING_BIN}\libintl-8.dll"
 
    ;QtKeyChain stuff
    File "${MING_BIN}\libqt5keychain.dll"
