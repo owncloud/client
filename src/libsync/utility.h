@@ -33,6 +33,7 @@ namespace Utility
     OWNCLOUDSYNC_EXPORT void usleep(int usec);
     OWNCLOUDSYNC_EXPORT QString formatFingerprint( const QByteArray&, bool colonSeparated = true );
     OWNCLOUDSYNC_EXPORT void setupFavLink( const QString &folder );
+    OWNCLOUDSYNC_EXPORT void updateNavPanel( const QString &folder );
     OWNCLOUDSYNC_EXPORT bool writeRandomFile( const QString& fname, int size = -1);
     OWNCLOUDSYNC_EXPORT QString octetsToString( qint64 octets );
     OWNCLOUDSYNC_EXPORT QByteArray userAgentString();

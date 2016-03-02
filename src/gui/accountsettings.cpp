@@ -222,6 +222,13 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 
     ac = menu->addAction(tr("Remove folder sync connection"));
     connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotRemoveCurrentFolder()));
+
+    if(Utility::isWindows())
+    {
+        ac = menu->addAction(tr("Use as root in Explorer navigation pane"));
+        connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotUseCurrentFolderAsNavigationPaneRoot()));
+    }
+
     menu->exec(tv->mapToGlobal(pos));
 }
 
@@ -356,6 +363,36 @@ void AccountSettings::slotRemoveCurrentFolder()
 
             emit folderChanged();
         }
+    }
+}
+
+void AccountSettings::slotUseCurrentFolderAsNavigationPaneRoot()
+{
+    if(!Utility::isWindows()){
+        return;
+    }
+
+    QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
+
+    if( selected.isValid() ) {
+        QString alias = _model->data( selected, FolderStatusDelegate::FolderAliasRole ).toString();
+
+        if( alias.isEmpty() ) {
+            qDebug() << "Empty alias to set as navigation pane root.";
+            return;
+        }
+
+        FolderMan *folderMan = FolderMan::instance();
+
+        qDebug() << "Application: set folder with alias " << alias << " as navigation pane root";
+
+        // this sets the folder status to disabled but does not interrupt it.
+        Folder *f = folderMan->folder( alias );
+        if (!f) {
+            return;
+        }
+
+        Utility::updateNavPanel(f->path());
     }
 }
 

@@ -11,7 +11,7 @@
 
 !define CRASHREPORTER_EXECUTABLE "@CRASHREPORTER_EXECUTABLE@"
 
-!define CLSID "{2F8BD8E0-03B3-47C5-A1E1-5C182FA6FFD0}"
+!define CLSID "@APPLICATION_CLSID@"
 !define NavigationPaneRegKey "Software\Classes\CLSID\${CLSID}"
 
 ;-----------------------------------------------------------------------------

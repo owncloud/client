@@ -34,6 +34,11 @@ static void setupFavLink_private(const QString &folder)
     CFRelease(urlRef);
 }
 
+static void updateNavPanel_private(const QString &folder)
+{
+    return;
+}
+
 bool hasLaunchOnStartup_private(const QString &)
 {
     // this is quite some duplicate code with setLaunchOnStartup, at some point we should fix this FIXME.

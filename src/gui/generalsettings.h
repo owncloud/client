@@ -36,7 +36,10 @@ class GeneralSettings : public QWidget
 public:
     explicit GeneralSettings(QWidget *parent = 0);
     ~GeneralSettings();
-    QSize sizeHint() const;
+    QSize sizeHint() const;    
+
+protected:
+    void showEvent(QShowEvent *);
 
 private slots:
     void saveMiscSettings();
