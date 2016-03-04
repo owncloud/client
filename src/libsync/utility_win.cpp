@@ -86,8 +86,10 @@ static void updateNavPanel_private(const QString &folder)
     f.replace('/','\\');
     wchar_t* path = new wchar_t[f.length()+1]();
     f.toWCharArray(path);
+    wchar_t* valuename = new wchar_t[17]();
+    wcsncpy(valuename, L"TargetFolderPath", 16);
 
-    CreateRegistryKeyValue ( HKEY_CURRENT_USER, newPanePath, L"TargetFolderPath", (PBYTE)path, sizeof(wchar_t) * f.length());
+    CreateRegistryKeyValue ( HKEY_CURRENT_USER, newPanePath, valuename, (PBYTE)path, sizeof(wchar_t) * f.length());
 
     // memory cleanup
     delete newPanePath;

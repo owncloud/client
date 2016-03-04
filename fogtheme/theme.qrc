@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/client">
-        <file>theme/colored/Skylagring-icon-512.png</file>
-        <file>theme/colored/Skylagring-icon-256.png</file>
-        <file>theme/colored/Skylagring-icon-128.png</file>
-        <file>theme/colored/Skylagring-icon-22.png</file>
-        <file>theme/colored/Skylagring-icon-32.png</file>
-        <file>theme/colored/Skylagring-icon-48.png</file>
-        <file>theme/colored/Skylagring-icon-64.png</file>
+        <file>theme/colored/InternSky-icon-512.png</file>
+        <file>theme/colored/InternSky-icon-256.png</file>
+        <file>theme/colored/InternSky-icon-128.png</file>
+        <file>theme/colored/InternSky-icon-22.png</file>
+        <file>theme/colored/InternSky-icon-32.png</file>
+        <file>theme/colored/InternSky-icon-48.png</file>
+        <file>theme/colored/InternSky-icon-64.png</file>
         <file>theme/colored/state-error-32.png</file>
         <file>theme/colored/state-error-64.png</file>
         <file>theme/colored/state-error-128.png</file>

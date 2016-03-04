@@ -38,7 +38,7 @@ public:
      * you will have to do that here also.
      */
     QIcon applicationIcon() const Q_DECL_OVERRIDE {
-        return themeIcon( QLatin1String("Skylagring-icon" ) );
+        return themeIcon( QLatin1String("InternSky-icon" ) );
     }
 
     /*
