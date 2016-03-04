@@ -591,8 +591,8 @@ Section -post
    	   SetRegView 64
    ${Endif}
    	   
-   WriteRegStr HKCU "${NavigationPaneRegKey}" "" "${APPLICATION_NAME}"
-   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\DefaultIcon" "" $INSTDIR\${APPLICATION_NAME}.exe
+   WriteRegStr HKCU "${NavigationPaneRegKey}" "" "${APPLICATION_SHORTNAME}"
+   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\DefaultIcon" "" "$INSTDIR\${APPLICATION_EXECUTABLE}"
    WriteRegDWORD HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree" "1"
    WriteRegDWORD HKCU "${NavigationPaneRegKey}" "SortOrderIndex" "66"
    WriteRegExpandStr HKCU "${NavigationPaneRegKey}\InProcServer32" "" "%systemroot%\system32\shell32.dll"

@@ -18,6 +18,7 @@
 #include "updater/updater.h"
 #include "updater/sparkleupdater.h"
 #include "updater/ocupdater.h"
+#include "qmessagebox.h"
 
 #include "version.h"
 #include "theme.h"
@@ -92,6 +93,7 @@ Updater *Updater::create()
     return new SparkleUpdater(updateBaseUrl.toString());
 #elif defined (Q_OS_WIN32)
     // the best we can do is notify about updates
+    QMessageBox::information(0, "update url", updateBaseUrl.toString());
     return new NSISUpdater(updateBaseUrl);
 #else
     return new PassiveUpdateNotifier(QUrl(updateBaseUrl));

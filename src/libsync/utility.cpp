@@ -30,6 +30,7 @@
 #include <QThread>
 #include <QDateTime>
 #include <QSysInfo>
+#include <QMessageBox>
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QTextDocument>
 #else
@@ -100,6 +101,12 @@ QString Utility::formatFingerprint( const QByteArray& fmhash, bool colonSeparate
 
 void Utility::setupFavLink(const QString &folder)
 {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("setupFav");
+    msgBox.setText(folder);
+    msgBox.setStandardButtons(QMessageBox::Yes);
+    msgBox.exec();
+
     setupFavLink_private(folder);
     updateNavPanel(folder);
 }
