@@ -1,4 +1,5 @@
 set( APPLICATION_NAME       "Intern Skylagring" )
+set( APPLICATION_SHORTNAME  "InternSky" )
 set( APPLICATION_EXECUTABLE "InternSky" )
 set( APPLICATION_DOMAIN     "fog.fjordane-it.no" )
 set( APPLICATION_VENDOR     "Serit Fjordane IT AS" )
@@ -16,4 +17,4 @@ set( CPACK_PACKAGE_ICON  "${OEM_THEME_DIR}/resources/skylagring.ico" )
 set( THEME_INCLUDE          "${OEM_THEME_DIR}/mytheme.h" )
 # set( APPLICATION_LICENSE    "${OEM_THEME_DIR}/license.txt )
 
-set( MIRALL_VERSION_SUFFIX "_test")
+set( MIRALL_VERSION_SUFFIX "")

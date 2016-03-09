@@ -590,19 +590,24 @@ Section -post
    ${If} ${RunningX64}
    	   SetRegView 64
    ${Endif}
-   	   
-   WriteRegStr HKCU "${NavigationPaneRegKey}" "" "${APPLICATION_SHORTNAME}"
-   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\DefaultIcon" "" "$INSTDIR\${APPLICATION_EXECUTABLE}"
-   WriteRegDWORD HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree" "1"
-   WriteRegDWORD HKCU "${NavigationPaneRegKey}" "SortOrderIndex" "66"
-   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\InProcServer32" "" "%systemroot%\system32\shell32.dll"
-   WriteRegStr HKCU "${NavigationPaneRegKey}\Instance" "CLSID" "{0E5AAE11-A475-4c5b-AB00-C66DE400274E}"
-   WriteRegDWORD HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "Attributes" "17"
-   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath" "%USERPROFILE%\${APPLICATION_NAME}"
-   WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "FolderValueFlags" "40"
-   WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "Attributes" "4034920525"
-   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\${CLSID}" "" "${APPLICATION_NAME}"
-   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "${CLSID}" "1" 
+
+   Var /GLOBAL val
+   ReadRegStr $val HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
+
+   ${If} $val == ""
+       WriteRegStr HKCU "${NavigationPaneRegKey}" "" "${APPLICATION_SHORTNAME}"
+       WriteRegExpandStr HKCU "${NavigationPaneRegKey}\DefaultIcon" "" "$INSTDIR\${APPLICATION_EXECUTABLE}"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree" "1"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}" "SortOrderIndex" "66"
+       WriteRegExpandStr HKCU "${NavigationPaneRegKey}\InProcServer32" "" "%systemroot%\system32\shell32.dll"
+       WriteRegStr HKCU "${NavigationPaneRegKey}\Instance" "CLSID" "{0E5AAE11-A475-4c5b-AB00-C66DE400274E}"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "Attributes" "17"
+       WriteRegExpandStr HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath" "%USERPROFILE%\${APPLICATION_NAME}"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "FolderValueFlags" "40"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "Attributes" "4034920525"
+       WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\${CLSID}" "" "${APPLICATION_NAME}"
+       WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "${CLSID}" "1"
+   ${Endif}
 	  
    ${If} ${RunningX64}
    	   SetRegView 32

@@ -1,4 +1,60 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="nl" version="2.0">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="nl">
+<context>
+    <name>CrashReporter</name>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="23"/>
+        <source>Tomahawk Crash Reporter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message utf8="true">
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="80"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Sorry!&lt;/span&gt; Tomahawk crashed. Please tell us about it! Tomahawk has created an error report for you that can help improve the stability in the future. You can now send this report directly to the Tomahawk developers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="129"/>
+        <source>Send this report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="136"/>
+        <source>Don&apos;t send</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="190"/>
+        <source>Abort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="210"/>
+        <source>You can disable sending crash reports in the configuration dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.cpp" line="163"/>
+        <source>Uploaded %L1 of %L2 KB.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.cpp" line="177"/>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.cpp" line="193"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.cpp" line="186"/>
+        <source>Sent! &lt;b&gt;Many thanks&lt;/b&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.cpp" line="194"/>
+        <source>Failed to send crash info.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 <context>
     <name>FileSystem</name>
     <message>
@@ -92,8 +148,8 @@
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="180"/>
-        <location filename="../src/gui/accountsettings.cpp" line="344"/>
-        <location filename="../src/gui/accountsettings.cpp" line="705"/>
+        <location filename="../src/gui/accountsettings.cpp" line="351"/>
+        <location filename="../src/gui/accountsettings.cpp" line="742"/>
         <source>Cancel</source>
         <translation>Annuleren</translation>
     </message>
@@ -133,97 +189,102 @@
         <translation>Verwijderen map sync verbinding</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="289"/>
+        <location filename="../src/gui/accountsettings.cpp" line="228"/>
+        <source>Use as root in Explorer navigation pane</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="296"/>
         <source>Folder creation failed</source>
         <translation>Maken map mislukt</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="290"/>
+        <location filename="../src/gui/accountsettings.cpp" line="297"/>
         <source>&lt;p&gt;Could not create local folder &lt;i&gt;%1&lt;/i&gt;.</source>
         <translation>&lt;p&gt;Kon lokale map &lt;i&gt;%1&lt;/i&gt; niet maken.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="337"/>
+        <location filename="../src/gui/accountsettings.cpp" line="344"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Bevestig verwijderen Map Sync verbinding</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="343"/>
+        <location filename="../src/gui/accountsettings.cpp" line="350"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Verwijderen Map Sync verbinding</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="369"/>
+        <location filename="../src/gui/accountsettings.cpp" line="406"/>
         <source>Confirm Folder Reset</source>
         <translation>Bevestig map reset</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="370"/>
+        <location filename="../src/gui/accountsettings.cpp" line="407"/>
         <source>&lt;p&gt;Do you really want to reset folder &lt;i&gt;%1&lt;/i&gt; and rebuild your client database?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This function is designed for maintenance purposes only. No files will be removed, but this can cause significant data traffic and take several minutes or hours to complete, depending on the size of the folder. Only use this option if advised by your administrator.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Wilt u map &lt;i&gt;%1&lt;/i&gt; echt resetten en de database opnieuw opbouwen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Let op:&lt;/b&gt; Deze functie is alleen ontworpen voor onderhoudsdoeleinden. Hoewel er geen bestanden worden verwijderd, kan dit een aanzienlijke hoeveelheid dataverkeer tot gevolg hebben en minuten tot zelfs uren duren, afhankelijk van de omvang van de map. Gebruik deze functie alleen als dit wordt geadviseerd door uw applicatiebeheerder.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="451"/>
+        <location filename="../src/gui/accountsettings.cpp" line="488"/>
         <source>Sync Running</source>
         <translation>Bezig met synchroniseren</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="452"/>
+        <location filename="../src/gui/accountsettings.cpp" line="489"/>
         <source>The syncing operation is running.&lt;br/&gt;Do you want to terminate it?</source>
         <translation>Bezig met synchroniseren.&lt;br/&gt;Wilt u stoppen met synchroniseren?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="520"/>
+        <location filename="../src/gui/accountsettings.cpp" line="557"/>
         <source>%1 in use</source>
         <translation>%1 in gebruik</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="540"/>
+        <location filename="../src/gui/accountsettings.cpp" line="577"/>
         <source>%1 as &lt;i&gt;%2&lt;/i&gt;</source>
         <translation>%1 als &lt;i&gt;%2&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="544"/>
+        <location filename="../src/gui/accountsettings.cpp" line="581"/>
         <source>Connected to %1.</source>
         <translation>Verbonden met %1.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="546"/>
+        <location filename="../src/gui/accountsettings.cpp" line="583"/>
         <source>Server %1 is temporarily unavailable.</source>
         <translation>Server %1 is tijdelijk niet beschikbaar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="548"/>
+        <location filename="../src/gui/accountsettings.cpp" line="585"/>
         <source>Signed out from %1.</source>
         <translation>Uitgelogd van %1.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="550"/>
+        <location filename="../src/gui/accountsettings.cpp" line="587"/>
         <source>No connection to %1 at %2.</source>
         <translation>Geen verbinding met %1 op %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="576"/>
+        <location filename="../src/gui/accountsettings.cpp" line="613"/>
         <source>Log in</source>
         <translation>Meld u aan</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="657"/>
+        <location filename="../src/gui/accountsettings.cpp" line="694"/>
         <source>There are new folders that were not synchronized because they are too big: </source>
         <translation>Er zijn nieuwe mappen die niet gesynchroniseerd werden omdat ze te groot zijn:</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="697"/>
+        <location filename="../src/gui/accountsettings.cpp" line="734"/>
         <source>Confirm Account Removal</source>
         <translation>Bevestig verwijderen account</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="698"/>
+        <location filename="../src/gui/accountsettings.cpp" line="735"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Wilt u echt de verbinding met het account &lt;i&gt;%1&lt;/i&gt; verbreken?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Let op:&lt;/b&gt; Hierdoor verwijdert u &lt;b&gt;geen&lt;/b&gt; bestanden.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="704"/>
+        <location filename="../src/gui/accountsettings.cpp" line="741"/>
         <source>Remove connection</source>
         <translation>Verwijderen verbinding</translation>
     </message>
@@ -234,7 +295,7 @@
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="146"/>
-        <location filename="../src/gui/accountsettings.cpp" line="574"/>
+        <location filename="../src/gui/accountsettings.cpp" line="611"/>
         <source>Log out</source>
         <translation>Afmelden</translation>
     </message>
@@ -249,27 +310,27 @@
         <translation>Pauzeren sync</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="338"/>
+        <location filename="../src/gui/accountsettings.cpp" line="345"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Weet u zeker dat u de synchronisatie van map &lt;i&gt;%1&lt;/i&gt; wilt stoppen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Opmerking:&lt;/b&gt; Dit zal &lt;b&gt;geen&lt;/b&gt; bestanden verwijderen.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="507"/>
+        <location filename="../src/gui/accountsettings.cpp" line="544"/>
         <source>%1 (%3%) of %2 in use. Some folders, including network mounted or shared folders, might have different limits.</source>
         <translation>%1 (%3%) van %2 in gebruik. Sommige mappen, inclusief netwerkmappen en gedeelde mappen, kunnen andere limieten hebben.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="508"/>
+        <location filename="../src/gui/accountsettings.cpp" line="545"/>
         <source>%1 of %2 in use</source>
         <translation>%1 van %2 in gebruik</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="517"/>
+        <location filename="../src/gui/accountsettings.cpp" line="554"/>
         <source>Currently there is no storage usage information available.</source>
         <translation>Er is nu geen informatie over het gebruik van de opslagruimte beschikbaar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="556"/>
+        <location filename="../src/gui/accountsettings.cpp" line="593"/>
         <source>No %1 connection configured.</source>
         <translation>Geen %1 connectie geconfigureerd.</translation>
     </message>
@@ -635,7 +696,7 @@ Ga naar de instellingen om het te selecteren als u deze wilt downloaden.</transl
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="1177"/>
-        <source>This sync would remove all the files in the sync folder '%1'.
+        <source>This sync would remove all the files in the sync folder &apos;%1&apos;.
 This might be because the folder was silently reconfigured, or that all the files were manually removed.
 Are you sure you want to perform this operation?</source>
         <translation>Deze sync zou alle bestanden in syncmap &apos;%1&apos; verwijderen.
@@ -853,7 +914,7 @@ Weet je zeker dat je door wilt gaan?</translation>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="872"/>
         <source>Syncing %1</source>
-        <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
+        <extracomment>Example text: &quot;Syncing &apos;foo.txt&apos;, &apos;bar.txt&apos;&quot;</extracomment>
         <translation>Synchroniseren %1</translation>
     </message>
     <message>
@@ -918,7 +979,10 @@ Totaal resterende tijd %5</translation>
     <message numerus="yes">
         <location filename="../src/gui/folderstatusmodel.cpp" line="963"/>
         <source>Waiting for %n other folder(s)...</source>
-        <translation><numerusform>Wacht op %n andere map...</numerusform><numerusform>Wacht op %n andere mappen...</numerusform></translation>
+        <translation>
+            <numerusform>Wacht op %n andere map...</numerusform>
+            <numerusform>Wacht op %n andere mappen...</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="969"/>
@@ -1797,17 +1861,17 @@ We adviseren deze site niet te gebruiken.</translation>
 <context>
     <name>OCC::OwncloudWizardResultPage</name>
     <message>
-        <location filename="../src/gui/wizard/owncloudwizardresultpage.cpp" line="38"/>
+        <location filename="../src/gui/wizard/owncloudwizardresultpage.cpp" line="39"/>
         <source>Everything set up!</source>
         <translation>Alles is geïnstalleerd!</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizard/owncloudwizardresultpage.cpp" line="42"/>
+        <location filename="../src/gui/wizard/owncloudwizardresultpage.cpp" line="43"/>
         <source>Open Local Folder</source>
         <translation>Open lokale map</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizard/owncloudwizardresultpage.cpp" line="50"/>
+        <location filename="../src/gui/wizard/owncloudwizardresultpage.cpp" line="51"/>
         <source>Open %1 in Browser</source>
         <translation>Open %1 in browser</translation>
     </message>
@@ -2077,17 +2141,23 @@ We adviseren deze site niet te gebruiken.</translation>
         <location filename="../src/gui/protocolwidget.cpp" line="241"/>
         <source>%n files are ignored because of previous errors.
 </source>
-        <translation><numerusform>%n bestand genegeerd wegens eerdere fouten.
-</numerusform><numerusform>%n bestanden genegeerd wegens eerdere fouten.
-</numerusform></translation>
+        <translation>
+            <numerusform>%n bestand genegeerd wegens eerdere fouten.
+</numerusform>
+            <numerusform>%n bestanden genegeerd wegens eerdere fouten.
+</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/protocolwidget.cpp" line="242"/>
         <source>%n files are partially downloaded.
 </source>
-        <translation><numerusform>%n bestand gedeeltelijk gedownload.
-</numerusform><numerusform>%n bestanden gedeeltelijk gedownload.
-</numerusform></translation>
+        <translation>
+            <numerusform>%n bestand gedeeltelijk gedownload.
+</numerusform>
+            <numerusform>%n bestanden gedeeltelijk gedownload.
+</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="243"/>
@@ -3338,92 +3408,302 @@ We adviseren deze site niet te gebruiken.</translation>
     </message>
 </context>
 <context>
-    <name>QObject</name>
-    <message numerus="yes">
-        <location filename="../src/libsync/utility.cpp" line="445"/>
-        <source>%1 day(s) ago</source>
-        <translation><numerusform>%1 dag geleden</numerusform><numerusform>%1 dagen geleden</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/libsync/utility.cpp" line="451"/>
-        <source>%1 hour(s) ago</source>
-        <translation><numerusform>%1 uur geleden</numerusform><numerusform>%1 uur geleden</numerusform></translation>
+    <name>QKeychain::DeletePasswordJobPrivate</name>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="458"/>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="455"/>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="476"/>
+        <source>Could not open wallet: %1; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="82"/>
+        <source>Password entry not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="86"/>
+        <source>Could not decrypt data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="175"/>
+        <source>Could not delete encrypted data from settings: access error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="176"/>
+        <source>Could not delete encrypted data from settings: format error</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QKeychain::JobPrivate</name>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="421"/>
+        <source>Access to keychain denied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="443"/>
+        <source>Could not open wallet: %1; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QKeychain::ReadPasswordJobPrivate</name>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_mac.cpp" line="76"/>
+        <source>Password not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="129"/>
+        <source>D-Bus is not running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="140"/>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="219"/>
+        <source>No keychain service available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="221"/>
+        <source>Could not open wallet: %1; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="267"/>
+        <source>Access to keychain denied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="288"/>
+        <source>Could not determine data type: %1; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="297"/>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="103"/>
+        <source>Entry not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="306"/>
+        <source>Unsupported entry type &apos;Map&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="309"/>
+        <source>Unknown kwallet entry type &apos;%1&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="35"/>
+        <source>Password entry not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="39"/>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="120"/>
+        <source>Could not decrypt data</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QKeychain::WritePasswordJobPrivate</name>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="345"/>
+        <source>D-Bus is not running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="359"/>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="378"/>
+        <source>Could not open wallet: %1; %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="67"/>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="143"/>
+        <source>Encryption failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="158"/>
+        <source>Could not store encrypted data in settings: access error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_win.cpp" line="159"/>
+        <source>Could not store encrypted data in settings: format error</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message numerus="yes">
+        <location filename="../src/libsync/utility.cpp" line="453"/>
+        <source>%1 day(s) ago</source>
+        <translation>
+            <numerusform>%1 dag geleden</numerusform>
+            <numerusform>%1 dagen geleden</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/libsync/utility.cpp" line="459"/>
+        <source>%1 hour(s) ago</source>
+        <translation>
+            <numerusform>%1 uur geleden</numerusform>
+            <numerusform>%1 uur geleden</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/utility.cpp" line="463"/>
         <source>Less than a minute ago</source>
         <translation>Minder dan een minuut geleden</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/libsync/utility.cpp" line="457"/>
+        <location filename="../src/libsync/utility.cpp" line="465"/>
         <source>%1 minute(s) ago</source>
-        <translation><numerusform>%1 minuut geleden</numerusform><numerusform>%1 minuten geleden</numerusform></translation>
+        <translation>
+            <numerusform>%1 minuut geleden</numerusform>
+            <numerusform>%1 minuten geleden</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="460"/>
+        <location filename="../src/libsync/utility.cpp" line="468"/>
         <source>Some time ago</source>
         <translation>Even geleden</translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_mac.cpp" line="31"/>
+        <location filename="../src/3rdparty/qtkeychain/keychain_mac.cpp" line="33"/>
+        <source>%1 (OSStatus %2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="168"/>
+        <source>Access to keychain denied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="170"/>
+        <source>No keyring daemon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="172"/>
+        <source>Already unlocked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="174"/>
+        <source>No such keyring</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="176"/>
+        <source>Bad arguments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="178"/>
+        <source>I/O error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="180"/>
+        <source>Cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="182"/>
+        <source>Keyring already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="184"/>
+        <source>No match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/3rdparty/qtkeychain/keychain_unix.cpp" line="189"/>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Utility</name>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="121"/>
+        <location filename="../src/libsync/utility.cpp" line="129"/>
         <source>%L1 GB</source>
         <translation>%L1 GB</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="124"/>
+        <location filename="../src/libsync/utility.cpp" line="132"/>
         <source>%L1 MB</source>
         <translation>%L1 MB</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="127"/>
+        <location filename="../src/libsync/utility.cpp" line="135"/>
         <source>%L1 KB</source>
         <translation>%L1 KB</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="130"/>
+        <location filename="../src/libsync/utility.cpp" line="138"/>
         <source>%L1 B</source>
         <translation>%L1 B</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="305"/>
+        <location filename="../src/libsync/utility.cpp" line="313"/>
         <source>%Ln year(s)</source>
         <translation>%Ln ja(a)r(en)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="306"/>
+        <location filename="../src/libsync/utility.cpp" line="314"/>
         <source>%Ln month(s)</source>
         <translation>%Ln maand(en)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="307"/>
+        <location filename="../src/libsync/utility.cpp" line="315"/>
         <source>%Ln day(s)</source>
         <translation>%Ln dag(en)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="308"/>
+        <location filename="../src/libsync/utility.cpp" line="316"/>
         <source>%Ln hour(s)</source>
         <translation>%Ln u(u)r(en)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="309"/>
+        <location filename="../src/libsync/utility.cpp" line="317"/>
         <source>%Ln minute(s)</source>
         <translation>%Ln minu(u)t(en)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="310"/>
+        <location filename="../src/libsync/utility.cpp" line="318"/>
         <source>%Ln second(s)</source>
         <translation>%Ln seconde(n)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="320"/>
+        <location filename="../src/libsync/utility.cpp" line="328"/>
         <source>0 seconds</source>
         <translation>0 seconden</translation>
     </message>
     <message>
-        <location filename="../src/libsync/utility.cpp" line="335"/>
+        <location filename="../src/libsync/utility.cpp" line="343"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>

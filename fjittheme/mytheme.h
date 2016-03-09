@@ -54,7 +54,7 @@ public:
      * example: return QLatin1String( "http://www.yourwebsite.com/updates/" );
      */
     virtual QString updateCheckUrl() const {
-        return QLatin1String( "https://fil.fjit.no/install/client/" );
+        return QLatin1String( "https://fog.fjordane-it.no/install/client/" );
     }
 
     /*
