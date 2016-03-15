@@ -151,9 +151,16 @@ void PropagateRemoteMove::slotMoveJobFinished()
 
 void PropagateRemoteMove::finalize()
 {
+    SyncJournalFileRecord oldRecord =
+                    _propagator->_journal->getFileRecord(_item._originalFile);
     _propagator->_journal->deleteFileRecord(_item._originalFile);
+
     SyncJournalFileRecord record(_item, _propagator->getFilePath(_item._renameTarget));
     record._path = _item._renameTarget;
+    if (record._fileSize != oldRecord._fileSize) {
+        qDebug() << "Warning: file sizes differ on server vs csync_journal: " << record._fileSize << oldRecord._fileSize;
+        record._fileSize = oldRecord._fileSize; // server might have claimed different size, we take the old one from the DB
+    }
 
     _propagator->_journal->setFileRecord(record);
     _propagator->_journal->commit("Remote Rename");
