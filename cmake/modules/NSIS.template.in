@@ -345,6 +345,7 @@ Function PageReinstall
 FunctionEnd
 
 Function PageLeaveReinstall
+   IfSilent reinst_uninstall 0
    !insertmacro INSTALLOPTIONS_READ $R1 "NSIS.InstallOptions.ini" "Field 2" "State"
    StrCmp $R0 "1" 0 +2
    StrCmp $R1 "1" reinst_uninstall reinst_done
