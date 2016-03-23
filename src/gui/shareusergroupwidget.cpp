@@ -197,6 +197,7 @@ void ShareUserGroupWidget::slotSharesFetched(const QList<QSharedPointer<Share>> 
     scrollArea->setWidget(newViewPort);
 
     _disableCompleterActivated = false;
+    _ui->shareeLineEdit->setEnabled(true);
 }
 
 void ShareUserGroupWidget::slotAdjustScrollWidgetSize()
@@ -231,9 +232,32 @@ void ShareUserGroupWidget::slotCompleterActivated(const QModelIndex & index)
         return;
     }
 
-    _manager->createShare(_sharePath, Share::ShareType(sharee->type()),
-                          sharee->shareWith(), Share::PermissionDefault);
+    /*
+     * Add spinner to the bottom of the widget list
+     */
+    auto viewPort = _ui->scrollArea->widget();
+    auto layout = viewPort->layout();
+    auto indicator = new QProgressIndicator(viewPort);
+    indicator->startAnimation();
+    layout->addWidget(indicator);
 
+    /*
+     * Don't send the reshare permissions for federataed shares
+     * https://github.com/owncloud/core/issues/22122#issuecomment-185637344
+     */
+    if (sharee->type() == Sharee::Federated) {
+        int permissions = Share::PermissionRead | Share::PermissionUpdate;
+        if (!_isFile) {
+            permissions |= Share::PermissionCreate | Share::PermissionDelete;
+        }
+        _manager->createShare(_sharePath, Share::ShareType(sharee->type()),
+                              sharee->shareWith(), Share::Permission(permissions));
+    } else {
+        _manager->createShare(_sharePath, Share::ShareType(sharee->type()),
+                              sharee->shareWith(), Share::PermissionDefault);
+    }
+
+    _ui->shareeLineEdit->setEnabled(false);
     _ui->shareeLineEdit->setText(QString());
 }
 
@@ -294,6 +318,15 @@ ShareWidget::ShareWidget(QSharedPointer<Share> share,
     connect(_permissionDelete, SIGNAL(triggered(bool)), SLOT(slotPermissionsChanged()));
     connect(_ui->permissionShare,  SIGNAL(clicked(bool)), SLOT(slotPermissionsChanged()));
     connect(_ui->permissionsEdit,  SIGNAL(clicked(bool)), SLOT(slotEditPermissionsChanged()));
+
+    /*
+     * We don't show permssion share for federated shares
+     * https://github.com/owncloud/core/issues/22122#issuecomment-185637344
+     */
+    if (share->getShareType() == Share::TypeRemote) {
+        _ui->permissionShare->setVisible(false);
+        _ui->permissionToolButton->setVisible(false);
+    }
 
     connect(share.data(), SIGNAL(permissionsSet()), SLOT(slotPermissionsSet()));
     connect(share.data(), SIGNAL(shareDeleted()), SLOT(slotShareDeleted()));

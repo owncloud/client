@@ -143,7 +143,7 @@ signals:
 
 public slots:
     void slotRemoveFolder( Folder* );
-    void slotSetFolderPaused(Folder *, bool paused);
+    void slotFolderSyncPaused(Folder *, bool paused);
 
     void slotFolderSyncStarted();
     void slotFolderSyncFinished( const SyncResult& );
@@ -195,6 +195,8 @@ private slots:
     // Wraps the Folder::syncStateChange() signal into the
     // FolderMan::folderSyncStateChange(Folder*) signal.
     void slotForwardFolderSyncStateChange();
+
+    void slotServerVersionChanged(Account* account);
 
 private:
     /** Adds a new folder, does not add it to the account settings and

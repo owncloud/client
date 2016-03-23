@@ -106,6 +106,8 @@ void FolderMan::unloadFolder( Folder *f )
                this, SLOT(slotFolderSyncFinished(SyncResult)));
     disconnect(f, SIGNAL(syncStateChange()),
                this, SLOT(slotForwardFolderSyncStateChange()));
+    disconnect(f, SIGNAL(syncPausedChanged(Folder*,bool)),
+               this, SLOT(slotFolderSyncPaused(Folder*,bool)));
 }
 
 int FolderMan::unloadAndDeleteAllFolders()
@@ -411,21 +413,19 @@ Folder* FolderMan::setupFolderFromOldConfigFile(const QString &file, AccountStat
     return folder;
 }
 
-void FolderMan::slotSetFolderPaused( Folder *f, bool paused )
+void FolderMan::slotFolderSyncPaused( Folder *f, bool paused )
 {
     if( !f ) {
-        qWarning() << "!! slotSetFolderPaused called with empty folder";
+        qWarning() << "!! slotFolderSyncPaused called with empty folder";
         return;
     }
 
-    f->setSyncPaused(paused);
     if (!paused) {
         _disabledFolders.remove(f);
         slotScheduleSync(f);
     } else {
         _disabledFolders.insert(f);
     }
-    emit folderSyncStateChange(f);
 }
 
 // this really terminates the current sync process
@@ -554,7 +554,7 @@ void FolderMan::slotAccountStateChanged()
     }
     QString accountName = accountState->account()->displayName();
 
-    if (accountState->isConnected()) {
+    if (accountState->canSync()) {
         qDebug() << "Account" << accountName << "connected, scheduling its folders";
 
         foreach (Folder *f, _folderMap.values()) {
@@ -565,7 +565,7 @@ void FolderMan::slotAccountStateChanged()
             }
         }
     } else {
-        qDebug() << "Account" << accountName << "disconnected, "
+        qDebug() << "Account" << accountName << "disconnected or paused, "
                     "terminating or descheduling sync folders";
 
         if (_currentSyncFolder
@@ -744,6 +744,21 @@ void FolderMan::slotForwardFolderSyncStateChange()
     }
 }
 
+void FolderMan::slotServerVersionChanged(Account *account)
+{
+    // Pause folders if the server version is unsupported
+    if (account->serverVersionUnsupported()) {
+        qDebug() << "The server version is unsupported:" << account->serverVersion()
+                 << "pausing all folders on the account";
+
+        foreach (auto& f, _folderMap) {
+            if (f->accountState()->account().data() == account) {
+                f->setSyncPaused(true);
+            }
+        }
+    }
+}
+
 void FolderMan::slotFolderSyncStarted( )
 {
     qDebug() << ">===================================== sync started for " << _currentSyncFolder->remoteUrl().toString();
@@ -796,6 +811,7 @@ Folder* FolderMan::addFolderInternal(const FolderDefinition& folderDefinition)
     connect(folder, SIGNAL(syncStarted()), SLOT(slotFolderSyncStarted()));
     connect(folder, SIGNAL(syncFinished(SyncResult)), SLOT(slotFolderSyncFinished(SyncResult)));
     connect(folder, SIGNAL(syncStateChange()), SLOT(slotForwardFolderSyncStateChange()));
+    connect(folder, SIGNAL(syncPausedChanged(Folder*,bool)), SLOT(slotFolderSyncPaused(Folder*,bool)));
 
     registerFolderMonitor(folder);
     return folder;

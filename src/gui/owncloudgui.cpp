@@ -193,6 +193,7 @@ void ownCloudGui::slotTrayClicked( QSystemTrayIcon::ActivationReason reason )
 void ownCloudGui::slotSyncStateChange( Folder* folder )
 {
     slotComputeOverallSyncStatus();
+    setupContextMenu();
 
     if( !folder ) {
         return; // Valid, just a general GUI redraw was needed.
@@ -228,9 +229,22 @@ void ownCloudGui::slotAccountStateChanged()
     slotComputeOverallSyncStatus();
 }
 
+void ownCloudGui::slotTrayMessageIfServerUnsupported(Account* account)
+{
+    if (account->serverVersionUnsupported()) {
+        slotShowTrayMessage(
+                tr("Unsupported Server Version"),
+                tr("The server on account %1 runs an old and unsupported version %2. "
+                   "Using this client with unsupported server versions is untested and "
+                   "potentially dangerous. Proceed at your own risk.")
+                    .arg(account->displayName(), account->serverVersion()));
+    }
+}
+
 void ownCloudGui::slotComputeOverallSyncStatus()
 {
     bool allSignedOut = true;
+    bool allPaused = true;
     QVector<AccountStatePtr> problemAccounts;
     foreach (auto a, AccountManager::instance()->accounts()) {
         if (!a->isSignedOut()) {
@@ -238,6 +252,11 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         }
         if (!a->isConnected()) {
             problemAccounts.append(a);
+        }
+    }
+    foreach (Folder* f, FolderMan::instance()->map()) {
+        if (!f->syncPaused()) {
+            allPaused = false;
         }
     }
 
@@ -271,6 +290,10 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     if (allSignedOut) {
         _tray->setIcon(Theme::instance()->folderOfflineIcon(true));
         _tray->setToolTip(tr("Please sign in"));
+        return;
+    } else if (allPaused) {
+        _tray->setIcon(Theme::instance()->syncStateIcon(SyncResult::Paused, true));
+        _tray->setToolTip(tr("Account synchronization is disabled"));
         return;
     }
 
@@ -325,9 +348,17 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
     bool singleSyncFolder = folderMan->map().size() == 1 && Theme::instance()->singleSyncFolder();
+    bool onePaused = false;
+    bool allPaused = true;
     foreach (Folder* folder, folderMan->map()) {
         if (folder->accountState() != accountState) {
             continue;
+        }
+
+        if (folder->syncPaused()) {
+            onePaused = true;
+        } else {
+            allPaused = false;
         }
 
         if (firstFolder && !singleSyncFolder) {
@@ -344,6 +375,17 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
 
      menu->addSeparator();
      if (separateMenu) {
+         if (onePaused) {
+             QAction* enable = menu->addAction(tr("Unpause all folders"));
+             enable->setProperty(propertyAccountC, QVariant::fromValue(accountState));
+             connect(enable, SIGNAL(triggered(bool)), SLOT(slotUnpauseAllFolders()));
+         }
+         if (!allPaused) {
+             QAction* enable = menu->addAction(tr("Pause all folders"));
+             enable->setProperty(propertyAccountC, QVariant::fromValue(accountState));
+             connect(enable, SIGNAL(triggered(bool)), SLOT(slotPauseAllFolders()));
+         }
+
          if (accountState->isSignedOut()) {
              QAction* signin = menu->addAction(tr("Log in..."));
              signin->setProperty(propertyAccountC, QVariant::fromValue(accountState));
@@ -365,14 +407,23 @@ void ownCloudGui::setupContextMenu()
     bool atLeastOneConnected = false;
     bool atLeastOneSignedOut = false;
     bool atLeastOneSignedIn = false;
+    bool atLeastOnePaused = false;
+    bool atLeastOneNotPaused = false;
     foreach (auto a, accountList) {
         if (a->isConnected()) {
             atLeastOneConnected = true;
         }
-        if (a->isSignedOut()){
+        if (a->isSignedOut()) {
             atLeastOneSignedOut = true;
         } else {
             atLeastOneSignedIn = true;
+        }
+    }
+    foreach (auto f, FolderMan::instance()->map()) {
+        if (f->syncPaused()) {
+            atLeastOnePaused = true;
+        } else {
+            atLeastOneNotPaused = true;
         }
     }
 
@@ -440,6 +491,26 @@ void ownCloudGui::setupContextMenu()
     }
 
     _contextMenu->addSeparator();
+    if (atLeastOnePaused) {
+        QString text;
+        if (accountList.count() > 1) {
+            text = tr("Unpause all synchronization");
+        } else {
+            text = tr("Unpause synchronization");
+        }
+        QAction* action = _contextMenu->addAction(text);
+        connect(action, SIGNAL(triggered(bool)), SLOT(slotUnpauseAllFolders()));
+    }
+    if (atLeastOneNotPaused) {
+        QString text;
+        if (accountList.count() > 1) {
+            text = tr("Pause all synchronization");
+        } else {
+            text = tr("Pause synchronization");
+        }
+        QAction* action = _contextMenu->addAction(text);
+        connect(action, SIGNAL(triggered(bool)), SLOT(slotPauseAllFolders()));
+    }
     if (atLeastOneSignedIn) {
         if (accountList.count() > 1) {
             _actionLogout->setText(tr("Log out of all accounts"));
@@ -628,10 +699,10 @@ void ownCloudGui::slotDisplayIdle()
 
 void ownCloudGui::slotLogin()
 {
-    auto list = AccountManager::instance()->accounts();
     if (auto account = qvariant_cast<AccountStatePtr>(sender()->property(propertyAccountC))) {
         account->signIn();
     } else {
+        auto list = AccountManager::instance()->accounts();
         foreach (const auto &a, list) {
             a->signIn();
         }
@@ -648,6 +719,33 @@ void ownCloudGui::slotLogout()
 
     foreach (const auto &ai, list) {
         ai->signOutByUi();
+    }
+}
+
+void ownCloudGui::slotUnpauseAllFolders()
+{
+    setPauseOnAllFoldersHelper(false);
+}
+
+void ownCloudGui::slotPauseAllFolders()
+{
+    setPauseOnAllFoldersHelper(true);
+}
+
+void ownCloudGui::setPauseOnAllFoldersHelper(bool pause)
+{
+    QList<AccountState*> accounts;
+    if (auto account = qvariant_cast<AccountStatePtr>(sender()->property(propertyAccountC))) {
+        accounts.append(account.data());
+    } else {
+        foreach (auto a, AccountManager::instance()->accounts()) {
+            accounts.append(a.data());
+        }
+    }
+    foreach (Folder* f, FolderMan::instance()->map()) {
+        if (accounts.contains(f->accountState())) {
+            f->setSyncPaused(pause);
+        }
     }
 }
 
@@ -740,7 +838,7 @@ void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &l
         w = _shareDialogs[localPath];
     } else {
         qDebug() << Q_FUNC_INFO << "Opening share dialog" << sharePath << localPath;
-        w = new ShareDialog(accountState->account(), sharePath, localPath, resharingAllowed);
+        w = new ShareDialog(accountState, sharePath, localPath, resharingAllowed);
         w->getShares();
         w->setAttribute( Qt::WA_DeleteOnClose, true );
 

@@ -133,8 +133,6 @@ public:
 
     /**
      * switch sync on or off
-     * If the sync is switched off, the startSync method is not going to
-     * be called.
      */
     void setSyncPaused( bool );
 
@@ -143,7 +141,7 @@ public:
     /**
      * Returns true when the folder may sync.
      *
-     * !syncPaused() && accountState->isConnected().
+     * !syncPaused() && accountState->canSync().
      */
     bool canSync() const;
 
@@ -214,6 +212,7 @@ signals:
     void scheduleToSync(Folder*);
     void progressInfo(const ProgressInfo& progress);
     void newBigFolderDiscovered(const QString &); // A new folder bigger than the threshold was discovered
+    void syncPausedChanged(Folder*, bool paused);
 
 public slots:
 
@@ -273,8 +272,6 @@ private slots:
     void slotNewBigFolderDiscovered(const QString &);
 
 private:
-    bool init();
-
     bool setIgnoredFiles();
 
     void bubbleUpSyncResult();
@@ -321,8 +318,6 @@ private:
     SyncJournalDb _journal;
 
     ClientProxy   _clientProxy;
-
-    CSYNC *_csync_ctx;
 };
 
 }

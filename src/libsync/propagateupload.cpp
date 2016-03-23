@@ -188,7 +188,7 @@ void PropagateUploadFileQNAM::start()
         return;
     }
 
-    _propagator->_activeJobs++;
+    _propagator->_activeJobList.append(this);
 
     if (!_deleteExisting) {
         return slotComputeContentChecksum();
@@ -209,7 +209,7 @@ void PropagateUploadFileQNAM::slotComputeContentChecksum()
         return;
     }
 
-    _propagator->_activeJobs--; // from start
+    _propagator->_activeJobList.removeOne(this);
 
     const QString filePath = _propagator->getFilePath(_item->_file);
 
@@ -219,23 +219,18 @@ void PropagateUploadFileQNAM::slotComputeContentChecksum()
 
     _stopWatch.start();
 
-    QByteArray contentChecksumType;
-    // We currently only do content checksums for the particular .eml case
-    // This should be done more generally in the future!
-    if (filePath.endsWith(QLatin1String(".eml"), Qt::CaseInsensitive)) {
-        contentChecksumType = "MD5";
-    }
+    QByteArray checksumType = contentChecksumType();
 
     // Maybe the discovery already computed the checksum?
-    if (_item->_contentChecksumType == contentChecksumType
+    if (_item->_contentChecksumType == checksumType
             && !_item->_contentChecksum.isEmpty()) {
-        slotComputeTransmissionChecksum(contentChecksumType, _item->_contentChecksum);
+        slotComputeTransmissionChecksum(checksumType, _item->_contentChecksum);
         return;
     }
 
     // Compute the content checksum.
     auto computeChecksum = new ComputeChecksum(this);
-    computeChecksum->setChecksumType(contentChecksumType);
+    computeChecksum->setChecksumType(checksumType);
 
     connect(computeChecksum, SIGNAL(done(QByteArray,QByteArray)),
             SLOT(slotComputeTransmissionChecksum(QByteArray,QByteArray)));
@@ -281,6 +276,12 @@ void PropagateUploadFileQNAM::slotStartUpload(const QByteArray& transmissionChec
 {
     _transmissionChecksum = transmissionChecksum;
     _transmissionChecksumType = transmissionChecksumType;
+
+    if (_item->_contentChecksum.isEmpty() && _item->_contentChecksumType.isEmpty())  {
+        // If the _contentChecksum was not set, reuse the transmission checksum as the content checksum.
+        _item->_contentChecksum = transmissionChecksum;
+        _item->_contentChecksumType = transmissionChecksumType;
+    }
 
     const QString fullFilePath = _propagator->getFilePath(_item->_file);
 
@@ -559,7 +560,7 @@ void PropagateUploadFileQNAM::startNextChunk()
     connect(job, SIGNAL(uploadProgress(qint64,qint64)), device, SLOT(slotJobUploadProgress(qint64,qint64)));
     connect(job, SIGNAL(destroyed(QObject*)), this, SLOT(slotJobDestroyed(QObject*)));
     job->start();
-    _propagator->_activeJobs++;
+    _propagator->_activeJobList.append(this);
     _currentChunk++;
 
     bool parallelChunkUpload = true;
@@ -581,7 +582,7 @@ void PropagateUploadFileQNAM::startNextChunk()
         parallelChunkUpload = false;
     }
 
-    if (parallelChunkUpload && (_propagator->_activeJobs < _propagator->maximumActiveJob())
+    if (parallelChunkUpload && (_propagator->_activeJobList.count() < _propagator->maximumActiveJob())
             && _currentChunk < _chunkCount ) {
         startNextChunk();
     }
@@ -602,7 +603,7 @@ void PropagateUploadFileQNAM::slotPutFinished()
              << job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute)
              << job->reply()->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
 
-    _propagator->_activeJobs--;
+    _propagator->_activeJobList.removeOne(this);
 
     if (_finished) {
         // We have sent the finished signal already. We don't need to handle any remaining jobs
@@ -828,7 +829,7 @@ void PropagateUploadFileQNAM::startPollJob(const QString& path)
     info._modtime = _item->_modtime;
     _propagator->_journal->setPollInfo(info);
     _propagator->_journal->commit("add poll info");
-    _propagator->_activeJobs++;
+    _propagator->_activeJobList.append(this);
     job->start();
 }
 
@@ -837,7 +838,7 @@ void PropagateUploadFileQNAM::slotPollFinished()
     PollJob *job = qobject_cast<PollJob *>(sender());
     Q_ASSERT(job);
 
-    _propagator->_activeJobs--;
+    _propagator->_activeJobList.removeOne(this);
 
     if (job->_item->_status != SyncFileItem::Success) {
         _finished = true;

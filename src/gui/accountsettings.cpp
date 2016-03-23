@@ -437,8 +437,7 @@ void AccountSettings::slotEnableCurrentFolder()
         if ( f->isBusy() && terminate ) {
             f->slotTerminateSync();
         }
-        f->setSyncPaused(!currentlyPaused); // toggle the pause setting
-        folderMan->slotSetFolderPaused( f, !currentlyPaused );
+        f->setSyncPaused(!currentlyPaused);
 
         // keep state for the icon setting.
         if( currentlyPaused ) _wasDisabledBefore = true;
@@ -513,7 +512,11 @@ void AccountSettings::slotAccountStateChanged(int state)
         }
 
         if (state == AccountState::Connected) {
-            showConnectionLabel( tr("Connected to %1.").arg(serverWithUser) );
+            QStringList errors;
+            if (account->serverVersionUnsupported()) {
+                errors << tr("The server version %1 is old and unsupported! Proceed at your own risk.").arg(account->serverVersion());
+            }
+            showConnectionLabel( tr("Connected to %1.").arg(serverWithUser), errors );
         } else if (state == AccountState::ServiceUnavailable) {
             showConnectionLabel( tr("Server %1 is temporarily unavailable.").arg(server) );
         } else if (state == AccountState::SignedOut) {

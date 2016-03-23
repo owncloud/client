@@ -114,6 +114,9 @@ public:
     void start() Q_DECL_OVERRIDE;
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
+    // We think it might finish quickly because it is a small file.
+    bool isLikelyFinishedQuickly() Q_DECL_OVERRIDE { return _item->_size < 100*1024; }
+
     /**
      * Whether an existing folder with the same name may be deleted before
      * the download.
@@ -128,6 +131,8 @@ public:
 private slots:
     void slotGetFinished();
     void abort() Q_DECL_OVERRIDE;
+    void transmissionChecksumValidated(const QByteArray& checksumType, const QByteArray& checksum);
+    void contentChecksumComputed(const QByteArray& checksumType, const QByteArray& checksum);
     void downloadFinished();
     void slotDownloadProgress(qint64,qint64);
     void slotChecksumFail( const QString& errMsg );
@@ -140,6 +145,8 @@ private:
     QPointer<GETFileJob> _job;
     QFile _tmpFile;
     bool _deleteExisting;
+
+    QElapsedTimer _stopwatch;
 };
 
 }

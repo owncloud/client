@@ -310,7 +310,8 @@ void PropagateDownloadFileQNAM::start()
     if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
-    qDebug() << Q_FUNC_INFO << _item->_file << _propagator->_activeJobs;
+    qDebug() << Q_FUNC_INFO << _item->_file << _propagator->_activeJobList.count();
+    _stopwatch.start();
 
     if (_deleteExisting) {
         deleteExistingFolder();
@@ -414,7 +415,7 @@ void PropagateDownloadFileQNAM::start()
     _job->setBandwidthManager(&_propagator->_bandwidthManager);
     connect(_job, SIGNAL(finishedSignal()), this, SLOT(slotGetFinished()));
     connect(_job, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(slotDownloadProgress(qint64,qint64)));
-    _propagator->_activeJobs ++;
+    _propagator->_activeJobList.append(this);
     _job->start();
 }
 
@@ -434,7 +435,7 @@ void PropagateDownloadFileQNAM::setDeleteExistingFolder(bool enabled)
 const char owncloudCustomSoftErrorStringC[] = "owncloud-custom-soft-error-string";
 void PropagateDownloadFileQNAM::slotGetFinished()
 {
-    _propagator->_activeJobs--;
+    _propagator->_activeJobList.removeOne(this);
 
     GETFileJob *job = qobject_cast<GETFileJob *>(sender());
     Q_ASSERT(job);
@@ -546,11 +547,11 @@ void PropagateDownloadFileQNAM::slotGetFinished()
     }
 
     // Do checksum validation for the download. If there is no checksum header, the validator
-    // will also emit the validated() signal to continue the flow in slot downloadFinished()
+    // will also emit the validated() signal to continue the flow in slot transmissionChecksumValidated()
     // as this is (still) also correct.
     ValidateChecksumHeader *validator = new ValidateChecksumHeader(this);
     connect(validator, SIGNAL(validated(QByteArray,QByteArray)),
-            SLOT(downloadFinished()));
+            SLOT(transmissionChecksumValidated(QByteArray,QByteArray)));
     connect(validator, SIGNAL(validationFailed(QString)),
             SLOT(slotChecksumFail(QString)));
     auto checksumHeader = job->reply()->rawHeader(checkSumHeaderC);
@@ -636,7 +637,47 @@ static void handleRecallFile(const QString &fn)
         FileSystem::uncheckedRenameReplace(fpath, rpath, &error);
     }
 }
+
+static void preserveGroupOwnership(const QString& fileName, const QFileInfo& fi)
+{
+#ifdef Q_OS_UNIX
+    chown(fileName.toLocal8Bit().constData(), -1, fi.groupId());
+#else
+    Q_UNUSED(fileName);
+    Q_UNUSED(fi);
+#endif
+}
 } // end namespace
+
+
+void PropagateDownloadFileQNAM::transmissionChecksumValidated(const QByteArray &checksumType, const QByteArray &checksum)
+{
+    const auto theContentChecksumType = contentChecksumType();
+
+    // Reuse transmission checksum as content checksum.
+    //
+    // We could do this more aggressively and accept both MD5 and SHA1
+    // instead of insisting on the exactly correct checksum type.
+    if (theContentChecksumType == checksumType || theContentChecksumType.isEmpty()) {
+        return contentChecksumComputed(checksumType, checksum);
+    }
+
+    // Compute the content checksum.
+    auto computeChecksum = new ComputeChecksum(this);
+    computeChecksum->setChecksumType(theContentChecksumType);
+
+    connect(computeChecksum, SIGNAL(done(QByteArray,QByteArray)),
+            SLOT(contentChecksumComputed(QByteArray,QByteArray)));
+    computeChecksum->start(_tmpFile.fileName());
+}
+
+void PropagateDownloadFileQNAM::contentChecksumComputed(const QByteArray &checksumType, const QByteArray &checksum)
+{
+    _item->_contentChecksum = checksum;
+    _item->_contentChecksumType = checksumType;
+
+    downloadFinished();
+}
 
 void PropagateDownloadFileQNAM::downloadFinished()
 {
@@ -676,6 +717,7 @@ void PropagateDownloadFileQNAM::downloadFinished()
         if (existingFile.permissions() != _tmpFile.permissions()) {
             _tmpFile.setPermissions(existingFile.permissions());
         }
+        preserveGroupOwnership(_tmpFile.fileName(), existingFile);
 
         // Check whether the existing file has changed since the discovery
         // phase by comparing size and mtime to the previous values. This
@@ -691,8 +733,13 @@ void PropagateDownloadFileQNAM::downloadFinished()
     }
 
     // Apply the remote permissions
-    FileSystem::setFileReadOnlyWeak(_tmpFile.fileName(),
-                                    !_item->_remotePerm.contains('W'));
+    // Older server versions sometimes provide empty remote permissions
+    // see #4450 - don't adjust the write permissions there.
+    const int serverVersionGoodRemotePerm = 0x070000; // 7.0.0
+    if (_propagator->account()->serverVersionInt() >= serverVersionGoodRemotePerm) {
+        FileSystem::setFileReadOnlyWeak(_tmpFile.fileName(),
+                                        !_item->_remotePerm.contains('W'));
+    }
 
     QString error;
     _propagator->addTouchedFile(fn);
@@ -730,6 +777,11 @@ void PropagateDownloadFileQNAM::downloadFinished()
     // handle the special recall file
     if(_item->_file == QLatin1String(".sys.admin#recall#") || _item->_file.endsWith("/.sys.admin#recall#")) {
         handleRecallFile(fn);
+    }
+
+    qint64 duration = _stopwatch.elapsed();
+    if (isLikelyFinishedQuickly() && duration > 5*1000) {
+        qDebug() << "WARNING: Unexpectedly slow connection, took" << duration << "msec for" << _item->_size - _resumeStart << "bytes for" << _item->_file;
     }
 }
 
