@@ -27,8 +27,6 @@
 #include <QSharedPointer>
 
 #include <csync.h>
-
-// when do we go away with this private/public separation?
 #include <csync_private.h>
 
 #include "excludedfiles.h"

@@ -32,8 +32,10 @@
 #include "theme.h"
 #include "filesystem.h"
 #include "excludedfiles.h"
+#include <csync_private.h>
 
 #include "creds/abstractcredentials.h"
+#include <csync_private.h>
 
 #include <QDebug>
 #include <QTimer>

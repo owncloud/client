@@ -22,6 +22,7 @@
 #include "owncloudsetupwizard.h"
 #include "accountmanager.h"
 #include "synclogdialog.h"
+#include "windowraiser.h"
 
 #include "updater/updater.h"
 #include "updater/ocupdater.h"
@@ -157,7 +158,7 @@ void GeneralSettings::slotIgnoreFilesEditor()
         _ignoreEditor->setAttribute( Qt::WA_DeleteOnClose, true );
         _ignoreEditor->open();
     } else {
-        ownCloudGui::raiseDialog(_ignoreEditor);
+        WindowRaiser::raiseDialog(_ignoreEditor);
     }
 }
 

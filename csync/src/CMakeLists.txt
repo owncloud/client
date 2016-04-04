@@ -72,10 +72,8 @@ configure_file(csync_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h)
 
 set(csync_HDRS
   ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h
+  ${CMAKE_CURRENT_BINARY_DIR}/../config_csync.h
   csync.h
-  vio/csync_vio.h
-  vio/csync_vio_method.h
-  vio/csync_vio_module.h
 )
 
 # Statically include sqlite
@@ -104,34 +102,22 @@ set_target_properties(
       RUNTIME_OUTPUT_DIRECTORY
         ${BIN_OUTPUT_DIRECTORY}
 )
-if(BUILD_OWNCLOUD_OSX_BUNDLE)
-  INSTALL(
-    TARGETS
-      ${CSYNC_LIBRARY}
-    LIBRARY DESTINATION
-	${LIB_INSTALL_DIR}
-    ARCHIVE DESTINATION
-	${LIB_INSTALL_DIR}
-    RUNTIME DESTINATION
-	${BIN_INSTALL_DIR}
-    )
-else()
-  INSTALL(
+
+INSTALL(
   TARGETS
     ${CSYNC_LIBRARY}
   LIBRARY DESTINATION
-    ${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
+    ${LIB_INSTALL_DIR}
   ARCHIVE DESTINATION
-    ${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
+    ${LIB_INSTALL_DIR}
   RUNTIME DESTINATION
-    ${BIN_INSTALL_DIR}/${APPLICATION_EXECUTABLE}
+    ${BIN_INSTALL_DIR}
   )
-endif()
+INSTALL(
+  FILES
+    ${csync_HDRS}
+  DESTINATION
+    ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}
+  )
 
-# INSTALL(
-#   FILES
-#     ${csync_HDRS}
-#   DESTINATION
-#     ${INCLUDE_INSTALL_DIR}/${APPLICATION_NAME}
-# )
 

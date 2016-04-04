@@ -48,7 +48,6 @@ public:
 
     bool checkAccountExists(bool openSettings);
 
-    static void raiseDialog(QWidget *raiseWidget);
     static QSize settingsDialogSize() { return QSize(800, 500); }
     void setupOverlayIcons();
 
