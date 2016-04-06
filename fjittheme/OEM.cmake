@@ -2,7 +2,7 @@ set( APPLICATION_NAME       "Skylagring" )
 set( APPLICATION_EXECUTABLE "Skylagring" )
 set( APPLICATION_DOMAIN     "fil.fjit.no" )
 set( APPLICATION_VENDOR     "Serit Fjordane IT AS" )
-set( APPLICATION_UPDATE_URL "https://fog.fjordane-it.no/install/client/" CACHE string "URL for updater" )
+set( APPLICATION_UPDATE_URL "https://deploy.fjit.no/skylagring/client/" CACHE string "URL for updater" )
 set( APPLICATION_CLSID      "{2F8BD8E0-03B3-47C5-A1E1-5C182FA6FFD0}" )
 
 set( THEME_CLASS            "MyTheme" )
