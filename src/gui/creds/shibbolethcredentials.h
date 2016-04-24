@@ -66,6 +66,8 @@ public:
     static QNetworkCookie findShibCookie(Account *, QList<QNetworkCookie> cookies = QList<QNetworkCookie>());
     static QByteArray shibCookieName();
 
+    const char* getAuthenticationFailedC();
+
 private Q_SLOTS:
     void onShibbolethCookieReceived(const QNetworkCookie&);
     void slotBrowserRejected();

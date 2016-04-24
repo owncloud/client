@@ -59,11 +59,32 @@ public:
 
     qint64 timeoutMsec() { return _timer.interval(); }
 
+    // These methods are used to replace the direct calls that were used to fetch the same information.
+    // Can and should be overloaded when needed by specific implementation.
+
+    virtual void abortNetworkReply();
+
+    virtual QUrl getUrl();
+    virtual QNetworkReply::NetworkError getError();
+    virtual int getHttpStatusCode();
+    virtual QString getHttpReasonPhrase();
+    virtual QString getErrorString();
+    virtual bool getHasOCErrorString();
+    virtual QByteArray getOCErrorString();
+    virtual  bool getHasOCFileID();
+    virtual QByteArray getOCFileID();
+    virtual QByteArray replyReadAll();
+    virtual QString getContentTypeHeader();
+    virtual QUrl getRedirectionTarget();
+    virtual bool getHasSTS();
+
 public slots:
     void setTimeout(qint64 msec);
     void resetTimeout();
 signals:
+    //TODO MBO : remove this one if it's not used anymore once all dependencies are fixed.
     void networkError(QNetworkReply *reply);
+    void networkError();
     void networkActivity();
 protected:
     void setupConnections(QNetworkReply *reply);
@@ -128,6 +149,8 @@ QString OWNCLOUDSYNC_EXPORT extractErrorMessage(const QByteArray& errorResponse)
 
 /** Builds a error message based on the error and the reply body. */
 QString OWNCLOUDSYNC_EXPORT errorMessage(const QString& baseError, const QByteArray& body);
+
+
 
 } // namespace OCC
 

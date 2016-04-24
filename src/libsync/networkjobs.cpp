@@ -314,6 +314,15 @@ void LsColJob::start()
     AbstractNetworkJob::start();
 }
 
+// Catches the signal emitted by the parser, which sends a QNetworkReply,
+// and emits a signal without it instead.
+void LsColJob::parserFinishedWithError(QNetworkReply *parserReply)
+{
+    // TODO  : for now.
+    Q_UNUSED(parserReply)
+    emit finishedWithError();
+}
+
 // TODO: Instead of doing all in this slot, we should iteratively parse in readyRead(). This
 // would allow us to be more asynchronous in processing while data is coming from the network,
 // not all in one big blob at the end.
@@ -328,21 +337,21 @@ bool LsColJob::finished()
         connect( &parser, SIGNAL(directoryListingIterated(const QString&, const QMap<QString,QString>&)),
                  this, SIGNAL(directoryListingIterated(const QString&, const QMap<QString,QString>&)) );
         connect( &parser, SIGNAL(finishedWithError(QNetworkReply *)),
-                 this, SIGNAL(finishedWithError(QNetworkReply *)) );
+                 this, SIGNAL(parserFinishedWithError(QNetworkReply *)) );
         connect( &parser, SIGNAL(finishedWithoutError()),
                  this, SIGNAL(finishedWithoutError()) );
 
         QString expectedPath = reply()->request().url().path(); // something like "/owncloud/remote.php/webdav/folder"
         if( !parser.parse( reply()->readAll(), &_sizes, expectedPath ) ) {
             // XML parse error
-            emit finishedWithError(reply());
+            emit finishedWithError();
         }
     } else if (httpCode == 207) {
         // wrong content type
-        emit finishedWithError(reply());
+        emit finishedWithError();
     } else {
         // wrong HTTP code or any other network error
-        emit finishedWithError(reply());
+        emit finishedWithError();
     }
 
     return true;

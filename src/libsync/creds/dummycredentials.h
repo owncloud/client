@@ -38,6 +38,7 @@ public:
     void persist() Q_DECL_OVERRIDE;
     void invalidateToken() Q_DECL_OVERRIDE {}
     void forgetSensitiveData() Q_DECL_OVERRIDE {};
+    const char* getAuthenticationFailedC() Q_DECL_OVERRIDE;
 };
 
 } // namespace OCC

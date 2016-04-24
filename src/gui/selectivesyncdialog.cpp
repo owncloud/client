@@ -85,8 +85,8 @@ void SelectiveSyncTreeView::refreshFolders()
     job->setProperties(QList<QByteArray>() << "resourcetype" << "http://owncloud.org/ns:size");
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             this, SLOT(slotUpdateDirectories(QStringList)));
-    connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
-            this, SLOT(slotLscolFinishedWithError(QNetworkReply*)));
+    connect(job, SIGNAL(finishedWithError()),
+            this, SLOT(slotLscolFinishedWithError()));
     job->start();
     clear();
     _loading->show();
@@ -239,9 +239,11 @@ void SelectiveSyncTreeView::slotUpdateDirectories(QStringList list)
     root->setExpanded(true);
 }
 
-void SelectiveSyncTreeView::slotLscolFinishedWithError(QNetworkReply *r)
+void SelectiveSyncTreeView::slotLscolFinishedWithError()
 {
-    if (r->error() == QNetworkReply::ContentNotFoundError) {
+    LsColJob *job = qobject_cast<LsColJob *>(sender());
+
+    if (job->getError() == QNetworkReply::ContentNotFoundError) {
         _loading->setText(tr("No subfolders currently on the server."));
     } else {
         _loading->setText(tr("An error occurred while loading the list of sub folders."));

@@ -167,7 +167,7 @@ void AbstractNetworkJob::slotFinished()
         if (_reply->error() == QNetworkReply::ProxyAuthenticationRequiredError) {
             qDebug() << Q_FUNC_INFO << _reply->rawHeader("Proxy-Authenticate");
         }
-        emit networkError(_reply);
+        emit networkError();
     }
 
     // get the Date timestamp from reply
@@ -245,6 +245,117 @@ void AbstractNetworkJob::slotTimeout()
     }
 }
 
+void AbstractNetworkJob::abortNetworkReply()
+{
+    if (_reply)
+        _reply->abort();
+
+    return;
+}
+
+QUrl AbstractNetworkJob::getUrl()
+{
+    if (_reply)
+        return _reply->request().url();
+    else
+        return QUrl();
+}
+
+QNetworkReply::NetworkError AbstractNetworkJob::getError()
+{
+    if (_reply)
+        return _reply->error();
+    else
+        return QNetworkReply::NoError;
+}
+
+int AbstractNetworkJob::getHttpStatusCode()
+{
+    if (_reply)
+        return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    else
+        return 0;
+}
+
+QString AbstractNetworkJob::getHttpReasonPhrase()
+{
+    if (_reply)
+        return _reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+    else
+        return QString();
+}
+
+QString AbstractNetworkJob::getErrorString()
+{
+    if (_reply)
+        return _reply->errorString();
+    else
+        return QString();
+}
+
+bool AbstractNetworkJob::getHasOCErrorString()
+{
+    if (_reply)
+        return _reply->hasRawHeader("OC-ErrorString");
+    else
+        return false;
+}
+
+QByteArray AbstractNetworkJob::getOCErrorString()
+{
+    if (_reply)
+        return _reply->rawHeader("OC-ErrorString");
+    else
+        return QByteArray();
+}
+
+bool AbstractNetworkJob::getHasOCFileID()
+{
+    if (_reply)
+        return _reply->hasRawHeader("OC-FileId");
+    else
+        return false;
+}
+
+QByteArray AbstractNetworkJob::getOCFileID()
+{
+    if (_reply)
+        return _reply->rawHeader("OC-FileId");
+    else
+        return QByteArray();
+}
+
+QByteArray AbstractNetworkJob::replyReadAll()
+{
+    if (_reply)
+        return _reply->readAll();
+    else
+        return QByteArray();
+}
+
+QString AbstractNetworkJob::getContentTypeHeader()
+{
+    if (_reply)
+        return _reply->header(QNetworkRequest::ContentTypeHeader).toString();
+    else
+        return QString();
+}
+
+QUrl AbstractNetworkJob::getRedirectionTarget()
+{
+    if (_reply)
+        return _reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    else
+        return QUrl();
+}
+
+bool AbstractNetworkJob::getHasSTS()
+{
+    if (_reply)
+        return _reply->hasRawHeader("Strict-Transport-Security");
+    else
+        return false;
+}
 
 NetworkJobTimeoutPauser::NetworkJobTimeoutPauser(QNetworkReply *reply)
 {

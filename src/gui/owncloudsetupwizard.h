@@ -88,7 +88,7 @@ private:
     void finalizeSetup( bool );
     bool ensureStartFromScratch(const QString &localFolder);
     AccountState *applyAccountChanges();
-    bool checkDowngradeAdvised(QNetworkReply* reply);
+    bool checkDowngradeAdvised(AbstractNetworkJob *job);
 
     OwncloudWizard* _ocWizard;
     QString _initLocalFolder;

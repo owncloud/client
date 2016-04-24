@@ -79,8 +79,13 @@ public:
 signals:
     void directoryListingSubfolders(const QStringList &items);
     void directoryListingIterated(const QString &name, const QMap<QString,QString> &properties);
+    // TODO MBO : should be removed if unused after all dependencies are fixed.
     void finishedWithError(QNetworkReply *reply);
+    void finishedWithError();
     void finishedWithoutError();
+
+public slots:
+    void parserFinishedWithError(QNetworkReply *reply);
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -118,7 +123,8 @@ public:
 
 signals:
     void result(const QVariantMap &values);
-    void finishedWithError(QNetworkReply *reply = 0);
+    void finishedWithError(QNetworkReply *reply);
+    void finishedWithError();
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;

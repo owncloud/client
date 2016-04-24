@@ -105,7 +105,7 @@ protected slots:
     void slotNoStatusFound(QNetworkReply *reply);
     void slotJobTimeout(const QUrl& url);
 
-    void slotAuthFailed(QNetworkReply *reply);
+    void slotAuthFailed();
     void slotAuthSuccess();
 
     void slotCapabilitiesRecieved(const QVariantMap&);

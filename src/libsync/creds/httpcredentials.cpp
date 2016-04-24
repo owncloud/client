@@ -119,6 +119,11 @@ void HttpCredentials::setAccount(Account* account)
     }
 }
 
+const char* HttpCredentials::getAuthenticationFailedC()
+{
+    return authenticationFailedC;
+}
+
 QNetworkAccessManager* HttpCredentials::getQNAM() const
 {
     AccessManager* qnam = new HttpCredentialsAccessManager(this);
@@ -180,6 +185,14 @@ bool HttpCredentials::stillValid(QNetworkReply *reply)
             && (reply->error() != QNetworkReply::OperationCanceledError
                 || !reply->property(authenticationFailedC).toBool()));
 }
+
+//bool HttpCredentials::stillValid(QNetworkReply::NetworkError error, bool authFailed)
+//{
+//    return ((error == QNetworkReply::AuthenticationRequiredError)
+//            // returned if user or password is incorrect
+//            && (error != QNetworkReply::OperationCanceledError
+//                || !authFailed));
+//}
 
 void HttpCredentials::slotReadJobDone(QKeychain::Job *job)
 {

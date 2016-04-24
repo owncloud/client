@@ -210,7 +210,7 @@ void FolderWizardRemotePath::slotCreateRemoteFolder(const QString &folder)
     /* check the owncloud configuration file and query the ownCloud */
     connect(job, SIGNAL(finished(QNetworkReply::NetworkError)),
                  SLOT(slotCreateRemoteFolderFinished(QNetworkReply::NetworkError)));
-    connect(job, SIGNAL(networkError(QNetworkReply*)), SLOT(slotHandleMkdirNetworkError(QNetworkReply*)));
+    connect(job, SIGNAL(networkError()), SLOT(slotHandleMkdirNetworkError()));
     job->start();
 }
 
@@ -225,10 +225,14 @@ void FolderWizardRemotePath::slotCreateRemoteFolderFinished(QNetworkReply::Netwo
     }
 }
 
-void FolderWizardRemotePath::slotHandleMkdirNetworkError(QNetworkReply *reply)
+void FolderWizardRemotePath::slotHandleMkdirNetworkError()
 {
-    qDebug() << "** webdav mkdir request failed:" << reply->error();
-    if( reply && !_account->credentials()->stillValid(reply) ) {
+    MkColJob *job = static_cast<MkColJob *>(sender());
+
+    QNetworkReply::NetworkError err = job->getError();
+
+    qDebug() << "** webdav mkdir request failed:" << err;
+    if(!_account->credentials()->stillValid(job->reply()) ) {
         showWarn(tr("Authentication failed accessing %1").arg(Theme::instance()->appNameGUI()));
     } else {
         showWarn(tr("Failed to create the folder on %1. Please check manually.")
@@ -236,10 +240,12 @@ void FolderWizardRemotePath::slotHandleMkdirNetworkError(QNetworkReply *reply)
     }
 }
 
-void FolderWizardRemotePath::slotHandleLsColNetworkError(QNetworkReply *reply)
+void FolderWizardRemotePath::slotHandleLsColNetworkError()
 {
+    LsColJob *job = static_cast<LsColJob *>(sender());
+
     showWarn(tr("Failed to list a folder. Error: %1")
-             .arg(errorMessage(reply->errorString(), reply->readAll())));
+             .arg(errorMessage(job->getErrorString(), job->replyReadAll())));
 }
 
 static QTreeWidgetItem* findFirstChild(QTreeWidgetItem *parent, const QString& text)
@@ -413,8 +419,8 @@ LsColJob* FolderWizardRemotePath::runLsColJob(const QString& path)
     job->setProperties(QList<QByteArray>() << "resourcetype");
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotUpdateDirectories(QStringList)));
-    connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
-            SLOT(slotHandleLsColNetworkError(QNetworkReply*)));
+    connect(job, SIGNAL(finishedWithError()),
+            SLOT(slotHandleLsColNetworkError()));
     job->start();
 
     return job;

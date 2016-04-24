@@ -177,26 +177,32 @@ void ConnectionValidator::checkAuthentication()
     job->setTimeout(timeoutToUseMsec);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, SIGNAL(result(QVariantMap)), SLOT(slotAuthSuccess()));
-    connect(job, SIGNAL(finishedWithError(QNetworkReply*)), SLOT(slotAuthFailed(QNetworkReply*)));
+    connect(job, SIGNAL(finishedWithError()), SLOT(slotAuthFailed()));
     job->start();
 }
 
-void ConnectionValidator::slotAuthFailed(QNetworkReply *reply)
+void ConnectionValidator::slotAuthFailed()
 {
+    PropfindJob *job = qobject_cast<PropfindJob*>(sender());
+    QNetworkReply::NetworkError err = job->getError();
+    QString errorString = job->getErrorString();
+
     Status stat = Timeout;
 
-    if( reply->error() == QNetworkReply::AuthenticationRequiredError ||
-             !_account->credentials()->stillValid(reply)) {
-        qDebug() <<  reply->error() << reply->errorString();
+    if( err == QNetworkReply::AuthenticationRequiredError ||
+             !_account->credentials()->stillValid(job->reply())) {
+
+
+        qDebug() <<  err << errorString;
         qDebug() << "******** Password is wrong!";
         _errors << tr("The provided credentials are not correct");
         stat = CredentialsMissingOrWrong;
 
-    } else if( reply->error() != QNetworkReply::NoError ) {
-        _errors << errorMessage(reply->errorString(), reply->readAll());
+    } else if( err != QNetworkReply::NoError ) {
+        _errors << errorMessage(errorString, job->replyReadAll());
 
-        const int httpStatus =
-                reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        const int httpStatus = job->getHttpStatusCode();
+
         if ( httpStatus == 503 ) {
             _errors.clear();
             stat = ServiceUnavailable;

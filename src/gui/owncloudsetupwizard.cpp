@@ -166,10 +166,16 @@ void OwncloudSetupWizard::slotOwnCloudFoundAuth(const QUrl& url, const QVariantM
 
 void OwncloudSetupWizard::slotNoOwnCloudFoundAuth(QNetworkReply *reply)
 {
+    // We keep the slot with that signature to avoid having to rewrite the signal from CheckServerJob.
+    // Since this class won't be overloaded for owncrypt given what it does, this avoid an unneeded change.
+    Q_UNUSED(reply);
+
+    AbstractNetworkJob* job = qobject_cast<AbstractNetworkJob*>(sender());
+
     _ocWizard->displayError(tr("Failed to connect to %1 at %2:<br/>%3")
                             .arg(Theme::instance()->appNameGUI(),
-                                 reply->url().toString(),
-                                 reply->errorString()), checkDowngradeAdvised(reply));
+                                 job->getUrl().toString(),
+                                 job->getErrorString()), checkDowngradeAdvised(job));
 
     // Allow the credentials dialog to pop up again for the same URL.
     // Maybe the user just clicked 'Cancel' by accident or changed his mind.
@@ -216,11 +222,13 @@ void OwncloudSetupWizard::slotAuthError()
         qWarning() << "Can't check for authed redirects. This slot should be invoked from PropfindJob!";
         return;
     }
-    QNetworkReply* reply = job->reply();
 
     // If there were redirects on the *authed* requests, also store
     // the updated server URL, similar to redirects on status.php.
-    QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    QUrl redirectUrl = job->getRedirectionTarget();
+
+    QNetworkReply::NetworkError err = job->getError();
+
     if (!redirectUrl.isEmpty()) {
         qDebug() << "authed request was redirected to" << redirectUrl.toString();
 
@@ -242,18 +250,18 @@ void OwncloudSetupWizard::slotAuthError()
 
     // A 404 is actually a success: we were authorized to know that the folder does
     // not exist. It will be created later...
-    } else if (reply->error() == QNetworkReply::ContentNotFoundError) {
+    } else if (err == QNetworkReply::ContentNotFoundError) {
         _ocWizard->successfulStep();
         return;
 
     // Provide messages for other errors, such as invalid credentials.
-    } else if (reply->error() != QNetworkReply::NoError) {
-        if (!_ocWizard->account()->credentials()->stillValid(reply)) {
+    } else if (err != QNetworkReply::NoError) {
+        if (!_ocWizard->account()->credentials()->stillValid(job->reply())) {
             errorMsg = tr("Access forbidden by server. To verify that you have proper access, "
                           "<a href=\"%1\">click here</a> to access the service with your browser.")
                        .arg(_ocWizard->account()->url().toString());
         } else {
-            errorMsg = errorMessage(reply->errorString(), reply->readAll());
+            errorMsg = errorMessage(job->getErrorString(), job->replyReadAll());
         }
 
     // Something else went wrong, maybe the response was 200 but with invalid data.
@@ -265,16 +273,16 @@ void OwncloudSetupWizard::slotAuthError()
     if (_ocWizard->currentId() == WizardCommon::Page_ShibbolethCreds) {
         _ocWizard->back();
     }
-    _ocWizard->displayError(errorMsg, _ocWizard->currentId() == WizardCommon::Page_ServerSetup && checkDowngradeAdvised(reply));
+    _ocWizard->displayError(errorMsg, _ocWizard->currentId() == WizardCommon::Page_ServerSetup && checkDowngradeAdvised(job));
 }
 
-bool OwncloudSetupWizard::checkDowngradeAdvised(QNetworkReply* reply)
+bool OwncloudSetupWizard::checkDowngradeAdvised(AbstractNetworkJob *job)
 {
-    if(reply->url().scheme() != QLatin1String("https")) {
+    if(job->getUrl().scheme() != QLatin1String("https")) {
         return false;
     }
 
-    switch (reply->error()) {
+    switch (job->getError()) {
     case QNetworkReply::NoError:
     case QNetworkReply::ContentNotFoundError:
     case QNetworkReply::AuthenticationRequiredError:
@@ -285,7 +293,7 @@ bool OwncloudSetupWizard::checkDowngradeAdvised(QNetworkReply* reply)
     }
 
     // Adhere to HSTS, even though we do not parse it properly
-    if (reply->hasRawHeader("Strict-Transport-Security")) {
+    if (job->getHasSTS()) {
         return false;
     }
     return true;
