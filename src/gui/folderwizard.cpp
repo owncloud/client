@@ -229,7 +229,7 @@ void FolderWizardRemotePath::slotHandleMkdirNetworkError()
 {
     MkColJob *job = static_cast<MkColJob *>(sender());
 
-    QNetworkReply::NetworkError err = job->getError();
+    QNetworkReply::NetworkError err = job->replyError();
 
     qDebug() << "** webdav mkdir request failed:" << err;
     if(!_account->credentials()->stillValid(job->reply()) ) {
@@ -245,7 +245,7 @@ void FolderWizardRemotePath::slotHandleLsColNetworkError()
     LsColJob *job = static_cast<LsColJob *>(sender());
 
     showWarn(tr("Failed to list a folder. Error: %1")
-             .arg(errorMessage(job->getErrorString(), job->replyReadAll())));
+             .arg(errorMessage(job->replyErrorString(), job->replyReadAll())));
 }
 
 static QTreeWidgetItem* findFirstChild(QTreeWidgetItem *parent, const QString& text)

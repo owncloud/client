@@ -247,114 +247,182 @@ void AbstractNetworkJob::slotTimeout()
 
 void AbstractNetworkJob::abortNetworkReply()
 {
-    if (_reply)
+    if (_reply) {
         _reply->abort();
+    }
 
     return;
 }
 
-QUrl AbstractNetworkJob::getUrl()
+QUrl AbstractNetworkJob::replyUrl()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->request().url();
-    else
+    } else {
         return QUrl();
+    }
 }
 
-QNetworkReply::NetworkError AbstractNetworkJob::getError()
+QNetworkReply::NetworkError AbstractNetworkJob::replyError()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->error();
-    else
+    } else {
         return QNetworkReply::NoError;
+    }
 }
 
-int AbstractNetworkJob::getHttpStatusCode()
+int AbstractNetworkJob::replyHttpStatusCode()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    else
+    } else {
         return 0;
+    }
 }
 
-QString AbstractNetworkJob::getHttpReasonPhrase()
+QString AbstractNetworkJob::replyHttpReasonPhrase()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-    else
+    } else {
         return QString();
+    }
 }
 
-QString AbstractNetworkJob::getErrorString()
+QString AbstractNetworkJob::replyErrorString()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->errorString();
-    else
+    } else {
         return QString();
+    }
 }
 
-bool AbstractNetworkJob::getHasOCErrorString()
+bool AbstractNetworkJob::replyHasOCErrorString()
 {
-    if (_reply)
-        return _reply->hasRawHeader("OC-ErrorString");
-    else
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCErrorHeaderName);
+    } else {
         return false;
+    }
 }
 
-QByteArray AbstractNetworkJob::getOCErrorString()
+QByteArray AbstractNetworkJob::replyOCErrorString()
 {
-    if (_reply)
-        return _reply->rawHeader("OC-ErrorString");
-    else
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCErrorHeaderName);
+    } else {
         return QByteArray();
+    }
 }
 
-bool AbstractNetworkJob::getHasOCFileID()
+bool AbstractNetworkJob::replyHasOCFileID()
 {
-    if (_reply)
-        return _reply->hasRawHeader("OC-FileId");
-    else
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudFileIDHeaderName);
+    } else {
         return false;
+    }
 }
 
-QByteArray AbstractNetworkJob::getOCFileID()
+QByteArray AbstractNetworkJob::replyOCFileID()
 {
-    if (_reply)
-        return _reply->rawHeader("OC-FileId");
-    else
+    if (_reply) {
+        return _reply->rawHeader(owncloudFileIDHeaderName);
+    } else {
         return QByteArray();
+    }
 }
 
 QByteArray AbstractNetworkJob::replyReadAll()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->readAll();
-    else
+    } else {
         return QByteArray();
+    }
 }
 
-QString AbstractNetworkJob::getContentTypeHeader()
+QString AbstractNetworkJob::replyContentTypeHeader()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->header(QNetworkRequest::ContentTypeHeader).toString();
-    else
+    } else {
         return QString();
+    }
 }
 
-QUrl AbstractNetworkJob::getRedirectionTarget()
+QUrl AbstractNetworkJob::replyRedirectionTarget()
 {
-    if (_reply)
+    if (_reply) {
         return _reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-    else
+    } else {
         return QUrl();
+    }
 }
 
-bool AbstractNetworkJob::getHasSTS()
+bool AbstractNetworkJob::replyHasSTS()
 {
-    if (_reply)
-        return _reply->hasRawHeader("Strict-Transport-Security");
-    else
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudSTSHeaderName);
+    } else {
         return false;
+    }
+}
+
+bool AbstractNetworkJob::replyHasContentRange()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudContentRangeHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyContentRange()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudContentRangeHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasContentLength()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudContentLengthHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyContentLength()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudContentLengthHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+QString AbstractNetworkJob::replyCustomSoftErrorString()
+{
+    if (_reply) {
+        return _reply->property(owncloudCustomSoftErrorStringC).toString();
+    } else {
+        return QString();
+    }
+}
+
+bool AbstractNetworkJob::replyCustomSoftErrorStringIsValid()
+{
+    if (_reply) {
+        return _reply->property(owncloudCustomSoftErrorStringC).isValid();
+    } else {
+        return true;
+    }
 }
 
 NetworkJobTimeoutPauser::NetworkJobTimeoutPauser(QNetworkReply *reply)

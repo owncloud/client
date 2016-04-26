@@ -72,22 +72,22 @@ void PropagateRemoteMkdir::slotMkcolJobFinished()
 
     Q_ASSERT(_job);
 
-    QNetworkReply::NetworkError err = _job->getError();
+    QNetworkReply::NetworkError err = _job->replyError();
 
-    qDebug() << Q_FUNC_INFO << _job->getUrl() << "FINISHED WITH STATUS"
+    qDebug() << Q_FUNC_INFO << _job->replyUrl() << "FINISHED WITH STATUS"
         << err
-        << (err == QNetworkReply::NoError ? QLatin1String("") : _job->getErrorString());
+        << (err == QNetworkReply::NoError ? QLatin1String("") : _job->replyErrorString());
 
-    _item->_httpErrorCode = _job->getHttpStatusCode();
+    _item->_httpErrorCode = _job->replyHttpStatusCode();
 
     if (_item->_httpErrorCode == 405) {
         // This happens when the directory already exists. Nothing to do.
     } else if (err != QNetworkReply::NoError) {
         SyncFileItem::Status status = classifyError(err, _item->_httpErrorCode,
                                                     &_propagator->_anotherSyncNeeded);
-        auto errorString = _job->getErrorString();
-        if (_job->getHasOCErrorString()) {
-            errorString = _job->getOCErrorString();
+        auto errorString = _job->replyErrorString();
+        if (_job->replyHasOCErrorString()) {
+            errorString = _job->replyOCErrorString();
         }
         done(status, errorString);
         return;
@@ -96,13 +96,13 @@ void PropagateRemoteMkdir::slotMkcolJobFinished()
         // If it is not the case, it might be because of a proxy or gateway intercepting the request, so we must
         // throw an error.
         done(SyncFileItem::NormalError, tr("Wrong HTTP code returned by server. Expected 201, but received \"%1 %2\".")
-            .arg(_item->_httpErrorCode).arg(_job->getHttpReasonPhrase()));
+            .arg(_item->_httpErrorCode).arg(_job->replyHttpReasonPhrase()));
         return;
     }
 
     _item->_requestDuration = _job->duration();
     _item->_responseTimeStamp = _job->responseTimestamp();
-    _item->_fileId = _job->getOCFileID();
+    _item->_fileId = _job->replyOCFileID();
 
     if (_item->_fileId.isEmpty()) {
         // Owncloud 7.0.0 and before did not have a header with the file id.

@@ -432,24 +432,23 @@ void PropagateDownloadFileQNAM::setDeleteExistingFolder(bool enabled)
     _deleteExisting = enabled;
 }
 
-const char owncloudCustomSoftErrorStringC[] = "owncloud-custom-soft-error-string";
 void PropagateDownloadFileQNAM::slotGetFinished()
 {
     _propagator->_activeJobList.removeOne(this);
 
     GETFileJob *job = qobject_cast<GETFileJob *>(sender());
     Q_ASSERT(job);
+    QNetworkReply::NetworkError err = job->replyError();
 
-    qDebug() << Q_FUNC_INFO << job->reply()->request().url() << "FINISHED WITH STATUS"
-             << job->reply()->error()
-             << (job->reply()->error() == QNetworkReply::NoError ? QLatin1String("") : job->reply()->errorString())
-             << _item->_httpErrorCode
+    qDebug() << Q_FUNC_INFO << job->replyUrl() << "FINISHED WITH STATUS"
+             << err
+             << (err == QNetworkReply::NoError ? QLatin1String("") : job->replyErrorString())
+             << _item->_httpErrorCode // change to job->replyHttpStatusCode() ?
              << _tmpFile.size() << _item->_size << job->resumeStart()
-             << job->reply()->rawHeader("Content-Range") << job->reply()->rawHeader("Content-Length");
+             << job->replyContentRange() << job->replyContentLength();
 
-    QNetworkReply::NetworkError err = job->reply()->error();
     if (err != QNetworkReply::NoError) {
-        _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        _item->_httpErrorCode = job->replyHttpStatusCode();
 
         // If we sent a 'Range' header and get 416 back, we want to retry
         // without the header.
@@ -484,9 +483,8 @@ void PropagateDownloadFileQNAM::slotGetFinished()
         // This gives a custom QNAM (by the user of libowncloudsync) to abort() a QNetworkReply in its metaDataChanged() slot and
         // set a custom error string to make this a soft error. In contrast to the default hard error this won't bring down
         // the whole sync and allows for a custom error message.
-        QNetworkReply *reply = job->reply();
-        if (err == QNetworkReply::OperationCanceledError && reply->property(owncloudCustomSoftErrorStringC).isValid()) {
-            job->setErrorString(reply->property(owncloudCustomSoftErrorStringC).toString());
+        if (err == QNetworkReply::OperationCanceledError && job->replyCustomSoftErrorStringIsValid()) {
+            job->setErrorString(job->replyCustomSoftErrorString());
             job->setErrorStatus(SyncFileItem::SoftError);
         } else if (badRangeHeader) {
             // Can't do this in classifyError() because 416 without a
@@ -795,8 +793,9 @@ void PropagateDownloadFileQNAM::slotDownloadProgress(qint64 received, qint64)
 
 void PropagateDownloadFileQNAM::abort()
 {
-    if (_job &&  _job->reply())
-        _job->reply()->abort();
+    if (_job) {
+        _job->abortNetworkReply();
+    }
 }
 
 

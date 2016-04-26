@@ -307,7 +307,7 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, con
 
     } else {
         // Remove <webDAV-Url>/folder/ from <webDAV-Url>/folder/subfile.txt
-        file.remove(0, _lsColJob->getUrl().path().length());
+        file.remove(0, _lsColJob->replyUrl().path().length());
         // remove trailing slash
         while (file.endsWith('/')) {
             file.chop(1);
@@ -362,11 +362,11 @@ void DiscoverySingleDirectoryJob::lsJobFinishedWithErrorSlot()
 {
     LsColJob *job = qobject_cast<LsColJob *>(sender());
 
-    QString contentType = job->getContentTypeHeader();
-    int httpCode = job->getHttpStatusCode();
-    QString httpReason = job->getHttpReasonPhrase();
-    QString msg = job->getErrorString();
-    QNetworkReply::NetworkError err = job->getError();
+    QString contentType = job->replyContentTypeHeader();
+    int httpCode = job->replyHttpStatusCode();
+    QString httpReason = job->replyHttpReasonPhrase();
+    QString msg = job->replyErrorString();
+    QNetworkReply::NetworkError err = job->replyError();
 
     int errnoCode = EIO; // Something went wrong
     qDebug() << Q_FUNC_INFO << msg << httpCode << err;

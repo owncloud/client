@@ -318,7 +318,7 @@ void LsColJob::start()
 // and emits a signal without it instead.
 void LsColJob::parserFinishedWithError(QNetworkReply *parserReply)
 {
-    // TODO  : for now.
+    // TODO  : unused for now.
     Q_UNUSED(parserReply)
     emit finishedWithError();
 }
@@ -672,7 +672,7 @@ void EntityExistsJob::start()
 
 bool EntityExistsJob::finished()
 {
-    emit exists(reply());
+    emit exists();
     return true;
 }
 

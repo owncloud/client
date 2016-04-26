@@ -44,7 +44,6 @@ public:
     bool ready() const Q_DECL_OVERRIDE;
     void fetchFromKeychain() Q_DECL_OVERRIDE;
     bool stillValid(QNetworkReply *reply) Q_DECL_OVERRIDE;
-    //bool stillValid(QNetworkReply::NetworkError error, bool authFailed) Q_DECL_OVERRIDE;
     void persist() Q_DECL_OVERRIDE;
     QString user() const Q_DECL_OVERRIDE;
     QString password() const;
@@ -57,8 +56,6 @@ public:
 
     // To fetch the user name as early as possible
     void setAccount(Account* account) Q_DECL_OVERRIDE;
-
-    const char* getAuthenticationFailedC() Q_DECL_OVERRIDE;
 
 private Q_SLOTS:
     void slotAuthentication(QNetworkReply*, QAuthenticator*);

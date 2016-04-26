@@ -31,6 +31,14 @@ namespace OCC {
 
 class AbstractSslErrorHandler;
 
+// Constants used to fetch and/or set attributes/properties/headers in network jobs.
+const char owncloudCustomSoftErrorStringC[] = "owncloud-custom-soft-error-string";
+const char owncloudOCErrorHeaderName[] = "OC-ErrorString";
+const char owncloudContentLengthHeaderName[] = "Content-Length";
+const char owncloudContentRangeHeaderName[] = "Content-Range";
+const char owncloudSTSHeaderName[] = "Strict-Transport-Security";
+const char owncloudFileIDHeaderName[] = "OC-FileId";
+
 /**
  * @brief The AbstractNetworkJob class
  * @ingroup libsync
@@ -64,20 +72,25 @@ public:
 
     virtual void abortNetworkReply();
 
-    virtual QUrl getUrl();
-    virtual QNetworkReply::NetworkError getError();
-    virtual int getHttpStatusCode();
-    virtual QString getHttpReasonPhrase();
-    virtual QString getErrorString();
-    virtual bool getHasOCErrorString();
-    virtual QByteArray getOCErrorString();
-    virtual  bool getHasOCFileID();
-    virtual QByteArray getOCFileID();
+    virtual QUrl replyUrl();
+    virtual QNetworkReply::NetworkError replyError();
+    virtual int replyHttpStatusCode();
+    virtual QString replyHttpReasonPhrase();
+    virtual QString replyErrorString();
+    virtual bool replyHasOCErrorString();
+    virtual QByteArray replyOCErrorString();
+    virtual  bool replyHasOCFileID();
+    virtual QByteArray replyOCFileID();
     virtual QByteArray replyReadAll();
-    virtual QString getContentTypeHeader();
-    virtual QUrl getRedirectionTarget();
-    virtual bool getHasSTS();
-
+    virtual QString replyContentTypeHeader();
+    virtual QUrl replyRedirectionTarget();
+    virtual bool replyHasSTS();
+    virtual bool replyHasContentRange();
+    virtual QByteArray replyContentRange();
+    virtual bool replyHasContentLength();
+    virtual QByteArray replyContentLength();
+    virtual bool replyCustomSoftErrorStringIsValid();
+    virtual QString replyCustomSoftErrorString();
 public slots:
     void setTimeout(qint64 msec);
     void resetTimeout();

@@ -184,8 +184,8 @@ void ConnectionValidator::checkAuthentication()
 void ConnectionValidator::slotAuthFailed()
 {
     PropfindJob *job = qobject_cast<PropfindJob*>(sender());
-    QNetworkReply::NetworkError err = job->getError();
-    QString errorString = job->getErrorString();
+    QNetworkReply::NetworkError err = job->replyError();
+    QString errorString = job->replyErrorString();
 
     Status stat = Timeout;
 
@@ -201,7 +201,7 @@ void ConnectionValidator::slotAuthFailed()
     } else if( err != QNetworkReply::NoError ) {
         _errors << errorMessage(errorString, job->replyReadAll());
 
-        const int httpStatus = job->getHttpStatusCode();
+        const int httpStatus = job->replyHttpStatusCode();
 
         if ( httpStatus == 503 ) {
             _errors.clear();

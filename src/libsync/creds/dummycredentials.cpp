@@ -63,9 +63,4 @@ void DummyCredentials::askFromUser()
 void DummyCredentials::persist()
 {}
 
-const char* DummyCredentials::getAuthenticationFailedC()
-{
-    return "";
-}
-
 } // namespace OCC

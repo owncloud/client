@@ -15,14 +15,13 @@
 #define MIRALL_CREDS_ABSTRACT_CREDENTIALS_H
 
 #include <QObject>
-#include <QNetworkReply>
 
 #include <csync.h>
 #include "owncloudlib.h"
 #include "accountfwd.h"
 
 class QNetworkAccessManager;
-
+class QNetworkReply;
 namespace OCC
 {
 
@@ -70,8 +69,6 @@ public:
     virtual void forgetSensitiveData() = 0;
 
     static QString keychainKey(const QString &url, const QString &user);
-
-    virtual const char* getAuthenticationFailedC() = 0;
 
 Q_SIGNALS:
     void fetched();

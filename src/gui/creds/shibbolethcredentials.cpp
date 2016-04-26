@@ -346,9 +346,5 @@ void ShibbolethCredentials::addToCookieJar(const QNetworkCookie &cookie)
     jar->blockSignals(false);
 }
 
-const char* ShibbolethCredentials::getAuthenticationFailedC()
-{
-    return "";
-}
 
 } // namespace OCC

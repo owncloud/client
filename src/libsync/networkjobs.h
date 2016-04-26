@@ -33,7 +33,7 @@ public:
     void start() Q_DECL_OVERRIDE;
 
 signals:
-    void exists(QNetworkReply*);
+    void exists();
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -79,7 +79,7 @@ public:
 signals:
     void directoryListingSubfolders(const QStringList &items);
     void directoryListingIterated(const QString &name, const QMap<QString,QString> &properties);
-    // TODO MBO : should be removed if unused after all dependencies are fixed.
+    // TODO orion : should be removed if unused after all dependencies are fixed.
     void finishedWithError(QNetworkReply *reply);
     void finishedWithError();
     void finishedWithoutError();

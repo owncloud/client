@@ -243,7 +243,7 @@ void SelectiveSyncTreeView::slotLscolFinishedWithError()
 {
     LsColJob *job = qobject_cast<LsColJob *>(sender());
 
-    if (job->getError() == QNetworkReply::ContentNotFoundError) {
+    if (job->replyError() == QNetworkReply::ContentNotFoundError) {
         _loading->setText(tr("No subfolders currently on the server."));
     } else {
         _loading->setText(tr("An error occurred while loading the list of sub folders."));

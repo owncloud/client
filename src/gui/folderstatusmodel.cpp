@@ -675,7 +675,7 @@ void FolderStatusModel::slotLscolFinishedWithError()
     }
     auto parentInfo = infoForIndex(idx);
     if (parentInfo) {
-        if (job->getError()== QNetworkReply::ContentNotFoundError) {
+        if (job->replyError()== QNetworkReply::ContentNotFoundError) {
             parentInfo->_fetched = true;
         } else {
             if (!parentInfo->hasLabel()) {
