@@ -97,8 +97,6 @@ public:
         : AbstractNetworkJob(account, path, parent), _device(device), _headers(headers), _chunk(chunk) {}
     ~PUTFileJob();
 
-    int _chunk;
-
     virtual void start() Q_DECL_OVERRIDE;
 
     virtual bool finished() Q_DECL_OVERRIDE {
@@ -112,6 +110,8 @@ public:
 
     virtual void slotTimeout() Q_DECL_OVERRIDE;
 
+    virtual int chunk();
+
 
 signals:
     void finishedSignal();
@@ -121,6 +121,9 @@ private slots:
 #if QT_VERSION < 0x050402
     void slotSoftAbort();
 #endif
+
+private:
+    int _chunk;
 };
 
 /**
@@ -135,7 +138,6 @@ class PollJob : public AbstractNetworkJob {
     SyncJournalDb *_journal;
     QString _localPath;
 public:
-    SyncFileItemPtr _item;
     // Takes ownership of the device
     explicit PollJob(AccountPtr account, const QString &path, const SyncFileItemPtr &item,
                      SyncJournalDb *journal, const QString &localPath, QObject *parent)
@@ -150,8 +152,12 @@ public:
         reply()->abort();
     }
 
+    SyncFileItemPtr item();
+
 signals:
     void finishedSignal();
+private:
+    SyncFileItemPtr _item;
 };
 
 /**

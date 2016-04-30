@@ -314,6 +314,11 @@ void LsColJob::start()
     AbstractNetworkJob::start();
 }
 
+QHash<QString, qint64>* LsColJob::sizes()
+{
+    return &_sizes;
+}
+
 // Catches the signal emitted by the parser, which sends a QNetworkReply,
 // and emits a signal without it instead.
 void LsColJob::parserFinishedWithError(QNetworkReply *parserReply)

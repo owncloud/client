@@ -98,7 +98,7 @@ protected slots:
     void slotFolderEntryEdited(const QString& text);
     void slotLsColFolderEntry();
     void slotTypedPathFound(const QStringList& subpaths);
-    void slotTypedPathError(QNetworkReply* reply);
+    void slotTypedPathError();
 private:
     LsColJob* runLsColJob(const QString& path);
     void recursiveInsert(QTreeWidgetItem *parent, QStringList pathTrail, QString path);

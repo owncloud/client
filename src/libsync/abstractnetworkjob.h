@@ -38,6 +38,14 @@ const char owncloudContentLengthHeaderName[] = "Content-Length";
 const char owncloudContentRangeHeaderName[] = "Content-Range";
 const char owncloudSTSHeaderName[] = "Strict-Transport-Security";
 const char owncloudFileIDHeaderName[] = "OC-FileId";
+const char owncloudOCETagHeaderName[] = "OC-ETag";
+const char owncloudETagHeaderName[] = "ETag";
+const char owncloudOCFinishPollHeaderName[] = "OC-Finish-Poll";
+const char owncloudOCMTimeHeaderName[] = "X-OC-MTime";
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
+const char owncloudShouldSoftCancelPropertyName[] = "owncloud-should-soft-cancel";
+#endif
+const char owncloudCheckSumHeaderName[] = "OC-Checksum";
 
 /**
  * @brief The AbstractNetworkJob class
@@ -91,13 +99,26 @@ public:
     virtual QByteArray replyContentLength();
     virtual bool replyCustomSoftErrorStringIsValid();
     virtual QString replyCustomSoftErrorString();
+    virtual  bool replyHasOCETag();
+    virtual QByteArray replyOCETag();
+    virtual  bool replyHasETag();
+    virtual QByteArray replyETag();
+    virtual  bool replyHasOCFinishPoll();
+    virtual QByteArray replyOCFinishPoll();
+    virtual  bool replyHasOCMTime();
+    virtual QByteArray replyOCMTime();
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
+    virtual bool replyShouldSoftCancelIsValid();
+    virtual QString replyShouldSoftCancel();
+#endif
+    virtual  bool replyHasOCChecksum();
+    virtual QByteArray replyOCChecksum();
+
 public slots:
     void setTimeout(qint64 msec);
     void resetTimeout();
 signals:
-    //TODO MBO : remove this one if it's not used anymore once all dependencies are fixed.
     void networkError(QNetworkReply *reply);
-    void networkError();
     void networkActivity();
 protected:
     void setupConnections(QNetworkReply *reply);

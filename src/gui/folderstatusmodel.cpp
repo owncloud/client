@@ -600,7 +600,7 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list)
         newInfo._folder = parentInfo->_folder;
         newInfo._pathIdx = parentInfo->_pathIdx;
         newInfo._pathIdx << newSubs.size();
-        auto size = job ? job->_sizes.value(path) : 0;
+        auto size = job ? job->sizes()->value(path) : 0;
         newInfo._size = size;
         newInfo._path = relativePath;
         newInfo._name = relativePath.split('/', QString::SkipEmptyParts).last();

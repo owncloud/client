@@ -161,7 +161,7 @@ void SelectiveSyncTreeView::recursiveInsert(QTreeWidgetItem* parent, QStringList
 
 void SelectiveSyncTreeView::slotUpdateDirectories(QStringList list)
 {
-    auto job = qobject_cast<LsColJob *>(sender());
+    LsColJob *job = qobject_cast<LsColJob *>(sender());
     QScopedValueRollback<bool> isInserting(_inserting);
     _inserting = true;
 
@@ -205,6 +205,7 @@ void SelectiveSyncTreeView::slotUpdateDirectories(QStringList list)
         _loading->hide();
     }
 
+    QHash<QString, qint64>* sizes =  job->sizes();
     if (!root) {
         root = new SelectiveSyncTreeViewItem(this);
         root->setText(0, _rootName);
@@ -215,7 +216,7 @@ void SelectiveSyncTreeView::slotUpdateDirectories(QStringList list)
         } else {
             root->setCheckState(0, Qt::PartiallyChecked);
         }
-        qint64 size = job ? job->_sizes.value(pathToRemove, -1) : -1;
+        qint64 size = job ? sizes->value(pathToRemove, -1) : -1;
         if (size >= 0) {
             root->setText(1, Utility::octetsToString(size));
             root->setData(1, Qt::UserRole, size);
@@ -224,7 +225,7 @@ void SelectiveSyncTreeView::slotUpdateDirectories(QStringList list)
 
     list.sort();
     foreach (QString path, list) {
-        auto size = job ? job->_sizes.value(path) : 0;
+        auto size = job ? sizes->value(path) : 0;
         path.remove(pathToRemove);
         QStringList paths = path.split('/');
         if (paths.last().isEmpty()) paths.removeLast();

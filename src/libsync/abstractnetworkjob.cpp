@@ -425,6 +425,116 @@ bool AbstractNetworkJob::replyCustomSoftErrorStringIsValid()
     }
 }
 
+bool AbstractNetworkJob::replyHasOCETag()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCETagHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCETag()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCETagHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasETag()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudETagHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyETag()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudETagHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCFinishPoll()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCFinishPollHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCFinishPoll()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCFinishPollHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCMTime()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCMTimeHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCMTime()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCMTimeHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
+QString AbstractNetworkJob::replyShouldSoftCancel()
+{
+    if (_reply) {
+        return _reply->property(owncloudShouldSoftCancelPropertyName).toString();
+    } else {
+        return QString();
+    }
+}
+
+bool AbstractNetworkJob::replyShouldSoftCancelIsValid()
+{
+    if (_reply) {
+        return _reply->property(owncloudShouldSoftCancelPropertyName).isValid();
+    } else {
+        return true;
+    }
+}
+#endif
+
+bool AbstractNetworkJob::replyHasOCChecksum()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudCheckSumHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCChecksum()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudCheckSumHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
 NetworkJobTimeoutPauser::NetworkJobTimeoutPauser(QNetworkReply *reply)
 {
     _timer = reply->property("timer").value<QTimer*>();

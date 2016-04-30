@@ -387,7 +387,7 @@ void FolderWizardRemotePath::slotLsColFolderEntry()
     // because of extra logic in the typed-path case.
     disconnect(job, 0, this, 0);
     connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
-            SLOT(slotTypedPathError(QNetworkReply*)));
+            SLOT(slotTypedPathError()));
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotTypedPathFound(QStringList)));
 }
@@ -398,19 +398,20 @@ void FolderWizardRemotePath::slotTypedPathFound(const QStringList& subpaths)
     selectByPath(_ui.folderEntry->text());
 }
 
-void FolderWizardRemotePath::slotTypedPathError(QNetworkReply* reply)
+void FolderWizardRemotePath::slotTypedPathError()
 {
     // Ignore 404s, otherwise users will get annoyed by error popups
     // when not typing fast enough. It's still clear that a given path
     // was not found, because the 'Next' button is disabled and no entry
     // is selected in the tree view.
-    int httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    if (httpCode == 404) {
+    LsColJob *job = static_cast<LsColJob *>(sender());
+
+    if (job->replyHttpStatusCode() == 404) {
         showWarn(""); // hides the warning pane
         return;
     }
 
-    slotHandleLsColNetworkError(reply);
+    slotHandleLsColNetworkError();
 }
 
 LsColJob* FolderWizardRemotePath::runLsColJob(const QString& path)

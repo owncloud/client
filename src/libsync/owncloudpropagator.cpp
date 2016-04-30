@@ -760,17 +760,20 @@ void CleanupPollsJob::slotPollFinished()
 {
     PollJob *job = qobject_cast<PollJob *>(sender());
     Q_ASSERT(job);
-    if (job->_item->_status == SyncFileItem::FatalError) {
-        emit aborted(job->_item->_errorString);
+
+    SyncFileItemPtr item = job->item();
+
+    if (item->_status == SyncFileItem::FatalError) {
+        emit aborted(item->_errorString);
         return;
-    } else if (job->_item->_status != SyncFileItem::Success) {
-        qDebug() << "There was an error with file " << job->_item->_file << job->_item->_errorString;
+    } else if (item->_status != SyncFileItem::Success) {
+        qDebug() << "There was an error with file " << item->_file << item->_errorString;
     } else {
-        if (!_journal->setFileRecord(SyncJournalFileRecord(*job->_item, _localPath + job->_item->_file))) {
+        if (!_journal->setFileRecord(SyncJournalFileRecord(*item, _localPath + item->_file))) {
             qWarning() << "database error";
-            job->_item->_status = SyncFileItem::FatalError;
-            job->_item->_errorString = tr("Error writing metadata to the database");
-            emit aborted(job->_item->_errorString);
+            item->_status = SyncFileItem::FatalError;
+            item->_errorString = tr("Error writing metadata to the database");
+            emit aborted(item->_errorString);
             return;
         }
     }

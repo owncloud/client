@@ -63,7 +63,8 @@ class OWNCLOUDSYNC_EXPORT LsColJob : public AbstractNetworkJob {
 public:
     explicit LsColJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
-    QHash<QString, qint64> _sizes;
+
+    QHash<QString, qint64>* sizes();
 
     /**
      * Used to specify which properties shall be retrieved.
@@ -92,6 +93,7 @@ private slots:
 
 private:
     QList<QByteArray> _properties;
+    QHash<QString, qint64> _sizes;
 };
 
 /**

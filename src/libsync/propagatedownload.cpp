@@ -138,7 +138,7 @@ void GETFileJob::slotMetaDataChanged()
     if (reply()->error() != QNetworkReply::NoError) {
         return;
     }
-    _etag = getEtagFromReply(reply());
+    _etag = getEtagFromJob(this);
 
     if (!_directDownloadUrl.isEmpty() && !_etag.isEmpty()) {
         qDebug() << Q_FUNC_INFO << "Direct download used, ignoring server ETag" << _etag;
@@ -525,10 +525,10 @@ void PropagateDownloadFileQNAM::slotGetFinished()
      * reported that if a server breaks behind a proxy, the GET is still a 200 but is
      * truncated, as described here: https://github.com/owncloud/mirall/issues/2528
      */
-    const QByteArray sizeHeader("Content-Length");
-    quint64 bodySize = job->reply()->rawHeader(sizeHeader).toULongLong();
+    QByteArray contentLength = job->replyContentLength();
+    quint64 bodySize = contentLength.toULongLong();
 
-    if (!job->reply()->rawHeader(sizeHeader).isEmpty() && _tmpFile.size() > 0 && bodySize == 0) {
+    if (!contentLength.isEmpty() && _tmpFile.size() > 0 && bodySize == 0) {
         // Strange bug with broken webserver or webfirewall https://github.com/owncloud/client/issues/3373#issuecomment-122672322
         // This happened when trying to resume a file. The Content-Range header was files, Content-Length was == 0
         qDebug() << bodySize << _item->_size << _tmpFile.size() << job->resumeStart();
@@ -552,7 +552,7 @@ void PropagateDownloadFileQNAM::slotGetFinished()
             SLOT(transmissionChecksumValidated(QByteArray,QByteArray)));
     connect(validator, SIGNAL(validationFailed(QString)),
             SLOT(slotChecksumFail(QString)));
-    auto checksumHeader = job->reply()->rawHeader(checkSumHeaderC);
+    auto checksumHeader = job->replyOCChecksum();
     validator->start(_tmpFile.fileName(), checksumHeader);
 }
 
