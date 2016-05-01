@@ -177,11 +177,11 @@ void ConnectionValidator::checkAuthentication()
     job->setTimeout(timeoutToUseMsec);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, SIGNAL(result(QVariantMap)), SLOT(slotAuthSuccess()));
-    connect(job, SIGNAL(finishedWithError()), SLOT(slotAuthFailed()));
+    connect(job, SIGNAL(finishedWithError(QNetworkReply*)), SLOT(slotAuthFailed(QNetworkReply*)));
     job->start();
 }
 
-void ConnectionValidator::slotAuthFailed()
+void ConnectionValidator::slotAuthFailed(QNetworkReply *reply)
 {
     PropfindJob *job = qobject_cast<PropfindJob*>(sender());
     QNetworkReply::NetworkError err = job->replyError();
@@ -190,7 +190,7 @@ void ConnectionValidator::slotAuthFailed()
     Status stat = Timeout;
 
     if( err == QNetworkReply::AuthenticationRequiredError ||
-             !_account->credentials()->stillValid(job->reply())) {
+             !_account->credentials()->stillValid(reply)) {
 
 
         qDebug() <<  err << errorString;

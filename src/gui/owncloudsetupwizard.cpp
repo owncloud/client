@@ -209,11 +209,11 @@ void OwncloudSetupWizard::testOwnCloudConnect()
     job->setIgnoreCredentialFailure(true);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, SIGNAL(result(QVariantMap)), _ocWizard, SLOT(successfulStep()));
-    connect(job, SIGNAL(finishedWithError()), this, SLOT(slotAuthError()));
+    connect(job, SIGNAL(finishedWithError(QNetworkReply*)), this, SLOT(slotAuthError(QNetworkReply*)));
     job->start();
 }
 
-void OwncloudSetupWizard::slotAuthError()
+void OwncloudSetupWizard::slotAuthError(QNetworkReply *reply)
 {
     QString errorMsg;
 
@@ -256,7 +256,7 @@ void OwncloudSetupWizard::slotAuthError()
 
     // Provide messages for other errors, such as invalid credentials.
     } else if (err != QNetworkReply::NoError) {
-        if (!_ocWizard->account()->credentials()->stillValid(job->reply())) {
+        if (!_ocWizard->account()->credentials()->stillValid(reply)) {
             errorMsg = tr("Access forbidden by server. To verify that you have proper access, "
                           "<a href=\"%1\">click here</a> to access the service with your browser.")
                        .arg(_ocWizard->account()->url().toString());

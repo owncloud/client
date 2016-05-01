@@ -167,7 +167,7 @@ void AbstractNetworkJob::slotFinished()
         if (_reply->error() == QNetworkReply::ProxyAuthenticationRequiredError) {
             qDebug() << Q_FUNC_INFO << _reply->rawHeader("Proxy-Authenticate");
         }
-        emit networkError();
+        emit networkError(_reply);
     }
 
     // get the Date timestamp from reply

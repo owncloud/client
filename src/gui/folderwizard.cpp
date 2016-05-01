@@ -210,7 +210,7 @@ void FolderWizardRemotePath::slotCreateRemoteFolder(const QString &folder)
     /* check the owncloud configuration file and query the ownCloud */
     connect(job, SIGNAL(finished(QNetworkReply::NetworkError)),
                  SLOT(slotCreateRemoteFolderFinished(QNetworkReply::NetworkError)));
-    connect(job, SIGNAL(networkError()), SLOT(slotHandleMkdirNetworkError()));
+    connect(job, SIGNAL(networkError(QNetworkReply*)), SLOT(slotHandleMkdirNetworkError(QNetworkReply*)));
     job->start();
 }
 
@@ -225,14 +225,14 @@ void FolderWizardRemotePath::slotCreateRemoteFolderFinished(QNetworkReply::Netwo
     }
 }
 
-void FolderWizardRemotePath::slotHandleMkdirNetworkError()
+void FolderWizardRemotePath::slotHandleMkdirNetworkError(QNetworkReply *reply)
 {
     MkColJob *job = static_cast<MkColJob *>(sender());
 
     QNetworkReply::NetworkError err = job->replyError();
 
     qDebug() << "** webdav mkdir request failed:" << err;
-    if(!_account->credentials()->stillValid(job->reply()) ) {
+    if(!_account->credentials()->stillValid(reply) ) {
         showWarn(tr("Authentication failed accessing %1").arg(Theme::instance()->appNameGUI()));
     } else {
         showWarn(tr("Failed to create the folder on %1. Please check manually.")

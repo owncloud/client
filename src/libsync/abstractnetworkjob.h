@@ -65,7 +65,6 @@ public:
     QString path() const { return _path; }
 
     void setReply(QNetworkReply *reply);
-    QNetworkReply* reply() const { return _reply; }
 
     void setIgnoreCredentialFailure(bool ignore);
     bool ignoreCredentialFailure() const { return _ignoreCredentialFailure; }
@@ -133,6 +132,16 @@ protected:
     QNetworkReply* headRequest(const QString &relPath);
     QNetworkReply* headRequest(const QUrl &url);
     QNetworkReply* deleteRequest(const QUrl &url);
+
+    /*
+     * Making this method protected instead of public.
+     * We really want external objects not to access the reply
+     * in order to abstract network protocol internal workings
+     * from propagators classes.
+     * For exceptions such as the credentials class, the reply
+     * should be sent through signals.
+    */
+    QNetworkReply* reply() const { return _reply; }
 
     int maxRedirects() const { return 10; }
     virtual bool finished() = 0;
