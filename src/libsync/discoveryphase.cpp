@@ -212,12 +212,13 @@ int get_errno_from_http_errcode( int err, const QString & reason ) {
 DiscoverySingleDirectoryJob::DiscoverySingleDirectoryJob(const AccountPtr &account, const QString &path, QObject *parent)
     : QObject(parent), _subPath(path), _account(account), _ignoredFirst(false)
 {
+    _factory = new NetworkJobFactory(this);
 }
 
 void DiscoverySingleDirectoryJob::start()
 {
     // Start the actual HTTP job
-    LsColJob *lsColJob = new LsColJob(_account, _subPath, this);
+    LsColJob *lsColJob = _factory->createLsColJob(_account, _subPath, this);
     lsColJob->setProperties(QList<QByteArray>() << "resourcetype" << "getlastmodified"
                         << "getcontentlength" << "getetag" << "http://owncloud.org/ns:id"
                         << "http://owncloud.org/ns:downloadURL" << "http://owncloud.org/ns:dDC"
@@ -488,7 +489,7 @@ void DiscoveryMainThread::doGetSizeSlot(const QString& path, qint64* result)
     _currentGetSizeResult = result;
 
     // Schedule the DiscoverySingleDirectoryJob
-    auto propfindJob = new PropfindJob(_account, fullPath, this);
+    auto propfindJob = _factory->createPropfindJob(_account, fullPath, this);
     propfindJob->setProperties(QList<QByteArray>() << "resourcetype" << "http://owncloud.org/ns:size");
     QObject::connect(propfindJob, SIGNAL(finishedWithError()),
                      this, SLOT(slotGetSizeFinishedWithError()));

@@ -17,6 +17,7 @@
 #include "configfile.h"
 #include "theme.h"
 #include "networkjobs.h"
+#include "networkjobfactory.h"
 #include "account.h"
 #include "selectivesyncdialog.h"
 #include "accountstate.h"
@@ -175,6 +176,8 @@ FolderWizardRemotePath::FolderWizardRemotePath(AccountPtr account)
     // Make sure that there will be a scrollbar when the contents is too wide
     _ui.folderTreeWidget->header()->setStretchLastSection(false);
 #endif
+
+    _factory = new NetworkJobFactory(this);
 }
 
 void FolderWizardRemotePath::slotAddRemoteFolder()
@@ -206,7 +209,7 @@ void FolderWizardRemotePath::slotCreateRemoteFolder(const QString &folder)
     }
     fullPath += "/" + folder;
 
-    MkColJob *job = new MkColJob(_account, fullPath, this);
+    MkColJob *job = _factory->createMkColJob(_account, fullPath, this);
     /* check the owncloud configuration file and query the ownCloud */
     connect(job, SIGNAL(finished(QNetworkReply::NetworkError)),
                  SLOT(slotCreateRemoteFolderFinished(QNetworkReply::NetworkError)));
@@ -409,7 +412,7 @@ void FolderWizardRemotePath::slotTypedPathError(QNetworkReply* reply)
 
 LsColJob* FolderWizardRemotePath::runLsColJob(const QString& path)
 {
-    LsColJob *job = new LsColJob(_account, path, this);
+    LsColJob *job = _factory->createLsColJob(_account, path, this);
     job->setProperties(QList<QByteArray>() << "resourcetype");
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotUpdateDirectories(QStringList)));

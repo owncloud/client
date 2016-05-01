@@ -23,6 +23,7 @@
 #include "filesystem.h"
 #include "propagatorjobs.h"
 #include "checksums.h"
+#include "networkjobfactory.h"
 
 #include <json.h>
 #include <QNetworkAccessManager>
@@ -396,7 +397,7 @@ void PropagateDownloadFileQNAM::start()
 
     if (_item->_directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
-        _job = new GETFileJob(_propagator->account(),
+        _job = _factory->createGETFileJob(_propagator->account(),
                             _propagator->_remoteFolder + _item->_file,
                             &_tmpFile, headers, expectedEtagForResume, _resumeStart);
     } else {
@@ -408,7 +409,7 @@ void PropagateDownloadFileQNAM::start()
         }
 
         QUrl url = QUrl::fromUserInput(_item->_directDownloadUrl);
-        _job = new GETFileJob(_propagator->account(),
+        _job = _factory->createGETFileJob(_propagator->account(),
                               url,
                               &_tmpFile, headers, expectedEtagForResume, _resumeStart);
     }

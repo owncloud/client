@@ -22,6 +22,7 @@
 #include "logger.h"
 #include "configfile.h"
 #include "networkjobs.h"
+#include "networkjobfactory.h"
 #include "syncjournalfilerecord.h"
 #include "syncresult.h"
 #include "utility.h"
@@ -119,6 +120,7 @@ Folder::Folder(const FolderDefinition& definition,
 
 Folder::~Folder()
 {
+    _factory = new NetworkJobFactory(this);
 }
 
 void Folder::checkLocalPath()
@@ -316,7 +318,7 @@ void Folder::slotRunEtagJob()
         // Do the ordinary etag check for the root folder and only schedule a real
         // sync if it's different.
 
-        _requestEtagJob = new RequestEtagJob(account, remotePath(), this);
+        _requestEtagJob = _factory->createRequestEtagJob(account, remotePath(), this);
         // check if the etag is different
         QObject::connect(_requestEtagJob, SIGNAL(etagRetreived(QString)), this, SLOT(etagRetreived(QString)));
         FolderMan::instance()->slotScheduleETagJob(alias(), _requestEtagJob);

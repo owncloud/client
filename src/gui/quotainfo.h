@@ -23,6 +23,7 @@
 namespace OCC {
 class AccountState;
 class PropfindJob;
+class NetworkJobFactory;
 
 /**
  * @brief handles getting the quota to display in the UI
@@ -81,6 +82,9 @@ private:
     QDateTime _lastQuotaRecieved; // the time at which the quota was received last
     bool _active; // if we should check at regular interval (when the UI is visible)
     QPointer<PropfindJob> _job; // the currently running job
+
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 

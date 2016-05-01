@@ -32,6 +32,7 @@ namespace OCC
 {
 
 class ShibbolethWebView;
+class NetworkJobFactory;
 
 /**
  * @brief The ShibbolethCredentials class
@@ -90,6 +91,9 @@ private:
     QPointer<ShibbolethWebView> _browser;
     QNetworkCookie _shibCookie;
     QString _user;
+
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 } // namespace OCC

@@ -194,7 +194,7 @@ void PropagateUploadFileQNAM::start()
         return slotComputeContentChecksum();
     }
 
-    auto job = new DeleteJob(_propagator->account(),
+    auto job = _factory->createDeleteJob(_propagator->account(),
                              _propagator->_remoteFolder + _item->_file,
                              this);
     _jobs.append(job);
@@ -553,7 +553,7 @@ void PropagateUploadFileQNAM::startNextChunk()
     }
 
     // job takes ownership of device via a QScopedPointer. Job deletes itself when finishing
-    PUTFileJob* job = new PUTFileJob(_propagator->account(), _propagator->_remoteFolder + path, device, headers, _currentChunk);
+    PUTFileJob* job = _factory->createPUTFileJob(_propagator->account(), _propagator->_remoteFolder + path, device, headers, _currentChunk);
     _jobs.append(job);
     connect(job, SIGNAL(finishedSignal()), this, SLOT(slotPutFinished()));
     connect(job, SIGNAL(uploadProgress(qint64,qint64)), this, SLOT(slotUploadProgress(qint64,qint64)));
@@ -824,7 +824,7 @@ void PropagateUploadFileQNAM::slotUploadProgress(qint64 sent, qint64 total)
 
 void PropagateUploadFileQNAM::startPollJob(const QString& path)
 {
-    PollJob* job = new PollJob(_propagator->account(), path, _item,
+    PollJob* job = _factory->createPollJob(_propagator->account(), path, _item,
                                _propagator->_journal, _propagator->_localDir, this);
     connect(job, SIGNAL(finishedSignal()), SLOT(slotPollFinished()));
     SyncJournalDb::PollInfo info;

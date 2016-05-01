@@ -25,12 +25,14 @@
 
 #include "activitydata.h"
 #include "activitylistmodel.h"
+#include "networkjobfactory.h"
 
 namespace OCC {
 
 ActivityListModel::ActivityListModel(QWidget *parent)
     :QAbstractListModel(parent)
 {
+    _factory = new NetworkJobFactory(this);
 }
 
 QVariant ActivityListModel::data(const QModelIndex &index, int role) const
@@ -118,7 +120,7 @@ void ActivityListModel::startFetchJob(AccountState* s)
     if( !s->isConnected() ) {
         return;
     }
-    JsonApiJob *job = new JsonApiJob(s->account(), QLatin1String("ocs/v1.php/cloud/activity"), this);
+    JsonApiJob *job = _factory->createJsonApiJob(s->account(), QLatin1String("ocs/v1.php/cloud/activity"), this);
     QObject::connect(job, SIGNAL(jsonReceived(QVariantMap, int)),
                      this, SLOT(slotActivitiesReceived(QVariantMap, int)));
     job->setProperty("AccountStatePtr", QVariant::fromValue<AccountState*>(s));

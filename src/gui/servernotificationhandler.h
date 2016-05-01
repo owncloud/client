@@ -21,6 +21,8 @@
 namespace OCC
 {
 
+class NetworkJobFactory;
+
 class ServerNotificationHandler : public QObject
 {
     Q_OBJECT
@@ -39,7 +41,8 @@ private slots:
 private:
     QPointer<JsonApiJob> _notificationJob;
 
-
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 }

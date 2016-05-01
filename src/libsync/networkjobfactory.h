@@ -16,20 +16,27 @@
 #define NETWORKJOBFACTORY_H
 
 #include <QObject>
+#include <QFile>
 
 #include "networkjobs.h"
 #include "syncfileitem.h"
-#include "propagatedownload.h"
-#include "propagateupload.h"
+#include "owncloudlib.h"
 
 namespace OCC {
+
+class GETFileJob;
+class PUTFileJob;
+class PollJob;
+class SyncJournalDb;
+class DeleteJob;
+class MoveJob;
 
 /**
  * @brief The NetworkJobFactoryHelper class
  * Provides helper methods to factory classes.
  */
-class NetworkJobFactoryHelper : public QObject {
-
+class OWNCLOUDSYNC_EXPORT NetworkJobFactoryHelper : public QObject {
+    Q_OBJECT
 public:
     NetworkJobFactoryHelper(QObject *parent=0)
         : QObject(parent) {}
@@ -44,8 +51,8 @@ public:
  * @brief Will handle reading from and writing to metadata information to permanent storage
  * @ingroup libowncrypt
  */
-class NetworkJobFactory : public QObject {
-
+class OWNCLOUDSYNC_EXPORT NetworkJobFactory : public QObject {
+    Q_OBJECT
 public:
 
     NetworkJobFactory(QObject *parent=0)
@@ -71,6 +78,10 @@ public:
 
     PollJob* createPollJob(AccountPtr account, const QString &path, const SyncFileItemPtr &item,
                            SyncJournalDb *journal, const QString &localPath, QObject *parent);
+
+    DeleteJob* createDeleteJob(AccountPtr account, const QString& path, QObject* parent = 0);
+
+    MoveJob* createMoveJob(AccountPtr account, const QString& path, const QString &destination, QObject* parent = 0);
 
 private:
     NetworkJobFactoryHelper _helper;

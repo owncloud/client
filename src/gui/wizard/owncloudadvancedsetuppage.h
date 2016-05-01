@@ -25,6 +25,8 @@ class QProgressIndicator;
 
 namespace OCC {
 
+class NetworkJobFactory;
+
 /**
  * @brief The OwncloudAdvancedSetupPage class
  * @ingroup gui
@@ -72,6 +74,9 @@ private:
   QString _oldLocalFolder;
   QString _remoteFolder;
   QStringList _selectiveSyncBlacklist;
+
+  // Used to create the network jobs we need
+   NetworkJobFactory* _factory;
 };
 
 } // namespace OCC

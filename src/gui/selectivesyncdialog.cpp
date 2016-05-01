@@ -16,6 +16,7 @@
 #include "account.h"
 #include "excludedfiles.h"
 #include "networkjobs.h"
+#include "networkjobfactory.h"
 #include "theme.h"
 #include "folderman.h"
 #include <QDialogButtonBox>
@@ -72,6 +73,8 @@ SelectiveSyncTreeView::SelectiveSyncTreeView(AccountPtr account, QWidget* parent
     header()->setStretchLastSection(true);
     headerItem()->setText(0, tr("Name"));
     headerItem()->setText(1, tr("Size"));
+
+    _factory = new NetworkJobFactory(this);
 }
 
 QSize SelectiveSyncTreeView::sizeHint() const
@@ -81,7 +84,7 @@ QSize SelectiveSyncTreeView::sizeHint() const
 
 void SelectiveSyncTreeView::refreshFolders()
 {
-    LsColJob *job = new LsColJob(_account, _folderPath, this);
+    LsColJob *job = _factory->createLsColJob(_account, _folderPath, this);
     job->setProperties(QList<QByteArray>() << "resourcetype" << "http://owncloud.org/ns:size");
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             this, SLOT(slotUpdateDirectories(QStringList)));
@@ -257,7 +260,7 @@ void SelectiveSyncTreeView::slotItemExpanded(QTreeWidgetItem *item)
     if (!_folderPath.isEmpty()) {
         prefix = _folderPath + QLatin1Char('/');
     }
-    LsColJob *job = new LsColJob(_account, prefix + dir, this);
+    LsColJob *job = _factory->createLsColJob(_account, prefix + dir, this);
     job->setProperties(QList<QByteArray>() << "resourcetype" << "http://owncloud.org/ns:size");
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotUpdateDirectories(QStringList)));

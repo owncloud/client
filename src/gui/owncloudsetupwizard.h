@@ -32,6 +32,7 @@ namespace OCC {
 class AccountState;
 
 class OwncloudWizard;
+class NetworkJobFactory;
 
 /**
  * @brief The DetermineAuthTypeJob class
@@ -93,6 +94,9 @@ private:
     OwncloudWizard* _ocWizard;
     QString _initLocalFolder;
     QString _remoteFolder;
+
+    // Used to create the network jobs we need
+    NetworkJobFactory* _factory;
 
 };
 

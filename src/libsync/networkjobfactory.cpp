@@ -15,6 +15,12 @@
 
 #include "networkjobfactory.h"
 
+#include "networkjobs.h"
+#include "propagatedownload.h"
+#include "propagateupload.h"
+#include "propagateremotedelete.h"
+#include "propagateremotemove.h"
+
 /** \file networkjobfactory.cpp
  *
  * \brief Class that creates network jobs on demand.
@@ -136,7 +142,7 @@ PUTFileJob* NetworkJobFactory::createPUTFileJob(AccountPtr account, const QStrin
 
 /**
  * @brief NetworkJobFactory::createPollJob
- * Creates either a normal or an encrypted ThumbnailJob network job, depending on path.
+ * Creates either a normal or an encrypted PollJob network job, depending on path.
  * @param account : passed as is to the relevant constructor
  * @param path : Used to decide whether to create an encrypted or normal version of the network job,
  * and passed as is to the relevant constructor
@@ -153,6 +159,26 @@ PollJob* NetworkJobFactory::createPollJob(AccountPtr account, const QString &pat
         return new PollJob(account, path, item, journal, localPath, parent);
     else
         // for now helper.isFileEncrypted returns always false so this is never executed.
+        // TODO orion : update once the encrypted class is created.
+        return 0;
+}
+
+DeleteJob* NetworkJobFactory::createDeleteJob(AccountPtr account, const QString& path, QObject* parent)
+{
+    if (! _helper.isFileEncrypted(path))
+        return new DeleteJob(account, path, parent);
+    else
+        // For now helper.isFileEncrypted returns always false so this is never executed.
+        // TODO orion : update once the encrypted class is created.
+        return 0;
+}
+
+MoveJob* NetworkJobFactory::createMoveJob(AccountPtr account, const QString& path, const QString &destination, QObject* parent)
+{
+    if (! _helper.isFileEncrypted(path))
+        return new MoveJob(account, path, destination, parent);
+    else
+        // For now helper.isFileEncrypted returns always false so this is never executed.
         // TODO orion : update once the encrypted class is created.
         return 0;
 }

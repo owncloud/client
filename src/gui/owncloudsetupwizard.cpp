@@ -27,7 +27,7 @@
 #include "utility.h"
 #include "accessmanager.h"
 #include "account.h"
-#include "networkjobs.h"
+#include "networkjobfactory.h"
 #include "sslerrordialog.h"
 #include "accountmanager.h"
 
@@ -55,6 +55,8 @@ OwncloudSetupWizard::OwncloudSetupWizard(QObject* parent) :
              this, SLOT(slotAssistantFinished(int)), Qt::QueuedConnection);
     connect( _ocWizard, SIGNAL(finished(int)), SLOT(deleteLater()));
     connect( _ocWizard, SIGNAL(skipFolderConfiguration()), SLOT(slotSkipFolderConfiguration()));
+
+    _factory = new NetworkJobFactory(this);
 }
 
 OwncloudSetupWizard::~OwncloudSetupWizard()
@@ -199,7 +201,7 @@ void OwncloudSetupWizard::testOwnCloudConnect()
 {
     AccountPtr account = _ocWizard->account();
 
-    auto *job = new PropfindJob(account, "/", this);
+    auto *job = _factory->createPropfindJob(account, "/", this);
     job->setIgnoreCredentialFailure(true);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, SIGNAL(result(QVariantMap)), _ocWizard, SLOT(successfulStep()));
@@ -316,7 +318,7 @@ void OwncloudSetupWizard::slotCreateLocalAndRemoteFolders(const QString& localFo
         _ocWizard->appendToConfigurationLog( res );
     }
     if (nextStep) {
-        EntityExistsJob *job = new EntityExistsJob(_ocWizard->account(), _ocWizard->account()->davPath() + remoteFolder, this);
+        EntityExistsJob *job = _factory->createEntityExistsJob(_ocWizard->account(), _ocWizard->account()->davPath() + remoteFolder, this);
         connect(job, SIGNAL(exists(QNetworkReply*)), SLOT(slotRemoteFolderExists(QNetworkReply*)));
         job->start();
     } else {
@@ -356,7 +358,7 @@ void OwncloudSetupWizard::createRemoteFolder()
 {
     _ocWizard->appendToConfigurationLog( tr("creating folder on ownCloud: %1" ).arg( _remoteFolder ));
 
-    MkColJob *job = new MkColJob(_ocWizard->account(), _remoteFolder, this);
+    MkColJob *job = _factory->createMkColJob(_ocWizard->account(), _remoteFolder, this);
     connect(job, SIGNAL(finished(QNetworkReply::NetworkError)), SLOT(slotCreateRemoteFolderFinished(QNetworkReply::NetworkError)));
     job->start();
 }

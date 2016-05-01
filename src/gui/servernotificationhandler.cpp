@@ -16,6 +16,7 @@
 #include "capabilities.h"
 #include "json.h"
 #include "networkjobs.h"
+#include "networkjobfactory.h"
 
 namespace OCC
 {
@@ -23,7 +24,7 @@ namespace OCC
 ServerNotificationHandler::ServerNotificationHandler(QObject *parent)
     : QObject(parent)
 {
-
+    _factory = new NetworkJobFactory(this);
 }
 
 void ServerNotificationHandler::slotFetchNotifications(AccountState *ptr)
@@ -46,7 +47,7 @@ void ServerNotificationHandler::slotFetchNotifications(AccountState *ptr)
     }
 
     // if the previous notification job has finished, start next.
-    _notificationJob = new JsonApiJob( ptr->account(), QLatin1String("ocs/v2.php/apps/notifications/api/v1/notifications"), this );
+    _notificationJob = _factory->createJsonApiJob(ptr->account(), QLatin1String("ocs/v2.php/apps/notifications/api/v1/notifications"), this );
     QObject::connect(_notificationJob.data(), SIGNAL(jsonReceived(QVariantMap, int)),
                      this, SLOT(slotNotificationsReceived(QVariantMap, int)));
     _notificationJob->setProperty("AccountStatePtr", QVariant::fromValue<AccountState*>(ptr));

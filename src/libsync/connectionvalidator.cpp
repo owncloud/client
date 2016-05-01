@@ -17,6 +17,7 @@
 
 #include "connectionvalidator.h"
 #include "account.h"
+#include "networkjobfactory.h"
 #include "networkjobs.h"
 #include "clientproxy.h"
 #include <creds/abstractcredentials.h>
@@ -32,6 +33,7 @@ ConnectionValidator::ConnectionValidator(AccountPtr account, QObject *parent)
       _account(account),
       _isCheckingServerAndAuth(false)
 {
+    _factory = new NetworkJobFactory(this);
 }
 
 QString ConnectionValidator::statusString( Status stat )
@@ -173,7 +175,7 @@ void ConnectionValidator::checkAuthentication()
     // simply GET the webdav root, will fail if credentials are wrong.
     // continue in slotAuthCheck here :-)
     qDebug() << "# Check whether authenticated propfind works.";
-    PropfindJob *job = new PropfindJob(_account, "/", this);
+    PropfindJob *job = _factory->createPropfindJob(_account, "/", this);
     job->setTimeout(timeoutToUseMsec);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, SIGNAL(result(QVariantMap)), SLOT(slotAuthSuccess()));
@@ -218,7 +220,7 @@ void ConnectionValidator::slotAuthSuccess()
 
 void ConnectionValidator::checkServerCapabilities()
 {
-    JsonApiJob *job = new JsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/capabilities"), this);
+    JsonApiJob *job = _factory->createJsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/capabilities"), this);
     job->setTimeout(timeoutToUseMsec);
     QObject::connect(job, SIGNAL(jsonReceived(QVariantMap, int)), this, SLOT(slotCapabilitiesRecieved(QVariantMap)));
     job->start();

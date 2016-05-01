@@ -235,7 +235,7 @@ private slots:
  *
  * To be used like this:
  * \code
- * _job = new JsonApiJob(account, QLatin1String("ocs/v1.php/foo/bar"), this);
+ * _job = _factory->createJsonApiJob(account, QLatin1String("ocs/v1.php/foo/bar"), this);
  * connect(job, SIGNAL(jsonReceived(QVariantMap)), ...)
  * The received QVariantMap is empty in case of error or otherwise is a map as parsed by QtJson
  * \encode

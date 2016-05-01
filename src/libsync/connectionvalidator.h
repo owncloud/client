@@ -23,6 +23,8 @@
 
 namespace OCC {
 
+class NetworkJobFactory;
+
 /**
  * This is a job-like class to check that the server is up and that we are connected.
  * There are two entry points: checkServerAndAuth and checkAuthentication
@@ -117,6 +119,9 @@ private:
     QStringList _errors;
     AccountPtr   _account;
     bool _isCheckingServerAndAuth;
+
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 }

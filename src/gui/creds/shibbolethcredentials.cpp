@@ -30,6 +30,7 @@
 #include "cookiejar.h"
 #include "owncloudgui.h"
 #include "syncengine.h"
+#include "networkjobfactory.h"
 
 #include <keychain.h>
 
@@ -53,7 +54,9 @@ ShibbolethCredentials::ShibbolethCredentials()
       _ready(false),
       _stillValid(false),
       _browser(0)
-{}
+{
+    _factory = new NetworkJobFactory(this);
+}
 
 ShibbolethCredentials::ShibbolethCredentials(const QNetworkCookie& cookie)
   : _ready(true),
@@ -61,6 +64,7 @@ ShibbolethCredentials::ShibbolethCredentials(const QNetworkCookie& cookie)
     _browser(0),
     _shibCookie(cookie)
 {
+    _factory = new NetworkJobFactory(this);
 }
 
 void ShibbolethCredentials::setAccount(Account* account)
@@ -210,7 +214,7 @@ void ShibbolethCredentials::slotFetchUser()
 {
     // We must first do a request to webdav so the session is enabled.
     // (because for some reason we can't access the API without that..  a bug in the server maybe?)
-    EntityExistsJob* job = new EntityExistsJob(_account->sharedFromThis(), _account->davPath(), this);
+    EntityExistsJob* job = _factory->createEntityExistsJob(_account->sharedFromThis(), _account->davPath(), this);
     connect(job, SIGNAL(exists(QNetworkReply*)), this, SLOT(slotFetchUserHelper()));
     job->setIgnoreCredentialFailure(true);
     job->start();

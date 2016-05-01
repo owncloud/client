@@ -18,6 +18,7 @@
 #include "syncjournalfilerecord.h"
 #include "propagateremotedelete.h"
 #include <QFile>
+#include "networkjobfactory.h"
 
 namespace OCC {
 
@@ -34,7 +35,7 @@ void PropagateRemoteMkdir::start()
         return slotStartMkcolJob();
     }
 
-    _job = new DeleteJob(_propagator->account(),
+    _job = _factory->createDeleteJob(_propagator->account(),
                          _propagator->_remoteFolder + _item->_file,
                          this);
     connect(_job, SIGNAL(finishedSignal()), SLOT(slotStartMkcolJob()));
@@ -48,7 +49,7 @@ void PropagateRemoteMkdir::slotStartMkcolJob()
 
     qDebug() << Q_FUNC_INFO << _item->_file;
 
-    _job = new MkColJob(_propagator->account(),
+    _job = _factory->createMkColJob(_propagator->account(),
                         _propagator->_remoteFolder + _item->_file,
                         this);
     connect(_job, SIGNAL(finished(QNetworkReply::NetworkError)), this, SLOT(slotMkcolJobFinished()));
@@ -110,7 +111,7 @@ void PropagateRemoteMkdir::slotMkcolJobFinished()
         // This is required so that we can detect moves even if the folder is renamed on the server
         // while files are still uploading
         _propagator->_activeJobList.append(this);
-        auto propfindJob = new PropfindJob(_job->account(), _job->path(), this);
+        auto propfindJob = _factory->createPropfindJob(_job->account(), _job->path(), this);
         propfindJob->setProperties(QList<QByteArray>() << "getetag" << "http://owncloud.org/ns:id");
         QObject::connect(propfindJob, SIGNAL(result(QVariantMap)), this, SLOT(propfindResult(QVariantMap)));
         QObject::connect(propfindJob, SIGNAL(finishedWithError()), this, SLOT(propfindError()));

@@ -19,6 +19,8 @@
 #include <theme.h>
 #include <account.h>
 #include "folderstatusdelegate.h"
+#include "networkjobfactory.h"
+#include "networkjobs.h"
 
 #include <QFileIconProvider>
 #include <QVarLengthArray>
@@ -33,6 +35,7 @@ static const char propertyParentIndexC[] = "oc_parentIndex";
 FolderStatusModel::FolderStatusModel(QObject *parent)
     :QAbstractItemModel(parent), _accountState(0), _dirty(false)
 {
+    _factory = new NetworkJobFactory(this);
 }
 
 FolderStatusModel::~FolderStatusModel()
@@ -519,7 +522,7 @@ void FolderStatusModel::fetchMore(const QModelIndex& parent)
         }
         path += info->_path;
     }
-    LsColJob *job = new LsColJob(_accountState->account(), path, this);
+    LsColJob *job = _factory->createLsColJob(_accountState->account(), path, this);
     job->setProperties(QList<QByteArray>() << "resourcetype" << "http://owncloud.org/ns:size");
     job->setTimeout(60 * 1000);
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
