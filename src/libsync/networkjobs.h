@@ -22,15 +22,20 @@ class QUrl;
 
 namespace OCC {
 
+class NetworkJobFactory;
+
 /**
  * @brief The EntityExistsJob class
  * @ingroup libsync
  */
 class OWNCLOUDSYNC_EXPORT EntityExistsJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit EntityExistsJob(AccountPtr account, const QString &path, QObject* parent = 0);
     void start() Q_DECL_OVERRIDE;
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit EntityExistsJob(AccountPtr account, const QString &path, QObject* parent = 0);
 
 signals:
     void exists(QNetworkReply*);
@@ -60,8 +65,8 @@ signals:
 
 class OWNCLOUDSYNC_EXPORT LsColJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit LsColJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
     QHash<QString, qint64> _sizes;
 
@@ -84,6 +89,9 @@ signals:
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit LsColJob(AccountPtr account, const QString &path, QObject *parent = 0);
 
 private:
     QList<QByteArray> _properties;
@@ -101,8 +109,8 @@ private:
  */
 class OWNCLOUDSYNC_EXPORT PropfindJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit PropfindJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
 
     /**
@@ -119,6 +127,10 @@ public:
 signals:
     void result(const QVariantMap &values);
     void finishedWithError(QNetworkReply *reply = 0);
+
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit PropfindJob(AccountPtr account, const QString &path, QObject *parent = 0);
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -138,8 +150,8 @@ private:
  */
 class OWNCLOUDSYNC_EXPORT ProppatchJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit ProppatchJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
 
     /**
@@ -156,6 +168,9 @@ public:
 signals:
     void success();
     void finishedWithError();
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit ProppatchJob(AccountPtr account, const QString &path, QObject *parent = 0);
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -170,12 +185,15 @@ private:
  */
 class OWNCLOUDSYNC_EXPORT MkColJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit MkColJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
 
 signals:
     void finished(QNetworkReply::NetworkError);
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit MkColJob(AccountPtr account, const QString &path, QObject *parent = 0);
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -216,12 +234,16 @@ private:
  */
 class OWNCLOUDSYNC_EXPORT RequestEtagJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit RequestEtagJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
 
 signals:
     void etagRetreived(const QString &etag);
+
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit RequestEtagJob(AccountPtr account, const QString &path, QObject *parent = 0);
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -244,8 +266,8 @@ private slots:
  */
 class OWNCLOUDSYNC_EXPORT JsonApiJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 public:
-    explicit JsonApiJob(const AccountPtr &account, const QString &path, QObject *parent = 0);
 
     /**
      * @brief addQueryParams - add more parameters to the ocs call
@@ -263,6 +285,9 @@ public slots:
     void start() Q_DECL_OVERRIDE;
 protected:
     bool finished() Q_DECL_OVERRIDE;
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit JsonApiJob(const AccountPtr &account, const QString &path, QObject *parent = 0);
+
 signals:
 
     /**

@@ -18,14 +18,17 @@
 
 namespace OCC {
 
+class NetworkJobFactory;
+
 /**
  * @brief The DeleteJob class
  * @ingroup libsync
  */
 class DeleteJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
+
 public:
-    explicit DeleteJob(AccountPtr account, const QString& path, QObject* parent = 0);
 
     void start() Q_DECL_OVERRIDE;
     bool finished() Q_DECL_OVERRIDE;
@@ -35,6 +38,11 @@ public:
 
 signals:
     void finishedSignal();
+
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit DeleteJob(AccountPtr account, const QString& path, QObject* parent = 0);
+
 };
 
 /**
