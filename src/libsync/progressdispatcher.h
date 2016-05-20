@@ -46,18 +46,18 @@ public:
     /**
      * Called when propagation starts.
      *
-     * hasStarted() will return true afterwards.
+     * isUpdatingEstimates() will return true afterwards.
      */
-    void start();
+    void startEstimateUpdates();
 
     /**
-     * Returns true when propagation has started (start() was called).
+     * Returns true when startEstimateUpdates() was called.
      *
      * This is used when the SyncEngine wants to indicate a new sync
      * is about to start via the transmissionProgress() signal. The
-     * first ProgressInfo will have hasStarted() == false.
+     * first ProgressInfo will have isUpdatingEstimates() == false.
      */
-    bool hasStarted() const;
+    bool isUpdatingEstimates() const;
 
     /**
      * Increase the file and size totals by the amount indicated in item.

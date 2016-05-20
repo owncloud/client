@@ -145,12 +145,12 @@ void ProgressInfo::reset()
     _updateEstimatesTimer.stop();
 }
 
-void ProgressInfo::start()
+void ProgressInfo::startEstimateUpdates()
 {
     _updateEstimatesTimer.start(1000);
 }
 
-bool ProgressInfo::hasStarted() const
+bool ProgressInfo::isUpdatingEstimates() const
 {
     return _updateEstimatesTimer.isActive();
 }

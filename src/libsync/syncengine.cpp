@@ -911,7 +911,7 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     emit aboutToPropagate(_syncedItems);
     // it's important to do this before ProgressInfo::start(), to announce start of new sync
     emit transmissionProgress(*_progressInfo);
-    _progressInfo->start();
+    _progressInfo->startEstimateUpdates();
 
     // post update phase script: allow to tweak stuff by a custom script in debug mode.
     if( !qgetenv("OWNCLOUD_POST_UPDATE_SCRIPT").isEmpty() ) {
