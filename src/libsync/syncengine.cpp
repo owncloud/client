@@ -673,6 +673,8 @@ void SyncEngine::startSync()
     _syncRunning = true;
     _anotherSyncNeeded = false;
 
+    _progressInfo->reset();
+
     if (!QDir(_localPath).exists()) {
         // No _tr, it should only occur in non-mirall
         emit csyncError("Unable to find local sync folder.");

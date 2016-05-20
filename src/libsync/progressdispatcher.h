@@ -37,11 +37,11 @@ class OWNCLOUDSYNC_EXPORT ProgressInfo : public QObject
 {
     Q_OBJECT
 public:
-    ProgressInfo()
-        : _totalSizeOfCompletedJobs(0)
-        , _maxFilesPerSecond(2.0)
-        , _maxBytesPerSecond(100000.0)
-    {}
+    ProgressInfo();
+
+    /** Resets for a new sync run.
+     */
+    void reset();
 
     /**
      * Called when propagation starts.
