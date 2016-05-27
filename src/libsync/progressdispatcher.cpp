@@ -155,16 +155,24 @@ bool ProgressInfo::isUpdatingEstimates() const
     return _updateEstimatesTimer.isActive();
 }
 
+static bool shouldCountProgress(const SyncFileItem &item)
+{
+    // Don't worry about directories that won't have propagation
+    // jobs associated with them.
+    return !(item._isDirectory
+             && (item._instruction == CSYNC_INSTRUCTION_NONE
+                 || item._instruction == CSYNC_INSTRUCTION_SYNC));
+}
+
 void ProgressInfo::adjustTotalsForFile(const SyncFileItem &item)
 {
-    if (!item._isDirectory) {
-        _fileProgress._total++;
-        if (isSizeDependent(item)) {
-            _sizeProgress._total += item._size;
-        }
-    } else if (item._instruction != CSYNC_INSTRUCTION_NONE) {
-        // Added or removed directories certainly count.
-        _fileProgress._total++;
+    if (!shouldCountProgress(item)) {
+        return;
+    }
+
+    _fileProgress._total += item._affectedItems;
+    if (isSizeDependent(item)) {
+        _sizeProgress._total += item._size;
     }
 }
 
@@ -195,6 +203,10 @@ quint64 ProgressInfo::completedSize() const
 
 void ProgressInfo::setProgressComplete(const SyncFileItem &item)
 {
+    if (!shouldCountProgress(item)) {
+        return;
+    }
+
     _currentItems.remove(item._file);
     _fileProgress.setCompleted(_fileProgress._completed + item._affectedItems);
     if (ProgressInfo::isSizeDependent(item)) {
@@ -206,6 +218,10 @@ void ProgressInfo::setProgressComplete(const SyncFileItem &item)
 
 void ProgressInfo::setProgressItem(const SyncFileItem &item, quint64 completed)
 {
+    if (!shouldCountProgress(item)) {
+        return;
+    }
+
     _currentItems[item._file]._item = item;
     _currentItems[item._file]._progress._total = item._size;
     _currentItems[item._file]._progress.setCompleted(completed);
