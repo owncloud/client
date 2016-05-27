@@ -157,11 +157,24 @@ bool ProgressInfo::isUpdatingEstimates() const
 
 static bool shouldCountProgress(const SyncFileItem &item)
 {
+    const auto instruction = item._instruction;
+
     // Don't worry about directories that won't have propagation
     // jobs associated with them.
-    return !(item._isDirectory
-             && (item._instruction == CSYNC_INSTRUCTION_NONE
-                 || item._instruction == CSYNC_INSTRUCTION_SYNC));
+    if (item._isDirectory
+            && (instruction == CSYNC_INSTRUCTION_NONE
+                || instruction == CSYNC_INSTRUCTION_SYNC
+                || instruction == CSYNC_INSTRUCTION_CONFLICT)) {
+        return false;
+    }
+
+    // Skip any ignored or error files, we do nothing with them.
+    if (instruction == CSYNC_INSTRUCTION_IGNORE
+            || instruction == CSYNC_INSTRUCTION_ERROR) {
+        return false;
+    }
+
+    return true;
 }
 
 void ProgressInfo::adjustTotalsForFile(const SyncFileItem &item)
