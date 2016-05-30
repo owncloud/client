@@ -4,6 +4,8 @@ version 2.2.1 (release 2016-05-xx)
  * Fix out of memory error when too many uploads happen (#4611)
  * Fix display errors in progress display (#4803 #4856)
  * LockWatcher: Remember to upload files after they become unlocked (#4865) 
+ * Fix display errors on Linux with Qt < 5.6
+ * OS X: Fix overlay status on files with ambigious unicode normalization (#4855)
 
 version 2.2.0 (release 2016-05-12)
  * Overlay icons: Refactoring - mainly for performance improvements
