@@ -453,6 +453,66 @@ void SocketApi::command_SHARE_MENU_TITLE(const QString &, QIODevice* socket)
     sendMessage(socket, QLatin1String("SHARE_MENU_TITLE:") + tr("Share with %1", "parameter is ownCloud").arg(Theme::instance()->appNameGUI()));
 }
 
+void SocketApi::command_SHARE_EMAIL(const QString& localFile, QIODevice* socket)
+{
+    if (!socket) {
+        qDebug() << Q_FUNC_INFO << "No valid socket object.";
+        return;
+    }
+
+    qDebug() << Q_FUNC_INFO << localFile;
+
+    auto theme = Theme::instance();
+
+    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    if (!shareFolder) {
+        const QString message = QLatin1String("SHARE_EMAIL:NOP:")+QDir::toNativeSeparators(localFile);
+        // files that are not within a sync folder are not synced.
+        sendMessage(socket, message);
+    } else if (!shareFolder->accountState()->isConnected()) {
+        const QString message = QLatin1String("SHARE_EMAIL:NOTCONNECTED:")+QDir::toNativeSeparators(localFile);
+        // if the folder isn't connected, don't open the share dialog
+        sendMessage(socket, message);
+    } else if (!theme->linkSharing()) {
+        const QString message = QLatin1String("SHARE_EMAIL:NOP:")+QDir::toNativeSeparators(localFile);
+        sendMessage(socket, message);
+    } else {
+        const QString localFileClean = QDir::cleanPath(localFile);
+        const QString file = localFileClean.mid(shareFolder->cleanPath().length()+1);
+        SyncFileStatus fileStatus = shareFolder->syncEngine().syncFileStatusTracker().fileStatus(file);
+
+        // Verify the file is on the server (to our knowledge of course)
+        if (fileStatus.tag() != SyncFileStatus::StatusUpToDate) {
+            const QString message = QLatin1String("SHARE:NOTSYNCED:")+QDir::toNativeSeparators(localFile);
+            sendMessage(socket, message);
+            return;
+        }
+
+        const QString remotePath = QDir(shareFolder->remotePath()).filePath(file);
+
+        // Can't share root folder
+        if (remotePath == "/") {
+            const QString message = QLatin1String("SHARE_EMAIL:CANNOTSHAREROOT:")+QDir::toNativeSeparators(localFile);
+            sendMessage(socket, message);
+            return;
+        }
+
+        SyncJournalFileRecord rec = shareFolder->journalDb()->getFileRecord(localFileClean);
+
+        bool allowReshare = true; // lets assume the good
+        if( rec.isValid() ) {
+            // check the permission: Is resharing allowed?
+            if( !rec._remotePerm.contains('R') ) {
+                allowReshare = false;
+            }
+        }
+        const QString message = QLatin1String("SHARE_EMAIL:OK:")+QDir::toNativeSeparators(localFile);
+        sendMessage(socket, message);
+
+        emit shareEmailCommandReceived(remotePath, localFileClean, allowReshare);
+    }
+}
+
 QString SocketApi::buildRegisterPathMessage(const QString& path)
 {
     QFileInfo fi(path);

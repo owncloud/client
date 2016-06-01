@@ -20,6 +20,7 @@
 #include "progressdispatcher.h"
 #include "owncloudsetupwizard.h"
 #include "sharedialog.h"
+#include "shareemailwidget.h"
 #if defined(Q_OS_MAC)
 #    include "settingsdialogmac.h"
 #    include "macwindow.h" // qtmacgoodies
@@ -909,6 +910,28 @@ void ownCloudGui::slotRemoveDestroyedShareDialogs()
             qDebug() << "REMOVED";
         }
     }
+}
+
+void ownCloudGui::slowSendShareLink(const QString &sharePath, const QString &localPath, bool resharingAllowed)
+{
+    const auto folder = FolderMan::instance()->folderForPath(localPath);
+    if (!folder) {
+        qDebug() << "Could not open share email widget for" << localPath << "no responsible folder found";
+        return;
+    }
+
+    // For https://github.com/owncloud/client/issues/3783
+    _settingsDialog->hide();
+
+    if (!resharingAllowed) {
+        qDebug() << "Could not open share email widget for" << localPath << "no reshare permissions";
+        return;
+    }
+
+    qDebug() << Q_FUNC_INFO << "Opening share email widget" << sharePath << localPath;
+    ShareEmailWidget *w = new ShareEmailWidget(folder->accountState()->account(), sharePath);
+    w->setAttribute( Qt::WA_DeleteOnClose, true );
+    raiseDialog(w);
 }
 
 

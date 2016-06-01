@@ -72,6 +72,7 @@ set(client_SRCS
     settingsdialog.cpp
     share.cpp
     sharedialog.cpp
+    shareemailwidget.cpp
     sharelinkwidget.cpp
     shareusergroupwidget.cpp
     sharee.cpp
