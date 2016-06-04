@@ -30,6 +30,7 @@ namespace OCC {
 class SelectiveSyncTreeView;
 
 class ownCloudInfo;
+class NetworkJobFactory;
 
 /**
  * @brief The FormatWarningsWizardPage class
@@ -107,6 +108,9 @@ private:
     bool _warnWasVisible;
     AccountPtr _account;
     QTimer _lscolTimer;
+
+    // Used to create the network jobs we need
+    NetworkJobFactory* _factory;
 };
 
 /**

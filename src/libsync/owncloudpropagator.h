@@ -45,6 +45,7 @@ qint64 freeSpaceLimit();
 
 class SyncJournalDb;
 class OwncloudPropagator;
+class NetworkJobFactory;
 
 /**
  * @brief the base class of propagator jobs
@@ -151,6 +152,9 @@ protected:
         _item->_errorString = msg;
     }
 
+   // Used by child classes to create the network jobs we need
+    NetworkJobFactory* _factory;
+
 protected slots:
     void slotRestoreJobCompleted(const SyncFileItem& );
 
@@ -158,8 +162,7 @@ private:
     QScopedPointer<PropagateItemJob> _restoreJob;
 
 public:
-    PropagateItemJob(OwncloudPropagator* propagator, const SyncFileItemPtr &item)
-        : PropagatorJob(propagator), _item(item) {}
+    PropagateItemJob(OwncloudPropagator* propagator, const SyncFileItemPtr &item);
 
     bool scheduleNextJob() Q_DECL_OVERRIDE {
         if (_state != NotYetStarted) {
@@ -404,8 +407,7 @@ class CleanupPollsJob : public QObject {
     QString _localPath;
 public:
     explicit CleanupPollsJob(const QVector< SyncJournalDb::PollInfo > &pollInfos, AccountPtr account,
-                             SyncJournalDb *journal, const QString &localPath, QObject* parent = 0)
-        : QObject(parent), _pollInfos(pollInfos), _account(account), _journal(journal), _localPath(localPath) {}
+                             SyncJournalDb *journal, const QString &localPath, QObject* parent = 0);
 
     ~CleanupPollsJob();
 
@@ -415,6 +417,9 @@ signals:
     void aborted(const QString &error);
 private slots:
     void slotPollFinished();
+private:
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 }

@@ -19,6 +19,7 @@
 #include "filesystem.h"
 #include <QFile>
 #include <QStringList>
+#include "networkjobfactory.h"
 
 namespace OCC {
 
@@ -92,7 +93,7 @@ void PropagateRemoteMove::start()
         }
     }
 
-    _job = new MoveJob(_propagator->account(),
+    _job = _factory->createMoveJob(_propagator->account(),
                         _propagator->_remoteFolder + _item->_file,
                         _propagator->_remoteDir + _item->_renameTarget,
                         this);

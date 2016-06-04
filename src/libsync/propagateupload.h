@@ -23,6 +23,7 @@
 
 namespace OCC {
 class BandwidthManager;
+class NetworkJobFactory;
 
 /**
  * @brief The UploadDevice class
@@ -84,6 +85,7 @@ protected slots:
  */
 class PUTFileJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
 
 private:
     QScopedPointer<QIODevice> _device;
@@ -91,10 +93,6 @@ private:
     QString _errorString;
 
 public:
-    // Takes ownership of the device
-    explicit PUTFileJob(AccountPtr account, const QString& path, QIODevice *device,
-                        const QMap<QByteArray, QByteArray> &headers, int chunk, QObject* parent = 0)
-        : AbstractNetworkJob(account, path, parent), _device(device), _headers(headers), _chunk(chunk) {}
     ~PUTFileJob();
 
     int _chunk;
@@ -117,6 +115,13 @@ signals:
     void finishedSignal();
     void uploadProgress(qint64,qint64);
 
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    // Takes ownership of the device
+    explicit PUTFileJob(AccountPtr account, const QString& path, QIODevice *device,
+                        const QMap<QByteArray, QByteArray> &headers, int chunk, QObject* parent = 0)
+        : AbstractNetworkJob(account, path, parent), _device(device), _headers(headers), _chunk(chunk) {}
+
 private slots:
 #if QT_VERSION < 0x050402
     void slotSoftAbort();
@@ -132,14 +137,12 @@ private slots:
  */
 class PollJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
+
     SyncJournalDb *_journal;
     QString _localPath;
 public:
     SyncFileItemPtr _item;
-    // Takes ownership of the device
-    explicit PollJob(AccountPtr account, const QString &path, const SyncFileItemPtr &item,
-                     SyncJournalDb *journal, const QString &localPath, QObject *parent)
-        : AbstractNetworkJob(account, path, parent), _journal(journal), _localPath(localPath), _item(item) {}
 
     void start() Q_DECL_OVERRIDE;
     bool finished() Q_DECL_OVERRIDE;
@@ -152,6 +155,13 @@ public:
 
 signals:
     void finishedSignal();
+
+protected:
+    // Takes ownership of the device
+    explicit PollJob(AccountPtr account, const QString &path, const SyncFileItemPtr &item,
+                     SyncJournalDb *journal, const QString &localPath, QObject *parent)
+        : AbstractNetworkJob(account, path, parent), _journal(journal), _localPath(localPath), _item(item) {}
+
 };
 
 /**

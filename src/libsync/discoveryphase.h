@@ -19,10 +19,11 @@
 #include <QStringList>
 #include <csync.h>
 #include <QMap>
-#include "networkjobs.h"
 #include <QMutex>
 #include <QWaitCondition>
 #include <QLinkedList>
+#include "networkjobs.h"
+#include "networkjobfactory.h"
 
 namespace OCC {
 
@@ -102,6 +103,10 @@ private:
     AccountPtr _account;
     bool _ignoredFirst;
     QPointer<LsColJob> _lsColJob;
+
+    // Used to create the network jobs we need
+    NetworkJobFactory* _factory;
+
 };
 
 // Lives in main thread. Deleted by the SyncEngine
@@ -119,7 +124,8 @@ class DiscoveryMainThread : public QObject {
 public:
     DiscoveryMainThread(AccountPtr account) : QObject(), _account(account),
         _currentDiscoveryDirectoryResult(0), _currentGetSizeResult(0)
-    { }
+    { _factory = new NetworkJobFactory(this); }
+
     void abort();
 
 
@@ -140,6 +146,9 @@ signals:
     void etagConcatenation(const QString &);
 public:
     void setupHooks(DiscoveryJob* discoveryJob, const QString &pathPrefix);
+private:
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 /**

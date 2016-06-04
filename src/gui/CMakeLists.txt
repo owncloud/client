@@ -92,6 +92,7 @@ set(client_SRCS
     notificationwidget.cpp
     notificationconfirmjob.cpp
     servernotificationhandler.cpp
+    guinetworkjobfactory.cpp
     creds/credentialsfactory.cpp
     creds/httpcredentialsgui.cpp
     creds/shibbolethcredentials.cpp

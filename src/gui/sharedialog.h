@@ -32,6 +32,7 @@ class ShareDialog;
 
 class ShareLinkWidget;
 class ShareUserGroupWidget;
+class NetworkJobFactory;
 
 class ShareDialog : public QDialog
 {
@@ -66,6 +67,9 @@ private:
     ShareLinkWidget *_linkWidget;
     ShareUserGroupWidget *_userGroupWidget;
     QProgressIndicator *_progressIndicator;
+
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 }

@@ -65,6 +65,7 @@ set(libsync_SRCS
     ownsql.cpp
     checksums.cpp
     excludedfiles.cpp
+    networkjobfactory.cpp
     creds/dummycredentials.cpp
     creds/abstractcredentials.cpp
     creds/credentialscommon.cpp

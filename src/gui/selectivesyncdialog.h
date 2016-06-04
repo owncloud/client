@@ -24,6 +24,7 @@ class QLabel;
 namespace OCC {
 
 class Folder;
+class NetworkJobFactory;
 
 /**
  * @brief The SelectiveSyncTreeView class
@@ -60,6 +61,10 @@ private:
     bool _inserting; // set to true when we are inserting new items on the list
     AccountPtr _account;
     QLabel *_loading;
+
+    // Used to create the network jobs we need
+    NetworkJobFactory* _factory;
+
 };
 
 /**

@@ -21,6 +21,7 @@
 namespace OCC {
 
 class AccountState;
+class NetworkJobFactory;
 
 /**
  * @brief The ActivityListModel
@@ -60,6 +61,9 @@ private:
     QMap<AccountState*, ActivityList> _activityLists;
     ActivityList _finalList;
     QSet<AccountState*> _currentlyFetching;
+
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 

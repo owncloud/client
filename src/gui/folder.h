@@ -35,6 +35,7 @@ namespace OCC {
 
 class SyncEngine;
 class AccountState;
+class NetworkJobFactory;
 
 /**
  * @brief The FolderDefinition class
@@ -311,6 +312,9 @@ private:
     SyncJournalDb _journal;
 
     ClientProxy   _clientProxy;
+
+    // Used to create the network jobs we need
+     NetworkJobFactory* _factory;
 };
 
 }

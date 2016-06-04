@@ -25,6 +25,7 @@ namespace OCC {
 
 class Folder;
 class ProgressInfo;
+class NetworkJobFactory;
 
 /**
  * @brief The FolderStatusModel class
@@ -139,6 +140,9 @@ private:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>())
     { emit QAbstractItemModel::dataChanged(topLeft,bottomRight); }
 #endif
+
+    // Used to create the network jobs we need
+    NetworkJobFactory* _factory;
 
 signals:
     void dirtyChanged();

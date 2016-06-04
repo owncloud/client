@@ -15,6 +15,7 @@
 #include "propagateremotedelete.h"
 #include "owncloudpropagator_p.h"
 #include "account.h"
+#include "networkjobfactory.h"
 
 namespace OCC {
 
@@ -60,7 +61,7 @@ void PropagateRemoteDelete::start()
 
     qDebug() << Q_FUNC_INFO << _item->_file;
 
-    _job = new DeleteJob(_propagator->account(),
+    _job = _factory->createDeleteJob(_propagator->account(),
                          _propagator->_remoteFolder + _item->_file,
                          this);
     connect(_job, SIGNAL(finishedSignal()), this, SLOT(slotDeleteJobFinished()));

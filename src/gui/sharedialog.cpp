@@ -21,6 +21,7 @@
 #include "configfile.h"
 #include "theme.h"
 #include "thumbnailjob.h"
+#include "networkjobfactory.h"
 
 #include <QFileInfo>
 #include <QFileIconProvider>
@@ -113,9 +114,11 @@ ShareDialog::ShareDialog(QPointer<AccountState> accountState,
     _progressIndicator->setToolTip(tr("Retrieving maximum possible sharing permissions from server..."));
     _ui->shareWidgetsLayout->addWidget(_progressIndicator);
 
+    _factory = new NetworkJobFactory(this);
+
     // Server versions >= 9.1 support the "share-permissions" property
     // older versions will just return share-permissions: ""
-    auto job = new PropfindJob(accountState->account(), _sharePath);
+    auto job = _factory->createPropfindJob(accountState->account(), _sharePath);
     job->setProperties(QList<QByteArray>() << "http://open-collaboration-services.org/ns:share-permissions");
     job->setTimeout(10 * 1000);
     connect(job, SIGNAL(result(QVariantMap)), SLOT(slotMaxSharingPermissionsReceived(QVariantMap)));

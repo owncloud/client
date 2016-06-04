@@ -18,15 +18,18 @@
 
 namespace OCC {
 
+class NetworkJobFactory;
+
 /**
  * @brief The MoveJob class
  * @ingroup libsync
  */
 class MoveJob : public AbstractNetworkJob {
     Q_OBJECT
+    friend class NetworkJobFactory;
+
     const QString _destination;
 public:
-    explicit MoveJob(AccountPtr account, const QString& path, const QString &destination, QObject* parent = 0);
 
     void start() Q_DECL_OVERRIDE;
     bool finished() Q_DECL_OVERRIDE;
@@ -36,6 +39,11 @@ public:
 
 signals:
     void finishedSignal();
+
+protected:
+    // Can only be created through the friend class, NetworkJobFactory
+    explicit MoveJob(AccountPtr account, const QString& path, const QString &destination, QObject* parent = 0);
+
 };
 
 /**

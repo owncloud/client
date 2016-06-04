@@ -14,7 +14,7 @@
 #include "quotainfo.h"
 #include "account.h"
 #include "accountstate.h"
-#include "networkjobs.h"
+#include "networkjobfactory.h"
 #include "folderman.h"
 #include "creds/abstractcredentials.h"
 #include <theme.h>
@@ -40,6 +40,8 @@ QuotaInfo::QuotaInfo(AccountState *accountState, QObject *parent)
             SLOT(slotAccountStateChanged()));
     connect(&_jobRestartTimer, SIGNAL(timeout()), SLOT(slotCheckQuota()));
     _jobRestartTimer.setSingleShot(true);
+
+    _factory = new NetworkJobFactory(this);
 }
 
 void QuotaInfo::setActive(bool active)
@@ -98,7 +100,7 @@ void QuotaInfo::slotCheckQuota()
     }
 
     AccountPtr account = _accountState->account();
-    _job = new PropfindJob(account, quotaBaseFolder(), this);
+    _job = _factory->createPropfindJob(account, quotaBaseFolder(), this);
     _job->setProperties(QList<QByteArray>() << "quota-available-bytes" << "quota-used-bytes");
     connect(_job, SIGNAL(result(QVariantMap)), SLOT(slotUpdateLastQuota(QVariantMap)));
     connect(_job, SIGNAL(networkError(QNetworkReply*)), SLOT(slotRequestFailed()));

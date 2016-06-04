@@ -26,6 +26,7 @@
 #include "utility.h"
 #include "account.h"
 #include <json.h>
+#include "networkjobfactory.h"
 
 #ifdef Q_OS_WIN
 #include <windef.h>
@@ -113,6 +114,12 @@ static bool blacklistCheck(SyncJournalDb* journal, const SyncFileItem& item)
     }
 
     return newEntry.isValid();
+}
+
+PropagateItemJob::PropagateItemJob(OwncloudPropagator* propagator, const SyncFileItemPtr &item)
+    : PropagatorJob(propagator), _item(item)
+{
+    _factory = new NetworkJobFactory(this);
 }
 
 void PropagateItemJob::done(SyncFileItem::Status status, const QString &errorString)
@@ -734,6 +741,13 @@ qint64 PropagateDirectory::committedDiskSpace() const
     return needed;
 }
 
+CleanupPollsJob::CleanupPollsJob(const QVector< SyncJournalDb::PollInfo > &pollInfos, AccountPtr account,
+                         SyncJournalDb *journal, const QString &localPath, QObject* parent)
+    : QObject(parent), _pollInfos(pollInfos), _account(account), _journal(journal), _localPath(localPath)
+{
+    _factory = new NetworkJobFactory(this);
+}
+
 CleanupPollsJob::~CleanupPollsJob()
 {}
 
@@ -750,7 +764,7 @@ void CleanupPollsJob::start()
     SyncJournalFileRecord record = _journal->getFileRecord(info._file);
     SyncFileItemPtr item(new SyncFileItem(record.toSyncFileItem()));
     if (record.isValid()) {
-        PollJob *job = new PollJob(_account, info._url, item, _journal, _localPath, this);
+        PollJob *job = _factory->createPollJob(_account, info._url, item, _journal, _localPath, this);
         connect(job, SIGNAL(finishedSignal()), SLOT(slotPollFinished()));
         job->start();
     }
