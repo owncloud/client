@@ -1,6 +1,6 @@
 ChangeLog
 =========
-version 2.2.1 (release 2016-05-xx)
+version 2.2.1 (release 2016-06-06)
  * Fix out of memory error when too many uploads happen (#4611)
  * Fix display errors in progress display (#4803 #4856)
  * LockWatcher: Remember to upload files after they become unlocked (#4865) 
@@ -9,6 +9,9 @@ version 2.2.1 (release 2016-05-xx)
  * Progress: Don't count items without propagation jobs (#4856, #4910)
  * Utility: Fix for the translation of minutes, second (#4855)
  * SyncEngine: invalid the blacklist entry when the rename destination change
+ * Several fixes to speed up reconnect after connection changes
+ * Updater: Fix small memory leak
+ * Linux: Revert forced HiDPI detection settings (#4840, #4861)
 
 version 2.2.0 (release 2016-05-12)
  * Overlay icons: Refactoring - mainly for performance improvements
