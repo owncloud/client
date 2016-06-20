@@ -16,7 +16,6 @@
 #include "ui_sharelinkwidget.h"
 #include "account.h"
 #include "capabilities.h"
-#include "creds/abstractcredentials.h"
 
 #include "share.h"
 
@@ -491,9 +490,8 @@ void ShareLinkWidget::slotPushButtonMailLinkPressed()
 
     QDesktopServices::openUrl(QUrl(QString(
             "mailto: "
-            "?subject=%1 has shared %2 with you"
-            "&body=%3").arg(
-            _account->credentials()->user(),
+            "?subject=I shared %1 with you"
+            "&body=%2").arg(
             fileName,
             _shareUrl),
         QUrl::TolerantMode));
