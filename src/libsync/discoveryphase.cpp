@@ -610,6 +610,74 @@ void DiscoveryJob::remote_vio_closedir_hook (csync_vio_handle_t *dhandle,  void 
     }
 }
 
+static QString convertToRegexpSyntax(char *exclude)
+{
+    //QString::fromUtf8(exclude);
+    QString s;
+    for (unsigned int i = 0; i < strlen(exclude); i++) {
+        char &c = exclude[i];
+        if (c == '*') s += ".*";
+        else if (c == '.') s += "\\.";
+        else if (c == '$') s += "\\$";
+        else if (c == '?') s += ".";
+        else s += c;
+        // FIXME: [ ] { } ( ) etc
+    }
+    qDebug() << s;
+    return s;
+}
+
+CSYNC_EXCLUDE_TYPE DiscoveryJob::excluded_traversal_hook (const char *path, int filetype, void *userdata)
+{
+    DiscoveryJob *discoveryJob = static_cast<DiscoveryJob*>(userdata);
+
+    // FIXME: csync_e
+
+    // FIXME file match vs directory match?
+
+    qDebug() << discoveryJob->_exclude_traversel_regexp_exclude.isValid() << path << discoveryJob->_exclude_traversel_regexp_exclude.errorString();
+
+    if (discoveryJob->_exclude_traversel_regexp_exclude.pattern().length() == 0) {
+        // env QT_ENABLE_REGEXP_JIT 1
+        discoveryJob->_exclude_traversel_regexp_exclude.setPatternOptions(QRegularExpression::OptimizeOnFirstUsageOption);
+        discoveryJob->_exclude_traversel_regexp_exclude_and_remove.setPatternOptions(QRegularExpression::OptimizeOnFirstUsageOption);
+        QString _exclude_traversel_regexp_exclude;
+        QString _exclude_traversel_regexp_exclude_and_remove;
+        for (unsigned int i = 0; i < discoveryJob->_csync_ctx->excludes->count; i++) {
+            char *exclude = discoveryJob->_csync_ctx->excludes->vector[i];
+            QString *builderToUse = & _exclude_traversel_regexp_exclude;
+            if (exclude[0] == '\n') continue; // empty line
+            if (exclude[0] == '\r') continue; // empty line
+            if (exclude[0] == ']'){
+                exclude++;
+                builderToUse = &_exclude_traversel_regexp_exclude_and_remove;
+            }
+            if (builderToUse->size() > 0) {
+                builderToUse->append("|");
+            }
+            builderToUse->append(convertToRegexpSyntax(exclude));
+        }
+        qDebug() << _exclude_traversel_regexp_exclude;
+        qDebug() << _exclude_traversel_regexp_exclude_and_remove;
+        discoveryJob->_exclude_traversel_regexp_exclude.setPattern(_exclude_traversel_regexp_exclude);
+        discoveryJob->_exclude_traversel_regexp_exclude_and_remove.setPattern(_exclude_traversel_regexp_exclude_and_remove);
+    }
+
+    QString p = QString::fromUtf8(path);
+    if (discoveryJob->_exclude_traversel_regexp_exclude.match(p).hasMatch()) {
+        qDebug() << "WOULD EXCLUDE";
+        return CSYNC_FILE_EXCLUDE_LIST;
+    }
+    // FIXME
+    if (discoveryJob->_exclude_traversel_regexp_exclude_and_remove.match(p).hasMatch()) {
+        qDebug() << "WOULD EXCLUDE AND REMOVE";
+        return CSYNC_FILE_EXCLUDE_AND_REMOVE;
+    }
+    // FIXME
+
+    return CSYNC_NOT_EXCLUDED;
+}
+
 void DiscoveryJob::start() {
     _selectiveSyncBlackList.sort();
     _selectiveSyncWhiteList.sort();
@@ -622,6 +690,9 @@ void DiscoveryJob::start() {
     _csync_ctx->callbacks.remote_readdir_hook = remote_vio_readdir_hook;
     _csync_ctx->callbacks.remote_closedir_hook = remote_vio_closedir_hook;
     _csync_ctx->callbacks.vio_userdata = this;
+
+    _csync_ctx->callbacks.excluded_traversal_hook = excluded_traversal_hook;
+    _csync_ctx->callbacks.excluded_traversal_userdata = this;
 
     csync_set_log_callback(_log_callback);
     csync_set_log_level(_log_level);

@@ -101,6 +101,10 @@ struct csync_s {
       csync_checksum_hook checksum_hook;
       void *checksum_userdata;
 
+      /* Hook for the QRegExp based exclude checker */
+      csync_exclude_traversal_hook excluded_traversal_hook;
+      void *excluded_traversal_userdata;
+
   } callbacks;
   c_strlist_t *excludes;
 

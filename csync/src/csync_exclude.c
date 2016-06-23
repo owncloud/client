@@ -172,6 +172,7 @@ out:
   return rc;
 }
 
+
 // See http://support.microsoft.com/kb/74496 and
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
 // Additionally, we ignore '$Recycle.Bin', see https://github.com/owncloud/client/issues/2955
@@ -207,7 +208,7 @@ bool csync_is_windows_reserved_word(const char* filename) {
   return false;
 }
 
-static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const char *path, int filetype, bool check_leading_dirs) {
+static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const char *path, int filetype, bool check_leading_dirs, csync_exclude_traversal_hook hook, void *hookUserData) {
     size_t i = 0;
     const char *bname = NULL;
     size_t blen = 0;
@@ -300,6 +301,13 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
         SAFE_FREE(conflict);
     }
 
+
+    if (!check_leading_dirs && hook) {
+        //
+        match = hook(bname, filetype, hookUserData);
+        goto out;
+    }
+
     if( ! excludes ) {
         goto out;
     }
@@ -331,6 +339,8 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
         }
         SAFE_FREE(path_split);
     }
+
+
 
     /* Loop over all exclude patterns and evaluate the given path */
     for (i = 0; match == CSYNC_NOT_EXCLUDED && i < excludes->count; i++) {
@@ -400,11 +410,12 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
     return match;
 }
 
-CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype) {
-  return _csync_excluded_common(excludes, path, filetype, false);
+CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype, csync_exclude_traversal_hook hook, void *hookUserData) {
+ //   return ctx->callbacks.excluded_traversal_hook(path, filetype);
+  return _csync_excluded_common(excludes, path, filetype, false, hook, hookUserData);
 }
 
 CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path, int filetype) {
-  return _csync_excluded_common(excludes, path, filetype, true);
+  return _csync_excluded_common(excludes, path, filetype, true, 0, 0);
 }
 

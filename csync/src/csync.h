@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <config_csync.h>
+#include "csync_exclude.h"
 
 #ifdef __cplusplus
 extern "C" {

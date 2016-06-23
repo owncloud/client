@@ -21,6 +21,8 @@
 #ifndef _CSYNC_EXCLUDE_H
 #define _CSYNC_EXCLUDE_H
 
+#include "std/c_string.h"
+
 enum csync_exclude_type_e {
   CSYNC_NOT_EXCLUDED   = 0,
   CSYNC_FILE_SILENTLY_EXCLUDED,
@@ -36,6 +38,10 @@ typedef enum csync_exclude_type_e CSYNC_EXCLUDE_TYPE;
 #ifdef NDEBUG
 int _csync_exclude_add(c_strlist_t **inList, const char *string);
 #endif
+
+// Hook from mirall
+typedef CSYNC_EXCLUDE_TYPE (*csync_exclude_traversal_hook) (
+        const char *path, int filetype, void *userData);
 
 /**
  * @brief Load exclude list
@@ -62,7 +68,7 @@ int csync_exclude_load(const char *fname, c_strlist_t **list);
  *
  * @return  2 if excluded and needs cleanup, 1 if excluded, 0 if not.
  */
-CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype);
+CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype, csync_exclude_traversal_hook hook, void *hookUserData);
 
 /**
  * @brief csync_excluded_no_ctx
@@ -72,7 +78,6 @@ CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *p
  * @return
  */
 CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path, int filetype);
-#endif /* _CSYNC_EXCLUDE_H */
 
 /**
  * @brief Checks if filename is considered reserved by Windows
@@ -81,5 +86,5 @@ CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path
  */
 bool csync_is_windows_reserved_word(const char *file_name);
 
-
+#endif /* _CSYNC_EXCLUDE_H */
 /* vim: set ft=c.doxygen ts=8 sw=2 et cindent: */
