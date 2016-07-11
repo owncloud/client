@@ -664,10 +664,10 @@ void CleanupPollsJob::start()
 
     auto info = _pollInfos.first();
     _pollInfos.pop_front();
-    SyncFileItem item;
-    item._file = info._file;
-    item._modtime = info._modtime;
-    PollJob *job = new PollJob(_account, info._url, item, _journal, _localPath, this);
+    _item = SyncFileItem();
+    _item._file = info._file;
+    _item._modtime = info._modtime;
+    PollJob *job = new PollJob(_account, info._url, _item, _journal, _localPath, this);
     connect(job, SIGNAL(finishedSignal()), SLOT(slotPollFinished()));
     job->start();
 }

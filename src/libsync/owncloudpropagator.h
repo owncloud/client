@@ -356,6 +356,7 @@ class CleanupPollsJob : public QObject {
     AccountPtr _account;
     SyncJournalDb *_journal;
     QString _localPath;
+    SyncFileItem _item;
 public:
     explicit CleanupPollsJob(const QVector< SyncJournalDb::PollInfo > &pollInfos, AccountPtr account,
                              SyncJournalDb *journal, const QString &localPath, QObject* parent = 0)
