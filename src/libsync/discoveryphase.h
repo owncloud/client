@@ -93,7 +93,7 @@ signals:
 private slots:
     void directoryListingIteratedSlot(QString, const QMap<QString,QString>&);
     void lsJobFinishedWithoutErrorSlot();
-    void lsJobFinishedWithErrorSlot(QNetworkReply*);
+    void lsJobFinishedWithErrorSlot();
 private:
     QList<FileStatPointer> _results;
     QString _subPath;

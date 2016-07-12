@@ -225,7 +225,7 @@ void DiscoverySingleDirectoryJob::start()
 
     QObject::connect(lsColJob, SIGNAL(directoryListingIterated(QString,QMap<QString,QString>)),
                      this, SLOT(directoryListingIteratedSlot(QString,QMap<QString,QString>)));
-    QObject::connect(lsColJob, SIGNAL(finishedWithError(QNetworkReply*)), this, SLOT(lsJobFinishedWithErrorSlot(QNetworkReply*)));
+    QObject::connect(lsColJob, SIGNAL(finishedWithError()), this, SLOT(lsJobFinishedWithErrorSlot()));
     QObject::connect(lsColJob, SIGNAL(finishedWithoutError()), this, SLOT(lsJobFinishedWithoutErrorSlot()));
     lsColJob->start();
 
@@ -234,8 +234,8 @@ void DiscoverySingleDirectoryJob::start()
 
 void DiscoverySingleDirectoryJob::abort()
 {
-    if (_lsColJob && _lsColJob->reply()) {
-        _lsColJob->reply()->abort();
+    if (_lsColJob) {
+        _lsColJob->abortNetworkReply();
     }
 }
 
@@ -297,7 +297,7 @@ static csync_vio_file_stat_t* propertyMapToFileStat(const QMap<QString,QString> 
 
 void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, const QMap<QString,QString> &map)
 {
-    //qDebug() << Q_FUNC_INFO << _subPath << file << map.count() << map.keys() << _account->davPath() << _lsColJob->reply()->request().url().path();
+    //qDebug() << Q_FUNC_INFO << _subPath << file << map.count() << map.keys() << _account->davPath() << _lsColJob->getUrl().path();
     if (!_ignoredFirst) {
         // First result is the directory itself. Maybe should have a better check for that? FIXME
         _ignoredFirst = true;
@@ -307,7 +307,7 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, con
 
     } else {
         // Remove <webDAV-Url>/folder/ from <webDAV-Url>/folder/subfile.txt
-        file.remove(0, _lsColJob->reply()->request().url().path().length());
+        file.remove(0, _lsColJob->replyUrl().path().length());
         // remove trailing slash
         while (file.endsWith('/')) {
             file.chop(1);
@@ -358,17 +358,21 @@ void DiscoverySingleDirectoryJob::lsJobFinishedWithoutErrorSlot()
     deleteLater();
 }
 
-void DiscoverySingleDirectoryJob::lsJobFinishedWithErrorSlot(QNetworkReply *r)
+void DiscoverySingleDirectoryJob::lsJobFinishedWithErrorSlot()
 {
-    QString contentType = r->header(QNetworkRequest::ContentTypeHeader).toString();
-    int httpCode = r->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QString httpReason = r->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-    QString msg = r->errorString();
+    LsColJob *job = qobject_cast<LsColJob *>(sender());
+
+    QString contentType = job->replyContentTypeHeader();
+    int httpCode = job->replyHttpStatusCode();
+    QString httpReason = job->replyHttpReasonPhrase();
+    QString msg = job->replyErrorString();
+    QNetworkReply::NetworkError err = job->replyError();
+
     int errnoCode = EIO; // Something went wrong
-    qDebug() << Q_FUNC_INFO << r->errorString() << httpCode << r->error();
+    qDebug() << Q_FUNC_INFO << msg << httpCode << err;
     if (httpCode != 0 && httpCode != 207) {
         errnoCode = get_errno_from_http_errcode(httpCode, httpReason);
-    } else if (r->error() != QNetworkReply::NoError) {
+    } else if (err != QNetworkReply::NoError) {
         errnoCode = EIO;
     } else if (!contentType.contains("application/xml; charset=utf-8")) {
         msg = QLatin1String("Server error: PROPFIND reply is not XML formatted!");

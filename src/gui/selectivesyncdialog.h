@@ -51,7 +51,7 @@ private slots:
     void slotUpdateDirectories(QStringList);
     void slotItemExpanded(QTreeWidgetItem *);
     void slotItemChanged(QTreeWidgetItem*,int);
-    void slotLscolFinishedWithError(QNetworkReply*);
+    void slotLscolFinishedWithError();
 private:
     void recursiveInsert(QTreeWidgetItem* parent, QStringList pathTrail, QString path, qint64 size);
     QString _folderPath;

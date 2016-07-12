@@ -31,6 +31,22 @@ namespace OCC {
 
 class AbstractSslErrorHandler;
 
+// Constants used to fetch and/or set attributes/properties/headers in network jobs.
+const char owncloudCustomSoftErrorStringC[] = "owncloud-custom-soft-error-string";
+const char owncloudOCErrorHeaderName[] = "OC-ErrorString";
+const char owncloudContentLengthHeaderName[] = "Content-Length";
+const char owncloudContentRangeHeaderName[] = "Content-Range";
+const char owncloudSTSHeaderName[] = "Strict-Transport-Security";
+const char owncloudFileIDHeaderName[] = "OC-FileId";
+const char owncloudOCETagHeaderName[] = "OC-ETag";
+const char owncloudETagHeaderName[] = "ETag";
+const char owncloudOCFinishPollHeaderName[] = "OC-Finish-Poll";
+const char owncloudOCMTimeHeaderName[] = "X-OC-MTime";
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
+const char owncloudShouldSoftCancelPropertyName[] = "owncloud-should-soft-cancel";
+#endif
+const char owncloudCheckSumHeaderName[] = "OC-Checksum";
+
 /**
  * @brief The AbstractNetworkJob class
  * @ingroup libsync
@@ -49,7 +65,6 @@ public:
     QString path() const { return _path; }
 
     void setReply(QNetworkReply *reply);
-    QNetworkReply* reply() const { return _reply; }
 
     void setIgnoreCredentialFailure(bool ignore);
     bool ignoreCredentialFailure() const { return _ignoreCredentialFailure; }
@@ -58,6 +73,45 @@ public:
     quint64 duration();
 
     qint64 timeoutMsec() { return _timer.interval(); }
+
+    // These methods are used to replace the direct calls that were used to fetch the same information.
+    // Can and should be overloaded when needed by specific implementation.
+
+    virtual void abortNetworkReply();
+
+    virtual QUrl replyUrl();
+    virtual QNetworkReply::NetworkError replyError();
+    virtual int replyHttpStatusCode();
+    virtual QString replyHttpReasonPhrase();
+    virtual QString replyErrorString();
+    virtual bool replyHasOCErrorString();
+    virtual QByteArray replyOCErrorString();
+    virtual  bool replyHasOCFileID();
+    virtual QByteArray replyOCFileID();
+    virtual QByteArray replyReadAll();
+    virtual QString replyContentTypeHeader();
+    virtual QUrl replyRedirectionTarget();
+    virtual bool replyHasSTS();
+    virtual bool replyHasContentRange();
+    virtual QByteArray replyContentRange();
+    virtual bool replyHasContentLength();
+    virtual QByteArray replyContentLength();
+    virtual bool replyCustomSoftErrorStringIsValid();
+    virtual QString replyCustomSoftErrorString();
+    virtual  bool replyHasOCETag();
+    virtual QByteArray replyOCETag();
+    virtual  bool replyHasETag();
+    virtual QByteArray replyETag();
+    virtual  bool replyHasOCFinishPoll();
+    virtual QByteArray replyOCFinishPoll();
+    virtual  bool replyHasOCMTime();
+    virtual QByteArray replyOCMTime();
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
+    virtual bool replyShouldSoftCancelIsValid();
+    virtual QString replyShouldSoftCancel();
+#endif
+    virtual  bool replyHasOCChecksum();
+    virtual QByteArray replyOCChecksum();
 
 public slots:
     void setTimeout(qint64 msec);
@@ -78,6 +132,16 @@ protected:
     QNetworkReply* headRequest(const QString &relPath);
     QNetworkReply* headRequest(const QUrl &url);
     QNetworkReply* deleteRequest(const QUrl &url);
+
+    /*
+     * Making this method protected instead of public.
+     * We really want external objects not to access the reply
+     * in order to abstract network protocol internal workings
+     * from propagators classes.
+     * For exceptions such as the credentials class, the reply
+     * should be sent through signals.
+    */
+    QNetworkReply* reply() const { return _reply; }
 
     int maxRedirects() const { return 10; }
     virtual bool finished() = 0;
@@ -128,6 +192,8 @@ QString OWNCLOUDSYNC_EXPORT extractErrorMessage(const QByteArray& errorResponse)
 
 /** Builds a error message based on the error and the reply body. */
 QString OWNCLOUDSYNC_EXPORT errorMessage(const QString& baseError, const QByteArray& body);
+
+
 
 } // namespace OCC
 

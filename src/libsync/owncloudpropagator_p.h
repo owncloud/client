@@ -18,6 +18,7 @@
 #include <QNetworkReply>
 #include <QDebug>
 #include "syncfileitem.h"
+#include "abstractnetworkjob.h"
 
 namespace OCC {
 
@@ -39,10 +40,10 @@ inline QByteArray parseEtag(const char *header) {
     return arr;
 }
 
-inline QByteArray getEtagFromReply(QNetworkReply *reply)
+inline QByteArray getEtagFromJob(AbstractNetworkJob *job)
 {
-    QByteArray ocEtag = parseEtag(reply->rawHeader("OC-ETag"));
-    QByteArray etag = parseEtag(reply->rawHeader("ETag"));
+    QByteArray ocEtag = parseEtag(job->replyOCETag());
+    QByteArray etag = parseEtag(job->replyETag());
     QByteArray ret = ocEtag;
     if (ret.isEmpty()) {
         ret = etag;

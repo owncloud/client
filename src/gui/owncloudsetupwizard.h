@@ -71,10 +71,10 @@ private slots:
     void slotNoOwnCloudFoundAuthTimeout(const QUrl&url);
 
     void slotConnectToOCUrl(const QString&);
-    void slotAuthError();
+    void slotAuthError(QNetworkReply*);
 
     void slotCreateLocalAndRemoteFolders(const QString&, const QString&);
-    void slotRemoteFolderExists(QNetworkReply*);
+    void slotRemoteFolderExists();
     void slotCreateRemoteFolderFinished(QNetworkReply::NetworkError);
     void slotAssistantFinished( int );
     void slotSkipFolderConfiguration();
@@ -88,7 +88,7 @@ private:
     void finalizeSetup( bool );
     bool ensureStartFromScratch(const QString &localFolder);
     AccountState *applyAccountChanges();
-    bool checkDowngradeAdvised(QNetworkReply* reply);
+    bool checkDowngradeAdvised(AbstractNetworkJob *job);
 
     OwncloudWizard* _ocWizard;
     QString _initLocalFolder;

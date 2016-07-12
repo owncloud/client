@@ -183,20 +183,26 @@ void ConnectionValidator::checkAuthentication()
 
 void ConnectionValidator::slotAuthFailed(QNetworkReply *reply)
 {
+    PropfindJob *job = qobject_cast<PropfindJob*>(sender());
+    QNetworkReply::NetworkError err = job->replyError();
+    QString errorString = job->replyErrorString();
+
     Status stat = Timeout;
 
-    if( reply->error() == QNetworkReply::AuthenticationRequiredError ||
+    if( err == QNetworkReply::AuthenticationRequiredError ||
              !_account->credentials()->stillValid(reply)) {
-        qDebug() <<  reply->error() << reply->errorString();
+
+
+        qDebug() <<  err << errorString;
         qDebug() << "******** Password is wrong!";
         _errors << tr("The provided credentials are not correct");
         stat = CredentialsMissingOrWrong;
 
-    } else if( reply->error() != QNetworkReply::NoError ) {
-        _errors << errorMessage(reply->errorString(), reply->readAll());
+    } else if( err != QNetworkReply::NoError ) {
+        _errors << errorMessage(errorString, job->replyReadAll());
 
-        const int httpStatus =
-                reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        const int httpStatus = job->replyHttpStatusCode();
+
         if ( httpStatus == 503 ) {
             _errors.clear();
             stat = ServiceUnavailable;

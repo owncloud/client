@@ -33,12 +33,6 @@
 #include <cmath>
 #include <cstring>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
-namespace {
-const char owncloudShouldSoftCancelPropertyName[] = "owncloud-should-soft-cancel";
-}
-#endif
-
 namespace OCC {
 
 /**
@@ -111,6 +105,11 @@ void PUTFileJob::slotSoftAbort() {
 }
 #endif
 
+int PUTFileJob::chunk()
+{
+    return _chunk;
+}
+
 void PollJob::start()
 {
     setTimeout(120 * 1000);
@@ -182,6 +181,11 @@ bool PollJob::finished()
 
     emit finishedSignal();
     return true;
+}
+
+SyncFileItemPtr PollJob::item()
+{
+    return _item;
 }
 
 void PropagateUploadFileQNAM::start()
@@ -548,7 +552,7 @@ void PropagateUploadFileQNAM::startNextChunk()
     }
 
     if (isFinalChunk && !_transmissionChecksumType.isEmpty()) {
-        headers[checkSumHeaderC] = makeChecksumHeader(
+        headers[owncloudCheckSumHeaderName] = makeChecksumHeader(
                 _transmissionChecksumType, _transmissionChecksum);
     }
 
@@ -613,11 +617,15 @@ void PropagateUploadFileQNAM::slotPutFinished()
     Q_ASSERT(job);
     slotJobDestroyed(job); // remove it from the _jobs list
 
-    qDebug() << Q_FUNC_INFO << job->reply()->request().url() << "FINISHED WITH STATUS"
-             << job->reply()->error()
-             << (job->reply()->error() == QNetworkReply::NoError ? QLatin1String("") : job->reply()->errorString())
-             << job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute)
-             << job->reply()->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
+    QNetworkReply::NetworkError err = job->replyError();
+    int httpStatusCode = job->replyHttpStatusCode();
+    QString replyErrorString = job->replyErrorString();
+
+    qDebug() << Q_FUNC_INFO << job->replyUrl() << "FINISHED WITH STATUS"
+             << err
+             << (err == QNetworkReply::NoError ? QLatin1String("") : replyErrorString)
+             << httpStatusCode
+             << job->replyHttpReasonPhrase();
 
     _propagator->_activeJobList.removeOne(this);
 
@@ -626,10 +634,8 @@ void PropagateUploadFileQNAM::slotPutFinished()
         return;
     }
 
-    QNetworkReply::NetworkError err = job->reply()->error();
-
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
-    if (err == QNetworkReply::OperationCanceledError && job->reply()->property(owncloudShouldSoftCancelPropertyName).isValid()) {
+    if (err == QNetworkReply::OperationCanceledError && job->replyShouldSoftCancelIsValid()) {
         // Abort the job and try again later.
         // This works around a bug in QNAM wich might reuse a non-empty buffer for the next request.
         qDebug() << "Forcing job abort on HTTP connection reset with Qt < 5.4.2.";
@@ -640,18 +646,18 @@ void PropagateUploadFileQNAM::slotPutFinished()
 #endif
 
     if (err != QNetworkReply::NoError) {
-        _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        _item->_httpErrorCode = httpStatusCode;
         if(checkForProblemsWithShared(_item->_httpErrorCode,
             tr("The file was edited locally but is part of a read only share. "
                "It is restored and your edit is in the conflict file."))) {
             return;
         }
-        QByteArray replyContent = job->reply()->readAll();
+        QByteArray replyContent = job->replyReadAll();
         qDebug() << replyContent; // display the XML error in the debug
-        QString errorString = errorMessage(job->errorString(), replyContent);
+        QString errorString = errorMessage(replyErrorString, replyContent);
 
-        if (job->reply()->hasRawHeader("OC-ErrorString")) {
-            errorString = job->reply()->rawHeader("OC-ErrorString");
+        if (job->replyHasOCErrorString()) {
+            errorString = job->replyOCErrorString();
         }
 
         if (_item->_httpErrorCode == 412) {
@@ -667,11 +673,11 @@ void PropagateUploadFileQNAM::slotPutFinished()
         return;
     }
 
-    _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    _item->_httpErrorCode = httpStatusCode;
     // The server needs some time to process the request and provide us with a poll URL
     if (_item->_httpErrorCode == 202) {
         _finished = true;
-        QString path =  QString::fromUtf8(job->reply()->rawHeader("OC-Finish-Poll"));
+        QString path =  QString::fromUtf8(job->replyOCFinishPoll());
         if (path.isEmpty()) {
             done(SyncFileItem::NormalError, tr("Poll URL missing"));
             return;
@@ -689,7 +695,7 @@ void PropagateUploadFileQNAM::slotPutFinished()
     // But if the upload is ongoing, because not all chunks were uploaded
     // yet, the upload can be stopped and an error can be displayed, because
     // the server hasn't registered the new file yet.
-    QByteArray etag = getEtagFromReply(job->reply());
+    QByteArray etag = getEtagFromJob(job);
     bool finished = etag.length() > 0;
 
     // Check if the file still exists
@@ -734,11 +740,11 @@ void PropagateUploadFileQNAM::slotPutFinished()
 
         SyncJournalDb::UploadInfo pi;
         pi._valid = true;
-        auto currentChunk = job->_chunk;
+        auto currentChunk = job->chunk();
         foreach (auto *job, _jobs) {
             // Take the minimum finished one
-            if (auto putJob = qobject_cast<PUTFileJob*>(job)) {
-                currentChunk = qMin(currentChunk, putJob->_chunk - 1);
+            if (PUTFileJob *putJob = qobject_cast<PUTFileJob*>(job)) {
+                currentChunk = qMin(currentChunk, putJob->chunk() - 1);
             }
         }
         pi._chunk = (currentChunk + _startChunk + 1) % _chunkCount ; // next chunk to start with
@@ -753,7 +759,7 @@ void PropagateUploadFileQNAM::slotPutFinished()
     // the following code only happens after all chunks were uploaded.
     _finished = true;
     // the file id should only be empty for new files up- or downloaded
-    QByteArray fid = job->reply()->rawHeader("OC-FileID");
+    QByteArray fid = job->replyOCFileID();
     if( !fid.isEmpty() ) {
         if( !_item->_fileId.isEmpty() && _item->_fileId != fid ) {
             qDebug() << "WARN: File ID changed!" << _item->_fileId << fid;
@@ -765,10 +771,11 @@ void PropagateUploadFileQNAM::slotPutFinished()
 
     _item->_responseTimeStamp = job->responseTimestamp();
 
-    if (job->reply()->rawHeader("X-OC-MTime") != "accepted") {
+    QByteArray ocMTime = job->replyOCMTime();
+    if (ocMTime != "accepted") {
         // X-OC-MTime is supported since owncloud 5.0.   But not when chunking.
         // Normally Owncloud 6 always puts X-OC-MTime
-        qWarning() << "Server does not support X-OC-MTime" << job->reply()->rawHeader("X-OC-MTime");
+        qWarning() << "Server does not support X-OC-MTime" << ocMTime;
         // Well, the mtime was not set
         done(SyncFileItem::SoftError, "Server does not support X-OC-MTime");
     }
@@ -860,15 +867,18 @@ void PropagateUploadFileQNAM::slotPollFinished()
     PollJob *job = qobject_cast<PollJob *>(sender());
     Q_ASSERT(job);
 
+    SyncFileItemPtr item = job->item();
+
     _propagator->_activeJobList.removeOne(this);
 
-    if (job->_item->_status != SyncFileItem::Success) {
+
+    if (item->_status != SyncFileItem::Success) {
         _finished = true;
-        done(job->_item->_status, job->_item->_errorString);
+        done(item->_status, item->_errorString);
         return;
     }
 
-    finalize(*job->_item);
+    finalize(*item);
 }
 
 void PropagateUploadFileQNAM::slotJobDestroyed(QObject* job)
@@ -878,10 +888,10 @@ void PropagateUploadFileQNAM::slotJobDestroyed(QObject* job)
 
 void PropagateUploadFileQNAM::abort()
 {
-    foreach(auto *job, _jobs) {
-        if (job->reply()) {
+    foreach(AbstractNetworkJob *job, _jobs) {
+        if (job) {
             qDebug() << Q_FUNC_INFO << job << this->_item->_file;
-            job->reply()->abort();
+            job->abortNetworkReply();
         }
     }
 }

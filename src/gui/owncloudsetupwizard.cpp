@@ -170,10 +170,16 @@ void OwncloudSetupWizard::slotOwnCloudFoundAuth(const QUrl& url, const QVariantM
 
 void OwncloudSetupWizard::slotNoOwnCloudFoundAuth(QNetworkReply *reply)
 {
+    // We keep the slot with that signature to avoid having to rewrite the signal from CheckServerJob.
+    // Since this class won't be overloaded for owncrypt given what it does, this avoid an unneeded change.
+    Q_UNUSED(reply);
+
+    AbstractNetworkJob* job = qobject_cast<AbstractNetworkJob*>(sender());
+
     _ocWizard->displayError(tr("Failed to connect to %1 at %2:<br/>%3")
                             .arg(Theme::instance()->appNameGUI(),
-                                 reply->url().toString(),
-                                 reply->errorString()), checkDowngradeAdvised(reply));
+                                 job->replyUrl().toString(),
+                                 job->replyErrorString()), checkDowngradeAdvised(job));
 
     // Allow the credentials dialog to pop up again for the same URL.
     // Maybe the user just clicked 'Cancel' by accident or changed his mind.
@@ -207,11 +213,11 @@ void OwncloudSetupWizard::testOwnCloudConnect()
     job->setIgnoreCredentialFailure(true);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, SIGNAL(result(QVariantMap)), _ocWizard, SLOT(successfulStep()));
-    connect(job, SIGNAL(finishedWithError()), this, SLOT(slotAuthError()));
+    connect(job, SIGNAL(finishedWithError(QNetworkReply*)), this, SLOT(slotAuthError(QNetworkReply*)));
     job->start();
 }
 
-void OwncloudSetupWizard::slotAuthError()
+void OwncloudSetupWizard::slotAuthError(QNetworkReply *reply)
 {
     QString errorMsg;
 
@@ -220,11 +226,13 @@ void OwncloudSetupWizard::slotAuthError()
         qWarning() << "Can't check for authed redirects. This slot should be invoked from PropfindJob!";
         return;
     }
-    QNetworkReply* reply = job->reply();
 
     // If there were redirects on the *authed* requests, also store
     // the updated server URL, similar to redirects on status.php.
-    QUrl redirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    QUrl redirectUrl = job->replyRedirectionTarget();
+
+    QNetworkReply::NetworkError err = job->replyError();
+
     if (!redirectUrl.isEmpty()) {
         qDebug() << "authed request was redirected to" << redirectUrl.toString();
 
@@ -246,18 +254,18 @@ void OwncloudSetupWizard::slotAuthError()
 
     // A 404 is actually a success: we were authorized to know that the folder does
     // not exist. It will be created later...
-    } else if (reply->error() == QNetworkReply::ContentNotFoundError) {
+    } else if (err == QNetworkReply::ContentNotFoundError) {
         _ocWizard->successfulStep();
         return;
 
     // Provide messages for other errors, such as invalid credentials.
-    } else if (reply->error() != QNetworkReply::NoError) {
+    } else if (err != QNetworkReply::NoError) {
         if (!_ocWizard->account()->credentials()->stillValid(reply)) {
             errorMsg = tr("Access forbidden by server. To verify that you have proper access, "
                           "<a href=\"%1\">click here</a> to access the service with your browser.")
                        .arg(_ocWizard->account()->url().toString());
         } else {
-            errorMsg = errorMessage(reply->errorString(), reply->readAll());
+            errorMsg = errorMessage(job->replyErrorString(), job->replyReadAll());
         }
 
     // Something else went wrong, maybe the response was 200 but with invalid data.
@@ -269,16 +277,16 @@ void OwncloudSetupWizard::slotAuthError()
     if (_ocWizard->currentId() == WizardCommon::Page_ShibbolethCreds) {
         _ocWizard->back();
     }
-    _ocWizard->displayError(errorMsg, _ocWizard->currentId() == WizardCommon::Page_ServerSetup && checkDowngradeAdvised(reply));
+    _ocWizard->displayError(errorMsg, _ocWizard->currentId() == WizardCommon::Page_ServerSetup && checkDowngradeAdvised(job));
 }
 
-bool OwncloudSetupWizard::checkDowngradeAdvised(QNetworkReply* reply)
+bool OwncloudSetupWizard::checkDowngradeAdvised(AbstractNetworkJob *job)
 {
-    if(reply->url().scheme() != QLatin1String("https")) {
+    if(job->replyUrl().scheme() != QLatin1String("https")) {
         return false;
     }
 
-    switch (reply->error()) {
+    switch (job->replyError()) {
     case QNetworkReply::NoError:
     case QNetworkReply::ContentNotFoundError:
     case QNetworkReply::AuthenticationRequiredError:
@@ -289,7 +297,7 @@ bool OwncloudSetupWizard::checkDowngradeAdvised(QNetworkReply* reply)
     }
 
     // Adhere to HSTS, even though we do not parse it properly
-    if (reply->hasRawHeader("Strict-Transport-Security")) {
+    if (job->replyHasSTS()) {
         return false;
     }
     return true;
@@ -321,7 +329,7 @@ void OwncloudSetupWizard::slotCreateLocalAndRemoteFolders(const QString& localFo
     }
     if (nextStep) {
         EntityExistsJob *job = new EntityExistsJob(_ocWizard->account(), _ocWizard->account()->davPath() + remoteFolder, this);
-        connect(job, SIGNAL(exists(QNetworkReply*)), SLOT(slotRemoteFolderExists(QNetworkReply*)));
+        connect(job, SIGNAL(exists()), SLOT(slotRemoteFolderExists()));
         job->start();
     } else {
         finalizeSetup( false );
@@ -329,11 +337,12 @@ void OwncloudSetupWizard::slotCreateLocalAndRemoteFolders(const QString& localFo
 }
 
 // ### TODO move into EntityExistsJob once we decide if/how to return gui strings from jobs
-void OwncloudSetupWizard::slotRemoteFolderExists(QNetworkReply *reply)
+void OwncloudSetupWizard::slotRemoteFolderExists()
 {
+    EntityExistsJob *job = qobject_cast<EntityExistsJob*>(sender());
     bool ok = true;
     QString error;
-    QNetworkReply::NetworkError errId = reply->error();
+    QNetworkReply::NetworkError errId = job->replyError();
 
     if( errId == QNetworkReply::NoError ) {
         qDebug() << "******** Remote folder found, all cool!";
@@ -345,7 +354,7 @@ void OwncloudSetupWizard::slotRemoteFolderExists(QNetworkReply *reply)
             createRemoteFolder();
         }
     } else {
-        error = tr("Error: %1").arg(reply->errorString());
+        error = tr("Error: %1").arg(job->replyErrorString());
         ok = false;
     }
 

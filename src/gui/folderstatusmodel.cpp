@@ -524,8 +524,8 @@ void FolderStatusModel::fetchMore(const QModelIndex& parent)
     job->setTimeout(60 * 1000);
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotUpdateDirectories(QStringList)));
-    connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
-            this, SLOT(slotLscolFinishedWithError(QNetworkReply*)));
+    connect(job, SIGNAL(finishedWithError()),
+            this, SLOT(slotLscolFinishedWithError()));
     job->start();
 
     QPersistentModelIndex persistentIndex(parent);
@@ -600,7 +600,7 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list)
         newInfo._folder = parentInfo->_folder;
         newInfo._pathIdx = parentInfo->_pathIdx;
         newInfo._pathIdx << newSubs.size();
-        auto size = job ? job->_sizes.value(path) : 0;
+        auto size = job ? job->sizes()->value(path) : 0;
         newInfo._size = size;
         newInfo._path = relativePath;
         newInfo._name = relativePath.split('/', QString::SkipEmptyParts).last();
@@ -665,9 +665,9 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list)
 #endif
 }
 
-void FolderStatusModel::slotLscolFinishedWithError(QNetworkReply* r)
+void FolderStatusModel::slotLscolFinishedWithError()
 {
-    auto job = qobject_cast<LsColJob *>(sender());
+    LsColJob *job = qobject_cast<LsColJob *>(sender());
     Q_ASSERT(job);
     QModelIndex idx = qvariant_cast<QPersistentModelIndex>(job->property(propertyParentIndexC));
     if (!idx.isValid()) {
@@ -675,7 +675,7 @@ void FolderStatusModel::slotLscolFinishedWithError(QNetworkReply* r)
     }
     auto parentInfo = infoForIndex(idx);
     if (parentInfo) {
-        if (r->error() == QNetworkReply::ContentNotFoundError) {
+        if (job->replyError()== QNetworkReply::ContentNotFoundError) {
             parentInfo->_fetched = true;
         } else {
             if (!parentInfo->hasLabel()) {

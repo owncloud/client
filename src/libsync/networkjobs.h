@@ -33,7 +33,7 @@ public:
     void start() Q_DECL_OVERRIDE;
 
 signals:
-    void exists(QNetworkReply*);
+    void exists();
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
@@ -63,7 +63,8 @@ class OWNCLOUDSYNC_EXPORT LsColJob : public AbstractNetworkJob {
 public:
     explicit LsColJob(AccountPtr account, const QString &path, QObject *parent = 0);
     void start() Q_DECL_OVERRIDE;
-    QHash<QString, qint64> _sizes;
+
+    QHash<QString, qint64>* sizes();
 
     /**
      * Used to specify which properties shall be retrieved.
@@ -79,14 +80,20 @@ public:
 signals:
     void directoryListingSubfolders(const QStringList &items);
     void directoryListingIterated(const QString &name, const QMap<QString,QString> &properties);
+    // TODO orion : should be removed if unused after all dependencies are fixed.
     void finishedWithError(QNetworkReply *reply);
+    void finishedWithError();
     void finishedWithoutError();
+
+public slots:
+    void parserFinishedWithError(QNetworkReply *reply);
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;
 
 private:
     QList<QByteArray> _properties;
+    QHash<QString, qint64> _sizes;
 };
 
 /**
@@ -118,7 +125,8 @@ public:
 
 signals:
     void result(const QVariantMap &values);
-    void finishedWithError(QNetworkReply *reply = 0);
+    void finishedWithError(QNetworkReply *reply);
+    void finishedWithError();
 
 private slots:
     virtual bool finished() Q_DECL_OVERRIDE;

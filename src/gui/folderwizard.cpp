@@ -212,8 +212,12 @@ void FolderWizardRemotePath::slotCreateRemoteFolderFinished(QNetworkReply::Netwo
 
 void FolderWizardRemotePath::slotHandleMkdirNetworkError(QNetworkReply *reply)
 {
-    qDebug() << "** webdav mkdir request failed:" << reply->error();
-    if( reply && !_account->credentials()->stillValid(reply) ) {
+    MkColJob *job = static_cast<MkColJob *>(sender());
+
+    QNetworkReply::NetworkError err = job->replyError();
+
+    qDebug() << "** webdav mkdir request failed:" << err;
+    if(!_account->credentials()->stillValid(reply) ) {
         showWarn(tr("Authentication failed accessing %1").arg(Theme::instance()->appNameGUI()));
     } else {
         showWarn(tr("Failed to create the folder on %1. Please check manually.")
@@ -221,10 +225,12 @@ void FolderWizardRemotePath::slotHandleMkdirNetworkError(QNetworkReply *reply)
     }
 }
 
-void FolderWizardRemotePath::slotHandleLsColNetworkError(QNetworkReply *reply)
+void FolderWizardRemotePath::slotHandleLsColNetworkError()
 {
+    LsColJob *job = static_cast<LsColJob *>(sender());
+
     showWarn(tr("Failed to list a folder. Error: %1")
-             .arg(errorMessage(reply->errorString(), reply->readAll())));
+             .arg(errorMessage(job->replyErrorString(), job->replyReadAll())));
 }
 
 static QTreeWidgetItem* findFirstChild(QTreeWidgetItem *parent, const QString& text)
@@ -366,7 +372,7 @@ void FolderWizardRemotePath::slotLsColFolderEntry()
     // because of extra logic in the typed-path case.
     disconnect(job, 0, this, 0);
     connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
-            SLOT(slotTypedPathError(QNetworkReply*)));
+            SLOT(slotTypedPathError()));
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotTypedPathFound(QStringList)));
 }
@@ -377,19 +383,20 @@ void FolderWizardRemotePath::slotTypedPathFound(const QStringList& subpaths)
     selectByPath(_ui.folderEntry->text());
 }
 
-void FolderWizardRemotePath::slotTypedPathError(QNetworkReply* reply)
+void FolderWizardRemotePath::slotTypedPathError()
 {
     // Ignore 404s, otherwise users will get annoyed by error popups
     // when not typing fast enough. It's still clear that a given path
     // was not found, because the 'Next' button is disabled and no entry
     // is selected in the tree view.
-    int httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    if (httpCode == 404) {
+    LsColJob *job = static_cast<LsColJob *>(sender());
+
+    if (job->replyHttpStatusCode() == 404) {
         showWarn(""); // hides the warning pane
         return;
     }
 
-    slotHandleLsColNetworkError(reply);
+    slotHandleLsColNetworkError();
 }
 
 LsColJob* FolderWizardRemotePath::runLsColJob(const QString& path)
@@ -398,8 +405,8 @@ LsColJob* FolderWizardRemotePath::runLsColJob(const QString& path)
     job->setProperties(QList<QByteArray>() << "resourcetype");
     connect(job, SIGNAL(directoryListingSubfolders(QStringList)),
             SLOT(slotUpdateDirectories(QStringList)));
-    connect(job, SIGNAL(finishedWithError(QNetworkReply*)),
-            SLOT(slotHandleLsColNetworkError(QNetworkReply*)));
+    connect(job, SIGNAL(finishedWithError()),
+            SLOT(slotHandleLsColNetworkError()));
     job->start();
 
     return job;

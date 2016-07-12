@@ -246,6 +246,295 @@ void AbstractNetworkJob::slotTimeout()
     }
 }
 
+void AbstractNetworkJob::abortNetworkReply()
+{
+    if (_reply) {
+        _reply->abort();
+    }
+
+    return;
+}
+
+QUrl AbstractNetworkJob::replyUrl()
+{
+    if (_reply) {
+        return _reply->request().url();
+    } else {
+        return QUrl();
+    }
+}
+
+QNetworkReply::NetworkError AbstractNetworkJob::replyError()
+{
+    if (_reply) {
+        return _reply->error();
+    } else {
+        return QNetworkReply::NoError;
+    }
+}
+
+int AbstractNetworkJob::replyHttpStatusCode()
+{
+    if (_reply) {
+        return _reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    } else {
+        return 0;
+    }
+}
+
+QString AbstractNetworkJob::replyHttpReasonPhrase()
+{
+    if (_reply) {
+        return _reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+    } else {
+        return QString();
+    }
+}
+
+QString AbstractNetworkJob::replyErrorString()
+{
+    if (_reply) {
+        return _reply->errorString();
+    } else {
+        return QString();
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCErrorString()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCErrorHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCErrorString()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCErrorHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCFileID()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudFileIDHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCFileID()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudFileIDHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+QByteArray AbstractNetworkJob::replyReadAll()
+{
+    if (_reply) {
+        return _reply->readAll();
+    } else {
+        return QByteArray();
+    }
+}
+
+QString AbstractNetworkJob::replyContentTypeHeader()
+{
+    if (_reply) {
+        return _reply->header(QNetworkRequest::ContentTypeHeader).toString();
+    } else {
+        return QString();
+    }
+}
+
+QUrl AbstractNetworkJob::replyRedirectionTarget()
+{
+    if (_reply) {
+        return _reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    } else {
+        return QUrl();
+    }
+}
+
+bool AbstractNetworkJob::replyHasSTS()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudSTSHeaderName);
+    } else {
+        return false;
+    }
+}
+
+bool AbstractNetworkJob::replyHasContentRange()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudContentRangeHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyContentRange()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudContentRangeHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasContentLength()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudContentLengthHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyContentLength()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudContentLengthHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+QString AbstractNetworkJob::replyCustomSoftErrorString()
+{
+    if (_reply) {
+        return _reply->property(owncloudCustomSoftErrorStringC).toString();
+    } else {
+        return QString();
+    }
+}
+
+bool AbstractNetworkJob::replyCustomSoftErrorStringIsValid()
+{
+    if (_reply) {
+        return _reply->property(owncloudCustomSoftErrorStringC).isValid();
+    } else {
+        return true;
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCETag()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCETagHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCETag()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCETagHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasETag()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudETagHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyETag()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudETagHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCFinishPoll()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCFinishPollHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCFinishPoll()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCFinishPollHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+bool AbstractNetworkJob::replyHasOCMTime()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudOCMTimeHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCMTime()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudOCMTimeHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
+QString AbstractNetworkJob::replyShouldSoftCancel()
+{
+    if (_reply) {
+        return _reply->property(owncloudShouldSoftCancelPropertyName).toString();
+    } else {
+        return QString();
+    }
+}
+
+bool AbstractNetworkJob::replyShouldSoftCancelIsValid()
+{
+    if (_reply) {
+        return _reply->property(owncloudShouldSoftCancelPropertyName).isValid();
+    } else {
+        return true;
+    }
+}
+#endif
+
+bool AbstractNetworkJob::replyHasOCChecksum()
+{
+    if (_reply) {
+        return _reply->hasRawHeader(owncloudCheckSumHeaderName);
+    } else {
+        return false;
+    }
+}
+
+QByteArray AbstractNetworkJob::replyOCChecksum()
+{
+    if (_reply) {
+        return _reply->rawHeader(owncloudCheckSumHeaderName);
+    } else {
+        return QByteArray();
+    }
+}
 
 NetworkJobTimeoutPauser::NetworkJobTimeoutPauser(QNetworkReply *reply)
 {
