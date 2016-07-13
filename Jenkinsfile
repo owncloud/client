@@ -38,6 +38,18 @@ node('CLIENT') {
 		ctest --output-on-failure'''
 
 
+    stage 'Win32'
+	sh '''
+		HOME=/var/jenkins
+		GUESTHOME=/home/user
+
+		docker_image='danimo/docker-owncloud-client-win32'
+
+		docker pull ${docker_image}
+		docker run -t -v $HOME:/home/user ${docker_image} \
+				 bash -x ${PWD/$HOME/$GUESTHOME}/admin/win/docker/build.sh \
+				 ${PWD/$HOME//} $(id -u)'''
+
 }
 
 
