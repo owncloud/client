@@ -424,6 +424,21 @@ bool Utility::isBSD()
 #endif
 }
 
+QString Utility::platformName()
+{
+    QString re("Windows");
+
+    if( isMac() ) {
+        re = QLatin1String("MacOSX");
+    } else if( isLinux() ) {
+        re = QLatin1String("Linux");
+    } else if( isBSD() ) {
+        re = QLatin1String("BSD");
+    } else if( isUnix() ) {
+        re = QLatin1String("Unix");
+    }
+    return re;
+}
 
 void Utility::crash()
 {
