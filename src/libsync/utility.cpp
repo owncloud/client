@@ -38,6 +38,9 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 #include <QCollator>
 #endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+#include <QSysInfo>
+#endif
 
 
 #ifdef Q_OS_UNIX
@@ -428,6 +431,7 @@ QString Utility::platformName()
 {
     QString re("Windows");
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
     if( isMac() ) {
         re = QLatin1String("MacOSX");
     } else if( isLinux() ) {
@@ -437,6 +441,9 @@ QString Utility::platformName()
     } else if( isUnix() ) {
         re = QLatin1String("Unix");
     }
+#else
+    re = QSysInfo::prettyProductName();
+#endif
     return re;
 }
 
