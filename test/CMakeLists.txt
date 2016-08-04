@@ -42,6 +42,8 @@ owncloud_add_test(FileSystem "")
 owncloud_add_test(ChecksumValidator "")
 
 owncloud_add_test(ExcludedFiles "")
+owncloud_add_test(SyncEngine "syncenginetestutils.h")
+owncloud_add_test(SyncFileStatusTracker "syncenginetestutils.h")
 
 SET(FolderMan_SRC ../src/gui/folderman.cpp)
 list(APPEND FolderMan_SRC ../src/gui/folder.cpp )

@@ -149,5 +149,5 @@ private:
     SqlDatabase _db;
 };
 
-QTEST_APPLESS_MAIN(TestOwnSql)
+QTEST_GUILESS_MAIN(TestOwnSql)
 #include "testownsql.moc"

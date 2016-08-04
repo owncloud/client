@@ -69,5 +69,5 @@ private slots:
     }
 };
 
-QTEST_APPLESS_MAIN(TestInotifyWatcher)
+QTEST_GUILESS_MAIN(TestInotifyWatcher)
 #include "testinotifywatcher.moc"

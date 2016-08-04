@@ -87,5 +87,5 @@ private slots:
 
 };
 
-QTEST_APPLESS_MAIN(TestFileSystem)
+QTEST_GUILESS_MAIN(TestFileSystem)
 #include "testfilesystem.moc"

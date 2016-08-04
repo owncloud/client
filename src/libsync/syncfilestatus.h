@@ -15,6 +15,7 @@
 #define SYNCFILESTATUS_H
 
 #include <QString>
+#include <QObject>
 
 #include "owncloudlib.h"
 
@@ -39,10 +40,10 @@ public:
     SyncFileStatus(SyncFileStatusTag);
 
     void set(SyncFileStatusTag tag);
-    SyncFileStatusTag tag();
+    SyncFileStatusTag tag() const;
 
     void setSharedWithMe( bool isShared );
-    bool sharedWithMe();
+    bool sharedWithMe() const;
 
     QString toSocketAPIString() const;
 private:
@@ -50,6 +51,16 @@ private:
     bool _sharedWithMe;
 
 };
+
+inline bool operator==(const SyncFileStatus &a, const SyncFileStatus &b) {
+    return a.tag() == b.tag() && a.sharedWithMe() == b.sharedWithMe();
 }
+
+inline bool operator!=(const SyncFileStatus &a, const SyncFileStatus &b) {
+    return !(a == b);
+}
+}
+
+Q_DECLARE_METATYPE(OCC::SyncFileStatus)
 
 #endif // SYNCFILESTATUS_H

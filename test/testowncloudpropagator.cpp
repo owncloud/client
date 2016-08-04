@@ -78,5 +78,5 @@ private slots:
     }
 };
 
-QTEST_APPLESS_MAIN(TestOwncloudPropagator)
+QTEST_GUILESS_MAIN(TestOwncloudPropagator)
 #include "testowncloudpropagator.moc"

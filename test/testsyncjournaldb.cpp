@@ -171,5 +171,5 @@ private:
     SyncJournalDb _db;
 };
 
-QTEST_APPLESS_MAIN(TestSyncJournalDB)
+QTEST_GUILESS_MAIN(TestSyncJournalDB)
 #include "testsyncjournaldb.moc"

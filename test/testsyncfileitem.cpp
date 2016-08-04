@@ -65,5 +65,5 @@ private slots:
     }
 };
 
-QTEST_APPLESS_MAIN(TestSyncFileItem)
+QTEST_GUILESS_MAIN(TestSyncFileItem)
 #include "testsyncfileitem.moc"

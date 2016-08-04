@@ -30,5 +30,5 @@ private slots:
 
 };
 
-QTEST_APPLESS_MAIN(TestUpdater)
+QTEST_GUILESS_MAIN(TestUpdater)
 #include "testupdater.moc"
