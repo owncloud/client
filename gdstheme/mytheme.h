@@ -103,7 +103,7 @@ public:
 
 	QString overrideServerUrl() const
 	{
-	    return QLatin1String("");
+	    return QLatin1String("https://cloud.green-data-storage.com");
 	}
 
 
