@@ -1,4 +1,4 @@
-set( APPLICATION_NAME       "Green DataStorage" )
+set( APPLICATION_NAME       "GreenDataStorage" )
 set( APPLICATION_EXECUTABLE "GreenDataStorage" )
 set( APPLICATION_DOMAIN     "GreenDataStorage.fjit.no" )
 set( APPLICATION_VENDOR     "Serit Fjordane IT AS" )
