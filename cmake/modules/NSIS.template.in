@@ -113,8 +113,8 @@ ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
 ; Modern User Interface (MUI) definitions and setup.
 ;-----------------------------------------------------------------------------
 !define MUI_ABORTWARNING
-!define MUI_ICON ${WIN_SETUP_BITMAP_PATH}\skylagring.ico
-!define MUI_UNICON ${WIN_SETUP_BITMAP_PATH}\skylagring.ico
+!define MUI_ICON ${CPACK_PACKAGE_ICON}
+!define MUI_UNICON ${CPACK_PACKAGE_ICON}
 !define MUI_WELCOMEFINISHPAGE_BITMAP ${WIN_SETUP_BITMAP_PATH}/welcome.bmp
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP  ${WIN_SETUP_BITMAP_PATH}/page_header.bmp
