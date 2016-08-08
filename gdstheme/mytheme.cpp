@@ -67,7 +67,7 @@ QIcon myTheme::trayFolderIcon( const QString& ) const
 
 QIcon myTheme::applicationIcon( ) const
 {
-    return themeIcon( QLatin1String("skylagring-icon") );
+    return themeIcon( QLatin1String("gds-icon") );
 }
 
 

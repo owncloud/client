@@ -31,14 +31,14 @@ public:
     MyTheme() : Theme() {}
 
     QIcon folderDisabledIcon() const Q_DECL_OVERRIDE { return themeIcon( QLatin1String("state-error" ) ); }
-    QString configFileName() const Q_DECL_OVERRIDE  { return QLatin1String( "skylagring.cfg" ); }
+    QString configFileName() const Q_DECL_OVERRIDE  { return QLatin1String( "GreenDataStorage.cfg" ); }
 
     /*
      * If you changed file names in /replacements/mytheme/theme/colored
      * you will have to do that here also.
      */
     QIcon applicationIcon() const Q_DECL_OVERRIDE {
-        return themeIcon( QLatin1String("gds-icon" ) );
+        return themeIcon( QLatin1String( "gds-icon" ) );
     }
 
     /*
