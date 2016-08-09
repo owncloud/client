@@ -588,10 +588,12 @@ Section -post
    WriteRegDWORD ${MEMENTO_REGISTRY_ROOT} "${MEMENTO_REGISTRY_KEY}" "NoRepair" "1"
 
    ;Create Navigation Pane registry entry  
+   
+	Var /GLOBAL val
+	   
    ${If} ${RunningX64}
    	   SetRegView 64
 
-	   Var /GLOBAL val
 	   ReadRegStr $val HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
 
 	   ${If} $val == ""
@@ -613,7 +615,6 @@ Section -post
 	   
    ${Endif}
 
-   Var /GLOBAL val
    ReadRegStr $val HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
 
    ${If} $val == ""
