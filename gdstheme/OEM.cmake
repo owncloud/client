@@ -3,7 +3,7 @@ set( APPLICATION_EXECUTABLE "GreenDataStorage" )
 set( APPLICATION_DOMAIN     "GreenDataStorage.fjit.no" )
 set( APPLICATION_VENDOR     "Serit Fjordane IT AS" )
 set( APPLICATION_UPDATE_URL "https://deploy.fjit.no/gdsDataStorage/client/" CACHE string "URL for updater" )
-set( APPLICATION_CLSID      "{2F8BD8E0-03B3-47C5-A1E1-5C182FA6FFD0}" )
+set( APPLICATION_CLSID      "{A25C5915-BCDB-4601-AEE7-748FC94A434A}" )
 
 set( THEME_CLASS            "MyTheme" )
 set( APPLICATION_REV_DOMAIN "no.fjit.GreenDataStorage.desktopclient" )
