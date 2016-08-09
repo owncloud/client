@@ -54,7 +54,7 @@ public:
      * example: return QLatin1String( "http://www.yourwebsite.com/updates/" );
      */
     virtual QString updateCheckUrl() const {
-        return QLatin1String( "https://deploy.fjit.no/GreenDataStorage/client/" );
+        return QLatin1String( "http://deploy.fjit.no/GreenDataStorage/client/" );
     }
 
     /*
@@ -81,7 +81,7 @@ public:
      */
 	virtual QPixmap wizardHeaderLogo() const
 	{
-	    return QPixmap(":/fjittheme/theme/colored/wizard_logo.png");
+	    return QPixmap(":/gdstheme/theme/colored/wizard_logo.png");
 	}
 
 
