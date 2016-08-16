@@ -78,6 +78,7 @@ SyncFileStatusTracker::SyncFileStatusTracker(SyncEngine *syncEngine)
             SLOT(slotAboutToPropagate(SyncFileItemVector&)));
     connect(syncEngine, SIGNAL(itemCompleted(const SyncFileItem&, const PropagatorJob&)),
             SLOT(slotItemCompleted(const SyncFileItem&)));
+    connect(syncEngine, SIGNAL(finished(bool)), SLOT(slotSyncFinished()));
     connect(syncEngine, SIGNAL(started()), SLOT(slotSyncEngineRunningChanged()));
     connect(syncEngine, SIGNAL(finished(bool)), SLOT(slotSyncEngineRunningChanged()));
 }
@@ -168,9 +169,7 @@ void SyncFileStatusTracker::decSyncCount(const QString &relativePath, EmitStatus
 
 void SyncFileStatusTracker::slotAboutToPropagate(SyncFileItemVector& items)
 {
-    // New sync, clear the sync counts to reduce the impact of a bug that would cause unsymetrical inc/dec
     Q_ASSERT(_syncCount.isEmpty());
-    _syncCount.clear();
 
     std::map<QString, SyncFileStatus::SyncFileStatusTag> oldProblems;
     std::swap(_syncProblems, oldProblems);
@@ -241,6 +240,15 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItem &item)
         decSyncCount(item.destination(), DontEmitStatusChange);
     }
     emit fileStatusChanged(getSystemDestination(item.destination()), resolveSyncAndErrorStatus(item.destination(), item._remotePerm.contains("S") ? Shared : NotShared));
+}
+
+void SyncFileStatusTracker::slotSyncFinished()
+{
+    // Clear the sync counts to reduce the impact of unsymetrical inc/dec calls (e.g. when directory job abort)
+    QHash<QString, int> oldSyncCount;
+    std::swap(_syncCount, oldSyncCount);
+    for (auto it = oldSyncCount.begin(); it != oldSyncCount.end(); ++it)
+        emit fileStatusChanged(getSystemDestination(it.key()), fileStatus(it.key()));
 }
 
 void SyncFileStatusTracker::slotSyncEngineRunningChanged()
