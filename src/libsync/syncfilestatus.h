@@ -14,8 +14,9 @@
 #ifndef SYNCFILESTATUS_H
 #define SYNCFILESTATUS_H
 
-#include <QString>
+#include <QMetaType>
 #include <QObject>
+#include <QString>
 
 #include "owncloudlib.h"
 
