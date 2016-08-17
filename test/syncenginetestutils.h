@@ -16,7 +16,27 @@
 #include <QNetworkReply>
 #include <QtTest>
 
-static const QUrl sRootUrl("owncloud://localhost/owncloud/remote.php/webdav/");
+static const QUrl sRootUrl("owncloud://somehost/owncloud/remote.php/webdav/");
+
+namespace {
+QString generateEtag() {
+    return QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch(), 16);
+}
+
+class PathComponents : public QStringList {
+public:
+    PathComponents(const QString &path) : QStringList{path.split('/', QString::SkipEmptyParts)} { }
+    PathComponents(const QStringList &pathComponents) : QStringList{pathComponents} { }
+
+    PathComponents parentDirComponents() const {
+        return PathComponents{mid(0, size() - 1)};
+    }
+    PathComponents subComponents() const { return PathComponents{mid(1)}; }
+    QString pathRoot() const { return first(); }
+    QString fileName() const { return last(); }
+};
+}
+
 class FileModifier
 {
 public:
@@ -111,60 +131,82 @@ public:
     }
 
     void remove(const QString &relativePath) override {
-        const QStringList pathComponents = relativePath.split('/', QString::SkipEmptyParts);
-        FileInfo *parent = findInvalidatingEtags(pathComponents.mid(0, pathComponents.size() - 1));
+        const PathComponents pathComponents{relativePath};
+        FileInfo *parent = findInvalidatingEtags(pathComponents.parentDirComponents());
         Q_ASSERT(parent);
         parent->children.erase(std::find_if(parent->children.begin(), parent->children.end(),
-                [&pathComponents](const FileInfo &fi){ return fi.name == pathComponents.last(); }));
+                [&pathComponents](const FileInfo &fi){ return fi.name == pathComponents.fileName(); }));
     }
+
     void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') override {
         create(relativePath, size, contentChar);
     }
+
     void setContents(const QString &relativePath, char contentChar) override {
-        FileInfo *file = findInvalidatingEtags(relativePath.split('/', QString::SkipEmptyParts));
+        FileInfo *file = findInvalidatingEtags(relativePath);
         Q_ASSERT(file);
         file->contentChar = contentChar;
     }
+
     void appendByte(const QString &relativePath) override {
-        FileInfo *file = findInvalidatingEtags(relativePath.split('/', QString::SkipEmptyParts));
+        FileInfo *file = findInvalidatingEtags(relativePath);
         Q_ASSERT(file);
         file->size += 1;
     }
+
     void mkdir(const QString &relativePath) override {
         createDir(relativePath);
     }
-    FileInfo *find(const QString &relativePath) {
-        return find(relativePath.split('/', QString::SkipEmptyParts));
+
+    FileInfo *find(const PathComponents &pathComponents, const bool invalidateEtags = false) {
+        if (pathComponents.isEmpty()) {
+            if (invalidateEtags)
+                etag = generateEtag();
+            return this;
+        }
+        QString childName = pathComponents.pathRoot();
+        auto it = children.find(childName);
+        if (it != children.end()) {
+            auto file = it->find(pathComponents.subComponents(), invalidateEtags);
+            if (file && invalidateEtags)
+                // Update parents on the way back
+                etag = file->etag;
+            return file;
+        }
+        return nullptr;
     }
+
     FileInfo *createDir(const QString &relativePath) {
-        const QStringList pathComponents = relativePath.split('/', QString::SkipEmptyParts);
-        const QString childName = pathComponents.last();
-        FileInfo *parent = findInvalidatingEtags(pathComponents.mid(0, pathComponents.size() - 1));
+        const PathComponents pathComponents{relativePath};
+        FileInfo *parent = findInvalidatingEtags(pathComponents.parentDirComponents());
         Q_ASSERT(parent);
-        FileInfo &child = parent->children[childName] = FileInfo{childName};
+        FileInfo &child = parent->children[pathComponents.fileName()] = FileInfo{pathComponents.fileName()};
         child.parentPath = parent->path();
-        child.etag = QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch(), 16);
+        child.etag = generateEtag();
         return &child;
     }
+
     FileInfo *create(const QString &relativePath, qint64 size, char contentChar) {
-        const QStringList pathComponents = relativePath.split('/', QString::SkipEmptyParts);
-        const QString childName = pathComponents.last();
-        FileInfo *parent = findInvalidatingEtags(pathComponents.mid(0, pathComponents.size() - 1));
+        const PathComponents pathComponents{relativePath};
+        FileInfo *parent = findInvalidatingEtags(pathComponents.parentDirComponents());
         Q_ASSERT(parent);
-        FileInfo &child = parent->children[childName] = FileInfo{childName, size};
+        FileInfo &child = parent->children[pathComponents.fileName()] = FileInfo{pathComponents.fileName(), size};
         child.parentPath = parent->path();
         child.contentChar = contentChar;
-        child.etag = QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch(), 16);
+        child.etag = generateEtag();
         return &child;
     }
+
     bool operator<(const FileInfo &other) const {
         return name < other.name;
     }
 
     bool operator==(const FileInfo &other) const {
+        // Consider files to be equal between local<->remote as a user would.
         return name == other.name
             && isDir == other.isDir
             && size == other.size
+            && contentChar == other.contentChar
             && children == other.children;
     }
 
@@ -176,33 +218,16 @@ public:
     bool isDir = true;
     bool isShared = false;
     QDateTime lastModified = QDateTime::currentDateTime().addDays(-7);
-    QString etag = QString::number(lastModified.toTime_t(), 16);
+    QString etag = generateEtag();
     qint64 size = 0;
-    char contentChar = 0;
+    char contentChar = 'W';
 
     // Sorted by name to be able to compare trees
     QMap<QString, FileInfo> children;
     QString parentPath;
 
 private:
-    FileInfo *find(const QStringList &pathComponents, const bool invalidateEtags = false) {
-        if (pathComponents.isEmpty()) {
-            if (invalidateEtags)
-                etag = QString::number(QDateTime::currentDateTime().toTime_t(), 16);
-            return this;
-        }
-        QString childName = pathComponents.first();
-        auto it = children.find(childName);
-        if (it != children.end()) {
-            auto file = it->find(pathComponents.mid(1), invalidateEtags);
-            if (file && invalidateEtags)
-                // Update parents on the way back
-                etag = file->etag;
-            return file;
-        }
-        return nullptr;
-    }
-    FileInfo *findInvalidatingEtags(const QStringList &pathComponents) {
+    FileInfo *findInvalidatingEtags(const PathComponents &pathComponents) {
         return find(pathComponents, true);
     }
 };
@@ -279,6 +304,7 @@ public:
             emit readyRead();
         emit finished();
     }
+
     void abort() override { }
 
     qint64 bytesAvailable() const override { return payload.size() + QIODevice::bytesAvailable(); }
@@ -304,11 +330,13 @@ public:
 
         Q_ASSERT(request.url().path().startsWith(sRootUrl.path()));
         QString fileName = request.url().path().mid(sRootUrl.path().length());
-        if ((fileInfo = remoteRootFileInfo.find(fileName)))
+        if ((fileInfo = remoteRootFileInfo.find(fileName))) {
             fileInfo->size = putPayload.size();
-        else
+            fileInfo->contentChar = putPayload.at(0);
+        } else {
             // Assume that the file is filled with the same character
             fileInfo = remoteRootFileInfo.create(fileName, putPayload.size(), putPayload.at(0));
+        }
 
         if (!fileInfo) {
             abort();
@@ -325,6 +353,7 @@ public:
         emit metaDataChanged();
         emit finished();
     }
+
     void abort() override { }
     qint64 readData(char *, qint64) override { return 0; }
 };
@@ -358,6 +387,7 @@ public:
         emit metaDataChanged();
         emit finished();
     }
+
     void abort() override { }
     qint64 readData(char *, qint64) override { return 0; }
 };
@@ -384,6 +414,7 @@ public:
         emit metaDataChanged();
         emit finished();
     }
+
     void abort() override { }
     qint64 readData(char *, qint64) override { return 0; }
 };
@@ -419,6 +450,7 @@ public:
             emit readyRead();
         emit finished();
     }
+
     void abort() override { }
     qint64 bytesAvailable() const override { return payload.size() + QIODevice::bytesAvailable(); }
 
@@ -428,7 +460,6 @@ public:
         payload.remove(0, len);
         return len;
     }
-
 };
 
 class FakeErrorReply : public QNetworkReply
@@ -449,6 +480,7 @@ public:
         emit metaDataChanged();
         emit finished();
     }
+
     void abort() override { }
     qint64 readData(char *, qint64) override { return 0; }
 };
@@ -486,7 +518,6 @@ protected:
             Q_UNREACHABLE();
         }
     }
-
 };
 
 class FakeCredentials : public OCC::AbstractCredentials
@@ -617,6 +648,7 @@ private:
             }
         }
     }
+
     static void fromDisk(QDir &dir, FileInfo &templateFi) {
         foreach (const QFileInfo &diskChild, dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
             if (diskChild.isDir()) {
@@ -625,7 +657,10 @@ private:
                 templateFi.children.insert(diskChild.fileName(), FileInfo{diskChild.fileName()});
                 fromDisk(subDir, templateFi.children.last());
             } else {
-                templateFi.children.insert(diskChild.fileName(), FileInfo{diskChild.fileName(), diskChild.size()});
+                QFile f{diskChild.filePath()};
+                f.open(QFile::ReadOnly);
+                char contentChar = f.read(1).at(0);
+                templateFi.children.insert(diskChild.fileName(), FileInfo{diskChild.fileName(), diskChild.size(), contentChar});
             }
         }
     }

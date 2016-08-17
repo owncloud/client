@@ -85,5 +85,5 @@ private slots:
 
 };
 
-QTEST_GUILESS_MAIN(TestCSyncSqlite)
+QTEST_APPLESS_MAIN(TestCSyncSqlite)
 #include "testcsyncsqlite.moc"

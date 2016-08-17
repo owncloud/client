@@ -45,5 +45,5 @@ private slots:
     }
 };
 
-QTEST_GUILESS_MAIN(TestExcludedFiles)
+QTEST_APPLESS_MAIN(TestExcludedFiles)
 #include "testexcludedfiles.moc"

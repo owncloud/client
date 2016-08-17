@@ -41,5 +41,5 @@ private slots:
 
 };
 
-QTEST_GUILESS_MAIN(TestFolder)
+QTEST_APPLESS_MAIN(TestFolder)
 #include "testfolder.moc"
