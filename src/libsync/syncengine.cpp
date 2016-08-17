@@ -555,7 +555,14 @@ int SyncEngine::treewalkFile( TREE_WALK_FILE *file, bool remote )
         bool directoryEtagUpdate = isDirectory && file->should_update_metadata;
         bool localMetadataUpdate = !remote && file->should_update_metadata;
         if (!directoryEtagUpdate) {
-            item->_isDirectory = isDirectory;
+            // Don't use the remote file-type if we noticed it changed locally.
+            // Otherwise, since the remote pass is second, the remote file-type
+            // will override the local type even if we want to propagate the new
+            // local type to the remote!
+            if (!(remote && file->other.instruction == CSYNC_INSTRUCTION_TYPE_CHANGE)) {
+                item->_isDirectory = isDirectory;
+            }
+
             if (localMetadataUpdate) {
                 // Hack, we want a local metadata update to happen, but only if the
                 // remote tree doesn't ask us to do some kind of propagation.
