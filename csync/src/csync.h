@@ -139,7 +139,7 @@ enum csync_instructions_e {
   CSYNC_INSTRUCTION_TYPE_CHANGE     = 0x00000200,  /* Like NEW, but deletes the old entity first (RECONCILE)
                                                       Used when the type of something changes from directory to file
                                                       or back. */
-  CSYNC_INSTRUCTION_UPDATE_METADATA = 0x00000400,  /* If the etag has been updated and need to be writen on the db,
+  CSYNC_INSTRUCTION_UPDATE_METADATA = 0x00000400,  /* If the etag has been updated and need to be writen to the db,
                                                       but without any propagation (UPDATE|RECONCILE) */
 };
 

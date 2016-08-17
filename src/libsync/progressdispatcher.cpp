@@ -165,6 +165,7 @@ static bool shouldCountProgress(const SyncFileItem &item)
 
     // Skip any ignored, error or non-propagated files and directories.
     if (instruction == CSYNC_INSTRUCTION_NONE
+            || instruction == CSYNC_INSTRUCTION_UPDATE_METADATA
             || instruction == CSYNC_INSTRUCTION_IGNORE
             || instruction == CSYNC_INSTRUCTION_ERROR) {
         return false;

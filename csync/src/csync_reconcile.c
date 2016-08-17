@@ -206,7 +206,7 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
                     CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "OOOO=> NEW detected in other tree!");
                     cur->instruction = CSYNC_INSTRUCTION_CONFLICT;
                 } else {
-                    assert(!other->type == CSYNC_FTW_TYPE_DIR);
+                    assert(other->type != CSYNC_FTW_TYPE_DIR);
                     cur->instruction = CSYNC_INSTRUCTION_NONE;
                     other->instruction = CSYNC_INSTRUCTION_SYNC;
                 }
