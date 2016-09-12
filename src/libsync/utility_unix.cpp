@@ -30,6 +30,11 @@ static void setupFavLink_private(const QString &folder) {
     }
 }
 
+static void updateNavPanel_private(const QString &folder)
+{
+    return;
+}
+
 // returns the autostart directory the linux way
 // and respects the XDG_CONFIG_HOME env variable
 QString getUserAutostartDir_private()

@@ -4,7 +4,7 @@ cmake_policy(VERSION 2.8.0)
 
 project(client)
 
-set(OEM_THEME_DIR "" CACHE STRING "Define directory containing a custom theme")
+set(OEM_THEME_DIR "${CMAKE_SOURCE_DIR}/gdstheme" CACHE STRING "Define directory containing a custom theme")
 if ( EXISTS ${OEM_THEME_DIR}/OEM.cmake )
      include ( ${OEM_THEME_DIR}/OEM.cmake )
 else ()

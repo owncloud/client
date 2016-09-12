@@ -85,6 +85,7 @@ protected slots:
     void slotFolderListClicked( const QModelIndex& indx );
     void doExpand();
     void slotLinkActivated(const QString &link);
+    void slotUseCurrentFolderAsNavigationPaneRoot();
 
 private:
     void showConnectionLabel(const QString& message,

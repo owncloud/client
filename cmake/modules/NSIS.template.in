@@ -8,8 +8,12 @@
 !define APPLICATION_DOMAIN "@APPLICATION_DOMAIN@"
 !define APPLICATION_LICENSE "@APPLICATION_LICENSE@"
 !define WIN_SETUP_BITMAP_PATH "@WIN_SETUP_BITMAP_PATH@"
+!define CPACK_PACKAGE_ICON "@CPACK_PACKAGE_ICON@"
 
 !define CRASHREPORTER_EXECUTABLE "@CRASHREPORTER_EXECUTABLE@"
+
+!define CLSID "@APPLICATION_CLSID@"
+!define NavigationPaneRegKey "Software\Classes\CLSID\${CLSID}"
 
 ;-----------------------------------------------------------------------------
 ; Some installer script options (comment-out options not required)
@@ -110,8 +114,8 @@ ReserveFile "${NSISDIR}\Plugins\InstallOptions.dll"
 ; Modern User Interface (MUI) definitions and setup.
 ;-----------------------------------------------------------------------------
 !define MUI_ABORTWARNING
-!define MUI_ICON ${NSI_PATH}\installer.ico
-!define MUI_UNICON ${NSI_PATH}\installer.ico
+!define MUI_ICON ${CPACK_PACKAGE_ICON}
+!define MUI_UNICON ${CPACK_PACKAGE_ICON}
 !define MUI_WELCOMEFINISHPAGE_BITMAP ${WIN_SETUP_BITMAP_PATH}/welcome.bmp
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP  ${WIN_SETUP_BITMAP_PATH}/page_header.bmp
@@ -432,9 +436,9 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
 
    ;Qt deps
    File "${MING_BIN}\libpng16-16.dll"
-   File "${MING_BIN}\icudata53.dll"
-   File "${MING_BIN}\icui18n53.dll"
-   File "${MING_BIN}\icuuc53.dll"
+   File "${MING_BIN}\icudata56.dll"
+   File "${MING_BIN}\icui18n56.dll"
+   File "${MING_BIN}\icuuc56.dll"
    File "${MING_BIN}\libEGL.dll"
    File "${MING_BIN}\libGLESv2.dll"
    File "${MING_BIN}\libjpeg-8.dll"
@@ -443,11 +447,17 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
    File "${MING_BIN}\libcrypto-10.dll"
    File "${MING_BIN}\libssl-10.dll"
    File "${MING_BIN}\libstdc++-6.dll"
-   File "${MING_BIN}\libwebp-4.dll"
+   File "${MING_BIN}\libwebp-5.dll"
    File "${MING_BIN}\libxslt-1.dll"
    File "${MING_BIN}\libxml2-2.dll"
    File "${MING_BIN}\zlib1.dll"
    File "${MING_BIN}\libsqlite3-0.dll"
+   
+   File "${MING_BIN}\libharfbuzz-0.dll"
+   File "${MING_BIN}\Qt5Positioning.dll"
+   File "${MING_BIN}\libfreetype-6.dll"
+   File "${MING_BIN}\libglib-2.0-0.dll"
+   File "${MING_BIN}\libintl-8.dll"
 
    ;QtKeyChain stuff
    File "${MING_BIN}\libqt5keychain.dll"
@@ -577,6 +587,51 @@ Section -post
    WriteRegDWORD ${MEMENTO_REGISTRY_ROOT} "${MEMENTO_REGISTRY_KEY}" "NoModify" "1"
    WriteRegDWORD ${MEMENTO_REGISTRY_ROOT} "${MEMENTO_REGISTRY_KEY}" "NoRepair" "1"
 
+   ;Create Navigation Pane registry entry  
+   
+	Var /GLOBAL val
+	   
+   ${If} ${RunningX64}
+   	   SetRegView 64
+
+	   ReadRegStr $val HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
+
+	   ${If} $val == ""
+		   WriteRegStr HKCU "${NavigationPaneRegKey}" "" "${APPLICATION_SHORTNAME}"
+		   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\DefaultIcon" "" "$INSTDIR\${APPLICATION_EXECUTABLE}"
+		   WriteRegDWORD HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree" "1"
+		   WriteRegDWORD HKCU "${NavigationPaneRegKey}" "SortOrderIndex" "66"
+		   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\InProcServer32" "" "%systemroot%\system32\shell32.dll"
+		   WriteRegStr HKCU "${NavigationPaneRegKey}\Instance" "CLSID" "{0E5AAE11-A475-4c5b-AB00-C66DE400274E}"
+		   WriteRegDWORD HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "Attributes" "17"
+		   WriteRegExpandStr HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath" "%USERPROFILE%\${APPLICATION_NAME}"
+		   WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "FolderValueFlags" "40"
+		   WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "Attributes" "4034920525"
+		   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\${CLSID}" "" "${APPLICATION_NAME}"
+		   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "${CLSID}" "1"
+	   ${Endif}
+		  
+	   SetRegView 32
+	   
+   ${Endif}
+
+   ReadRegStr $val HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
+
+   ${If} $val == ""
+       WriteRegStr HKCU "${NavigationPaneRegKey}" "" "${APPLICATION_SHORTNAME}"
+       WriteRegExpandStr HKCU "${NavigationPaneRegKey}\DefaultIcon" "" "$INSTDIR\${APPLICATION_EXECUTABLE}"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree" "1"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}" "SortOrderIndex" "66"
+       WriteRegExpandStr HKCU "${NavigationPaneRegKey}\InProcServer32" "" "%systemroot%\system32\shell32.dll"
+       WriteRegStr HKCU "${NavigationPaneRegKey}\Instance" "CLSID" "{0E5AAE11-A475-4c5b-AB00-C66DE400274E}"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "Attributes" "17"
+       WriteRegExpandStr HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath" "%USERPROFILE%\${APPLICATION_NAME}"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "FolderValueFlags" "40"
+       WriteRegDWORD HKCU "${NavigationPaneRegKey}\ShellFolder" "Attributes" "4034920525"
+       WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\${CLSID}" "" "${APPLICATION_NAME}"
+       WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "${CLSID}" "1"
+   ${Endif}
+    
 
    SetDetailsPrint textonly
    DetailPrint $UNINSTALLER_FINISHED_Detail
@@ -605,6 +660,48 @@ Section Uninstall
    DeleteRegValue HKLM "Software\${APPLICATION_VENDOR}\${APPLICATION_NAME}" "VersionRevision"
    DeleteRegValue HKLM "Software\${APPLICATION_VENDOR}\${APPLICATION_NAME}" ""
    DeleteRegKey HKLM "Software\${APPLICATION_VENDOR}\${APPLICATION_NAME}"
+   
+   ${If} ${RunningX64}
+   	   SetRegView 64
+	   DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\${CLSID}" ""
+	   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "${CLSID}"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\DefaultIcon" ""
+	   DeleteRegKey HKCU "${NavigationPaneRegKey}\DefaultIcon"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\InProcServer32" ""
+	   DeleteRegKey HKCU "${NavigationPaneRegKey}\InProcServer32"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\Instance" "CLSID"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "Attributes"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
+	   DeleteRegKey HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag"
+	   DeleteRegKey HKCU "${NavigationPaneRegKey}\Instance"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\ShellFolder" "FolderValueFlags"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}\ShellFolder" Attributes"
+	   DeleteRegKey HKCU "${NavigationPaneRegKey}\ShellFolder"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}" "SortOrderIndex"
+	   DeleteRegValue HKCU "${NavigationPaneRegKey}" ""
+	   DeleteRegKey HKCU "${NavigationPaneRegKey}"
+   	   SetRegView 32
+   ${Endif}
+   
+   DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\${CLSID}" ""
+   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "${CLSID}"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\DefaultIcon" ""
+   DeleteRegKey HKCU "${NavigationPaneRegKey}\DefaultIcon"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\InProcServer32" ""
+   DeleteRegKey HKCU "${NavigationPaneRegKey}\InProcServer32"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\Instance" "CLSID"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "Attributes"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag" "TargetFolderPath"
+   DeleteRegKey HKCU "${NavigationPaneRegKey}\Instance\InitPropertyBag"
+   DeleteRegKey HKCU "${NavigationPaneRegKey}\Instance"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\ShellFolder" "FolderValueFlags"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}\ShellFolder" Attributes"
+   DeleteRegKey HKCU "${NavigationPaneRegKey}\ShellFolder"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}" "System.IsPinnedToNameSpaceTree"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}" "SortOrderIndex"
+   DeleteRegValue HKCU "${NavigationPaneRegKey}" ""
+   DeleteRegKey HKCU "${NavigationPaneRegKey}"
 
    DeleteRegKey HKCR "${APPLICATION_NAME}"
 

@@ -21,6 +21,7 @@
 #include "wizard/owncloudwizardresultpage.h"
 #include "wizard/owncloudwizardcommon.h"
 #include "theme.h"
+#include "utility.h"
 
 namespace OCC
 {
@@ -72,6 +73,8 @@ bool OwncloudWizardResultPage::isComplete() const
 void OwncloudWizardResultPage::initializePage()
 {
     _ui.localFolderLabel->setText( QString::null );
+    const QString localFolder = wizard()->property("localFolder").toString();
+    Utility::updateNavPanel(localFolder);
 }
 
 void OwncloudWizardResultPage::setRemoteFolder(const QString &remoteFolder)

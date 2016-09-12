@@ -30,6 +30,7 @@
 #include <QThread>
 #include <QDateTime>
 #include <QSysInfo>
+#include <QMessageBox>
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QTextDocument>
 #else
@@ -101,6 +102,13 @@ QString Utility::formatFingerprint( const QByteArray& fmhash, bool colonSeparate
 void Utility::setupFavLink(const QString &folder)
 {
     setupFavLink_private(folder);
+    updateNavPanel(folder);
+}
+
+void Utility::updateNavPanel(const QString &folder)
+{
+    if(Utility::isWindows())
+        updateNavPanel_private(folder);
 }
 
 QString Utility::octetsToString( qint64 octets )

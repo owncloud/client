@@ -52,7 +52,7 @@ OwncloudSetupPage::OwncloudSetupPage(QWidget *parent)
     setSubTitle(WizardCommon::subTitleTemplate().arg(tr("Setup %1 server").arg(theme->appNameGUI())));
 
     if (!theme->overrideServerUrl().isEmpty()) {
-        _ui.leUrl->setEnabled(false);
+        //_ui.leUrl->setEnabled(false);
     }
 
     registerField( QLatin1String("OCUrl*"), _ui.leUrl );

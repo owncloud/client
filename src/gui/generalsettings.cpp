@@ -107,6 +107,12 @@ void GeneralSettings::loadMiscSettings()
     _ui->newFolderLimitSpinBox->setValue(newFolderLimit.second);
 }
 
+void GeneralSettings::showEvent(QShowEvent *ev)
+{
+    _ui->autostartCheckBox->setChecked(Utility::hasLaunchOnStartup(Theme::instance()->appName()));
+    QWidget::showEvent(ev);
+}
+
 void GeneralSettings::slotUpdateInfo()
 {
     if (OCUpdater *updater = dynamic_cast<OCUpdater*>(Updater::instance())) {
