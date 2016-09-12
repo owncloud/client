@@ -28,11 +28,13 @@ QString Progress::asResultString( const SyncFileItem& item)
     case CSYNC_INSTRUCTION_SYNC:
     case CSYNC_INSTRUCTION_NEW:
     case CSYNC_INSTRUCTION_TYPE_CHANGE:
-        if (item._direction != SyncFileItem::Up) {
-            return QCoreApplication::translate( "progress", "Downloaded");
-        } else {
-            return QCoreApplication::translate( "progress", "Uploaded");
-        }
+        if (item._type != SyncFileItem::Type::RequestsContainer) {
+            if (item._direction != SyncFileItem::Up) {
+                return QCoreApplication::translate( "progress", "Downloaded");
+            } else
+                return QCoreApplication::translate( "progress", "Uploaded");
+            }
+        return QCoreApplication::translate( "progress", "Processed Bundle");
     case CSYNC_INSTRUCTION_CONFLICT:
         return QCoreApplication::translate( "progress", "Server version downloaded, copied changed local file into conflict file");
     case CSYNC_INSTRUCTION_REMOVE:

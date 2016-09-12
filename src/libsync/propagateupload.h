@@ -20,7 +20,6 @@
 #include <QFile>
 #include <QDebug>
 
-
 namespace OCC {
 class BandwidthManager;
 
@@ -116,6 +115,51 @@ public:
 signals:
     void finishedSignal();
     void uploadProgress(qint64,qint64);
+
+private slots:
+#if QT_VERSION < 0x050402
+    void slotSoftAbort();
+#endif
+};
+
+/**
+ * @brief The MultipartJob class
+ * @ingroup libsync
+ */
+class MultipartJob : public AbstractNetworkJob {
+    Q_OBJECT
+
+private:
+    QVector<SyncFileItemPtr> _syncItems;
+    QHttpMultiPart* _multipart;
+    QString _errorString;
+public:
+    QElapsedTimer _duration;
+    // Takes ownership of the device
+    explicit MultipartJob(AccountPtr account, const QString& path, QHttpMultiPart* multiPart, const QVector<SyncFileItemPtr> &syncItems,QObject* parent = 0)
+        : AbstractNetworkJob(account, path, parent), _syncItems(syncItems), _multipart(multiPart), _errorString(QString()) {}
+    ~MultipartJob();
+
+    virtual void start() Q_DECL_OVERRIDE;
+
+    virtual bool finished() Q_DECL_OVERRIDE {
+        emit finishedSignal();
+        return true;
+    }
+
+    QString errorString() {
+        return _errorString.isEmpty() ? reply()->errorString() : _errorString;
+    }
+
+    QVector<SyncFileItemPtr> syncItems() const {
+        return _syncItems;
+    }
+
+    virtual void slotTimeout() Q_DECL_OVERRIDE;
+
+
+signals:
+    void finishedSignal();
 
 private slots:
 #if QT_VERSION < 0x050402
@@ -220,6 +264,67 @@ private slots:
 private:
     void startPollJob(const QString& path);
     void abortWithError(SyncFileItem::Status status, const QString &error);
+};
+
+/**
+ * @brief The PropagateBundle class
+ * @ingroup libsync
+ */
+class PropagateBundle : public PropagateItemJob {
+    Q_OBJECT
+
+private:
+    QLinkedList<SyncFileItemPtr> _itemsToSync;
+    QLinkedList<SyncFileItemPtr> _itemsToChecksum;
+    QVector<MultipartJob*> _jobs; /// network jobs that are currently in transit
+    bool _running; // Tells that all the jobs have been finished
+    bool _preparingBundle; // Tells that all the jobs have been finished
+    quint64 _size; // Tells what is the total size of _itemsToSync inside the bundle
+    quint64 _currentBundleSize;
+    quint64 _currentRequestsNumber;
+    quint64 _totalFiles;
+    // measure the performance of checksum calc and upload
+    Utility::StopWatch _stopWatch;
+
+public:
+    PropagateBundle(OwncloudPropagator* propagator)
+        : PropagateItemJob(propagator, SyncFileItemPtr(new SyncFileItem)), _running(false), _preparingBundle(true), _size(0), _currentBundleSize(0), _currentRequestsNumber(0) {}
+    void start() Q_DECL_OVERRIDE;
+    void startBundle();
+    void append(const SyncFileItemPtr &bundledFile);
+    QByteArray getRemotePath(QString filePath);
+    bool empty();
+    bool scheduleNextJob() Q_DECL_OVERRIDE {
+        if (_running != true && _propagator->runningNowAtRootJob() == 1){
+            _running = true;
+            QMetaObject::invokeMethod(this, "start"); // We could be in a different thread (neon jobs)
+        }
+        if (_state == NotYetStarted){
+            _state = Running;
+            return true;
+        }
+        return false;
+    }
+    quint64 syncItemsSize() const { return _size; }
+    quint64 syncItemsNumber() const { return _itemsToChecksum.count(); }
+private slots:
+    void slotComputeTransmissionChecksum();
+    void slotStartUpload(const QByteArray& transmissionChecksumType, const QByteArray& transmissionChecksum);
+    void slotMultipartFinished();
+    void slotJobDestroyed(QObject *job);
+    void abortWithError(SyncFileItem::Status status, const QString &error);
+
+private:
+    quint64 checkBundledRequestsLimits()
+    {
+        //TODO: obtain this value from the server or by other means
+        quint64 maximumBundledFiles = 500;
+        return (maximumBundledFiles/_propagator->maximumActiveJob());
+    }
+    quint64 chunkSize() const { return _propagator->chunkSize(); }
+    int getHttpStatusCode(const QString &status);
+    void slotItemFinished(const SyncFileItemPtr &item, QMap<QString, QMap<QString, QString> > &responseObjectsProperties);
+    void itemDone(SyncFileItemPtr item, SyncFileItem::Status status, const QString &errorString = QString());
 };
 
 }

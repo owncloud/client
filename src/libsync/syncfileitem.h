@@ -45,6 +45,7 @@ public:
 
     enum Type {
       UnknownType = 0,
+      RequestsContainer = 1,
       File      = CSYNC_FTW_TYPE_FILE,
       Directory = CSYNC_FTW_TYPE_DIR,
       SoftLink  = CSYNC_FTW_TYPE_SLINK

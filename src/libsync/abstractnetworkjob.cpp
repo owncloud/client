@@ -128,6 +128,11 @@ QNetworkReply *AbstractNetworkJob::davRequest(const QByteArray &verb, const QUrl
     return addTimer(_account->davRequest(verb, url, req, data));
 }
 
+QNetworkReply *AbstractNetworkJob::multipartRequest(const QString &relPath, QNetworkRequest req, QHttpMultiPart *multiPart)
+{
+    return addTimer(_account->multipartRequest(relPath, req, multiPart));
+}
+
 QNetworkReply* AbstractNetworkJob::getRequest(const QString &relPath)
 {
     return addTimer(_account->getRequest(relPath));
