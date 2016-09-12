@@ -41,6 +41,7 @@ public:
     int  sharePublicLinkExpireDateDays() const;
     bool shareResharing() const;
     bool chunkingNg() const;
+    bool bundledRequest() const;
 
     /// returns true if the capabilities report notifications
     bool notificationsAvailable() const;

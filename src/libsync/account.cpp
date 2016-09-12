@@ -40,6 +40,8 @@ Account::Account(QObject *parent)
     : QObject(parent)
     , _capabilities(QVariantMap())
     , _davPath( Theme::instance()->webDavPath() )
+    , _wasMigrated(false)
+    , _bundleRequests(true)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
 }
@@ -84,6 +86,14 @@ QString Account::davUser() const
 void Account::setDavUser(const QString &newDavUser)
 {
     _davUser = newDavUser;
+}
+
+QString Account::davFilesPath() const
+{
+    //TODO DO NOT HARCODE PATH, GET IT FROM THE SERVER!!!!
+    QString dfp("remote.php/dav/files/");
+    dfp.append(_credentials->user());
+    return dfp;
 }
 
 QString Account::displayName() const
@@ -235,6 +245,20 @@ QNetworkReply *Account::davRequest(const QByteArray &verb, const QUrl &url, QNet
     req.setSslConfiguration(this->getOrCreateSslConfig());
 #endif
     return _am->sendCustomRequest(req, verb, data);
+}
+
+QNetworkReply *Account::multipartRequest(const QString &relPath, QNetworkRequest req, QHttpMultiPart *multiPart)
+{
+    return multipartRequest(Utility::concatUrlPath(url(), relPath), req, multiPart);
+}
+
+QNetworkReply *Account::multipartRequest(const QUrl &url, QNetworkRequest req, QHttpMultiPart *multiPart)
+{
+    req.setUrl(url);
+#if QT_VERSION > QT_VERSION_CHECK(4, 8, 4)
+    req.setSslConfiguration(this->getOrCreateSslConfig());
+#endif
+    return _am->post(req, multiPart);
 }
 
 void Account::setCertificate(const QByteArray certficate, const QString privateKey)
@@ -475,6 +499,13 @@ void Account::setNonShib(bool nonShib)
     } 
 }
 
+void Account::setBundleRequestsIfCapable(bool bundleRequests){
+    _bundleRequests = bundleRequests;
+}
 
+bool Account::bundledRequestsEnabled()
+{
+    return (_bundleRequests &&  _capabilities.bundledRequest()) ? true : false;
+}
 
 } // namespace OCC

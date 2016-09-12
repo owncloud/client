@@ -34,6 +34,7 @@ class QSettings;
 class QNetworkReply;
 class QUrl;
 class QNetworkAccessManager;
+class QHttpMultiPart;
 
 namespace OCC {
 
@@ -64,6 +65,26 @@ public:
 class OWNCLOUDSYNC_EXPORT Account : public QObject {
     Q_OBJECT
 public:
+    /**
+     * @brief The possibly themed dav path for the account. It has
+     *        a trailing slash.
+     * @returns the (themeable) dav path for the account.
+     */
+    QString davPath() const;
+
+    /**
+     * @brief The possibly themed files dav path for the account. It has
+     *        a trailing slash.
+     * @returns the (themeable) files dav path for the account.
+     */
+    QString davFilesPath() const;
+    void setDavPath(const QString&s) { _davPath = s; }
+    void setNonShib(bool nonShib);
+
+    /// Functions for bundle support
+    void setBundleRequestsIfCapable(bool bundleRequests);
+    bool bundledRequestsEnabled();
+
     static AccountPtr create();
     ~Account();
 
@@ -88,15 +109,6 @@ public:
     void setUrl(const QUrl &url);
     QUrl url() const { return _url; }
 
-    /**
-     * @brief The possibly themed dav path for the account. It has
-     *        a trailing slash.
-     * @returns the (themeable) dav path for the account.
-     */
-    QString davPath() const;
-    void setDavPath(const QString&s) { _davPath = s; }
-    void setNonShib(bool nonShib);
-
     /** Returns webdav entry URL, based on url() */
     QUrl davUrl() const;
 
@@ -113,6 +125,8 @@ public:
     QNetworkReply* deleteRequest( const QUrl &url);
     QNetworkReply* davRequest(const QByteArray &verb, const QString &relPath, QNetworkRequest req, QIODevice *data = 0);
     QNetworkReply* davRequest(const QByteArray &verb, const QUrl &url, QNetworkRequest req, QIODevice *data = 0);
+    QNetworkReply* multipartRequest(const QString &relPath, QNetworkRequest req, QHttpMultiPart *multiPart);
+    QNetworkReply* multipartRequest(const QUrl &url, QNetworkRequest req, QHttpMultiPart *multiPart);
 
 
     /** The ssl configuration during the first connection */
@@ -227,6 +241,8 @@ private:
     QByteArray _pemCertificate; 
     QString _pemPrivateKey;  
     QString _davPath; // defaults to value from theme, might be overwritten in brandings
+    bool _wasMigrated;
+    bool _bundleRequests;
     friend class AccountManager;
 };
 

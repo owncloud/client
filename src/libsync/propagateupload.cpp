@@ -28,10 +28,12 @@
 
 #include <json.h>
 #include <QNetworkAccessManager>
+#include <QHttpMultiPart>
 #include <QFileInfo>
 #include <QDir>
 #include <cmath>
 #include <cstring>
+#include <QXmlStreamReader>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 4, 2)
 namespace {
@@ -561,6 +563,5 @@ void PropagateUploadFileCommon::finalize()
 
     done(SyncFileItem::Success);
 }
-
 
 }

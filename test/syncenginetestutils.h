@@ -32,6 +32,7 @@ inline QString getFilePathFromUrl(const QUrl &url) {
     return {};
 }
 
+static const QUrl sBundleRootUrl("owncloud://somehost/remote.php/dav/files/");
 
 inline QString generateEtag() {
     return QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch(), 16);
@@ -625,7 +626,6 @@ public:
     qint64 readData(char *, qint64) override { return 0; }
 };
 
-
 class FakeErrorReply : public QNetworkReply
 {
     Q_OBJECT
@@ -647,6 +647,169 @@ public:
 
     void abort() override { }
     qint64 readData(char *, qint64) override { return 0; }
+};
+
+class FakeBundlePOSTReply : public QNetworkReply
+{
+    Q_OBJECT
+    FileInfo *fileInfo;
+    QByteArray payload;
+public:
+    FakeBundlePOSTReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, const QByteArray &postPayload, QObject *parent)
+    : QNetworkReply{parent} {
+        setRequest(request);
+        QUrl rawUrl = request.url();
+        QString bundlePath(sBundleRootUrl.path()+rawUrl.userName());
+        setUrl(rawUrl);
+        setOperation(op);
+        open(QIODevice::ReadOnly);
+        const QString davUri{QStringLiteral("DAV:")};
+        const QString ocUri{QStringLiteral("http://owncloud.org/ns")};
+        const QString sabUri{QStringLiteral("http://sabredav.org/ns")};
+        QBuffer buffer{&payload};
+        buffer.open(QIODevice::WriteOnly);
+        QXmlStreamWriter xml( &buffer );
+        xml.writeNamespace(davUri, "d");
+        xml.writeNamespace(ocUri, "o");
+        xml.writeNamespace(sabUri, "s");
+
+        auto writeFileResponse = [&](const FileInfo &fileInfo) {
+            xml.writeStartElement(davUri, QStringLiteral("response"));
+
+            //TODO: no need for X-OC-PATH, href could contain that, fix client/server
+            xml.writeTextElement(davUri, QStringLiteral("href"), bundlePath);
+            xml.writeStartElement(davUri, QStringLiteral("propstat"));
+            xml.writeStartElement(davUri, QStringLiteral("prop"));
+
+            xml.writeTextElement(davUri, QStringLiteral("oc-etag"), fileInfo.etag);
+            xml.writeTextElement(davUri, QStringLiteral("etag"), fileInfo.etag);
+            xml.writeTextElement(davUri, QStringLiteral("oc-fileid"), fileInfo.fileId);
+            xml.writeTextElement(davUri, QStringLiteral("x-oc-mtime"), QStringLiteral("accepted"));
+
+            //TODO: this slash to be fixed on client/server
+            xml.writeTextElement(davUri, QStringLiteral("oc-path"), "/"+fileInfo.path());
+            xml.writeEndElement(); // prop
+            xml.writeTextElement(davUri, QStringLiteral("status"), "HTTP/1.1 200 OK");
+            xml.writeEndElement(); // propstat
+            xml.writeEndElement(); // response
+        };
+        auto writeFileErrorResponse = [&](const FileInfo &fileInfo, const QString &exception, const QString &message, const QString &status) {
+            xml.writeStartElement(davUri, QStringLiteral("response"));
+
+            //TODO: no need for X-OC-PATH, href could contain that, fix client/server
+            xml.writeTextElement(davUri, QStringLiteral("href"), bundlePath);
+            xml.writeStartElement(davUri, QStringLiteral("propstat"));
+            xml.writeStartElement(davUri, QStringLiteral("prop"));
+            xml.writeStartElement(davUri, QStringLiteral("error"));
+            xml.writeTextElement(sabUri, QStringLiteral("exception"), exception);
+            xml.writeTextElement(sabUri, QStringLiteral("message"), message);
+            xml.writeEndElement(); // error
+
+            //TODO: this slash to be fixed on client/server
+            xml.writeTextElement(davUri, QStringLiteral("oc-path"), "/"+fileInfo.path());
+            xml.writeEndElement(); // prop
+            xml.writeTextElement(davUri, QStringLiteral("status"), status);
+            xml.writeEndElement(); // propstat
+            xml.writeEndElement(); // response
+        };
+
+
+        if ("erroruser" == rawUrl.userName()) {
+            xml.writeStartDocument();
+            xml.writeStartElement(davUri, QStringLiteral("error"));
+            xml.writeTextElement(sabUri, QStringLiteral("exception"), QStringLiteral("OCA\\DAV\\Connector\\Sabre\\Exception\\Forbidden"));
+            xml.writeTextElement(sabUri, QStringLiteral("message"), QStringLiteral("URL endpoint has to be instance of \\OCA\\DAV\\Files\\FilesHome"));
+            xml.writeTextElement(ocUri, QStringLiteral("retry"), QStringLiteral("false"));
+            xml.writeTextElement(ocUri, QStringLiteral("reason"), QStringLiteral("URL endpoint has to be instance of \\OCA\\DAV\\Files\\FilesHome"));
+            xml.writeEndElement(); // error
+            xml.writeEndDocument();
+            setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 403);
+        } else {
+            Q_ASSERT(request.url().path().endsWith(bundlePath));
+            xml.writeStartDocument();
+            xml.writeStartElement(davUri, QStringLiteral("multistatus"));
+
+            //multipart parsing
+            QString headerSectEnd = "\r\n\r\n";
+            QString headerEnd = "\r\n";
+            QString headerOcMethod = "X-OC-Method: ";
+            QString headerConLen = "Content-Length: ";
+            QString headerOcPath = "X-OC-Path: ";
+            int indexOfBody = 0;
+            QChar contentChar;
+
+            while(postPayload.indexOf(headerSectEnd,indexOfBody) + headerSectEnd.length() >=indexOfBody) {
+                //find oc-method
+                int indexOfheaderEnd = postPayload.indexOf(headerOcMethod,indexOfBody) + headerOcMethod.length();
+                int indexOfheaderBodyEnd = postPayload.indexOf(headerEnd,indexOfheaderEnd);
+                Q_ASSERT(postPayload.mid(indexOfheaderEnd,indexOfheaderBodyEnd-indexOfheaderEnd) == QString("PUT"));
+
+                //find oc-path
+                indexOfheaderEnd = postPayload.indexOf(headerOcPath,indexOfBody) + headerOcPath.length();
+                indexOfheaderBodyEnd = postPayload.indexOf(headerEnd,indexOfheaderEnd)-1;
+                QString filePath(postPayload.mid(indexOfheaderEnd+1,indexOfheaderBodyEnd-indexOfheaderEnd));
+
+                //find content-length
+                indexOfheaderEnd = postPayload.indexOf(headerConLen,indexOfBody) + headerConLen.length();
+                indexOfheaderBodyEnd = postPayload.indexOf(headerEnd,indexOfheaderEnd);
+                QString fileSize(postPayload.mid(indexOfheaderEnd,indexOfheaderBodyEnd-indexOfheaderEnd));
+
+
+                //find body content and extract first letter
+                indexOfheaderEnd = postPayload.indexOf(headerSectEnd,indexOfBody) + headerSectEnd.length();
+                indexOfBody = indexOfheaderEnd+1;
+                contentChar = postPayload.at(indexOfheaderEnd+1);
+
+                if ((fileInfo = remoteRootFileInfo.find(filePath))) {
+                    fileInfo->size = fileSize.toInt();
+                    fileInfo->contentChar = contentChar.toAscii();
+                } else {
+                    // Assume that the file is filled with the same character
+                    fileInfo = remoteRootFileInfo.create(filePath, fileSize.toInt(), contentChar.toAscii());
+                }
+
+                if (!fileInfo) {
+                    abort();
+                    return;
+                }
+
+                if (filePath.endsWith("normalerrorfile")){
+                    writeFileErrorResponse(*fileInfo, QStringLiteral("Sabre\\DAV\\Exception\\BadRequest"), QStringLiteral("Method not allowed - file exists - update of the file is not supported!"), QStringLiteral("HTTP/1.1 400 Bad Request"));
+                } else if (filePath.endsWith("fatalerrorfile")){
+                    writeFileErrorResponse(*fileInfo, QStringLiteral("Sabre\\DAV\\Exception\\ServiceUnavailable"), QStringLiteral("Failed to check file size"), QStringLiteral("HTTP/1.1 503 Service Unavailable"));
+                } else if (filePath.endsWith("softerrorfile")){
+                    writeFileErrorResponse(*fileInfo, QStringLiteral("OCA\\DAV\\Connector\\Sabre\\Exception\\FileLocked"), QStringLiteral("Target file is locked by another process."), QStringLiteral("HTTP/1.1 423 Locked (WebDAV; RFC 4918)"));
+                } else {
+                    writeFileResponse(*fileInfo);
+                }
+            }
+            xml.writeEndElement(); // multistatus
+            xml.writeEndDocument();
+            setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 207);
+            setFinished(true);
+        }
+
+        QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
+    }
+
+    Q_INVOKABLE void respond() {
+        setHeader(QNetworkRequest::ContentTypeHeader, "application/xml; charset=utf-8");
+        setHeader(QNetworkRequest::ContentLengthHeader, payload.size());
+        emit metaDataChanged();
+        if (bytesAvailable())
+            emit readyRead();
+        emit finished();
+    }
+
+    void abort() override { }
+
+    qint64 bytesAvailable() const override { return payload.size() + QIODevice::bytesAvailable(); }
+    qint64 readData(char *data, qint64 maxlen) override {
+        qint64 len = std::min(qint64{payload.size()}, maxlen);
+        strncpy(data, payload.constData(), len);
+        payload.remove(0, len);
+        return len;
+    }
 };
 
 class FakeQNAM : public QNetworkAccessManager
@@ -687,7 +850,9 @@ protected:
             return new FakeMoveReply{info, op, request, this};
         else if (verb == QLatin1String("MOVE") && isUpload)
             return new FakeChunkMoveReply{info, _remoteRootFileInfo, op, request, this};
-        else {
+        else if (op == QNetworkAccessManager::PostOperation) {
+            return new FakeBundlePOSTReply{_remoteRootFileInfo, op, request, outgoingData->readAll(), this};
+        } else {
             qDebug() << verb << outgoingData;
             Q_UNREACHABLE();
         }
@@ -805,6 +970,10 @@ public:
     bool syncOnce() {
         scheduleSync();
         return execUntilFinished();
+    }
+
+    OCC::AccountPtr getAccount() {
+        return _account;
     }
 
 private:

@@ -26,6 +26,7 @@
 #include "accountfwd.h"
 
 class QUrl;
+class QHttpMultiPart;
 
 namespace OCC {
 
@@ -78,6 +79,7 @@ protected:
     QNetworkReply* headRequest(const QString &relPath);
     QNetworkReply* headRequest(const QUrl &url);
     QNetworkReply* deleteRequest(const QUrl &url);
+    QNetworkReply* multipartRequest(const QString &relPath, QNetworkRequest req, QHttpMultiPart *multiPart);
 
     int maxRedirects() const { return 10; }
     virtual bool finished() = 0;
