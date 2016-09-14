@@ -525,8 +525,6 @@ void ownCloudGui::setupContextMenu()
 
 void ownCloudGui::updateContextMenu()
 {
-    qDebug() << "ZZZ CONTEXT";
-
     if (minimalTrayMenu()) {
         return;
     }
