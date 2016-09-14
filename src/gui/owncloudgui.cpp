@@ -483,12 +483,11 @@ void ownCloudGui::setupContextMenu()
     // If we build with 5.6.1 or newer, we can skip this because the
     // bugs should be fixed there.
 #ifdef Q_OS_LINUX
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)) && (QT_VERSION < QT_VERSION_CHECK(5, 5, 1))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)) && (QT_VERSION < QT_VERSION_CHECK(5, 6, 0))
     if (qVersion() == QByteArray("5.5.0")) {
         QObject* platformMenu = reinterpret_cast<QObject*>(_tray->contextMenu()->platformMenu());
         if (platformMenu
-                && platformMenu->metaObject()->className() == QLatin1String("QDBusPlatformMenu")
-                && !disableQDBusTrayWorkaround()) {
+                && platformMenu->metaObject()->className() == QLatin1String("QDBusPlatformMenu")) {
             _qdbusmenuWorkaround = true;
             qDebug() << "Enabled QDBusPlatformMenu workaround";
         }
@@ -665,7 +664,7 @@ void ownCloudGui::updateContextMenuNeeded()
 #ifdef Q_OS_MAC
     // https://bugreports.qt.io/browse/QTBUG-54845
     // We cannot update on demand or while visible -> update when invisible.
-    if (!_contextMenuVisible) {
+    if (!contextMenuVisible()) {
         updateContextMenu();
     }
 #else
