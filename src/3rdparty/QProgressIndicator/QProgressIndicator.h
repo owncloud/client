@@ -1,24 +1,3 @@
-/*
-*
-* This file is part of QProgressIndicator,
-* an open-source recent files menu widget
-*
-* Copyright (C) 2009 - 2010 Morgan Leborgne
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with QRecentFilesMenu. If not, see <http://www.gnu.org/licenses/>.
-*
-*/
 #ifndef QPROGRESSINDICATOR_H
 #define QPROGRESSINDICATOR_H
 
@@ -64,8 +43,8 @@ public:
       */
     const QColor & color() const { return m_color; }
 
-    virtual QSize sizeHint() const Q_DECL_OVERRIDE;
-    int heightForWidth(int w) const Q_DECL_OVERRIDE;
+    virtual QSize sizeHint() const;
+    int heightForWidth(int w) const;
 public slots:
     /*! Starts the spin animation.
         \sa stopAnimation isAnimated
@@ -95,8 +74,8 @@ public slots:
      */
     void setColor(const QColor & color);
 protected:
-    virtual void timerEvent(QTimerEvent * event) Q_DECL_OVERRIDE; 
-    virtual void paintEvent(QPaintEvent * event) Q_DECL_OVERRIDE;
+    virtual void timerEvent(QTimerEvent * event); 
+    virtual void paintEvent(QPaintEvent * event);
 private:
     int m_angle;
     int m_timerId;
