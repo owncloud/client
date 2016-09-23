@@ -437,11 +437,9 @@ static bool updateWhileVisible()
     } else if (var == "0") {
         return false;
     } else {
-#ifdef Q_OS_MAC
-        return false; // https://bugreports.qt.io/browse/QTBUG-54845
-#else
-        return true;
-#endif
+        // triggers bug on OS X: https://bugreports.qt.io/browse/QTBUG-54845
+        // or flickering on Xubuntu
+        return false;
     }
 }
 
