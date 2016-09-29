@@ -521,7 +521,6 @@ static void _csync_clean_ctx(CSYNC *ctx)
     c_rbtree_free(ctx->local.tree);
     c_rbtree_free(ctx->remote.tree);
 
-    SAFE_FREE(ctx->statedb.file);
     SAFE_FREE(ctx->remote.root_perms);
 }
 
