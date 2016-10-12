@@ -43,7 +43,7 @@ repositories`_ to see all the Linux client repos.
     http://download.opensuse.org/repositories/isv:/ownCloud:/desktop/Debian_8.0/ /' >> /etc/apt/sources.list.d/owncloud-client.list
 
 2. Install the dependencies using the following commands for your specific Linux 
-distribution. Make sure the repositories for source packages is enabled.
+distribution. Make sure the repositories for source packages are enabled.
   
    * Debian/Ubuntu: ``apt-get update; apt-get build-dep owncloud-client``
    * openSUSE/SLES: ``zypper ref; zypper si -d owncloud-client``
