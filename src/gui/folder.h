@@ -167,7 +167,7 @@ public:
       * Ignore syncing of hidden files or not. This is defined in the
       * folder definition
       */
-     bool ignoreHiddenFiles();
+     bool ignoreHiddenFiles() const;
      void setIgnoreHiddenFiles(bool ignore);
 
      // Used by the Socket API

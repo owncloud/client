@@ -188,7 +188,7 @@ QString Folder::shortGuiLocalPath() const
 }
 
 
-bool Folder::ignoreHiddenFiles()
+bool Folder::ignoreHiddenFiles() const
 {
     bool re(_definition.ignoreHiddenFiles);
     return re;

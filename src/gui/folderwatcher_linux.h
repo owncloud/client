@@ -33,7 +33,6 @@ class FolderWatcherPrivate : public QObject
 {
     Q_OBJECT
 public:
-    FolderWatcherPrivate() { }
     FolderWatcherPrivate(FolderWatcher *p, const QString &path);
     ~FolderWatcherPrivate();
 
@@ -45,10 +44,9 @@ protected slots:
     void slotAddFolderRecursive(const QString &path);
 
 protected:
-    bool findFoldersBelow( const QDir& dir, QStringList& fullList );
+    int addFolderRecursiveHelper(const QString &path, const QSet<QString> &watchedFolders);
     void inotifyRegisterPath(const QString& path);
 
-private:
     FolderWatcher *_parent;
 
     QString _folder;
