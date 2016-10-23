@@ -176,6 +176,59 @@ public slots:
     virtual void start() = 0;
 };
 
+/**
+ * @brief Propagate sync items within a specific folder, and all its sub entries.
+ * @ingroup libsync
+ */
+class PropagateSyncItems : public PropagatorJob {
+    Q_OBJECT
+public:
+    // all the sub files or sub directories.
+    QList<PropagatorJob *> _syncJobs;
+
+    int _jobsFinished; // number of jobs that have completed
+    int _syncJobsCount; // number of subJobs running right now
+    SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
+
+    PropagateSyncItems(OwncloudPropagator *propagator)
+        : PropagatorJob(propagator)
+        , _jobsFinished(0), _syncJobsCount(0), _hasError(SyncFileItem::NoStatus)
+    { }
+
+    virtual ~PropagateSyncItems() {
+        qDeleteAll(_syncJobs);
+    }
+
+    void append(PropagatorJob *subJob) {
+        _syncJobs.append(subJob);
+        _syncJobsCount++;
+    }
+
+    virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
+    virtual JobParallelism parallelism() Q_DECL_OVERRIDE;
+    virtual void abort() Q_DECL_OVERRIDE {
+        foreach (PropagatorJob *j, _syncJobs)
+            j->abort();
+    }
+
+    void finalize();
+
+    qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
+
+private slots:
+    bool possiblyRunNextJob(PropagatorJob *next) {
+        if (next->_state == NotYetStarted) {
+            connect(next, SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotSubJobFinished(SyncFileItem::Status)), Qt::QueuedConnection);
+            connect(next, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
+                    this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+            connect(next, SIGNAL(progress(const SyncFileItem &,quint64)), this, SIGNAL(progress(const SyncFileItem &,quint64)));
+            connect(next, SIGNAL(ready()), this, SIGNAL(ready()));
+        }
+        return next->scheduleNextJob();
+    }
+
+    void slotSubJobFinished(SyncFileItem::Status status);
+};
 
 /**
  * @brief Propagate a directory, and all its sub entries.
@@ -187,7 +240,12 @@ public:
     // e.g: create the directory
     QScopedPointer<PropagateItemJob>_firstJob;
 
-    // all the sub files or sub directories.
+    // all the new and changed files without conflicts scheduler class
+    // remark: do not QScopedPointer, since this class is either deleted via qDeleteAll(_subJobs) or usual delete,
+    // depending on ownership determined by flag _scheduledSyncJobs
+    QPointer<PropagateSyncItems> _syncJobsScheduler;
+
+    // all the other file operation or sub directories.
     QVector<PropagatorJob *> _subJobs;
 
     SyncFileItemPtr _item;
@@ -195,13 +253,18 @@ public:
     int _jobsFinished; // number of jobs that have completed
     int _runningNow; // number of subJobs running right now
     SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
+    bool _scheduledSyncJobs; // verify if already scheduled execution of files sync jobs
 
     explicit PropagateDirectory(OwncloudPropagator *propagator, const SyncFileItemPtr &item = SyncFileItemPtr(new SyncFileItem))
         : PropagatorJob(propagator)
-        , _firstJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus)
+        , _firstJob(0), _syncJobsScheduler(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _scheduledSyncJobs(false)
     { }
 
     virtual ~PropagateDirectory() {
+        // check whether the owner of the pointer is _subJobs or PropagateDirectory class
+        if (!_scheduledSyncJobs){
+            delete _syncJobsScheduler;
+        }
         qDeleteAll(_subJobs);
     }
 
@@ -209,11 +272,20 @@ public:
         _subJobs.append(subJob);
     }
 
+    void appendSyncJob(PropagatorJob *subJob) {
+        if (!_syncJobsScheduler) {
+            _syncJobsScheduler = new PropagateSyncItems(_propagator);
+        }
+        _syncJobsScheduler->append(subJob);
+    }
+
     virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
     virtual JobParallelism parallelism() Q_DECL_OVERRIDE;
     virtual void abort() Q_DECL_OVERRIDE {
         if (_firstJob)
             _firstJob->abort();
+        if (_syncJobsScheduler)
+            _syncJobsScheduler->abort();
         foreach (PropagatorJob *j, _subJobs)
             j->abort();
     }
@@ -223,6 +295,8 @@ public:
     }
 
     void finalize();
+
+    void scheduleSyncJobs();
 
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
@@ -241,7 +315,6 @@ private slots:
 
     void slotSubJobFinished(SyncFileItem::Status status);
 };
-
 
 /**
  * @brief Dummy job that just mark it as completed and ignored

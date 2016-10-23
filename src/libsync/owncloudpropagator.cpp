@@ -384,6 +384,8 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
                 // will delete directories, so defer execution
                 directoriesToRemove.prepend(current);
                 removedDirectory = item->_file + "/";
+            } else if (item->_instruction == CSYNC_INSTRUCTION_NEW || item->_instruction == CSYNC_INSTRUCTION_SYNC){
+                directories.top().second->appendSyncJob(current);
             } else {
                 directories.top().second->append(current);
             }
@@ -593,7 +595,11 @@ bool PropagateDirectory::scheduleNextJob()
         _state = Running;
 
         if (!_firstJob && _subJobs.isEmpty()) {
-            finalize();
+            if (!_scheduledSyncJobs && _syncJobsScheduler) {
+                scheduleSyncJobs();
+            } else {
+                finalize();
+            }
             return true;
         }
     }
@@ -657,10 +663,21 @@ void PropagateDirectory::slotSubJobFinished(SyncFileItem::Status status)
     // check if we finished
     if (_jobsFinished >= totalJobs) {
         Q_ASSERT(!_runningNow); // how can we be finished if there are still jobs running now
-        finalize();
+        if (!_scheduledSyncJobs && _syncJobsScheduler) {
+            scheduleSyncJobs();
+        } else {
+            finalize();
+        }
     } else {
         emit ready();
     }
+}
+
+void PropagateDirectory::scheduleSyncJobs() {
+    _scheduledSyncJobs = true;
+    //at this point, scheduler will be destroyed together with _subJobs
+    _subJobs.append(_syncJobsScheduler.data());
+    emit ready();
 }
 
 void PropagateDirectory::finalize()
@@ -706,6 +723,80 @@ qint64 PropagateDirectory::committedDiskSpace() const
 {
     qint64 needed = 0;
     foreach (PropagatorJob* job, _subJobs) {
+        needed += job->committedDiskSpace();
+    }
+    return needed;
+}
+
+// ================================================================================
+
+PropagatorJob::JobParallelism PropagateSyncItems::parallelism()
+{
+    return FullParallelism;
+}
+
+
+bool PropagateSyncItems::scheduleNextJob()
+{
+    if (_state == Finished) {
+        return false;
+    }
+
+    if (_state == NotYetStarted) {
+        _state = Running;
+
+        if (_syncJobs.isEmpty()) {
+            finalize();
+            return true;
+        }
+    }
+
+    while (!_syncJobs.isEmpty()) {
+        PropagatorJob *next = _syncJobs.takeFirst();
+        if (next->_state == Finished) {
+            continue;
+        }
+
+        if (possiblyRunNextJob(next)) {
+            return true;
+        }
+
+        Q_ASSERT(next->_state == Running);
+    }
+    return false;
+}
+
+void PropagateSyncItems::slotSubJobFinished(SyncFileItem::Status status)
+{
+    if (status == SyncFileItem::FatalError) {
+        abort();
+        _hasError = status;
+        finalize();
+        return;
+    } else if (status == SyncFileItem::NormalError || status == SyncFileItem::SoftError) {
+        _hasError = status;
+    }
+
+    _jobsFinished++;
+    // We finished processing all the jobs
+    // check if we finished
+    if (_syncJobs.isEmpty() && (_syncJobsCount == _jobsFinished)) {
+        finalize();
+    } else {
+        emit ready();
+    }
+}
+
+void PropagateSyncItems::finalize()
+{
+    _state = Finished;
+    emit finished(_hasError == SyncFileItem::NoStatus ?  SyncFileItem::Success : _hasError);
+}
+
+qint64 PropagateSyncItems::committedDiskSpace() const
+{
+    qint64 needed = 0;
+    foreach (PropagatorJob* job, _syncJobs) {
         needed += job->committedDiskSpace();
     }
     return needed;
