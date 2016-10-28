@@ -165,7 +165,7 @@ static bool _csync_mtime_equal(time_t a, time_t b)
  * local filesystem and once for each entity in the server data.
  *
  * It has two main jobs:
- * - figure out whether anything happened compared to the database
+ * - figure out whether anything happened compared to the sync journal
  *   and set (primarily) the instruction flag accordingly
  * - build the ctx->local.tree / ctx->remote.tree
  *

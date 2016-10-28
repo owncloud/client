@@ -72,7 +72,7 @@ static c_rbnode_t *_csync_check_ignored(c_rbtree_t *tree, const char *path, int 
  * csync_reconcile()
  *
  * Before the reconcile phase the trees already know about changes
- * relative to the database. This function's job is to spot conflicts
+ * relative to the sync journal. This function's job is to spot conflicts
  * between local and remote changes and adjust the nodes accordingly.
  *
  * See doc/dev/sync-algorithm.md for an overview.
