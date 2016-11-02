@@ -65,7 +65,7 @@ resultP12ToPem p12ToPem(string p12File, string p12Passwd) {
     ret.PrivateKey = "";
     ret.Certificate = "";
     
-    SSLeay_add_all_algorithms();
+    ADD_ALL_ALGORITHMS();
     ERR_load_crypto_strings();
     if(!(fp = fopen(p12File.c_str(), "rb"))) {
         ret.ErrorCode = 1;

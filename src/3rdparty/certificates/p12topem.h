@@ -29,6 +29,13 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
+#include <openssl/opensslv.h>
+
+#if OPENSSL_VERSION_NUMBER <= 0x0090400f
+# define ADD_ALL_ALGORITHMS() SSLeay_add_all_algorithms()
+#else
+# define ADD_ALL_ALGORITHMS() OpenSSL_add_all_algorithms()
+#endif
 
 using namespace std;
 
