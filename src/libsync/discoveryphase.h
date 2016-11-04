@@ -23,6 +23,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QLinkedList>
+#include <QRegularExpression>
 
 namespace OCC {
 
@@ -181,6 +182,10 @@ class DiscoveryJob : public QObject {
                                                                   void *userdata);
     QMutex _vioMutex;
     QWaitCondition _vioWaitCondition;
+
+    QRegularExpression _exclude_traversel_regexp_exclude;
+    QRegularExpression _exclude_traversel_regexp_exclude_and_remove;
+    static CSYNC_EXCLUDE_TYPE excluded_traversal_hook (const char *path, int filetype, void *userdata);
 
 
 public:

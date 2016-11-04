@@ -203,7 +203,7 @@ static int _csync_detect_update(CSYNC *ctx, const char *file,
       excluded =CSYNC_FILE_EXCLUDE_STAT_FAILED;
   } else {
     /* Check if file is excluded */
-    excluded = csync_excluded_traversal(ctx->excludes, path, type);
+    excluded = csync_excluded_traversal(ctx->excludes, path, type, ctx->callbacks.excluded_traversal_hook, ctx->callbacks.excluded_traversal_userdata);
   }
 
   if( excluded == CSYNC_NOT_EXCLUDED ) {
