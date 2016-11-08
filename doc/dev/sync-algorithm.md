@@ -6,7 +6,7 @@ Overview
 
 This is a technical description of the synchronization (sync) algorithm used by the ownCloud client.
 
-The sync algorithm is the thing that looks at the local tree, sync journal and remote tree and decides which steps need to be taken to bring the two trees into synchronization. It's different from the propagator, whose job it is to actually execute these steps.
+The sync algorithm is the thing that looks at the local and remote file system trees and the sync journal and decides which steps need to be taken to bring the two trees into synchronization. It's different from the propagator, whose job it is to actually execute these steps.
 
 
 Definitions
@@ -34,7 +34,7 @@ The discovery phase collects file and directory metadata from the local and remo
 Afterwards, we have two trees that tell us what happened relative to the journal. But there may still be conflicts if something happened to an entity both locally and on the remote.
 
   - Input: file system, server data, journal
-  - Output: c_rbtree_t* for the local and remote trees
+  - Output: two c_rbtree_t*, representing the local and remote trees
 
   - Note on remote discovery: Since a change to a file on the server causes the etags of all parent folders to change, folders with an unchanged etag can be read from the journal directly and don't need to be walked into.
 
@@ -77,3 +77,8 @@ Afterwards, there is a list of items that can tell the propagator what needs to 
     - They use _csync_walk_tree() to run SyncEngine::treewalkFile() on each entry.
     - treewalkFile() creates and fills SyncFileItems for each entry, ensuring that each file only has a single instance. This is the main function of this pass.
 
+
+See Also
+--------
+
+An overview of the propagation steps is still missing. The sync protocol is documented at https://github.com/cernbox/smashbox/blob/master/protocol/protocol.md.
