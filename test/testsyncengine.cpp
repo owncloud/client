@@ -31,6 +31,16 @@ bool itemDidCompleteSuccessfully(const QSignalSpy &spy, const QString &path)
     return false;
 }
 
+SyncFileItem::Status itemDidCompleteWithStatus(const QSignalSpy &spy, const QString &path)
+{
+    for(const QList<QVariant> &args : spy) {
+        SyncFileItem item = args[0].value<SyncFileItem>();
+        if (item.destination() == path)
+            return item._status;
+    }
+    return SyncFileItem::NoStatus;
+}
+
 class TestSyncEngine : public QObject
 {
     Q_OBJECT
@@ -51,6 +61,75 @@ private slots:
         fakeFolder.localModifier().insert("A/a0");
         fakeFolder.syncOnce();
         QVERIFY(itemDidCompleteSuccessfully(completeSpy, "A/a0"));
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+    }
+
+    void testFileUploadBundled() {
+        FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
+
+        QVariantMap capBundle;
+        capBundle["bundlerequest"] = true;
+        QVariantMap caps;
+        caps["dav"] = capBundle;
+        fakeFolder.getAccount()->setCapabilities(caps);
+
+        testFileUploadBundledAllFilesOK(fakeFolder);
+        testFileUploadBundledErrorForFile(fakeFolder);
+
+        //TODO unfinished, cannot generate NetworkError
+        //testFileUploadBundledNotHomeCollection(fakeFolder);
+    }
+
+    void testFileUploadBundledAllFilesOK(FakeFolder &fakeFolder) {
+        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+        fakeFolder.localModifier().insert("A/a3");
+        fakeFolder.localModifier().insert("A/a4");
+        fakeFolder.localModifier().insert("B/b0");
+        fakeFolder.syncOnce();
+
+        //check separate files
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, "A/a3"));
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, "A/a4"));
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, "B/b0"));
+
+        //check whole bundle
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, ""));
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+    }
+
+    void testFileUploadBundledErrorForFile(FakeFolder &fakeFolder) {
+        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+        fakeFolder.localModifier().insert("A/a5");
+        fakeFolder.localModifier().insert("A/normalerrorfile");
+        fakeFolder.localModifier().insert("A/fatalerrorfile");
+        fakeFolder.localModifier().insert("A/softerrorfile");
+        fakeFolder.localModifier().insert("B/b3");
+        fakeFolder.syncOnce();
+
+        //check separate files
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, "A/a5"));
+        QVERIFY(SyncFileItem::NormalError == itemDidCompleteWithStatus(completeSpy, "A/normalerrorfile"));
+        QVERIFY(SyncFileItem::FatalError == itemDidCompleteWithStatus(completeSpy, "A/fatalerrorfile"));
+        QVERIFY(SyncFileItem::SoftError == itemDidCompleteWithStatus(completeSpy, "A/softerrorfile"));
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, "B/b3"));
+
+        //check whole bundle
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, ""));
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+    }
+
+    void testFileUploadBundledNotHomeCollection(FakeFolder &fakeFolder) {
+        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+        fakeFolder.localModifier().insert("A/a7");
+        fakeFolder.localModifier().insert("A/a8");
+        fakeFolder.localModifier().insert("B/b4");
+
+        //add the user "erroruser" which is not a FilesHomeCollection
+        fakeFolder.getAccount()->setUrl(QUrl(QStringLiteral("http://erroruser:admin@localhost/owncloud")));
+        fakeFolder.syncOnce();
+
+        //check whole bundle
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, ""));
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 

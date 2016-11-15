@@ -46,6 +46,12 @@ bool Capabilities::sharePublicLink() const
     }
 }
 
+bool Capabilities::bundledRequest() const
+{
+    bool bundle = _capabilities["dav"].toMap()["bundlerequest"].toBool();
+    return  bundle;
+}
+
 bool Capabilities::sharePublicLinkAllowUpload() const
 {
     return  _capabilities["files_sharing"].toMap()["public"].toMap()["upload"].toBool();

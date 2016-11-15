@@ -303,6 +303,13 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
     directories.push(qMakePair(QString(), _rootJob.data()));
     QVector<PropagatorJob*> directoriesToRemove;
     QString removedDirectory;
+
+    PropagateBundle *bundledUploadRequestsJob = new PropagateBundle(this);
+    quint64 chunkSize = OwncloudPropagator::chunkSize();
+
+    // TODO: here we should also check somehow if bundle is not broken for specific sync - bug recovery to standard PUTs
+    bool bundledRequestsEnabled = _account->bundledRequestsEnabled();
+
     foreach(const SyncFileItemPtr &item, items) {
 
         if (!removedDirectory.isEmpty() && item->_file.startsWith(removedDirectory)) {
@@ -379,6 +386,12 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
                 currentDirJob->append(dir);
             }
             directories.push(qMakePair(item->destination() + "/" , dir));
+        } else if (bundledRequestsEnabled
+                  && (item->_instruction == CSYNC_INSTRUCTION_NEW)
+                  && (item->_direction == SyncFileItem::Up)
+                  && (item->_size < chunkSize)) {
+            //this will create list of bundle files to sync for that bundlejob
+            bundledUploadRequestsJob->append(item);
         } else if (PropagateItemJob* current = createJob(item)) {
             if (item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE) {
                 // will delete directories, so defer execution
@@ -392,6 +405,21 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
 
     foreach(PropagatorJob* it, directoriesToRemove) {
         _rootJob->append(it);
+    }
+
+    // Root job is DirectoryJob with FullParallelizm, so we need to halt bundle till all other jobs are finished.
+    // If there are no running jobs in root folder it means we can start with sending the bundle
+    // If there are running jobs, we halt and wait for finish of the other job to trigger sending
+    if (bundledRequestsEnabled && !bundledUploadRequestsJob->empty()) {
+        bundledUploadRequestsJob->_item->_direction = SyncFileItem::Direction::Up;
+        bundledUploadRequestsJob->_item->_type = SyncFileItem::Type::RequestsContainer;
+        bundledUploadRequestsJob->_item->_instruction = CSYNC_INSTRUCTION_NEW;
+        bundledUploadRequestsJob->_item->_size = bundledUploadRequestsJob->syncItemsSize();
+        bundledUploadRequestsJob->_item->_originalFile = tr("%1 file(s)").arg(bundledUploadRequestsJob->syncItemsNumber());
+        _rootJob->append(bundledUploadRequestsJob);
+    }
+    else{
+        delete bundledUploadRequestsJob;
     }
 
     connect(_rootJob.data(), SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
@@ -630,6 +658,7 @@ bool PropagateDirectory::scheduleNextJob()
         Q_ASSERT(_subJobs.at(i)->_state == Running);
 
         auto paral = _subJobs.at(i)->parallelism();
+
         if (paral == WaitForFinished) {
             return false;
         }

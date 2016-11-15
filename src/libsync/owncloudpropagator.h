@@ -325,6 +325,10 @@ public:
         emitFinished(SyncFileItem::NormalError);
     }
 
+    int runningNowAtRootJob() const {
+        return _rootJob->_runningNow;
+    }
+
     // timeout in seconds
     static int httpTimeout();
 
@@ -384,6 +388,7 @@ private:
     friend class PropagateLocalMkdir;
     friend class PropagateLocalRename;
     friend class PropagateRemoteMove;
+    friend class PropagateBundle;
 #endif
 };
 
