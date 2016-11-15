@@ -30,6 +30,7 @@
 #include "owncloudsetupwizard.h"
 #include "creds/abstractcredentials.h"
 #include "tooltipupdater.h"
+#include "filesystem.h"
 
 #include <math.h>
 
@@ -299,8 +300,9 @@ void AccountSettings::slotFolderWizardAccepted()
                                      tr("<p>Could not create local folder <i>%1</i>.")
                                         .arg(QDir::toNativeSeparators(definition.localPath)));
                 return;
+            } else {
+                FileSystem::setFolderMinimumPermissions(definition.localPath);
             }
-
         }
     }
 
