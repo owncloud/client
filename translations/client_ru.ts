@@ -901,7 +901,7 @@ Continuing the sync as normal will cause all your files to be overwritten by an 
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="132"/>
         <source>Adding folder is disabled because you are already syncing all your files. If you want to sync multiple folders, please remove the currently configured root folder.</source>
-        <translation>Добавление папки отключена, потому что вы уже синхронизированы все файлы. Если вы хотите синхронизировать несколько папок, пожалуйста, удалите текущую корневую папку.</translation>
+        <translation>Добавление папки отключено, потому что вы уже синхронизируете все файлы. Если вы хотите синхронизировать несколько папок, пожалуйста, удалите текущую корневую папку.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="170"/>
