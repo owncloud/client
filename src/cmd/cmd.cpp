@@ -58,7 +58,6 @@ struct CmdOptions {
     QString password;
     QString proxy;
     bool silent;
-    bool bundleRequests;
     bool trustSSL;
     bool useNetrc;
     bool interactive;
@@ -158,7 +157,6 @@ void help()
     std::cout << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << "  --silent, -s           Don't be so verbose" << std::endl;
-    std::cout << "  --bundle-requests, -b  Bundle Requests if supported" << std::endl;
     std::cout << "  --httpproxy [proxy]    Specify a http proxy to use." << std::endl;
     std::cout << "                         Proxy is http://server:port" << std::endl;
     std::cout << "  --trust                Trust the SSL certification." << std::endl;
@@ -226,8 +224,6 @@ void parseOptions( const QStringList& app_args, CmdOptions *options )
             options->silent = true;
         } else if( option == "--trust") {
             options->trustSSL = true;
-        } else if( option == "-b" || option == "--bundle-requests") {
-            options->bundleRequests = true;
         } else if( option == "-n") {
             options->useNetrc = true;
         } else if( option == "-h") {
@@ -296,7 +292,6 @@ int main(int argc, char **argv) {
 
     CmdOptions options;
     options.silent = false;
-    options.bundleRequests = false;
     options.trustSSL = false;
     options.useNetrc = false;
     options.interactive = true;
@@ -421,7 +416,6 @@ int main(int argc, char **argv) {
 
     loop.exec();
 #endif
-    account->setBundleRequestsIfCapable(options.bundleRequests);
 
     // much lower age than the default since this utility is usually made to be run right after a change in the tests
     SyncEngine::minimumFileAgeForUpload = 0;

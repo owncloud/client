@@ -40,8 +40,6 @@ Account::Account(QObject *parent)
     : QObject(parent)
     , _capabilities(QVariantMap())
     , _davPath( Theme::instance()->webDavPath() )
-    , _wasMigrated(false)
-    , _bundleRequests(true)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
 }
@@ -91,7 +89,7 @@ void Account::setDavUser(const QString &newDavUser)
 QString Account::davFilesPath() const
 {
     //TODO DO NOT HARCODE PATH, GET IT FROM THE SERVER!!!!
-    QString dfp("remote.php/dav/files/");
+    QString dfp("/remote.php/dav/files/");
     dfp.append(_credentials->user());
     return dfp;
 }
@@ -499,13 +497,9 @@ void Account::setNonShib(bool nonShib)
     } 
 }
 
-void Account::setBundleRequestsIfCapable(bool bundleRequests){
-    _bundleRequests = bundleRequests;
-}
-
-bool Account::bundledRequestsEnabled()
+bool Account::bundledRequestsEnabled() const
 {
-    return (_bundleRequests &&  _capabilities.bundledRequest()) ? true : false;
+    return _capabilities.bundledRequest();
 }
 
 } // namespace OCC

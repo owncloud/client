@@ -673,48 +673,8 @@ public:
         xml.writeNamespace(ocUri, "o");
         xml.writeNamespace(sabUri, "s");
 
-        auto writeFileResponse = [&](const FileInfo &fileInfo) {
-            xml.writeStartElement(davUri, QStringLiteral("response"));
-
-            //TODO: no need for X-OC-PATH, href could contain that, fix client/server
-            xml.writeTextElement(davUri, QStringLiteral("href"), bundlePath);
-            xml.writeStartElement(davUri, QStringLiteral("propstat"));
-            xml.writeStartElement(davUri, QStringLiteral("prop"));
-
-            xml.writeTextElement(davUri, QStringLiteral("oc-etag"), fileInfo.etag);
-            xml.writeTextElement(davUri, QStringLiteral("etag"), fileInfo.etag);
-            xml.writeTextElement(davUri, QStringLiteral("oc-fileid"), fileInfo.fileId);
-            xml.writeTextElement(davUri, QStringLiteral("x-oc-mtime"), QStringLiteral("accepted"));
-
-            //TODO: this slash to be fixed on client/server
-            xml.writeTextElement(davUri, QStringLiteral("oc-path"), "/"+fileInfo.path());
-            xml.writeEndElement(); // prop
-            xml.writeTextElement(davUri, QStringLiteral("status"), "HTTP/1.1 200 OK");
-            xml.writeEndElement(); // propstat
-            xml.writeEndElement(); // response
-        };
-        auto writeFileErrorResponse = [&](const FileInfo &fileInfo, const QString &exception, const QString &message, const QString &status) {
-            xml.writeStartElement(davUri, QStringLiteral("response"));
-
-            //TODO: no need for X-OC-PATH, href could contain that, fix client/server
-            xml.writeTextElement(davUri, QStringLiteral("href"), bundlePath);
-            xml.writeStartElement(davUri, QStringLiteral("propstat"));
-            xml.writeStartElement(davUri, QStringLiteral("prop"));
-            xml.writeStartElement(davUri, QStringLiteral("error"));
-            xml.writeTextElement(sabUri, QStringLiteral("exception"), exception);
-            xml.writeTextElement(sabUri, QStringLiteral("message"), message);
-            xml.writeEndElement(); // error
-
-            //TODO: this slash to be fixed on client/server
-            xml.writeTextElement(davUri, QStringLiteral("oc-path"), "/"+fileInfo.path());
-            xml.writeEndElement(); // prop
-            xml.writeTextElement(davUri, QStringLiteral("status"), status);
-            xml.writeEndElement(); // propstat
-            xml.writeEndElement(); // response
-        };
-
-
         if ("erroruser" == rawUrl.userName()) {
+            // ERROR CASE
             xml.writeStartDocument();
             xml.writeStartElement(davUri, QStringLiteral("error"));
             xml.writeTextElement(sabUri, QStringLiteral("exception"), QStringLiteral("OCA\\DAV\\Connector\\Sabre\\Exception\\Forbidden"));
@@ -725,40 +685,134 @@ public:
             xml.writeEndDocument();
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 403);
         } else {
+            //NORMAL CASE
+            auto writeFileResponse = [&](const FileInfo &fileInfo) {
+                xml.writeStartElement(davUri, QStringLiteral("response"));
+
+                //TODO: no need for X-OC-PATH, href could contain that, fix client/server
+                xml.writeTextElement(davUri, QStringLiteral("href"), bundlePath);
+                xml.writeStartElement(davUri, QStringLiteral("propstat"));
+                xml.writeStartElement(davUri, QStringLiteral("prop"));
+
+                xml.writeTextElement(davUri, QStringLiteral("oc-etag"), fileInfo.etag);
+                xml.writeTextElement(davUri, QStringLiteral("etag"), fileInfo.etag);
+                xml.writeTextElement(davUri, QStringLiteral("oc-fileid"), fileInfo.fileId);
+                xml.writeTextElement(davUri, QStringLiteral("oc-mtime"), QStringLiteral("accepted"));
+
+                //TODO: this slash to be fixed on client/server
+                xml.writeTextElement(davUri, QStringLiteral("oc-path"), "/"+fileInfo.path());
+                xml.writeEndElement(); // prop
+                xml.writeTextElement(davUri, QStringLiteral("status"), "HTTP/1.1 200 OK");
+                xml.writeEndElement(); // propstat
+                xml.writeEndElement(); // response
+            };
+            auto writeFileErrorResponse = [&](const FileInfo &fileInfo, const QString &exception, const QString &message, const QString &status) {
+                xml.writeStartElement(davUri, QStringLiteral("response"));
+
+                //TODO: no need for X-OC-PATH, href could contain that, fix client/server
+                xml.writeTextElement(davUri, QStringLiteral("href"), bundlePath);
+                xml.writeStartElement(davUri, QStringLiteral("propstat"));
+                xml.writeStartElement(davUri, QStringLiteral("prop"));
+                xml.writeStartElement(davUri, QStringLiteral("error"));
+                xml.writeTextElement(sabUri, QStringLiteral("exception"), exception);
+                xml.writeTextElement(sabUri, QStringLiteral("message"), message);
+                xml.writeEndElement(); // error
+
+                //TODO: this slash to be fixed on client/server
+                xml.writeTextElement(davUri, QStringLiteral("oc-path"), "/"+fileInfo.path());
+                xml.writeEndElement(); // prop
+                xml.writeTextElement(davUri, QStringLiteral("status"), status);
+                xml.writeEndElement(); // propstat
+                xml.writeEndElement(); // response
+            };
+
             Q_ASSERT(request.url().path().endsWith(bundlePath));
             xml.writeStartDocument();
             xml.writeStartElement(davUri, QStringLiteral("multistatus"));
 
-            //multipart parsing
             QString headerSectEnd = "\r\n\r\n";
             QString headerEnd = "\r\n";
-            QString headerOcMethod = "X-OC-Method: ";
-            QString headerConLen = "Content-Length: ";
-            QString headerOcPath = "X-OC-Path: ";
-            int indexOfBody = 0;
+            QString headerConType= "Content-Type: ";
+            QString headerConID= "Content-ID: ";
+            QString multipartStart = "<d:multipart xmlns:d=\"DAV:\">";
+            QString partStart = "<d:part>";
+            QString pathStart = "<d:oc-path>";
+            QString pathEnd = "</d:oc-path>";
+            QString mtimeStart = "<d:oc-mtime>";
+            QString mtimeEnd = "</d:oc-mtime>";
+            QString cidStart = "<d:oc-id>";
+            QString cidEnd = "</d:oc-id>";
+            QString lengthStart = "<d:oc-total-length>";
+            QString lenghtEnd = "</d:oc-total-length>";
+
+            //we will use it to navigate in the request body
+            int indexPointer = 0;
+            int indexPointerEnd = 0;
             QChar contentChar;
 
-            while(postPayload.indexOf(headerSectEnd,indexOfBody) + headerSectEnd.length() >=indexOfBody) {
-                //find oc-method
-                int indexOfheaderEnd = postPayload.indexOf(headerOcMethod,indexOfBody) + headerOcMethod.length();
-                int indexOfheaderBodyEnd = postPayload.indexOf(headerEnd,indexOfheaderEnd);
-                Q_ASSERT(postPayload.mid(indexOfheaderEnd,indexOfheaderBodyEnd-indexOfheaderEnd) == QString("PUT"));
+            QMap<int, QMap<QString, QString>> pathMap;
+            QMap<QString, QString> objectMap;
+            /* Find Content-Type of bundle metadata.*/
+            //find index of content type and move to its end
+            indexPointer = postPayload.indexOf(headerConType,indexPointerEnd) + headerConType.length();
+            //find index of \r\n, so end of HTTP header and move to its end
+            indexPointerEnd = postPayload.indexOf(headerEnd,indexPointer);
+            //assert if what is between these indexes is our desired content type
+            Q_ASSERT(postPayload.mid(indexPointer,indexPointerEnd-indexPointer) == QString("text/xml; charset=utf-8"));
 
+            /* Verify if there is xml which contains multipartStart element*/
+            //find index of nearest header end and move to its end
+            indexPointer = postPayload.indexOf(headerSectEnd,indexPointerEnd) + headerSectEnd.length();
+            //
+            indexPointerEnd = postPayload.indexOf(multipartStart,indexPointer);
+            //assert if what is between these indexes is our desired content type
+            Q_ASSERT(postPayload.mid(indexPointer,indexPointerEnd-indexPointer) == QString("<?xml version='1.0' encoding='UTF-8'?>\n"));
+
+
+            /*Check metadata contents*/
+            while(postPayload.indexOf(partStart,indexPointerEnd) + partStart.length() >=indexPointerEnd) {
                 //find oc-path
-                indexOfheaderEnd = postPayload.indexOf(headerOcPath,indexOfBody) + headerOcPath.length();
-                indexOfheaderBodyEnd = postPayload.indexOf(headerEnd,indexOfheaderEnd)-1;
-                QString filePath(postPayload.mid(indexOfheaderEnd+1,indexOfheaderBodyEnd-indexOfheaderEnd));
+                indexPointer = postPayload.indexOf(pathStart,indexPointerEnd) + pathStart.length();
+                indexPointerEnd = postPayload.indexOf(pathEnd,indexPointer);
+                QString filePath(postPayload.mid(indexPointer,indexPointerEnd-indexPointer));
+                Q_ASSERT(!filePath.isNull());
 
-                //find content-length
-                indexOfheaderEnd = postPayload.indexOf(headerConLen,indexOfBody) + headerConLen.length();
-                indexOfheaderBodyEnd = postPayload.indexOf(headerEnd,indexOfheaderEnd);
-                QString fileSize(postPayload.mid(indexOfheaderEnd,indexOfheaderBodyEnd-indexOfheaderEnd));
+                indexPointer = postPayload.indexOf(mtimeStart,indexPointerEnd) + mtimeStart.length();
+                indexPointerEnd = postPayload.indexOf(mtimeEnd,indexPointer);
+                QString fileMtime(postPayload.mid(indexPointer,indexPointerEnd-indexPointer));
+                Q_ASSERT(!fileMtime.isNull());
 
+                indexPointer = postPayload.indexOf(cidStart,indexPointerEnd) + cidStart.length();
+                indexPointerEnd = postPayload.indexOf(cidEnd,indexPointer);
+                QString fileID(postPayload.mid(indexPointer,indexPointerEnd-indexPointer));
+                Q_ASSERT(!fileID.isNull());
 
-                //find body content and extract first letter
-                indexOfheaderEnd = postPayload.indexOf(headerSectEnd,indexOfBody) + headerSectEnd.length();
-                indexOfBody = indexOfheaderEnd+1;
-                contentChar = postPayload.at(indexOfheaderEnd+1);
+                indexPointer = postPayload.indexOf(lengthStart,indexPointerEnd) + lengthStart.length();
+                indexPointerEnd = postPayload.indexOf(lenghtEnd,indexPointer);
+                QString fileLength(postPayload.mid(indexPointer,indexPointerEnd-indexPointer));
+                Q_ASSERT(!fileLength.isNull());
+
+                objectMap["mtime"] = fileMtime;
+                objectMap["path"] = filePath;
+                objectMap["length"] = fileLength;
+                pathMap[fileID.toInt()] = objectMap;
+
+            }
+
+            while(postPayload.indexOf(headerConID,indexPointerEnd) + headerConID.length() >=indexPointerEnd) {
+                /* Find Content-ID of bundle binary.*/
+                indexPointer = postPayload.indexOf(headerConID,indexPointerEnd) + headerConID.length();
+                indexPointerEnd = postPayload.indexOf(headerEnd,indexPointer);
+                //assert if what is between these indexes is our desired content type
+                int id = QString(postPayload.mid(indexPointer,indexPointerEnd-indexPointer)).toInt();
+                Q_ASSERT(pathMap.contains(id));
+
+                indexPointer = postPayload.indexOf(headerSectEnd,indexPointerEnd) + headerSectEnd.length();
+
+                Q_ASSERT(postPayload.mid(indexPointer,1).size()==1);
+                QChar contentChar(postPayload.mid(indexPointer,1)[0]);
+                QString filePath(pathMap[id]["path"]);
+                QString fileSize(pathMap[id]["length"]);
 
                 if ((fileInfo = remoteRootFileInfo.find(filePath))) {
                     fileInfo->size = fileSize.toInt();
@@ -787,14 +841,14 @@ public:
             xml.writeEndDocument();
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 207);
             setFinished(true);
+            setHeader(QNetworkRequest::ContentTypeHeader, "application/xml; charset=utf-8");
+            setHeader(QNetworkRequest::ContentLengthHeader, payload.size());
         }
 
         QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
     }
 
     Q_INVOKABLE void respond() {
-        setHeader(QNetworkRequest::ContentTypeHeader, "application/xml; charset=utf-8");
-        setHeader(QNetworkRequest::ContentLengthHeader, payload.size());
         emit metaDataChanged();
         if (bytesAvailable())
             emit readyRead();
@@ -827,7 +881,13 @@ protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request,
                                          QIODevice *outgoingData = 0) {
         const QString fileName = getFilePathFromUrl(request.url());
-        Q_ASSERT(!fileName.isNull());
+
+        if (op != QNetworkAccessManager::PostOperation){
+            Q_ASSERT(!fileName.isNull());
+        } else {
+            //For Bundle, fileName of bundle is "". Otherwise, assert
+            Q_ASSERT(fileName.isNull());
+        }
         if (_errorPaths.contains(fileName))
             return new FakeErrorReply{op, request, this};
 

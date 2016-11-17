@@ -49,8 +49,11 @@ bool Capabilities::sharePublicLink() const
 
 bool Capabilities::bundledRequest() const
 {
-    bool bundle = _capabilities["dav"].toMap()["bundlerequest"].toBool();
-    return  bundle;
+    static const auto bundling = qgetenv("OWNCLOUD_BUNDLING");
+    if (bundling == "0") return false;
+    if (bundling == "1") return true;
+
+    return _capabilities["dav"].toMap()["bundlerequest"].toByteArray() >= "1.0";
 }
 
 bool Capabilities::sharePublicLinkAllowUpload() const

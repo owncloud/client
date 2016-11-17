@@ -82,8 +82,7 @@ public:
     void setNonShib(bool nonShib);
 
     /// Functions for bundle support
-    void setBundleRequestsIfCapable(bool bundleRequests);
-    bool bundledRequestsEnabled();
+    bool bundledRequestsEnabled() const;
 
     static AccountPtr create();
     ~Account();
@@ -241,8 +240,6 @@ private:
     QByteArray _pemCertificate; 
     QString _pemPrivateKey;  
     QString _davPath; // defaults to value from theme, might be overwritten in brandings
-    bool _wasMigrated;
-    bool _bundleRequests;
     friend class AccountManager;
 };
 

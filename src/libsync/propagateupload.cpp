@@ -28,7 +28,6 @@
 
 #include <json.h>
 #include <QNetworkAccessManager>
-#include <QHttpMultiPart>
 #include <QFileInfo>
 #include <QDir>
 #include <cmath>
