@@ -374,8 +374,11 @@ void Account::slotHandleSslErrors(QNetworkReply *reply , QList<QSslError> errors
     // Keep a ref here on our stackframe to make sure that it doesn't get deleted before
     // handleErrors returns.
     QSharedPointer<QNetworkAccessManager> qnamLock = _am;
+    QPointer<QObject> guard = reply;
 
     if (_sslErrorHandler->handleErrors(errors, reply->sslConfiguration(), &approvedCerts, sharedFromThis())) {
+        if (!guard) return;
+
         QSslSocket::addDefaultCaCertificates(approvedCerts);
         addApprovedCerts(approvedCerts);
         emit wantsAccountSaved(this);
@@ -387,6 +390,8 @@ void Account::slotHandleSslErrors(QNetworkReply *reply , QList<QSslError> errors
         // certificate changes.
         reply->ignoreSslErrors(errors);
     } else {
+        if (!guard) return;
+
         // Mark all involved certificates as rejected, so we don't ask the user again.
         foreach (const QSslError &error, errors) {
             if (!_rejectedCertificates.contains(error.certificate())) {
