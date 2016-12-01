@@ -197,7 +197,7 @@ protected:
 
 public:
     PropagateUploadFileCommon(OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item), _finished(false), _deleteExisting(false) {}
+        : PropagateItemJob(propagator, item, JobPriority::NormalPriority), _finished(false), _deleteExisting(false) {}
 
     /**
      * Whether an existing entity with the same name may be deleted before
@@ -210,6 +210,9 @@ public:
     void start() Q_DECL_OVERRIDE;
 
     bool isLikelyFinishedQuickly() Q_DECL_OVERRIDE { return _item->_size < 100*1024; }
+
+    // this item is prioritized normaly, so get priority by its size
+    quint64 getJobPredicateValue() const Q_DECL_OVERRIDE { return _item->_size; }
 
 private slots:
     void slotComputeContentChecksum();

@@ -51,7 +51,7 @@ class PropagateRemoteMove : public PropagateItemJob {
     QPointer<MoveJob> _job;
 public:
     PropagateRemoteMove (OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item) {}
+        : PropagateItemJob(propagator, item, JobPriority::InsertionOrderHighPriority) {}
     void start() Q_DECL_OVERRIDE;
     void abort() Q_DECL_OVERRIDE;
     JobParallelism parallelism() Q_DECL_OVERRIDE { return OCC::PropagatorJob::WaitForFinishedInParentDirectory; }

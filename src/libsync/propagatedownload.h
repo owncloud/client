@@ -110,12 +110,15 @@ class PropagateDownloadFile : public PropagateItemJob {
     Q_OBJECT
 public:
     PropagateDownloadFile(OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item), _resumeStart(0), _downloadProgress(0), _deleteExisting(false) {}
+        : PropagateItemJob(propagator, item, JobPriority::NormalPriority), _resumeStart(0), _downloadProgress(0), _deleteExisting(false) {}
     void start() Q_DECL_OVERRIDE;
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
     // We think it might finish quickly because it is a small file.
     bool isLikelyFinishedQuickly() Q_DECL_OVERRIDE { return _item->_size < 100*1024; }
+
+    // this item is prioritized normaly, so get priority by its size
+    quint64 getJobPredicateValue() const Q_DECL_OVERRIDE { return _item->_size; }
 
     /**
      * Whether an existing folder with the same name may be deleted before
