@@ -60,7 +60,24 @@ protected:
     OwncloudPropagator *_propagator;
 
 public:
-    explicit PropagatorJob(OwncloudPropagator* propagator) : _propagator(propagator), _state(NotYetStarted) {}
+    enum JobPriority {
+
+        /** Jobs can prioritized, so that they will be executed first, according to insertion order */
+        InsertionOrderHighPriority,
+
+        /** Jobs are normaly prioritized, so that they will be executed according to some predicate represented by integer*/
+        NormalPriority,\
+
+        /** To contruct predicate for this Priority, all subitem has to be classified and contenerised  */
+        ContainerItemsPriority,
+    };
+
+    explicit PropagatorJob(OwncloudPropagator* propagator, JobPriority priority) : _propagator(propagator), _priority(priority), _state(NotYetStarted) {}
+
+    /*
+    * Keeps track of the priority of the object
+    */
+    JobPriority _priority;
 
     enum JobState {
         NotYetStarted,
@@ -99,6 +116,23 @@ public:
      * in use by running jobs for things like a download-in-progress.
      */
     virtual qint64 committedDiskSpace() const { return 0; }
+
+    /**
+     * Returns job priority predicate value
+     * 0 if InsertionOrderHighPriority
+     * Priority if other type of priority
+     */
+    virtual quint64 getJobPredicateValue() const { return 0; }
+
+    /**
+     * Updates job priorities for the given job
+     */
+    virtual void updateJobPredicateValues() {}
+
+    /**
+     * Enforces job priority
+     */
+    virtual void setHighJobPriority() { _priority = JobPriority::InsertionOrderHighPriority; }
 
 public slots:
     virtual void abort() {}
@@ -158,8 +192,8 @@ private:
     QScopedPointer<PropagateItemJob> _restoreJob;
 
 public:
-    PropagateItemJob(OwncloudPropagator* propagator, const SyncFileItemPtr &item)
-        : PropagatorJob(propagator), _item(item) {}
+    PropagateItemJob(OwncloudPropagator* propagator, const SyncFileItemPtr &item, JobPriority priority)
+        : PropagatorJob(propagator, priority), _item(item) {}
 
     bool scheduleNextJob() Q_DECL_OVERRIDE {
         if (_state != NotYetStarted) {
@@ -187,27 +221,41 @@ public:
     // e.g: create the directory
     QScopedPointer<PropagateItemJob>_firstJob;
 
-    // all the sub files or sub directories.
-    QVector<PropagatorJob *> _subJobs;
+    // all the sub files or sub directories. This map has to be updated with _containerJobs
+    // QMap is ordered by the key value, or in case of equal keys (e.g 0) by insertion order.
+    QMap<quint64, PropagatorJob *> _subJobs;
+
+    QVector<PropagatorJob *> _containerJobs;
 
     SyncFileItemPtr _item;
 
     int _jobsFinished; // number of jobs that have completed
+    int _totalJobs; // number of jobs that will be defined to be synced
     int _runningNow; // number of subJobs running right now
     SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
-    int _firstUnfinishedSubJob;
+
+    /*
+     * Keeps track of the all the sub files or sub directories priority.
+    */
+    qint64 _subJobsPriority;
 
     explicit PropagateDirectory(OwncloudPropagator *propagator, const SyncFileItemPtr &item = SyncFileItemPtr(new SyncFileItem))
-        : PropagatorJob(propagator)
-        , _firstJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _firstUnfinishedSubJob(0)
+        : PropagatorJob(propagator, JobPriority::ContainerItemsPriority)
+        , _firstJob(0), _item(item),  _jobsFinished(0),  _totalJobs(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _subJobsPriority(0)
     { }
 
     virtual ~PropagateDirectory() {
         qDeleteAll(_subJobs);
+        qDeleteAll(_containerJobs);
     }
 
     void append(PropagatorJob *subJob) {
-        _subJobs.append(subJob);
+        _subJobsPriority += subJob->getJobPredicateValue();
+        if(subJob->_priority == JobPriority::ContainerItemsPriority){
+            _containerJobs.append(subJob);
+        } else {
+            _subJobs.insertMulti(subJob->getJobPredicateValue(), subJob);
+        }
     }
 
     virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
@@ -227,6 +275,12 @@ public:
 
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
+    // this item is prioritized normaly, so get priority by its sub items total size
+    quint64 getJobPredicateValue() const  Q_DECL_OVERRIDE { return _subJobsPriority; }
+
+    // This uses recursion to perform Depth-First Traversal of the directories with changes trees
+    // If the given (this) directory contains _containerJobs, it will call updateJob on that child dir job, otherwise does nothing
+    void updateJobPredicateValues();
 private slots:
     bool possiblyRunNextJob(PropagatorJob *next) {
         if (next->_state == NotYetStarted) {
@@ -252,7 +306,7 @@ class PropagateIgnoreJob : public PropagateItemJob {
     Q_OBJECT
 public:
     PropagateIgnoreJob(OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item) {}
+        : PropagateItemJob(propagator, item, JobPriority::InsertionOrderHighPriority) {}
     void start() Q_DECL_OVERRIDE {
         SyncFileItem::Status status = _item->_status;
         done(status == SyncFileItem::NoStatus ? SyncFileItem::FileIgnored : status, _item->_errorString);

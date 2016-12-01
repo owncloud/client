@@ -29,7 +29,7 @@ class PropagateRemoteMkdir : public PropagateItemJob {
     friend class PropagateDirectory; // So it can access the _item;
 public:
     PropagateRemoteMkdir (OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item), _deleteExisting(false) {}
+        : PropagateItemJob(propagator, item, JobPriority::InsertionOrderHighPriority), _deleteExisting(false) {}
     void start() Q_DECL_OVERRIDE;
     void abort() Q_DECL_OVERRIDE;
 
