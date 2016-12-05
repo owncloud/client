@@ -62,13 +62,13 @@ protected:
 public:
     enum JobPriority {
 
-        /** Jobs can prioritized, so that they will be executed first, according to insertion order */
+        /** Jobs can be prioritized, so that they will be executed first, according to insertion order */
         InsertionOrderHighPriority,
 
-        /** Jobs are normaly prioritized, so that they will be executed according to some predicate represented by integer*/
+        /** Jobs are normally prioritized, so that they will be executed according to some predicate represented by integer*/
         NormalPriority,\
 
-        /** To contruct predicate for this Priority, all subitem has to be classified and contenerised  */
+        /** To construct predicate for this Priority, all subitems have to be classified and containerised */
         ContainerItemsPriority,
     };
 
@@ -275,7 +275,7 @@ public:
 
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
 
-    // this item is prioritized normaly, so get priority by its sub items total size
+    // this item is prioritized normally, so get priority by its sub items total size
     quint64 getJobPredicateValue() const  Q_DECL_OVERRIDE { return _subJobsPriority; }
 
     // This uses recursion to perform Depth-First Traversal of the directories with changes trees

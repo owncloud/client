@@ -611,7 +611,7 @@ bool PropagateDirectory::scheduleNextJob()
     if (_state == NotYetStarted) {
         _state = Running;
 
-        // at the begining of the Directory Job, update expected number of Jobs to be synced
+        // at the beginning of the Directory Job, update expected number of Jobs to be synced
         _totalJobs = _subJobs.count();
         if (_firstJob)
             _totalJobs++;
