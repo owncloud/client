@@ -145,7 +145,7 @@ void PropagateUploadFileV1::startNextChunk()
             parallelChunkUpload = false;
         }
 
-	if (_propagator->account()->chunkingV1ParallelUploadDisabled()) {
+	if (_propagator->account()->capabilities().chunkingV1ParallelUploadDisabled()) {
 	  // Server may also disable parallel chunked upload for any higher version
 	  parallelChunkUpload = false;
 	}
