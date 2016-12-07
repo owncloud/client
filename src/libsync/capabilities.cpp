@@ -116,5 +116,10 @@ bool Capabilities::chunkingNg() const
     return _capabilities["dav"].toMap()["chunking"].toByteArray() >= "1.0";
 }
 
+bool Capabilities::chunkingV1ParallelUploadDisabled() const
+{
+  return _capabilities["dav"].toMap()["chunkingV1ParallelUploadDisabled"].toBool();
+}
+
 
 }

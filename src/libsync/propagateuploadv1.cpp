@@ -144,6 +144,11 @@ void PropagateUploadFileV1::startNextChunk()
             // internal sever errors (#2743, #2938)
             parallelChunkUpload = false;
         }
+
+	if (_propagator->account()->chunkingV1ParallelUploadDisabled()) {
+	  // Server may also disable parallel chunked upload for any higher version
+	  parallelChunkUpload = false;
+	}
     }
 
     if (_currentChunk + _startChunk >= _chunkCount - 1) {
