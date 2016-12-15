@@ -117,8 +117,8 @@ public:
     // We think it might finish quickly because it is a small file.
     bool isLikelyFinishedQuickly() Q_DECL_OVERRIDE { return _item->_size < 100*1024; }
 
-    // this item is prioritized normaly, so get priority by its size
-    quint64 getJobPredicateValue() const Q_DECL_OVERRIDE { return _item->_size; }
+    // this item is prioritized normaly, so get priority by its modification time
+    quint64 getJobPriorityAttributeValue() const Q_DECL_OVERRIDE { return _item->_modtime; }
 
     /**
      * Whether an existing folder with the same name may be deleted before

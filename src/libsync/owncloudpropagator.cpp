@@ -401,11 +401,15 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
     }
 
     foreach(PropagatorJob* it, directoriesToRemove) {
-        it->setHighJobPriority();
+        // ensure that these items will go last in the root folder and append
+        it->setLastOutJobPriority();
         _rootJob->append(it);
     }
 
-    _rootJob->updateJobPredicateValues();
+    // at this point, all priority values for items in the folders should be set
+    // update priority attribute for folders containing these items
+    // this will move _containerJobs to _subJobs updating their evaluation attributes
+    _rootJob->updateJobPriorityAttributeValues();
 
     connect(_rootJob.data(), SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
             this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
@@ -577,13 +581,36 @@ OwncloudPropagator::DiskSpaceResult OwncloudPropagator::diskSpaceCheck() const
 
 // ================================================================================
 
-void PropagateDirectory::updateJobPredicateValues()
+void PropagateDirectory::insertItemByPriority(PropagatorJob *subJob){
+    // if job is prioritised, take priority into account, otherwise use modification time
+    int priority = subJob->getJobPriorityAttributeValue();
+
+    if(subJob->_priority == JobPriority::NormalPriority){
+        // jobs are prioritised by timestamp, thus higher timestamp, higher the priority
+        // QMultiMap is sorted in increasing order, so substract from max possible quint64
+        int modificationTimestamp = subJob->getJobPriorityAttributeValue();
+        priority = std::numeric_limits<quint64>::max() - modificationTimestamp;
+    }
+
+    _subJobs.insertMulti(priority, subJob);
+}
+
+void PropagateDirectory::updateJobPriorityAttributeValues()
 {
+    // This uses recursion to perform Depth-First Traversal of the directories with changes trees
+    // If the given (this) directory contains _containerJobs, it will call updateJob on that child dir job, otherwise does nothing
+
+    //this will get the _container jobs within this parent directory and iterate over them
     QMutableVectorIterator<PropagatorJob *> containerJobsIterator(_containerJobs);
     while (containerJobsIterator.hasNext()) {
-        PropagatorJob * job = containerJobsIterator.next();
-        job->updateJobPredicateValues();
-         _subJobs.insertMulti(job->getJobPredicateValue(), job);
+        //take next Container Job
+        PropagatorJob * subJob = containerJobsIterator.next();
+
+        //ascend to its child folders to update their priorities
+        subJob->updateJobPriorityAttributeValues();
+
+        //at this point, all child folders are updated, add job to _subJobs and remote job from _containerJobs
+         insertItemByPriority(subJob);
          containerJobsIterator.remove();
     }
 }

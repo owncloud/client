@@ -41,7 +41,7 @@ class PropagateLocalRemove : public PropagateItemJob {
     Q_OBJECT
 public:
     PropagateLocalRemove (OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item, JobPriority::InsertionOrderHighPriority) {}
+        : PropagateItemJob(propagator, item, JobPriority::FirstOutPriority) {}
     void start() Q_DECL_OVERRIDE;
 private:
     bool removeRecursively(const QString &path);
@@ -56,7 +56,7 @@ class PropagateLocalMkdir : public PropagateItemJob {
     Q_OBJECT
 public:
     PropagateLocalMkdir (OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item, JobPriority::InsertionOrderHighPriority), _deleteExistingFile(false) {}
+        : PropagateItemJob(propagator, item, JobPriority::FirstOutPriority), _deleteExistingFile(false) {}
     void start() Q_DECL_OVERRIDE;
 
     /**
@@ -79,7 +79,7 @@ class PropagateLocalRename : public PropagateItemJob {
     Q_OBJECT
 public:
     PropagateLocalRename (OwncloudPropagator* propagator,const SyncFileItemPtr& item)
-        : PropagateItemJob(propagator, item, JobPriority::InsertionOrderHighPriority) {}
+        : PropagateItemJob(propagator, item, JobPriority::FirstOutPriority) {}
     void start() Q_DECL_OVERRIDE;
     JobParallelism parallelism() Q_DECL_OVERRIDE { return WaitForFinishedInParentDirectory; }
 };
