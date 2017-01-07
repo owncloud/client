@@ -313,6 +313,7 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
     directories.push(qMakePair(QString(), _rootJob.data()));
     QVector<PropagatorJob*> directoriesToRemove;
     QString removedDirectory;
+    bool enableBundledRequests = account()->capabilities().bundling();
     foreach(const SyncFileItemPtr &item, items) {
 
         if (!removedDirectory.isEmpty() && item->_file.startsWith(removedDirectory)) {
@@ -389,13 +390,34 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
                 currentDirJob->append(dir);
             }
             directories.push(qMakePair(item->destination() + "/" , dir));
-        } else if (PropagateItemJob* current = createJob(item)) {
-            if (item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE) {
-                // will delete directories, so defer execution
-                directoriesToRemove.prepend(current);
-                removedDirectory = item->_file + "/";
-            } else {
-                directories.top().second->append(current);
+        } else {
+            // Ensure that only new files are inserted into PropagateFiles
+            if (enableBundledRequests && item->_instruction == CSYNC_INSTRUCTION_NEW) {
+                // Get PropagateFiles container job
+                PropagateFiles* filesJob = 0;
+                if (directories.top().second->_filesJob.isNull()) {
+                    filesJob = new PropagateFiles(this);
+                    directories.top().second->_filesJob.reset(filesJob);
+                } else {
+                    filesJob = qobject_cast<PropagateFiles*>(directories.top().second->_filesJob.data());
+                }
+
+                // Allow PropagateFiles to create PropagateItemJob from under chunk size
+                // items (since these are performance critical and can be handled differently)
+                if (item->_size <= chunkSize()
+                        && item->_direction == SyncFileItem::Up ){
+                    filesJob->append(item);
+                } else if (PropagateItemJob* current = createJob(item)){
+                    filesJob->append(current);
+                }
+            } else if (PropagateItemJob* current = createJob(item)) {
+                if (item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE) {
+                    // will delete directories, so defer execution
+                    directoriesToRemove.prepend(current);
+                    removedDirectory = item->_file + "/";
+                } else {
+                    directories.top().second->append(current);
+                }
             }
         }
     }
@@ -459,6 +481,20 @@ quint64 OwncloudPropagator::chunkSize()
     return chunkSize;
 }
 
+quint64 OwncloudPropagator::smallFileSize()
+{
+    // Small filesize item is the file which transfer time
+    // typicaly will be lower than its bookkeping time.
+    static uint smallFileSize;
+    if (!smallFileSize) {
+        smallFileSize = qgetenv("OWNCLOUD_SMALLFILE_SIZE").toUInt();
+        if (smallFileSize == 0) {
+            ConfigFile cfg;
+            smallFileSize = cfg.smallFileSize();
+        }
+    }
+    return smallFileSize;
+}
 
 bool OwncloudPropagator::localFileNameClash( const QString& relFile )
 {
@@ -591,6 +627,13 @@ PropagatorJob::JobParallelism PropagateDirectory::parallelism()
     return FullParallelism;
 }
 
+void PropagateDirectory::append(PropagatorJob *subJob) {
+    if (!subJob->isJobsContainer()){
+        // This is standard job, so increase global counter
+        _propagator->_standardJobsCount++;
+    }
+    _subJobs.append(subJob);
+}
 
 bool PropagateDirectory::scheduleNextJob()
 {
@@ -601,15 +644,25 @@ bool PropagateDirectory::scheduleNextJob()
     if (_state == NotYetStarted) {
         _state = Running;
 
-        // At the begining of the Directory Job, update expected number of Jobs to be synced
-        _totalJobs = _subJobs.count();
-        if (_firstJob)
-            _totalJobs++;
+        if(_filesJob){
+            // PropagateFiles is not a standard job, since it is abstract object
+            PropagateFiles* files = qobject_cast<PropagateFiles*>(_filesJob.take());
+            append(files);
+        }
 
         if (!_firstJob && _subJobs.isEmpty()) {
             finalize();
             return true;
         }
+
+        // At the begining of the Directory Job, update expected number of Jobs to be synced
+        _totalJobs = _subJobs.count();
+        if (_firstJob) {
+            // _firstJob is a standard job, since it does interact with server
+            _propagator->_standardJobsCount++;
+            _totalJobs++;
+        }
+
     }
 
     if (_firstJob && _firstJob->_state == NotYetStarted) {
@@ -626,14 +679,20 @@ bool PropagateDirectory::scheduleNextJob()
 
     while (subJobsIterator.hasNext()) {
         subJobsIterator.next();
-        // Get the state of the state of the sub job pointed by call next()
-        // Function value() will directly access the item through hash in the QList at that subjob
+        // Get the state of the sub job pointed by call next()
         if (subJobsIterator.value()->_state == Finished) {
-            // If this items is finish, remove it from the _subJobs list as it is not needed anymore
+            // If this items is finished, remove it from the _subJobs as it is not needed anymore
             // Note that in this case remove() from QVector will just perform memmove of pointer array items.
-            PropagatorJob * jobPointer = subJobsIterator.value();
+            PropagatorJob * job = subJobsIterator.value();
             subJobsIterator.remove();
-            delete jobPointer;
+
+            // Delete only containers now, we need items in slotSubJobFinished
+            // Items will be deleted when one will call delete on parent container later
+            if (job->isJobsContainer()){
+                delete job;
+            } else {
+                _finishedSubJobs.append(job);
+            }
             continue;
         }
 
@@ -669,12 +728,20 @@ void PropagateDirectory::slotSubJobFinished(SyncFileItem::Status status)
     } else if (status == SyncFileItem::NormalError || status == SyncFileItem::SoftError) {
         _hasError = status;
     }
+
+    PropagatorJob *job = qobject_cast<PropagatorJob *>(sender());
+    if (job && !job->isJobsContainer()){
+        // The finished job was an item, decrease global counter as it is finished
+        _propagator->_standardJobsCount--;
+    }
+
     _runningNow--;
     _jobsFinished++;
 
     // We finished processing all the jobs
     // check if we finished
     if (_jobsFinished >= _totalJobs) {
+        Q_ASSERT(_propagator->_standardJobsCount>=0);
         Q_ASSERT(!_runningNow); // how can we be finished if there are still jobs running now
         finalize();
     } else {
