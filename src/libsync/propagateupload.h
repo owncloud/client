@@ -1,5 +1,6 @@
 /*
  * Copyright (C) by Olivier Goffart <ogoffart@owncloud.com>
+ * Copyright (C) by Piotr Mrowczynski <piotr@owncloud.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,7 +210,7 @@ public:
 
     void start() Q_DECL_OVERRIDE;
 
-    bool isLikelyFinishedQuickly() Q_DECL_OVERRIDE { return _item->_size < 100*1024; }
+    bool isLikelyFinishedQuickly() Q_DECL_OVERRIDE { return false; }
 
 private slots:
     void slotComputeContentChecksum();
@@ -321,6 +322,99 @@ private slots:
     void slotUploadProgress(qint64,qint64);
 };
 
+/**
+ * @brief The PropagateUploadBundle class is a container class for upload jobs under chunking size.
+ *
+ * It will also ensure proper bandwidth utilization vs bookkeeping balance, and that in case no other items then under chunk uploads are available,
+ * it will parallelise itself into 3 flows.
+ *
+ *
+ * @ingroup libsync
+ *
+ * State Machine:
+ *
+ *  _________________________________________________ _________________________________________
+ * |                                                 |                                         |
+ * |                     (Are there any STANDARD jobs to run in whole sync?)                   |
+ * |                   Yes |                                             | No                  |
+ * |  (Is there any DB job running in whole sync?)   (Is there any DB job within this class?)  |
+ * |    Yes |                       | No                          No |              | Yes      |
+ * |        |                       |                                |              |          |
+ * |<-[Schedule STANDARD job]       |                                |      [Schedule DB job]->
+ * |                                |                                |
+ * |                                |                                |
+ * |       (Is there any DB job within this class?)                  |
+ * ^          Yes |                       | No                       |
+ * |              |                       |                          |
+ * |<-[Schedule DB job]                   |                          |
+ * |                                      |                          |
+ * |                                      |                          |
+ * ^         (Are there at least 2 STANDARD jobs                     |
+ * |          already running within this class?)                    |
+ * |          No  |                      | Yes                       |
+ * |              |                      |                           |
+ *  <-[Schedule STANDARD job]             ->[Try in next container]<-
+ *
+ */
+class PropagateNormalUpload : public PropagatorJob {
+    Q_OBJECT
+public:
+    // all the sub files which are equal or smaller _propagator->smallFileSize()
+    QVector<PropagatorJob *> _dbJobs;
+
+    // all the sub files which are over _propagator->smallFileSize()
+    QVector<PropagatorJob *> _standardJobs;
+
+    // all the sub files which were deleted inside this job
+    QVector<PropagatorJob *> _finishedSubJobs;
+
+    int _jobsFinished; // number of jobs that have completed
+    int _runningNow; // number of subJobs running right now
+    SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
+    int _totalJobs;
+
+    explicit PropagateNormalUpload(OwncloudPropagator *propagator)
+        : PropagatorJob(propagator)
+        , _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0) { }
+
+    virtual ~PropagateNormalUpload() {
+        qDeleteAll(_dbJobs);
+        qDeleteAll(_standardJobs);
+        qDeleteAll(_finishedSubJobs);
+    }
+
+    void append(const SyncFileItemPtr &item);
+    bool scheduleNextJobRoutine(QVector<PropagatorJob *> &subJobs);
+    virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
+
+    virtual void abort() Q_DECL_OVERRIDE {
+        foreach (PropagatorJob *n, _standardJobs)
+            n->abort();
+        foreach (PropagatorJob *s, _dbJobs)
+            s->abort();
+    }
+
+    void finalize();
+
+    qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
+
+    bool isJobsContainer() const Q_DECL_OVERRIDE { return true; }
+
+private slots:
+    bool possiblyRunNextJob(PropagatorJob *next) {
+        if (next->_state == NotYetStarted) {
+            connect(next, SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotSubJobFinished(SyncFileItem::Status)), Qt::QueuedConnection);
+            connect(next, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
+                    this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+            connect(next, SIGNAL(progress(const SyncFileItem &,quint64)), this, SIGNAL(progress(const SyncFileItem &,quint64)));
+            connect(next, SIGNAL(ready()), this, SIGNAL(ready()));
+            _runningNow++;
+        }
+        return next->scheduleNextJob();
+    }
+
+    void slotSubJobFinished(SyncFileItem::Status status);
+};
 
 }
 

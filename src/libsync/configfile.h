@@ -113,6 +113,7 @@ public:
 
     int timeout() const;
     quint64 chunkSize() const;
+    quint64 smallFileSize() const;
 
     void saveGeometry(QWidget *w);
     void restoreGeometry(QWidget *w);

@@ -52,6 +52,7 @@ set(libsync_SRCS
     propagateupload.cpp
     propagateuploadv1.cpp
     propagateuploadng.cpp
+    propagateuploadbundle.cpp
     propagateremotedelete.cpp
     propagateremotemove.cpp
     propagateremotemkdir.cpp

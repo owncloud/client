@@ -100,6 +100,12 @@ public:
      */
     virtual qint64 committedDiskSpace() const { return 0; }
 
+    /**
+     * As  in the description, this class can be job or job container
+     * This flag will allow to detect it
+     */
+    virtual bool isJobsContainer() const { return false; }
+
 public slots:
     virtual void abort() {}
 
@@ -185,10 +191,17 @@ class OWNCLOUDSYNC_EXPORT PropagateDirectory : public PropagatorJob {
     Q_OBJECT
 public:
     // e.g: create the directory
-    QScopedPointer<PropagateItemJob>_firstJob;
+    QScopedPointer<PropagateItemJob> _firstJob;
+
+    // e.g: create class which will handle bundled uploads and bandwidth utilization vs bookkeeping balance
+    QScopedPointer<PropagatorJob> _bundledUploadJob;
 
     // all the sub files or sub directories.
     QVector<PropagatorJob *> _subJobs;
+
+    // all the finished sub PropagatorJob items which are not PropagateItemJob.
+    // one might need PropagatorJobs (PropagateDirectory, PropagateNormalUpload)
+    QVector<PropagatorJob *> _finishedSubJobs;
 
     SyncFileItemPtr _item;
 
@@ -199,16 +212,16 @@ public:
 
     explicit PropagateDirectory(OwncloudPropagator *propagator, const SyncFileItemPtr &item = SyncFileItemPtr(new SyncFileItem))
         : PropagatorJob(propagator)
-        , _firstJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0)
+        , _firstJob(0), _bundledUploadJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0)
+
     { }
 
     virtual ~PropagateDirectory() {
         qDeleteAll(_subJobs);
+        qDeleteAll(_finishedSubJobs);
     }
 
-    void append(PropagatorJob *subJob) {
-        _subJobs.append(subJob);
-    }
+    void append(PropagatorJob *subJob);
 
     virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
     virtual JobParallelism parallelism() Q_DECL_OVERRIDE;
@@ -226,6 +239,8 @@ public:
     void finalize();
 
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
+
+    bool isJobsContainer() const Q_DECL_OVERRIDE { return true; }
 
 private slots:
     bool possiblyRunNextJob(PropagatorJob *next) {
@@ -281,6 +296,9 @@ public:
             , _journal(progressDb)
             , _finishedEmited(false)
             , _bandwidthManager(this)
+            , _activeDBJobs(0)
+            , _dbJobsCount(0)
+            , _standardJobsCount(0)
             , _anotherSyncNeeded(false)
             , _account(account)
     { }
@@ -302,6 +320,9 @@ public:
         Jobs can be several time on the list (example, when several chunks are uploaded in parallel)
      */
     QList<PropagateItemJob*> _activeJobList;
+    qint8 _activeDBJobs; // number of active DB jobs running
+    qint64 _dbJobsCount; // number of all jobs in which db operations are major factor
+    qint64 _standardJobsCount; // number of all jobs which are rare or in which db operations are not a major factor
 
     /** We detected that another sync is required after this one */
     bool _anotherSyncNeeded;
@@ -327,6 +348,7 @@ public:
 
     /** returns the size of chunks in bytes  */
     static quint64 chunkSize();
+    static quint64 smallFileSize();
 
     AccountPtr account() const;
 

@@ -40,6 +40,7 @@ public:
     bool sharePublicLinkEnforceExpireDate() const;
     int  sharePublicLinkExpireDateDays() const;
     bool shareResharing() const;
+    bool bundling() const;
     bool chunkingNg() const;
 
     /// disable parallel upload in chunking

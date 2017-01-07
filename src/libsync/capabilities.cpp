@@ -108,6 +108,15 @@ QByteArray Capabilities::uploadChecksumType() const
     return QByteArray();
 }
 
+bool Capabilities::bundling() const
+{
+    static const auto bundling = qgetenv("OWNCLOUD_BUNDLING");
+    if (bundling == "0") return false;
+    if (bundling == "1") return true;
+
+    return _capabilities["dav"].toMap()["bundling"].toByteArray() >= "1.0";
+}
+
 bool Capabilities::chunkingNg() const
 {
     static const auto chunkng = qgetenv("OWNCLOUD_CHUNKING_NG");
