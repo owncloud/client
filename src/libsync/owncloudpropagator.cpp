@@ -479,8 +479,8 @@ quint64 OwncloudPropagator::chunkSize()
 
 quint64 OwncloudPropagator::smallFileSize()
 {
-    // Small filesize item is the file which transfer time
-    // typicaly will be lower than its bookkeping time.
+    // A small filesize item is a file whose transfer time
+    // typically will be lower than its bookkeeping time.
     static uint smallFileSize;
     if (!smallFileSize) {
         smallFileSize = qgetenv("OWNCLOUD_SMALLFILE_SIZE").toUInt();
@@ -625,7 +625,7 @@ PropagatorJob::JobParallelism PropagateDirectory::parallelism()
 
 void PropagateDirectory::append(PropagatorJob *subJob) {
     if (!subJob->isJobsContainer()){
-        // This is standard job, so increase global counter
+        // This is a standard job, so increase global counter
         _propagator->_standardJobsCount++;
     }
     _subJobs.append(subJob);
@@ -641,7 +641,7 @@ bool PropagateDirectory::scheduleNextJob()
         _state = Running;
 
         if(_bundledUploadJob){
-            // PropagateNormalUpload is not a standard job, since it is abstract object
+            // PropagateNormalUpload is not a standard job, since it is an abstract object
             PropagateNormalUpload* bundle = qobject_cast<PropagateNormalUpload*>(_bundledUploadJob.take());
             append(bundle);
         }
@@ -651,10 +651,10 @@ bool PropagateDirectory::scheduleNextJob()
             return true;
         }
 
-        // At the begining of the Directory Job, update expected number of Jobs to be synced
+        // At the beginning of the Directory Job, update the expected number of Jobs to be synced
         _totalJobs = _subJobs.count();
         if (_firstJob) {
-            // _firstJob is a standard job, since it does interact with server
+            // _firstJob is a standard job, since it does interact with the server
             _propagator->_standardJobsCount++;
             _totalJobs++;
         }
@@ -675,15 +675,15 @@ bool PropagateDirectory::scheduleNextJob()
 
     while (subJobsIterator.hasNext()) {
         subJobsIterator.next();
-        // Get the state of the sub job pointed by call next()
+        // Get the state of the sub job pointed at by call next()
         if (subJobsIterator.value()->_state == Finished) {
-            // If this items is finished, remove it from the _subJobs as it is not needed anymore
+            // If this item is finished, remove it from _subJobs as it is not needed anymore
             // Note that in this case remove() from QVector will just perform memmove of pointer array items.
             PropagatorJob * job = subJobsIterator.value();
             subJobsIterator.remove();
 
             // Delete only containers now, we need items in slotSubJobFinished
-            // Items will be deleted when one will call delete on parent container later
+            // Items will be deleted later when one of them calls delete on the parent container
             if (job->isJobsContainer()){
                 delete job;
             } else {

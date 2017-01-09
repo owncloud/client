@@ -359,7 +359,7 @@ private slots:
 class PropagateNormalUpload : public PropagatorJob {
     Q_OBJECT
 public:
-    // all the sub files which are equal or smaller _propagator->smallFileSize()
+    // all the sub files which are equal to or smaller than _propagator->smallFileSize()
     QVector<PropagatorJob *> _dbJobs;
 
     // all the sub files which are over _propagator->smallFileSize()

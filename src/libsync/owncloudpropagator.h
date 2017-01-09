@@ -101,8 +101,8 @@ public:
     virtual qint64 committedDiskSpace() const { return 0; }
 
     /**
-     * As  in the description, this class can be job or job container
-     * This flag will allow to detect it
+     * As in the description, this class can be a job or job container.
+     * This flag will allow it to be detected.
      */
     virtual bool isJobsContainer() const { return false; }
 
@@ -321,7 +321,7 @@ public:
      */
     QList<PropagateItemJob*> _activeJobList;
     qint8 _activeDBJobs; // number of active DB jobs running
-    qint64 _dbJobsCount; // number of all jobs in which db operations are major factor
+    qint64 _dbJobsCount; // number of all jobs in which db operations are a major factor
     qint64 _standardJobsCount; // number of all jobs which are rare or in which db operations are not a major factor
 
     /** We detected that another sync is required after this one */
