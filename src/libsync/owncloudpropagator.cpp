@@ -391,21 +391,25 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
             }
             directories.push(qMakePair(item->destination() + "/" , dir));
         } else {
-            // Ensure that only files under or equal to chunk size are being inserted to Normal Upload
-            if (enableBundledRequests && item->_size <= chunkSize()
-                    && item->_instruction == CSYNC_INSTRUCTION_NEW
-                    && item->_direction == SyncFileItem::Up ) {
-                // Get PropagateNormalUpload container job
-                PropagateNormalUpload* bundleJob = 0;
-                if (directories.top().second->_bundledUploadJob.isNull()) {
-                    bundleJob = new PropagateNormalUpload(this);
-                    directories.top().second->_bundledUploadJob.reset(bundleJob);
+            // Ensure that only new files are inserted into PropagateFiles
+            if (enableBundledRequests && item->_instruction == CSYNC_INSTRUCTION_NEW) {
+                // Get PropagateFiles container job
+                PropagateFiles* filesJob = 0;
+                if (directories.top().second->_filesJob.isNull()) {
+                    filesJob = new PropagateFiles(this);
+                    directories.top().second->_filesJob.reset(filesJob);
                 } else {
-                    bundleJob = qobject_cast<PropagateNormalUpload*>(directories.top().second->_bundledUploadJob.data());
+                    filesJob = qobject_cast<PropagateFiles*>(directories.top().second->_filesJob.data());
                 }
 
-                // Append Upload job
-                bundleJob->append(item);
+                // Allow PropagateFiles to create PropagateItemJob from under chunk size
+                // items (since these are performance critical and can be handled differently)
+                if (item->_size <= chunkSize()
+                        && item->_direction == SyncFileItem::Up ){
+                    filesJob->append(item);
+                } else if (PropagateItemJob* current = createJob(item)){
+                    filesJob->append(current);
+                }
             } else if (PropagateItemJob* current = createJob(item)) {
                 if (item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE) {
                     // will delete directories, so defer execution
@@ -640,10 +644,10 @@ bool PropagateDirectory::scheduleNextJob()
     if (_state == NotYetStarted) {
         _state = Running;
 
-        if(_bundledUploadJob){
-            // PropagateNormalUpload is not a standard job, since it is an abstract object
-            PropagateNormalUpload* bundle = qobject_cast<PropagateNormalUpload*>(_bundledUploadJob.take());
-            append(bundle);
+        if(_filesJob){
+            // PropagateFiles is not a standard job, since it is an abstract object
+            PropagateFiles* files = qobject_cast<PropagateFiles*>(_filesJob.take());
+            append(files);
         }
 
         if (!_firstJob && _subJobs.isEmpty()) {
@@ -654,7 +658,7 @@ bool PropagateDirectory::scheduleNextJob()
         // At the beginning of the Directory Job, update the expected number of Jobs to be synced
         _totalJobs = _subJobs.count();
         if (_firstJob) {
-            // _firstJob is a standard job, since it does interact with the server
+            // _firstJob is a standard job, since it does interact with server
             _propagator->_standardJobsCount++;
             _totalJobs++;
         }

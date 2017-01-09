@@ -194,13 +194,13 @@ public:
     QScopedPointer<PropagateItemJob> _firstJob;
 
     // e.g: create class which will handle bundled uploads and bandwidth utilization vs bookkeeping balance
-    QScopedPointer<PropagatorJob> _bundledUploadJob;
+    QScopedPointer<PropagatorJob> _filesJob;
 
     // all the sub files or sub directories.
     QVector<PropagatorJob *> _subJobs;
 
     // all the finished sub PropagatorJob items which are not PropagateItemJob.
-    // one might need PropagatorJobs (PropagateDirectory, PropagateNormalUpload)
+    // one might need PropagatorJobs (PropagateDirectory, PropagateFiles)
     QVector<PropagatorJob *> _finishedSubJobs;
 
     SyncFileItemPtr _item;
@@ -212,7 +212,7 @@ public:
 
     explicit PropagateDirectory(OwncloudPropagator *propagator, const SyncFileItemPtr &item = SyncFileItemPtr(new SyncFileItem))
         : PropagatorJob(propagator)
-        , _firstJob(0), _bundledUploadJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0)
+        , _firstJob(0), _filesJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0)
 
     { }
 

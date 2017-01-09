@@ -323,7 +323,7 @@ private slots:
 };
 
 /**
- * @brief The PropagateUploadBundle class is a container class for upload jobs under chunking size.
+ * @brief The PropagateFiles class is a container class for upload jobs under chunking size.
  *
  * It will also ensure proper bandwidth utilization vs bookkeeping balance, and that in case no other items then under chunk uploads are available,
  * it will parallelise itself into 3 flows.
@@ -356,7 +356,7 @@ private slots:
  *  <-[Schedule STANDARD job]             ->[Try in next container]<-
  *
  */
-class PropagateNormalUpload : public PropagatorJob {
+class PropagateFiles : public PropagatorJob {
     Q_OBJECT
 public:
     // all the sub files which are equal to or smaller than _propagator->smallFileSize()
@@ -373,17 +373,18 @@ public:
     SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
     int _totalJobs;
 
-    explicit PropagateNormalUpload(OwncloudPropagator *propagator)
+    explicit PropagateFiles(OwncloudPropagator *propagator)
         : PropagatorJob(propagator)
         , _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0) { }
 
-    virtual ~PropagateNormalUpload() {
+    virtual ~PropagateFiles() {
         qDeleteAll(_dbJobs);
         qDeleteAll(_standardJobs);
         qDeleteAll(_finishedSubJobs);
     }
 
     void append(const SyncFileItemPtr &item);
+    void append(PropagateItemJob* subJob);
     bool scheduleNextJobRoutine(QVector<PropagatorJob *> &subJobs);
     virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
 

@@ -13,11 +13,12 @@
  */
 
 #include "propagateupload.h"
+#include "propagatedownload.h"
 
 namespace OCC {
 
 
-qint64 PropagateNormalUpload::committedDiskSpace() const
+qint64 PropagateFiles::committedDiskSpace() const
 {
     qint64 needed = 0;
     foreach (PropagatorJob* job, _dbJobs) {
@@ -29,21 +30,43 @@ qint64 PropagateNormalUpload::committedDiskSpace() const
     return needed;
 }
 
-bool PropagateNormalUpload::scheduleNextJobRoutine(QVector<PropagatorJob *> &subJobs) {
+void PropagateFiles::append(PropagateItemJob* subJob) {
+    Q_ASSERT(!(subJob->_item->_size <= _propagator->chunkSize() && subJob->_item->_direction == SyncFileItem::Up));
+    _propagator->_standardJobsCount++; // This item is not a small upload file, so it is standard
+    _standardJobs.append(subJob);
+}
+
+void PropagateFiles::append(const SyncFileItemPtr &item) {
+    // In case of bundles, in here we should append BundledUpload jobs with new files to the .top() of _subJobs until chunking size is reached.
+    // The role of this class is also to control how much data is going into the container class.
+    // In version 1.0 append just PUTs
+
+    Q_ASSERT((item->_size <= _propagator->chunkSize() && item->_direction == SyncFileItem::Up));
+    PropagateUploadFileV1* subJob = new PropagateUploadFileV1(_propagator, item);
+    if (item->_size <= _propagator->smallFileSize()){
+        _propagator->_dbJobsCount++; // Db operations for this item take considerably longer then any other factors.
+        _dbJobs.append(subJob);
+    } else {
+        _propagator->_standardJobsCount++; // This item is not a small upload file, so it is standard
+        _standardJobs.append(subJob);
+    }
+}
+
+bool PropagateFiles::scheduleNextJobRoutine(QVector<PropagatorJob *> &subJobs) {
     QMutableVectorIterator<PropagatorJob *> subJobsIterator(subJobs);
     while (subJobsIterator.hasNext()) {
         subJobsIterator.next();
         // Get the state of the sub job pointed at by call next()
         if (subJobsIterator.value()->_state == Finished) {
-            // If this item is finished, remove it from the _subJobs list as it is not needed anymore
+            // If this items is finished, remove it from the _subJobs list as it is not needed anymore
             // Note that in this case remove() from QVector will just perform memmove of pointer array items.
             PropagatorJob * job = subJobsIterator.value();
             subJobsIterator.remove();
 
-            // In this case we dont delete the job, but save it in the _finishedSubJobs queue
+            // In this case de dont delete the job, but save it in the _finishedSubJobs queue
             // We might need this job in slotSubJobFinished
-            // The PropagateNormalUpload class will be destroyed in PropagateDirectory
-            // when it will detect that we finished PropagateNormalUpload
+            // The PropagateFiles class will be destroyed in PropagateDirectory
+            // when it will detect that we finished PropagateFiles
             _finishedSubJobs.append(job);
             continue;
         }
@@ -57,22 +80,7 @@ bool PropagateNormalUpload::scheduleNextJobRoutine(QVector<PropagatorJob *> &sub
     return false;
 }
 
-void PropagateNormalUpload::append(const SyncFileItemPtr &item) {
-    // In case of bundles, in here we should append BundledUpload jobs with new files to the .top() of _subJobs until chunking size is reached.
-    // The role of this class is also to control how much data is going into the container class.
-    // In version 1.0 append just PUTs
-
-    PropagateUploadFileV1* subJob = new PropagateUploadFileV1(_propagator, item);
-    if (item->_size <= _propagator->smallFileSize()){
-        _propagator->_dbJobsCount++; // Db operations for this item take considerably longer then any other factors.
-        _dbJobs.append(subJob);
-    } else {
-        _propagator->_standardJobsCount++; // This item is not a small upload file, so it is standard.
-        _standardJobs.append(subJob);
-    }
-}
-
-bool PropagateNormalUpload::scheduleNextJob()
+bool PropagateFiles::scheduleNextJob()
 {
     if (_state == Finished) {
         return false;
@@ -127,7 +135,7 @@ bool PropagateNormalUpload::scheduleNextJob()
 }
 
 
-void PropagateNormalUpload::slotSubJobFinished(SyncFileItem::Status status)
+void PropagateFiles::slotSubJobFinished(SyncFileItem::Status status)
 {
     if (status == SyncFileItem::FatalError) {
         abort();
@@ -164,7 +172,7 @@ void PropagateNormalUpload::slotSubJobFinished(SyncFileItem::Status status)
     }
 }
 
-void PropagateNormalUpload::finalize()
+void PropagateFiles::finalize()
 {
     _state = Finished;
     emit finished(_hasError == SyncFileItem::NoStatus ?  SyncFileItem::Success : _hasError);
