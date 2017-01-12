@@ -2,6 +2,8 @@ set( APPLICATION_NAME       "ownCloud" )
 #set( APPLICATION_SHORTNAME  ${APPLICATION_NAME} )
 set( APPLICATION_EXECUTABLE "owncloud" )
 set( APPLICATION_DOMAIN     "owncloud.com" )
+set( DEBIAN_URL        "https://packages.debian.org/unstable/owncloud-client" )
+set( DEBIAN_DOMAIN     "packages.debian.org/owncloud-client" )
 set( APPLICATION_VENDOR     "ownCloud" )
 set( APPLICATION_UPDATE_URL "https://updates.owncloud.com/client/" CACHE string "URL for updater" )
 
