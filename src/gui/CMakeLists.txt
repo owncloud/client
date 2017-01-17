@@ -73,6 +73,7 @@ set(client_SRCS
     selectivesyncdialog.cpp
     settingsdialog.cpp
     sharedialog.cpp
+    shareemailwidget.cpp
     sharelinkwidget.cpp
     sharemanager.cpp
     shareusergroupwidget.cpp

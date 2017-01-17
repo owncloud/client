@@ -88,6 +88,7 @@ public slots:
     void slotTrayMessageIfServerUnsupported(Account *account);
     void slotShowShareDialog(const QString &sharePath, const QString &localPath, bool resharingAllowed);
     void slotRemoveDestroyedShareDialogs();
+    void slowSendShareLink(const QString &sharePath, const QString &localPath, bool resharingAllowed);
 
 private slots:
     void slotDisplayIdle();
