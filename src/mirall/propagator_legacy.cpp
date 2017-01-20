@@ -63,6 +63,7 @@ void PropagateUploadFileLegacy::start()
         return;
 
     QFile file(_propagator->getFilePath(_item._file));
+    // FIXME Use same code as in PropagateUploadFileQNAM::start()
     if (!file.open(QIODevice::ReadOnly)) {
         done(SyncFileItem::NormalError, file.errorString());
         return;
