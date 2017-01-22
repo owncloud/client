@@ -41,6 +41,7 @@ public:
     int  sharePublicLinkExpireDateDays() const;
     bool shareResharing() const;
     bool chunkingNg() const;
+    bool scheduling() const;
 
     /// disable parallel upload in chunking
     bool chunkingParallelUploadDisabled() const;

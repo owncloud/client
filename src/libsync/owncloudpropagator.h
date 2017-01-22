@@ -262,7 +262,6 @@ public:
 class OwncloudPropagator : public QObject {
     Q_OBJECT
 
-    PropagateItemJob *createJob(const SyncFileItemPtr& item);
     QScopedPointer<PropagateDirectory> _rootJob;
 
 public:
@@ -327,6 +326,7 @@ public:
 
     /** returns the size of chunks in bytes  */
     static quint64 chunkSize();
+    static quint64 smallFileSize();
 
     AccountPtr account() const;
 
@@ -342,7 +342,11 @@ public:
      */
     DiskSpaceResult diskSpaceCheck() const;
 
+    PropagateItemJob *createJob(const SyncFileItemPtr& item);
 
+    int runningAtRootJob(){
+        return _rootJob.data()->_runningNow;
+    }
 
 private slots:
 
@@ -413,6 +417,106 @@ signals:
     void aborted(const QString &error);
 private slots:
     void slotPollFinished();
+};
+
+/**
+ * @brief The PropagateFiles class is a container class.
+ *
+ * It will also ensure proper bandwidth utilization vs bookkeeping balance
+ *
+ * @ingroup libsync
+ *
+ * State Machine:
+ *
+ *  _________________________________________________ ___________________________________________
+ * |                                                 |                                           |
+ * |                     (Empty DB items queue and populated Data items queue?)                  |
+ * |                       |                                             |                       |
+ * |                   Yes |                                             | No                    |
+ * |                       |                                             |                       |
+ * |<-----------[Schedule Data job]      (Empty Data items queue and populated DB items queue?)  |
+ * |                                                     |              |                        |
+ * |                                                  No |              | Yes                    |
+ * |                                                     |              |                        |
+ * |                                                     |      [Schedule DB job]--------------->|
+ * |                                                     |                                       |
+ * |                                                     |                                       |
+ * |                 (Populated Data items queue and populated DB items queue?)                  |
+ * |                                  |                           |                              |
+ * |                              Yes |                           | No                           |
+ * |                                  |                           |                              |
+ * | (Active running Data items number exceeded limit?)       [Finish - no items]                |
+ * |            |                        |                                                       |
+ * |        No  |                        | Yes                                                   |
+ * |            |                        |                                                       |
+ *  <---[Schedule Data job]          [Schedule DB job]------------------------------------------>
+ *
+ *
+ */
+class PropagateFiles : public PropagatorJob {
+    Q_OBJECT
+public:
+    QVector<PropagatorJob *> _subJobs;
+
+    QVector<SyncFileItemPtr> _syncDBItems; // Items which bookkeeping on the server is longer then the transfer of its payload
+
+    QVector<SyncFileItemPtr> _syncDataItems; // Items which transfer of the payload is longer then bookkeeping on the server
+
+    int _jobsFinished; // number of jobs that have completed
+    SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
+    int _firstUnfinishedSubJob;
+    int _totalItems;
+    int _activeDBJobsNow;
+    int _activeDataJobsNow;
+
+    explicit PropagateFiles(OwncloudPropagator *propagator)
+        : PropagatorJob(propagator)
+        , _jobsFinished(0), _hasError(SyncFileItem::NoStatus), _firstUnfinishedSubJob(0), _totalItems(0), _activeDBJobsNow(0), _activeDataJobsNow(0) { }
+
+    virtual ~PropagateFiles() {
+        qDeleteAll(_subJobs);
+    }
+
+    bool isEmpty() {
+        return _syncDBItems.isEmpty() && _syncDataItems.isEmpty();
+    }
+
+    void append(const SyncFileItemPtr &item);
+    virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
+    bool scheduleNewJob(QVector<SyncFileItemPtr> &syncJobs);
+    bool scheduleNextItem();
+
+    virtual void abort() Q_DECL_OVERRIDE {
+        foreach (PropagatorJob *n, _subJobs)
+            n->abort();
+    }
+
+    void finalize();
+
+    qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
+
+    JobParallelism parallelism() Q_DECL_OVERRIDE { return OCC::PropagatorJob::WaitForFinished; }
+
+private slots:
+    bool possiblyRunNextJob(PropagatorJob *next) {
+        if (next->_state == NotYetStarted) {
+            connect(next, SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotSubJobFinished(SyncFileItem::Status)), Qt::QueuedConnection);
+            connect(next, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
+                    this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+            connect(next, SIGNAL(progress(const SyncFileItem &,quint64)), this, SIGNAL(progress(const SyncFileItem &,quint64)));
+            connect(next, SIGNAL(ready()), this, SIGNAL(ready()));
+
+            PropagateItemJob *job = qobject_cast<PropagateItemJob *>(next);
+            if(job->_item->_size <= propagator()->smallFileSize()){
+                _activeDBJobsNow++;
+            } else {
+                _activeDataJobsNow++;
+            }
+        }
+        return next->scheduleNextJob();
+    }
+
+    void slotSubJobFinished(SyncFileItem::Status status);
 };
 
 }

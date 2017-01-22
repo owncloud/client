@@ -57,6 +57,7 @@ set(libsync_SRCS
     propagateremotedelete.cpp
     propagateremotemove.cpp
     propagateremotemkdir.cpp
+    propagatefiles.cpp
     syncengine.cpp
     syncfilestatus.cpp
     syncfilestatustracker.cpp

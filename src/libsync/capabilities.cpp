@@ -116,6 +116,15 @@ bool Capabilities::chunkingNg() const
     return _capabilities["dav"].toMap()["chunking"].toByteArray() >= "1.0";
 }
 
+bool Capabilities::scheduling() const
+{
+    static const auto scheduling = qgetenv("OWNCLOUD_SCHEDULING");
+    if (scheduling == "0") return false;
+    if (scheduling == "1") return true;
+
+    return _capabilities["dav"].toMap()["scheduling"].toByteArray() >= "1.0";
+}
+
 bool Capabilities::chunkingParallelUploadDisabled() const
 {
     return _capabilities["dav"].toMap()["chunkingParallelUploadDisabled"].toBool();

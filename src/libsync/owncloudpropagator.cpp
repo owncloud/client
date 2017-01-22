@@ -312,6 +312,13 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
     directories.push(qMakePair(QString(), _rootJob.data()));
     QVector<PropagatorJob*> directoriesToRemove;
     QString removedDirectory;
+
+    // This needs to be changed before marging - capability to switch on/off scheduling, since
+    // server needs to decide if to do that - scheduling will also bring more features in the future
+    // TODO: change it before marging to -> bool enableScheduledRequests = account()->capabilities().scheduling();
+    bool enableScheduledRequests = true;
+
+    PropagateFiles* filesJob = new PropagateFiles(this);
     foreach(const SyncFileItemPtr &item, items) {
 
         if (!removedDirectory.isEmpty() && item->_file.startsWith(removedDirectory)) {
@@ -388,6 +395,9 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
                 currentDirJob->append(dir);
             }
             directories.push(qMakePair(item->destination() + "/" , dir));
+        } else if (enableScheduledRequests
+              && (item->_instruction == CSYNC_INSTRUCTION_NEW || item->_instruction == CSYNC_INSTRUCTION_SYNC)) {
+            filesJob->append(item);
         } else if (PropagateItemJob* current = createJob(item)) {
             if (item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE) {
                 // will delete directories, so defer execution
@@ -399,9 +409,17 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
         }
     }
 
+    if (enableScheduledRequests && !filesJob->isEmpty()){
+        // This job has parallelism WaitForFinished to allow directoriesToRemove be last
+        _rootJob->append(filesJob);
+    } else {
+        delete filesJob;
+    }
+
     foreach(PropagatorJob* it, directoriesToRemove) {
         _rootJob->append(it);
     }
+
 
     connect(_rootJob.data(), SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
             this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
@@ -458,6 +476,20 @@ quint64 OwncloudPropagator::chunkSize()
     return chunkSize;
 }
 
+quint64 OwncloudPropagator::smallFileSize()
+{
+    // A small filesize item is a file whose transfer time
+    // typically will be lower than its bookkeeping time.
+    static uint smallFileSize;
+    if (!smallFileSize) {
+        smallFileSize = qgetenv("OWNCLOUD_SMALLFILE_SIZE").toUInt();
+        if (smallFileSize == 0) {
+            ConfigFile cfg;
+            smallFileSize = cfg.smallFileSize();
+        }
+    }
+    return smallFileSize;
+}
 
 bool OwncloudPropagator::localFileNameClash( const QString& relFile )
 {
