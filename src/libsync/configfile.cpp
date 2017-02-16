@@ -17,6 +17,7 @@
 #include "configfile.h"
 #include "theme.h"
 #include "utility.h"
+#include "asserts.h"
 
 #include "creds/abstractcredentials.h"
 
@@ -68,6 +69,7 @@ static const char downloadLimitC[]    = "BWLimit/downloadLimit";
 
 static const char newBigFolderSizeLimitC[] = "newBigFolderSizeLimit";
 static const char useNewBigFolderSizeLimitC[] = "useNewBigFolderSizeLimit";
+static const char confirmExternalStorageC[] = "confirmExternalStorage";
 
 static const char maxLogLinesC[] = "Logging/maxLogLines";
 
@@ -145,7 +147,7 @@ void ConfigFile::setOptionalDesktopNotifications(bool show)
 void ConfigFile::saveGeometry(QWidget *w)
 {
 #ifndef TOKEN_AUTH_ONLY
-    Q_ASSERT(!w->objectName().isNull());
+    ASSERT(!w->objectName().isNull());
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.beginGroup(w->objectName());
     settings.setValue(QLatin1String(geometryC), w->saveGeometry());
@@ -164,7 +166,7 @@ void ConfigFile::saveGeometryHeader(QHeaderView *header)
 {
 #ifndef TOKEN_AUTH_ONLY
     if(!header) return;
-    Q_ASSERT(!header->objectName().isEmpty());
+    ASSERT(!header->objectName().isEmpty());
 
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.beginGroup(header->objectName());
@@ -177,7 +179,7 @@ void ConfigFile::restoreGeometryHeader(QHeaderView *header)
 {
 #ifndef TOKEN_AUTH_ONLY
     if(!header) return;
-    Q_ASSERT(!header->objectName().isNull());
+    ASSERT(!header->objectName().isNull());
 
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.beginGroup(header->objectName());
@@ -236,8 +238,8 @@ QString ConfigFile::excludeFile(Scope scope) const
     // directories.
     QFileInfo fi;
 
-    if (scope != SystemScope) {
-        QFileInfo fi;
+    switch (scope) {
+    case UserScope:
         fi.setFile( configPath(), exclFile );
 
         if( ! fi.isReadable() ) {
@@ -247,12 +249,12 @@ QString ConfigFile::excludeFile(Scope scope) const
             fi.setFile( configPath(), exclFile );
         }
         return fi.absoluteFilePath();
-    } else if (scope != UserScope) {
+    case SystemScope:
         return ConfigFile::excludeFileFromSystem();
-    } else {
-        Q_ASSERT(false);
-        return QString(); // unreachable
     }
+
+    ASSERT(false);
+    return QString();
 }
 
 QString ConfigFile::excludeFileFromSystem()
@@ -601,6 +603,16 @@ void ConfigFile::setNewBigFolderSizeLimit(bool isChecked, quint64 mbytes)
 {
     setValue(newBigFolderSizeLimitC, mbytes);
     setValue(useNewBigFolderSizeLimitC, isChecked);
+}
+
+bool ConfigFile::confirmExternalStorage() const
+{
+    return getValue(confirmExternalStorageC, QString(), true).toBool();
+}
+
+void ConfigFile::setConfirmExternalStorage(bool isChecked)
+{
+    setValue(confirmExternalStorageC, isChecked);
 }
 
 bool ConfigFile::promptDeleteFiles() const
