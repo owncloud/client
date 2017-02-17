@@ -178,7 +178,7 @@ public slots:
 
 
 /**
- * @brief Propagate a directory, and all its sub entries.
+ * @brief Propagate a directory, and all its sub entries which are not uploads/downloads.
  * @ingroup libsync
  */
 class OWNCLOUDSYNC_EXPORT PropagateDirectory : public PropagatorJob {
@@ -238,6 +238,60 @@ private slots:
     void slotSubJobFinished(SyncFileItem::Status status);
 };
 
+/**
+ * @brief Propagate new/updates of files to be uploaded/downloaded
+ * @ingroup libsync
+ */
+class OWNCLOUDSYNC_EXPORT PropagateDataTransfers : public PropagatorJob {
+    Q_OBJECT
+public:
+    // all the file uploads and downloads
+    QList<PropagatorJob *> _subJobs;
+
+    int _jobsFinished; // number of jobs that have completed
+    int _runningNow; // number of subJobs running right now
+    SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
+    int _totalJobs;
+
+    explicit PropagateDataTransfers(OwncloudPropagator *propagator)
+        : PropagatorJob(propagator)
+        , _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus), _totalJobs(0)
+    { }
+
+    virtual ~PropagateDataTransfers() {
+        qDeleteAll(_subJobs);
+    }
+
+    void append(PropagatorJob *subJob) {
+        _subJobs.append(subJob);
+    }
+
+    virtual bool scheduleNextJob() Q_DECL_OVERRIDE;
+    virtual JobParallelism parallelism() Q_DECL_OVERRIDE;
+    virtual void abort() Q_DECL_OVERRIDE {
+        foreach (PropagatorJob *j, _subJobs)
+            j->abort();
+    }
+
+    void finalize();
+
+    qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
+
+private slots:
+    bool possiblyRunNextJob(PropagatorJob *next) {
+        if (next->_state == NotYetStarted) {
+            connect(next, SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotSubJobFinished(SyncFileItem::Status)), Qt::QueuedConnection);
+            connect(next, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
+                    this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+            connect(next, SIGNAL(progress(const SyncFileItem &,quint64)), this, SIGNAL(progress(const SyncFileItem &,quint64)));
+            connect(next, SIGNAL(ready()), this, SIGNAL(ready()));
+            _runningNow++;
+        }
+        return next->scheduleNextJob();
+    }
+
+    void slotSubJobFinished(SyncFileItem::Status status);
+};
 
 /**
  * @brief Dummy job that just mark it as completed and ignored
