@@ -1,0 +1,9 @@
+# group_vars/testing
+---
+db_user: expressive
+db_password: expressive
+deploy_user: deploy
+env: development
+redis_bind: 127.0.0.1
+webuser: www-data
+webgroup: www-data

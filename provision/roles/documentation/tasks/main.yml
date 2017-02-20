@@ -1,0 +1,28 @@
+- name: Install packages
+  become: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+      - ufw
+      - git
+      - vim
+      - tree
+      - zip
+      - unzip
+      - tar
+      - gzip
+      - bzip2
+      - python-pil 
+      - python-sphinx 
+      - python-sphinxcontrib.phpdomain 
+      - rst2pdf 
+      - texlive-fonts-recommended 
+      - texlive-latex-extra 
+      - texlive-latex-recommended
+
+- name: Set firewall default policy
+  ufw: state=enabled policy=deny
+  become: true
+
+- name: Allow ssh
+  ufw: rule=allow port=22 proto=tcp
+  become: true
