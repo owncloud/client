@@ -61,7 +61,7 @@ Where:
   desired.
 * ``Storage Usage``: Provides further details on the storage utilization on the
   ownCloud server.
-* ``Edit Ignored Files``: Provides a list of files which will be ignored, i.e.
+* ``Edit Ignored Files``: Provides a list of files which will be ignored, i.e.,
   will not sync between the client and server. The ignored files editor allows
   adding patterns for files or directories that should be excluded from the
   sync process. Besides normal characters, wild cards may be used, an asterisk
@@ -124,7 +124,7 @@ The tab provides several useful options:
    :scale: 50 %
 
 * ``Launch on System Startup``: This option is automatically activated
-  once a user has conimaged his account. Unchecking the box will cause
+  once a user has conimaged his account. Un-checking the box will cause
   ownCloud client to not launch on startup for a particular user.
 * ``Show Desktop Nofications``: When checked, bubble notifications when
   a set of sync operations has been performed are provided.
@@ -138,7 +138,7 @@ Network
 
 .. index:: proxy settings, SOCKS, bandwith, throttling, limiting
 
-This tab consollidates ``Proxy Settings`` and ``Bandwith Limiting``:
+This tab consolidates ``Proxy Settings`` and ``Bandwith Limiting``:
 
 .. image:: images/settings_network.png
    :scale: 50 %
@@ -152,7 +152,7 @@ Proxy Settings
   On Linux, this will only pick up the value of the variable ``http_proxy``.
 * ``Specify proxy manually as``: Allows to specify custom proxy settings.
   If you require to go through a HTTP(S) proxy server such as Squid or Microsoft
-  Forefront TMG, pick ``HTTP(S)``. ``SOCKSv5`` on the other hand is particulary
+  Forefront TMG, pick ``HTTP(S)``. ``SOCKSv5`` on the other hand is particularly
   useful in special company LAN setups, or in combination with the OpenSSH
   dynamic application level forwarding feature (see ``ssh -D``).
 * ``Host``: Enter the host name or IP address of your proxy server, followed

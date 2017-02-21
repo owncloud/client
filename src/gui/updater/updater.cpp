@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -85,6 +86,10 @@ Updater *Updater::create()
     QUrl updateBaseUrl(QString::fromLocal8Bit(qgetenv("OCC_UPDATE_URL")));
     if (updateBaseUrl.isEmpty()) {
         updateBaseUrl = QUrl(QLatin1String(APPLICATION_UPDATE_URL));
+    }
+    if (!updateBaseUrl.isValid() || updateBaseUrl.host() == ".") {
+        qDebug() << "Not a valid updater URL, will not do update check";
+        return 0;
     }
     updateBaseUrl = addQueryParams(updateBaseUrl);
 #if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)

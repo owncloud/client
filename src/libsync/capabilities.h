@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -39,6 +40,10 @@ public:
     bool sharePublicLinkEnforceExpireDate() const;
     int  sharePublicLinkExpireDateDays() const;
     bool shareResharing() const;
+    bool chunkingNg() const;
+
+    /// disable parallel upload in chunking
+    bool chunkingParallelUploadDisabled() const;
 
     /// returns true if the capabilities report notifications
     bool notificationsAvailable() const;
@@ -75,6 +80,25 @@ public:
      * QByteArray if no checksum types are supported.
      */
     QByteArray uploadChecksumType() const;
+
+    /**
+     * List of HTTP error codes should be guaranteed to eventually reset
+     * failing chunked uploads.
+     *
+     * The resetting works by tracking UploadInfo::errorCount.
+     *
+     * Note that other error codes than the ones listed here may reset the
+     * upload as well.
+     *
+     * Motivation: See #5344. They should always be reset on 412 (possibly
+     * checksum error), but broken servers may also require resets on
+     * unusual error codes such as 503.
+     *
+     * Path: dav/httpErrorCodesThatResetFailingChunkedUploads
+     * Default: []
+     * Example: [503, 500]
+     */
+    QList<int> httpErrorCodesThatResetFailingChunkedUploads() const;
 
 private:
     QVariantMap _capabilities;

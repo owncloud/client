@@ -1,6 +1,5 @@
 project(libsync)
 set(CMAKE_AUTOMOC TRUE)
-include(GenerateExportHeader)
 
 configure_file( version.h.in "${CMAKE_CURRENT_BINARY_DIR}/version.h" )
 
@@ -51,6 +50,8 @@ set(libsync_SRCS
     propagatorjobs.cpp
     propagatedownload.cpp
     propagateupload.cpp
+    propagateuploadv1.cpp
+    propagateuploadng.cpp
     propagateremotedelete.cpp
     propagateremotemove.cpp
     propagateremotemkdir.cpp
@@ -69,7 +70,6 @@ set(libsync_SRCS
     creds/abstractcredentials.cpp
     creds/credentialscommon.cpp
     ../3rdparty/qjson/json.cpp
-    ../3rdparty/certificates/p12topem.cpp
 )
 
 if(TOKEN_AUTH_ONLY)

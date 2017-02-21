@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -15,6 +16,8 @@
 #include <QStringList>
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QUrl>
+
 #include "ownsql.h"
 
 #include <inttypes.h>
@@ -24,22 +27,97 @@
 #include "utility.h"
 #include "version.h"
 #include "filesystem.h"
+#include "asserts.h"
 
 #include "../../csync/src/std/c_jhash.h"
 
 namespace OCC {
 
-SyncJournalDb::SyncJournalDb(const QString& path, QObject *parent) :
-    QObject(parent), _transaction(0)
+SyncJournalDb::SyncJournalDb(const QString& dbFilePath, QObject *parent) :
+    QObject(parent),
+    _dbFile(dbFilePath),
+    _transaction(0)
 {
 
-    _dbFile = path;
-    if( !_dbFile.endsWith('/') ) {
-        _dbFile.append('/');
+}
+
+QString SyncJournalDb::makeDbName(const QUrl& remoteUrl,
+                                  const QString& remotePath,
+                                  const QString& user)
+{
+    QString journalPath = QLatin1String("._sync_");
+
+    QString key = QString::fromUtf8("%1@%2:%3").arg(
+            user,
+            remoteUrl.toString(),
+            remotePath);
+
+    QByteArray ba = QCryptographicHash::hash(key.toUtf8(), QCryptographicHash::Md5);
+    journalPath.append( ba.left(6).toHex() );
+    journalPath.append(".db");
+
+    return journalPath;
+}
+
+bool SyncJournalDb::maybeMigrateDb(const QString& localPath, const QString& absoluteJournalPath)
+{
+    const QString oldDbName = localPath + QLatin1String(".csync_journal.db");
+    if( !FileSystem::fileExists(oldDbName) ) {
+        return true;
     }
-    _dbFile.append(".csync_journal.db");
+    const QString oldDbNameShm = oldDbName + "-shm";
+    const QString oldDbNameWal = oldDbName + "-wal";
 
+    const QString newDbName = absoluteJournalPath;
+    const QString newDbNameShm = newDbName + "-shm";
+    const QString newDbNameWal = newDbName + "-wal";
 
+    // Whenever there is an old db file, migrate it to the new db path.
+    // This is done to make switching from older versions to newer versions
+    // work correctly even if the user had previously used a new version
+    // and therefore already has an (outdated) new-style db file.
+    QString error;
+
+    if( FileSystem::fileExists( newDbName ) ) {
+        if( !FileSystem::remove(newDbName, &error) ) {
+            qDebug() << "Database migration: Could not remove db file" << newDbName
+                     << "due to" << error;
+            return false;
+        }
+    }
+    if( FileSystem::fileExists( newDbNameWal ) ) {
+        if( !FileSystem::remove(newDbNameWal, &error) ) {
+            qDebug() << "Database migration: Could not remove db WAL file" << newDbNameWal
+                     << "due to" << error;
+            return false;
+        }
+    }
+    if( FileSystem::fileExists( newDbNameShm ) ) {
+        if( !FileSystem::remove(newDbNameShm, &error) ) {
+            qDebug() << "Database migration: Could not remove db SHM file" << newDbNameShm
+                     << "due to" << error;
+            return false;
+        }
+    }
+
+    if( !FileSystem::rename(oldDbName, newDbName, &error) ) {
+        qDebug() << "Database migration: could not rename " << oldDbName
+                 << "to" << newDbName << ":" << error;
+        return false;
+    }
+    if( !FileSystem::rename(oldDbNameWal, newDbNameWal, &error) ) {
+        qDebug() << "Database migration: could not rename " << oldDbNameWal
+                 << "to" << newDbNameWal << ":" << error;
+        return false;
+    }
+    if( !FileSystem::rename(oldDbNameShm, newDbNameShm, &error) ) {
+        qDebug() << "Database migration: could not rename " << oldDbNameShm
+                 << "to" << newDbNameShm << ":" << error;
+        return false;
+    }
+
+    qDebug() << "Journal successfully migrated from" << oldDbName << "to" << newDbName;
+    return true;
 }
 
 bool SyncJournalDb::exists()
@@ -48,7 +126,7 @@ bool SyncJournalDb::exists()
     return (!_dbFile.isEmpty() && QFile::exists(_dbFile));
 }
 
-QString SyncJournalDb::databaseFilePath()
+QString SyncJournalDb::databaseFilePath() const
 {
     return _dbFile;
 }
@@ -101,7 +179,7 @@ bool SyncJournalDb::sqlFail( const QString& log, const SqlQuery& query )
 {
     commitTransaction();
     qWarning() << "SQL Error" << log << query.error();
-    Q_ASSERT(!"SQL ERROR");
+    ASSERT(false);
     _db.close();
     return false;
 }
@@ -133,8 +211,6 @@ bool SyncJournalDb::checkConnect()
         qDebug() << "Database filename" + _dbFile + " is empty";
         return false;
     }
-
-    bool isNewDb = !QFile::exists(_dbFile);
 
     // The database file is created by this call (SQLITE_OPEN_CREATE)
     if( !_db.openOrCreateReadWrite(_dbFile) ) {
@@ -286,6 +362,13 @@ bool SyncJournalDb::checkConnect()
         return sqlFail("Create table version", createQuery);
     }
 
+    // create the checksumtype table.
+    createQuery.prepare("CREATE TABLE IF NOT EXISTS datafingerprint("
+                        "fingerprint TEXT UNIQUE"
+                        ");");
+    if (!createQuery.exec()) {
+        return sqlFail("Create table datafingerprint", createQuery);
+    }
 
     createQuery.prepare("CREATE TABLE IF NOT EXISTS version("
                                "major INTEGER(8),"
@@ -302,16 +385,17 @@ bool SyncJournalDb::checkConnect()
     SqlQuery versionQuery("SELECT major, minor, patch FROM version;", _db);
     if (!versionQuery.next()) {
         // If there was no entry in the table, it means we are likely upgrading from 1.5
-        if (!isNewDb) {
-            qDebug() << Q_FUNC_INFO << "possibleUpgradeFromMirall_1_5 detected!";
-            forceRemoteDiscovery = true;
-        }
+        qDebug() << Q_FUNC_INFO << "possibleUpgradeFromMirall_1_5 detected!";
+        forceRemoteDiscovery = true;
+
         createQuery.prepare("INSERT INTO version VALUES (?1, ?2, ?3, ?4);");
         createQuery.bindValue(1, MIRALL_VERSION_MAJOR);
         createQuery.bindValue(2, MIRALL_VERSION_MINOR);
         createQuery.bindValue(3, MIRALL_VERSION_PATCH);
         createQuery.bindValue(4, MIRALL_VERSION_BUILD);
-        createQuery.exec();
+        if (!createQuery.exec()) {
+            return sqlFail("Update version", createQuery);
+        }
 
     } else {
         int major = versionQuery.intValue(0);
@@ -322,6 +406,15 @@ bool SyncJournalDb::checkConnect()
             qDebug() << Q_FUNC_INFO << "possibleUpgradeFromMirall_1_8_0_or_1 detected!";
             forceRemoteDiscovery = true;
         }
+
+        // There was a bug in versions <2.3.0 that could lead to stale
+        // local files and a remote discovery will fix them.
+        // See #5190 #5242.
+        if( major == 2 && minor < 3) {
+            qDebug() << Q_FUNC_INFO << "upgrade form client < 2.3.0 detected! forcing remote discovery";
+            forceRemoteDiscovery = true;
+        }
+
         // Not comparing the BUILD id here, correct?
         if( !(major == MIRALL_VERSION_MAJOR && minor == MIRALL_VERSION_MINOR && patch == MIRALL_VERSION_PATCH) ) {
             createQuery.prepare("UPDATE version SET major=?1, minor=?2, patch =?3, custom=?4 "
@@ -360,54 +453,84 @@ bool SyncJournalDb::checkConnect()
     }
 
     _getFileRecordQuery.reset(new SqlQuery(_db));
-    _getFileRecordQuery->prepare(
+    if (_getFileRecordQuery->prepare(
             "SELECT path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize,"
             "  ignoredChildrenRemote, contentChecksum, contentchecksumtype.name"
             " FROM metadata"
             "  LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id"
-            " WHERE phash=?1" );
+            " WHERE phash=?1" )) {
+        return sqlFail("prepare _getFileRecordQuery", *_getFileRecordQuery);
+    }
 
     _setFileRecordQuery.reset(new SqlQuery(_db) );
-    _setFileRecordQuery->prepare("INSERT OR REPLACE INTO metadata "
+    if (_setFileRecordQuery->prepare("INSERT OR REPLACE INTO metadata "
                                  "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId) "
-                                 "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16);" );
+                                 "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16);" )) {
+        return sqlFail("prepare _setFileRecordQuery", *_setFileRecordQuery);
+    }
 
     _setFileRecordChecksumQuery.reset(new SqlQuery(_db) );
-    _setFileRecordChecksumQuery->prepare(
+    if (_setFileRecordChecksumQuery->prepare(
             "UPDATE metadata"
             " SET contentChecksum = ?2, contentChecksumTypeId = ?3"
-            " WHERE phash == ?1;");
+            " WHERE phash == ?1;")) {
+        return sqlFail("prepare _setFileRecordChecksumQuery", *_setFileRecordChecksumQuery);
+    }
 
+    _setFileRecordLocalMetadataQuery.reset(new SqlQuery(_db));
+    if (_setFileRecordLocalMetadataQuery->prepare(
+            "UPDATE metadata"
+            " SET inode=?2, modtime=?3, filesize=?4"
+            " WHERE phash == ?1;")) {
+        return sqlFail("prepare _setFileRecordLocalMetadataQuery", *_setFileRecordLocalMetadataQuery);
+    }
+ 
     _getDownloadInfoQuery.reset(new SqlQuery(_db) );
-    _getDownloadInfoQuery->prepare( "SELECT tmpfile, etag, errorcount FROM "
-                                    "downloadinfo WHERE path=?1" );
+    if (_getDownloadInfoQuery->prepare( "SELECT tmpfile, etag, errorcount FROM "
+                                    "downloadinfo WHERE path=?1" )) {
+        return sqlFail("prepare _getDownloadInfoQuery", *_getDownloadInfoQuery);
+    }
 
     _setDownloadInfoQuery.reset(new SqlQuery(_db) );
-    _setDownloadInfoQuery->prepare( "INSERT OR REPLACE INTO downloadinfo "
+    if (_setDownloadInfoQuery->prepare( "INSERT OR REPLACE INTO downloadinfo "
                                     "(path, tmpfile, etag, errorcount) "
-                                    "VALUES ( ?1 , ?2, ?3, ?4 )" );
+                                    "VALUES ( ?1 , ?2, ?3, ?4 )" )) {
+        return sqlFail("prepare _setDownloadInfoQuery", *_setDownloadInfoQuery);
+    }
 
     _deleteDownloadInfoQuery.reset(new SqlQuery(_db) );
-    _deleteDownloadInfoQuery->prepare( "DELETE FROM downloadinfo WHERE path=?1" );
+    if (_deleteDownloadInfoQuery->prepare( "DELETE FROM downloadinfo WHERE path=?1" )) {
+        return sqlFail("prepare _deleteDownloadInfoQuery", *_deleteDownloadInfoQuery);
+    }
 
     _getUploadInfoQuery.reset(new SqlQuery(_db));
-    _getUploadInfoQuery->prepare( "SELECT chunk, transferid, errorcount, size, modtime FROM "
-                                  "uploadinfo WHERE path=?1" );
+    if (_getUploadInfoQuery->prepare( "SELECT chunk, transferid, errorcount, size, modtime FROM "
+                                  "uploadinfo WHERE path=?1" )) {
+        return sqlFail("prepare _getUploadInfoQuery", *_getUploadInfoQuery);
+    }
 
     _setUploadInfoQuery.reset(new SqlQuery(_db));
-    _setUploadInfoQuery->prepare( "INSERT OR REPLACE INTO uploadinfo "
+    if (_setUploadInfoQuery->prepare( "INSERT OR REPLACE INTO uploadinfo "
                                   "(path, chunk, transferid, errorcount, size, modtime) "
-                                  "VALUES ( ?1 , ?2, ?3 , ?4 ,  ?5, ?6 )");
+                                  "VALUES ( ?1 , ?2, ?3 , ?4 ,  ?5, ?6 )")) {
+        return sqlFail("prepare _setUploadInfoQuery", *_setUploadInfoQuery);
+    }
 
     _deleteUploadInfoQuery.reset(new SqlQuery(_db));
-    _deleteUploadInfoQuery->prepare("DELETE FROM uploadinfo WHERE path=?1" );
+    if (_deleteUploadInfoQuery->prepare("DELETE FROM uploadinfo WHERE path=?1" )) {
+        return sqlFail("prepare _deleteUploadInfoQuery", *_deleteUploadInfoQuery);
+    }
 
 
     _deleteFileRecordPhash.reset(new SqlQuery(_db));
-    _deleteFileRecordPhash->prepare("DELETE FROM metadata WHERE phash=?1");
+    if (_deleteFileRecordPhash->prepare("DELETE FROM metadata WHERE phash=?1")) {
+        return sqlFail("prepare _deleteFileRecordPhash", *_deleteFileRecordPhash);
+    }
 
     _deleteFileRecordRecursively.reset(new SqlQuery(_db));
-    _deleteFileRecordRecursively->prepare("DELETE FROM metadata WHERE path LIKE(?||'/%')");
+    if (_deleteFileRecordRecursively->prepare("DELETE FROM metadata WHERE path LIKE(?||'/%')")) {
+        return sqlFail("prepare _deleteFileRecordRecursively", *_deleteFileRecordRecursively);
+    }
 
     QString sql( "SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget "
                  "FROM blacklist WHERE path=?1");
@@ -417,24 +540,50 @@ bool SyncJournalDb::checkConnect()
         sql += QLatin1String(" COLLATE NOCASE");
     }
     _getErrorBlacklistQuery.reset(new SqlQuery(_db));
-    _getErrorBlacklistQuery->prepare(sql);
+    if (_getErrorBlacklistQuery->prepare(sql)) {
+        return sqlFail("prepare _getErrorBlacklistQuery", *_getErrorBlacklistQuery);
+    }
 
     _setErrorBlacklistQuery.reset(new SqlQuery(_db));
-    _setErrorBlacklistQuery->prepare("INSERT OR REPLACE INTO blacklist "
+    if (_setErrorBlacklistQuery->prepare("INSERT OR REPLACE INTO blacklist "
                                 "(path, lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget) "
-                                "VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)");
+                                "VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)")) {
+        return sqlFail("prepare _setErrorBlacklistQuery", *_setErrorBlacklistQuery);
+    }
 
     _getSelectiveSyncListQuery.reset(new SqlQuery(_db));
-    _getSelectiveSyncListQuery->prepare("SELECT path FROM selectivesync WHERE type=?1");
+    if (_getSelectiveSyncListQuery->prepare("SELECT path FROM selectivesync WHERE type=?1")) {
+        return sqlFail("prepare _getSelectiveSyncListQuery", *_getSelectiveSyncListQuery);
+    }
 
     _getChecksumTypeIdQuery.reset(new SqlQuery(_db));
-    _getChecksumTypeIdQuery->prepare("SELECT id FROM checksumtype WHERE name=?1");
+    if (_getChecksumTypeIdQuery->prepare("SELECT id FROM checksumtype WHERE name=?1")) {
+        return sqlFail("prepare _getChecksumTypeIdQuery", *_getChecksumTypeIdQuery);
+    }
 
     _getChecksumTypeQuery.reset(new SqlQuery(_db));
-    _getChecksumTypeQuery->prepare("SELECT name FROM checksumtype WHERE id=?1");
+    if (_getChecksumTypeQuery->prepare("SELECT name FROM checksumtype WHERE id=?1")) {
+        return sqlFail("prepare _getChecksumTypeQuery", *_getChecksumTypeQuery);
+    }
 
     _insertChecksumTypeQuery.reset(new SqlQuery(_db));
-    _insertChecksumTypeQuery->prepare("INSERT OR IGNORE INTO checksumtype (name) VALUES (?1)");
+    if (_insertChecksumTypeQuery->prepare("INSERT OR IGNORE INTO checksumtype (name) VALUES (?1)")) {
+        return sqlFail("prepare _insertChecksumTypeQuery", *_insertChecksumTypeQuery);
+    }
+
+    _getDataFingerprintQuery.reset(new SqlQuery(_db));
+    if (_getDataFingerprintQuery->prepare("SELECT fingerprint FROM datafingerprint")) {
+        return sqlFail("prepare _getDataFingerprintQuery", *_getDataFingerprintQuery);
+    }
+
+    _setDataFingerprintQuery1.reset(new SqlQuery(_db));
+    if (_setDataFingerprintQuery1->prepare("DELETE FROM datafingerprint;")) {
+        return sqlFail("prepare _setDataFingerprintQuery1", *_setDataFingerprintQuery1);
+    }
+    _setDataFingerprintQuery2.reset(new SqlQuery(_db));
+    if (_setDataFingerprintQuery2->prepare("INSERT INTO datafingerprint (fingerprint) VALUES (?1);")) {
+        return sqlFail("prepare _setDataFingerprintQuery2", *_setDataFingerprintQuery2);
+    }
 
     // don't start a new transaction now
     commitInternal(QString("checkConnect End"), false);
@@ -458,6 +607,7 @@ void SyncJournalDb::close()
     _getFileRecordQuery.reset(0);
     _setFileRecordQuery.reset(0);
     _setFileRecordChecksumQuery.reset(0);
+    _setFileRecordLocalMetadataQuery.reset(0);
     _getDownloadInfoQuery.reset(0);
     _setDownloadInfoQuery.reset(0);
     _deleteDownloadInfoQuery.reset(0);
@@ -472,6 +622,9 @@ void SyncJournalDb::close()
     _getChecksumTypeIdQuery.reset(0);
     _getChecksumTypeQuery.reset(0);
     _insertChecksumTypeQuery.reset(0);
+    _getDataFingerprintQuery.reset(0);
+    _setDataFingerprintQuery1.reset(0);
+    _setDataFingerprintQuery2.reset(0);
 
     _db.close();
     _avoidReadFromDbOnNextSyncFilter.clear();
@@ -946,6 +1099,40 @@ bool SyncJournalDb::updateFileRecordChecksum(const QString& filename,
     return true;
 }
 
+bool SyncJournalDb::updateLocalMetadata(const QString& filename,
+                                        qint64 modtime, quint64 size, quint64 inode)
+
+{
+    QMutexLocker locker(&_mutex);
+
+    qlonglong phash = getPHash(filename);
+    if( !checkConnect() ) {
+        qDebug() << "Failed to connect database.";
+        return false;
+    }
+
+    auto & query = _setFileRecordLocalMetadataQuery;
+
+    query->reset_and_clear_bindings();
+    query->bindValue(1, QString::number(phash));
+    query->bindValue(2, inode);
+    query->bindValue(3, modtime);
+    query->bindValue(4, size);
+
+    if( !query->exec() ) {
+        qWarning() << "Error SQL statement updateLocalMetadata: "
+                   << query->lastQuery() <<  " :"
+                   << query->error();
+        return false;
+    }
+
+    qDebug() << query->lastQuery() << phash << inode
+             << modtime << size;
+
+    query->reset_and_clear_bindings();
+    return true;
+}
+
 bool SyncJournalDb::setFileRecordMetadata(const SyncJournalFileRecord& record)
 {
     SyncJournalFileRecord existing = getFileRecord(record._path);
@@ -1184,21 +1371,22 @@ void SyncJournalDb::setUploadInfo(const QString& file, const SyncJournalDb::Uplo
     }
 }
 
-bool SyncJournalDb::deleteStaleUploadInfos(const QSet<QString> &keep)
+QVector<uint> SyncJournalDb::deleteStaleUploadInfos(const QSet<QString> &keep)
 {
     QMutexLocker locker(&_mutex);
+    QVector<uint> ids;
 
     if (!checkConnect()) {
-        return false;
+        return ids;
     }
 
     SqlQuery query(_db);
-    query.prepare("SELECT path FROM uploadinfo");
+    query.prepare("SELECT path,transferid FROM uploadinfo");
 
     if (!query.exec()) {
         QString err = query.error();
         qDebug() << "Error creating prepared statement: " << query.lastQuery() << ", Error:" << err;
-        return false;
+        return ids;
     }
 
     QStringList superfluousPaths;
@@ -1207,10 +1395,12 @@ bool SyncJournalDb::deleteStaleUploadInfos(const QSet<QString> &keep)
         const QString file = query.stringValue(0);
         if (!keep.contains(file)) {
             superfluousPaths.append(file);
+            ids.append(query.intValue(1));
         }
     }
 
-    return deleteBatch(*_deleteUploadInfoQuery, superfluousPaths, "uploadinfo");
+    deleteBatch(*_deleteUploadInfoQuery, superfluousPaths, "uploadinfo");
+    return ids;
 }
 
 SyncJournalErrorBlacklistRecord SyncJournalDb::errorBlacklistEntry( const QString& file )
@@ -1418,7 +1608,7 @@ void SyncJournalDb::setPollInfo(const SyncJournalDb::PollInfo& info)
 QStringList SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, bool *ok )
 {
     QStringList result;
-    Q_ASSERT(ok);
+    ASSERT(ok);
 
     QMutexLocker locker(&_mutex);
     if( !checkConnect() ) {
@@ -1602,6 +1792,60 @@ int SyncJournalDb::mapChecksumType(const QByteArray& checksumType)
     return _getChecksumTypeIdQuery->intValue(0);
 }
 
+QByteArray SyncJournalDb::dataFingerprint()
+{
+    QMutexLocker locker(&_mutex);
+    if (!checkConnect()) {
+        return QByteArray();
+    }
+
+    _getDataFingerprintQuery->reset_and_clear_bindings();
+    if (!_getDataFingerprintQuery->exec()) {
+        qWarning() << "Error SQL statement dataFingerprint: "
+                   << _getDataFingerprintQuery->lastQuery() << " :"
+                   << _getDataFingerprintQuery->error();
+        return QByteArray();
+    }
+
+    if (!_getDataFingerprintQuery->next()) {
+        return QByteArray();
+    }
+    return _getDataFingerprintQuery->baValue(0);
+}
+
+void SyncJournalDb::setDataFingerprint(const QByteArray &dataFingerprint)
+{
+    QMutexLocker locker(&_mutex);
+    if (!checkConnect()) {
+        return;
+    }
+
+    _setDataFingerprintQuery1->reset_and_clear_bindings();
+    if (!_setDataFingerprintQuery1->exec()) {
+        qWarning() << "Error SQL statement setDataFingerprint1: "
+                   << _setDataFingerprintQuery1->lastQuery() << " :"
+                   << _setDataFingerprintQuery1->error();
+    }
+
+    _setDataFingerprintQuery2->reset_and_clear_bindings();
+    _setDataFingerprintQuery2->bindValue(1, dataFingerprint);
+    if (!_setDataFingerprintQuery2->exec()) {
+        qWarning() << "Error SQL statement setDataFingerprint2: "
+                   << _setDataFingerprintQuery2->lastQuery() << " :"
+                   << _setDataFingerprintQuery2->error();
+    }
+}
+
+void SyncJournalDb::clearFileTable()
+{
+    SqlQuery query(_db);
+    query.prepare("DELETE FROM metadata;");
+    if (!query.exec()) {
+        qWarning() << "SQL error in clearFileTable" << query.error();
+    } else {
+        qDebug() << query.lastQuery() << "(" << query.numRowsAffected() << " rows)";
+    }
+}
 
 void SyncJournalDb::commit(const QString& context, bool startTrans)
 {

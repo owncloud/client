@@ -18,6 +18,7 @@
 #include <QStringList>
 #include <QUrl>
 #include <QFile>
+#include <QFileInfo>
 #include <qdebug.h>
 
 #include "account.h"
@@ -28,6 +29,7 @@
 #include "syncengine.h"
 #include "syncjournaldb.h"
 #include "config.h"
+#include "connectionvalidator.h"
 
 #include "cmd.h"
 
@@ -40,9 +42,13 @@
 #include <windows.h>
 #else
 #include <termios.h>
+#include <unistd.h>
 #endif
 
 using namespace OCC;
+
+
+static void nullMessageHandler(QtMsgType, const char *) {}
 
 struct CmdOptions {
     QString source_dir;
@@ -66,6 +72,8 @@ struct CmdOptions {
 // we can't use csync_set_userdata because the SyncEngine sets it already.
 // So we have to use a global variable
 CmdOptions *opts = 0;
+
+const qint64 timeoutToUseMsec = qMax(1000, ConnectionValidator::DefaultCallingIntervalMsec - 5*1000);
 
 class EchoDisabler
 {
@@ -113,7 +121,7 @@ QString queryPassword(const QString &user)
 class HttpCredentialsText : public HttpCredentials {
 public:
     HttpCredentialsText(const QString& user, const QString& password)
-        : HttpCredentials(user, password, "", ""), // FIXME: not working with client certs yet (qknight)
+        : HttpCredentials(user, password), // FIXME: not working with client certs yet (qknight)
           _sslTrusted(false)
     {}
 
@@ -196,10 +204,12 @@ void parseOptions( const QStringList& app_args, CmdOptions *options )
     if (!options->source_dir.endsWith('/')) {
         options->source_dir.append('/');
     }
-    if( !QFile::exists( options->source_dir )) {
+    QFileInfo fi(options->source_dir);
+    if( !fi.exists() ) {
         std::cerr << "Source dir '" << qPrintable(options->source_dir) << "' does not exist." << std::endl;
         exit(1);
     }
+    options->source_dir = fi.absoluteFilePath();
 
     QStringListIterator it(args);
     // skip file name;
@@ -268,7 +278,6 @@ void selectiveSyncFixup(OCC::SyncJournalDb *journal, const QStringList &newList)
     }
 }
 
-
 int main(int argc, char **argv) {
     QCoreApplication app(argc, argv);
 
@@ -292,6 +301,11 @@ int main(int argc, char **argv) {
 
     parseOptions( app.arguments(), &options );
 
+    csync_set_log_level(options.silent ? 1 : 11);
+    if (options.silent) {
+        qInstallMsgHandler(nullMessageHandler);
+    }
+
     AccountPtr account = Account::create();
 
     if( !account ) {
@@ -314,8 +328,7 @@ int main(int argc, char **argv) {
     if( !options.target_url.contains( account->davPath() )) {
         options.target_url.append(account->davPath());
     }
-    if (options.target_url.startsWith("http"))
-        options.target_url.replace(0, 4, "owncloud");
+
     QUrl url = QUrl::fromUserInput(options.target_url);
 
     // Order of retrieval attempt (later attempts override earlier ones):
@@ -356,23 +369,24 @@ int main(int argc, char **argv) {
          }
      }
 
-    // ### ensure URL is free of credentials
-    if (url.userName().isEmpty()) {
-        url.setUserName(user);
-    }
-    if (url.password().isEmpty()) {
-        url.setPassword(password);
-    }
-
     // take the unmodified url to pass to csync_create()
     QByteArray remUrl = options.target_url.toUtf8();
 
     // Find the folder and the original owncloud url
-    QStringList splitted = url.path().split(account->davPath());
+    QStringList splitted = url.path().split("/" + account->davPath());
     url.setPath(splitted.value(0));
 
     url.setScheme(url.scheme().replace("owncloud", "http"));
-    QString folder = splitted.value(1);
+
+    QUrl credentialFreeUrl = url;
+    credentialFreeUrl.setUserName(QString());
+    credentialFreeUrl.setPassword(QString());
+
+    // Remote folders typically start with a / and don't end with one
+    QString folder = "/" + splitted.value(1);
+    if (folder.endsWith("/") && folder != "/") {
+        folder.chop(1);
+    }
 
     SimpleSslErrorHandler *sslErrorHandler = new SimpleSslErrorHandler;
 
@@ -385,13 +399,29 @@ int main(int argc, char **argv) {
     account->setCredentials(cred);
     account->setSslErrorHandler(sslErrorHandler);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    //obtain capabilities using event loop
+    QEventLoop loop;
+
+    JsonApiJob *job = new JsonApiJob(account, QLatin1String("ocs/v1.php/cloud/capabilities"));
+    job->setTimeout(timeoutToUseMsec);
+    QObject::connect(job, &JsonApiJob::jsonReceived, [&](const QVariantMap &json) {
+        auto caps = json.value("ocs").toMap().value("data").toMap().value("capabilities");
+        qDebug() << "Server capabilities" << caps;
+        account->setCapabilities(caps.toMap());
+        loop.quit();
+    });
+    job->start();
+
+    loop.exec();
+#endif
+
     // much lower age than the default since this utility is usually made to be run right after a change in the tests
     SyncEngine::minimumFileAgeForUpload = 0;
 
     int restartCount = 0;
 restart_sync:
 
-    csync_set_log_level(options.silent ? 1 : 11);
 
     opts = &options;
 
@@ -439,12 +469,14 @@ restart_sync:
     }
 
     Cmd cmd;
-    SyncJournalDb db(options.source_dir);
+    QString dbPath = options.source_dir + SyncJournalDb::makeDbName(credentialFreeUrl, folder, user);
+    SyncJournalDb db(dbPath);
+
     if (!selectiveSyncList.empty()) {
         selectiveSyncFixup(&db, selectiveSyncList);
     }
 
-    SyncEngine engine(account, options.source_dir, QUrl(options.target_url), folder, &db);
+    SyncEngine engine(account, options.source_dir, folder, &db);
     engine.setIgnoreHiddenFiles(options.ignoreHiddenFiles);
     QObject::connect(&engine, SIGNAL(finished(bool)), &app, SLOT(quit()));
     QObject::connect(&engine, SIGNAL(transmissionProgress(ProgressInfo)), &cmd, SLOT(transmissionProgressSlot()));
@@ -475,7 +507,7 @@ restart_sync:
 
     app.exec();
 
-    if (engine.isAnotherSyncNeeded()) {
+    if (engine.isAnotherSyncNeeded() != NoFollowUpSync) {
         if (restartCount < options.restartTimes) {
             restartCount++;
             qDebug() << "Restarting Sync, because another sync is needed" << restartCount;

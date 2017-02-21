@@ -35,6 +35,7 @@ namespace OCC {
 
 class SyncEngine;
 class AccountState;
+class SyncRunFileLog;
 
 /**
  * @brief The FolderDefinition class
@@ -52,6 +53,8 @@ public:
     QString alias;
     /// path on local machine
     QString localPath;
+    /// path to the journal, usually relative to localPath
+    QString journalPath;
     /// path on remote
     QString targetPath;
     /// whether the folder is paused
@@ -68,6 +71,15 @@ public:
 
     /// Ensure / as separator and trailing /.
     static QString prepareLocalPath(const QString& path);
+
+    /// Ensure starting / and no ending /.
+    static QString prepareTargetPath(const QString& path);
+
+    /// journalPath relative to localPath.
+    QString absoluteJournalPath() const;
+
+    /// Returns the relative journal path that's appropriate for this folder and account.
+    QString defaultJournalPath(AccountPtr account);
 };
 
 /**
@@ -110,7 +122,7 @@ public:
     /**
      * wrapper for QDir::cleanPath("Z:\\"), which returns "Z:\\", but we need "Z:" instead
      */
-    QString cleanPath();
+    QString cleanPath() const;
 
     /**
      * remote folder path
@@ -177,6 +189,7 @@ public:
      qint64 msecSinceLastSync() const { return _timeSinceLastSyncDone.elapsed(); }
      qint64 msecLastSyncDuration() const { return _lastSyncDuration; }
      int consecutiveFollowUpSyncs() const { return _consecutiveFollowUpSyncs; }
+     int consecutiveFailingSyncs() const { return _consecutiveFailingSyncs; }
 
      /// Saves the folder data in the account's settings.
      void saveToSettings() const;
@@ -193,11 +206,27 @@ public:
       */
      bool isFileExcludedRelative(const QString& relativePath) const;
 
+     /** Calls schedules this folder on the FolderMan after a short delay.
+      *
+      * This should be used in situations where a sync should be triggered
+      * because a local file was modified. Syncs don't upload files that were
+      * modified too recently, and this delay ensures the modification is
+      * far enough in the past.
+      *
+      * The delay doesn't reset with subsequent calls.
+      */
+     void scheduleThisFolderSoon();
+
+     /**
+      * Migration: When this flag is true, this folder will save to
+      * the backwards-compatible 'Folders' section in the config file.
+      */
+     void setSaveBackwardsCompatible(bool save);
+
 signals:
     void syncStateChange();
     void syncStarted();
     void syncFinished(const SyncResult &result);
-    void scheduleToSync(Folder*);
     void progressInfo(const ProgressInfo& progress);
     void newBigFolderDiscovered(const QString &); // A new folder bigger than the threshold was discovered
     void syncPausedChanged(Folder*, bool paused);
@@ -251,22 +280,27 @@ private slots:
 
     void slotFolderDiscovered(bool local, QString folderName);
     void slotTransmissionProgress(const ProgressInfo& pi);
-    void slotItemCompleted(const SyncFileItem&, const PropagatorJob&);
+    void slotItemCompleted(const SyncFileItemPtr&);
 
     void slotRunEtagJob();
     void etagRetreived(const QString &);
     void etagRetreivedFromSyncEngine(const QString &);
 
-    void slotThreadTreeWalkResult(const SyncFileItemVector& ); // after sync is done
-
     void slotEmitFinishedDelayed();
 
-    void slotNewBigFolderDiscovered(const QString &);
+    void slotNewBigFolderDiscovered(const QString &, bool isExternal);
+
+    void slotLogPropagationStart();
+
+    /** Adds this folder to the list of scheduled folders in the
+     *  FolderMan.
+     */
+    void slotScheduleThisFolder();
 
 private:
     bool setIgnoredFiles();
 
-    void bubbleUpSyncResult();
+    void showSyncResultPopup();
 
     void checkLocalPath();
 
@@ -285,20 +319,17 @@ private:
 
     AccountStatePtr _accountState;
     FolderDefinition _definition;
+    QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
 
     SyncResult _syncResult;
     QScopedPointer<SyncEngine> _engine;
-    QStringList  _errors;
-    bool         _csyncError;
     bool         _csyncUnavail;
-    bool         _wipeDb;
     bool         _proxyDirty;
     QPointer<RequestEtagJob> _requestEtagJob;
     QString       _lastEtag;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;
     qint64        _lastSyncDuration;
-    bool          _forceSyncOnPollTimeout;
 
     /// The number of syncs that failed in a row.
     /// Reset when a sync is successful.
@@ -311,6 +342,20 @@ private:
     SyncJournalDb _journal;
 
     ClientProxy   _clientProxy;
+
+    QScopedPointer<SyncRunFileLog> _fileLog;
+
+    QTimer _scheduleSelfTimer;
+
+    /**
+     * When the same local path is synced to multiple accounts, only one
+     * of them can be stored in the settings in a way that's compatible
+     * with old clients that don't support it. This flag marks folders
+     * that shall be written in a backwards-compatible way, by being set
+     * on the *first* Folder instance that was configured for each local
+     * path.
+     */
+    bool _saveBackwardsCompatible;
 };
 
 }

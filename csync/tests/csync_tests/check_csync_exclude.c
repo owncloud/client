@@ -20,6 +20,7 @@
 #include "config_csync.h"
 #include <string.h>
 #include <time.h>
+#include <sys/time.h>
 
 #include "torture.h"
 
@@ -28,20 +29,20 @@
 
 #define EXCLUDE_LIST_FILE SOURCEDIR"/../sync-exclude.lst"
 
-static void setup(void **state) {
+static int setup(void **state) {
     CSYNC *csync;
-    int rc;
 
-    csync_create(&csync, "/tmp/check_csync1", "/tmp/check_csync2");
+    csync_create(&csync, "/tmp/check_csync1");
 
     *state = csync;
+    return 0;
 }
 
-static void setup_init(void **state) {
+static int setup_init(void **state) {
     CSYNC *csync;
     int rc;
 
-    csync_create(&csync, "/tmp/check_csync1", "/tmp/check_csync2");
+    csync_create(&csync, "/tmp/check_csync1");
 
     rc = csync_exclude_load(EXCLUDE_LIST_FILE, &(csync->excludes));
     assert_int_equal(rc, 0);
@@ -59,9 +60,10 @@ static void setup_init(void **state) {
     assert_int_equal(rc, 0);
 
     *state = csync;
+    return 0;
 }
 
-static void teardown(void **state) {
+static int teardown(void **state) {
     CSYNC *csync = *state;
     int rc;
 
@@ -74,6 +76,8 @@ static void teardown(void **state) {
     assert_int_equal(rc, 0);
 
     *state = NULL;
+    
+    return 0;
 }
 
 static void check_csync_exclude_add(void **state)
@@ -143,6 +147,17 @@ static void check_csync_excluded(void **state)
     assert_int_equal(rc, CSYNC_FILE_SILENTLY_EXCLUDED);
     rc = csync_excluded_no_ctx(csync->excludes, "subdir/.csync_journal.db", CSYNC_FTW_TYPE_FILE);
     assert_int_equal(rc, CSYNC_FILE_SILENTLY_EXCLUDED);
+    
+    /* also the new form of the database name */
+    rc = csync_excluded_no_ctx(csync->excludes, "._sync_5bdd60bdfcfa.db", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_SILENTLY_EXCLUDED);
+    rc = csync_excluded_no_ctx(csync->excludes, "._sync_5bdd60bdfcfa.db.ctmp", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_SILENTLY_EXCLUDED);
+    rc = csync_excluded_no_ctx(csync->excludes, "._sync_5bdd60bdfcfa.db-shm", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_SILENTLY_EXCLUDED);
+    rc = csync_excluded_no_ctx(csync->excludes, "subdir/._sync_5bdd60bdfcfa.db", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_SILENTLY_EXCLUDED);
+    
 
     /* pattern ]*.directory - ignore and remove */
     rc = csync_excluded_no_ctx(csync->excludes, "my.~directory", CSYNC_FTW_TYPE_FILE);
@@ -179,6 +194,20 @@ static void check_csync_excluded(void **state)
 
     rc = csync_excluded_no_ctx(csync->excludes, "latex/songbook/my_manuscript.tex.tmp", CSYNC_FTW_TYPE_FILE);
     assert_int_equal(rc, CSYNC_FILE_EXCLUDE_LIST);
+
+#ifdef _WIN32
+    rc = csync_excluded_no_ctx(csync->excludes, "file_trailing_space ", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_EXCLUDE_TRAILING_SPACE);
+
+    rc = csync_excluded_no_ctx(csync->excludes, "file_trailing_dot.", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_EXCLUDE_INVALID_CHAR);
+
+    rc = csync_excluded_no_ctx(csync->excludes, "AUX", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_EXCLUDE_INVALID_CHAR);
+
+    rc = csync_excluded_no_ctx(csync->excludes, "file_invalid_char<", CSYNC_FTW_TYPE_FILE);
+    assert_int_equal(rc, CSYNC_FILE_EXCLUDE_INVALID_CHAR);
+#endif
 }
 
 static void check_csync_excluded_traversal(void **state)
@@ -305,13 +334,14 @@ static void check_csync_excluded_performance(void **state)
 
     const int N = 10000;
     int totalRc = 0;
+    int i = 0;
 
     // Being able to use QElapsedTimer for measurement would be nice...
     {
         struct timeval before, after;
         gettimeofday(&before, 0);
 
-        for (int i = 0; i < N; ++i) {
+        for (i = 0; i < N; ++i) {
             totalRc += csync_excluded_no_ctx(csync->excludes, "/this/is/quite/a/long/path/with/many/components", CSYNC_FTW_TYPE_DIR);
             totalRc += csync_excluded_no_ctx(csync->excludes, "/1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20/21/22/23/24/25/26/27/29", CSYNC_FTW_TYPE_FILE);
         }
@@ -329,7 +359,7 @@ static void check_csync_excluded_performance(void **state)
         struct timeval before, after;
         gettimeofday(&before, 0);
 
-        for (int i = 0; i < N; ++i) {
+        for (i = 0; i < N; ++i) {
             totalRc += csync_excluded_traversal(csync->excludes, "/this/is/quite/a/long/path/with/many/components", CSYNC_FTW_TYPE_DIR);
             totalRc += csync_excluded_traversal(csync->excludes, "/1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20/21/22/23/24/25/26/27/29", CSYNC_FTW_TYPE_FILE);
         }
@@ -365,16 +395,16 @@ static void check_csync_exclude_expand_escapes(void **state)
 
 int torture_run_tests(void)
 {
-    const UnitTest tests[] = {
-        unit_test_setup_teardown(check_csync_exclude_add, setup, teardown),
-        unit_test_setup_teardown(check_csync_exclude_load, setup, teardown),
-        unit_test_setup_teardown(check_csync_excluded, setup_init, teardown),
-        unit_test_setup_teardown(check_csync_excluded_traversal, setup_init, teardown),
-        unit_test_setup_teardown(check_csync_pathes, setup_init, teardown),
-        unit_test_setup_teardown(check_csync_is_windows_reserved_word, setup_init, teardown),
-        unit_test_setup_teardown(check_csync_excluded_performance, setup_init, teardown),
-        unit_test(check_csync_exclude_expand_escapes),
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test_setup_teardown(check_csync_exclude_add, setup, teardown),
+        cmocka_unit_test_setup_teardown(check_csync_exclude_load, setup, teardown),
+        cmocka_unit_test_setup_teardown(check_csync_excluded, setup_init, teardown),
+        cmocka_unit_test_setup_teardown(check_csync_excluded_traversal, setup_init, teardown),
+        cmocka_unit_test_setup_teardown(check_csync_pathes, setup_init, teardown),
+        cmocka_unit_test_setup_teardown(check_csync_is_windows_reserved_word, setup_init, teardown),
+        cmocka_unit_test_setup_teardown(check_csync_excluded_performance, setup_init, teardown),
+        cmocka_unit_test(check_csync_exclude_expand_escapes),
     };
 
-    return run_tests(tests);
+    return cmocka_run_group_tests(tests, NULL, NULL);
 }

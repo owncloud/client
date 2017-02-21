@@ -42,7 +42,8 @@ repositories`_ to see all the Linux client repos.
     echo 'deb-src 
     http://download.opensuse.org/repositories/isv:/ownCloud:/desktop/Debian_8.0/ /' >> /etc/apt/sources.list.d/owncloud-client.list
 
-2. Install the dependencies using the following commands for your specific Linux distribution:
+2. Install the dependencies using the following commands for your specific Linux 
+distribution. Make sure the repositories for source packages are enabled.
   
    * Debian/Ubuntu: ``apt-get update; apt-get build-dep owncloud-client``
    * openSUSE/SLES: ``zypper ref; zypper si -d owncloud-client``
@@ -53,7 +54,7 @@ repositories`_ to see all the Linux client repos.
 Mac OS X
 --------
 
-In additon to needing XCode (along with the command line tools), developing in
+In addition to needing XCode (along with the command line tools), developing in
 the Mac OS X environment requires extra dependencies.  You can install these
 dependencies through MacPorts_ or Homebrew_.  These dependencies are required
 only on the build machine, because non-standard libs are deployed in the app
@@ -65,37 +66,51 @@ recipes.
 
 To set up your build environment for development using HomeBrew_:
 
-1. Add the ownCloud repository using the following command::
+1. Install Xcode
+2. Install Xcode command line tools::
+    xcode-select --install
+
+3. Install homebrew::
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+4. Add the ownCloud repository using the following command::
 
     brew tap owncloud/owncloud
 
-2. Install any missing dependencies::
+5. Install a Qt5 version with qtwebkit support::
+
+    brew install qt5 --with-qtwebkit
+
+6. Install any missing dependencies::
 
     brew install $(brew deps owncloud-client)
 
-3. Add Qt from brew to the path::
+7. Add Qt from brew to the path::
 
-    export PATH=/usr/local/Cellar/qt5/5.x.y/bin/qmake
+    export PATH=/usr/local/Cellar/qt5/5.x.y/bin:$PATH
 
-   Where ``x.z`` is the current version of Qt 5 that brew has installed
+   Where ``x.y`` is the current version of Qt 5 that brew has installed
    on your machine.
+8. Install qtkeychain from here:  git clone https://github.com/frankosterfeld/qtkeychain.git
+   make sure you make the same install prefix as later while building the client e.g.  -            
+   ``DCMAKE_INSTALL_PREFIX=/Path/to/client-install``
 
-5. For compilation of the client, follow the :ref:`generic-build-instructions`.
+9. For compilation of the client, follow the :ref:`generic-build-instructions`.
 
-6. Install the Packages_ package creation tool.
+10. Install the Packages_ package creation tool.
 
-7. In the build directory, run ``admin/osx/create_mac.sh <build_dir>
+11. In the build directory, run ``admin/osx/create_mac.sh <build_dir>
    <install_dir>``. If you have a developer signing certificate, you can specify
    its Common Name as a third parameter (use quotes) to have the package
    signed automatically.
 
-   .. note:: Contrary to earlier versions, ownCloud 1.7 and later are packaged
+  .. note::  Contrary to earlier versions, ownCloud 1.7 and later are packaged
              as a ``pkg`` installer. Do not call "make package" at any time when
              compiling for OS X, as this will build a disk image, and will not
              work correctly.
 
 Windows Development Build
------------------------
+-------------------------
 
 If you want to test some changes and deploy them locally, you can build natively
 on Windows using MinGW. If you want to generate an installer for deployment, please
@@ -195,7 +210,7 @@ In order to make setup simple, you can use the provided Dockerfile to build your
                -in ${unsigned_file} \
                -out ${installer_file}
 
-   for ``-in``, use the URL to the time stamping server provided by your CA along with the Authenticode certificate. Alternatively,
+   For ``-in``, use the URL to the time stamping server provided by your CA along with the Authenticode certificate. Alternatively,
    you may use the official Microsoft ``signtool`` utility on Microsoft Windows.
 
    If you're familiar with docker, you can use the version of ``osslsigncode`` that is part of the docker image.
@@ -233,6 +248,14 @@ To build the most up-to-date version of the client:
    .. note:: On Mac OS X, you need to specify ``-DCMAKE_INSTALL_PREFIX=target``,
             where ``target`` is a private location, i.e. in parallel to your build
             dir by specifying ``../install``.
+            
+   ..note:: qtkeychain must be compiled with the same prefix e.g CMAKE_INSTALL_PREFIX=/Users/path/to/client/install/
+
+   .. note:: Example:: cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCMAKE_INSTALL_PREFIX=/Users/path/to/client/install/  -D_OPENSSL_LIBDIR=/usr/local/opt/openssl/lib/ -D_OPENSSL_INCLUDEDIR=/usr/local/opt/openssl/include/   -DOPENSSL_INCLUDE_DIR=/usr/local/opt/openssl/include/ -DNO_SHIBBOLETH=1
+
+   .. note:: Example:: cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5 -DCMAKE_INSTALL_PREFIX=/Users/path/to/client/install/  -D_OPENSSL_LIBDIR=/usr/local/opt/openssl/lib/ -D_OPENSSL_INCLUDEDIR=/usr/local/opt/openssl/include/  -D_OPENSSL_VERSION=1.0.2a -DOPENSSL_INCLUDE_DIR=/usr/local/opt/openssl/include/ -DNO_SHIBBOLETH=1
+
+   qtkeychain must be compiled with the same prefix e.g CMAKE_INSTALL_PREFIX=/Users/path/to/client/install/ .
 
 4. Call ``make``.
 

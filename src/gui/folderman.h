@@ -37,6 +37,26 @@ class LockWatcher;
 /**
  * @brief The FolderMan class
  * @ingroup gui
+ *
+ * The FolderMan knows about all loaded folders and is responsible for
+ * scheduling them when necessary.
+ *
+ * A folder is scheduled if:
+ * - The configured force-sync-interval has expired
+ *   (_timeScheduler and slotScheduleFolderByTime())
+ *
+ * - A folder watcher receives a notification about a file change
+ *   (_folderWatchers and Folder::slotWatchedPathChanged())
+ *
+ * - The folder etag on the server has changed
+ *   (_etagPollTimer)
+ *
+ * - The locks of a monitored file are released
+ *   (_lockWatcher and slotWatchedFileUnlocked())
+ *
+ * - There was a sync error or a follow-up sync is requested
+ *   (_timeScheduler and slotScheduleFolderByTime()
+ *    and Folder::slotSyncFinished())
  */
 class FolderMan : public QObject
 {
@@ -53,6 +73,9 @@ public:
     /** Adds a folder for an account, ensures the journal is gone and saves it in the settings.
       */
     Folder* addFolder(AccountState* accountState, const FolderDefinition& folderDefinition);
+
+    /** Removes a folder */
+    void removeFolder( Folder* );
 
     /** Returns the folder which the file or directory stored in path is in */
     Folder* folderForPath(const QString& path);
@@ -74,16 +97,16 @@ public:
     Folder* setupFolderFromOldConfigFile(const QString &, AccountState *account );
 
     /**
-     * Ensures that a given directory does not contain a .csync_journal.
+     * Ensures that a given directory does not contain a sync journal file.
      *
      * @returns false if the journal could not be removed, true otherwise.
      */
-    static bool ensureJournalGone(const QString &path);
+    static bool ensureJournalGone(const QString& journalDbFile);
 
     /** Creates a new and empty local directory. */
     bool startFromScratch( const QString& );
 
-    QString statusToString(SyncResult, bool paused ) const;
+    QString statusToString(SyncResult::Status, bool paused ) const;
 
     static SyncResult accountStatus( const QList<Folder*> &folders );
 
@@ -105,7 +128,7 @@ public:
      *
      * @returns an empty string if it is allowed, or an error if it is not allowed
      */
-    QString checkPathValidityForNewFolder(const QString &path, bool forNewDirectory = false);
+    QString checkPathValidityForNewFolder(const QString &path, const QUrl& serverUrl = QUrl(), bool forNewDirectory = false);
 
     /**
      * While ignoring hidden files can theoretically be switched per folder,
@@ -126,6 +149,34 @@ public:
      */
     Folder* currentSyncFolder() const;
 
+    /** Removes all folders */
+    int unloadAndDeleteAllFolders();
+
+    /**
+     * If enabled is set to false, no new folders will start to sync.
+     * The current one will finish.
+     */
+    void setSyncEnabled( bool );
+
+    /** Queues a folder for syncing. */
+    void scheduleFolder(Folder*);
+
+    /** Puts a folder in the very front of the queue. */
+    void scheduleFolderNext(Folder*);
+
+    /** Queues all folders for syncing. */
+    void scheduleAllFolders();
+
+    void setDirtyProxy(bool value = true);
+    void setDirtyNetworkLimits();
+
+    /**
+     * Terminates the current folder sync.
+     *
+     * It does not switch the folder to paused state.
+     */
+    void terminateSyncProcess();
+
 signals:
     /**
       * signal to indicate a folder has changed its sync state.
@@ -139,41 +190,12 @@ signals:
      */
     void scheduleQueueChanged();
 
+    /**
+     * Emitted whenever the list of configured folders changes.
+     */
     void folderListChanged(const Folder::Map &);
 
 public slots:
-    void slotRemoveFolder( Folder* );
-    void slotFolderSyncPaused(Folder *, bool paused);
-    void slotFolderCanSyncChanged();
-
-    void slotFolderSyncStarted();
-    void slotFolderSyncFinished( const SyncResult& );
-
-    /**
-     * Terminates the current folder sync.
-     *
-     * It does not switch the folder to paused state.
-     */
-    void terminateSyncProcess();
-
-    /* delete all folder objects */
-    int unloadAndDeleteAllFolders();
-
-    // if enabled is set to false, no new folders will start to sync.
-    // the current one will finish.
-    void setSyncEnabled( bool );
-
-    void slotScheduleAllFolders();
-
-    void setDirtyProxy(bool value = true);
-    void setDirtyNetworkLimits();
-
-    // slot to add a folder to the syncing queue
-    void slotScheduleSync(Folder*);
-    // slot to schedule an ETag job
-    void slotScheduleETagJob ( const QString &alias, RequestEtagJob *job);
-    void slotEtagJobDestroyed (QObject*);
-    void slotRunOneEtagJob();
 
     /**
      * Schedules folders of newly connected accounts, terminates and
@@ -190,10 +212,22 @@ public slots:
      * Triggers a sync run once the lock on the given file is removed.
      *
      * Automatically detemines the folder that's responsible for the file.
+     * See slotWatchedFileUnlocked().
      */
     void slotSyncOnceFileUnlocks(const QString& path);
 
+    // slot to schedule an ETag job (from Folder only)
+    void slotScheduleETagJob ( const QString &alias, RequestEtagJob *job);
+
 private slots:
+    void slotFolderSyncPaused(Folder *, bool paused);
+    void slotFolderCanSyncChanged();
+    void slotFolderSyncStarted();
+    void slotFolderSyncFinished( const SyncResult& );
+
+    void slotRunOneEtagJob();
+    void slotEtagJobDestroyed (QObject*);
+
     // slot to take the next folder from queue and start syncing.
     void slotStartScheduledFolderSync();
     void slotEtagPollTimerTimeout();
@@ -207,22 +241,34 @@ private slots:
     void slotServerVersionChanged(Account* account);
 
     /**
-     * Schedules the folder for synchronization that contains
+     * A file whose locks were being monitored has become unlocked.
+     *
+     * This schedules the folder for synchronization that contains
      * the file with the given path.
      */
-    void slotScheduleFolderOwningFile(const QString& path);
+    void slotWatchedFileUnlocked(const QString& path);
+
+    /**
+     * Schedules folders whose time to sync has come.
+     *
+     * Either because a long time has passed since the last sync or
+     * because of previous failures.
+     */
+    void slotScheduleFolderByTime();
 
 private:
+
     /** Adds a new folder, does not add it to the account settings and
      *  does not set an account on the new folder.
       */
-    Folder* addFolderInternal(FolderDefinition folderDefinition, AccountState* accountState);
+    Folder* addFolderInternal(FolderDefinition folderDefinition,
+                              AccountState* accountState);
 
     /* unloads a folder object, does not delete it */
     void unloadFolder( Folder * );
 
     /** Will start a sync after a bit of delay. */
-    void startScheduledSyncSoon(qint64 msMinimumDelay = 0);
+    void startScheduledSyncSoon();
 
     // finds all folder configuration files
     // and create the folders
@@ -232,24 +278,36 @@ private:
     // restarts the application (Linux only)
     void restartApplication();
 
+    void setupFoldersHelper(QSettings& settings, AccountStatePtr account, bool backwardsCompatible);
+
     QSet<Folder*>  _disabledFolders;
     Folder::Map    _folderMap;
     QString        _folderConfigPath;
     Folder        *_currentSyncFolder;
     QPointer<Folder> _lastSyncFolder;
     bool           _syncEnabled;
-    QTimer         _etagPollTimer;
-    QPointer<RequestEtagJob>        _currentEtagJob; // alias of Folder running the current RequestEtagJob
 
+    /// Watching for file changes in folders
     QMap<QString, FolderWatcher*> _folderWatchers;
+
+    /// Starts regular etag query jobs
+    QTimer _etagPollTimer;
+    /// The currently running etag query
+    QPointer<RequestEtagJob> _currentEtagJob;
+
+    /// Watches files that couldn't be synced due to locks
     QScopedPointer<LockWatcher> _lockWatcher;
-    QScopedPointer<SocketApi> _socketApi;
 
-    /** The aliases of folders that shall be synced. */
-    QQueue<Folder*> _scheduleQueue;
+    /// Occasionally schedules folders
+    QTimer _timeScheduler;
 
-    /** When the timer expires one of the scheduled syncs will be started. */
+    /// Scheduled folders that should be synced as soon as possible
+    QQueue<Folder*> _scheduledFolders;
+
+    /// Picks the next scheduled folder and starts the sync
     QTimer          _startScheduledSyncTimer;
+
+    QScopedPointer<SocketApi> _socketApi;
 
     bool            _appRestartRequired;
 

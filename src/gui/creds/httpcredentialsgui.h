@@ -27,9 +27,11 @@ class HttpCredentialsGui : public HttpCredentials {
     Q_OBJECT
 public:
     explicit HttpCredentialsGui() : HttpCredentials() {}
-    HttpCredentialsGui(const QString& user, const QString& password, const QString& certificatePath, const QString& certificatePasswd) : HttpCredentials(user, password, certificatePath, certificatePasswd) {}
+    HttpCredentialsGui(const QString& user, const QString& password, const QSslCertificate& certificate, const QSslKey& key) : HttpCredentials(user, password, certificate, key) {}
     void askFromUser() Q_DECL_OVERRIDE;
     Q_INVOKABLE void askFromUserAsync();
+
+    static QString requestAppPasswordText(const Account *account);
 };
 
 } // namespace OCC

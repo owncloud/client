@@ -15,6 +15,7 @@
 #include "propagateremotedelete.h"
 #include "owncloudpropagator_p.h"
 #include "account.h"
+#include "asserts.h"
 
 namespace OCC {
 
@@ -22,11 +23,14 @@ DeleteJob::DeleteJob(AccountPtr account, const QString& path, QObject* parent)
     : AbstractNetworkJob(account, path, parent)
 { }
 
+DeleteJob::DeleteJob(AccountPtr account, const QUrl& url, QObject* parent)
+    : AbstractNetworkJob(account, QString(), parent), _url(url)
+{ }
 
 void DeleteJob::start()
 {
     QNetworkRequest req;
-    setReply(davRequest("DELETE", path(), req));
+    setReply(_url.isValid() ? davRequest("DELETE", _url, req) : davRequest("DELETE", path(), req));
     setupConnections(reply());
 
     if( reply()->error() != QNetworkReply::NoError ) {
@@ -55,16 +59,16 @@ bool DeleteJob::finished()
 
 void PropagateRemoteDelete::start()
 {
-    if (_propagator->_abortRequested.fetchAndAddRelaxed(0))
+    if (propagator()->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
     qDebug() << Q_FUNC_INFO << _item->_file;
 
-    _job = new DeleteJob(_propagator->account(),
-                         _propagator->_remoteFolder + _item->_file,
+    _job = new DeleteJob(propagator()->account(),
+                         propagator()->_remoteFolder + _item->_file,
                          this);
     connect(_job, SIGNAL(finishedSignal()), this, SLOT(slotDeleteJobFinished()));
-    _propagator->_activeJobList.append(this);
+    propagator()->_activeJobList.append(this);
     _job->start();
 }
 
@@ -76,9 +80,9 @@ void PropagateRemoteDelete::abort()
 
 void PropagateRemoteDelete::slotDeleteJobFinished()
 {
-    _propagator->_activeJobList.removeOne(this);
+    propagator()->_activeJobList.removeOne(this);
 
-    Q_ASSERT(_job);
+    ASSERT(_job);
 
     qDebug() << Q_FUNC_INFO << _job->reply()->request().url() << "FINISHED WITH STATUS"
         << _job->reply()->error()
@@ -96,12 +100,11 @@ void PropagateRemoteDelete::slotDeleteJobFinished()
         }
 
         SyncFileItem::Status status = classifyError(err, _item->_httpErrorCode,
-                                                    &_propagator->_anotherSyncNeeded);
+                                                    &propagator()->_anotherSyncNeeded);
         done(status, _job->errorString());
         return;
     }
 
-    _item->_requestDuration = _job->duration();
     _item->_responseTimeStamp = _job->responseTimestamp();
 
     // A 404 reply is also considered a success here: We want to make sure
@@ -117,8 +120,8 @@ void PropagateRemoteDelete::slotDeleteJobFinished()
         return;
     }
 
-    _propagator->_journal->deleteFileRecord(_item->_originalFile, _item->_isDirectory);
-    _propagator->_journal->commit("Remote Remove");
+    propagator()->_journal->deleteFileRecord(_item->_originalFile, _item->_isDirectory);
+    propagator()->_journal->commit("Remote Remove");
     done(SyncFileItem::Success);
 }
 

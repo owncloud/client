@@ -156,7 +156,23 @@ Application::Application(int &argc, char **argv) :
 
     connect(this, SIGNAL(messageReceived(QString, QObject*)), SLOT(slotParseMessage(QString, QObject*)));
 
-    AccountManager::instance()->restore();
+    if (!AccountManager::instance()->restore()) {
+        // If there is an error reading the account settings, try again
+        // after a couple of seconds, if that fails, give up.
+        // (non-existence is not an error)
+        Utility::sleep(5);
+        if (!AccountManager::instance()->restore()) {
+            qDebug() << "Could not read the account settings, quitting";
+            QMessageBox::critical(
+                        0,
+                        tr("Error accessing the configuration file"),
+                        tr("There was an error while accessing the configuration "
+                           "file at %1.").arg(ConfigFile().configFile()),
+                        tr("Quit ownCloud"));
+            QTimer::singleShot(0, qApp, SLOT(quit()));
+            return;
+        }
+    }
 
     FolderMan::instance()->setSyncEnabled(true);
 
@@ -336,18 +352,15 @@ void Application::slotownCloudWizardDone( int res )
         _checkConnectionTimer.start();
         slotCheckConnection();
 
-        // The very first time an account is configured: enabled autostart
-        // TODO: Doing this every time the account wizard finishes will annoy users.
-        Utility::setLaunchOnStartup(_theme->appName(), _theme->appNameGUI(), true);
+        // If one account is configured: enable autostart
+        bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
+#ifdef Q_OS_MAC
+        // Don't auto start when not being 'installed'
+        shouldSetAutoStart = shouldSetAutoStart
+                && QCoreApplication::applicationDirPath().startsWith("/Applications/");
+#endif
+        Utility::setLaunchOnStartup(_theme->appName(), _theme->appNameGUI(), shouldSetAutoStart);
     }
-}
-
-static void csyncLogCatcher(int /*verbosity*/,
-                        const char */*function*/,
-                        const char *buffer,
-                        void */*userdata*/)
-{
-    Logger::instance()->csyncLog( QString::fromUtf8(buffer) );
 }
 
 void Application::setupLogging()
@@ -360,14 +373,11 @@ void Application::setupLogging()
 
     Logger::instance()->enterNextLogFile();
 
-    qDebug() << QString::fromLatin1( "################## %1 %2 (%3) %4").arg(_theme->appName())
+    qDebug() << QString::fromLatin1( "################## %1 %2 (%3) %4 on %5").arg(_theme->appName())
                 .arg( QLocale::system().name() )
                 .arg(property("ui_lang").toString())
-                .arg(_theme->version());
-
-    // Setup CSYNC logging to forward to our own logger
-    csync_set_log_callback( csyncLogCatcher );
-    csync_set_log_level( Logger::instance()->isNoop() ? 0 : 11 );
+                .arg(_theme->version())
+                .arg(Utility::platformName());
 }
 
 void Application::slotUseMonoIconsChanged(bool)

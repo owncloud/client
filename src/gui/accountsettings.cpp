@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -30,6 +31,7 @@
 #include "owncloudsetupwizard.h"
 #include "creds/abstractcredentials.h"
 #include "tooltipupdater.h"
+#include "filesystem.h"
 
 #include <math.h>
 
@@ -109,7 +111,7 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
 
     QAction *syncNowAction = new QAction(this);
     syncNowAction->setShortcut(QKeySequence(Qt::Key_F6));
-    connect(syncNowAction, SIGNAL(triggered()), SLOT(slotSyncCurrentFolderNow()));
+    connect(syncNowAction, SIGNAL(triggered()), SLOT(slotScheduleCurrentFolder()));
     addAction(syncNowAction);
 
     connect(ui->_folderList, SIGNAL(clicked(const QModelIndex &)),
@@ -117,6 +119,10 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent) :
 
     connect(ui->selectiveSyncApply, SIGNAL(clicked()), _model, SLOT(slotApplySelectiveSync()));
     connect(ui->selectiveSyncCancel, SIGNAL(clicked()), _model, SLOT(resetFolders()));
+    connect(ui->bigFolderApply, SIGNAL(clicked(bool)), _model, SLOT(slotApplySelectiveSync()));
+    connect(ui->bigFolderSyncAll, SIGNAL(clicked(bool)), _model, SLOT(slotSyncAllPendingBigFolders()));
+    connect(ui->bigFolderSyncNone, SIGNAL(clicked(bool)), _model, SLOT(slotSyncNoPendingBigFolders()));
+
     connect(FolderMan::instance(), SIGNAL(folderListChanged(Folder::Map)), _model, SLOT(resetFolders()));
     connect(this, SIGNAL(folderChanged()), _model, SLOT(resetFolders()));
 
@@ -208,8 +214,10 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     }
 
     tv->setCurrentIndex(index);
+    QString alias = _model->data( index, FolderStatusDelegate::FolderAliasRole ).toString();
     bool folderPaused = _model->data( index, FolderStatusDelegate::FolderSyncPaused).toBool();
     bool folderConnected = _model->data( index, FolderStatusDelegate::FolderAccountConnected ).toBool();
+    auto folderMan = FolderMan::instance();
 
     QMenu *menu = new QMenu(tv);
     menu->setAttribute(Qt::WA_DeleteOnClose);
@@ -221,6 +229,15 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
         ac = menu->addAction(tr("Choose what to sync"));
         ac->setEnabled(folderConnected);
         connect(ac, SIGNAL(triggered(bool)), this, SLOT(doExpand()));
+    }
+
+    if (!folderPaused) {
+        ac = menu->addAction(tr("Force sync now"));
+        if (folderMan->currentSyncFolder() == folderMan->folder(alias)) {
+            ac->setText(tr("Restart sync"));
+        }
+        ac->setEnabled(folderConnected);
+        connect(ac, SIGNAL(triggered(bool)), this, SLOT(slotForceSyncCurrentFolder()));
     }
 
     ac = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
@@ -284,7 +301,8 @@ void AccountSettings::slotFolderWizardAccepted()
     FolderDefinition definition;
     definition.localPath    = FolderDefinition::prepareLocalPath(
             folderWizard->field(QLatin1String("sourceFolder")).toString());
-    definition.targetPath   = folderWizard->property("targetPath").toString();
+    definition.targetPath   = FolderDefinition::prepareTargetPath(
+            folderWizard->property("targetPath").toString());
 
     {
         QDir dir(definition.localPath);
@@ -295,8 +313,9 @@ void AccountSettings::slotFolderWizardAccepted()
                                      tr("<p>Could not create local folder <i>%1</i>.")
                                         .arg(QDir::toNativeSeparators(definition.localPath)));
                 return;
+            } else {
+                FileSystem::setFolderMinimumPermissions(definition.localPath);
             }
-
         }
     }
 
@@ -317,7 +336,7 @@ void AccountSettings::slotFolderWizardAccepted()
         // The user already accepted the selective sync dialog. everything is in the white list
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
                                              QStringList() << QLatin1String("/"));
-        folderMan->slotScheduleAllFolders();
+        folderMan->scheduleAllFolders();
         emit folderChanged();
     }
 }
@@ -356,7 +375,7 @@ void AccountSettings::slotRemoveCurrentFolder()
                 return;
             }
 
-            folderMan->slotRemoveFolder( folderMan->folder(alias) );
+            folderMan->removeFolder( folderMan->folder(alias) );
             _model->removeRow(row);
 
             // single folder fix to show add-button and hide remove-button
@@ -456,7 +475,7 @@ void AccountSettings::slotEnableCurrentFolder()
     }
 }
 
-void AccountSettings::slotSyncCurrentFolderNow()
+void AccountSettings::slotScheduleCurrentFolder()
 {
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
     if( !selected.isValid() )
@@ -464,7 +483,25 @@ void AccountSettings::slotSyncCurrentFolderNow()
     QString alias = _model->data( selected, FolderStatusDelegate::FolderAliasRole ).toString();
     FolderMan *folderMan = FolderMan::instance();
 
-    folderMan->slotScheduleSync(folderMan->folder(alias));
+    folderMan->scheduleFolder(folderMan->folder(alias));
+}
+
+void AccountSettings::slotForceSyncCurrentFolder()
+{
+    QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
+    if( !selected.isValid() )
+        return;
+    QString alias = _model->data( selected, FolderStatusDelegate::FolderAliasRole ).toString();
+    FolderMan *folderMan = FolderMan::instance();
+
+    // Terminate and reschedule any running sync
+    if (Folder* current = folderMan->currentSyncFolder()) {
+        folderMan->terminateSyncProcess();
+        folderMan->scheduleFolder(current);
+    }
+
+    // Insert the selected folder at the front of the queue
+    folderMan->scheduleFolderNext(folderMan->folder(alias));
 }
 
 void AccountSettings::slotOpenOC()
@@ -635,12 +672,18 @@ void AccountSettings::refreshSelectiveSyncStatus()
     }
 
     if (msg.isEmpty()) {
-        ui->selectiveSyncNotification->setVisible(false);
-        ui->selectiveSyncNotification->setText(QString());
+        ui->selectiveSyncButtons->setVisible(true);
+        ui->bigFolderUi->setVisible(false);
     } else {
-        ui->selectiveSyncNotification->setVisible(true);
-        QString wholeMsg = tr("There are new folders that were not synchronized because they are too big: ") + msg;
-        ui->selectiveSyncNotification->setText(wholeMsg);
+        ConfigFile cfg;
+        QString info =
+            !cfg.confirmExternalStorage() ? tr("There are folders that were not synchronized because they are too big: ") :
+            !cfg.newBigFolderSizeLimit().first ? tr("There are folders that were not synchronized because they are external storages: ") :
+            tr("There are folders that were not synchronized because they are too big or external storages: ");
+
+        ui->selectiveSyncNotification->setText(info + msg);
+        ui->selectiveSyncButtons->setVisible(false);
+        ui->bigFolderUi->setVisible(true);
         shouldBeVisible = true;
     }
 

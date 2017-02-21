@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -66,8 +67,8 @@ public:
     SyncFileItem() : _type(UnknownType),  _direction(None), _isDirectory(false),
          _serverHasIgnoredFiles(false), _hasBlacklistEntry(false),
          _errorMayBeBlacklisted(false), _status(NoStatus),
-        _isRestoration(false), _should_update_metadata(false),
-        _httpErrorCode(0), _requestDuration(0), _affectedItems(1),
+        _isRestoration(false),
+        _httpErrorCode(0), _affectedItems(1),
         _instruction(CSYNC_INSTRUCTION_NONE), _modtime(0), _size(0), _inode(0)
     {
     }
@@ -137,7 +138,7 @@ public:
     QString _file;
     QString _renameTarget;
     Type _type BITFIELD(3);
-    Direction _direction BITFIELD(2);
+    Direction _direction BITFIELD(3);
     bool _isDirectory BITFIELD(1);
     bool _serverHasIgnoredFiles BITFIELD(1);
 
@@ -156,11 +157,9 @@ public:
     // Variables useful to report to the user
     Status               _status BITFIELD(4);
     bool                 _isRestoration BITFIELD(1); // The original operation was forbidden, and this is a restoration
-    bool                 _should_update_metadata BITFIELD(1);
     quint16              _httpErrorCode;
     QString              _errorString; // Contains a string only in case of error
     QByteArray           _responseTimeStamp;
-    quint64              _requestDuration;
     quint32              _affectedItems; // the number of affected items by the operation on this item.
      // usually this value is 1, but for removes on dirs, it might be much higher.
 
@@ -179,15 +178,10 @@ public:
     QString              _directDownloadCookies;
 
     struct {
-        quint64     _size;
-        time_t      _modtime;
-        QByteArray  _etag;
-        QByteArray  _fileId;
         quint64     _other_size;
         time_t      _other_modtime;
         QByteArray  _other_etag;
         QByteArray  _other_fileId;
-        enum csync_instructions_e _instruction BITFIELD(16);
         enum csync_instructions_e _other_instruction BITFIELD(16);
     } log;
 };
@@ -202,5 +196,6 @@ typedef QVector<SyncFileItemPtr> SyncFileItemVector;
 }
 
 Q_DECLARE_METATYPE(OCC::SyncFileItem)
+Q_DECLARE_METATYPE(OCC::SyncFileItemPtr)
 
 #endif // SYNCFILEITEM_H

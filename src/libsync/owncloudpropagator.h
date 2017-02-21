@@ -56,11 +56,9 @@ class OwncloudPropagator;
  */
 class PropagatorJob : public QObject {
     Q_OBJECT
-protected:
-    OwncloudPropagator *_propagator;
 
 public:
-    explicit PropagatorJob(OwncloudPropagator* propagator) : _propagator(propagator), _state(NotYetStarted) {}
+    explicit PropagatorJob(OwncloudPropagator* propagator);
 
     enum JobState {
         NotYetStarted,
@@ -116,7 +114,7 @@ signals:
     /**
      * Emitted when one item has been completed within a job.
      */
-    void itemCompleted(const SyncFileItem &, const PropagatorJob &);
+    void itemCompleted(const SyncFileItemPtr &);
 
     /**
      * Emitted when all the sub-jobs have been finished and
@@ -126,6 +124,8 @@ signals:
 
     void progress(const SyncFileItem& item, quint64 bytes);
 
+protected:
+    OwncloudPropagator *propagator() const;
 };
 
 
@@ -192,13 +192,11 @@ public:
 
     SyncFileItemPtr _item;
 
-    int _jobsFinished; // number of jobs that have completed
-    int _runningNow; // number of subJobs running right now
     SyncFileItem::Status _hasError;  // NoStatus,  or NormalError / SoftError if there was an error
 
     explicit PropagateDirectory(OwncloudPropagator *propagator, const SyncFileItemPtr &item = SyncFileItemPtr(new SyncFileItem))
         : PropagatorJob(propagator)
-        , _firstJob(0), _item(item),  _jobsFinished(0), _runningNow(0), _hasError(SyncFileItem::NoStatus)
+        , _item(item), _hasError(SyncFileItem::NoStatus)
     { }
 
     virtual ~PropagateDirectory() {
@@ -230,11 +228,9 @@ private slots:
     bool possiblyRunNextJob(PropagatorJob *next) {
         if (next->_state == NotYetStarted) {
             connect(next, SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotSubJobFinished(SyncFileItem::Status)), Qt::QueuedConnection);
-            connect(next, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)),
-                    this, SIGNAL(itemCompleted(const SyncFileItem &, const PropagatorJob &)));
+            connect(next, SIGNAL(itemCompleted(const SyncFileItemPtr &)), this, SIGNAL(itemCompleted(const SyncFileItemPtr &)));
             connect(next, SIGNAL(progress(const SyncFileItem &,quint64)), this, SIGNAL(progress(const SyncFileItem &,quint64)));
             connect(next, SIGNAL(ready()), this, SIGNAL(ready()));
-            _runningNow++;
         }
         return next->scheduleNextJob();
     }
@@ -266,8 +262,7 @@ class OwncloudPropagator : public QObject {
 
 public:
     const QString _localDir; // absolute path to the local directory. ends with '/'
-    const QString _remoteDir; // path to the root of the remote. ends with '/'  (include WebDAV path)
-    const QString _remoteFolder; // folder. (same as remoteDir but without the WebDAV path)
+    const QString _remoteFolder; // remote folder, ends with '/'
 
     SyncJournalDb * const _journal;
     bool _finishedEmited; // used to ensure that finished is only emitted once
@@ -275,10 +270,8 @@ public:
 
 public:
     OwncloudPropagator(AccountPtr account, const QString &localDir,
-                       const QString &remoteDir, const QString &remoteFolder,
-                       SyncJournalDb *progressDb)
+                       const QString &remoteFolder, SyncJournalDb *progressDb)
             : _localDir((localDir.endsWith(QChar('/'))) ? localDir : localDir+'/' )
-            , _remoteDir((remoteDir.endsWith(QChar('/'))) ? remoteDir : remoteDir+'/' )
             , _remoteFolder((remoteFolder.endsWith(QChar('/'))) ? remoteFolder : remoteFolder+'/' )
             , _journal(progressDb)
             , _finishedEmited(false)
@@ -308,8 +301,9 @@ public:
     /** We detected that another sync is required after this one */
     bool _anotherSyncNeeded;
 
+    /* the maximum number of jobs using bandwidth (uploads or downloads, in parallel) */
+    int maximumActiveTransferJob();
     /* The maximum number of active jobs in parallel  */
-    int maximumActiveJob();
     int hardMaximumActiveJob();
 
     bool isInSharedDirectory(const QString& file);
@@ -321,7 +315,7 @@ public:
         if (_rootJob) {
             _rootJob->abort();
         }
-        emitFinished();
+        emitFinished(SyncFileItem::NormalError);
     }
 
     // timeout in seconds
@@ -329,18 +323,6 @@ public:
 
     /** returns the size of chunks in bytes  */
     static quint64 chunkSize();
-
-    /** Records that a file was touched by a job.
-     *
-     * Thread-safe.
-     */
-    void addTouchedFile(const QString& fn);
-
-    /** Get the ms since a file was touched, or -1 if it wasn't.
-     *
-     * Thread-safe.
-     */
-    qint64 timeSinceFileTouched(const QString& fn) const;
 
     AccountPtr account() const;
 
@@ -361,34 +343,41 @@ public:
 private slots:
 
     /** Emit the finished signal and make sure it is only emitted once */
-    void emitFinished() {
+    void emitFinished(SyncFileItem::Status status) {
         if (!_finishedEmited)
-            emit finished();
+            emit finished(status == SyncFileItem::Success);
         _finishedEmited = true;
     }
 
     void scheduleNextJob();
 
 signals:
-    void itemCompleted(const SyncFileItem &, const PropagatorJob &);
+    void itemCompleted(const SyncFileItemPtr &);
     void progress(const SyncFileItem&, quint64 bytes);
-    void finished();
+    void finished(bool success);
 
     /** Emitted when propagation has problems with a locked file. */
     void seenLockedFile(const QString &fileName);
+
+    /** Emitted when propagation touches a file.
+     *
+     * Used to track our own file modifications such that notifications
+     * from the file watcher about these can be ignored.
+     */
+    void touchedFile(const QString &fileName);
 
 private:
 
     AccountPtr _account;
 
-    /** Stores the time since a job touched a file. */
-    QHash<QString, QElapsedTimer> _touchedFiles;
-    mutable QMutex _touchedFilesMutex;
-
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // access to signals which are protected in Qt4
-    friend class PropagateDownloadFileQNAM;
-    friend class PropagateUploadFileQNAM;
+    friend class PropagateDownloadFile;
+    friend class PropagateLocalMkdir;
+    friend class PropagateLocalRename;
+    friend class PropagateRemoteMove;
+    friend class PropagateUploadFileV1;
+    friend class PropagateUploadFileNG;
 #endif
 };
 

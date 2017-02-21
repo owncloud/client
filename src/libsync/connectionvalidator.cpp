@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -143,7 +144,12 @@ void ConnectionValidator::slotStatusFound(const QUrl&url, const QVariantMap &inf
 // status.php could not be loaded (network or server issue!).
 void ConnectionValidator::slotNoStatusFound(QNetworkReply *reply)
 {
-    qDebug() << Q_FUNC_INFO << reply->error() << reply->errorString();
+    qDebug() << Q_FUNC_INFO << reply->error() << reply->errorString() << reply->peek(1024);
+    if (reply && !_account->credentials()->ready()) {
+        // This could be needed for SSL client certificates
+        // We need to load them from keychain and try
+        reportResult( CredentialsMissingOrWrong );
+    } else
     if( reply && ! _account->credentials()->stillValid(reply)) {
         _errors.append(tr("Authentication error: Either username or password are wrong."));
     }  else {
@@ -229,10 +235,26 @@ void ConnectionValidator::slotCapabilitiesRecieved(const QVariantMap &json)
     auto caps = json.value("ocs").toMap().value("data").toMap().value("capabilities");
     qDebug() << "Server capabilities" << caps;
     _account->setCapabilities(caps.toMap());
-    reportResult(Connected);
-    return;
+    fetchUser();
 }
 
+void ConnectionValidator::fetchUser()
+{
+
+    JsonApiJob *job = new JsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/user"), this);
+    job->setTimeout(timeoutToUseMsec);
+    QObject::connect(job, SIGNAL(jsonReceived(QVariantMap, int)), this, SLOT(slotUserFetched(QVariantMap)));
+    job->start();
+}
+
+void ConnectionValidator::slotUserFetched(const QVariantMap &json)
+{
+    QString user = json.value("ocs").toMap().value("data").toMap().value("id").toString();
+    if (!user.isEmpty()) {
+        _account->setDavUser(user);
+    }
+    reportResult(Connected);
+}
 
 void ConnectionValidator::reportResult(Status status)
 {

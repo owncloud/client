@@ -4,7 +4,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -79,21 +80,6 @@ void ShibbolethCredentials::setAccount(Account* account)
     }
 }
 
-bool ShibbolethCredentials::changed(AbstractCredentials* credentials) const
-{
-    ShibbolethCredentials* other(qobject_cast< ShibbolethCredentials* >(credentials));
-
-    if (!other) {
-        return true;
-    }
-
-    if (_shibCookie != other->_shibCookie || _user != other->_user) {
-        return true;
-    }
-
-    return false;
-}
-
 QString ShibbolethCredentials::authType() const
 {
     return QString::fromLatin1("shibboleth");
@@ -142,9 +128,9 @@ void ShibbolethCredentials::fetchFromKeychain()
     } else {
         _url = _account->url();
         ReadPasswordJob *job = new ReadPasswordJob(Theme::instance()->appName());
-        job->setSettings(_account->settingsWithGroup(Theme::instance()->appName(), job).release());
+        job->setSettings(Utility::settingsWithGroup(Theme::instance()->appName(), job).release());
         job->setInsecureFallback(false);
-        job->setKey(keychainKey(_account->url().toString(), "shibAssertion"));
+        job->setKey(keychainKey(_account->url().toString(), user()));
         connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotReadJobDone(QKeychain::Job*)));
         job->start();
     }
@@ -261,7 +247,7 @@ void ShibbolethCredentials::slotReadJobDone(QKeychain::Job *job)
             addToCookieJar(_shibCookie);
         }
         // access
-        job->setSettings(_account->settingsWithGroup(Theme::instance()->appName(), job).release());
+        job->setSettings(Utility::settingsWithGroup(Theme::instance()->appName(), job).release());
 
         _ready = true;
         _stillValid = true;
@@ -320,10 +306,10 @@ QByteArray ShibbolethCredentials::shibCookieName()
 void ShibbolethCredentials::storeShibCookie(const QNetworkCookie &cookie)
 {
     WritePasswordJob *job = new WritePasswordJob(Theme::instance()->appName());
-    job->setSettings(_account->settingsWithGroup(Theme::instance()->appName(), job).release());
+    job->setSettings(Utility::settingsWithGroup(Theme::instance()->appName(), job).release());
     // we don't really care if it works...
     //connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotWriteJobDone(QKeychain::Job*)));
-    job->setKey(keychainKey(_account->url().toString(), "shibAssertion"));
+    job->setKey(keychainKey(_account->url().toString(), user()));
     job->setTextData(QString::fromUtf8(cookie.toRawForm()));
     job->start();
 }
@@ -331,8 +317,8 @@ void ShibbolethCredentials::storeShibCookie(const QNetworkCookie &cookie)
 void ShibbolethCredentials::removeShibCookie()
 {
     DeletePasswordJob *job = new DeletePasswordJob(Theme::instance()->appName());
-    job->setSettings(_account->settingsWithGroup(Theme::instance()->appName(), job).release());
-    job->setKey(keychainKey(_account->url().toString(), "shibAssertion"));
+    job->setSettings(Utility::settingsWithGroup(Theme::instance()->appName(), job).release());
+    job->setKey(keychainKey(_account->url().toString(), user()));
     job->start();
 }
 

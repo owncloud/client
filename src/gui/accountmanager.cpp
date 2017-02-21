@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -44,12 +45,18 @@ AccountManager *AccountManager::instance()
 
 bool AccountManager::restore()
 {
-    auto settings = Account::settingsWithGroup(QLatin1String(accountsC));
+    auto settings = Utility::settingsWithGroup(QLatin1String(accountsC));
+    if (settings->status() != QSettings::NoError) {
+        qDebug() << "Could not read settings from" << settings->fileName()
+                 << settings->status();
+        return false;
+    }
 
     // If there are no accounts, check the old format.
     if (settings->childGroups().isEmpty()
             && !settings->contains(QLatin1String(versionC))) {
-        return restoreFromLegacySettings();
+        restoreFromLegacySettings();
+        return true;
     }
 
     foreach (const auto& accountId, settings->childGroups()) {
@@ -68,10 +75,11 @@ bool AccountManager::restore()
 
 bool AccountManager::restoreFromLegacySettings()
 {
-    // try to open the correctly themed settings
-    auto settings = Account::settingsWithGroup(Theme::instance()->appName());
+    qDebug() << "Migrate: restoreFromLegacySettings, checking settings group"
+             << Theme::instance()->appName();
 
-    bool migratedCreds = false;
+    // try to open the correctly themed settings
+    auto settings = Utility::settingsWithGroup(Theme::instance()->appName());
 
     // if the settings file could not be opened, the childKeys list is empty
     // then try to load settings from a very old place
@@ -87,7 +95,7 @@ bool AccountManager::restoreFromLegacySettings()
 
         QFileInfo fi( oCCfgFile );
         if( fi.isReadable() ) {
-            QSettings *oCSettings = new QSettings(oCCfgFile, QSettings::IniFormat);
+            std::unique_ptr<QSettings> oCSettings(new QSettings(oCCfgFile, QSettings::IniFormat));
             oCSettings->beginGroup(QLatin1String("ownCloud"));
 
             // Check the theme url to see if it is the same url that the oC config was for
@@ -102,10 +110,7 @@ bool AccountManager::restoreFromLegacySettings()
                 qDebug() << "Migrate oC config if " << oCUrl << " == " << overrideUrl << ":"
                          << (oCUrl == overrideUrl ? "Yes" : "No");
                 if( oCUrl == overrideUrl ) {
-                    migratedCreds = true;
-                    settings.reset( oCSettings );
-                } else {
-                    delete oCSettings;
+                    settings = std::move(oCSettings);
                 }
             }
         }
@@ -114,9 +119,6 @@ bool AccountManager::restoreFromLegacySettings()
     // Try to load the single account.
     if (!settings->childKeys().isEmpty()) {
         if (auto acc = loadAccountHelper(*settings)) {
-            if (migratedCreds) {
-                acc->setMigrated(true);
-            }
             addAccount(acc);
             return true;
         }
@@ -126,7 +128,7 @@ bool AccountManager::restoreFromLegacySettings()
 
 void AccountManager::save(bool saveCredentials)
 {
-    auto settings = Account::settingsWithGroup(QLatin1String(accountsC));
+    auto settings = Utility::settingsWithGroup(QLatin1String(accountsC));
     settings->setValue(QLatin1String(versionC), 2);
     foreach (const auto &acc, _accounts) {
         settings->beginGroup(acc->account()->id());
@@ -142,7 +144,7 @@ void AccountManager::save(bool saveCredentials)
 void AccountManager::saveAccount(Account* a)
 {
     qDebug() << "Saving account" << a->url().toString();
-    auto settings = Account::settingsWithGroup(QLatin1String(accountsC));
+    auto settings = Utility::settingsWithGroup(QLatin1String(accountsC));
     settings->beginGroup(a->id());
     saveAccountHelper(a, *settings, false); // don't save credentials they might not have been loaded yet
     settings->endGroup();
@@ -154,7 +156,7 @@ void AccountManager::saveAccount(Account* a)
 void AccountManager::saveAccountState(AccountState* a)
 {
     qDebug() << "Saving account state" << a->account()->url().toString();
-    auto settings = Account::settingsWithGroup(QLatin1String(accountsC));
+    auto settings = Utility::settingsWithGroup(QLatin1String(accountsC));
     settings->beginGroup(a->account()->id());
     a->writeToSettings(*settings);
     settings->endGroup();
@@ -201,17 +203,35 @@ void AccountManager::saveAccountHelper(Account* acc, QSettings& settings, bool s
     if (acc->_am) {
         CookieJar* jar = qobject_cast<CookieJar*>(acc->_am->cookieJar());
         if (jar) {
-            qDebug() << "Saving cookies.";
-            jar->save();
+            qDebug() << "Saving cookies." << acc->cookieJarPath();
+            jar->save(acc->cookieJarPath());
         }
     }
 }
 
 AccountPtr AccountManager::loadAccountHelper(QSettings& settings)
 {
+    auto urlConfig = settings.value(QLatin1String(urlC));
+    if (!urlConfig.isValid()) {
+        // No URL probably means a corrupted entry in the account settings
+        qDebug() << "No URL for account " << settings.group();
+        return AccountPtr();
+    }
+
     auto acc = createAccount();
 
     QString authType = settings.value(QLatin1String(authTypeC)).toString();
+
+    // There was an account-type saving bug when 'skip folder config' was used
+    // See #5408. This attempts to fix up the "dummy" authType
+    if (authType == QLatin1String("dummy")) {
+        if (settings.contains(QLatin1String("http_user"))) {
+            authType = "http";
+        } else if (settings.contains(QLatin1String("shibboleth_shib_user"))) {
+            authType = "shibboleth";
+        }
+    }
+
     QString overrideUrl = Theme::instance()->overrideServerUrl();
     QString forceAuth = Theme::instance()->forceConfigAuthType();
     if(!forceAuth.isEmpty() && !overrideUrl.isEmpty() ) {
@@ -220,8 +240,11 @@ AccountPtr AccountManager::loadAccountHelper(QSettings& settings)
         acc->setUrl(overrideUrl);
         authType = forceAuth;
     } else {
-        acc->setUrl(settings.value(QLatin1String(urlC)).toUrl());
+        acc->setUrl(urlConfig.toUrl());
     }
+
+    qDebug() << "Account for" << acc->url() << "using auth type" << authType;
+
     acc->_serverVersion = settings.value(QLatin1String(serverVersionC)).toString();
 
     // We want to only restore settings for that auth type and the user value
@@ -235,7 +258,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings& settings)
 
     acc->setCredentials(CredentialsFactory::create(authType));
 
-    // now the cert, it is in the general group
+    // now the server cert, it is in the general group
     settings.beginGroup(QLatin1String("General"));
     acc->setApprovedCerts(QSslCertificate::fromData(settings.value(caCertsKeyC).toByteArray()));
     settings.endGroup();
@@ -273,7 +296,9 @@ void AccountManager::deleteAccount(AccountState* account)
     auto copy = *it; // keep a reference to the shared pointer so it does not delete it just yet
     _accounts.erase(it);
 
-    auto settings = Account::settingsWithGroup(QLatin1String(accountsC));
+    QFile::remove(account->account()->cookieJarPath());
+
+    auto settings = Utility::settingsWithGroup(QLatin1String(accountsC));
     settings->remove(account->account()->id());
 
     emit accountRemoved(account);

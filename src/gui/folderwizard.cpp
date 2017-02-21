@@ -56,8 +56,9 @@ QString FormatWarningsWizardPage::formatWarnings(const QStringList &warnings) co
     return ret;
 }
 
-FolderWizardLocalPath::FolderWizardLocalPath()
-    : FormatWarningsWizardPage()
+FolderWizardLocalPath::FolderWizardLocalPath(const AccountPtr& account)
+    : FormatWarningsWizardPage(),
+      _account(account)
 {
     _ui.setupUi(this);
     registerField(QLatin1String("sourceFolder*"), _ui.localFolderLineEdit);
@@ -89,8 +90,13 @@ void FolderWizardLocalPath::cleanupPage()
 
 bool FolderWizardLocalPath::isComplete() const
 {
+    QUrl serverUrl = _account->url();
+    serverUrl.setUserName( _account->credentials()->user() );
+
     QString errorStr = FolderMan::instance()->checkPathValidityForNewFolder(
-        QDir::fromNativeSeparators(_ui.localFolderLineEdit->text()));
+        QDir::fromNativeSeparators(_ui.localFolderLineEdit->text()), serverUrl);
+
+
 
     bool isOk = errorStr.isEmpty();
     QStringList warnStrings;
@@ -133,7 +139,7 @@ void FolderWizardLocalPath::slotChooseLocalFolder()
 }
 
 // =================================================================================
-FolderWizardRemotePath::FolderWizardRemotePath(AccountPtr account)
+FolderWizardRemotePath::FolderWizardRemotePath(const AccountPtr& account)
     : FormatWarningsWizardPage()
     ,_warnWasVisible(false)
     ,_account(account)
@@ -308,7 +314,7 @@ void FolderWizardRemotePath::slotUpdateDirectories(const QStringList &list)
         root->setData(0, Qt::UserRole, "/");
     }
     QStringList sortedList = list;
-    sortedList.sort();
+    Utility::sortFilenames(sortedList);
     foreach (QString path, sortedList) {
         path.remove(webdavFolder);
         QStringList paths = path.split('/');
@@ -473,12 +479,11 @@ void FolderWizardRemotePath::showWarn( const QString& msg ) const
 
 // ====================================================================================
 
-FolderWizardSelectiveSync::FolderWizardSelectiveSync(AccountPtr account)
+FolderWizardSelectiveSync::FolderWizardSelectiveSync(const AccountPtr& account)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
-    _treeView = new SelectiveSyncTreeView(account, this);
-    layout->addWidget(new QLabel(tr("Choose What to Sync: You can optionally deselect remote subfolders you do not wish to synchronize.")));
-    layout->addWidget(_treeView);
+    _selectiveSync = new SelectiveSyncWidget(account, this);
+    layout->addWidget(_selectiveSync);
 }
 
 FolderWizardSelectiveSync::~FolderWizardSelectiveSync()
@@ -495,13 +500,17 @@ void FolderWizardSelectiveSync::initializePage()
     QString alias        = QFileInfo(targetPath).fileName();
     if (alias.isEmpty())
         alias = Theme::instance()->appName();
-    _treeView->setFolderInfo(targetPath, alias);
+    QStringList initialBlacklist;
+    if (Theme::instance()->wizardSelectiveSyncDefaultNothing()) {
+        initialBlacklist = QStringList("/");
+    }
+    _selectiveSync->setFolderInfo(targetPath, alias, initialBlacklist);
     QWizardPage::initializePage();
 }
 
 bool FolderWizardSelectiveSync::validatePage()
 {
-    wizard()->setProperty("selectiveSyncBlackList", QVariant(_treeView->createBlackList()));
+    wizard()->setProperty("selectiveSyncBlackList", QVariant(_selectiveSync->createBlackList()));
     return true;
 }
 
@@ -511,7 +520,7 @@ void FolderWizardSelectiveSync::cleanupPage()
     QString alias        = QFileInfo(targetPath).fileName();
     if (alias.isEmpty())
         alias = Theme::instance()->appName();
-    _treeView->setFolderInfo(targetPath, alias);
+    _selectiveSync->setFolderInfo(targetPath, alias);
     QWizardPage::cleanupPage();
 }
 
@@ -527,7 +536,7 @@ void FolderWizardSelectiveSync::cleanupPage()
 
 FolderWizard::FolderWizard(AccountPtr account, QWidget *parent)
     : QWizard(parent),
-    _folderWizardSourcePage(new FolderWizardLocalPath),
+    _folderWizardSourcePage(new FolderWizardLocalPath(account)),
     _folderWizardTargetPage(0),
     _folderWizardSelectiveSyncPage(new FolderWizardSelectiveSync(account))
 {

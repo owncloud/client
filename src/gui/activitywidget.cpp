@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -248,6 +249,9 @@ void ActivityWidget::slotBuildNotificationDisplay(const ActivityList& list)
     QHash<QString, int> accNotified;
     QString listAccountName;
 
+    // Whether a new notification widget was added to the notificationLayout.
+    bool newNotificationShown = false;
+
     foreach( auto activity, list ) {
         if( _blacklistedNotifications.contains(activity)) {
             qDebug() << Q_FUNC_INFO << "Activity in blacklist, skip";
@@ -271,6 +275,7 @@ void ActivityWidget::slotBuildNotificationDisplay(const ActivityList& list)
             _ui->_notifyScroll->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContentsOnFirstShow);
 #endif
             _widgetForNotifId[activity.ident()] = widget;
+            newNotificationShown = true;
         }
 
         widget->setActivity( activity );
@@ -364,6 +369,10 @@ void ActivityWidget::slotBuildNotificationDisplay(const ActivityList& list)
 
         const QString log = tr("%1 Notifications - Action Required").arg(Theme::instance()->appNameGUI());
         emit guiLog( log, msg);
+    }
+
+    if (newNotificationShown) {
+        emit newNotification();
     }
 }
 
@@ -517,6 +526,7 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     connect(_activityWidget, SIGNAL(copyToClipboard()), this, SLOT(slotCopyToClipboard()));
     connect(_activityWidget, SIGNAL(hideActivityTab(bool)), this, SLOT(setActivityTabHidden(bool)));
     connect(_activityWidget, SIGNAL(guiLog(QString,QString)), this, SIGNAL(guiLog(QString,QString)));
+    connect(_activityWidget, SIGNAL(newNotification()), SLOT(slotShowActivityTab()));
 
     _protocolWidget = new ProtocolWidget(this);
     _tab->insertTab(1, _protocolWidget, Theme::instance()->syncStateIcon(SyncResult::Success), tr("Sync Protocol"));
@@ -582,6 +592,13 @@ void ActivitySettings::slotShowIssueItemCount(int cnt)
     _tab->setTabText(_syncIssueTabId, cntText);
 }
 
+void ActivitySettings::slotShowActivityTab()
+{
+    if (_activityTabId != -1) {
+        _tab->setCurrentIndex(_activityTabId);
+    }
+}
+
 void ActivitySettings::slotCopyToClipboard()
 {
     QString text;
@@ -600,7 +617,7 @@ void ActivitySettings::slotCopyToClipboard()
         message = tr("The sync activity list has been copied to the clipboard.");
     } else if(idx == 2 ) {
         // issues Widget
-        message = tr("The list of unsynched items has been copied to the clipboard.");
+        message = tr("The list of unsynced items has been copied to the clipboard.");
        _protocolWidget->storeSyncIssues(ts);
     }
 

@@ -31,6 +31,13 @@ use strict;
 
 print "Hello, this is t6, a tester for csync with ownCloud.\n";
 
+# Checking CURL is installed to avoid misleading errors later...
+system(("curl", "--help", ">", "/dev/null"));
+if ($? != 0) {
+   print "CURL is needed for this script, aborting with error\n";
+   exit 1;
+}
+
 initTesting();
 
 sub createPostUpdateScript($)
@@ -54,7 +61,7 @@ sub getETagFromJournal($$)
 {
     my ($name,$num) = @_;
 
-    my $sql = "sqlite3 " . localDir() . ".csync_journal.db \"SELECT md5 FROM metadata WHERE path='$name';\"";
+    my $sql = "sqlite3 " . localDir() . "._sync_*.db \"SELECT md5 FROM metadata WHERE path='$name';\"";
     open(my $fh, '-|', $sql) or die $!;
     my $etag  = <$fh>;
     close $fh;

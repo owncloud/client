@@ -1,8 +1,13 @@
 
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(VERSION 2.8.0)
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 NEW)
+endif()
 
 project(client)
+
+set(BIN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 set(OEM_THEME_DIR "" CACHE STRING "Define directory containing a custom theme")
 if ( EXISTS ${OEM_THEME_DIR}/OEM.cmake )
@@ -57,7 +62,7 @@ endif()
 
 include(GNUInstallDirs)
 include(DefineInstallationPaths)
-
+include(GenerateExportHeader)
 
 include(GetGitRevisionDescription)
 
@@ -66,7 +71,7 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 # if we cannot get it from git, directly try .tag (packages)
 # this will work if the tar balls have been properly created
 # via git-archive.
-if (${GIT_SHA1} STREQUAL "GITDIR-NOTFOUND")
+if ("${GIT_SHA1}" STREQUAL "GITDIR-NOTFOUND")
     file(READ ${CMAKE_SOURCE_DIR}/.tag sha1_candidate)
     string(REPLACE "\n" "" sha1_candidate ${sha1_candidate})
     if (NOT ${sha1_candidate} STREQUAL "$Format:%H$")
@@ -136,6 +141,13 @@ if(OWNCLOUD_RESTORE_RENAME)
     add_definitions(-DOWNCLOUD_RESTORE_RENAME=1)
 endif()
 
+# Disable shibboleth.
+# So the client can be built without QtWebKit
+option(NO_SHIBBOLETH "Build without Shibboleth support. Allow to build the client without QtWebKit" OFF)
+if(NO_SHIBBOLETH)
+   message("Compiling without shibboleth")
+   add_definitions(-DNO_SHIBBOLETH=1)
+endif()
 
 if(APPLE)
   set( SOCKETAPI_TEAM_IDENTIFIER_PREFIX "" CACHE STRING "SocketApi prefix (including a following dot) that must match the codesign key's TeamIdentifier/Organizational Unit" )
@@ -159,6 +171,9 @@ find_package(SQLite3 3.8.0 REQUIRED)
 # On some OS, we want to use our own, not the system sqlite
 if (USE_OUR_OWN_SQLITE3)
     include_directories(BEFORE ${SQLITE3_INCLUDE_DIR})
+    if (WIN32)
+        add_definitions(-DSQLITE_API=__declspec\(dllimport\))
+    endif()
 endif()
 
 find_package(ZLIB)
@@ -173,6 +188,7 @@ add_definitions(-DUNICODE)
 add_definitions(-D_UNICODE)
 if( WIN32 )
 add_definitions( -D__USE_MINGW_ANSI_STDIO=1 )
+add_definitions( -DNOMINMAX )
 endif( WIN32 )
 
 # Handle Translations, pick all client_* files from trans directory.

@@ -30,6 +30,8 @@
 #include "networkjobs.h"
 #include "sslerrordialog.h"
 #include "accountmanager.h"
+#include "clientproxy.h"
+#include "filesystem.h"
 
 #include "creds/credentialsfactory.h"
 #include "creds/abstractcredentials.h"
@@ -128,7 +130,38 @@ void OwncloudSetupWizard::slotDetermineAuthType(const QString &urlString)
     account->setUrl(url);
     // Reset the proxy which might had been determined previously in ConnectionValidator::checkServerAndAuth()
     // when there was a previous account.
-    account->networkAccessManager()->setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
+    account->networkAccessManager()->setProxy(QNetworkProxy(QNetworkProxy::NoProxy));
+
+    // Lookup system proxy in a thread https://github.com/owncloud/client/issues/2993
+    if (ClientProxy::isUsingSystemDefault()) {
+        qDebug() << "Trying to look up system proxy";
+        ClientProxy::lookupSystemProxyAsync(account->url(),
+                                            this, SLOT(slotSystemProxyLookupDone(QNetworkProxy)));
+    } else {
+        // We want to reset the QNAM proxy so that the global proxy settings are used (via ClientProxy settings)
+        account->networkAccessManager()->setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
+        // use a queued invocation so we're as asynchronous as with the other code path
+        QMetaObject::invokeMethod(this, "slotContinueDetermineAuth", Qt::QueuedConnection);
+    }
+}
+
+void OwncloudSetupWizard::slotSystemProxyLookupDone(const QNetworkProxy &proxy)
+{
+    if (proxy.type() != QNetworkProxy::NoProxy) {
+        qDebug() << "Setting QNAM proxy to be system proxy" << printQNetworkProxy(proxy);
+    } else {
+        qDebug() << "No system proxy set by OS";
+    }
+    AccountPtr account = _ocWizard->account();
+    account->networkAccessManager()->setProxy(proxy);
+
+    slotContinueDetermineAuth();
+}
+
+void OwncloudSetupWizard::slotContinueDetermineAuth()
+{
+    AccountPtr account = _ocWizard->account();
+
     // Set fake credentials before we check what credential it actually is.
     account->setCredentials(CredentialsFactory::create("dummy"));
     CheckServerJob *job = new CheckServerJob(_ocWizard->account(), this);
@@ -136,17 +169,21 @@ void OwncloudSetupWizard::slotDetermineAuthType(const QString &urlString)
     connect(job, SIGNAL(instanceFound(QUrl,QVariantMap)), SLOT(slotOwnCloudFoundAuth(QUrl,QVariantMap)));
     connect(job, SIGNAL(instanceNotFound(QNetworkReply*)), SLOT(slotNoOwnCloudFoundAuth(QNetworkReply*)));
     connect(job, SIGNAL(timeout(const QUrl&)), SLOT(slotNoOwnCloudFoundAuthTimeout(const QUrl&)));
-    job->setTimeout(10*1000);
+    job->setTimeout((account->url().scheme() == "https") ? 30*1000 : 10*1000);
     job->start();
 }
 
 void OwncloudSetupWizard::slotOwnCloudFoundAuth(const QUrl& url, const QVariantMap &info)
 {
+    auto serverVersion = CheckServerJob::version(info);
+
     _ocWizard->appendToConfigurationLog(tr("<font color=\"green\">Successfully connected to %1: %2 version %3 (%4)</font><br/><br/>")
                                         .arg(url.toString())
                                         .arg(Theme::instance()->appNameGUI())
                                         .arg(CheckServerJob::versionString(info))
-                                        .arg(CheckServerJob::version(info)));
+                                        .arg(serverVersion));
+
+    _ocWizard->account()->setServerVersion(serverVersion);
 
     QString p = url.path();
     if (p.endsWith("/status.php")) {
@@ -166,10 +203,39 @@ void OwncloudSetupWizard::slotOwnCloudFoundAuth(const QUrl& url, const QVariantM
 
 void OwncloudSetupWizard::slotNoOwnCloudFoundAuth(QNetworkReply *reply)
 {
-    _ocWizard->displayError(tr("Failed to connect to %1 at %2:<br/>%3")
-                            .arg(Theme::instance()->appNameGUI(),
-                                 reply->url().toString(),
-                                 reply->errorString()), checkDowngradeAdvised(reply));
+    int resultCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
+
+    // Do this early because reply might be deleted in message box event loop
+    QString msg;
+    if (!_ocWizard->account()->url().isValid()) {
+        msg = tr("Invalid URL");
+    } else {
+        msg = tr("Failed to connect to %1 at %2:<br/>%3")
+            .arg(Theme::instance()->appNameGUI(),
+                 reply->url().toString(),
+                 reply->errorString());
+    }
+    bool isDowngradeAdvised = checkDowngradeAdvised(reply);
+
+    // If a client cert is needed, nginx sends:
+    // 400 "<html>\r\n<head><title>400 No required SSL certificate was sent</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>400 Bad Request</h1></center>\r\n<center>No required SSL certificate was sent</center>\r\n<hr><center>nginx/1.10.0</center>\r\n</body>\r\n</html>\r\n"
+    // If the IP needs to be added as "trusted domain" in oC, oC sends:
+    // https://gist.github.com/guruz/ab6d11df1873c2ad3932180de92e7d82
+    if (resultCode != 200 && contentType.startsWith("text/")) {
+        // FIXME: Synchronous dialogs are not so nice because of event loop recursion
+        // (we already create a dialog further below)
+        QString serverError = reply->peek(1024*20);
+        qDebug() << serverError;
+        QMessageBox messageBox(_ocWizard);
+        messageBox.setText(serverError);
+        messageBox.addButton(QMessageBox::Ok);
+        messageBox.setTextFormat(Qt::RichText);
+        messageBox.exec();
+    }
+
+    // Displays message inside wizard and possibly also another message box
+    _ocWizard->displayError(msg, isDowngradeAdvised);
 
     // Allow the credentials dialog to pop up again for the same URL.
     // Maybe the user just clicked 'Cancel' by accident or changed his mind.
@@ -304,8 +370,8 @@ void OwncloudSetupWizard::slotCreateLocalAndRemoteFolders(const QString& localFo
     } else {
         QString res = tr("Creating local sync folder %1...").arg(localFolder);
         if( fi.mkpath( localFolder ) ) {
+            FileSystem::setFolderMinimumPermissions(localFolder);
             Utility::setupFavLink( localFolder );
-            // FIXME: Create a local sync folder.
             res += tr("ok");
         } else {
             res += tr("failed.");
@@ -460,16 +526,18 @@ void OwncloudSetupWizard::slotAssistantFinished( int result )
             qDebug() << "Adding folder definition for" << localFolder << _remoteFolder;
             FolderDefinition folderDefinition;
             folderDefinition.localPath = localFolder;
-            folderDefinition.targetPath = _remoteFolder;
+            folderDefinition.targetPath = FolderDefinition::prepareTargetPath(_remoteFolder);
             folderDefinition.ignoreHiddenFiles = folderMan->ignoreHiddenFiles();
 
             auto f = folderMan->addFolder(account, folderDefinition);
             if (f) {
                 f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList,
                                                      _ocWizard->selectiveSyncBlacklist());
-                // The user already accepted the selective sync dialog. everything is in the white list
-                f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
+                if (!_ocWizard->isConfirmBigFolderChecked()) {
+                    // The user already accepted the selective sync dialog. everything is in the white list
+                    f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
                                                      QStringList() << QLatin1String("/"));
+                }
             }
             _ocWizard->appendToConfigurationLog(tr("<font color=\"green\"><b>Local sync folder %1 successfully created!</b></font>").arg(localFolder));
         }
@@ -492,6 +560,13 @@ void OwncloudSetupWizard::slotSkipFolderConfiguration()
 AccountState *OwncloudSetupWizard::applyAccountChanges()
 {
     AccountPtr newAccount = _ocWizard->account();
+
+    // Detach the account that is going to be saved from the
+    // wizard to ensure it doesn't accidentally get modified
+    // later (such as from running cleanup such as
+    // AbstractCredentialsWizardPage::cleanupPage())
+    _ocWizard->setAccount(AccountManager::createAccount());
+
     auto manager = AccountManager::instance();
 
     auto newState = manager->addAccount(newAccount);
@@ -504,6 +579,10 @@ DetermineAuthTypeJob::DetermineAuthTypeJob(AccountPtr account, QObject *parent)
     : AbstractNetworkJob(account, QString(), parent)
     , _redirects(0)
 {
+    // This job implements special redirect handling to detect redirections
+    // to pages that are indicative of Shibboleth-using servers. Hence we
+    // disable the standard job redirection handling here.
+    _followRedirects = false;
 }
 
 void DetermineAuthTypeJob::start()
@@ -531,12 +610,15 @@ bool DetermineAuthTypeJob::finished()
         setupConnections(reply());
         return false; // don't discard
     } else {
+#ifndef NO_SHIBBOLETH
         QRegExp shibbolethyWords("SAML|wayf");
 
         shibbolethyWords.setCaseSensitivity(Qt::CaseInsensitive);
         if (redirection.toString().contains(shibbolethyWords)) {
             emit authType(WizardCommon::Shibboleth);
-        } else {
+        } else
+#endif
+        {
             // TODO: Send an error.
             // eh?
             emit authType(WizardCommon::HttpCreds);

@@ -17,6 +17,8 @@
 #define MIRALL_OWNCLOUD_WIZARD_H
 
 #include <QWizard>
+#include <QSslKey>
+#include <QSslCertificate>
 
 #include "wizard/owncloudwizardcommon.h"
 #include "accountfwd.h"
@@ -25,7 +27,9 @@ namespace OCC {
 
 class OwncloudSetupPage;
 class OwncloudHttpCredsPage;
+#ifndef NO_SHIBBOLETH
 class OwncloudShibbolethCredsPage;
+#endif
 class OwncloudAdvancedSetupPage;
 class OwncloudWizardResultPage;
 class AbstractCredentials;
@@ -55,17 +59,17 @@ public:
     QString ocUrl() const;
     QString localFolder() const;
     QStringList selectiveSyncBlacklist() const;
+    bool isConfirmBigFolderChecked() const;
 
     void enableFinishOnResultWidget(bool enable);
 
     void displayError( const QString&, bool retryHTTPonly);
     AbstractCredentials* getCredentials() const;
 
-    void raiseCertificatePopup();
-    QByteArray ownCloudCertificate;
-    QString ownCloudPrivateKey;
-    QString ownCloudCertificatePath;
-    QString ownCloudCertificatePasswd;
+    // FIXME: Can those be local variables?
+    // Set from the OwncloudSetupPage, later used from OwncloudHttpCredsPage
+    QSslKey _clientSslKey;
+    QSslCertificate _clientSslCertificate;
 
 public slots:
     void setAuthType(WizardCommon::AuthType type);
@@ -88,7 +92,9 @@ private:
     AccountPtr _account;
     OwncloudSetupPage* _setupPage;
     OwncloudHttpCredsPage* _httpCredsPage;
+#ifndef NO_SHIBBOLETH
     OwncloudShibbolethCredsPage* _shibbolethCredsPage;
+#endif
     OwncloudAdvancedSetupPage* _advancedSetupPage;
     OwncloudWizardResultPage* _resultPage;
     AbstractCredentialsWizardPage* _credentialsPage;

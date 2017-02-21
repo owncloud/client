@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -67,7 +68,6 @@ QDataStream &operator>>(QDataStream &stream, QList<QNetworkCookie> &list)
 CookieJar::CookieJar(QObject *parent) :
     QNetworkCookieJar(parent)
 {
-    restore();
 }
 
 CookieJar::~CookieJar()
@@ -96,21 +96,21 @@ void CookieJar::clearSessionCookies()
     setAllCookies(removeExpired(allCookies()));
 }
 
-void CookieJar::save()
+void CookieJar::save(const QString &fileName)
 {
     QFile file;
-    file.setFileName(storagePath());
-    qDebug() << storagePath();
+    file.setFileName(fileName);
+    qDebug() << fileName;
     file.open(QIODevice::WriteOnly);
     QDataStream stream(&file);
     stream << removeExpired(allCookies());
     file.close();
 }
 
-void CookieJar::restore()
+void CookieJar::restore(const QString &fileName)
 {
     QFile file;
-    file.setFileName(storagePath());
+    file.setFileName(fileName);
     file.open(QIODevice::ReadOnly);
     QDataStream stream(&file);
     QList<QNetworkCookie> list;
@@ -128,12 +128,6 @@ QList<QNetworkCookie> CookieJar::removeExpired(const QList<QNetworkCookie> &cook
         }
     }
     return updatedList;
-}
-
-QString CookieJar::storagePath() const
-{
-  ConfigFile cfg;
-  return cfg.configPath() + "/cookies.db";
 }
 
 } // namespace OCC

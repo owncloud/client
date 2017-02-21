@@ -34,6 +34,16 @@ class Account;
  * if the files are new, or changed.
  */
 
+struct SyncOptions {
+    SyncOptions() : _newBigFolderSizeLimit(-1), _confirmExternalStorage(false) {}
+    /** Maximum size (in Bytes) a folder can have without asking for confirmation.
+     * -1 means infinite */
+    qint64 _newBigFolderSizeLimit;
+    /** If a confirmation should be asked for external storages */
+    bool _confirmExternalStorage;
+};
+
+
 /**
  * @brief The FileStatPointer class
  * @ingroup libsync
@@ -81,6 +91,8 @@ class DiscoverySingleDirectoryJob : public QObject {
     Q_OBJECT
 public:
     explicit DiscoverySingleDirectoryJob(const AccountPtr &account, const QString &path, QObject *parent = 0);
+    // Specify thgat this is the root and we need to check the data-fingerprint
+    void setIsRootPath() { _isRootPath = true; }
     void start();
     void abort();
     // This is not actually a network job, it is just a job
@@ -100,8 +112,17 @@ private:
     QString _etagConcatenation;
     QString _firstEtag;
     AccountPtr _account;
+    // The first result is for the directory itself and need to be ignored.
+    // This flag is true if it was already ignored.
     bool _ignoredFirst;
+    // Set to true if this is the root path and we need to check the data-fingerprint
+    bool _isRootPath;
+    // If this directory is an external storage (The first item has 'M' in its permission)
+    bool _isExternalStorage;
     QPointer<LsColJob> _lsColJob;
+
+public:
+    QByteArray _dataFingerprint;
 };
 
 // Lives in main thread. Deleted by the SyncEngine
@@ -115,12 +136,15 @@ class DiscoveryMainThread : public QObject {
     AccountPtr _account;
     DiscoveryDirectoryResult *_currentDiscoveryDirectoryResult;
     qint64 *_currentGetSizeResult;
+    bool _firstFolderProcessed;
 
 public:
     DiscoveryMainThread(AccountPtr account) : QObject(), _account(account),
-        _currentDiscoveryDirectoryResult(0), _currentGetSizeResult(0)
+        _currentDiscoveryDirectoryResult(0), _currentGetSizeResult(0), _firstFolderProcessed(false)
     { }
     void abort();
+
+    QByteArray _dataFingerprint;
 
 
 public slots:
@@ -162,10 +186,10 @@ class DiscoveryJob : public QObject {
      * return true if the given path should be ignored,
      * false if the path should be synced
      */
-    bool isInSelectiveSyncBlackList(const QString &path) const;
+    bool isInSelectiveSyncBlackList(const char* path) const;
     static int isInSelectiveSyncBlackListCallback(void *, const char *);
-    bool checkSelectiveSyncNewFolder(const QString &path);
-    static int checkSelectiveSyncNewFolderCallback(void*, const char*);
+    bool checkSelectiveSyncNewFolder(const QString &path, const char *remotePerm);
+    static int checkSelectiveSyncNewFolderCallback(void* data, const char* path, const char* remotePerm);
 
     // Just for progress
     static void update_job_update_callback (bool local,
@@ -185,7 +209,7 @@ class DiscoveryJob : public QObject {
 
 public:
     explicit DiscoveryJob(CSYNC *ctx, QObject* parent = 0)
-            : QObject(parent), _csync_ctx(ctx), _newBigFolderSizeLimit(-1) {
+            : QObject(parent), _csync_ctx(ctx) {
         // We need to forward the log property as csync uses thread local
         // and updates run in another thread
         _log_callback = csync_get_log_callback();
@@ -195,7 +219,7 @@ public:
 
     QStringList _selectiveSyncBlackList;
     QStringList _selectiveSyncWhiteList;
-    qint64 _newBigFolderSizeLimit;
+    SyncOptions _syncOptions;
     Q_INVOKABLE void start();
 signals:
     void finished(int result);
@@ -206,7 +230,7 @@ signals:
     void doGetSizeSignal(const QString &path, qint64 *result);
 
     // A new folder was discovered and was not synced because of the confirmation feature
-    void newBigFolder(const QString &folder);
+    void newBigFolder(const QString &folder, bool isExternal);
 };
 
 }

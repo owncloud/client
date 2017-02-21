@@ -49,7 +49,7 @@ Other command line switches supported by ``owncloudcmd`` include the following:
       Exclude list file
 
 ``--unsyncedfolders [file]``
-      File containing the list of unsynced remote folders (selective sync)
+      File containing the list of un-synced remote folders (selective sync)
 
 ``--max-sync-retries [n]``
       Retries maximum n times (defaults to 3)
@@ -65,7 +65,7 @@ If no client is configured, or if you choose to use a different user to synchron
 you can specify the user
 password setting with the usual URL pattern.  For example::
 
-  $ owncloudcmd / https://carla:secret@server/owncloud/remote.php/webdav/
+  $ owncloudcmd /home/user/my_sync_folder https://carla:secret@server/owncloud/remote.php/webdav/
 
 To synchronize the ownCloud directory ``Music`` to the local directory
 ``media/music``, through a proxy listening on port ``8080``, and on a gateway

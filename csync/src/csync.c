@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <stdbool.h>
 
@@ -90,7 +89,7 @@ static int _data_cmp(const void *key, const void *data) {
   return 0;
 }
 
-void csync_create(CSYNC **csync, const char *local, const char *remote) {
+void csync_create(CSYNC **csync, const char *local) {
   CSYNC *ctx;
   size_t len = 0;
 
@@ -104,12 +103,6 @@ void csync_create(CSYNC **csync, const char *local, const char *remote) {
 
   ctx->local.uri = c_strndup(local, len);
 
-  /* remove trailing slashes */
-  len = strlen(remote);
-  while(len > 0 && remote[len - 1] == '/') --len;
-
-  ctx->remote.uri = c_strndup(remote, len);
-
   ctx->status_code = CSYNC_STATUS_OK;
 
   ctx->current_fs = NULL;
@@ -121,7 +114,7 @@ void csync_create(CSYNC **csync, const char *local, const char *remote) {
   *csync = ctx;
 }
 
-void csync_init(CSYNC *ctx) {
+void csync_init(CSYNC *ctx, const char *db_file) {
   assert(ctx);
   /* Do not initialize twice */
 
@@ -131,6 +124,9 @@ void csync_init(CSYNC *ctx) {
   ctx->local.type = LOCAL_REPLICA;
 
   ctx->remote.type = REMOTE_REPLICA;
+
+  SAFE_FREE(ctx->statedb.file);
+  ctx->statedb.file = c_strdup(db_file);
 
   c_rbtree_create(&ctx->local.tree, _key_cmp, _data_cmp);
   c_rbtree_create(&ctx->remote.tree, _key_cmp, _data_cmp);
@@ -153,19 +149,11 @@ int csync_update(CSYNC *ctx) {
   }
   ctx->status_code = CSYNC_STATUS_OK;
 
-  /* create/load statedb */
-    rc = asprintf(&ctx->statedb.file, "%s/.csync_journal.db",
-                  ctx->local.uri);
-    if (rc < 0) {
-        ctx->status_code = CSYNC_STATUS_MEMORY_ERROR;
-        return rc;
-    }
-    CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "Journal: %s", ctx->statedb.file);
-
-    if (csync_statedb_load(ctx, ctx->statedb.file, &ctx->statedb.db) < 0) {
+  /* Path of database file is set in csync_init */
+  if (csync_statedb_load(ctx, ctx->statedb.file, &ctx->statedb.db) < 0) {
       rc = -1;
       return rc;
-    }
+  }
 
   ctx->status_code = CSYNC_STATUS_OK;
 
@@ -200,7 +188,7 @@ int csync_update(CSYNC *ctx) {
   ctx->current = REMOTE_REPLICA;
   ctx->replica = ctx->remote.type;
 
-  rc = csync_ftw(ctx, ctx->remote.uri, csync_walker, MAX_DEPTH);
+  rc = csync_ftw(ctx, "", csync_walker, MAX_DEPTH);
   if (rc < 0) {
       if(ctx->status_code == CSYNC_STATUS_OK) {
           ctx->status_code = csync_errno_to_status(errno, CSYNC_STATUS_UPDATE_ERROR);
@@ -387,7 +375,6 @@ static int _csync_treewalk_visitor(void *obj, void *data) {
       trav.inode        = cur->inode;
 
       trav.error_status = cur->error_status;
-      trav.should_update_metadata = cur->should_update_metadata;
       trav.has_ignored_files = cur->has_ignored_files;
       trav.checksum = cur->checksum;
       trav.checksumTypeId = cur->checksumTypeId;
@@ -523,7 +510,6 @@ static void _csync_clean_ctx(CSYNC *ctx)
     c_rbtree_free(ctx->local.tree);
     c_rbtree_free(ctx->remote.tree);
 
-    SAFE_FREE(ctx->statedb.file);
     SAFE_FREE(ctx->remote.root_perms);
 }
 
@@ -580,8 +566,8 @@ int csync_destroy(CSYNC *ctx) {
 
   _csync_clean_ctx(ctx);
 
+  SAFE_FREE(ctx->statedb.file);
   SAFE_FREE(ctx->local.uri);
-  SAFE_FREE(ctx->remote.uri);
   SAFE_FREE(ctx->error_string);
 
 #ifdef WITH_ICONV

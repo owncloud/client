@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -17,9 +18,9 @@
 #include "configfile.h"
 #include "accessmanager.h"
 #include "creds/abstractcredentials.h"
-#include "../3rdparty/certificates/p12topem.h"
 #include "capabilities.h"
 #include "theme.h"
+#include "asserts.h"
 
 #include <QSettings>
 #include <QMutex>
@@ -39,7 +40,6 @@ Account::Account(QObject *parent)
     : QObject(parent)
     , _capabilities(QVariantMap())
     , _davPath( Theme::instance()->webDavPath() )
-    , _wasMigrated(false)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
 }
@@ -57,6 +57,11 @@ Account::~Account()
 
 QString Account::davPath() const
 {
+    if (capabilities().chunkingNg()) {
+        // The chunking-ng means the server prefer to use the new webdav URL
+        return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
+    }
+
     // make sure to have a trailing slash
     if( !_davPath.endsWith('/') ) {
         QString dp(_davPath);
@@ -76,11 +81,19 @@ AccountPtr Account::sharedFromThis()
     return _sharedThis.toStrongRef();
 }
 
+QString Account::davUser() const
+{
+    return _davUser.isEmpty() ? _credentials->user() : _davUser;
+}
+
+void Account::setDavUser(const QString &newDavUser)
+{
+    _davUser = newDavUser;
+}
 
 QString Account::displayName() const
 {
-    auto user = _credentials->user();
-    QString dn = QString("%1@%2").arg(user, _url.host());
+    QString dn = QString("%1@%2").arg(_credentials->user(), _url.host());
     int port = url().port();
     if (port > 0 && port != 80 && port != 443) {
         dn.append(QLatin1Char(':'));
@@ -92,30 +105,6 @@ QString Account::displayName() const
 QString Account::id() const
 {
     return _id;
-}
-
-static bool isEqualExceptProtocol(const QUrl &url1, const QUrl &url2)
-{
-    return (url1.host() != url2.host() ||
-            url1.port() != url2.port() ||
-            url1.path() != url2.path());
-}
-
-bool Account::changed(AccountPtr other, bool ignoreUrlProtocol) const
-{
-    if (!other) {
-        return false;
-    }
-    bool changes = false;
-    if (ignoreUrlProtocol) {
-        changes = isEqualExceptProtocol(_url, other->_url);
-    } else {
-        changes = (_url == other->_url);
-    }
-
-    changes |= _credentials->changed(other->credentials());
-
-    return changes;
 }
 
 AbstractCredentials *Account::credentials() const
@@ -157,18 +146,18 @@ void Account::setCredentials(AbstractCredentials *cred)
 
 QUrl Account::davUrl() const
 {
-    return concatUrlPath(url(), davPath());
+    return Utility::concatUrlPath(url(), davPath());
 }
 
-QList<QNetworkCookie> Account::lastAuthCookies() const
-{
-    return _am->cookieJar()->cookiesForUrl(_url);
-}
-
+/**
+ * clear all cookies. (Session cookies or not)
+ */
 void Account::clearCookieJar()
 {
-    Q_ASSERT(qobject_cast<CookieJar*>(_am->cookieJar()));
-    static_cast<CookieJar*>(_am->cookieJar())->clearSessionCookies();
+    auto jar = qobject_cast<CookieJar*>(_am->cookieJar());
+    ASSERT(jar);
+    jar->setAllCookies(QList<QNetworkCookie>());
+    emit wantsAccountSaved(this);
 }
 
 /*! This shares our official cookie jar (containing all the tasty
@@ -180,6 +169,12 @@ void Account::lendCookieJarTo(QNetworkAccessManager *guest)
     auto oldParent = jar->parent();
     guest->setCookieJar(jar); // takes ownership of our precious cookie jar
     jar->setParent(oldParent); // takes it back
+}
+
+QString Account::cookieJarPath()
+{
+    ConfigFile cfg;
+    return cfg.configPath() + "/cookies" + id() + ".db";
 }
 
 void Account::resetNetworkAccessManager()
@@ -209,7 +204,7 @@ QNetworkAccessManager *Account::networkAccessManager()
 
 QNetworkReply *Account::headRequest(const QString &relPath)
 {
-    return headRequest(concatUrlPath(url(), relPath));
+    return headRequest(Utility::concatUrlPath(url(), relPath));
 }
 
 QNetworkReply *Account::headRequest(const QUrl &url)
@@ -223,7 +218,7 @@ QNetworkReply *Account::headRequest(const QUrl &url)
 
 QNetworkReply *Account::getRequest(const QString &relPath)
 {
-    return getRequest(concatUrlPath(url(), relPath));
+    return getRequest(Utility::concatUrlPath(url(), relPath));
 }
 
 QNetworkReply *Account::getRequest(const QUrl &url)
@@ -246,7 +241,7 @@ QNetworkReply *Account::deleteRequest( const QUrl &url)
 
 QNetworkReply *Account::davRequest(const QByteArray &verb, const QString &relPath, QNetworkRequest req, QIODevice *data)
 {
-    return davRequest(verb, concatUrlPath(davUrl(), relPath), req, data);
+    return davRequest(verb, Utility::concatUrlPath(davUrl(), relPath), req, data);
 }
 
 QNetworkReply *Account::davRequest(const QByteArray &verb, const QUrl &url, QNetworkRequest req, QIODevice *data)
@@ -256,12 +251,6 @@ QNetworkReply *Account::davRequest(const QByteArray &verb, const QUrl &url, QNet
     req.setSslConfiguration(this->getOrCreateSslConfig());
 #endif
     return _am->sendCustomRequest(req, verb, data);
-}
-
-void Account::setCertificate(const QByteArray certficate, const QString privateKey)
-{
-    _pemCertificate=certficate;
-    _pemPrivateKey=privateKey;
 }
 
 void Account::setSslConfiguration(const QSslConfiguration &config)
@@ -280,31 +269,7 @@ QSslConfiguration Account::getOrCreateSslConfig()
     // if setting the client certificate fails, you will probably get an error similar to this:
     //  "An internal error number 1060 happened. SSL handshake failed, client certificate was requested: SSL error: sslv3 alert handshake failure"
     QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
-    QSslCertificate sslClientCertificate;
     
-    ConfigFile cfgFile;
-    if(!cfgFile.certificatePath().isEmpty() && !cfgFile.certificatePasswd().isEmpty()) {
-        resultP12ToPem certif = p12ToPem(cfgFile.certificatePath().toStdString(), cfgFile.certificatePasswd().toStdString());
-        QString s = QString::fromStdString(certif.Certificate);
-        QByteArray ba = s.toLocal8Bit();
-        this->setCertificate(ba, QString::fromStdString(certif.PrivateKey));
-    }
-    if((!_pemCertificate.isEmpty())&&(!_pemPrivateKey.isEmpty())) {
-        // Read certificates
-        QList<QSslCertificate> sslCertificateList = QSslCertificate::fromData(_pemCertificate, QSsl::Pem);
-        if(sslCertificateList.length() != 0) {
-            sslClientCertificate = sslCertificateList.takeAt(0);
-        }
-        // Read key from file
-        QSslKey privateKey(_pemPrivateKey.toLocal8Bit(), QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey , "");
-
-        // SSL configuration
-        sslConfig.setCaCertificates(QSslSocket::systemCaCertificates());
-        sslConfig.setLocalCertificate(sslClientCertificate);
-        sslConfig.setPrivateKey(privateKey);
-        qDebug() << "Added SSL client certificate to the query";
-    }
-
 #if QT_VERSION > QT_VERSION_CHECK(5, 2, 0)
     // Try hard to re-use session for different requests
     sslConfig.setSslOption(QSsl::SslOptionDisableSessionTickets, false);
@@ -338,43 +303,6 @@ void Account::setSslErrorHandler(AbstractSslErrorHandler *handler)
 void Account::setUrl(const QUrl &url)
 {
     _url = url;
-}
-
-QUrl Account::concatUrlPath(const QUrl &url, const QString &concatPath,
-                            const QList< QPair<QString, QString> > &queryItems)
-{
-    QString path = url.path();
-    if (! concatPath.isEmpty()) {
-        // avoid '//'
-        if (path.endsWith('/') && concatPath.startsWith('/')) {
-            path.chop(1);
-        } // avoid missing '/'
-        else if (!path.endsWith('/') && !concatPath.startsWith('/')) {
-            path += QLatin1Char('/');
-        }
-        path += concatPath; // put the complete path together
-    }
-
-    QUrl tmpUrl = url;
-    tmpUrl.setPath(path);
-    if( queryItems.size() > 0 ) {
-        tmpUrl.setQueryItems(queryItems);
-    }
-    return tmpUrl;
-}
-
-QString Account::_configFileName;
-
-std::unique_ptr<QSettings> Account::settingsWithGroup(const QString& group, QObject *parent)
-{
-    if (_configFileName.isEmpty()) {
-        // cache file name
-        ConfigFile cfg;
-        _configFileName = cfg.configFile();
-    }
-    std::unique_ptr<QSettings> settings(new QSettings(_configFileName, QSettings::IniFormat, parent));
-    settings->beginGroup(group);
-    return settings;
 }
 
 QVariant Account::credentialSetting(const QString &key) const
@@ -432,8 +360,11 @@ void Account::slotHandleSslErrors(QNetworkReply *reply , QList<QSslError> errors
     // Keep a ref here on our stackframe to make sure that it doesn't get deleted before
     // handleErrors returns.
     QSharedPointer<QNetworkAccessManager> qnamLock = _am;
+    QPointer<QObject> guard = reply;
 
     if (_sslErrorHandler->handleErrors(errors, reply->sslConfiguration(), &approvedCerts, sharedFromThis())) {
+        if (!guard) return;
+
         QSslSocket::addDefaultCaCertificates(approvedCerts);
         addApprovedCerts(approvedCerts);
         emit wantsAccountSaved(this);
@@ -445,6 +376,8 @@ void Account::slotHandleSslErrors(QNetworkReply *reply , QList<QSslError> errors
         // certificate changes.
         reply->ignoreSslErrors(errors);
     } else {
+        if (!guard) return;
+
         // Mark all involved certificates as rejected, so we don't ask the user again.
         foreach (const QSslError &error, errors) {
             if (!_rejectedCertificates.contains(error.certificate())) {
@@ -473,16 +406,6 @@ void Account::slotCredentialsAsked()
 void Account::handleInvalidCredentials()
 {
     emit invalidCredentials();
-}
-
-bool Account::wasMigrated()
-{
-    return _wasMigrated;
-}
-
-void Account::setMigrated(bool mig)
-{
-    _wasMigrated = mig;
 }
 
 const Capabilities &Account::capabilities() const

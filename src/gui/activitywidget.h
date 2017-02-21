@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -81,7 +82,7 @@ signals:
     void copyToClipboard();
     void rowsInserted();
     void hideActivityTab(bool);
-    void newNotificationList(const ActivityList& list);
+    void newNotification();
 
 private slots:
     void slotBuildNotificationDisplay(const ActivityList& list);
@@ -143,6 +144,7 @@ private slots:
     void setActivityTabHidden(bool hidden);
     void slotRegularNotificationCheck();
     void slotShowIssueItemCount(int cnt);
+    void slotShowActivityTab();
 
 signals:
     void guiLog(const QString&, const QString&);

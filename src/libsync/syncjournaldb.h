@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -36,8 +37,16 @@ class OWNCLOUDSYNC_EXPORT SyncJournalDb : public QObject
 {
     Q_OBJECT
 public:
-    explicit SyncJournalDb(const QString& path, QObject *parent = 0);
+    explicit SyncJournalDb(const QString& dbFilePath, QObject *parent = 0);
     virtual ~SyncJournalDb();
+
+    /// Create a journal path for a specific configuration
+    static QString makeDbName(const QUrl& remoteUrl,
+                              const QString& remotePath,
+                              const QString& user);
+
+    /// Migrate a csync_journal to the new path, if necessary. Returns false on error
+    static bool maybeMigrateDb(const QString& localPath, const QString& absoluteJournalPath);
 
     // to verify that the record could be queried successfully check
     // with SyncJournalFileRecord::isValid()
@@ -52,10 +61,13 @@ public:
     bool updateFileRecordChecksum(const QString& filename,
                                   const QByteArray& contentChecksum,
                                   const QByteArray& contentChecksumType);
+    bool updateLocalMetadata(const QString& filename,
+                             qint64 modtime, quint64 size, quint64 inode);
     bool exists();
     void walCheckpoint();
 
-    QString databaseFilePath();
+    QString databaseFilePath() const;
+
     static qint64 getPHash(const QString& );
 
     void updateErrorBlacklistEntry( const SyncJournalErrorBlacklistRecord& item );
@@ -93,7 +105,8 @@ public:
 
     UploadInfo getUploadInfo(const QString &file);
     void setUploadInfo(const QString &file, const UploadInfo &i);
-    bool deleteStaleUploadInfos(const QSet<QString>& keep);
+    // Return the list of transfer ids that were removed.
+    QVector<uint> deleteStaleUploadInfos(const QSet<QString>& keep);
 
     SyncJournalErrorBlacklistRecord errorBlacklistEntry( const QString& );
     bool deleteStaleErrorBlacklistEntries(const QSet<QString>& keep);
@@ -154,6 +167,19 @@ public:
      */
     QByteArray getChecksumType(int checksumTypeId);
 
+    /**
+     * The data-fingerprint used to detect backup
+     */
+    void setDataFingerprint(const QByteArray &dataFingerprint);
+    QByteArray dataFingerprint();
+
+    /**
+     * Delete any file entry. This will force the next sync to re-sync everything as if it was new,
+     * restoring everyfile on every remote. If a file is there both on the client and server side,
+     * it will be a conflict that will be automatically resolved if the file is the same.
+     */
+    void clearFileTable();
+
 private:
     bool updateDatabaseStructure();
     bool updateMetadataTableStructure();
@@ -182,6 +208,7 @@ private:
     QScopedPointer<SqlQuery> _getFileRecordQuery;
     QScopedPointer<SqlQuery> _setFileRecordQuery;
     QScopedPointer<SqlQuery> _setFileRecordChecksumQuery;
+    QScopedPointer<SqlQuery> _setFileRecordLocalMetadataQuery;
     QScopedPointer<SqlQuery> _getDownloadInfoQuery;
     QScopedPointer<SqlQuery> _setDownloadInfoQuery;
     QScopedPointer<SqlQuery> _deleteDownloadInfoQuery;
@@ -196,6 +223,9 @@ private:
     QScopedPointer<SqlQuery> _getChecksumTypeIdQuery;
     QScopedPointer<SqlQuery> _getChecksumTypeQuery;
     QScopedPointer<SqlQuery> _insertChecksumTypeQuery;
+    QScopedPointer<SqlQuery> _getDataFingerprintQuery;
+    QScopedPointer<SqlQuery> _setDataFingerprintQuery1;
+    QScopedPointer<SqlQuery> _setDataFingerprintQuery2;
 
     /* This is the list of paths we called avoidReadFromDbOnNextSync on.
      * It means that they should not be written to the DB in any case since doing

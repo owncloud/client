@@ -97,10 +97,10 @@ public:
     /**
       * get an sync state icon
       */
-    virtual QIcon   syncStateIcon( SyncResult::Status, bool sysTray = false ) const;
+    virtual QIcon   syncStateIcon( SyncResult::Status, bool sysTray = false, bool sysTrayMenuVisible = false) const;
 
     virtual QIcon   folderDisabledIcon() const;
-    virtual QIcon   folderOfflineIcon(bool systray = false) const;
+    virtual QIcon   folderOfflineIcon(bool sysTray = false, bool sysTrayMenuVisible = false) const;
     virtual QIcon   applicationIcon() const = 0;
 #endif
 
@@ -152,7 +152,7 @@ public:
     virtual QString enforcedLocale() const { return QString::null; }
 
     /** colored, white or black */
-    QString systrayIconFlavor(bool mono) const;
+    QString systrayIconFlavor(bool mono, bool sysTrayMenuVisible = false) const;
 
 #ifndef TOKEN_AUTH_ONLY
     /**
@@ -218,6 +218,17 @@ public:
      * Set -1 to never ask confirmation.  0 to ask confirmation for every folder.
      **/
     virtual qint64 newBigFolderSizeLimit() const;
+
+    /**
+     * Hide the checkbox that says "Ask for confirmation before synchronizing folders larger than X MB"
+     * in the account wizard
+     */
+    virtual bool wizardHideFolderSizeLimitCheckbox() const;
+    /**
+     * Hide the checkbox that says "Ask for confirmation before synchronizing external storages"
+     * in the account wizard
+     */
+    virtual bool wizardHideExternalStorageConfirmationCheckbox() const;
 
     /**
      * Alternative path on the server that provides access to the webdav capabilities
@@ -302,9 +313,10 @@ public:
      */
     virtual QString quotaBaseFolder() const;
 
+
 protected:
 #ifndef TOKEN_AUTH_ONLY
-    QIcon themeIcon(const QString& name, bool sysTray = false) const;
+    QIcon themeIcon(const QString& name, bool sysTray = false, bool sysTrayMenuVisible = false) const;
 #endif
     Theme();
 

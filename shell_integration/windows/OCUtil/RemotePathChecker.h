@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <queue>
 #include <thread>
+#include <memory>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
@@ -27,21 +28,21 @@
 
 class __declspec(dllexport) RemotePathChecker {
 public:
-	enum FileState {
-		// Order synced with OCOverlay
-		StateError = 0,
-		StateOk, StateOkSWM,
-		StateSync,
-		StateWarning,
-		StateNone
-	};
-	RemotePathChecker();
+    enum FileState {
+        // Order synced with OCOverlay
+        StateError = 0,
+        StateOk, StateOkSWM,
+        StateSync,
+        StateWarning,
+        StateNone
+    };
+    RemotePathChecker();
     ~RemotePathChecker();
-	std::vector<std::wstring> WatchedDirectories();
-	bool IsMonitoredPath(const wchar_t* filePath, int* state);
+    std::shared_ptr<const std::vector<std::wstring>> WatchedDirectories() const;
+    bool IsMonitoredPath(const wchar_t* filePath, int* state);
 
 private:
-	FileState _StrToFileState(const std::wstring &str);
+    FileState _StrToFileState(const std::wstring &str);
     std::mutex _mutex;
     std::atomic<bool> _stop;
 
@@ -52,8 +53,9 @@ private:
     std::queue<std::wstring> _pending;
 
     std::unordered_map<std::wstring, FileState> _cache;
-    std::unordered_map<std::wstring, FileState> _oldCache;
-    std::vector<std::wstring> _watchedDirectories;
+    // The vector is const since it will be accessed from multiple threads through OCOverlay::IsMemberOf.
+    // Each modification needs to be made onto a copy and then atomically replaced in the shared_ptr.
+    std::shared_ptr<const std::vector<std::wstring>> _watchedDirectories;
     bool _connected;
 
 
@@ -61,7 +63,7 @@ private:
     //std::condition_variable _newQueries;
     HANDLE _newQueries;
 
-	std::thread _thread;
+    std::thread _thread;
     void workerThreadLoop();
 };
 

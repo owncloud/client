@@ -37,8 +37,8 @@ sub assertCsyncJournalOk {
 	my $path = $_[0];
 
     # FIXME: should test also remoteperm but it's not working with owncloud6
-    #     my $cmd = 'sqlite3 ' . $path . '.csync_journal.db "SELECT count(*) from metadata where length(remotePerm) == 0 or length(fileId) == 0"';
-    my $cmd = 'sqlite3 ' . $path . '.csync_journal.db "SELECT count(*) from metadata where length(fileId) == 0"';
+    #     my $cmd = 'sqlite3 ' . $path . '._sync_*.db "SELECT count(*) from metadata where length(remotePerm) == 0 or length(fileId) == 0"';
+    my $cmd = 'sqlite3 ' . $path . '._sync_*.db "SELECT count(*) from metadata where length(fileId) == 0"';
 	my $result = `$cmd`;
 	assert($result == "0");
 }
@@ -170,14 +170,14 @@ assertLocalAndRemoteDir( '', 0);
 
 #######################################################################
 printInfo( "move a directory in a outside read only folder" );
-system("sqlite3 " . localDir().'.csync_journal.db .dump');
+system("sqlite3 " . localDir().'._sync_*.db .dump');
 
 #Missing directory should be restored
 #new directory should be uploaded
 system("mv " . localDir().'readonlyDirectory_PERM_M_/subdir_PERM_CK_ ' . localDir().'normalDirectory_PERM_CKDNV_/subdir_PERM_CKDNV_'  );
 
 csync();
-system("sqlite3 " . localDir().'.csync_journal.db .dump');
+system("sqlite3 " . localDir().'._sync_*.db .dump');
 assertCsyncJournalOk(localDir());
 
 # old name restored
@@ -229,7 +229,38 @@ system("rm -r " . localDir(). "readonlyDirectory_PERM_M_/moved_PERM_CK_");
 
 assertLocalAndRemoteDir( '', 0);
 
-system("sqlite3 " . localDir().'.csync_journal.db .dump');
+system("sqlite3 " . localDir().'._sync_*.db .dump');
+
+
+#######################################################################
+printInfo( "multiple restores of a file create different conflict files" );
+
+system("sleep 1"); #make sure changes have different mtime
+
+system("echo 'modified_1' > ". localDir() . "readonlyDirectory_PERM_M_/canotBeModified_PERM_DVN_.data");
+
+#do the sync
+csync();
+assertCsyncJournalOk(localDir());
+
+system("sleep 1"); #make sure changes have different mtime
+
+system("echo 'modified_2' > ". localDir() . "readonlyDirectory_PERM_M_/canotBeModified_PERM_DVN_.data");
+
+#do the sync
+csync();
+assertCsyncJournalOk(localDir());
+
+# there should be two conflict files
+# TODO check that the conflict file has the right content
+my @conflicts = glob(localDir().'readonlyDirectory_PERM_M_/canotBeModified_PERM_DVN__conflict-*.data' );
+assert( scalar @conflicts == 2 );
+# remove the conflicts for the next assertLocalAndRemoteDir
+system("rm " . localDir().'readonlyDirectory_PERM_M_/canotBeModified_PERM_DVN__conflict-*.data' );
+
+### Both side should still be the same
+assertLocalAndRemoteDir( '', 0);
+
 
 
 cleanup();

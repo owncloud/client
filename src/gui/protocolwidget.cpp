@@ -3,7 +3,8 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -26,7 +27,6 @@
 #include "syncfileitem.h"
 #include "folder.h"
 #include "openfilemanager.h"
-#include "owncloudpropagator.h"
 #include "activityitemdelegate.h"
 
 #include "ui_protocolwidget.h"
@@ -44,8 +44,8 @@ ProtocolWidget::ProtocolWidget(QWidget *parent) :
 
     connect(ProgressDispatcher::instance(), SIGNAL(progressInfo(QString,ProgressInfo)),
             this, SLOT(slotProgressInfo(QString,ProgressInfo)));
-    connect(ProgressDispatcher::instance(), SIGNAL(itemCompleted(QString,SyncFileItem,PropagatorJob)),
-            this, SLOT(slotItemCompleted(QString,SyncFileItem,PropagatorJob)));
+    connect(ProgressDispatcher::instance(), SIGNAL(itemCompleted(QString,SyncFileItemPtr)),
+            this, SLOT(slotItemCompleted(QString,SyncFileItemPtr)));
 
     connect(_ui->_treeWidget, SIGNAL(itemActivated(QTreeWidgetItem*,int)), SLOT(slotOpenFile(QTreeWidgetItem*,int)));
 
@@ -98,6 +98,8 @@ ProtocolWidget::ProtocolWidget(QWidget *parent) :
     _issueItemView->setRootIsDecorated(false);
     _issueItemView->setTextElideMode(Qt::ElideMiddle);
     _issueItemView->header()->setObjectName("ActivityErrorListHeader");
+    connect(_issueItemView, SIGNAL(itemActivated(QTreeWidgetItem*,int)),
+            SLOT(slotOpenFile(QTreeWidgetItem*,int)));
 }
 
 ProtocolWidget::~ProtocolWidget()
@@ -219,15 +221,11 @@ void ProtocolWidget::slotProgressInfo( const QString& folder, const ProgressInfo
     }
 }
 
-void ProtocolWidget::slotItemCompleted(const QString &folder, const SyncFileItem &item, const PropagatorJob &job)
+void ProtocolWidget::slotItemCompleted(const QString &folder, const SyncFileItemPtr &item)
 {
-    if (qobject_cast<const PropagateDirectory*>(&job)) {
-        return;
-    }
-
-    QTreeWidgetItem *line = createCompletedTreewidgetItem(folder, item);
+    QTreeWidgetItem *line = createCompletedTreewidgetItem(folder, *item);
     if(line) {
-       if( item.hasErrorStatus() ) {
+       if( item->hasErrorStatus() ) {
             _issueItemView->insertTopLevelItem(0, line);
             emit issueItemCountUpdated(_issueItemView->topLevelItemCount());
         } else {

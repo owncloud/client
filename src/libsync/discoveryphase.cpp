@@ -13,12 +13,19 @@
  */
 
 #include "discoveryphase.h"
-#include <csync_private.h>
-#include <qdebug.h>
 
-#include <QUrl>
 #include "account.h"
+#include "theme.h"
+#include "asserts.h"
+
+#include <csync_private.h>
+#include <csync_rename.h>
+
+#include <qdebug.h>
+#include <QUrl>
 #include <QFileInfo>
+#include <cstring>
+
 
 namespace OCC {
 
@@ -51,7 +58,7 @@ static bool findPathInList(const QStringList &list, const QString &path)
     return pathSlash.startsWith(*it);
 }
 
-bool DiscoveryJob::isInSelectiveSyncBlackList(const QString& path) const
+bool DiscoveryJob::isInSelectiveSyncBlackList(const char *path) const
 {
     if (_selectiveSyncBlackList.isEmpty()) {
         // If there is no black list, everything is allowed
@@ -59,23 +66,53 @@ bool DiscoveryJob::isInSelectiveSyncBlackList(const QString& path) const
     }
 
     // Block if it is in the black list
-    return findPathInList(_selectiveSyncBlackList, path);
+    if (findPathInList(_selectiveSyncBlackList, QString::fromUtf8(path))) {
+        return true;
+    }
 
+    // Also try to adjust the path if there was renames
+    if (csync_rename_count(_csync_ctx)) {
+        QScopedPointer<char, QScopedPointerPodDeleter> adjusted(
+            csync_rename_adjust_path_source(_csync_ctx, path));
+        if (strcmp(adjusted.data(), path) != 0) {
+            return findPathInList(_selectiveSyncBlackList, QString::fromUtf8(adjusted.data()));
+        }
+    }
+
+    return false;
 }
 
 int DiscoveryJob::isInSelectiveSyncBlackListCallback(void *data, const char *path)
 {
-    return static_cast<DiscoveryJob*>(data)->isInSelectiveSyncBlackList(QString::fromUtf8(path));
+    return static_cast<DiscoveryJob*>(data)->isInSelectiveSyncBlackList(path);
 }
 
-bool DiscoveryJob::checkSelectiveSyncNewFolder(const QString& path)
+bool DiscoveryJob::checkSelectiveSyncNewFolder(const QString& path, const char *remotePerm)
 {
-    // If this path or the parent is in the white list, then we do not block this file
+
+    if (_syncOptions._confirmExternalStorage && std::strchr(remotePerm, 'M')) {
+        // 'M' in the permission means external storage.
+
+        /* Note: DiscoverySingleDirectoryJob::directoryListingIteratedSlot make sure that only the
+         * root of a mounted storage has 'M', all sub entries have 'm' */
+
+        // Only allow it if the white list contains exactly this path (not parents)
+        // We want to ask confirmation for external storage even if the parents where selected
+        if (_selectiveSyncWhiteList.contains(path + QLatin1Char('/'))) {
+            return false;
+        }
+
+        emit newBigFolder(path, true);
+        return true;
+    }
+
+   // If this path or the parent is in the white list, then we do not block this file
     if (findPathInList(_selectiveSyncWhiteList, path)) {
         return false;
     }
 
-    if (_newBigFolderSizeLimit < 0) {
+    auto limit = _syncOptions._newBigFolderSizeLimit;
+    if (limit < 0) {
         // no limit, everything is allowed;
         return false;
     }
@@ -89,10 +126,9 @@ bool DiscoveryJob::checkSelectiveSyncNewFolder(const QString& path)
         _vioWaitCondition.wait(&_vioMutex);
     }
 
-    auto limit = _newBigFolderSizeLimit;
     if (result >= limit) {
         // we tell the UI there is a new folder
-        emit newBigFolder(path);
+        emit newBigFolder(path, false);
         return true;
     } else {
         // it is not too big, put it in the white list (so we will not do more query for the children)
@@ -106,9 +142,9 @@ bool DiscoveryJob::checkSelectiveSyncNewFolder(const QString& path)
     }
 }
 
-int DiscoveryJob::checkSelectiveSyncNewFolderCallback(void *data, const char *path)
+int DiscoveryJob::checkSelectiveSyncNewFolderCallback(void *data, const char *path, const char *remotePerm)
 {
-    return static_cast<DiscoveryJob*>(data)->checkSelectiveSyncNewFolder(QString::fromUtf8(path));
+    return static_cast<DiscoveryJob*>(data)->checkSelectiveSyncNewFolder(QString::fromUtf8(path), remotePerm);
 }
 
 
@@ -192,7 +228,8 @@ int get_errno_from_http_errcode( int err, const QString & reason ) {
         new_errno = EIO;
         break;
     case 503:           /* Service Unavailable */
-        if (reason == "Storage not available") {
+        // https://github.com/owncloud/core/pull/26145/files
+        if (reason == "Storage not available" || reason == "Storage is temporarily not available") {
             new_errno = ERRNO_STORAGE_UNAVAILABLE;
         } else {
             new_errno = ERRNO_SERVICE_UNAVAILABLE;
@@ -210,7 +247,7 @@ int get_errno_from_http_errcode( int err, const QString & reason ) {
 
 
 DiscoverySingleDirectoryJob::DiscoverySingleDirectoryJob(const AccountPtr &account, const QString &path, QObject *parent)
-    : QObject(parent), _subPath(path), _account(account), _ignoredFirst(false)
+    : QObject(parent), _subPath(path), _account(account), _ignoredFirst(false), _isRootPath(false), _isExternalStorage(false)
 {
 }
 
@@ -218,10 +255,15 @@ void DiscoverySingleDirectoryJob::start()
 {
     // Start the actual HTTP job
     LsColJob *lsColJob = new LsColJob(_account, _subPath, this);
-    lsColJob->setProperties(QList<QByteArray>() << "resourcetype" << "getlastmodified"
-                        << "getcontentlength" << "getetag" << "http://owncloud.org/ns:id"
-                        << "http://owncloud.org/ns:downloadURL" << "http://owncloud.org/ns:dDC"
-                        << "http://owncloud.org/ns:permissions");
+
+    QList<QByteArray> props;
+    props << "resourcetype" << "getlastmodified" << "getcontentlength" << "getetag"
+          << "http://owncloud.org/ns:id" << "http://owncloud.org/ns:downloadURL"
+          << "http://owncloud.org/ns:dDC" << "http://owncloud.org/ns:permissions";
+    if (_isRootPath)
+        props << "http://owncloud.org/ns:data-fingerprint";
+
+    lsColJob->setProperties(props);
 
     QObject::connect(lsColJob, SIGNAL(directoryListingIterated(QString,QMap<QString,QString>)),
                      this, SLOT(directoryListingIteratedSlot(QString,QMap<QString,QString>)));
@@ -299,12 +341,16 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, con
 {
     //qDebug() << Q_FUNC_INFO << _subPath << file << map.count() << map.keys() << _account->davPath() << _lsColJob->reply()->request().url().path();
     if (!_ignoredFirst) {
-        // First result is the directory itself. Maybe should have a better check for that? FIXME
+        // The first entry is for the folder itself, we should process it differently.
         _ignoredFirst = true;
         if (map.contains("permissions")) {
-            emit firstDirectoryPermissions(map.value("permissions"));
+            auto perm = map.value("permissions");
+            emit firstDirectoryPermissions(perm);
+            _isExternalStorage = perm.contains(QLatin1Char('M'));
         }
-
+        if (map.contains("data-fingerprint")) {
+            _dataFingerprint = map.value("data-fingerprint").toUtf8();
+        }
     } else {
         // Remove <webDAV-Url>/folder/ from <webDAV-Url>/folder/subfile.txt
         file.remove(0, _lsColJob->reply()->request().url().path().length());
@@ -322,6 +368,13 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, con
         file_stat->name = strdup(file.toUtf8());
         if (!file_stat->etag || strlen(file_stat->etag) == 0) {
             qDebug() << "WARNING: etag of" << file_stat->name << "is" << file_stat->etag << " This must not happen.";
+        }
+        if (_isExternalStorage) {
+            /* All the entries in a external storage have 'M' in their permission. However, for all
+               purposes in the desktop client, we only need to know about the mount points.
+               So replace the 'M' by a 'm' for every sub entries in an external storage */
+            std::replace(file_stat->remotePerm, file_stat->remotePerm + strlen(file_stat->remotePerm),
+                         'M', 'm');
         }
 
         QStringRef fileRef(&file);
@@ -426,6 +479,11 @@ void DiscoveryMainThread::doOpendirSlot(const QString &subPath, DiscoveryDirecto
                      this, SIGNAL(etagConcatenation(QString)));
     QObject::connect(_singleDirJob, SIGNAL(etag(QString)),
                      this, SIGNAL(etag(QString)));
+
+    if (!_firstFolderProcessed) {
+        _singleDirJob->setIsRootPath();
+    }
+
     _singleDirJob->start();
 }
 
@@ -441,7 +499,12 @@ void DiscoveryMainThread::singleDirectoryJobResultSlot(const QList<FileStatPoint
     _currentDiscoveryDirectoryResult->list = result;
     _currentDiscoveryDirectoryResult->code = 0;
     _currentDiscoveryDirectoryResult->listIndex = 0;
-     _currentDiscoveryDirectoryResult = 0; // the sync thread owns it now
+    _currentDiscoveryDirectoryResult = 0; // the sync thread owns it now
+
+    if (!_firstFolderProcessed) {
+        _firstFolderProcessed = true;
+        _dataFingerprint = _singleDirJob->_dataFingerprint;
+    }
 
     _discoveryJob->_vioMutex.lock();
     _discoveryJob->_vioWaitCondition.wakeAll();
