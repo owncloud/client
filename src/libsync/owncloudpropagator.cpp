@@ -568,6 +568,32 @@ OwncloudPropagator::DiskSpaceResult OwncloudPropagator::diskSpaceCheck() const
     return DiskSpaceOk;
 }
 
+bool OwncloudPropagator::quotaCheck(quint64 newSize, quint64 oldSize) const
+{
+    // It's okay if newSize < oldSize.
+    return qint64(newSize - oldSize) < freeQuota();
+}
+
+void OwncloudPropagator::setFreeQuota(qint64 quota)
+{
+    _freeQuota = quota;
+}
+
+qint64 OwncloudPropagator::freeQuota() const
+{
+    if (_freeQuota < 0) {
+        return std::numeric_limits<qint64>::max();
+    }
+    return _freeQuota;
+}
+
+void OwncloudPropagator::adjustFreeQuota(qint64 adjustment)
+{
+    if (_freeQuota < 0)
+        return;
+    _freeQuota = qMax(0LL, _freeQuota + adjustment);
+}
+
 // ================================================================================
 
 PropagatorJob::PropagatorJob(OwncloudPropagator *propagator)

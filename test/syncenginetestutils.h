@@ -283,6 +283,7 @@ public:
     QString etag = generateEtag();
     QByteArray fileId = generateFileId();
     qint64 size = 0;
+    qint64 quota_available = -1; // no quota available
     char contentChar = 'W';
 
     // Sorted by name to be able to compare trees
@@ -321,7 +322,7 @@ public:
         }
         QString prefix = request.url().path().left(request.url().path().size() - fileName.size());
 
-        // Don't care about the request and just return a full propfind
+        // Don't care about the requested properties and just return all of them
         const QString davUri{QStringLiteral("DAV:")};
         const QString ocUri{QStringLiteral("http://owncloud.org/ns")};
         QBuffer buffer{&payload};
@@ -342,6 +343,8 @@ public:
                 xml.writeStartElement(davUri, QStringLiteral("resourcetype"));
                 xml.writeEmptyElement(davUri, QStringLiteral("collection"));
                 xml.writeEndElement(); // resourcetype
+                xml.writeTextElement(davUri, QStringLiteral("quota-available-bytes"), QString::number(fileInfo.quota_available));
+                // quota-used-bytes is currently not written
             } else
                 xml.writeEmptyElement(davUri, QStringLiteral("resourcetype"));
 
@@ -359,8 +362,10 @@ public:
         };
 
         writeFileResponse(*fileInfo);
-        foreach(const FileInfo &childFileInfo, fileInfo->children)
-           writeFileResponse(childFileInfo);
+        if (request.rawHeader("Depth") != "0") {
+            foreach(const FileInfo &childFileInfo, fileInfo->children)
+               writeFileResponse(childFileInfo);
+        }
         xml.writeEndElement(); // multistatus
         xml.writeEndDocument();
 
@@ -786,7 +791,8 @@ public:
     OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
 
     FileModifier &localModifier() { return _localModifier; }
-    FileModifier &remoteModifier() { return _fakeQnam->currentRemoteState(); }
+    FileInfo &remoteModifier() { return _fakeQnam->currentRemoteState(); }
+
     FileInfo currentLocalState() {
         QDir rootDir{_tempDir.path()};
         FileInfo rootTemplate;

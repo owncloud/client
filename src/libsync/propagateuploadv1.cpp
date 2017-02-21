@@ -228,6 +228,8 @@ void PropagateUploadFileV1::slotPutFinished()
         // Ensure errors that should eventually reset the chunked upload are tracked.
         checkResettingErrors();
 
+        checkInsufficentStorageError();
+
         SyncFileItem::Status status = classifyError(err, _item->_httpErrorCode,
                                                     &propagator()->_anotherSyncNeeded);
         abortWithError(status, errorString);

@@ -331,6 +331,23 @@ void PropagateUploadFileCommon::slotStartUpload(const QByteArray& transmissionCh
         return;
     }
 
+    // Check that there's enough space on the server
+    if (!propagator()->quotaCheck(_item->_size, _item->log._other_size)) {
+        done(SyncFileItem::NormalError, tr("Storage quota on the server is exceeded"));
+        return;
+    }
+
+    // If we will end up needing more space, eat up the available quota
+    // right now. That way we won't start parallel jobs that compete for
+    // the remaining quota if we know we can't fit both.
+    // However, if we will *free up* quota through the PUT request (say
+    // the new file is smaller than the one that is overwritten), we can
+    // only release that space when the job is done (see finalize()).
+    auto freedSpace = qint64(_item->log._other_size - _item->_size);
+    if (freedSpace < 0) {
+        propagator()->adjustFreeQuota(freedSpace);
+    }
+
     doStartUpload();
 }
 
@@ -521,6 +538,21 @@ void PropagateUploadFileCommon::checkResettingErrors()
     }
 }
 
+void PropagateUploadFileCommon::checkInsufficentStorageError()
+{
+    if (_item->_httpErrorCode == 507) {
+        // We don't expect to see this kind of error because we check whether
+        // there's enough space on the server before starting an upload.
+        // So if we *do* see such an error, our quota expectation must be wrong.
+        // Here it is updated to be more correct.
+        auto freeQuota = propagator()->freeQuota();
+        auto newFreeQuota = qBound(0LL, qint64(_item->_size - 1), freeQuota);
+        propagator()->setFreeQuota(newFreeQuota);
+        qDebug() << "Adjusted free quota downwards from" << freeQuota
+                 << "to" << newFreeQuota << "due to Insufficient Storage error";
+    }
+}
+
 void PropagateUploadFileCommon::slotJobDestroyed(QObject* job)
 {
     _jobs.erase(std::remove(_jobs.begin(), _jobs.end(), job) , _jobs.end());
@@ -577,6 +609,14 @@ QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
 void PropagateUploadFileCommon::finalize()
 {
     _finished = true;
+
+    // If we freed up quota through this PUT, adjust our model of the
+    // quota now. If we needed more space, it was already done in
+    // slotStartUpload().
+    auto freedSpace = qint64(_item->log._other_size - _item->_size);
+    if (freedSpace > 0) {
+        propagator()->adjustFreeQuota(freedSpace);
+    }
 
     if (!propagator()->_journal->setFileRecord(SyncJournalFileRecord(*_item, propagator()->getFilePath(_item->_file)))) {
         done(SyncFileItem::FatalError, tr("Error writing metadata to the database"));
