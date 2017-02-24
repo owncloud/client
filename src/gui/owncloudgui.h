@@ -37,6 +37,7 @@ class ShareDialog;
 class Application;
 class LogBrowser;
 class AccountState;
+class QuotaInfo;
 
 /**
  * @brief The ownCloudGui class
@@ -140,6 +141,24 @@ private:
     QSignalMapper *_recentItemsMapper;
 
     Application *_app;
+};
+
+/**
+  * @brief Quota info menu item
+  * @ingroup gui
+  */
+class QuotaAction : public QObject {
+    Q_OBJECT
+public:
+    explicit QuotaAction(QAction *action, AccountStatePtr accountState);
+
+private slots:
+    void slotUpdateQuota(qint64, qint64);
+
+private:
+    AccountStatePtr _accountState;
+    QAction *_action;
+    QuotaInfo *_quotaInfo;
 };
 
 } // namespace OCC

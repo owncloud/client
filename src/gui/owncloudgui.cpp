@@ -34,6 +34,7 @@
 #include "openfilemanager.h"
 #include "accountmanager.h"
 #include "creds/abstractcredentials.h"
+#include "quotainfo.h"
 
 #include <QDesktopServices>
 #include <QDir>
@@ -346,6 +347,13 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
     auto actionOpenoC = menu->addAction(browserOpen);
     actionOpenoC->setProperty(propertyAccountC, QVariant::fromValue(accountState->account()));
     QObject::connect(actionOpenoC, SIGNAL(triggered(bool)), SLOT(slotOpenOwnCloud()));
+
+    menu->addSeparator();
+
+    QString quotaInfo = tr("Fetching Quota");
+    auto actionQuotaInfo = menu->addAction(quotaInfo);
+    actionQuotaInfo->setEnabled(false);
+    new QuotaAction(actionQuotaInfo, accountState);
 
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
@@ -1084,5 +1092,32 @@ void ownCloudGui::slotRemoveDestroyedShareDialogs()
     }
 }
 
+QuotaAction::QuotaAction(QAction* action, AccountStatePtr accountState) :
+    QObject(action),
+    _accountState(accountState),
+    _action(action)
+{
+    _quotaInfo = new QuotaInfo(_accountState.data(), this);
+
+    connect(_quotaInfo, SIGNAL(quotaUpdated(qint64,qint64)),
+            this, SLOT(slotUpdateQuota(qint64,qint64)));
+    _quotaInfo->setActive(true);
+}
+
+void QuotaAction::slotUpdateQuota(qint64 total, qint64 used) {
+    if( total > 0 ) {
+        const double percent = used/(double)total*100;
+        QString totalStr = Utility::octetsToString(total);
+        _action->setText(tr("%1% of %2 in use").arg(percent, 0, 'f', 1).arg(totalStr));
+    } else {
+        /* -1 means not computed; -2 means unknown; -3 means unlimited  (#3940)*/
+        if (total == 0 || total == -1) {
+            _action->setText("Quota not available");
+        } else {
+            QString usedStr = Utility::octetsToString(used);
+            _action->setText(tr("%1 in use").arg(usedStr));
+        }
+    }
+}
 
 } // end namespace
