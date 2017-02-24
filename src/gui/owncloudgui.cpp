@@ -348,12 +348,14 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
     actionOpenoC->setProperty(propertyAccountC, QVariant::fromValue(accountState->account()));
     QObject::connect(actionOpenoC, SIGNAL(triggered(bool)), SLOT(slotOpenOwnCloud()));
 
-    menu->addSeparator();
+    if (accountState->state() == AccountState::Connected) {
+        menu->addSeparator();
 
-    QString quotaInfo = tr("Fetching Quota");
-    auto actionQuotaInfo = menu->addAction(quotaInfo);
-    actionQuotaInfo->setEnabled(false);
-    new QuotaAction(actionQuotaInfo, accountState);
+        QString quotaInfo = tr("Fetching Quota");
+        auto actionQuotaInfo = menu->addAction(quotaInfo);
+        actionQuotaInfo->setEnabled(false);
+        new QuotaAction(actionQuotaInfo, accountState);
+    }
 
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
