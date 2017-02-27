@@ -84,7 +84,7 @@ QString OCUpdater::statusString() const
     case UpdateOnlyAvailableThroughSystem:
         return tr("New version %1 available. Please use the systems update tool to install it.").arg(updateVersion);
     case Unknown:
-        return tr("Checking update server...");
+        return tr("Disabled for Debian. You hve to use your package management to update.");
     case UpToDate:
         // fall through
     default:

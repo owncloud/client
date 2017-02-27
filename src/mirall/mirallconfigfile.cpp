@@ -344,11 +344,14 @@ bool MirallConfigFile::skipUpdateCheck( const QString& connection ) const
     QString con( connection );
     if( connection.isEmpty() ) con = defaultConnection();
 
-    QVariant fallback = getValue(QLatin1String(skipUpdateCheckC), con, false);
+    QVariant fallback = getValue(QLatin1String(skipUpdateCheckC), con, true);
     fallback = getValue(QLatin1String(skipUpdateCheckC), QString(), fallback);
 
     QVariant value = getPolicySetting(QLatin1String(skipUpdateCheckC), fallback);
-    return value.toBool();
+    if ( !value.toBool() )
+        qDebug() << "debian disabled the UpdateCheck mechanism.";
+
+    return true;
 }
 
 void MirallConfigFile::setSkipUpdateCheck( bool skip, const QString& connection )
