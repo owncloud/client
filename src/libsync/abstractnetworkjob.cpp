@@ -173,7 +173,7 @@ void AbstractNetworkJob::slotFinished()
     // get the Date timestamp from reply
     _responseTimestamp = _reply->rawHeader("Date");
 
-    if (_followRedirects) {
+    if (_followRedirects && reply()->operation() == QNetworkAccessManager::GetOperation) {
         // ### the qWarnings here should be exported via displayErrors() so they
         // ### can be presented to the user if the job executor has a GUI
         QUrl requestedUrl = reply()->request().url();
