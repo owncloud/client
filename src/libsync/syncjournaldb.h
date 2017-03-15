@@ -63,6 +63,10 @@ public:
                                   const QByteArray& contentChecksumType);
     bool updateLocalMetadata(const QString& filename,
                              qint64 modtime, quint64 size, quint64 inode);
+
+    /// Retrieves the size of a file, or a directory and all its contents.
+    qint64 queryRecursiveSize(const QString& filename);
+
     bool exists();
     void walCheckpoint();
 
@@ -226,6 +230,7 @@ private:
     QScopedPointer<SqlQuery> _getDataFingerprintQuery;
     QScopedPointer<SqlQuery> _setDataFingerprintQuery1;
     QScopedPointer<SqlQuery> _setDataFingerprintQuery2;
+    QScopedPointer<SqlQuery> _queryRecursiveSize;
 
     /* This is the list of paths we called avoidReadFromDbOnNextSync on.
      * It means that they should not be written to the DB in any case since doing

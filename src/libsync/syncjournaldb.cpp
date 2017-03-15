@@ -584,6 +584,10 @@ bool SyncJournalDb::checkConnect()
     if (_setDataFingerprintQuery2->prepare("INSERT INTO datafingerprint (fingerprint) VALUES (?1);")) {
         return sqlFail("prepare _setDataFingerprintQuery2", *_setDataFingerprintQuery2);
     }
+    _queryRecursiveSize.reset(new SqlQuery(_db));
+    if (_queryRecursiveSize->prepare("SELECT SUM(filesize) FROM metadata WHERE path LIKE (?1 || '/%') OR path=?1;")) {
+        return sqlFail("prepare _queryRecursiveSize", *_queryRecursiveSize);
+    }
 
     // don't start a new transaction now
     commitInternal(QString("checkConnect End"), false);
@@ -625,6 +629,7 @@ void SyncJournalDb::close()
     _getDataFingerprintQuery.reset(0);
     _setDataFingerprintQuery1.reset(0);
     _setDataFingerprintQuery2.reset(0);
+    _queryRecursiveSize.reset(0);
 
     _db.close();
     _avoidReadFromDbOnNextSyncFilter.clear();
@@ -1131,6 +1136,35 @@ bool SyncJournalDb::updateLocalMetadata(const QString& filename,
 
     query->reset_and_clear_bindings();
     return true;
+}
+
+qint64 SyncJournalDb::queryRecursiveSize(const QString& filename)
+{
+    qint64 result = 0;
+    QMutexLocker locker(&_mutex);
+
+    if( !checkConnect() ) {
+        qDebug() << "Failed to connect database.";
+        return result;
+    }
+
+    auto & query = _queryRecursiveSize;
+
+    query->reset_and_clear_bindings();
+    query->bindValue(1, filename);
+
+    if( !query->exec() ) {
+        qWarning() << "Error SQL statement queryRecursiveSize: "
+                   << query->lastQuery() <<  " :"
+                   << query->error();
+        return result;
+    }
+    if( query->next() ) {
+        result = query->intValue(0);
+    }
+
+    query->reset_and_clear_bindings();
+    return result;
 }
 
 bool SyncJournalDb::setFileRecordMetadata(const SyncJournalFileRecord& record)

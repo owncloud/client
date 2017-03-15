@@ -153,6 +153,8 @@ private slots:
     void slotFinished(bool success);
     void slotProgress(const SyncFileItem& item, quint64 curent);
     void slotDiscoveryJobFinished(int updateResult);
+    void slotQuotaJobFinished(const QVariantMap &result);
+    void slotQuotaJobFailed();
     void slotCleanPollsJobAborted(const QString &error);
 
     /** Records that a file was touched by a job. */
@@ -188,6 +190,9 @@ private:
 
     // Must only be acessed during update and reconcile
     QMap<QString, SyncFileItemPtr> _syncItemMap;
+
+    // Only temporarily filled while the quota job is running
+    SyncFileItemVector _syncItems;
 
     AccountPtr _account;
     CSYNC *_csync_ctx;

@@ -246,6 +246,9 @@ protected:
      */
     void checkResettingErrors();
 
+    /// Checks 507 Insufficent Storage
+    void checkInsufficentStorageError();
+
     // Bases headers that need to be sent with every chunk
     QMap<QByteArray, QByteArray> headers();
 

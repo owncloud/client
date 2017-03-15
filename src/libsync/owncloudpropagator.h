@@ -292,6 +292,7 @@ public:
             , _bandwidthManager(this)
             , _anotherSyncNeeded(false)
             , _account(account)
+            , _freeQuota(-1)
     { }
 
     ~OwncloudPropagator();
@@ -358,6 +359,28 @@ public:
      */
     DiskSpaceResult diskSpaceCheck() const;
 
+    /** Checks whether a file that's now \a new_size and used to have
+     *  \a old_size can be successfully uploaded.
+     */
+    bool quotaCheck(quint64 newSize, quint64 oldSize) const;
+
+    /** Sets the amount of space availabe on the server.
+     *
+     * Negative values indicate that the quota is unknown.
+     */
+    void setFreeQuota(qint64 quota);
+
+    /** Returns the amount of free quota remaining.
+     *
+     * Can return qint64::max if quota is unknown.
+     */
+    qint64 freeQuota() const;
+
+    /** Adjusts the amount of free quota
+     *
+     * Safe to use when quota is unknown (no effect)
+     */
+    void adjustFreeQuota(qint64 adjustment);
 
 
 private slots:
@@ -389,6 +412,7 @@ signals:
 private:
 
     AccountPtr _account;
+    qint64 _freeQuota;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // access to signals which are protected in Qt4

@@ -920,12 +920,12 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     csync_commit(_csync_ctx);
 
     // The map was used for merging trees, convert it to a list:
-    SyncFileItemVector syncItems = _syncItemMap.values().toVector();
+    _syncItems = _syncItemMap.values().toVector();
     _syncItemMap.clear(); // free memory
 
     // Adjust the paths for the renames.
-    for (SyncFileItemVector::iterator it = syncItems.begin();
-            it != syncItems.end(); ++it) {
+    for (SyncFileItemVector::iterator it = _syncItems.begin();
+            it != _syncItems.end(); ++it) {
         (*it)->_file = adjustRenamedPath((*it)->_file);
     }
 
@@ -933,7 +933,7 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     if (_account->serverVersionInt() < 0x080100) {
         // Server version older than 8.1 don't support these character in filename.
         static const QRegExp invalidCharRx("[\\\\:?*\"<>|]");
-        for (auto it = syncItems.begin(); it != syncItems.end(); ++it) {
+        for (auto it = _syncItems.begin(); it != _syncItems.end(); ++it) {
             if ((*it)->_direction == SyncFileItem::Up &&
                     (*it)->destination().contains(invalidCharRx)) {
                 (*it)->_errorString  = tr("File name contains at least one invalid character");
@@ -945,7 +945,7 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     if (!_hasNoneFiles && _hasRemoveFile) {
         qDebug() << Q_FUNC_INFO << "All the files are going to be changed, asking the user";
         bool cancel = false;
-        emit aboutToRemoveAllFiles(syncItems.first()->_direction, &cancel);
+        emit aboutToRemoveAllFiles(_syncItems.first()->_direction, &cancel);
         if (cancel) {
             qDebug() << Q_FUNC_INFO << "Abort sync";
             finalize(false);
@@ -960,7 +960,7 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     if (!databaseFingerprint.isNull()
             && _discoveryMainThread->_dataFingerprint != databaseFingerprint) {
         qDebug() << "data fingerprint changed, assume restore from backup" << databaseFingerprint << _discoveryMainThread->_dataFingerprint;
-        restoreOldFiles(syncItems);
+        restoreOldFiles(_syncItems);
     } else if (!_hasForwardInTimeFiles && _backInTimeFiles >= 2 && _account->serverVersionInt() < 0x090100) {
         // The server before ownCloud 9.1 did not have the data-fingerprint property. So in that
         // case we use heuristics to detect restored backup.  This is disabled with newer version
@@ -970,18 +970,18 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
         bool restore = false;
         emit aboutToRestoreBackup(&restore);
         if (restore) {
-            restoreOldFiles(syncItems);
+            restoreOldFiles(_syncItems);
         }
     }
 
     // Sort items per destination
-    std::sort(syncItems.begin(), syncItems.end());
+    std::sort(_syncItems.begin(), _syncItems.end());
 
     // make sure everything is allowed
-    checkForPermission(syncItems);
+    checkForPermission(_syncItems);
 
     // To announce the beginning of the sync
-    emit aboutToPropagate(syncItems);
+    emit aboutToPropagate(_syncItems);
     // it's important to do this before ProgressInfo::start(), to announce start of new sync
     emit transmissionProgress(*_progressInfo);
     _progressInfo->startEstimateUpdates();
@@ -1001,6 +1001,22 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     // do a database commit
     _journal->commit("post treewalk");
 
+    // Let's retrieve the current quota so uploads can take
+    // the currently available amount of space into account.
+    auto quotaJob = new PropfindJob(_account, _remotePath, _propagator.data());
+    quotaJob->setProperties(QList<QByteArray>() << "quota-available-bytes");
+    connect(quotaJob, SIGNAL(result(QVariantMap)), SLOT(slotQuotaJobFinished(QVariantMap)));
+    connect(quotaJob, SIGNAL(networkError(QNetworkReply*)), SLOT(slotQuotaJobFailed()));
+    quotaJob->start();
+}
+
+void SyncEngine::slotQuotaJobFinished(const QVariantMap &result)
+{
+    // The server can return fractional bytes (#1374)
+    // <d:quota-available-bytes>1374532061.2</d:quota-available-bytes>
+    qint64 availableQuota = result["quota-available-bytes"].toDouble();
+    qDebug() << "Received quota:" << availableQuota;
+
     _propagator = QSharedPointer<OwncloudPropagator>(
         new OwncloudPropagator (_account, _localPath, _remotePath, _journal));
     connect(_propagator.data(), SIGNAL(itemCompleted(const SyncFileItemPtr &)),
@@ -1014,18 +1030,31 @@ void SyncEngine::slotDiscoveryJobFinished(int discoveryResult)
     // apply the network limits to the propagator
     setNetworkLimits(_uploadLimit, _downloadLimit);
 
-    deleteStaleDownloadInfos(syncItems);
-    deleteStaleUploadInfos(syncItems);
-    deleteStaleErrorBlacklistEntries(syncItems);
+    _propagator->setFreeQuota(availableQuota);
+
+    deleteStaleDownloadInfos(_syncItems);
+    deleteStaleUploadInfos(_syncItems);
+    deleteStaleErrorBlacklistEntries(_syncItems);
     _journal->commit("post stale entry removal");
 
     // Emit the started signal only after the propagator has been set up.
     if (_needsUpdate)
-        emit(started());
+        emit started();
 
-    _propagator->start(syncItems);
+    _propagator->start(_syncItems);
+    _syncItems.clear();
 
     qDebug() << "<<#### Post-Reconcile end #################################################### " << _stopWatch.addLapTime(QLatin1String("Post-Reconcile Finished"));
+}
+
+void SyncEngine::slotQuotaJobFailed()
+{
+    qDebug() << "Quota job failed, proceeding without quota checks";
+
+    // Proceed anyway, without knowing how much space is available
+    QVariantMap noResult;
+    noResult["quota-available-bytes"] = -1;
+    slotQuotaJobFinished(noResult);
 }
 
 void SyncEngine::slotCleanPollsJobAborted(const QString &error)

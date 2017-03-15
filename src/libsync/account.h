@@ -40,7 +40,6 @@ namespace OCC {
 class AbstractCredentials;
 class Account;
 typedef QSharedPointer<Account> AccountPtr;
-class QuotaInfo;
 class AccessManager;
 
 
@@ -213,7 +212,6 @@ private:
     Capabilities _capabilities;
     QString _serverVersion;
     QScopedPointer<AbstractSslErrorHandler> _sslErrorHandler;
-    QuotaInfo *_quotaInfo;
     QSharedPointer<QNetworkAccessManager> _am;
     QSharedPointer<AbstractCredentials> _credentials;
 

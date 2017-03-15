@@ -123,6 +123,10 @@ void PropagateRemoteDelete::slotDeleteJobFinished()
         return;
     }
 
+    // Add all the file sizes from the file or directory, recursively, to free space
+    auto freedSpace = propagator()->_journal->queryRecursiveSize(_item->_originalFile);
+    propagator()->adjustFreeQuota(freedSpace);
+
     propagator()->_journal->deleteFileRecord(_item->_originalFile, _item->_isDirectory);
     propagator()->_journal->commit("Remote Remove");
     done(SyncFileItem::Success);
