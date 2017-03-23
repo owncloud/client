@@ -34,6 +34,7 @@ For all Betas and RCs:
 * [ ] Create build for Windows using rotor job owncloud-client-win32 (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
 * [ ] Create build for Mac using rotor, job owncloud-client-osx (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
 * [ ] Create the beta tarball using Jenkins job ownCloud-client-source
+* [ ] backup isv:ownCloud:desktop to isv:ownCloud:desktop:client-X.Y.Z before overwriting.
 * [ ] Create Linux builds using rotor job owncloud-client-linux building both themes 'ownCloud' and 'testpilotcould' (this magically interacts with the ownCloud-client-source job)
 * [ ] Copy builds from ```daily``` to ```testing``` on download.owncloud.com, double check the download links.
 * [ ] Update the owncloud.org webpage, section testing, by providing a pull request to the https://github.com/owncloud/owncloud.org github repository.
