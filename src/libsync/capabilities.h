@@ -41,7 +41,17 @@ public:
     int  sharePublicLinkExpireDateDays() const;
     bool shareResharing() const;
     bool chunkingNg() const;
-    quint64 requestMaxDurationDC() const;
+
+    /**
+     * The desired time in ms needed for a single-chunk upload.
+     *
+     * The chunk size will be dynamically adjusted to target
+     * this value.
+     *
+     * Capability: dav/target_chunk_upload_request_duration_msec
+     */
+    quint64 desiredChunkUploadDuration() const;
+
 
     /// disable parallel upload in chunking
     bool chunkingParallelUploadDisabled() const;
