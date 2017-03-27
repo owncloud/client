@@ -281,7 +281,7 @@ private:
     int _chunkCount; /// Total number of chunks for this file
     int _transferId; /// transfer id (part of the url)
 
-    quint64 chunkSize() const { return propagator()->initialChunkSize(); }
+    quint64 chunkSize() const { return propagator()->syncOptions()._initialChunkSize; }
 
 
 public:

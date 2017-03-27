@@ -648,9 +648,32 @@ void Folder::startSync(const QStringList &pathList)
 
     SyncOptions opt;
     ConfigFile cfgFile;
+
     auto newFolderLimit = cfgFile.newBigFolderSizeLimit();
     opt._newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
     opt._confirmExternalStorage = cfgFile.confirmExternalStorage();
+
+    opt._initialChunkSize = qgetenv("OWNCLOUD_CHUNK_SIZE").toUInt();
+    if (opt._initialChunkSize == 0) {
+        opt._initialChunkSize = cfgFile.chunkSize();
+    }
+    opt._minChunkSize = qgetenv("OWNCLOUD_MIN_CHUNK_SIZE").toUInt();
+    if (opt._minChunkSize == 0) {
+        opt._minChunkSize = cfgFile.minChunkSize();
+    }
+    opt._maxChunkSize = qgetenv("OWNCLOUD_MAX_CHUNK_SIZE").toUInt();
+    if (opt._maxChunkSize == 0) {
+        opt._maxChunkSize = cfgFile.maxChunkSize();
+    }
+
+    // Previously min/max chunk size values didn't exist, so users might
+    // have setups where the chunk size exceeds the new min/max default
+    // values. To cope with this, adjust min/max to always include the
+    // initial chunk size value.
+    opt._minChunkSize = qMin(opt._minChunkSize, opt._initialChunkSize);
+    opt._maxChunkSize = qMax(opt._maxChunkSize, opt._initialChunkSize);
+
+
     _engine->setSyncOptions(opt);
 
     _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles);

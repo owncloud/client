@@ -29,6 +29,7 @@
 #include "syncjournaldb.h"
 #include "bandwidthmanager.h"
 #include "accountfwd.h"
+#include "discoveryphase.h"
 
 namespace OCC {
 
@@ -288,13 +289,16 @@ public:
             , _finishedEmited(false)
             , _bandwidthManager(this)
             , _anotherSyncNeeded(false)
-            , _chunkSize(initialChunkSize())
+            , _chunkSize(10 * 1000 * 1000) // 10 MB, overridden in setSyncOptions
             , _account(account)
     { }
 
     ~OwncloudPropagator();
 
     void start(const SyncFileItemVector &_syncedItems);
+
+    const SyncOptions& syncOptions() const;
+    void setSyncOptions(const SyncOptions& syncOptions);
 
     QAtomicInt _downloadLimit;
     QAtomicInt _uploadLimit;
@@ -364,11 +368,6 @@ public:
     // timeout in seconds
     static int httpTimeout();
 
-    /** returns the size of chunks in bytes  */
-    static quint64 initialChunkSize();
-    static quint64 maxChunkSize();
-    static quint64 minChunkSize();
-
     AccountPtr account() const;
 
     enum DiskSpaceResult
@@ -415,6 +414,7 @@ private:
 
     AccountPtr _account;
     QScopedPointer<PropagateDirectory> _rootJob;
+    SyncOptions _syncOptions;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // access to signals which are protected in Qt4

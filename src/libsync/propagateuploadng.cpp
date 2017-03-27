@@ -411,9 +411,9 @@ void PropagateUploadFileNG::slotPutFinished()
         // So don't force the chunk size to the new predicted best size
         // and instead move it there gradually.
         propagator()->_chunkSize = qBound(
-                propagator()->minChunkSize(),
+                propagator()->syncOptions()._minChunkSize,
                 (propagator()->_chunkSize + correctedSize) / 2,
-                propagator()->maxChunkSize());
+                propagator()->syncOptions()._maxChunkSize);
 
         qDebug() << "Chunked upload of " << _currentChunkSize << " took " << uploadTime
                  << " desired is " << targetDuration << ", expected good chunk size is "

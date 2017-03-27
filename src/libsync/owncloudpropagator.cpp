@@ -503,6 +503,17 @@ void OwncloudPropagator::start(const SyncFileItemVector& items)
     scheduleNextJob();
 }
 
+const SyncOptions& OwncloudPropagator::syncOptions() const
+{
+    return _syncOptions;
+}
+
+void OwncloudPropagator::setSyncOptions(const SyncOptions& syncOptions)
+{
+    _syncOptions = syncOptions;
+    _chunkSize = syncOptions._initialChunkSize;
+}
+
 // ownCloud server  < 7.0 did not had permissions so we need some other euristics
 // to detect wrong doing in a Shared directory
 bool OwncloudPropagator::isInSharedDirectory(const QString& file)
@@ -532,45 +543,6 @@ int OwncloudPropagator::httpTimeout()
 
     }
     return timeout;
-}
-
-quint64 OwncloudPropagator::initialChunkSize()
-{
-    static uint chunkSize = 0;
-    if (!chunkSize) {
-        chunkSize = qgetenv("OWNCLOUD_CHUNK_SIZE").toUInt();
-        if (chunkSize == 0) {
-            ConfigFile cfg;
-            chunkSize = cfg.chunkSize();
-        }
-    }
-    return chunkSize;
-}
-
-quint64 OwncloudPropagator::maxChunkSize()
-{
-    static uint chunkSize = 0;
-    if (!chunkSize) {
-        chunkSize = qgetenv("OWNCLOUD_MAX_CHUNK_SIZE").toUInt();
-        if (chunkSize == 0) {
-            ConfigFile cfg;
-            chunkSize = cfg.maxChunkSize();
-        }
-    }
-    return chunkSize;
-}
-
-quint64 OwncloudPropagator::minChunkSize()
-{
-    static uint chunkSize = 0;
-    if (!chunkSize) {
-        chunkSize = qgetenv("OWNCLOUD_MIN_CHUNK_SIZE").toUInt();
-        if (chunkSize == 0) {
-            ConfigFile cfg;
-            chunkSize = cfg.minChunkSize();
-        }
-    }
-    return chunkSize;
 }
 
 bool OwncloudPropagator::localFileNameClash( const QString& relFile )
