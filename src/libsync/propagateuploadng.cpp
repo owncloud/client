@@ -404,20 +404,26 @@ void PropagateUploadFileNG::slotPutFinished()
     if (targetDuration > 0) {
         double uploadTime = job->msSinceStart();
 
-        auto correctedSize = static_cast<quint64>(
+        auto predictedGoodSize = static_cast<quint64>(
                 _currentChunkSize / uploadTime * targetDuration);
 
-        // There can be multiple chunk uploads going on at the same time.
-        // So don't force the chunk size to the new predicted best size
-        // and instead move it there gradually.
+        // The whole targeting is heuristic. The predictedGoodSize will fluctuate
+        // quite a bit because of external factors (like available bandwidth)
+        // and internal factors (like number of parallel uploads).
+        //
+        // We use an exponential moving average here as a cheap way of smoothing
+        // the chunk sizes a bit.
+        quint64 targetSize = (propagator()->_chunkSize + predictedGoodSize) / 2;
+
         propagator()->_chunkSize = qBound(
                 propagator()->syncOptions()._minChunkSize,
-                (propagator()->_chunkSize + correctedSize) / 2,
+                targetSize,
                 propagator()->syncOptions()._maxChunkSize);
 
-        qDebug() << "Chunked upload of " << _currentChunkSize << " took " << uploadTime
-                 << " desired is " << targetDuration << ", expected good chunk size is "
-                 << correctedSize << " and nudged next chunk size to " << propagator()->_chunkSize;
+        qDebug() << "Chunked upload of" << _currentChunkSize << "bytes took" << uploadTime
+                 << "ms, desired is" << targetDuration << "ms, expected good chunk size is"
+                 << predictedGoodSize << "bytes and nudged next chunk size to "
+                 << propagator()->_chunkSize << "bytes";
     }
 
     bool finished = _sent == _item->_size;
