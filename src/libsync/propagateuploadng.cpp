@@ -400,7 +400,7 @@ void PropagateUploadFileNG::slotPutFinished()
     //
     // Dynamic chunk sizing is enabled if the server configured a
     // target duration for each chunk upload.
-    double targetDuration = propagator()->account()->capabilities().desiredChunkUploadDuration();
+    double targetDuration = propagator()->syncOptions()._targetChunkUploadDuration;
     if (targetDuration > 0) {
         double uploadTime = job->msSinceStart();
 

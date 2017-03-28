@@ -645,7 +645,17 @@ void Folder::startSync(const QStringList &pathList)
     }
 
     setDirtyNetworkLimits();
+    setSyncOptions();
 
+    _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles);
+
+    QMetaObject::invokeMethod(_engine.data(), "startSync", Qt::QueuedConnection);
+
+    emit syncStarted();
+}
+
+void Folder::setSyncOptions()
+{
     SyncOptions opt;
     ConfigFile cfgFile;
 
@@ -653,16 +663,22 @@ void Folder::startSync(const QStringList &pathList)
     opt._newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
     opt._confirmExternalStorage = cfgFile.confirmExternalStorage();
 
-    opt._initialChunkSize = qgetenv("OWNCLOUD_CHUNK_SIZE").toUInt();
-    if (opt._initialChunkSize == 0) {
+    QByteArray chunkSizeEnv = qgetenv("OWNCLOUD_CHUNK_SIZE");
+    if (!chunkSizeEnv.isEmpty()) {
+        opt._initialChunkSize = chunkSizeEnv.toUInt();
+    } else {
         opt._initialChunkSize = cfgFile.chunkSize();
     }
-    opt._minChunkSize = qgetenv("OWNCLOUD_MIN_CHUNK_SIZE").toUInt();
-    if (opt._minChunkSize == 0) {
+    QByteArray minChunkSizeEnv = qgetenv("OWNCLOUD_MIN_CHUNK_SIZE");
+    if (!minChunkSizeEnv.isEmpty()) {
+        opt._minChunkSize = minChunkSizeEnv.toUInt();
+    } else {
         opt._minChunkSize = cfgFile.minChunkSize();
     }
-    opt._maxChunkSize = qgetenv("OWNCLOUD_MAX_CHUNK_SIZE").toUInt();
-    if (opt._maxChunkSize == 0) {
+    QByteArray maxChunkSizeEnv = qgetenv("OWNCLOUD_MAX_CHUNK_SIZE");
+    if (!maxChunkSizeEnv.isEmpty()) {
+        opt._maxChunkSize = maxChunkSizeEnv.toUInt();
+    } else {
         opt._maxChunkSize = cfgFile.maxChunkSize();
     }
 
@@ -673,14 +689,14 @@ void Folder::startSync(const QStringList &pathList)
     opt._minChunkSize = qMin(opt._minChunkSize, opt._initialChunkSize);
     opt._maxChunkSize = qMax(opt._maxChunkSize, opt._initialChunkSize);
 
+    QByteArray targetChunkUploadDurationEnv = qgetenv("OWNCLOUD_TARGET_CHUNK_UPLOAD_DURATION");
+    if (!targetChunkUploadDurationEnv.isEmpty()) {
+        opt._targetChunkUploadDuration = targetChunkUploadDurationEnv.toUInt();
+    } else {
+        opt._targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
+    }
 
     _engine->setSyncOptions(opt);
-
-    _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles);
-
-    QMetaObject::invokeMethod(_engine.data(), "startSync", Qt::QueuedConnection);
-
-    emit syncStarted();
 }
 
 void Folder::setDirtyNetworkLimits()

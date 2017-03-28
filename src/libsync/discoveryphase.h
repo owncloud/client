@@ -41,6 +41,7 @@ struct SyncOptions {
         , _initialChunkSize(10 * 1000 * 1000) // 10 MB
         , _minChunkSize(1 * 1000 * 1000) // 1 MB
         , _maxChunkSize(100 * 1000 * 1000) // 100 MB
+        , _targetChunkUploadDuration(60 * 1000) // 1 minute
     {}
 
     /** Maximum size (in Bytes) a folder can have without asking for confirmation.
@@ -63,6 +64,12 @@ struct SyncOptions {
 
     /** The maximum chunk size in bytes for chunked uploads */
     quint64 _maxChunkSize;
+
+    /** The target duration of chunk uploads for dynamic chunk sizing.
+     *
+     * Set to 0 it will disable dynamic chunk sizing.
+     */
+    quint64 _targetChunkUploadDuration;
 };
 
 
