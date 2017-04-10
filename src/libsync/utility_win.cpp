@@ -36,9 +36,9 @@ static void setupFavLink_private(const QString &folder)
     if(SHGetKnownFolderPath(FOLDERID_Links, 0, NULL, &path) == S_OK) {
         QString links = QDir::fromNativeSeparators(QString::fromWCharArray(path)); 
         linkName = QDir(links).filePath(folderDir.dirName() + QLatin1String(".lnk"));
+    	CoTaskMemFree(path);
     }
     qDebug() << Q_FUNC_INFO << " creating link from " << linkName << " to " << folder;
-    CoTaskMemFree(path);
     if (!QFile::link(folder, linkName))
         qDebug() << Q_FUNC_INFO << "linking" << folder << "to" << linkName << "failed!";
 
