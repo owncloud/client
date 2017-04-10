@@ -21,42 +21,20 @@
 
 static const char runPathC[] = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-typedef HRESULT (WINAPI *SHGetKnownFolderPathFun)(
-    const GUID &rfid, 
-    DWORD dwFlags, 
-    HANDLE hToken, 
-    PWSTR *ppszPath
-);
+
      
 static void setupFavLink_private(const QString &folder)
 {
     // Windows Explorer: Place under "Favorites" (Links)
     
-    static SHGetKnownFolderPathFun SHGetKnownFolderPathPtr = NULL;
     QString linkName; 
     QDir folderDir(QDir::fromNativeSeparators(folder));
-    if (!SHGetKnownFolderPathPtr)
-    {
-      QLibrary kernel32Lib("shell32.dll");
-      if(kernel32Lib.load())
-      {
-        SHGetKnownFolderPathPtr = (SHGetKnownFolderPathFun) kernel32Lib.resolve("SHGetKnownFolderPath");
-      }
-    }
      
-    if(SHGetKnownFolderPathPtr) {
-        /* Use new WINAPI functions */
-        wchar_t *path = NULL;
-        if(SHGetKnownFolderPathPtr(FOLDERID_Links, 0, NULL, &path) == S_OK) {
-            QString links = QDir::fromNativeSeparators(QString::fromWCharArray(path)); 
-            linkName = QDir(links).filePath(folderDir.dirName() + QLatin1String(".lnk"));
-        }
-    } else {
-        /* Use legacy functions */
-        wchar_t path[MAX_PATH];
-        SHGetSpecialFolderPath(0, path, CSIDL_PROFILE, FALSE);
-        QString profile = QDir::fromNativeSeparators(QString::fromWCharArray(path));
-        linkName = QDir(profile).filePath(QDir(QLatin1String("Links")).filePath(folderDir.dirName() + QLatin1String(".lnk")));
+    /* Use new WINAPI functions */
+    wchar_t *path = NULL;
+    if(SHGetKnownFolderPath(FOLDERID_Links, 0, NULL, &path) == S_OK) {
+        QString links = QDir::fromNativeSeparators(QString::fromWCharArray(path)); 
+        linkName = QDir(links).filePath(folderDir.dirName() + QLatin1String(".lnk"));
     }
     qDebug() << Q_FUNC_INFO << " creating link from " << linkName << " to " << folder;
     if (!QFile::link(folder, linkName))
