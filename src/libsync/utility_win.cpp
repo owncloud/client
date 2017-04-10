@@ -31,13 +31,14 @@ static void setupFavLink_private(const QString &folder)
     QDir folderDir(QDir::fromNativeSeparators(folder));
      
     /* Use new WINAPI functions */
-    wchar_t *path = NULL;
+    PWSTR path;
+    
     if(SHGetKnownFolderPath(FOLDERID_Links, 0, NULL, &path) == S_OK) {
         QString links = QDir::fromNativeSeparators(QString::fromWCharArray(path)); 
         linkName = QDir(links).filePath(folderDir.dirName() + QLatin1String(".lnk"));
     }
     qDebug() << Q_FUNC_INFO << " creating link from " << linkName << " to " << folder;
-    CoTaskMemFree(*path);
+    CoTaskMemFree(path);
     if (!QFile::link(folder, linkName))
         qDebug() << Q_FUNC_INFO << "linking" << folder << "to" << linkName << "failed!";
 
