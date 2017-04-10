@@ -35,7 +35,7 @@ static void setupFavLink_private(const QString &folder)
     /* Use new WINAPI functions */
     PWSTR path;
     
-    if(shell32.SHGetKnownFolderPath(FOLDERID_Links, 0, NULL, &path) == S_OK) {
+    if(SHGetKnownFolderPath(FOLDERID_Links, 0, NULL, &path) == S_OK) {
         QString links = QDir::fromNativeSeparators(QString::fromWCharArray(path)); 
         linkName = QDir(links).filePath(folderDir.dirName() + QLatin1String(".lnk"));
     	CoTaskMemFree(path);
