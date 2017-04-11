@@ -47,6 +47,7 @@
 #include <QIcon>
 #include <QVariant>
 #include <QToolTip>
+#include <QStringBuilder>
 #include <qstringlistmodel.h>
 #include <qpropertyanimation.h>
 
@@ -405,8 +406,7 @@ void AccountSettings::showConnectionLabel( const QString& message, QStringList e
         ui->connectLabel->setToolTip(QString());
         ui->connectLabel->setStyleSheet(QString());
     } else {
-        errors.prepend(message);
-        const QString msg = errors.join(QLatin1String(".\n")).append(QChar('.'));
+        const QString msg = message % "\n" % errors.join(tr(".\n")) % tr(".\n");
         qDebug() << msg;
         ui->connectLabel->setText( msg );
         ui->connectLabel->setToolTip(QString());
@@ -571,7 +571,7 @@ void AccountSettings::slotAccountStateChanged(int state)
         } else if (state == AccountState::SignedOut) {
             showConnectionLabel( tr("Signed out from %1.").arg(serverWithUser) );
         } else {
-            showConnectionLabel(tr("No connection to %1 at %2")
+            showConnectionLabel(tr("No connection to %1 at %2.")
                                     .arg(Utility::escape(Theme::instance()->appNameGUI()), server),
                                 _accountState->connectionErrors());
         }
