@@ -477,7 +477,8 @@ bool CheckServerJob::finished()
         if( status.contains("installed")
                 && status.contains("version")
                 && status.contains("versionstring") ) {
-
+            // Newer servers don't disclose anything in that empty string "version" anymore
+            // https://github.com/owncloud/core/pull/27473/files
             emit instanceFound(reply()->url(), status);
         } else {
             qDebug() << "No proper answer on " << reply()->url();

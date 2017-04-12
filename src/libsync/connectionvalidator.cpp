@@ -119,6 +119,8 @@ void ConnectionValidator::slotStatusFound(const QUrl&url, const QVariantMap &inf
              << url << " with version "
              << CheckServerJob::versionString(info)
              << "(" << CheckServerJob::version(info) << ")";
+    // Newer servers don't disclose any version in status.php anymore
+    // https://github.com/owncloud/core/pull/27473/files
 
     QString version = CheckServerJob::version(info);
     _account->setServerVersion(version);
@@ -235,6 +237,13 @@ void ConnectionValidator::slotCapabilitiesRecieved(const QVariantMap &json)
     auto caps = json.value("ocs").toMap().value("data").toMap().value("capabilities");
     qDebug() << "Server capabilities" << caps;
     _account->setCapabilities(caps.toMap());
+
+    QString serverVersion = caps.toMap()["core"].toMap()["status"].toMap()["version"].toString();
+    if (!serverVersion.isEmpty()) {
+        _account->setServerVersion(serverVersion);
+        qDebug() << "Version from capabilities instead of status.php:" << serverVersion;
+    }
+
     fetchUser();
 }
 
