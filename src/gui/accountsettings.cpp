@@ -47,7 +47,6 @@
 #include <QIcon>
 #include <QVariant>
 #include <QToolTip>
-#include <QStringBuilder>
 #include <qstringlistmodel.h>
 #include <qpropertyanimation.h>
 
@@ -406,7 +405,8 @@ void AccountSettings::showConnectionLabel( const QString& message, QStringList e
         ui->connectLabel->setToolTip(QString());
         ui->connectLabel->setStyleSheet(QString());
     } else {
-        const QString msg = message % "\n" % errors.join(tr(".\n")) % tr(".\n");
+		errors.prepend(message);
+		const QString msg = errors.join(QLatin1String("\n"));
         qDebug() << msg;
         ui->connectLabel->setText( msg );
         ui->connectLabel->setToolTip(QString());
