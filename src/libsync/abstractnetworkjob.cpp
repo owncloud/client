@@ -355,14 +355,14 @@ QByteArray requestVerb(const QNetworkReply& reply)
 
 QString networkReplyErrorString(const QNetworkReply& reply)
 {
-	QString base = reply.errorString();
+    QString base = reply.errorString();
     int httpStatus = reply.attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QString httpReason = reply.attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
     // Only adjust HTTP error messages of the expected format.
     if (httpReason.isEmpty() || httpStatus == 0 || !base.contains(httpReason)) {
-		//: Adding a sentence end character for finishing error messages
-		return QObject::tr("%1.").arg(base);
+        //: Adding a sentence end character for finishing error messages
+        return QObject::tr("%1.").arg(base);
     }
 
     return AbstractNetworkJob::tr("Server replied \"%1 %2\" to \"%3 %4\".").arg(
