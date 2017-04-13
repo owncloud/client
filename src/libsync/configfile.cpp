@@ -56,6 +56,7 @@ static const char chunkSizeC[] = "chunkSize";
 static const char minChunkSizeC[] = "minChunkSize";
 static const char maxChunkSizeC[] = "maxChunkSize";
 static const char targetChunkUploadDurationC[] = "targetChunkUploadDuration";
+static const char smallFileSizeC[] = "smallFileSize";
 
 static const char proxyHostC[] = "Proxy/host";
 static const char proxyTypeC[] = "Proxy/type";
@@ -149,6 +150,12 @@ quint64 ConfigFile::targetChunkUploadDuration() const
 {
     QSettings settings(configFile(), QSettings::IniFormat);
     return settings.value(QLatin1String(targetChunkUploadDurationC), 60*1000).toLongLong(); // default to 1 minute
+}
+
+quint64 ConfigFile::smallFileSize() const
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    return settings.value(QLatin1String(smallFileSizeC), 100*1024).toLongLong();
 }
 
 void ConfigFile::setOptionalDesktopNotifications(bool show)

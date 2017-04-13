@@ -118,6 +118,7 @@ public:
     quint64 maxChunkSize() const;
     quint64 minChunkSize() const;
     quint64 targetChunkUploadDuration() const;
+    quint64 smallFileSize() const;
 
     void saveGeometry(QWidget *w);
     void restoreGeometry(QWidget *w);

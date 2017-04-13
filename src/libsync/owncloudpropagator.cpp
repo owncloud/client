@@ -392,6 +392,16 @@ PropagateItemJob* OwncloudPropagator::createJob(const SyncFileItemPtr &item) {
     return 0;
 }
 
+quint64 OwncloudPropagator::smallFileSize()
+{
+    static quint64 smallFileSize = 0;
+    if(smallFileSize != 0){
+        ConfigFile cfg;
+        smallFileSize = cfg.smallFileSize();
+    }
+    return smallFileSize;
+}
+
 void OwncloudPropagator::start(const SyncFileItemVector& items)
 {
     Q_ASSERT(std::is_sorted(items.begin(), items.end()));
