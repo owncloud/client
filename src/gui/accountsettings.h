@@ -72,6 +72,7 @@ protected slots:
     void slotAddFolder();
     void slotEnableCurrentFolder();
     void slotScheduleCurrentFolder();
+    void slotScheduleCurrentFolderForceRemoteDiscovery();
     void slotForceSyncCurrentFolder();
     void slotRemoveCurrentFolder();
     void slotOpenCurrentFolder();
@@ -92,6 +93,9 @@ private:
                              QStringList errors = QStringList());
     bool event(QEvent*) Q_DECL_OVERRIDE;
     void createAccountToolbox();
+
+    /// Returns the alias of the selected folder, empty string if none
+    QString selectedFolderAlias() const;
 
     Ui::AccountSettings *ui;
 
