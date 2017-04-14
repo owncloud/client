@@ -395,9 +395,8 @@ PropagateItemJob* OwncloudPropagator::createJob(const SyncFileItemPtr &item) {
 quint64 OwncloudPropagator::smallFileSize()
 {
     static quint64 smallFileSize = 0;
-    if(smallFileSize != 0){
-        ConfigFile cfg;
-        smallFileSize = cfg.smallFileSize();
+    if(smallFileSize == 0){
+        smallFileSize = 100*1024;
     }
     return smallFileSize;
 }
