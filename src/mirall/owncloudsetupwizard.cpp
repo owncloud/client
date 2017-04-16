@@ -221,16 +221,23 @@ void OwncloudSetupWizard::testOwnCloudConnect()
 
 void OwncloudSetupWizard::slotConnectionCheck(QNetworkReply* reply)
 {
+    bool downgradeAdvised = (reply->url().scheme() == QLatin1String("https"));
     switch (reply->error()) {
     case QNetworkReply::NoError:
     case QNetworkReply::ContentNotFoundError:
         _ocWizard->successfulStep();
         break;
 
+    case QNetworkReply::ConnectionRefusedError:
+    case QNetworkReply::TimeoutError:
+        downgradeAdvised = false;
+        // fall through
     default:
         _ocWizard->show();
         _ocWizard->back();
-        _ocWizard->displayError(reply->errorString());
+        // Adhere to HSTS, even though we do not parse it properly
+        downgradeAdvised &= !reply->hasRawHeader("Strict-Transport-Security");
+        _ocWizard->displayError(reply->errorString(), downgradeAdvised);
         break;
     }
 }
