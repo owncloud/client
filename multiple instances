@@ -1,0 +1,119 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index ba1fa8e..78700db 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -47,10 +47,21 @@ int main(int argc, char **argv)
+ {
+     Q_INIT_RESOURCE(mirall);
+ 
++    int i;
++    const char *instance = "";
++
++    for ( i = 0; i < argc - 1; i++ ) {
++        if ( strcmp( argv[ i ], "--instance" ) )
++            continue;
++
++        instance = argv[ i + 1 ];
++        break;
++    }
++
+ #ifdef Q_OS_MAC
+     Mac::CocoaInitializer cocoaInit; // RIIA
+ #endif
+-    Mirall::Application app(argc, argv);
++    Mirall::Application app(instance, argc, argv);
+ #ifndef Q_OS_WIN
+     signal(SIGPIPE, SIG_IGN);
+ #endif
+diff --git a/src/mirall/application.cpp b/src/mirall/application.cpp
+index a88c7ed..bd78785 100644
+--- a/src/mirall/application.cpp
++++ b/src/mirall/application.cpp
+@@ -62,6 +62,7 @@ static const char optionsC[] =
+         "                         (to be used with --logdir)\n"
+         "  --logflush           : flush the log file after every write.\n"
+         "  --confdir <dirname>  : Use the given configuration directory.\n"
++        "  --instance <name>    : Use a new instance.\n"
+         ;
+ 
+ QString applicationTrPath()
+@@ -78,8 +79,8 @@ QString applicationTrPath()
+ 
+ // ----------------------------------------------------------------------------------
+ 
+-Application::Application(int &argc, char **argv) :
+-    SharedTools::QtSingleApplication(Theme::instance()->appName() ,argc, argv),
++Application::Application(QString instance, int &argc, char **argv) :
++    SharedTools::QtSingleApplication(QString("%1/%2").arg(Theme::instance()->appName()).arg(instance), argc, argv),
+     _gui(0),
+     _theme(Theme::instance()),
+     _helpOnly(false),
+@@ -399,7 +400,14 @@ void Application::parseOptions(const QStringList &options)
+             } else {
+                 showHelp();
+             }
+-        } else {
++        } else if (option == QLatin1String("--instance")) {
++            if (it.hasNext() && !it.peekNext().startsWith(QLatin1String("--"))) {
++               QString instance = it.next();
++               MirallConfigFile::setInstance( instance );
++            } else {
++                setHelp();
++            }
++	} else {
+             setHelp();
+             break;
+         }
+diff --git a/src/mirall/application.h b/src/mirall/application.h
+index f6c6f96..c5175d2 100644
+--- a/src/mirall/application.h
++++ b/src/mirall/application.h
+@@ -43,7 +43,7 @@ class Application : public SharedTools::QtSingleApplication
+ {
+     Q_OBJECT
+ public:
+-    explicit Application(int &argc, char **argv);
++    explicit Application(QString instance, int &argc, char **argv);
+     ~Application();
+ 
+     bool giveHelp();
+diff --git a/src/mirall/mirallconfigfile.cpp b/src/mirall/mirallconfigfile.cpp
+index 48f806e..b188508 100644
+--- a/src/mirall/mirallconfigfile.cpp
++++ b/src/mirall/mirallconfigfile.cpp
+@@ -97,6 +97,23 @@ void MirallConfigFile::setConfDir(const QString &value)
+     }
+ }
+ 
++void MirallConfigFile::setInstance(const QString &value)
++{
++    QString instance = value;
++    if ( instance.isEmpty() ) return;
++
++    QString dir = Utility::dataLocation();
++    if( !dir.endsWith(QLatin1Char('/')) ) dir.append(QLatin1Char('/'));
++
++    dir.append(QString("%1/").arg(instance));
++
++    QFileInfo fi(dir);
++    if ( !fi.exists() )
++        QDir::current().mkdir(dir);
++
++    setConfDir(dir);
++}
++
+ bool MirallConfigFile::optionalDesktopNotifications() const
+ {
+     QSettings settings(configFile(), QSettings::IniFormat);
+diff --git a/src/mirall/mirallconfigfile.h b/src/mirall/mirallconfigfile.h
+index c3769a9..56e2f50 100644
+--- a/src/mirall/mirallconfigfile.h
++++ b/src/mirall/mirallconfigfile.h
+@@ -93,6 +93,7 @@ public:
+     void setDownloadLimit(int kbytes);
+ 
+     static void setConfDir(const QString &value);
++    static void setInstance(const QString &value);
+ 
+     bool optionalDesktopNotifications() const;
+     void setOptionalDesktopNotifications(bool show);
