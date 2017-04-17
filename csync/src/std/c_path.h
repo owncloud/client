@@ -33,6 +33,7 @@
 #define _C_PATH_H
 
 #include "c_macro.h"
+#include "c_private.h"
 
 /**
  * @brief Parse directory component.
@@ -96,9 +97,9 @@ int c_parse_uri(const char *uri, char **scheme, char **user, char **passwd,
  * @param directory '\0' terminated path including the final '/'
  *
  * @param filename '\0' terminated string
- * 
+ *
  * @param extension '\0' terminated string
- * 
+ *
  */
 typedef struct
 {
@@ -107,6 +108,32 @@ typedef struct
     char * extension;
 } C_PATHINFO;
 
+/**
+ * @brief c_path_to_UNC converts a unixoid path to UNC format.
+ *
+ * It converts the '/' to '\' and prepends \\?\ to the path.
+ *
+ * A proper windows path has to have a drive letter, otherwise it is not
+ * valid UNC.
+ *
+ * @param str The path to convert
+ *
+ * @return a pointer to the converted string. Caller has to free it.
+ */
+const char *c_path_to_UNC(const char *str);
+
+/**
+ * @brief c_utf8_path_to_locale converts a unixoid path to the locale aware format
+ *
+ * On windows, it converts to UNC and multibyte.
+ * On Mac, it converts to the correct utf8 using iconv.
+ * On Linux, it returns utf8
+ *
+ * @param str The path to convert
+ *
+ * @return a pointer to the converted string. Caller has to free it.
+ */
+mbchar_t* c_utf8_path_to_locale(const char *str);
 
 /**
  * }@

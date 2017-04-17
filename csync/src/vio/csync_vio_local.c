@@ -44,15 +44,49 @@
  */
 
 typedef struct dhandle_s {
-  _TDIR *dh;
+#if defined _WIN32
+  WIN32_FIND_DATA ffd;
+  HANDLE hFind;
+  int firstFind;
+#else
+  DIR *dh;
+#endif
   char *path;
 } dhandle_t;
 
 csync_vio_handle_t *csync_vio_local_opendir(const char *name) {
   dhandle_t *handle = NULL;
-  mbchar_t *dirname = c_utf8_to_locale(name);
+  mbchar_t *dirname = NULL;
 
   handle = c_malloc(sizeof(dhandle_t));
+
+#ifdef _WIN32
+  // the file wildcard has to be attached
+  int len_name = strlen(name);
+  if( len_name ) {
+      char *h = NULL;
+
+      // alloc an enough large buffer to take the name + '/*' + the closing zero.
+      h = c_malloc(len_name+3);
+      strncpy( h, name, 1+len_name);
+      strncat(h, "/*", 2);
+
+      dirname = c_utf8_path_to_locale(h);
+      SAFE_FREE(h);
+  }
+
+  if( dirname ) {
+      handle->hFind = FindFirstFile(dirname, &(handle->ffd));
+  }
+
+  if (!dirname || handle->hFind == INVALID_HANDLE_VALUE) {
+      SAFE_FREE(handle);
+      return NULL;
+  }
+
+  handle->firstFind = 1; // Set a flag that there first fileinfo is available.
+#else
+  dirname = c_utf8_path_to_locale(name);
 
   handle->dh = _topendir( dirname );
   if (handle->dh == NULL) {
@@ -60,7 +94,7 @@ csync_vio_handle_t *csync_vio_local_opendir(const char *name) {
     SAFE_FREE(handle);
     return NULL;
   }
-
+#endif
   handle->path = c_strdup(name);
   c_free_locale_string(dirname);
 
@@ -77,7 +111,14 @@ int csync_vio_local_closedir(csync_vio_handle_t *dhandle) {
   }
 
   handle = (dhandle_t *) dhandle;
+#ifdef _WIN32
+  // FindClose returns non-zero on success
+  if( FindClose(handle->hFind) != 0 ) {
+      rc = 0;
+  }
+#else
   rc = _tclosedir(handle->dh);
+#endif
 
   SAFE_FREE(handle->path);
   SAFE_FREE(handle);
@@ -86,7 +127,6 @@ int csync_vio_local_closedir(csync_vio_handle_t *dhandle) {
 }
 
 csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
-  struct _tdirent *dirent = NULL;
 
   dhandle_t *handle = NULL;
   csync_vio_file_stat_t *file_stat = NULL;
@@ -94,22 +134,43 @@ csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
   handle = (dhandle_t *) dhandle;
 
   errno = 0;
-  dirent = _treaddir(handle->dh);
-  if (dirent == NULL) {
-    if (errno) {
-      goto err;
-    } else {
-      return NULL;
-    }
-  }
-
   file_stat = csync_vio_file_stat_new();
   if (file_stat == NULL) {
     goto err;
   }
-
-  file_stat->name = c_utf8_from_locale(dirent->d_name);
   file_stat->fields = CSYNC_VIO_FILE_STAT_FIELDS_NONE;
+
+#ifdef _WIN32
+  // the win32 functions get the first valid entry with the opendir
+  // thus we must not jump to next entry if it was the first find.
+  if( handle->firstFind ) {
+      handle->firstFind = 0;
+  } else {
+      if( FindNextFile(handle->hFind, &(handle->ffd)) == 0 ) {
+          // might be error, check!
+          int dwError = GetLastError();
+          if (dwError != ERROR_NO_MORE_FILES) {
+              errno = EACCES; // no more files is fine. Otherwise EACCESS
+          }
+          goto err;
+      }
+  }
+  file_stat->name = c_utf8_from_locale(handle->ffd.cFileName);
+
+  file_stat->fields |= CSYNC_VIO_FILE_STAT_FIELDS_TYPE;
+  if (handle->ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+      file_stat->type = CSYNC_VIO_FILE_TYPE_DIRECTORY;
+  } else {
+      file_stat->type = CSYNC_VIO_FILE_TYPE_REGULAR;
+  }
+#else
+  struct _tdirent *dirent = NULL;
+
+  dirent = _treaddir(handle->dh);
+  if (dirent == NULL) {
+      goto err;
+  }
+  file_stat->name = c_utf8_from_locale(dirent->d_name);
 
   /* Check for availability of d_type, see manpage. */
 #ifdef _DIRENT_HAVE_D_TYPE
@@ -135,6 +196,8 @@ csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
       break;
   }
 #endif
+
+#endif // non WIN32
 
   return file_stat;
 
@@ -170,7 +233,7 @@ int csync_vio_local_stat(const char *uri, csync_vio_file_stat_t *buf) {
     BY_HANDLE_FILE_INFORMATION fileInfo;
     WIN32_FIND_DATAW FindFileData;
     ULARGE_INTEGER FileIndex;
-    mbchar_t *wuri = c_utf8_to_locale( uri );
+    mbchar_t *wuri = c_utf8_path_to_locale( uri );
 
     h = CreateFileW( wuri, 0, FILE_SHARE_READ, NULL, OPEN_EXISTING,
                      FILE_ATTRIBUTE_NORMAL+FILE_FLAG_BACKUP_SEMANTICS, NULL );
@@ -263,7 +326,7 @@ int csync_vio_local_stat(const char *uri, csync_vio_file_stat_t *buf) {
 int csync_vio_local_stat(const char *uri, csync_vio_file_stat_t *buf) {
   csync_stat_t sb;
 
-  mbchar_t *wuri = c_utf8_to_locale( uri );
+  mbchar_t *wuri = c_utf8_path_to_locale( uri );
 
   if( _tstat(wuri, &sb) < 0) {
     c_free_locale_string(wuri);

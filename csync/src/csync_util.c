@@ -104,30 +104,6 @@ void csync_memstat_check(void) {
                  m.size * 4, m.resident * 4, m.shared * 4);
 }
 
-void csync_win32_set_file_hidden( const char *file, bool h ) {
-#ifdef _WIN32
-  const mbchar_t *fileName;
-  DWORD dwAttrs;
-  if( !file ) return;
-
-  fileName = c_utf8_to_locale( file );
-  dwAttrs = GetFileAttributesW(fileName);
-
-  if (dwAttrs != INVALID_FILE_ATTRIBUTES) {
-      if (h && !(dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
-          SetFileAttributesW(fileName, dwAttrs | FILE_ATTRIBUTE_HIDDEN );
-      } else if (!h && (dwAttrs & FILE_ATTRIBUTE_HIDDEN)) {
-          SetFileAttributesW(fileName, dwAttrs & ~FILE_ATTRIBUTE_HIDDEN );
-      }
-  }
-
-  c_free_locale_string(fileName);
-#else
-    (void) h;
-    (void) file;
-#endif
-}
-
 bool (*csync_file_locked_or_open_ext) (const char*) = 0; // filled in by library user
 void set_csync_file_locked_or_open_ext(bool (*f) (const char*));
 void set_csync_file_locked_or_open_ext(bool (*f) (const char*)) {

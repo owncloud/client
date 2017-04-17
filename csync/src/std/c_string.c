@@ -32,6 +32,7 @@
 #include <wchar.h>
 
 #include "c_string.h"
+#include "c_path.h"
 #include "c_alloc.h"
 #include "c_macro.h"
 
@@ -275,33 +276,34 @@ char* c_utf8_from_locale(const mbchar_t *wstr)
 }
 
 /* Convert a an UTF8 string to multibyte */
-mbchar_t* c_utf8_to_locale(const char *str)
+mbchar_t* c_utf8_string_to_locale(const char *str)
 {
-  mbchar_t *dst = NULL;
+    mbchar_t *dst = NULL;
 #ifdef _WIN32
-  size_t len;
-  int size_needed;
+    size_t len;
+    int size_needed;
 #endif
 
-  if (str == NULL ) {
-    return NULL;
-  }
+    if (str == NULL ) {
+        return NULL;
+    }
 
 #ifdef _WIN32
-  len = strlen(str);
-  size_needed = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
-  if (size_needed > 0) {
-    int size_char = (size_needed + 1) * sizeof(mbchar_t);
-    dst = c_malloc(size_char);
-    memset((void*)dst, 0, size_char);
-    MultiByteToWideChar(CP_UTF8, 0, str, -1, dst, size_needed);
-  }
+    len = strlen(str);
+    size_needed = MultiByteToWideChar(CP_UTF8, 0, str, len, NULL, 0);
+    if (size_needed > 0) {
+        int size_char = (size_needed + 1) * sizeof(mbchar_t);
+        dst = c_malloc(size_char);
+        memset((void*)dst, 0, size_char);
+        MultiByteToWideChar(CP_UTF8, 0, str, -1, dst, size_needed);
+    }
 #else
 #ifdef WITH_ICONV
-  dst = c_iconv(str, iconv_to_native);
+    dst = c_iconv(str, iconv_to_native);
 #else
-  dst = (_TCHAR*) str;
+    dst = (_TCHAR*) str;
 #endif
 #endif
-  return dst;
+    return dst;
 }
+

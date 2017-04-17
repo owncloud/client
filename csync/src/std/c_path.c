@@ -32,6 +32,7 @@
 #include "c_private.h"
 #include "c_alloc.h"
 #include "c_path.h"
+#include "c_string.h"
 
 /*
  * dirname - parse directory component.
@@ -389,3 +390,61 @@ int c_parse_uri(const char *uri,
   return -1;
 }
 
+
+/*
+ * This function takes a path and converts it to a UNC representation of the
+ * string. That means that it prepends a \\?\ and convertes all slashes to
+ * backslashes.
+ *
+ * Note the following:
+ *  - The string must be absolute.
+ *  - it needs to contain a drive character to be a valid UNC
+ *  - A conversion is only done if the path len is larger than 245. Otherwise
+ *    the windows API functions work with the normal "unixoid" representation too.
+ *
+ *  This function allocates memory that must be freed by the caller.
+ */
+ const char *c_path_to_UNC(const char *str)
+ {
+     int len = 0;
+     char *longStr = NULL;
+     int i = 4; // index where to start changing "/"=>"\"
+
+     len = strlen(str);
+     longStr = c_malloc(len+5);
+     *longStr = '\0';
+
+     // prepend \\?\ and convert '/' => '\' to support long names
+     if( str[0] == '/' ) {
+         strncpy( longStr, "\\\\?", 4);
+         i=3;
+     } else {
+         strncpy( longStr, "\\\\?\\", 5); // prepend string by this four magic chars.
+     }
+     strncat( longStr, str, len );
+
+     /* replace all occurences of / with the windows native \ */
+     while(longStr[i] != '\0') {
+         if(longStr[i] == '/') {
+             longStr[i] = '\\';
+         }
+         i++;
+     }
+     return longStr;
+ }
+
+ mbchar_t* c_utf8_path_to_locale(const char *str)
+ {
+     if( str == NULL ) {
+         return NULL;
+     } else {
+ #ifdef _WIN32
+         const char *unc_str = c_path_to_UNC(str);
+         mbchar_t *dst = c_utf8_string_to_locale(unc_str);
+         SAFE_FREE(unc_str);
+         return dst;
+ #else
+         return c_utf8_string_to_locale(str);
+ #endif
+     }
+ }

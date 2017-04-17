@@ -41,10 +41,18 @@
 #ifdef _WIN32
 #define EDQUOT 0
 #define ENODATA 0
+#ifndef S_IRGRP
 #define S_IRGRP 0
+#endif
+#ifndef S_IROTH
 #define S_IROTH 0
+#endif
+#ifndef S_IXGRP
 #define S_IXGRP 0
+#endif
+#ifndef S_IXOTH
 #define S_IXOTH 0
+#endif
 
 #define S_IFSOCK 10000 /* dummy val on Win32 */
 #define S_IFLNK 10001  /* dummy val on Win32 */
@@ -102,7 +110,6 @@ typedef struct stat csync_stat_t;
 typedef  wchar_t         mbchar_t;
 #define _topen           _wopen
 #define _tdirent         _wdirent
-#define _TDIR            _WDIR
 #define _topendir        _wopendir
 #define _tclosedir       _wclosedir
 #define _treaddir        _wreaddir
@@ -118,11 +125,12 @@ typedef  wchar_t         mbchar_t;
 #define _tchmod          _wchmod
 #define _trewinddir      _wrewinddir
 #define _tchown(X, Y, Z)  0 /* no chown on Win32 */
+#define _tchdir          _wchdir
+#define _tgetcwd         _wgetcwd
 #else
 typedef char           mbchar_t;
 #define _tdirent       dirent
 #define _topen         open
-#define _TDIR          DIR
 #define _topendir      opendir
 #define _tclosedir     closedir
 #define _treaddir      readdir
@@ -138,6 +146,8 @@ typedef char           mbchar_t;
 #define _tchmod        chmod
 #define _trewinddir    rewinddir
 #define _tchown(X,Y,Z) chown(X,Y,Z)
+#define _tchdir        chdir
+#define _tgetcwd       getcwd
 #endif
 
 #ifdef WITH_ICONV

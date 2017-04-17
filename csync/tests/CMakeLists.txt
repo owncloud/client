@@ -46,6 +46,7 @@ add_cmocka_test(check_csync_commit csync_tests/check_csync_commit.c ${TEST_TARGE
 # vio
 add_cmocka_test(check_vio_file_stat vio_tests/check_vio_file_stat.c ${TEST_TARGET_LIBRARIES})
 add_cmocka_test(check_vio vio_tests/check_vio.c ${TEST_TARGET_LIBRARIES})
+add_cmocka_test(check_vio_ext vio_tests/check_vio_ext.c ${TEST_TARGET_LIBRARIES})
 
 # sync
 add_cmocka_test(check_csync_update csync_tests/check_csync_update.c ${TEST_TARGET_LIBRARIES})
@@ -57,4 +58,7 @@ add_cmocka_test(check_encoding_functions encoding_tests/check_encoding.c ${TEST_
 set(TEST_HTTPBF_LIBRARIES ${TEST_TARGET_LIBRARIES} ${NEON_LIBRARIES})
 add_cmocka_test(check_httpbf httpbf_tests/hbf_send_test.c ${TEST_HTTPBF_LIBRARIES} )
 
+if(UNIT_TESTING)
+    INSTALL( FILES "${CMOCKA_LIBRARIES}" DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif(UNIT_TESTING)
 
