@@ -631,6 +631,26 @@ static bool mark_current_item_ignored( CSYNC *ctx, csync_file_stat_t *previous_f
     return false;
 }
 
+/* set the current item to an ignored state.
+ * If the item is set to ignored, the update phase continues, ie. its not a hard error */
+static bool mark_current_item_ignored( CSYNC *ctx, csync_file_stat_t *previous_fs, CSYNC_STATUS status )
+{
+    if(!ctx) {
+        return false;
+    }
+
+    if (ctx->current_fs) {
+        ctx->current_fs->instruction = CSYNC_INSTRUCTION_IGNORE;
+        ctx->current_fs->error_status = status;
+        /* If a directory has ignored files, put the flag on the parent directory as well */
+        if( previous_fs ) {
+            previous_fs->has_ignored_files = true;
+        }
+        return true;
+    }
+    return false;
+}
+
 /* File tree walker */
 int csync_ftw(CSYNC *ctx, const char *uri, csync_walker_fn fn,
     unsigned int depth) {
