@@ -42,6 +42,8 @@
 #include <termios.h>
 #endif
 
+#include <csync_private.h>
+
 using namespace OCC;
 
 struct CmdOptions {
@@ -114,11 +116,11 @@ public:
           _sslTrusted(false)
     {}
 
-    QString queryPassword(bool *ok, const QString&) Q_DECL_OVERRIDE {
-        if (ok) {
-            *ok = true;
-        }
-        return ::queryPassword(user());
+    void askFromUser() Q_DECL_OVERRIDE {
+        _password = ::queryPassword(user());
+        _ready = true;
+        persist();
+        emit asked();
     }
 
     void setSSLTrusted( bool isTrusted ) {

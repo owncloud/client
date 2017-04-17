@@ -168,6 +168,7 @@ signals:
     void propagatorNetworkActivity();
     void invalidCredentials();
     void credentialsFetched(AbstractCredentials* credentials);
+    void credentialsAsked(AbstractCredentials* credentials);
 
     /// Forwards from QNetworkAccessManager::proxyAuthenticationRequired().
     void proxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*);
@@ -178,6 +179,7 @@ signals:
 protected Q_SLOTS:
     void slotHandleSslErrors(QNetworkReply*,QList<QSslError>);
     void slotCredentialsFetched();
+    void slotCredentialsAsked();
 
 private:
     Account(QObject *parent = 0);

@@ -10,6 +10,7 @@ if (APPLE)
 endif()
 
 add_subdirectory(libsync)
+add_subdirectory(libclient)
 if (NOT BUILD_LIBRARIES_ONLY)
     add_subdirectory(gui)
     add_subdirectory(cmd)

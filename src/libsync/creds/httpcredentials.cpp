@@ -82,23 +82,16 @@ const char authenticationFailedC[] = "owncloud-authentication-failed";
 } // ns
 
 HttpCredentials::HttpCredentials()
-    : _user(),
-      _password(),
-      _certificatePath(),
-      _certificatePasswd(),
-      _ready(false),
-      _fetchJobInProgress(false),
-      _readPwdFromDeprecatedPlace(false)
+    : _ready(false)
 {
 }
 
 HttpCredentials::HttpCredentials(const QString& user, const QString& password, const QString& certificatePath, const QString& certificatePasswd)
     : _user(user),
       _password(password),
-      _certificatePath(certificatePath),
-      _certificatePasswd(certificatePasswd),
       _ready(true),
-      _fetchJobInProgress(false)
+      _certificatePath(certificatePath),
+      _certificatePasswd(certificatePasswd)
 {
 }
 
@@ -200,12 +193,8 @@ QString HttpCredentials::fetchUser()
     return _user;
 }
 
-void HttpCredentials::fetch()
+void HttpCredentials::fetchFromKeychain()
 {
-    if (_fetchJobInProgress) {
-        return;
-    }
-
     // User must be fetched from config file
     fetchUser();
     _certificatePath = _account->credentialSetting(QLatin1String(certifPathC)).toString();
@@ -235,8 +224,6 @@ void HttpCredentials::fetch()
         job->setKey(kck);
         connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotReadJobDone(QKeychain::Job*)));
         job->start();
-        _fetchJobInProgress = true;
-        _readPwdFromDeprecatedPlace = true;
     }
 }
 bool HttpCredentials::stillValid(QNetworkReply *reply)
@@ -256,7 +243,6 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *job)
     QKeychain::Error error = job->error();
 
     if( !_password.isEmpty() && error == NoError ) {
-        _fetchJobInProgress = false;
 
         // All cool, the keychain did not come back with error.
         // Still, the password can be empty which indicates a problem and
@@ -266,44 +252,12 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *job)
     } else {
         // we come here if the password is empty or any other keychain
         // error happend.
-        // In all error conditions it should
-        // ask the user for the password interactively now.
-        if( _readPwdFromDeprecatedPlace ) {
-            // there simply was not a password. Lets restart a read job without
-            // a settings object as we did it in older client releases.
-            ReadPasswordJob *job = new ReadPasswordJob(Theme::instance()->appName());
 
-            const QString kck = keychainKey(_account->url().toString(), _user);
-            job->setKey(kck);
+        _fetchErrorString = job->error() != EntryNotFound ? job->errorString() : QString();
 
-            connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotReadJobDone(QKeychain::Job*)));
-            job->start();
-            _readPwdFromDeprecatedPlace = false; // do  try that only once.
-            _fetchJobInProgress = true;
-            // Note: if this read job succeeds, the value from the old place is still
-            // NOT persisted into the new account.
-        } else {
-            // interactive password dialog starts here
-
-            QString hint;
-            if (job->error() != EntryNotFound) {
-                hint = tr("Reading from keychain failed with error: '%1'").arg(
-                        job->errorString());
-            }
-
-            bool ok;
-            QString pwd = queryPassword(&ok, hint);
-            _fetchJobInProgress = false;
-            if (ok) {
-                _password = pwd;
-                _ready = true;
-                persist();
-            } else {
-                _password = QString::null;
-                _ready = false;
-            }
-            emit fetched();
-        }
+        _password = QString();
+        _ready = false;
+        emit fetched();
     }
 }
 

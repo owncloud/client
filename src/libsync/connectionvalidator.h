@@ -44,10 +44,9 @@ namespace OCC {
         |
         +-> slotJobTimeout --> X
         |
-        +-> slotStatusFound
-                credential->fetch() --+
-                                      |
-  +-----------------------------------+
+        +-> slotStatusFound --+--> X (if credentials are still missing)
+                              |
+  +---------------------------+
   |
 *-+-> checkAuthentication (PROPFIND on root)
         PropfindJob
@@ -75,7 +74,7 @@ public:
         Connected,
         NotConfigured,
         ServerVersionMismatch,
-        CredentialsWrong,
+        CredentialsMissingOrWrong,
         StatusNotFound,
         UserCanceledCredentials,
         ServiceUnavailable,
