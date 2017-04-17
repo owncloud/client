@@ -67,6 +67,8 @@ struct CmdOptions {
     QString unsyncedfolders;
     QString davPath;
     int restartTimes;
+    int downlimit;
+    int uplimit;
 };
 
 // we can't use csync_set_userdata because the SyncEngine sets it already.
@@ -169,6 +171,8 @@ void help()
     std::cout << "  --nonshib              Use Non Shibboleth WebDAV authentication" << std::endl;
     std::cout << "  --davpath [path]       Custom themed dav path, overrides --nonshib" << std::endl;
     std::cout << "  --max-sync-retries [n] Retries maximum n times (default to 3)" << std::endl;
+    std::cout << "  --uplimit [n]          Limit the upload speed to n KB/s" << std::endl;
+    std::cout << "  --downlimit [n]        Limit the download speed to n KB/s" << std::endl;
     std::cout << "  -h                     Sync hidden files,do not ignore them" << std::endl;
     std::cout << "  --version, -v          Display version and exit" << std::endl;
     std::cout << "" << std::endl;
@@ -244,6 +248,10 @@ void parseOptions( const QStringList& app_args, CmdOptions *options )
             options->davPath = it.next();
         } else if( option == "--max-sync-retries" && !it.peekNext().startsWith("-") ) {
             options->restartTimes = it.next().toInt();
+        } else if( option == "--uplimit" && !it.peekNext().startsWith("-") ) {
+            options->uplimit = it.next().toInt();
+        } else if( option == "--downlimit" && !it.peekNext().startsWith("-") ) {
+            options->downlimit = it.next().toInt();
         } else {
             help();
         }
@@ -297,6 +305,8 @@ int main(int argc, char **argv) {
     options.ignoreHiddenFiles = true;
     options.nonShib = false;
     options.restartTimes = 3;
+    options.uplimit = 0;
+    options.downlimit = 0;
     ClientProxy clientProxy;
 
     parseOptions( app.arguments(), &options );
@@ -478,6 +488,7 @@ restart_sync:
 
     SyncEngine engine(account, options.source_dir, folder, &db);
     engine.setIgnoreHiddenFiles(options.ignoreHiddenFiles);
+    engine.setNetworkLimits(options.uplimit, options.downlimit);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QObject::connect(&engine, &SyncEngine::finished,
                      [&app](bool result) { app.exit(result ? EXIT_SUCCESS : EXIT_FAILURE); });
