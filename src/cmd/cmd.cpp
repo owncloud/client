@@ -1,6 +1,7 @@
 /*
  * Copyright (C) by Olivier Goffart <ogoffart@owncloud.com>
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
+ * Copyright (C) by Daniel Heule <daniel.heule@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -249,9 +250,9 @@ void parseOptions( const QStringList& app_args, CmdOptions *options )
         } else if( option == "--max-sync-retries" && !it.peekNext().startsWith("-") ) {
             options->restartTimes = it.next().toInt();
         } else if( option == "--uplimit" && !it.peekNext().startsWith("-") ) {
-            options->uplimit = it.next().toInt();
+            options->uplimit = it.next().toInt() * 1000;
         } else if( option == "--downlimit" && !it.peekNext().startsWith("-") ) {
-            options->downlimit = it.next().toInt();
+            options->downlimit = it.next().toInt() * 1000;
         } else {
             help();
         }
