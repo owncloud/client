@@ -2,8 +2,10 @@
 Categories=Utility;X-SuSE-SyncUtility;
 Type=Application
 Exec=@APPLICATION_EXECUTABLE@
-Name=@APPLICATION_NAME@ desktop sync client 
+Name=@APPLICATION_NAME@ desktop sync client
+Name[ru]=Клиент синхронизации данных @APPLICATION_NAME@ для ПК
 Comment=@APPLICATION_NAME@ desktop synchronization client
+Comment[ru]=Клиент синхронизации данных @APPLICATION_NAME@ для ПК
 GenericName=Folder Sync
 Icon=@APPLICATION_EXECUTABLE@
 Keywords=@APPLICATION_NAME@;syncing;file;sharing;
