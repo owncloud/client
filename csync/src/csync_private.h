@@ -97,6 +97,14 @@ struct csync_s {
       csync_vio_closedir_hook remote_closedir_hook;
       void *vio_userdata;
 
+      // Maybe the better option?
+//      csync_vio_opendir_hook local_opendir_hook;
+//      csync_vio_readdir_hook local_readdir_hook;
+//      csync_vio_closedir_hook local_closedir_hook;
+
+      utf8_from_locale_hook qt_utf8_from_locale;
+
+
       /* hook for comparing checksums of files during discovery */
       csync_checksum_hook checksum_hook;
       void *checksum_userdata;

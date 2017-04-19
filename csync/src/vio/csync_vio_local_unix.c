@@ -83,7 +83,8 @@ int csync_vio_local_closedir(csync_vio_handle_t *dhandle) {
   return rc;
 }
 
-csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
+
+csync_vio_file_stat_t *csync_vio_local_readdir(CSYNC *ctx, csync_vio_handle_t *dhandle) {
 
   dhandle_t *handle = NULL;
   csync_vio_file_stat_t *file_stat = NULL;
@@ -103,7 +104,7 @@ csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
   if (dirent == NULL) {
       goto err;
   }
-  file_stat->name = c_utf8_from_locale(dirent->d_name);
+  file_stat->name = ctx->callbacks.qt_utf8_from_locale(dirent->d_name);
   if (file_stat->name == NULL) {
       //file_stat->original_name = c_strdup(dirent->d_name);
       if (asprintf(&file_stat->original_name, "%s/%s", handle->path, dirent->d_name) < 0) {
@@ -149,8 +150,15 @@ err:
 
 int csync_vio_local_stat(const char *uri, csync_vio_file_stat_t *buf) {
   csync_stat_t sb;
-
+#ifdef  __APPLE__
+  // macOS accepts both normalization forms as input for the stat syscall
+  // (ok for WiP, for final we should not do this but have a qt_locale_from_utf8)
+  CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "Local stat %s", uri);
+  mbchar_t *wuri = strdup(uri);
+  CSYNC_LOG(CSYNC_LOG_PRIORITY_ERROR, "Xocal stat %s", wuri);
+#else
   mbchar_t *wuri = c_utf8_path_to_locale( uri );
+#endif
 
   if( _tstat(wuri, &sb) < 0) {
     c_free_locale_string(wuri);

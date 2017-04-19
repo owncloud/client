@@ -93,7 +93,7 @@ csync_vio_file_stat_t *csync_vio_readdir(CSYNC *ctx, csync_vio_handle_t *dhandle
       return ctx->callbacks.remote_readdir_hook(dhandle, ctx->callbacks.vio_userdata);
       break;
     case LOCAL_REPLICA:
-      return csync_vio_local_readdir(dhandle);
+      return csync_vio_local_readdir(ctx, dhandle);
       break;
     default:
       CSYNC_LOG(CSYNC_LOG_PRIORITY_ALERT, "Invalid replica (%d)", (int)ctx->replica);
