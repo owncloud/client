@@ -413,8 +413,8 @@ void AccountSettings::showConnectionLabel( const QString& message, QStringList e
         ui->connectLabel->setToolTip(QString());
         ui->connectLabel->setStyleSheet(QString());
     } else {
-        errors.prepend(message);
-        const QString msg = errors.join(QLatin1String("\n"));
+		errors.prepend(message);
+		const QString msg = errors.join(QLatin1String("\n"));
         qDebug() << msg;
         ui->connectLabel->setText( msg );
         ui->connectLabel->setToolTip(QString());

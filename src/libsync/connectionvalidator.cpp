@@ -64,7 +64,7 @@ QString ConnectionValidator::statusString( Status stat )
 void ConnectionValidator::checkServerAndAuth()
 {
     if( !_account ) {
-        _errors << tr("No ownCloud account configured");
+        _errors << tr("No ownCloud account configured.");
         reportResult( NotConfigured );
         return;
     }
@@ -126,7 +126,7 @@ void ConnectionValidator::slotStatusFound(const QUrl&url, const QVariantMap &inf
 
     // We cannot deal with servers < 5.0.0
     if (version.contains('.') && version.split('.')[0].toInt() < 5) {
-        _errors.append( tr("The configured server for this client is too old") );
+        _errors.append( tr("The configured server for this client is too old.") );
         _errors.append( tr("Please update to the latest server and restart the client.") );
         reportResult( ServerVersionMismatch );
         return;
@@ -154,7 +154,6 @@ void ConnectionValidator::slotNoStatusFound(QNetworkReply *reply)
     } else if (! _account->credentials()->stillValid(reply)) {
         _errors.append(tr("Authentication error: Either username or password are wrong."));
     } else {
-        //_errors.append(tr("Unable to connect to %1").arg(_account->url().toString()));
         _errors.append( job->errorString() );
     }
     reportResult( StatusNotFound );
@@ -163,8 +162,7 @@ void ConnectionValidator::slotNoStatusFound(QNetworkReply *reply)
 void ConnectionValidator::slotJobTimeout(const QUrl &url)
 {
     Q_UNUSED(url);
-    //_errors.append(tr("Unable to connect to %1").arg(url.toString()));
-    _errors.append(tr("timeout"));
+    _errors.append(tr("Timeout."));
     reportResult( Timeout );
 }
 
@@ -197,7 +195,7 @@ void ConnectionValidator::slotAuthFailed(QNetworkReply *reply)
              !_account->credentials()->stillValid(reply)) {
         qDebug() <<  reply->error() << job->errorString();
         qDebug() << "******** Password is wrong!";
-        _errors << tr("The provided credentials are not correct");
+        _errors << tr("The provided credentials are not correct.");
         stat = CredentialsMissingOrWrong;
 
     } else if( reply->error() != QNetworkReply::NoError ) {
