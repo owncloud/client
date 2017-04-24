@@ -1,8 +1,6 @@
 <!--
 This is the template for new release issues.
-
 (originated from https://github.com/owncloud/client/wiki/Release%20Checklist%20Template)
-
 -->
 
 Copy below text into a task and tick the items:
@@ -14,6 +12,7 @@ Release-1 Week:
 * [ ] Ensure NSIS is up to date on the build machine
 * [ ] Ensure up-to-date dependencies (e.g. [latest Qt version](http://qt-project.org/downloads#qt-lib) is installed on the machine and picked up (cmake output)
 * [ ] Ensure the crash reporter server is up
+* [ ] Check crash reporter for bad crashes
 * [ ] Ensure Windows Overlay DLLs are rebuilt
 * [ ] Check nightly builds are up and running, that is Jenkins jobs ownCloud-client-linux, ownCloud-client-osx and ownCloud-client-win32 all green.
 * [ ] Ensure Linux nightlies are built too for all distros https://build.opensuse.org/package/show/isv:ownCloud:community:nightly/owncloud-client
@@ -34,9 +33,11 @@ For all Betas and RCs:
 * [ ] Create build for Windows using rotor job owncloud-client-win32 (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
 * [ ] Create build for Mac using rotor, job owncloud-client-osx (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
 * [ ] Create the beta tarball using Jenkins job ownCloud-client-source
-* [ ] Create Linux builds using rotor job owncloud-client-linux building both themes 'ownCloud' and 'testpilotcould' (this magically interacts with the ownCloud-client-source job)
+* [ ] Create Linux builds using rotor job owncloud-client-linux building (this magically interacts with the ownCloud-client-source job)
+ * [ ] theme 'ownCloud' -> isv:ownCloud:community:testing
+ * [ ] theme 'testpilotcould' -> isv:ownCloud:testpilot:testing
 * [ ] Copy builds from ```daily``` to ```testing``` on download.owncloud.com, double check the download links.
-* [ ] Update the owncloud.org webpage, section testing, by providing a pull request to the https://github.com/owncloud/owncloud.org github repository.
+* [ ] Create a pull request to the owncloud.org repository to update the install page (strings.php, page-desktop.php) and the changelog on owncloud.org. From now on download packages from the staging webserver.
 * [ ] Inform community mailinglists devel@owncloud.org and testpilots@owncloud.org and packaging@owncloud.org
 * [ ] Announce on https://central.owncloud.org
 * [ ] Create a signed tag using ```git tag -u E94E7B37 tagname``` (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
@@ -61,34 +62,40 @@ On Release Day (for final release):
 * [ ] Double check ```VERSION.cmake```: Check the version number settings and suffix (beta etc.) to be removed. Commit change to release branch only!
 * [ ] Add last updates to Changelog in the client source repository.
 * [ ] Create tar ball (automated by `ownCloud-client-source` jenkins job) and **immediately** sign it (asc file). (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
+* [ ] Create build for Windows using rotor job owncloud-client-win32 (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
+* [ ] Create build for Mac using rotor, job owncloud-client-osx (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
+* [ ] Stop publishing on OBS
+* [ ] Create Linux builds using rotor job owncloud-client-linux (this magically interacts with the ownCloud-client-source job)
+ * [ ] theme 'ownCloud' -> isv:ownCloud:desktop
+ * [ ] theme 'testpilotcould' -> isv:ownCloud:testpilotcloud
 * [ ] Copy the source tarball from the daily to the stable dir on download.o.o
-* [ ] Announce the source tarball on the packaging mailing list packaging@owncloud.org
-* [ ] Announce on https://central.owncloud.org
-* [ ] Build Windows packages
-* [ ] Build Mac OS X packages
 * [ ] Branch isv:ownCloud:desktop to isv:ownCloud:desktop:client-X.Y.Z before overwriting
 * [ ] Build Linux packages by running the jenkins job ownCloud-client-linux with proper parameters
- * Update [OBS repository](https://build.opensuse.org/project/show?project=isv%3AownCloud%3Adesktop) `isv:ownCloud:desktop` (or `isv:ownCloud:community:testing` for RC/Beta)
+ * Update [OBS repository](https://build.opensuse.org/project/show?project=isv%3AownCloud%3Adesktop) `isv:ownCloud:desktop`
  * Check if patches still apply in the linux packages
-* [ ] Update the testing repository to the latest stable version.
+* [ ] Linux: Update the testing repository to the latest stable version.
 * [ ] Inform GCX that a new tarball is available.
+* [ ] Copy builds from ```daily``` to ```stable``` on download.owncloud.com, double check the download links.
 * [ ] Check if the following packages are on download.owncloud.com/desktop/stable:
   * Windows binary package
   * Mac binary package
   * source tarballs
-* [ ] Create a pull request to the owncloud.org repository to update the install page (strings.php) and the changelog on owncloud.org. From now on download packages from the staging webserver.
+* [ ] Create a pull request to the owncloud.org repository to update the install page (strings.php, page-desktop.php) and the changelog on owncloud.org. From now on download packages from the staging webserver.
 * [ ] Re-download Mac builds and check signature. Interactive in installer window
 * [ ] Re-download Win build check signature. From Mac or Linux: ```osslsigncode verify ownCloud-version-setup.exe```
 * [ ] Mac: Perform smoke test (Install, make sure it does not explode, and check if all version indicators are correct)
 * [ ] Win: Perform smoke test (Install, make sure it does not explode, and check if all version indicators are correct)
 * [ ] Update ASCII Changelog on http://download.owncloud.com/download/changelog-client
 * [ ] Keep the packaging mailinglist packaging@owncloud.org informed and announce the final sources.
+* [ ] Announce on https://central.owncloud.org
+* [ ] Announce on announcements@owncloud.org
 * [ ] Create git signed tag in github client repository using ```git tag -u E94E7B37 tagname```
 * [ ] Send out Social (tweet, blog, other)
 * [ ] Send out customer communication (if any)
 * [ ] Inform GCX that the new version is released (gcx@owncloud.com)
 * [ ] Take pride and celebrate!
-* [ ] Days later: Update the updater script ```clientupdater.php```
+* [ ] Also update the testpilotcloud builds for that release version and make sure they show up on the download page
+* [ ] Days later: Update the updater script ```clientupdater.php``` (check the crash reporter if auto update is a good idea or we need a new release)
 * [ ] Tell GCX to increment the minimum supported version for enterprise customers
 * [ ] Check if minimum.supported.desktop.version (https://github.com/owncloud/core/blob/master/config/config.sample.php#L1152) needs to be updated in server
 ```
