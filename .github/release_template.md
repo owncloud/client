@@ -34,8 +34,8 @@ For all Betas and RCs:
 * [ ] Create build for Mac using rotor, job owncloud-client-osx (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
 * [ ] Create the beta tarball using Jenkins job ownCloud-client-source
 * [ ] Create Linux builds using rotor job owncloud-client-linux building (this magically interacts with the ownCloud-client-source job)
- * [ ] theme 'ownCloud' -> isv:ownCloud:community:testing
- * [ ] theme 'testpilotcould' -> isv:ownCloud:testpilot:testing
+  * [ ] theme 'ownCloud' -> isv:ownCloud:community:testing
+  * [ ] theme 'testpilotcould' -> isv:ownCloud:testpilot:testing
 * [ ] Copy builds from ```daily``` to ```testing``` on download.owncloud.com, double check the download links.
 * [ ] Create a pull request to the owncloud.org repository to update the install page (strings.php, page-desktop.php) and the changelog on owncloud.org. From now on download packages from the staging webserver.
 * [ ] Inform community mailinglists devel@owncloud.org and testpilots@owncloud.org and packaging@owncloud.org
@@ -66,8 +66,8 @@ On Release Day (for final release):
 * [ ] Create build for Mac using rotor, job owncloud-client-osx (uncheck the "nightly build" checkbox, check the "sign package" checkboxes) both themes 'ownCloud' and 'testpilotcould'
 * [ ] Stop publishing on OBS
 * [ ] Create Linux builds using rotor job owncloud-client-linux (this magically interacts with the ownCloud-client-source job)
- * [ ] theme 'ownCloud' -> isv:ownCloud:desktop
- * [ ] theme 'testpilotcould' -> isv:ownCloud:testpilotcloud
+  * [ ] theme 'ownCloud' -> isv:ownCloud:desktop
+  * [ ] theme 'testpilotcould' -> isv:ownCloud:testpilotcloud
 * [ ] Copy the source tarball from the daily to the stable dir on download.o.o
 * [ ] Branch isv:ownCloud:desktop to isv:ownCloud:desktop:client-X.Y.Z before overwriting
 * [ ] Build Linux packages by running the jenkins job ownCloud-client-linux with proper parameters
