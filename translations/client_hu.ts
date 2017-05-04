@@ -284,7 +284,7 @@
         <location filename="../src/gui/accountsettings.cpp" line="151"/>
         <location filename="../src/gui/accountsettings.cpp" line="599"/>
         <source>Log out</source>
-        <translation>Kilépés</translation>
+        <translation>Kijelentkezés</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="243"/>
@@ -3266,7 +3266,7 @@ It is not advisable to use it.</source>
         <location filename="../src/gui/owncloudgui.cpp" line="649"/>
         <location filename="../src/gui/owncloudgui.cpp" line="753"/>
         <source>Log out</source>
-        <translation>Kilépés</translation>
+        <translation>Kijelentkezés</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="477"/>
