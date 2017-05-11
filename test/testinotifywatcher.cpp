@@ -11,18 +11,23 @@
 
 using namespace OCC;
 
-class TestInotifyWatcher: public FolderWatcherPrivate
+
+struct FriendlyFolderWatcherPrivate : FolderWatcherPrivate
+{
+    using FolderWatcherPrivate::FolderWatcherPrivate;
+    friend class TestInotifyWatcher;
+};
+
+
+class TestInotifyWatcher : public QObject
 {
     Q_OBJECT
-
-private:
-    QString _root;
-
 private slots:
-    void initTestCase() {
-        qsrand(QTime::currentTime().msec());
+    // Test the recursive path listing function lists everything
+    void testAddFolderRecursiveHelper() {
+        QTemporaryDir tmpDir;
 
-        _root = QDir::tempPath() + "/" + "test_" + QString::number(qrand());
+        QString _root = tmpDir.path();
         qDebug() << "creating test directory tree in " << _root;
         QDir rootDir(_root);
 
@@ -32,13 +37,13 @@ private slots:
         rootDir.mkpath(_root + "/a1/b3/c3");
         rootDir.mkpath(_root + "/a2/b3/c3");
 
-    }
+        FriendlyFolderWatcherPrivate watcher(0, _root);
+        QVERIFY(watcher._fd >= 0);
+        QCoreApplication::processEvents(); // Let the slotAddFolderRecursive slot run;
+        QStringList dirs = watcher._watches.values();
 
-    // Test the recursive path listing function findFoldersBelow
-    void testDirsBelowPath() {
-        QStringList dirs;
+        QVERIFY( dirs.indexOf(_root)>-1);
 
-        bool ok = findFoldersBelow(QDir(_root), dirs);
         QVERIFY( dirs.indexOf(_root + "/a1")>-1);
         QVERIFY( dirs.indexOf(_root + "/a1/b1")>-1);
         QVERIFY( dirs.indexOf(_root + "/a1/b1/c1")>-1);
@@ -53,20 +58,13 @@ private slots:
         QVERIFY( dirs.indexOf(_root + "/a1/b3")>-1);
         QVERIFY( dirs.indexOf(_root + "/a1/b3/c3")>-1);
 
-        QVERIFY( dirs.indexOf(_root + "/a2"));
-        QVERIFY( dirs.indexOf(_root + "/a2/b3"));
-        QVERIFY( dirs.indexOf(_root + "/a2/b3/c3"));
+        QVERIFY( dirs.contains(_root + "/a2"));
+        QVERIFY( dirs.contains(_root + "/a2/b3"));
+        QVERIFY( dirs.contains(_root + "/a2/b3/c3"));
 
-        QVERIFY2(dirs.count() == 11, "Directory count wrong.");
-
-        QVERIFY2(ok, "findFoldersBelow failed.");
+        QCOMPARE(dirs.count(), 12);
     }
 
-    void cleanupTestCase() {
-        if( _root.startsWith(QDir::tempPath() )) {
-           system( QString("rm -rf %1").arg(_root).toLocal8Bit() );
-        }
-    }
 };
 
 QTEST_APPLESS_MAIN(TestInotifyWatcher)

@@ -24,6 +24,7 @@
 #include <QStringList>
 #include <QObject>
 #include <QVarLengthArray>
+#include <syncengine.h>
 
 namespace OCC {
 
@@ -49,31 +50,6 @@ FolderWatcherPrivate::~FolderWatcherPrivate()
 
 }
 
-// attention: result list passed by reference!
-bool FolderWatcherPrivate::findFoldersBelow( const QDir& dir, QStringList& fullList )
-{
-    bool ok = true;
-    if( !(dir.exists() && dir.isReadable()) ) {
-        qDebug() << "Non existing path coming in: " << dir.absolutePath();
-        ok = false;
-    } else {
-        QStringList nameFilter;
-        nameFilter << QLatin1String("*");
-        QDir::Filters filter = QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Hidden;
-        const QStringList pathes = dir.entryList(nameFilter, filter);
-
-        QStringList::const_iterator constIterator;
-        for (constIterator = pathes.constBegin(); constIterator != pathes.constEnd();
-               ++constIterator) {
-            const QString fullPath(dir.path()+QLatin1String("/")+(*constIterator));
-            fullList.append(fullPath);
-            ok = findFoldersBelow(QDir(fullPath), fullList);
-        }
-    }
-
-    return ok;
-}
-
 void FolderWatcherPrivate::inotifyRegisterPath(const QString& path)
 {
     if( !path.isEmpty()) {
@@ -89,40 +65,46 @@ void FolderWatcherPrivate::inotifyRegisterPath(const QString& path)
 
 void FolderWatcherPrivate::slotAddFolderRecursive(const QString &path)
 {
-    int subdirs = 0;
     qDebug() << "(+) Watcher:" << path;
-
-    QDir inPath(path);
-    inotifyRegisterPath(inPath.absolutePath());
-
     const QStringList watchedFolders = _watches.values();
-
-    QStringList allSubfolders;
-    if( !findFoldersBelow(QDir(path), allSubfolders)) {
-        qDebug() << "Could not traverse all sub folders";
-    }
-    // qDebug() << "currently watching " << watchedFolders;
-    QStringListIterator subfoldersIt(allSubfolders);
-    while (subfoldersIt.hasNext()) {
-        QString subfolder = subfoldersIt.next();
-        // qDebug() << "  (**) subfolder: " << subfolder;
-        QDir folder (subfolder);
-        if (folder.exists() && !watchedFolders.contains(folder.absolutePath())) {
-            subdirs++;
-            if( _parent->pathIsIgnored(subfolder) ) {
-                qDebug() << "* Not adding" << folder.path();
-                continue;
-            }
-            inotifyRegisterPath(folder.absolutePath());
-        } else {
-            qDebug() << "    `-> discarded:" << folder.path();
-        }
-    }
-
+    int subdirs = addFolderRecursiveHelper(path, watchedFolders.toSet());
     if (subdirs >0) {
         qDebug() << "    `-> and" << subdirs << "subdirectories";
     }
 }
+
+int FolderWatcherPrivate::addFolderRecursiveHelper(const QString &path, const QSet<QString> &watchedFolders)
+{
+    QDir dir(path);
+    if( !(dir.exists() && dir.isReadable()) ) {
+        qDebug() << "Non existing path coming in: " << dir.absolutePath();
+        return 0;
+    }
+    int subdirs = 1;
+
+    inotifyRegisterPath(dir.absolutePath());
+
+    QDir::Filters filter = QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Hidden;
+    const QStringList pathes = dir.entryList(filter);
+    for (auto constIterator = pathes.constBegin(); constIterator != pathes.constEnd(); ++constIterator) {
+        const QString subfolder = path + QLatin1String("/") + (*constIterator);
+        QDir folder(subfolder);
+        if (folder.exists() && !watchedFolders.contains(subfolder)) {
+#ifndef OWNCLOUD_TEST // InotifyWatcherTest is not interested in ignored files and does not link against the folder
+            if( _parent->_folder->syncEngine().excludedFiles().isExcluded(
+                    subfolder, path, _parent->_folder->ignoreHiddenFiles())) {
+                qDebug() << "* Not adding" << folder.path();
+                continue;
+            }
+#endif
+            subdirs += addFolderRecursiveHelper(subfolder, watchedFolders);
+        } else {
+            qDebug() << "    `-> discarded:" << folder.path();
+        }
+    }
+    return subdirs;
+}
+
 
 void FolderWatcherPrivate::slotReceivedNotification(int fd)
 {
