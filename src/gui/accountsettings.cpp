@@ -46,6 +46,7 @@
 #include <QIcon>
 #include <QVariant>
 #include <QToolTip>
+#include <QStringBuilder>
 #include <qstringlistmodel.h>
 #include <qpropertyanimation.h>
 
@@ -609,7 +610,7 @@ void AccountSettings::slotAccountStateChanged(int state)
         } else {
             showConnectionLabel(tr("No connection to %1 at %2.")
                                     .arg(Utility::escape(Theme::instance()->appNameGUI()), server),
-                                _accountState->connectionErrors());
+                                _accountState->connectionErrors() % QChar('.'));
         }
     } else {
         // ownCloud is not yet configured.
