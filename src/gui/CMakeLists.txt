@@ -61,6 +61,7 @@ set(client_SRCS
     ocsshareejob.cpp
     openfilemanager.cpp
     owncloudgui.cpp
+    windowraiser.cpp
     owncloudsetupwizard.cpp
     protocolwidget.cpp
     activitydata.cpp
