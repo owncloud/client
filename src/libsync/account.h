@@ -26,6 +26,8 @@
 #include <QSslCipher>
 #include <QSslError>
 #include <QSharedPointer>
+#include <QPixmap>
+
 #include "utility.h"
 #include <memory>
 #include "capabilities.h"
@@ -77,6 +79,9 @@ public:
      */
     QString davUser() const;
     void setDavUser(const QString &newDavUser);
+
+    QImage avatar() const;
+    void setAvatar(const QImage& img);
 
     /// The name of the account as shown in the toolbar
     QString displayName() const;
@@ -208,6 +213,8 @@ signals:
 
     void serverVersionChanged(Account* account, const QString& newVersion, const QString& oldVersion);
 
+    void accountChangedAvatar();
+
 protected Q_SLOTS:
     void slotHandleSslErrors(QNetworkReply*,QList<QSslError>);
     void slotCredentialsFetched();
@@ -220,6 +227,7 @@ private:
     QWeakPointer<Account> _sharedThis;
     QString _id;
     QString _davUser;
+    QImage _avatarImg;
     QMap<QString, QVariant> _settingsMap;
     QUrl _url;
     QList<QSslCertificate> _approvedCerts;
