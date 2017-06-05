@@ -90,6 +90,11 @@ int OwncloudPropagator::maximumActiveTransferJob()
 /* The maximum number of active jobs in parallel  */
 int OwncloudPropagator::hardMaximumActiveJob()
 {
+    if (_downloadLimit != 0 || _uploadLimit != 0) {
+        // disable parallelism when there is a network limit.
+        return 1;
+    }
+
     static int max = qgetenv("OWNCLOUD_MAX_PARALLEL").toUInt();
     if (!max) {
         max = 6; //default (Qt cannot do more anyway)
