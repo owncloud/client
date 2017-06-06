@@ -224,7 +224,31 @@ Compared to previous versions, building the desktop sync client has become easie
 earlier versions, CSync, which is the sync engine library of the client, is now
 part of the client source repository and not a separate module.
 
-To build the most up-to-date version of the client:
+To build the most up-to-date version of the client, requires four mandatory steps (and one optional one).
+But, before you can run those, make sure you have all the dependencies installed. 
+These are:
+
+* build-essential
+* bzip2
+* cmake
+* doxygen
+* git
+* gzip
+* lacheck
+* libdbusmenu-qt5-dev 
+* libqt5webkit5-dev
+* libsqlite3-dev
+* libssl-dev
+* python3
+* qtkeychain-dev
+
+.. note:: 
+   Feel free to use the included VM which has all of the dependencies available. All you need to run it are the latest version of VirtualBox and Vagrant. These are ``5.0.32 r112930`` and ``1.9.1``, respectively, at the time of writing. 
+   
+.. warning::
+   Please know that Ubuntu 14.04 is NOT supported as the client will not build properly. You need at least version 16.04 (which is available in the Vagrant/VirtualBox VM). For more information, have a read through https://github.com/owncloud/client/issues/4617.
+
+With the dependencies satisfied, you can now build the client.
 
 1. Clone the latest versions of the client from Git_ as follows::
 
@@ -255,12 +279,12 @@ To build the most up-to-date version of the client:
    
 4. Call ``make``.
 
-   The owncloud binary will appear in the ``bin`` directory.
+   The ownCloud binary will appear in the ``bin`` directory.
    
 5. (Optional) Call ``make install`` to install the client to the   
    ``/usr/local/bin`` directory.   
 
-The following are known cmake parameters:
+The following are known ``cmake`` parameters:
 
 * ``QTKEYCHAIN_LIBRARY=/path/to/qtkeychain.dylib -DQTKEYCHAIN_INCLUDE_DIR=/path/to/qtkeychain/``:
    Used for stored credentials.  When compiling with Qt5, the library is called ``qt5keychain.dylib.``
