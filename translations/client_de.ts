@@ -839,7 +839,7 @@ Wenn diese Synchronisation fortgesetzt wird, werden Dateien eventuell von älter
     <message>
         <location filename="../src/gui/folderman.cpp" line="1247"/>
         <source>Waiting to start syncing.</source>
-        <translation>Wartet auf Beginn der Synchronistation</translation>
+        <translation>Wartet auf Beginn der Synchronisation</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1250"/>
@@ -1844,7 +1844,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="388"/>
         <source>Local sync folder %1 already exists, setting it up for sync.&lt;br/&gt;&lt;br/&gt;</source>
-        <translation>Lokaler Sync-Ordner %1 existiert bereits, aktiviere Synchronistation.&lt;br/&gt;&lt;br/&gt;</translation>
+        <translation>Lokaler Sync-Ordner %1 existiert bereits, aktiviere Synchronisation.&lt;br/&gt;&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="391"/>
@@ -3902,7 +3902,7 @@ Es ist nicht ratsam, diese zu benutzen.</translation>
     <message>
         <location filename="../src/libsync/theme.cpp" line="62"/>
         <source>Waiting to start sync</source>
-        <translation>Warte, um mit der Synchronistation zu beginnen</translation>
+        <translation>Warte, um mit der Synchronisation zu beginnen</translation>
     </message>
     <message>
         <location filename="../src/libsync/theme.cpp" line="65"/>
