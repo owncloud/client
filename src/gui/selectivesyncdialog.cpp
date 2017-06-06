@@ -99,6 +99,11 @@ SelectiveSyncWidget::SelectiveSyncWidget(AccountPtr account, QWidget *parent)
     _folderTree->header()->setStretchLastSection(true);
     _folderTree->headerItem()->setText(0, tr("Name"));
     _folderTree->headerItem()->setText(1, tr("Size"));
+
+    auto footer = new QLabel(this);
+    footer->setText(tr("Existing deselected folders will be <b>removed locally</b> if the server's copy is up to date."));
+    footer->setWordWrap(true);
+    layout->addWidget(footer);
 }
 
 QSize SelectiveSyncWidget::sizeHint() const
