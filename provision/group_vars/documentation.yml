@@ -1,0 +1,6 @@
+# group_vars/webserver
+---
+webuser: www-data
+webgroup: www-data
+redis_bind: 127.0.0.1
+deploy_user: deploy

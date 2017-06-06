@@ -1,0 +1,39 @@
+- name: Install packages
+  become: yes
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+      - build-essential
+      - bzip2
+      - chktex
+      - cmake
+      - doxygen
+      - git
+      - gzip
+      - lacheck
+      - libdbusmenu-qt5-dev 
+      - libqt5webkit5-dev
+      - libsqlite3-dev
+      - libssl-dev
+      - python3
+      - python-pil 
+      - python-sphinx 
+      - python-sphinxcontrib.phpdomain 
+      - qtkeychain-dev
+      - rst2pdf 
+      - tar
+      - texlive-fonts-recommended 
+      - texlive-latex-extra 
+      - texlive-latex-recommended
+      - tree
+      - ufw
+      - unzip
+      - vim
+      - zip
+
+- name: Set firewall default policy
+  ufw: state=enabled policy=deny
+  become: true
+
+- name: Allow ssh
+  ufw: rule=allow port=22 proto=tcp
+  become: true
