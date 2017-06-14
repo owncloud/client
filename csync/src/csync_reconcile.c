@@ -272,11 +272,22 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
                     // Folders of the same path are always considered equals
                     is_conflict = false;
                 } else {
+                    // If the size or mtime is different, it's definitely a conflict.
                     is_conflict = ((other->size != cur->size) || (other->modtime != cur->modtime));
-                    // FIXME: do a binary comparision of the file here because of the following
-                    // edge case:
-                    // The files could still have different content, even though the mtime
-                    // and size are the same.
+
+                    // It could be a conflict even if size and mtime match!
+                    // When we have the remote checksum available we can detect
+                    // it without downloading the file.
+                    is_conflict |= (ctx->current == REMOTE_REPLICA ? cur->checksumHeader : other->checksumHeader) != 0;
+
+                    // NOTE: If there is no checksum, we can have !is_conflict here
+                    // even though the files have different content! This is an
+                    // intentional tradeoff. Downloading and comparing files would
+                    // be technically correct in this situation but leads to too
+                    // much waste.
+                    // In particular this kind of NEW/NEW situation with identical
+                    // sizes and mtimes pops up when the local database is lost for
+                    // whatever reason.
                 }
                 if (ctx->current == REMOTE_REPLICA) {
                     // If the files are considered equal, only update the DB with the etag from remote
