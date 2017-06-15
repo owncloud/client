@@ -65,6 +65,19 @@ static c_rbnode_t *_csync_check_ignored(c_rbtree_t *tree, const char *path, int 
     }
 }
 
+/* Returns true if we're reasonably certain that hash equality
+ * for the header means content equality.
+ *
+ * Cryptographic safety is not required - this is mainly
+ * intended to rule out checksums like Adler32 that are not intended for
+ * hashing and have high likelihood of collision with particular inputs.
+ */
+static bool _csync_is_collision_safe_hash(const char *checksum_header)
+{
+    return strncmp(checksum_header, "SHA1:", 5) == 0
+        || strncmp(checksum_header, "MD5:", 4) == 0;
+}
+
 /**
  * The main function in the reconcile pass.
  *
@@ -276,11 +289,20 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
                     is_conflict = ((other->size != cur->size) || (other->modtime != cur->modtime));
 
                     // It could be a conflict even if size and mtime match!
-                    // When we have the remote checksum available we can detect
-                    // it without downloading the file.
-                    is_conflict |= (ctx->current == REMOTE_REPLICA ? cur->checksumHeader : other->checksumHeader) != 0;
+                    //
+                    // In older client versions we always treated these cases as a
+                    // non-conflict. This behavior is preserved in case the server
+                    // doesn't provide a suitable content hash.
+                    //
+                    // When it does have one, however, we do create a job, but the job
+                    // will compare hashes and avoid the download if they are equal.
+                    const char *remoteChecksumHeader =
+                        (ctx->current == REMOTE_REPLICA ? cur->checksumHeader : other->checksumHeader);
+                    if (remoteChecksumHeader) {
+                        is_conflict |= _csync_is_collision_safe_hash(remoteChecksumHeader);
+                    }
 
-                    // NOTE: If there is no checksum, we can have !is_conflict here
+                    // SO: If there is no checksum, we can have !is_conflict here
                     // even though the files have different content! This is an
                     // intentional tradeoff. Downloading and comparing files would
                     // be technically correct in this situation but leads to too

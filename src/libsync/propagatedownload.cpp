@@ -347,14 +347,13 @@ void PropagateDownloadFile::start()
     // If we have a conflict where size and mtime are identical,
     // compare the remote checksum to the local one.
     // Maybe it's not a real conflict and no download is necessary!
-    QByteArray checksumType = parseChecksumHeaderType(_item->_checksumHeader);
     if (_item->_instruction == CSYNC_INSTRUCTION_CONFLICT
         && _item->_size == _item->log._other_size
         && _item->_modtime == _item->log._other_modtime
-        && collisionSafeHashes().contains(checksumType)) {
+        && !_item->_checksumHeader.isEmpty()) {
         qCDebug(lcPropagateDownload) << _item->_file << "may not need download, computing checksum";
         auto computeChecksum = new ComputeChecksum(this);
-        computeChecksum->setChecksumType(checksumType);
+        computeChecksum->setChecksumType(parseChecksumHeaderType(_item->_checksumHeader));
         connect(computeChecksum, SIGNAL(done(QByteArray, QByteArray)),
             SLOT(conflictChecksumComputed(QByteArray, QByteArray)));
         computeChecksum->start(propagator()->getFilePath(_item->_file));

@@ -40,10 +40,6 @@ bool uploadChecksumEnabled();
 /// Checks OWNCLOUD_CONTENT_CHECKSUM_TYPE (default: SHA1)
 QByteArray contentChecksumType();
 
-/// Returns hashes where we're reasonably certain that hash equality
-/// means content equality.
-QList<QByteArray> collisionSafeHashes();
-
 
 /**
  * Computes the checksum of a file.

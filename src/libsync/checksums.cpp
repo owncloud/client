@@ -132,12 +132,6 @@ QByteArray contentChecksumType()
     return type;
 }
 
-QList<QByteArray> collisionSafeHashes()
-{
-    static QList<QByteArray> list = { "SHA1" };
-    return list;
-}
-
 ComputeChecksum::ComputeChecksum(QObject *parent)
     : QObject(parent)
 {

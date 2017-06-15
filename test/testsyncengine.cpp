@@ -308,16 +308,17 @@ private slots:
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
 
         int nGET = 0;
-        fakeFolder.setServerObserver([&](QByteArray verb, QString) {
-            if (verb == "GET")
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &) {
+            if (op == QNetworkAccessManager::GetOperation)
                 ++nGET;
+            return nullptr;
         });
 
         // For directly editing the remote checksum
         FileInfo &remoteInfo = dynamic_cast<FileInfo &>(fakeFolder.remoteModifier());
 
         // Base mtime with no ms content (filesystem is seconds only)
-        auto mtime = QDateTime::currentDateTime().addDays(-3);
+        auto mtime = QDateTime::currentDateTime().addDays(-4);
         mtime.setMSecsSinceEpoch(mtime.toMSecsSinceEpoch() / 1000 * 1000);
 
         // Conflict: Same content, mtime, but no server checksum
@@ -326,6 +327,17 @@ private slots:
         fakeFolder.localModifier().setModTime("A/a1", mtime);
         fakeFolder.remoteModifier().setContents("A/a1", 'C');
         fakeFolder.remoteModifier().setModTime("A/a1", mtime);
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(nGET, 0);
+
+        // Conflict: Same content, mtime, but weak server checksum
+        //           -> ignored in reconcile
+        mtime = mtime.addDays(1);
+        fakeFolder.localModifier().setContents("A/a1", 'D');
+        fakeFolder.localModifier().setModTime("A/a1", mtime);
+        fakeFolder.remoteModifier().setContents("A/a1", 'D');
+        fakeFolder.remoteModifier().setModTime("A/a1", mtime);
+        remoteInfo.find("A/a1")->checksums = "Adler32:bad";
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(nGET, 0);
 
