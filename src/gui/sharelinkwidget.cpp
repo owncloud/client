@@ -155,6 +155,8 @@ ShareLinkWidget::ShareLinkWidget(AccountPtr account,
     // Prepare sharing menu
 
     _shareLinkMenu = new QMenu(this);
+    connect(_shareLinkMenu, SIGNAL(triggered(QAction *)),
+        SLOT(slotShareLinkActionTriggered(QAction *)));
     _openLinkAction = _shareLinkMenu->addAction(tr("Open link in browser"));
     _copyLinkAction = _shareLinkMenu->addAction(tr("Copy link to clipboard"));
     _copyDirectLinkAction = _shareLinkMenu->addAction(tr("Copy link to clipboard (direct download)"));
@@ -244,9 +246,7 @@ void ShareLinkWidget::slotSharesFetched(const QList<QSharedPointer<Share>> &shar
         auto shareButton = new QToolButton;
         shareButton->setText("...");
         shareButton->setProperty(propertyShareC, QVariant::fromValue(linkShare));
-        shareButton->setMenu(_shareLinkMenu);
-        shareButton->setPopupMode(QToolButton::InstantPopup);
-        connect(shareButton, SIGNAL(triggered(QAction *)), SLOT(slotShareLinkButtonTriggered(QAction *)));
+        connect(shareButton, SIGNAL(clicked(bool)), SLOT(slotShareLinkButtonClicked()));
         table->setCellWidget(row, 1, shareButton);
 
         auto deleteButton = new QToolButton;
@@ -546,7 +546,18 @@ void ShareLinkWidget::openShareLink(const QUrl &url)
     }
 }
 
-void ShareLinkWidget::slotShareLinkButtonTriggered(QAction *action)
+void ShareLinkWidget::slotShareLinkButtonClicked()
+{
+    auto share = sender()->property(propertyShareC).value<QSharedPointer<LinkShare>>();
+    bool downloadEnabled = share->getShowFileListing();
+    _copyDirectLinkAction->setVisible(downloadEnabled);
+    _emailDirectLinkAction->setVisible(downloadEnabled);
+
+    _shareLinkMenu->setProperty(propertyShareC, QVariant::fromValue(share));
+    _shareLinkMenu->exec(QCursor::pos());
+}
+
+void ShareLinkWidget::slotShareLinkActionTriggered(QAction *action)
 {
     auto share = sender()->property(propertyShareC).value<QSharedPointer<LinkShare>>();
 
