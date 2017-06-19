@@ -977,7 +977,7 @@ Wenn diese Synchronisation fortgesetzt wird, werden Dateien eventuell von älter
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="193"/>
         <source>Fetching folder list from server...</source>
-        <translation>Empfange Orderliste vom Server...</translation>
+        <translation>Empfange Ordnerliste vom Server...</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="864"/>
@@ -1121,7 +1121,7 @@ Wenn diese Synchronisation fortgesetzt wird, werden Dateien eventuell von älter
     <message>
         <location filename="../src/gui/folderwizard.cpp" line="212"/>
         <source>Folder was successfully created on %1.</source>
-        <translation>Order erfolgreich auf %1 erstellt.</translation>
+        <translation>Ordner erfolgreich auf %1 erstellt.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard.cpp" line="223"/>
