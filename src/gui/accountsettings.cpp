@@ -301,6 +301,10 @@ void AccountSettings::slotFolderListClicked(const QModelIndex &indx)
             slotCustomContextMenuRequested(pos);
             return;
         }
+        if (FolderStatusDelegate::errorsListRect(tv->visualRect(indx)).contains(pos)) {
+            emit showIssuesList(_model->data(indx, FolderStatusDelegate::FolderAliasRole).toString());
+            return;
+        }
 
         // Expand root items on single click
         if (_accountState && _accountState->state() == AccountState::Connected) {

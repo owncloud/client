@@ -267,13 +267,15 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         painter->setPen(QColor(0xaa, 0xaa, 0xaa));
         painter->drawRoundedRect(QStyle::visualRect(option.direction, option.rect, errorRect),
             4, 4);
-        painter->setPen(Qt::white);
-        painter->setFont(errorFont);
         QRect errorTextRect(errorRect.left() + margin,
             errorRect.top() + margin,
             errorRect.width() - 2 * margin,
             subFm.height());
 
+        painter->setFont(errorFont);
+        painter->setPen(Qt::white);
+        painter->drawText(QStyle::visualRect(option.direction, option.rect, errorTextRect), Qt::AlignRight,
+            tr("Click for error list"));
         foreach (QString eText, errorTexts) {
             painter->drawText(QStyle::visualRect(option.direction, option.rect, errorTextRect), textAlign,
                 subFm.elidedText(eText, Qt::ElideLeft, errorTextRect.width()));
@@ -371,6 +373,16 @@ QRect FolderStatusDelegate::optionsButtonRect(QRect within, Qt::LayoutDirection 
                 within.top() + within.height() / 2 - size.height() / 2),
         size);
     return QStyle::visualRect(direction, within, r);
+}
+
+QRect FolderStatusDelegate::errorsListRect(QRect within)
+{
+    QFont font = QFont();
+    QFont aliasFont = makeAliasFont(font);
+    QFontMetrics fm(font);
+    QFontMetrics aliasFm(aliasFont);
+    within.setTop(within.top() + FolderStatusDelegate::rootFolderHeightWithoutErrors(fm, aliasFm));
+    return within;
 }
 
 
