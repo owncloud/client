@@ -267,15 +267,13 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         painter->setPen(QColor(0xaa, 0xaa, 0xaa));
         painter->drawRoundedRect(QStyle::visualRect(option.direction, option.rect, errorRect),
             4, 4);
+        painter->setPen(Qt::white);
+        painter->setFont(errorFont);
         QRect errorTextRect(errorRect.left() + margin,
             errorRect.top() + margin,
             errorRect.width() - 2 * margin,
             subFm.height());
 
-        painter->setFont(errorFont);
-        painter->setPen(Qt::white);
-        painter->drawText(QStyle::visualRect(option.direction, option.rect, errorTextRect), Qt::AlignRight,
-            tr("Click for error list"));
         foreach (QString eText, errorTexts) {
             painter->drawText(QStyle::visualRect(option.direction, option.rect, errorTextRect), textAlign,
                 subFm.elidedText(eText, Qt::ElideLeft, errorTextRect.width()));
