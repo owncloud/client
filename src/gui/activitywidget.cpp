@@ -594,7 +594,6 @@ void ActivitySettings::slotShowIssuesTab(const QString &folderAlias)
 {
     if (_syncIssueTabId == -1)
         return;
-    qDebug() << "SWITCHING TAB " << _syncIssueTabId;
     _tab->setCurrentIndex(_syncIssueTabId);
 
     _issuesWidget->showFolderErrors(folderAlias);
