@@ -132,6 +132,8 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     auto mouseCursorChanger = new MouseCursorChanger(this);
     mouseCursorChanger->folderList = ui->_folderList;
     mouseCursorChanger->model = _model;
+    ui->_folderList->setMouseTracking(true);
+    ui->_folderList->setAttribute(Qt::WA_Hover, true);
     ui->_folderList->installEventFilter(mouseCursorChanger);
 
     createAccountToolbox();
