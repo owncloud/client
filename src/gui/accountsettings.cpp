@@ -95,7 +95,8 @@ protected:
             auto pos = folderList->mapFromGlobal(QCursor::pos());
             auto index = folderList->indexAt(pos);
             if (model->classify(index) == FolderStatusModel::RootFolder
-                && FolderStatusDelegate::errorsListRect(folderList->visualRect(index)).contains(pos)) {
+                && (FolderStatusDelegate::errorsListRect(folderList->visualRect(index)).contains(pos)
+                    || FolderStatusDelegate::optionsButtonRect(folderList->visualRect(index),folderList->layoutDirection()).contains(pos))) {
                 shape = Qt::PointingHandCursor;
             }
             folderList->setCursor(shape);
