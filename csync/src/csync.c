@@ -626,19 +626,6 @@ const char *csync_get_status_string(CSYNC *ctx)
   return csync_vio_get_status_string(ctx);
 }
 
-#ifdef WITH_ICONV
-int csync_set_iconv_codec(const char *from)
-{
-  c_close_iconv();
-
-  if (from != NULL) {
-    c_setup_iconv(from);
-  }
-
-  return 0;
-}
-#endif
-
 void csync_request_abort(CSYNC *ctx)
 {
   if (ctx != NULL) {

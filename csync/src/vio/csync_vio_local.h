@@ -23,7 +23,7 @@
 
 csync_vio_handle_t OCSYNC_EXPORT *csync_vio_local_opendir(const char *name);
 int OCSYNC_EXPORT csync_vio_local_closedir(csync_vio_handle_t *dhandle);
-csync_vio_file_stat_t OCSYNC_EXPORT *csync_vio_local_readdir(csync_vio_handle_t *dhandle);
+csync_vio_file_stat_t OCSYNC_EXPORT *csync_vio_local_readdir(CSYNC *ctx, csync_vio_handle_t *dhandle);
 
 int OCSYNC_EXPORT csync_vio_local_stat(const char *uri, csync_vio_file_stat_t *buf);
 

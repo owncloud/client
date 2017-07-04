@@ -306,6 +306,10 @@ typedef void (*csync_vio_closedir_hook) (csync_vio_handle_t *dhhandle,
 typedef int (*csync_vio_stat_hook) (csync_vio_handle_t *dhhandle,
                                                               void *userdata);
 
+typedef char* (*utf8_from_locale_hook)(const mbchar_t *wstr);
+
+
+
 /* Compute the checksum of the given \a checksumTypeId for \a path. */
 typedef const char *(*csync_checksum_hook)(
     const char *path, const char *otherChecksumHeader, void *userdata);

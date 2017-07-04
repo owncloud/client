@@ -688,7 +688,7 @@ void SyncEngine::handleSyncError(CSYNC *ctx, const char *state)
     }
     // Special handling CSYNC_STATUS_INVALID_CHARACTERS
     if (err == CSYNC_STATUS_INVALID_CHARACTERS) {
-        errStr = tr("Invalid characters, please rename \"%1\"").arg(errMsg);
+        errStr = tr("Invalid characters, please rename \"%1\"").arg(errMsg));
     }
 
     // if there is csyncs url modifier in the error message, replace it.
@@ -708,6 +708,18 @@ void SyncEngine::handleSyncError(CSYNC *ctx, const char *state)
     }
     finalize(false);
 }
+
+// Instead of using the buggy iconv version c_utf8_from_locale from ocsync
+char* qt_utf8_from_locale(const mbchar_t *wstr)
+{
+    QByteArray tmp =  QString::fromUtf8(wstr).normalized(QString::NormalizationForm_C).toLocal8Bit();
+    char *ret = tmp.data();
+    if (ret) {
+        ret = strdup(ret);
+    }
+    return ret;
+}
+
 
 void SyncEngine::startSync()
 {
@@ -817,6 +829,9 @@ void SyncEngine::startSync()
     // Set up checksumming hook
     _csync_ctx->callbacks.checksum_hook = &CSyncChecksumHook::hook;
     _csync_ctx->callbacks.checksum_userdata = &_checksum_hook;
+
+    _csync_ctx->callbacks.qt_utf8_from_locale = &qt_utf8_from_locale;
+
 
     _stopWatch.start();
 
