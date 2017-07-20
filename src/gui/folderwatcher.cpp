@@ -33,13 +33,13 @@
 #endif
 
 #include "excludedfiles.h"
-#include "folder.h"
+#include "abstractfolder.h"
 
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFolderWatcher, "gui.folderwatcher", QtInfoMsg)
 
-FolderWatcher::FolderWatcher(const QString &root, Folder *folder)
+FolderWatcher::FolderWatcher(const QString &root, AbstractFolder *folder)
     : QObject(folder)
     , _folder(folder)
 {

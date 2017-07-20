@@ -34,7 +34,7 @@ namespace OCC {
 Q_DECLARE_LOGGING_CATEGORY(lcFolderWatcher)
 
 class FolderWatcherPrivate;
-class Folder;
+class AbstractFolder;
 
 /**
  * @brief Monitors a directory recursively for changes
@@ -58,7 +58,7 @@ public:
     /**
      * @param root Path of the root of the folder
      */
-    FolderWatcher(const QString &root, Folder *folder = 0L);
+    FolderWatcher(const QString &root, AbstractFolder *folder = 0L);
     virtual ~FolderWatcher();
 
     /**
@@ -92,7 +92,7 @@ private:
     QScopedPointer<FolderWatcherPrivate> _d;
     QTime _timer;
     QSet<QString> _lastPaths;
-    Folder *_folder;
+    AbstractFolder *_folder;
 
     friend class FolderWatcherPrivate;
 };

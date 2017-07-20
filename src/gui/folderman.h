@@ -75,10 +75,10 @@ public:
     Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
     /** Removes a folder */
-    void removeFolder(Folder *);
+    void removeFolder(AbstractFolder *);
 
     /** Returns the folder which the file or directory stored in path is in */
-    Folder *folderForPath(const QString &path);
+    AbstractFolder *folderForPath(const QString &path);
 
     /**
       * returns a list of local files that exist on the local harddisk for an
@@ -88,7 +88,7 @@ public:
     QStringList findFileInLocalFolders(const QString &relPath, const AccountPtr acc);
 
     /** Returns the folder by alias or NULL if no folder with the alias exists. */
-    Folder *folder(const QString &);
+    AbstractFolder *folder(const QString &);
 
     /**
      * Migrate accounts from owncloud < 2.0
@@ -108,7 +108,7 @@ public:
 
     QString statusToString(SyncResult::Status, bool paused) const;
 
-    static SyncResult accountStatus(const QList<Folder *> &folders);
+    static SyncResult accountStatus(const QList<AbstractFolder *> &folders);
 
     void removeMonitorPath(const QString &alias, const QString &path);
     void addMonitorPath(const QString &alias, const QString &path);
@@ -155,12 +155,12 @@ public:
     /**
      * Access to the current queue of scheduled folders.
      */
-    QQueue<Folder *> scheduleQueue() const;
+    QQueue<AbstractFolder *> scheduleQueue() const;
 
     /**
      * Access to the currently syncing folder.
      */
-    Folder *currentSyncFolder() const;
+    AbstractFolder *currentSyncFolder() const;
 
     /** Removes all folders */
     int unloadAndDeleteAllFolders();
@@ -172,10 +172,10 @@ public:
     void setSyncEnabled(bool);
 
     /** Queues a folder for syncing. */
-    void scheduleFolder(Folder *);
+    void scheduleFolder(AbstractFolder *);
 
     /** Puts a folder in the very front of the queue. */
-    void scheduleFolderNext(Folder *);
+    void scheduleFolderNext(AbstractFolder*);
 
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
@@ -196,7 +196,7 @@ signals:
       *
       * Attention: The folder may be zero. Do a general update of the state then.
       */
-    void folderSyncStateChange(Folder *);
+    void folderSyncStateChange(AbstractFolder *);
 
     /**
      * Indicates when the schedule queue changes.
@@ -206,7 +206,7 @@ signals:
     /**
      * Emitted whenever the list of configured folders changes.
      */
-    void folderListChanged(const Folder::Map &);
+    void folderListChanged(const AbstractFolder::Map &);
 
 public slots:
 
@@ -233,7 +233,7 @@ public slots:
     void slotScheduleETagJob(const QString &alias, RequestEtagJob *job);
 
 private slots:
-    void slotFolderSyncPaused(Folder *, bool paused);
+    void slotFolderSyncPaused(AbstractFolder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
     void slotFolderSyncFinished(const SyncResult &);
@@ -277,7 +277,7 @@ private:
         AccountState *accountState);
 
     /* unloads a folder object, does not delete it */
-    void unloadFolder(Folder *);
+    void unloadFolder(AbstractFolder *);
 
     /** Will start a sync after a bit of delay. */
     void startScheduledSyncSoon();
@@ -285,18 +285,18 @@ private:
     // finds all folder configuration files
     // and create the folders
     QString getBackupName(QString fullPathName) const;
-    void registerFolderMonitor(Folder *folder);
+    void registerFolderMonitor(AbstractFolder *folder);
 
     // restarts the application (Linux only)
     void restartApplication();
 
     void setupFoldersHelper(QSettings &settings, AccountStatePtr account, bool backwardsCompatible);
 
-    QSet<Folder *> _disabledFolders;
-    Folder::Map _folderMap;
+    QSet<AbstractFolder *> _disabledFolders;
+    AbstractFolder::Map _folderMap;
     QString _folderConfigPath;
-    Folder *_currentSyncFolder;
-    QPointer<Folder> _lastSyncFolder;
+    AbstractFolder *_currentSyncFolder;
+    QPointer<AbstractFolder> _lastSyncFolder;
     bool _syncEnabled;
 
     /// Watching for file changes in folders
@@ -314,7 +314,7 @@ private:
     QTimer _timeScheduler;
 
     /// Scheduled folders that should be synced as soon as possible
-    QQueue<Folder *> _scheduledFolders;
+    QQueue<AbstractFolder *> _scheduledFolders;
 
     /// Picks the next scheduled folder and starts the sync
     QTimer _startScheduledSyncTimer;

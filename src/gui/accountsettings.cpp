@@ -172,7 +172,7 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     connect(ui->bigFolderSyncAll, SIGNAL(clicked(bool)), _model, SLOT(slotSyncAllPendingBigFolders()));
     connect(ui->bigFolderSyncNone, SIGNAL(clicked(bool)), _model, SLOT(slotSyncNoPendingBigFolders()));
 
-    connect(FolderMan::instance(), SIGNAL(folderListChanged(Folder::Map)), _model, SLOT(resetFolders()));
+    connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
     connect(this, SIGNAL(folderChanged()), _model, SLOT(resetFolders()));
 
 
@@ -513,7 +513,7 @@ void AccountSettings::slotEnableCurrentFolder()
         bool currentlyPaused = false;
 
         // this sets the folder status to disabled but does not interrupt it.
-        Folder *f = folderMan->folder(alias);
+        auto *f = folderMan->folder(alias);
         if (!f) {
             return;
         }
@@ -577,7 +577,7 @@ void AccountSettings::slotForceSyncCurrentFolder()
     FolderMan *folderMan = FolderMan::instance();
     if (auto selectedFolder = folderMan->folder(selectedFolderAlias())) {
         // Terminate and reschedule any running sync
-        if (Folder *current = folderMan->currentSyncFolder()) {
+        if (auto *current = folderMan->currentSyncFolder()) {
             folderMan->terminateSyncProcess();
             folderMan->scheduleFolder(current);
         }
@@ -632,7 +632,7 @@ void AccountSettings::slotAccountStateChanged()
         QUrl safeUrl(account->url());
         safeUrl.setPassword(QString()); // Remove the password from the URL to avoid showing it in the UI
         FolderMan *folderMan = FolderMan::instance();
-        foreach (Folder *folder, folderMan->map().values()) {
+        foreach (AbstractFolder *folder, folderMan->map().values()) {
             _model->slotUpdateFolderState(folder);
         }
 
@@ -714,7 +714,7 @@ void AccountSettings::slotLinkActivated(const QString &link)
             myFolder.chop(1);
 
         // Make sure the folder itself is expanded
-        Folder *f = FolderMan::instance()->folder(alias);
+        auto *f = FolderMan::instance()->folder(alias);
         QModelIndex folderIndx = _model->indexForPath(f, QString());
         if (!ui->_folderList->isExpanded(folderIndx)) {
             ui->_folderList->setExpanded(folderIndx, true);
@@ -748,7 +748,7 @@ void AccountSettings::refreshSelectiveSyncStatus()
 
     QString msg;
     int cnt = 0;
-    foreach (Folder *folder, FolderMan::instance()->map().values()) {
+    foreach (AbstractFolder *folder, FolderMan::instance()->map().values()) {
         if (folder->accountState() != _accountState) {
             continue;
         }

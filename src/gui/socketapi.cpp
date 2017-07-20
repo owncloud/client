@@ -223,7 +223,8 @@ SocketApi::SocketApi(QObject *parent)
     connect(&_localServer, SIGNAL(newConnection()), this, SLOT(slotNewConnection()));
 
     // folder watcher
-    connect(FolderMan::instance(), SIGNAL(folderSyncStateChange(Folder *)), this, SLOT(slotUpdateFolderView(Folder *)));
+    connect(FolderMan::instance(), &FolderMan::folderSyncStateChange,
+            this, &SocketApi::slotUpdateFolderView);
 }
 
 SocketApi::~SocketApi()
@@ -251,7 +252,7 @@ void SocketApi::slotNewConnection()
     _listeners.append(SocketListener(socket));
     SocketListener &listener = _listeners.last();
 
-    foreach (Folder *f, FolderMan::instance()->map()) {
+    foreach (auto *f, FolderMan::instance()->map()) {
         if (f->canSync()) {
             QString message = buildRegisterPathMessage(removeTrailingSlash(f->path()));
             listener.sendMessage(message);
@@ -302,7 +303,7 @@ void SocketApi::slotRegisterPath(const QString &alias)
     if (_registeredAliases.contains(alias))
         return;
 
-    Folder *f = FolderMan::instance()->folder(alias);
+    auto *f = FolderMan::instance()->folder(alias);
     if (f) {
         QString message = buildRegisterPathMessage(removeTrailingSlash(f->path()));
         foreach (auto &listener, _listeners) {
@@ -318,14 +319,14 @@ void SocketApi::slotUnregisterPath(const QString &alias)
     if (!_registeredAliases.contains(alias))
         return;
 
-    Folder *f = FolderMan::instance()->folder(alias);
+    auto *f = FolderMan::instance()->folder(alias);
     if (f)
         broadcastMessage(buildMessage(QLatin1String("UNREGISTER_PATH"), removeTrailingSlash(f->path()), QString::null), true);
 
     _registeredAliases.remove(alias);
 }
 
-void SocketApi::slotUpdateFolderView(Folder *f)
+void SocketApi::slotUpdateFolderView(AbstractFolder *f)
 {
     if (_listeners.isEmpty()) {
         return;
@@ -376,7 +377,7 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 {
     QString statusString;
 
-    Folder *syncFolder = FolderMan::instance()->folderForPath(argument);
+    auto *syncFolder = FolderMan::instance()->folderForPath(argument);
     if (!syncFolder) {
         // this can happen in offline mode e.g.: nothing to worry about
         statusString = QLatin1String("NOP");
@@ -404,7 +405,7 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
 {
     auto theme = Theme::instance();
 
-    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    auto *shareFolder = FolderMan::instance()->folderForPath(localFile);
     if (!shareFolder) {
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         // files that are not within a sync folder are not synced.
@@ -451,7 +452,7 @@ void SocketApi::command_VERSION(const QString &, SocketListener *listener)
 
 void SocketApi::command_SHARE_STATUS(const QString &localFile, SocketListener *listener)
 {
-    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    auto *shareFolder = FolderMan::instance()->folderForPath(localFile);
 
     if (!shareFolder) {
         const QString message = QLatin1String("SHARE_STATUS:NOP:") + QDir::toNativeSeparators(localFile);

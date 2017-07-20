@@ -114,7 +114,7 @@ void ProtocolWidget::slotOpenFile(QTreeWidgetItem *item, int)
     QString folderName = item->data(2, Qt::UserRole).toString();
     QString fileName = item->text(1);
 
-    Folder *folder = FolderMan::instance()->folder(folderName);
+    auto *folder = FolderMan::instance()->folder(folderName);
     if (folder) {
         // folder->path() always comes back with trailing path
         QString fullPath = folder->path() + fileName;

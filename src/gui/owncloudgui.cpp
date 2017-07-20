@@ -94,8 +94,8 @@ ownCloudGui::ownCloudGui(Application *parent)
         SLOT(slotUpdateProgress(QString, ProgressInfo)));
 
     FolderMan *folderMan = FolderMan::instance();
-    connect(folderMan, SIGNAL(folderSyncStateChange(Folder *)),
-        this, SLOT(slotSyncStateChange(Folder *)));
+    connect(folderMan, &FolderMan::folderSyncStateChange,
+            this, &ownCloudGui::slotSyncStateChange);
 
     connect(AccountManager::instance(), SIGNAL(accountAdded(AccountState *)),
         SLOT(updateContextMenuNeeded()));
@@ -163,7 +163,7 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
     // or SSL error dialog also comes to front.
 }
 
-void ownCloudGui::slotSyncStateChange(Folder *folder)
+void ownCloudGui::slotSyncStateChange(AbstractFolder *folder)
 {
     slotComputeOverallSyncStatus();
     updateContextMenuNeeded();
@@ -227,7 +227,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             problemAccounts.append(a);
         }
     }
-    foreach (Folder *f, FolderMan::instance()->map()) {
+    foreach (auto *f, FolderMan::instance()->map()) {
         if (!f->syncPaused()) {
             allPaused = false;
         }
@@ -282,7 +282,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             trayMessage = folderMan->statusToString(overallResult.status(), false);
 #else
             QStringList allStatusStrings;
-            foreach (Folder *folder, map.values()) {
+            foreach (auto *folder, map.values()) {
                 QString folderMessage = folderMan->statusToString(folder->syncResult().status(), folder->syncPaused());
                 allStatusStrings += tr("Folder %1: %2").arg(folder->shortGuiLocalPath(), folderMessage);
             }
@@ -320,7 +320,7 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
     bool singleSyncFolder = folderMan->map().size() == 1 && Theme::instance()->singleSyncFolder();
     bool onePaused = false;
     bool allPaused = true;
-    foreach (Folder *folder, folderMan->map()) {
+    foreach (auto *folder, folderMan->map()) {
         if (folder->accountState() != accountState.data()) {
             continue;
         }
@@ -671,7 +671,7 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
  */
 void ownCloudGui::slotFolderOpenAction(const QString &alias)
 {
-    Folder *f = FolderMan::instance()->folder(alias);
+    auto *f = FolderMan::instance()->folder(alias);
     if (f) {
         qCInfo(lcApplication) << "opening local url " << f->path();
         QUrl url = QUrl::fromLocalFile(f->path());
@@ -802,7 +802,7 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo &
         QString timeStr = QTime::currentTime().toString("hh:mm");
         QString actionText = tr("%1 (%2, %3)").arg(progress._lastCompletedItem._file, kindStr, timeStr);
         QAction *action = new QAction(actionText, this);
-        Folder *f = FolderMan::instance()->folder(folder);
+        auto *f = FolderMan::instance()->folder(folder);
         if (f) {
             QString fullPath = f->path() + '/' + progress._lastCompletedItem._file;
             if (QFile(fullPath).exists()) {
@@ -881,7 +881,7 @@ void ownCloudGui::setPauseOnAllFoldersHelper(bool pause)
             accounts.append(a.data());
         }
     }
-    foreach (Folder *f, FolderMan::instance()->map()) {
+    foreach (auto *f, FolderMan::instance()->map()) {
         if (accounts.contains(f->accountState())) {
             f->setSyncPaused(pause);
             if (pause) {
