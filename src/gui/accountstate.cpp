@@ -153,6 +153,7 @@ void AccountState::signOutByUi()
 void AccountState::signIn()
 {
     if (_state == SignedOut) {
+        _waitingForNewCredentials = false;
         setState(Disconnected);
     }
 }
