@@ -549,7 +549,7 @@ QString SocketApi::buildRegisterPathMessage(const QString &path)
 
 QUrl SocketApi::getPrivateLinkUrl(const QString &localFile) const
 {
-    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    auto *shareFolder = FolderMan::instance()->folderForPath(localFile);
     if (!shareFolder) {
         qCWarning(lcSocketApi) << "Unknown path" << localFile;
         return QUrl();

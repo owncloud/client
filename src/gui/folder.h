@@ -82,6 +82,7 @@ public slots:
     void startSync(const QStringList &pathList = QStringList());
 
 private slots:
+    void slotCsyncUnavailable();
     void slotRunEtagJob();
     void etagRetreived(const QString &);
     void etagRetreivedFromSyncEngine(const QString &);

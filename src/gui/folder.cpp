@@ -142,40 +142,6 @@ void Folder::etagRetreivedFromSyncEngine(const QString &etag)
     _lastEtag = etag;
 }
 
-void Folder::showSyncResultPopup()
-{
-    if (_syncResult.firstItemNew()) {
-        createGuiLog(_syncResult.firstItemNew()->_file, LogStatusNew, _syncResult.numNewItems());
-    }
-    if (_syncResult.firstItemDeleted()) {
-        createGuiLog(_syncResult.firstItemDeleted()->_file, LogStatusRemove, _syncResult.numRemovedItems());
-    }
-    if (_syncResult.firstItemUpdated()) {
-        createGuiLog(_syncResult.firstItemUpdated()->_file, LogStatusUpdated, _syncResult.numUpdatedItems());
-    }
-
-    if (_syncResult.firstItemRenamed()) {
-        LogStatus status(LogStatusRename);
-        // if the path changes it's rather a move
-        QDir renTarget = QFileInfo(_syncResult.firstItemRenamed()->_renameTarget).dir();
-        QDir renSource = QFileInfo(_syncResult.firstItemRenamed()->_file).dir();
-        if (renTarget != renSource) {
-            status = LogStatusMove;
-        }
-        createGuiLog(_syncResult.firstItemRenamed()->_originalFile, status,
-            _syncResult.numRenamedItems(), _syncResult.firstItemRenamed()->_renameTarget);
-    }
-
-    if (_syncResult.firstNewConflictItem()) {
-        createGuiLog(_syncResult.firstNewConflictItem()->_file, LogStatusConflict, _syncResult.numNewConflictItems());
-    }
-    if (int errorCount = _syncResult.numErrorItems()) {
-        createGuiLog(_syncResult.firstItemError()->_file, LogStatusError, errorCount);
-    }
-
-    qCInfo(lcFolder) << "Folder sync result: " << int(_syncResult.status());
-}
-
 bool Folder::isFileExcludedRelative(const QString &relativePath) const
 {
     return _engine->excludedFiles().isExcluded(path() + relativePath, path(), _definition.ignoreHiddenFiles);
