@@ -18,7 +18,8 @@
 #include <QObject>
 #include <QStringList>
 
-class AccountPtr;
+#include "account.h"
+
 class QSettings;
 
 namespace OCC {
