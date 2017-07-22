@@ -179,8 +179,8 @@ public:
     virtual void setIgnoreHiddenFiles(bool ignore) { Q_UNUSED(ignore) } // default does nothing, FIXME
 
     // Exclude handling, FIXME: Think again!
-    virtual bool isFileExcludedRelative( const QString& ) { return false; } // nothing excluded by default.
-    virtual bool isFileExcludedAbsolute( const QString& ) { return false; } // nothing excluded by default.
+    virtual bool isFileExcludedRelative( const QString& ) const { return false; } // nothing excluded by default.
+    virtual bool isFileExcludedAbsolute( const QString& ) const { return false; } // nothing excluded by default.
 
 signals:
     void syncStateChange();

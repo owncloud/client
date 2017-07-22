@@ -147,6 +147,11 @@ bool Folder::isFileExcludedRelative(const QString &relativePath) const
     return _engine->excludedFiles().isExcluded(path() + relativePath, path(), _definition.ignoreHiddenFiles);
 }
 
+bool Folder::isFileExcludedAbsolute(const QString& fullPath) const
+{
+    return _engine->excludedFiles().isExcluded(fullPath, path(), _definition.ignoreHiddenFiles);
+}
+
 bool Folder::setIgnoredFiles()
 {
     // Note: Doing this on each sync run and on Folder construction is
