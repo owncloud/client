@@ -48,6 +48,8 @@ set(client_SRCS
     accountsettings.cpp
     application.cpp
     folder.cpp
+    abstractfolder.cpp
+    folderdefinition.cpp
     folderman.cpp
     folderstatusmodel.cpp
     folderstatusdelegate.cpp

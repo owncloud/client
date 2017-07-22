@@ -28,6 +28,7 @@ Q_DECLARE_LOGGING_CATEGORY(lcFolderStatus)
 
 class Folder;
 class ProgressInfo;
+class AbstractFolder;
 
 /**
  * @brief The FolderStatusModel class
@@ -66,7 +67,7 @@ public:
             , _checked(Qt::Checked)
         {
         }
-        Folder *_folder;
+        AbstractFolder *_folder;
         QString _name;
         QString _path;
         QVector<int> _pathIdx;
@@ -126,10 +127,10 @@ public:
      * return a QModelIndex for the given path within the given folder.
      * Note: this method returns an invalid index if the path was not fetched from the server before
      */
-    QModelIndex indexForPath(Folder *f, const QString &path) const;
+    QModelIndex indexForPath(OCC::AbstractFolder *f, const QString &path) const;
 
 public slots:
-    void slotUpdateFolderState(Folder *);
+    void slotUpdateFolderState(OCC::AbstractFolder *);
     void slotApplySelectiveSync();
     void resetFolders();
     void slotSyncAllPendingBigFolders();
@@ -140,7 +141,7 @@ private slots:
     void slotUpdateDirectories(const QStringList &);
     void slotGatherPermissions(const QString &name, const QMap<QString, QString> &properties);
     void slotLscolFinishedWithError(QNetworkReply *r);
-    void slotFolderSyncStateChange(Folder *f);
+    void slotFolderSyncStateChange(AbstractFolder *f);
     void slotFolderScheduleQueueChanged();
     void slotNewBigFolder();
 

@@ -34,7 +34,7 @@ class QStringList;
 namespace OCC {
 
 class SyncFileStatus;
-class Folder;
+class AbstractFolder;
 class SocketListener;
 
 /**
@@ -50,7 +50,7 @@ public:
     virtual ~SocketApi();
 
 public slots:
-    void slotUpdateFolderView(Folder *f);
+    void slotUpdateFolderView(OCC::AbstractFolder *f);
     void slotUnregisterPath(const QString &alias);
     void slotRegisterPath(const QString &alias);
 

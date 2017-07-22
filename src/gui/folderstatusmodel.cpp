@@ -68,10 +68,10 @@ void FolderStatusModel::setAccountState(const AccountState *accountState)
     _folders.clear();
     _accountState = accountState;
 
-    connect(FolderMan::instance(), SIGNAL(folderSyncStateChange(Folder *)),
-        SLOT(slotFolderSyncStateChange(Folder *)), Qt::UniqueConnection);
-    connect(FolderMan::instance(), SIGNAL(scheduleQueueChanged()),
-        SLOT(slotFolderScheduleQueueChanged()), Qt::UniqueConnection);
+    connect(FolderMan::instance(), &FolderMan::folderSyncStateChange,
+        this, &FolderStatusModel::slotFolderSyncStateChange, Qt::UniqueConnection);
+    connect(FolderMan::instance(), &FolderMan::scheduleQueueChanged,
+        this, &FolderStatusModel::slotFolderScheduleQueueChanged, Qt::UniqueConnection);
 
     auto folders = FolderMan::instance()->map();
     foreach (auto f, folders) {
@@ -415,7 +415,7 @@ FolderStatusModel::SubFolderInfo *FolderStatusModel::infoForIndex(const QModelIn
     }
 }
 
-QModelIndex FolderStatusModel::indexForPath(Folder *f, const QString &path) const
+QModelIndex FolderStatusModel::indexForPath(AbstractFolder *f, const QString &path) const
 {
     if (!f) {
         return QModelIndex();
@@ -801,7 +801,7 @@ QStringList FolderStatusModel::createBlackList(FolderStatusModel::SubFolderInfo 
     return result;
 }
 
-void FolderStatusModel::slotUpdateFolderState(Folder *folder)
+void FolderStatusModel::slotUpdateFolderState(AbstractFolder *folder)
 {
     if (!folder)
         return;
@@ -1043,7 +1043,7 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress)
     emit dataChanged(index(folderIndex), index(folderIndex), roles);
 }
 
-void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
+void FolderStatusModel::slotFolderSyncStateChange(AbstractFolder *f)
 {
     if (!f) {
         return;
@@ -1104,7 +1104,7 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
 void FolderStatusModel::slotFolderScheduleQueueChanged()
 {
     // Update messages on waiting folders.
-    foreach (Folder *f, FolderMan::instance()->map()) {
+    foreach (auto *f, FolderMan::instance()->map()) {
         slotFolderSyncStateChange(f);
     }
 }
