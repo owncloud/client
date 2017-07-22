@@ -51,6 +51,8 @@ owncloud_add_benchmark(LargeSync "syncenginetestutils.h")
 
 SET(FolderMan_SRC ../src/gui/folderman.cpp)
 list(APPEND FolderMan_SRC ../src/gui/folder.cpp )
+list(APPEND FolderMan_SRC ../src/gui/abstractfolder.cpp )
+list(APPEND FolderMan_SRC ../src/gui/folderdefinition.cpp )
 list(APPEND FolderMan_SRC ../src/gui/socketapi.cpp )
 list(APPEND FolderMan_SRC ../src/gui/accountstate.cpp )
 list(APPEND FolderMan_SRC ../src/gui/syncrunfilelog.cpp )
