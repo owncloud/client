@@ -47,8 +47,8 @@ namespace OCC {
 Q_LOGGING_CATEGORY(lcAbstractFolder, "gui.abstractfolder", QtInfoMsg)
 
 AbstractFolder::AbstractFolder(const FolderDefinition &definition,
-    AccountState *accountState,
-    QObject *parent)
+                               AccountState *accountState,
+                               QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _definition(definition)
@@ -83,7 +83,7 @@ AbstractFolder::AbstractFolder(const FolderDefinition &definition,
 
     connect(_engine.data(), SIGNAL(started()), SLOT(slotSyncStarted()), Qt::QueuedConnection);
     connect(_engine.data(), SIGNAL(finished(bool)), SLOT(slotSyncFinished(bool)), Qt::QueuedConnection);
-    connect(_engine.data(), SIGNAL(folderDiscovered(bool, QString)), this, SLOT(slotFolderDiscovered(bool, QString)));
+    // connect(_engine.data(), SIGNAL(folderDiscovered(bool, QString)), this, SLOT(slotFolderDiscovered(bool, QString)));
     connect(_engine.data(), SIGNAL(transmissionProgress(ProgressInfo)), this, SLOT(slotTransmissionProgress(ProgressInfo)));
     connect(_engine.data(), SIGNAL(itemCompleted(const SyncFileItemPtr &)),
             this, SLOT(slotItemCompleted(const SyncFileItemPtr &)));
