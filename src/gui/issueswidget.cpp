@@ -69,7 +69,7 @@ IssuesWidget::IssuesWidget(QWidget *parent)
         SLOT(slotAccountAdded(AccountState *)));
     connect(AccountManager::instance(), SIGNAL(accountRemoved(AccountState *)),
         SLOT(slotAccountRemoved(AccountState *)));
-    connect(FolderMan::instance(), SIGNAL(folderListChanged(Folder::Map)),
+    connect(FolderMan::instance(), SIGNAL(folderListChanged(AbstractFolder::Map)),
         SLOT(slotUpdateFolderFilters()));
 
 

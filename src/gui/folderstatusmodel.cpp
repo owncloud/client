@@ -872,7 +872,7 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress)
         return; // for https://github.com/owncloud/client/issues/2648#issuecomment-71377909
     }
 
-    Folder *f = qobject_cast<Folder *>(sender());
+    AbstractFolder *f = qobject_cast<AbstractFolder *>(sender());
     if (!f) {
         return;
     }
@@ -1187,8 +1187,8 @@ void FolderStatusModel::slotSyncNoPendingBigFolders()
 
 void FolderStatusModel::slotNewBigFolder()
 {
-    auto f = qobject_cast<Folder *>(sender());
-    ASSERT(f);
+    auto *f = qobject_cast<Folder *>(sender());
+    ASSERT(f);  // FIXME: If this ASSERT fires, the cast before should probably be AbstractFolder
 
     int folderIndex = -1;
     for (int i = 0; i < _folders.count(); ++i) {

@@ -72,7 +72,7 @@ public:
 
     /** Adds a folder for an account, ensures the journal is gone and saves it in the settings.
       */
-    Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
+    AbstractFolder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
     /** Removes a folder */
     void removeFolder(AbstractFolder *);
@@ -94,7 +94,7 @@ public:
      * Migrate accounts from owncloud < 2.0
      * Creates a folder for a specific configuration, identified by alias.
      */
-    Folder *setupFolderFromOldConfigFile(const QString &, AccountState *account);
+    AbstractFolder *setupFolderFromOldConfigFile(const QString &, AccountState *account);
 
     /**
      * Ensures that a given directory does not contain a sync journal file.
@@ -273,7 +273,7 @@ private:
     /** Adds a new folder, does not add it to the account settings and
      *  does not set an account on the new folder.
       */
-    Folder *addFolderInternal(FolderDefinition folderDefinition,
+    AbstractFolder *addFolderInternal(FolderDefinition folderDefinition,
         AccountState *accountState);
 
     /* unloads a folder object, does not delete it */

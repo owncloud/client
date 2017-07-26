@@ -408,7 +408,7 @@ void AccountSettings::slotFolderWizardAccepted()
 
     folderMan->setSyncEnabled(true);
 
-    Folder *f = folderMan->addFolder(_accountState, definition);
+    auto *f = folderMan->addFolder(_accountState, definition);
     if (f) {
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSyncBlackList);
 

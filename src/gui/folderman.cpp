@@ -263,7 +263,7 @@ void FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account,
                 SyncJournalDb::maybeMigrateDb(folderDefinition.localPath, folderDefinition.absoluteJournalPath());
             }
 
-            Folder *f = addFolderInternal(std::move(folderDefinition), account.data());
+            auto *f = addFolderInternal(std::move(folderDefinition), account.data());
             if (f) {
                 // Migration: Mark folders that shall be saved in a backwards-compatible way
                 if (backwardsCompatible) {
@@ -292,7 +292,7 @@ int FolderMan::setupFoldersMigration()
     // Normally there should be only one account when migrating.
     AccountState *accountState = AccountManager::instance()->accounts().value(0).data();
     foreach (const QString &alias, list) {
-        Folder *f = setupFolderFromOldConfigFile(alias, accountState);
+        auto *f = setupFolderFromOldConfigFile(alias, accountState);
         if (f) {
             scheduleFolder(f);
             emit folderSyncStateChange(f);
@@ -383,9 +383,9 @@ QString FolderMan::unescapeAlias(const QString &alias)
 // filename is the name of the file only, it does not include
 // the configuration directory path
 // WARNING: Do not remove this code, it is used for predefined/automated deployments (2016)
-Folder *FolderMan::setupFolderFromOldConfigFile(const QString &file, AccountState *accountState)
+AbstractFolder *FolderMan::setupFolderFromOldConfigFile(const QString &file, AccountState *accountState)
 {
-    Folder *folder = 0;
+    AbstractFolder *folder = 0;
 
     qCInfo(lcFolderMan) << "  ` -> setting up:" << file;
     QString escapedAlias(file);
@@ -481,7 +481,7 @@ void FolderMan::slotFolderSyncPaused(AbstractFolder *f, bool paused)
 
 void FolderMan::slotFolderCanSyncChanged()
 {
-    Folder *f = qobject_cast<Folder *>(sender());
+    auto *f = qobject_cast<AbstractFolder *>(sender());
     ASSERT(f);
     if (f->canSync()) {
         _socketApi->slotRegisterPath(f->alias());
@@ -806,7 +806,7 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
 
 void FolderMan::slotForwardFolderSyncStateChange()
 {
-    if (Folder *f = qobject_cast<Folder *>(sender())) {
+    if (auto *f = qobject_cast<AbstractFolder *>(sender())) {
         emit folderSyncStateChange(f);
     }
 }
@@ -907,7 +907,7 @@ void FolderMan::slotFolderSyncFinished(const SyncResult &)
     startScheduledSyncSoon();
 }
 
-Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition &folderDefinition)
+AbstractFolder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition &folderDefinition)
 {
     // Choose a db filename
     auto definition = folderDefinition;
@@ -938,7 +938,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     return folder;
 }
 
-Folder *FolderMan::addFolderInternal(FolderDefinition folderDefinition,
+AbstractFolder *FolderMan::addFolderInternal(FolderDefinition folderDefinition,
     AccountState *accountState)
 {
     auto alias = folderDefinition.alias;
