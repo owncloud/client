@@ -897,9 +897,13 @@ void PropagateDownloadFile::slotDownloadProgress(qint64 received, qint64)
 }
 
 
-void PropagateDownloadFile::abort()
+void PropagateDownloadFile::abort(PropagatorJob::AbortType abortType)
 {
     if (_job && _job->reply())
         _job->reply()->abort();
+
+    if (abortType == AbortType::Asynchronous) {
+        emit abortFinished();
+    }
 }
 }
