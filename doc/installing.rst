@@ -25,6 +25,20 @@ KWallet, so that the sync client can login automatically.
 You will also find links to source code archives and older versions on the 
 download page.
 
+System Requirements (Version 2.3.3)
+----------------------------------
+
+- Windows 7+
+- Mac OS X 10.7+ (**64-bit only**)
+- CentOS 6 & 7 (64-bit only)
+- Debian 7.0 & 8.0 & 9.0
+- Fedora 24 & 25 & 26
+- Ubuntu 16.04 & 16.10 & 17.04
+- openSUSE Leap 42.1 & 42.2 & 42.3
+
+.. note::
+   For Linux distributions, we support, if technically feasible, the latest 2 versions per platform and the previous `LTS`_.
+
 Installation Wizard
 -------------------
 
