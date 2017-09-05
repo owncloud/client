@@ -68,7 +68,7 @@ enum csync_replica_e {
 /**
  * @brief csync public structure
  */
-struct csync_s {
+struct OCSYNC_EXPORT csync_s {
   struct {
       csync_auth_callback auth_function = nullptr;
       void *userdata = nullptr;
