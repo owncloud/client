@@ -159,7 +159,7 @@ enum csync_ftw_type_e {
 
 typedef struct csync_file_stat_s csync_file_stat_t;
 
-struct csync_file_stat_s {
+struct OCSYNC_EXPORT csync_file_stat_s {
   uint64_t phash;
   time_t modtime;
   int64_t size;
