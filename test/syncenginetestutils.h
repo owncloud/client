@@ -433,6 +433,8 @@ public:
             abort();
             return;
         }
+        fileInfo->lastModified = OCC::Utility::qDateTimeFromTime_t(request.rawHeader("X-OC-Mtime").toLongLong());
+        remoteRootFileInfo.find(fileName, /*invalidate_etags=*/true);
         QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
     }
 
@@ -662,6 +664,8 @@ public:
             abort();
             return;
         }
+        fileInfo->lastModified = OCC::Utility::qDateTimeFromTime_t(request.rawHeader("X-OC-Mtime").toLongLong());
+        remoteRootFileInfo.find(fileName, /*invalidate_etags=*/true);
         QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
     }
 
