@@ -608,8 +608,10 @@ class FakeChunkMoveReply : public QNetworkReply
     FileInfo *fileInfo;
 public:
     FakeChunkMoveReply(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo,
-                       QNetworkAccessManager::Operation op, const QNetworkRequest &request,
-                       QObject *parent) : QNetworkReply{parent} {
+        QNetworkAccessManager::Operation op, const QNetworkRequest &request,
+        quint64 delayMs, QObject *parent)
+        : QNetworkReply{ parent }
+    {
         setRequest(request);
         setUrl(request.url());
         setOperation(op);
@@ -666,7 +668,8 @@ public:
         }
         fileInfo->lastModified = OCC::Utility::qDateTimeFromTime_t(request.rawHeader("X-OC-Mtime").toLongLong());
         remoteRootFileInfo.find(fileName, /*invalidate_etags=*/true);
-        QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
+
+        QTimer::singleShot(delayMs, this, &FakeChunkMoveReply::respond);
     }
 
     Q_INVOKABLE void respond() {
@@ -715,6 +718,24 @@ public:
     qint64 readData(char *, qint64) override { return 0; }
 
     int _httpErrorCode;
+};
+
+// A reply that never responds
+class FakeHangingReply : public QNetworkReply
+{
+    Q_OBJECT
+public:
+    FakeHangingReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
+        : QNetworkReply(parent)
+    {
+        setRequest(request);
+        setUrl(request.url());
+        setOperation(op);
+        open(QIODevice::ReadOnly);
+    }
+
+    void abort() override {}
+    qint64 readData(char *, qint64) override { return 0; }
 };
 
 class FakeQNAM : public QNetworkAccessManager
@@ -769,7 +790,7 @@ protected:
         else if (verb == QLatin1String("MOVE") && !isUpload)
             return new FakeMoveReply{info, op, request, this};
         else if (verb == QLatin1String("MOVE") && isUpload)
-            return new FakeChunkMoveReply{info, _remoteRootFileInfo, op, request, this};
+            return new FakeChunkMoveReply{ info, _remoteRootFileInfo, op, request, 0, this };
         else {
             qDebug() << verb << outgoingData;
             Q_UNREACHABLE();
