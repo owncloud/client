@@ -48,6 +48,8 @@
 
 #include "csync_macros.h"
 
+#include <QRegularExpression>
+
 /**
  * How deep to scan directories.
  */
@@ -102,9 +104,18 @@ struct OCSYNC_EXPORT csync_s {
       void *checksum_userdata = nullptr;
 
   } callbacks;
-  c_strlist_t *excludes = nullptr;
-  
+
   OCC::SyncJournalDb *statedb;
+
+  c_strlist_t *excludes = nullptr; /* list of individual patterns collected from all exclude files */
+  struct {
+      QRegularExpression regexp_exclude;
+      QRegularExpression regexp_exclude_and_remove;
+      /* FIXME ^^ could we use one regexp by using captures? (exclude|these)|(exclude|and|remove|these)
+       * and then check which capture is nonempty? Unclear whether that'd be faster*/
+      c_strlist_t *list_patterns_with_slashes = nullptr;
+      /* FIXME ^^ at a later point use QRegularExpression too if those become popular */
+  } parsed_traversal_excludes;
 
   struct {
     std::map<QByteArray, QByteArray> folder_renamed_to; // map from->to

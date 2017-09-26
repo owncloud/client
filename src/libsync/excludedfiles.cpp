@@ -50,6 +50,8 @@ void ExcludedFiles::addExcludeFilePath(const QString &path)
 void ExcludedFiles::addExcludeExpr(const QString &expr)
 {
     _csync_exclude_add(_excludesPtr, expr.toLatin1().constData());
+    // FIXME call finalize or not?
+    // maybe better call from tests? or _finalize should first delete all regexp and rebuild?
 }
 #endif
 
@@ -63,6 +65,8 @@ bool ExcludedFiles::reloadExcludes()
         if (csync_exclude_load(file.toUtf8(), _excludesPtr) < 0)
             success = false;
     }
+    // FIXME: now call csync_exclude_load_finalize to create regular expression
+    // or maybe not, how does traveral with ctx know the files?
     return success;
 }
 

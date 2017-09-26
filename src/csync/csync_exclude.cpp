@@ -39,6 +39,8 @@
 
 #include "common/utility.h"
 
+#include <QString>
+
 #ifdef _WIN32
 #include <io.h>
 #else
@@ -216,22 +218,11 @@ bool csync_is_windows_reserved_word(const char* filename) {
   return false;
 }
 
-static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const char *path, int filetype, bool check_leading_dirs) {
-    size_t i = 0;
-    const char *bname = NULL;
+/* FIXME: This should use a big thread-local QRegularExpression */
+static CSYNC_EXCLUDE_TYPE _csync_excluded_common(const char *bname) {
     size_t blen = 0;
     int rc = -1;
     CSYNC_EXCLUDE_TYPE match = CSYNC_NOT_EXCLUDED;
-    CSYNC_EXCLUDE_TYPE type  = CSYNC_NOT_EXCLUDED;
-    c_strlist_t *path_components = NULL;
-
-    /* split up the path */
-    bname = strrchr(path, '/');
-    if (bname) {
-        bname += 1; // don't include the /
-    } else {
-        bname = path;
-    }
     blen = strlen(bname);
 
     rc = csync_fnmatch("._sync_*.db*", bname, 0);
@@ -316,110 +307,265 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
         }
     }
 
-    if( ! excludes ) {
-        goto out;
+  out:
+    return match;
+}
+
+
+
+/* Only for bnames (not paths) */
+static QString convertToBnameRegexpSyntax(QString exclude)
+{
+    QString s = "^" + QRegularExpression::escape(exclude).replace("\\*", ".*").replace("?", ".") + "$";
+    //qDebug() << "Converted pattern" << exclude << "to regex" << s;
+    return s;
+}
+
+
+void csync_exclude_traversal_prepare(CSYNC *ctx)
+{
+    if (!ctx->excludes) {
+        qDebug() << "FURUZ";
+        //ctx->parsed_traversal_excludes.list_patterns_with_slashes = c_strlist_new(0);
+        return;
     }
 
-    if (check_leading_dirs) {
-        /* Build a list of path components to check. */
-        path_components = c_strlist_new(32);
-        char *path_split = strdup(path);
-        size_t len = strlen(path_split);
-        for (i = len; ; --i) {
-            // read backwards until a path separator is found
-            if (i != 0 && path_split[i-1] != '/') {
-                continue;
-            }
+    QString _exclude_traversel_regexp_exclude;
+    QString _exclude_traversel_regexp_exclude_and_remove;
+    for (unsigned int i = 0; i < ctx->excludes->count; i++) {
+        char *exclude = ctx->excludes->vector[i];
+        QString *builderToUse = & _exclude_traversel_regexp_exclude;
+        if (exclude[0] == '\n') continue; // empty line
+        if (exclude[0] == '\r') continue; // empty line
 
-            // check 'basename', i.e. for "/foo/bar/fi" we'd check 'fi', 'bar', 'foo'
-            if (path_split[i] != 0) {
-                c_strlist_add_grow(&path_components, path_split + i);
-            }
-
-            if (i == 0) {
-                break;
-            }
-
-            // check 'dirname', i.e. for "/foo/bar/fi" we'd check '/foo/bar', '/foo'
-            path_split[i-1] = '\0';
-            c_strlist_add_grow(&path_components, path_split);
-        }
-        SAFE_FREE(path_split);
-    }
-
-    /* Loop over all exclude patterns and evaluate the given path */
-    for (i = 0; match == CSYNC_NOT_EXCLUDED && i < excludes->count; i++) {
-        bool match_dirs_only = false;
-        char *pattern = excludes->vector[i];
-
-        type = CSYNC_FILE_EXCLUDE_LIST;
-        if (!pattern[0]) { /* empty pattern */
+        /* If an exclude entry contains a slash, we use the C-style codepath without QRegularEpression */
+        if (strchr(exclude, '/')) {
+            _csync_exclude_add(&ctx->parsed_traversal_excludes.list_patterns_with_slashes, exclude);
             continue;
         }
-        /* Excludes starting with ']' means it can be cleanup */
-        if (pattern[0] == ']') {
-            ++pattern;
-            if (filetype == CSYNC_FTW_TYPE_FILE) {
-                type = CSYNC_FILE_EXCLUDE_AND_REMOVE;
-            }
+        /* Those will attempt to use QRegularExpression */
+        if (exclude[0] == ']'){
+            exclude++;
+            builderToUse = &_exclude_traversel_regexp_exclude_and_remove;
         }
-        /* Check if the pattern applies to pathes only. */
-        if (pattern[strlen(pattern)-1] == '/') {
-            if (!check_leading_dirs && filetype == CSYNC_FTW_TYPE_FILE) {
-                continue;
-            }
-            match_dirs_only = true;
-            pattern[strlen(pattern)-1] = '\0'; /* Cut off the slash */
+        if (builderToUse->size() > 0) {
+            builderToUse->append("|");
         }
-
-        /* check if the pattern contains a / and if, compare to the whole path */
-        if (strchr(pattern, '/')) {
-            rc = csync_fnmatch(pattern, path, FNM_PATHNAME);
-            if( rc == 0 ) {
-                match = type;
-            }
-            /* if the pattern requires a dir, but path is not, its still not excluded. */
-            if (match_dirs_only && filetype != CSYNC_FTW_TYPE_DIR) {
-                match = CSYNC_NOT_EXCLUDED;
-            }
-        }
-
-        /* if still not excluded, check each component and leading directory of the path */
-        if (match == CSYNC_NOT_EXCLUDED && check_leading_dirs) {
-            size_t j = 0;
-            if (match_dirs_only && filetype == CSYNC_FTW_TYPE_FILE) {
-                j = 1; // skip the first entry, which is bname
-            }
-            for (; j < path_components->count; ++j) {
-                rc = csync_fnmatch(pattern, path_components->vector[j], 0);
-                if (rc == 0) {
-                    match = type;
-                    break;
-                }
-            }
-        } else if (match == CSYNC_NOT_EXCLUDED && !check_leading_dirs) {
-            rc = csync_fnmatch(pattern, bname, 0);
-            if (rc == 0) {
-                match = type;
-            }
-        }
-        if (match_dirs_only) {
-            /* restore the '/' */
-            pattern[strlen(pattern)] = '/';
-        }
+        builderToUse->append(convertToBnameRegexpSyntax(exclude));
     }
-    c_strlist_destroy(path_components);
 
-  out:
+    //qDebug() << _exclude_traversel_regexp_exclude;
+    //qDebug() << _exclude_traversel_regexp_exclude_and_remove;
+    ctx->parsed_traversal_excludes.regexp_exclude.setPattern(_exclude_traversel_regexp_exclude);
+    ctx->parsed_traversal_excludes.regexp_exclude_and_remove.setPattern(_exclude_traversel_regexp_exclude_and_remove);
+    ctx->parsed_traversal_excludes.regexp_exclude.setPatternOptions(QRegularExpression::OptimizeOnFirstUsageOption
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
+     /* On windows and macOS, file names are Case Invesitive */
+                                                                  | QRegularExpression::CaseInsensitiveOption
+#endif
+                                                                    );
+    ctx->parsed_traversal_excludes.regexp_exclude_and_remove.setPatternOptions(QRegularExpression::OptimizeOnFirstUsageOption);
+    ctx->parsed_traversal_excludes.regexp_exclude.optimize();
+    ctx->parsed_traversal_excludes.regexp_exclude_and_remove.optimize();
+}
+
+
+
+CSYNC_EXCLUDE_TYPE csync_excluded_traversal(CSYNC *ctx, const char *path, int filetype) {
+    CSYNC_EXCLUDE_TYPE match = CSYNC_NOT_EXCLUDED;
+    CSYNC_EXCLUDE_TYPE type  = CSYNC_NOT_EXCLUDED;
+    int rc = -1;
+
+    const char *bname = NULL;
+    size_t blen = 0;
+    /* split up the path */
+    bname = strrchr(path, '/');
+    if (bname) {
+        bname += 1; // don't include the /
+    } else {
+        bname = path;
+    }
+    match = _csync_excluded_common(bname);
+    if (match != CSYNC_NOT_EXCLUDED) {
+        return match;
+    }
+
+    blen = strlen(bname);
+    QString p = QString::fromUtf8(bname);
+
+    if (ctx->excludes && ctx->parsed_traversal_excludes.regexp_exclude.match(p).hasMatch()) {
+        qDebug() << "WOULD EXCLUDE";
+        return CSYNC_FILE_EXCLUDE_LIST;
+    }
+    if (ctx->excludes && ctx->parsed_traversal_excludes.regexp_exclude_and_remove.match(p).hasMatch()) {
+        qDebug() << "WOULD EXCLUDE AND REMOVE";
+        return CSYNC_FILE_EXCLUDE_AND_REMOVE;
+    }
+
+    if (!ctx->parsed_traversal_excludes.list_patterns_with_slashes) {
+        return match;
+    }
+
+    /* Old C-style matching code. This duplicates a lot with csync_excluded_no_ctx (which also splits path components) */
+    /* Loop over all exclude patterns and evaluate the given path */
+     for (unsigned int i = 0; match == CSYNC_NOT_EXCLUDED && i < ctx->parsed_traversal_excludes.list_patterns_with_slashes->count; i++) {
+         bool match_dirs_only = false;
+         char *pattern = ctx->parsed_traversal_excludes.list_patterns_with_slashes->vector[i];
+
+         type = CSYNC_FILE_EXCLUDE_LIST;
+         if (!pattern[0]) { /* empty pattern */
+             continue;
+         }
+         /* Excludes starting with ']' means it can be cleanup */
+         if (pattern[0] == ']') {
+             ++pattern;
+             if (filetype == CSYNC_FTW_TYPE_FILE) {
+                 type = CSYNC_FILE_EXCLUDE_AND_REMOVE;
+             }
+         }
+         /* Check if the pattern applies to pathes only. */
+         if (pattern[strlen(pattern)-1] == '/') {
+             if (filetype == CSYNC_FTW_TYPE_FILE) {
+                 continue;
+             }
+             match_dirs_only = true;
+             pattern[strlen(pattern)-1] = '\0'; /* Cut off the slash */
+         }
+
+         /* check if the pattern contains a / and if, compare to the whole path */
+         if (strchr(pattern, '/')) {
+             rc = csync_fnmatch(pattern, path, FNM_PATHNAME);
+             if( rc == 0 ) {
+                 match = type;
+             }
+             /* if the pattern requires a dir, but path is not, its still not excluded. */
+             if (match_dirs_only && filetype != CSYNC_FTW_TYPE_DIR) {
+                 match = CSYNC_NOT_EXCLUDED;
+             }
+         }
+
+         if (match == CSYNC_NOT_EXCLUDED) {
+             rc = csync_fnmatch(pattern, bname, 0);
+             if (rc == 0) {
+                 match = type;
+             }
+         }
+         if (match_dirs_only) {
+             /* restore the '/' */
+             pattern[strlen(pattern)] = '/';
+         }
+     }
 
     return match;
 }
 
-CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype) {
-  return _csync_excluded_common(excludes, path, filetype, false);
-}
 
 CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path, int filetype) {
-  return _csync_excluded_common(excludes, path, filetype, true);
+  CSYNC_EXCLUDE_TYPE match = CSYNC_NOT_EXCLUDED;
+
+  const char *bname = NULL;
+  /* split up the path */
+  bname = strrchr(path, '/');
+  if (bname) {
+      bname += 1; // don't include the /
+  } else {
+      bname = path;
+  }
+  match = _csync_excluded_common(bname);
+  if (match != CSYNC_NOT_EXCLUDED) {
+      return match;
+  }
+
+  size_t i = 0;
+  int rc = -1;
+  CSYNC_EXCLUDE_TYPE type  = CSYNC_NOT_EXCLUDED;
+  c_strlist_t *path_components = NULL;
+
+  /* Build a list of path components to check. */
+  path_components = c_strlist_new(32);
+  char *path_split = strdup(path);
+  size_t len = strlen(path_split);
+  for (i = len; ; --i) {
+      // read backwards until a path separator is found
+      if (i != 0 && path_split[i-1] != '/') {
+          continue;
+      }
+
+      // check 'basename', i.e. for "/foo/bar/fi" we'd check 'fi', 'bar', 'foo'
+      if (path_split[i] != 0) {
+          c_strlist_add_grow(&path_components, path_split + i);
+      }
+
+      if (i == 0) {
+          break;
+      }
+
+      // check 'dirname', i.e. for "/foo/bar/fi" we'd check '/foo/bar', '/foo'
+      path_split[i-1] = '\0';
+      c_strlist_add_grow(&path_components, path_split);
+  }
+  SAFE_FREE(path_split);
+
+  if (!excludes) {
+      return match;
+  }
+
+  /* This duplicates a lot with csync_excluded_traversal */
+  /* Loop over all exclude patterns and evaluate the given path */
+  for (i = 0; match == CSYNC_NOT_EXCLUDED && i < excludes->count; i++) {
+      bool match_dirs_only = false;
+      char *pattern = excludes->vector[i];
+
+      type = CSYNC_FILE_EXCLUDE_LIST;
+      if (!pattern[0]) { /* empty pattern */
+          continue;
+      }
+      /* Excludes starting with ']' means it can be cleanup */
+      if (pattern[0] == ']') {
+          ++pattern;
+          if (filetype == CSYNC_FTW_TYPE_FILE) {
+              type = CSYNC_FILE_EXCLUDE_AND_REMOVE;
+          }
+      }
+      /* Check if the pattern applies to pathes only. */
+      if (pattern[strlen(pattern)-1] == '/') {
+          match_dirs_only = true;
+          pattern[strlen(pattern)-1] = '\0'; /* Cut off the slash */
+      }
+
+      /* check if the pattern contains a / and if, compare to the whole path */
+      if (strchr(pattern, '/')) {
+          rc = csync_fnmatch(pattern, path, FNM_PATHNAME);
+          if( rc == 0 ) {
+              match = type;
+          }
+          /* if the pattern requires a dir, but path is not, its still not excluded. */
+          if (match_dirs_only && filetype != CSYNC_FTW_TYPE_DIR) {
+              match = CSYNC_NOT_EXCLUDED;
+          }
+      }
+
+      /* if still not excluded, check each component and leading directory of the path */
+      if (match == CSYNC_NOT_EXCLUDED) {
+          size_t j = 0;
+          if (match_dirs_only && filetype == CSYNC_FTW_TYPE_FILE) {
+              j = 1; // skip the first entry, which is bname
+          }
+          for (; j < path_components->count; ++j) {
+              rc = csync_fnmatch(pattern, path_components->vector[j], 0);
+              if (rc == 0) {
+                  match = type;
+                  break;
+              }
+          }
+      }
+      if (match_dirs_only) {
+          /* restore the '/' */
+          pattern[strlen(pattern)] = '/';
+      }
+  }
+  c_strlist_destroy(path_components);
+
+  return match;
 }
 
