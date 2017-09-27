@@ -330,8 +330,13 @@ void csync_exclude_traversal_prepare(CSYNC *ctx)
         return;
     }
 
-    QString _exclude_traversel_regexp_exclude;
-    QString _exclude_traversel_regexp_exclude_and_remove;
+    c_strlist_destroy(ctx->parsed_traversal_excludes.list_patterns_with_slashes);
+    ctx->parsed_traversal_excludes.list_patterns_with_slashes = nullptr;
+
+    // Start out with regexes that would match nothing
+    QString _exclude_traversel_regexp_exclude = "a^";
+    QString _exclude_traversel_regexp_exclude_and_remove = "a^";
+
     for (unsigned int i = 0; i < ctx->excludes->count; i++) {
         char *exclude = ctx->excludes->vector[i];
         QString *builderToUse = & _exclude_traversel_regexp_exclude;
