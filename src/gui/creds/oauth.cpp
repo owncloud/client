@@ -65,8 +65,8 @@ void OAuth::start()
 
     QObject::connect(&_server, &QTcpServer::newConnection, this, [this] {
         while (QPointer<QTcpSocket> socket = _server.nextPendingConnection()) {
-            QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
-            QObject::connect(socket, &QIODevice::readyRead, this, [this, socket] {
+            QObject::connect((QTcpSocket *)socket, &QTcpSocket::disconnected, (QTcpSocket *)socket, &QTcpSocket::deleteLater);
+            QObject::connect((QTcpSocket *)socket, &QIODevice::readyRead, this, [this, socket] {
                 QByteArray peek = socket->peek(qMin(socket->bytesAvailable(), 4000LL)); //The code should always be within the first 4K
                 if (peek.indexOf('\n') < 0)
                     return; // wait until we find a \n
