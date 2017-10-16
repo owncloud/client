@@ -17,8 +17,8 @@
 #define ACCOUNTINFO_H
 
 #include <QByteArray>
+#include <QElapsedTimer>
 #include <QPointer>
-#include "utility.h"
 #include "connectionvalidator.h"
 #include "creds/abstractcredentials.h"
 #include <memory>
@@ -64,8 +64,11 @@ public:
         /// again automatically.
         NetworkError,
 
-        /// An error like invalid credentials where retrying won't help.
-        ConfigurationError
+        /// Server configuration error. (For example: unsupported version)
+        ConfigurationError,
+
+        /// We are currently asking the user for credentials
+        AskingCredentials
     };
 
     /// The actual current connectivity status.
@@ -107,17 +110,8 @@ public:
 
     bool isConnected() const;
 
-    /// Triggers a ping to the server to update state and
-    /// connection status and errors.
-    void checkConnectivity();
-
     /** Returns a new settings object for this account, already in the right groups. */
     std::unique_ptr<QSettings> settings();
-
-    /** display name with two lines that is displayed in the settings
-     * If width is bigger than 0, the string will be ellided so it does not exceed that width
-     */
-    QString shortDisplayNameForSettings(int width = 0) const;
 
     /** Mark the timestamp when the last successful ETag check happened for
      *  this account.
@@ -126,6 +120,11 @@ public:
      *  was not so long ago.
      */
     void tagLastSuccessfullETagRequest();
+
+public slots:
+    /// Triggers a ping to the server to update state and
+    /// connection status and errors.
+    void checkConnectivity();
 
 private:
     void setState(State state);
@@ -148,6 +147,18 @@ private:
     bool _waitingForNewCredentials;
     QElapsedTimer _timeSinceLastETagCheck;
     QPointer<ConnectionValidator> _connectionValidator;
+
+    /**
+     * Starts counting when the server starts being back up after 503 or
+     * maintenance mode. The account will only become connected once this
+     * timer exceeds the _maintenanceToConnectedDelay value.
+     */
+    QElapsedTimer _timeSinceMaintenanceOver;
+
+    /**
+     * Milliseconds for which to delay reconnection after 503/maintenance.
+     */
+    int _maintenanceToConnectedDelay;
 };
 }
 

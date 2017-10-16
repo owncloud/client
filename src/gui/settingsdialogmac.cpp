@@ -38,6 +38,9 @@
 
 namespace OCC {
 
+#include "settingsdialogcommon.cpp"
+
+
 // Duplicate in settingsdialog.cpp
 static QIcon circleMask(const QImage &avatar)
 {
@@ -133,17 +136,26 @@ void SettingsDialogMac::showActivityPage()
     setCurrentPanelIndex(preferencePanelCount() - 1 - 2);
 }
 
+void SettingsDialogMac::showIssuesList(const QString &folderAlias)
+{
+    // Count backwards (0-based) from the last panel (multiple accounts can be on the left)
+    setCurrentPanelIndex(preferencePanelCount() - 1 - 2);
+    _activitySettings->slotShowIssuesTab(folderAlias);
+}
+
+
 void SettingsDialogMac::accountAdded(AccountState *s)
 {
     QIcon accountIcon = MacStandardIcon::icon(MacStandardIcon::UserAccounts);
     auto accountSettings = new AccountSettings(s, this);
 
-    QString displayName = Theme::instance()->multiAccount() ? s->shortDisplayNameForSettings() : tr("Account");
+    QString displayName = Theme::instance()->multiAccount() ? SettingsDialogCommon::shortDisplayNameForSettings(s->account().data(), 0) : tr("Account");
 
     insertPreferencesPanel(0, accountIcon, displayName, accountSettings);
 
     connect(accountSettings, &AccountSettings::folderChanged, _gui, &ownCloudGui::slotFoldersChanged);
     connect(accountSettings, &AccountSettings::openFolderAlias, _gui, &ownCloudGui::slotFolderOpenAction);
+    connect(accountSettings, &AccountSettings::showIssuesList, this, &SettingsDialogMac::showIssuesList);
 
     connect(s->account().data(), SIGNAL(accountChangedAvatar()), this, SLOT(slotAccountAvatarChanged()));
 

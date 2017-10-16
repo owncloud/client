@@ -25,7 +25,8 @@ SyncResult::SyncResult()
     , _numRemovedItems(0)
     , _numUpdatedItems(0)
     , _numRenamedItems(0)
-    , _numConflictItems(0)
+    , _numNewConflictItems(0)
+    , _numOldConflictItems(0)
     , _numErrorItems(0)
 
 {
@@ -84,7 +85,7 @@ QString SyncResult::statusString() const
 void SyncResult::setStatus(Status stat)
 {
     _status = stat;
-    _syncTime = QDateTime::currentDateTime();
+    _syncTime = QDateTime::currentDateTimeUtc();
 }
 
 QDateTime SyncResult::syncTime() const
@@ -131,7 +132,7 @@ void SyncResult::processCompletedItem(const SyncFileItemPtr &item)
         _foundFilesNotSynced = true;
     }
 
-    if (item->_isDirectory && (item->_instruction == CSYNC_INSTRUCTION_NEW
+    if (item->isDirectory() && (item->_instruction == CSYNC_INSTRUCTION_NEW
                                   || item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE
                                   || item->_instruction == CSYNC_INSTRUCTION_REMOVE
                                   || item->_instruction == CSYNC_INSTRUCTION_RENAME)) {
@@ -147,9 +148,13 @@ void SyncResult::processCompletedItem(const SyncFileItemPtr &item)
             _firstItemError = item;
         }
     } else if (item->_status == SyncFileItem::Conflict) {
-        _numConflictItems++;
-        if (!_firstConflictItem) {
-            _firstConflictItem = item;
+        if (item->_instruction == CSYNC_INSTRUCTION_CONFLICT) {
+            _numNewConflictItems++;
+            if (!_firstNewConflictItem) {
+                _firstNewConflictItem = item;
+            }
+        } else {
+            _numOldConflictItems++;
         }
     } else {
         if (!item->hasErrorStatus() && item->_status != SyncFileItem::FileIgnored && item->_direction == SyncFileItem::Down) {

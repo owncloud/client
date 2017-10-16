@@ -21,10 +21,11 @@
 #include <QNetworkCookie>
 #include <QNetworkCookieJar>
 #include <QNetworkConfiguration>
+#include <QUuid>
 
 #include "cookiejar.h"
 #include "accessmanager.h"
-#include "utility.h"
+#include "common/utility.h"
 
 namespace OCC {
 
@@ -33,7 +34,7 @@ Q_LOGGING_CATEGORY(lcAccessManager, "sync.accessmanager", QtInfoMsg)
 AccessManager::AccessManager(QObject *parent)
     : QNetworkAccessManager(parent)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined(Q_OS_MAC)
+#if defined(Q_OS_MAC)
     // FIXME Workaround http://stackoverflow.com/a/15707366/2941 https://bugreports.qt-project.org/browse/QTBUG-30434
     QNetworkProxy proxy = this->proxy();
     proxy.setHostName(" ");
@@ -59,6 +60,13 @@ void AccessManager::setRawCookie(const QByteArray &rawCookie, const QUrl &url)
     jar->setCookiesFromUrl(cookieList, url);
 }
 
+static QByteArray generateRequestId()
+{
+    // Use a UUID with the starting and ending curly brace removed.
+    auto uuid = QUuid::createUuid().toByteArray();
+    return uuid.mid(1, uuid.size() - 2);
+}
+
 QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData)
 {
     QNetworkRequest newRequest(request);
@@ -79,6 +87,20 @@ QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op,
     if (verb == "PROPFIND") {
         newRequest.setHeader(QNetworkRequest::ContentTypeHeader, QLatin1String("text/xml; charset=utf-8"));
     }
+
+    // Generate a new request id
+    QByteArray requestId = generateRequestId();
+    qInfo(lcAccessManager) << op << verb << newRequest.url().toString() << "has X-Request-ID" << requestId;
+    newRequest.setRawHeader("X-Request-ID", requestId);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+    // only enable HTTP2 with Qt 5.9 because Qt 5.8.0 has too many bugs
+    // (only use one connection if the server does not support HTTP2)
+    if (newRequest.url().scheme() == "https") { // Not for "http": QTBUG-61397
+        newRequest.setAttribute(QNetworkRequest::HTTP2AllowedAttribute, true);
+    }
+#endif
+
     return QNetworkAccessManager::createRequest(op, newRequest, outgoingData);
 }
 

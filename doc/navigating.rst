@@ -87,8 +87,7 @@ have the following features:
   **Log Out**, and **Remove**.
 * Used and available space on the server.
 * Current synchronization status.
-* **Add Folder Sync Connection** button, which is active only when you have 
-  removed synchronization on an account (see **Remove Sync** below).
+* **Add Folder Sync Connection** button.
 
 The little button with three dots (the overflow menu) that sits to the right of 
 the sync status bar offers four additional options:
@@ -190,7 +189,9 @@ The Activity window contains the log of your recent activities, organized over
 three tabs: **Server Activities**, which includes new shares and files 
 downloaded and deleted, **Sync Protocol**, which displays local activities such 
 as which local folders your files went into, and **Not Synced** shows errors 
-such as files not synced. 
+such as files not synced. Double clicking an entry pointing to an existing
+file in **Server Activities** or **Sync Protocol** will open the folder containing
+the file and highlight it.
 
 .. figure:: images/client-8.png
    :alt: Activity windows logs all server and client activities.

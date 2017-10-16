@@ -1,3 +1,5 @@
+# This file contains fixed global exclude patterns
+
 *~
 ~$*
 .~lock.*
@@ -8,7 +10,6 @@
 ].ds_store
 ._*
 ]Thumbs.db
-desktop.ini
 System Volume Information
 
 .*.sw?

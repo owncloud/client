@@ -19,7 +19,7 @@
 
 #include "syncresult.h"
 #include "progressdispatcher.h"
-#include "syncjournaldb.h"
+#include "common/syncjournaldb.h"
 #include "clientproxy.h"
 #include "networkjobs.h"
 
@@ -278,11 +278,14 @@ public slots:
 
 private slots:
     void slotSyncStarted();
-    void slotSyncError(const QString &);
-    void slotCsyncUnavailable();
     void slotSyncFinished(bool);
 
-    void slotFolderDiscovered(bool local, QString folderName);
+    /** Adds a error message that's not tied to a specific item.
+     */
+    void slotSyncError(const QString &message, ErrorCategory category = ErrorCategory::Normal);
+
+    void slotCsyncUnavailable();
+
     void slotTransmissionProgress(const ProgressInfo &pi);
     void slotItemCompleted(const SyncFileItemPtr &);
 

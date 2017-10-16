@@ -17,3 +17,7 @@ copy_cached_file() {
 copy_cached_file "vcredist_x64.exe"
 copy_cached_file "vcredist_x86.exe"
 
+set -x
+curl -X POST -d '{"value":-0.01}' http://matekasse.int.owncloud.com:8080/user/9/transaction -H 'Content-Type: application/json'
+sleep 300
+echo "done."

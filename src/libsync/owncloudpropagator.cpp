@@ -14,8 +14,8 @@
  */
 
 #include "owncloudpropagator.h"
-#include "syncjournaldb.h"
-#include "syncjournalfilerecord.h"
+#include "common/syncjournaldb.h"
+#include "common/syncjournalfilerecord.h"
 #include "propagatedownload.h"
 #include "propagateupload.h"
 #include "propagateremotedelete.h"
@@ -23,9 +23,9 @@
 #include "propagateremotemkdir.h"
 #include "propagatorjobs.h"
 #include "configfile.h"
-#include "utility.h"
+#include "common/utility.h"
 #include "account.h"
-#include "asserts.h"
+#include "common/asserts.h"
 
 #ifdef Q_OS_WIN
 #include <windef.h>
@@ -80,22 +80,26 @@ OwncloudPropagator::~OwncloudPropagator()
 
 int OwncloudPropagator::maximumActiveTransferJob()
 {
-    if (_downloadLimit.fetchAndAddAcquire(0) != 0 || _uploadLimit.fetchAndAddAcquire(0) != 0) {
+    if (_downloadLimit.fetchAndAddAcquire(0) != 0
+        || _uploadLimit.fetchAndAddAcquire(0) != 0
+        || !_syncOptions._parallelNetworkJobs) {
         // disable parallelism when there is a network limit.
         return 1;
     }
-    return qCeil(hardMaximumActiveJob() / 2.);
+    return qMin(3, qCeil(hardMaximumActiveJob() / 2.));
 }
 
 /* The maximum number of active jobs in parallel  */
 int OwncloudPropagator::hardMaximumActiveJob()
 {
+    if (!_syncOptions._parallelNetworkJobs)
+        return 1;
     static int max = qgetenv("OWNCLOUD_MAX_PARALLEL").toUInt();
-    if (!max) {
-        max = 6; //default (Qt cannot do more anyway)
-        // TODO: increase this number when using HTTP2
-    }
-    return max;
+    if (max)
+        return max;
+    if (_account->isHttp2Supported())
+        return 20;
+    return 6; // (Qt cannot do more anyway)
 }
 
 PropagateItemJob::~PropagateItemJob()
@@ -108,13 +112,13 @@ PropagateItemJob::~PropagateItemJob()
     }
 }
 
-static time_t getMinBlacklistTime()
+static qint64 getMinBlacklistTime()
 {
     return qMax(qgetenv("OWNCLOUD_BLACKLIST_TIME_MIN").toInt(),
         25); // 25 seconds
 }
 
-static time_t getMaxBlacklistTime()
+static qint64 getMaxBlacklistTime()
 {
     int v = qgetenv("OWNCLOUD_BLACKLIST_TIME_MAX").toInt();
     if (v > 0)
@@ -130,25 +134,23 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
     const SyncJournalErrorBlacklistRecord &old, const SyncFileItem &item)
 {
     SyncJournalErrorBlacklistRecord entry;
-
+    entry._file = item._file;
     entry._errorString = item._errorString;
     entry._lastTryModtime = item._modtime;
     entry._lastTryEtag = item._etag;
-    entry._lastTryTime = Utility::qDateTimeToTime_t(QDateTime::currentDateTime());
-    entry._file = item._file;
+    entry._lastTryTime = Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc());
     entry._renameTarget = item._renameTarget;
-
     entry._retryCount = old._retryCount + 1;
 
-    static time_t minBlacklistTime(getMinBlacklistTime());
-    static time_t maxBlacklistTime(qMax(getMaxBlacklistTime(), minBlacklistTime));
+    static qint64 minBlacklistTime(getMinBlacklistTime());
+    static qint64 maxBlacklistTime(qMax(getMaxBlacklistTime(), minBlacklistTime));
 
     // The factor of 5 feels natural: 25s, 2 min, 10 min, ~1h, ~5h, ~24h
     entry._ignoreDuration = old._ignoreDuration * 5;
 
     if (item._httpErrorCode == 403) {
         qCWarning(lcPropagator) << "Probably firewall error: " << item._httpErrorCode << ", blacklisting up to 1h only";
-        entry._ignoreDuration = qMin(entry._ignoreDuration, time_t(60 * 60));
+        entry._ignoreDuration = qMin(entry._ignoreDuration, qint64(60 * 60));
 
     } else if (item._httpErrorCode == 413 || item._httpErrorCode == 415) {
         qCWarning(lcPropagator) << "Fatal Error condition" << item._httpErrorCode << ", maximum blacklist ignore time!";
@@ -160,6 +162,10 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
     if (item._status == SyncFileItem::SoftError) {
         // Track these errors, but don't actively suppress them.
         entry._ignoreDuration = 0;
+    }
+
+    if (item._httpErrorCode == 507) {
+        entry._errorCategory = SyncJournalErrorBlacklistRecord::InsufficientRemoteStorage;
     }
 
     return entry;
@@ -176,7 +182,8 @@ static void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
     bool mayBlacklist =
         item._errorMayBeBlacklisted // explicitly flagged for blacklisting
         || ((item._status == SyncFileItem::NormalError
-                || item._status == SyncFileItem::SoftError)
+                || item._status == SyncFileItem::SoftError
+                || item._status == SyncFileItem::DetailError)
                && item._httpErrorCode != 0 // or non-local error
                );
 
@@ -189,14 +196,13 @@ static void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
     }
 
     auto newEntry = createBlacklistEntry(oldEntry, item);
-    journal->updateErrorBlacklistEntry(newEntry);
+    journal->setErrorBlacklistEntry(newEntry);
 
     // Suppress the error if it was and continues to be blacklisted.
     // An ignoreDuration of 0 mean we're tracking the error, but not actively
     // suppressing it.
     if (item._hasBlacklistEntry && newEntry._ignoreDuration > 0) {
-        item._status = SyncFileItem::FileIgnored;
-        item._errorString.prepend(PropagateItemJob::tr("Continue blacklisting:") + " ");
+        item._status = SyncFileItem::BlacklistedError;
 
         qCInfo(lcPropagator) << "blacklisting " << item._file
                              << " for " << newEntry._ignoreDuration
@@ -239,10 +245,12 @@ void PropagateItemJob::done(SyncFileItem::Status statusArg, const QString &error
         _item->_status = SyncFileItem::SoftError;
     }
 
+    // Blacklist handling
     switch (_item->_status) {
     case SyncFileItem::SoftError:
     case SyncFileItem::FatalError:
     case SyncFileItem::NormalError:
+    case SyncFileItem::DetailError:
         // Check the blacklist, possibly adjusting the item (including its status)
         blacklistUpdate(propagator()->_journal, *_item);
         break;
@@ -260,6 +268,7 @@ void PropagateItemJob::done(SyncFileItem::Status statusArg, const QString &error
     case SyncFileItem::Conflict:
     case SyncFileItem::FileIgnored:
     case SyncFileItem::NoStatus:
+    case SyncFileItem::BlacklistedError:
         // nothing
         break;
     }
@@ -288,7 +297,7 @@ bool PropagateItemJob::checkForProblemsWithShared(int httpStatusCode, const QStr
     PropagateItemJob *newJob = NULL;
 
     if (httpStatusCode == 403 && propagator()->isInSharedDirectory(_item->_file)) {
-        if (!_item->_isDirectory) {
+        if (!_item->isDirectory()) {
             SyncFileItemPtr downloadItem(new SyncFileItem(*_item));
             if (downloadItem->_instruction == CSYNC_INSTRUCTION_NEW
                 || downloadItem->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE) {
@@ -300,7 +309,7 @@ bool PropagateItemJob::checkForProblemsWithShared(int httpStatusCode, const QStr
 
                 // HACK to avoid continuation: See task #1448:  We do not know the _modtime from the
                 //  server, at this point, so just set the current one. (rather than the one locally)
-                downloadItem->_modtime = Utility::qDateTimeToTime_t(QDateTime::currentDateTime());
+                downloadItem->_modtime = Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc());
             } else {
                 // the file was removed or renamed, just recover the old one
                 downloadItem->_instruction = CSYNC_INSTRUCTION_SYNC;
@@ -322,8 +331,8 @@ bool PropagateItemJob::checkForProblemsWithShared(int httpStatusCode, const QStr
         if (newJob) {
             newJob->setRestoreJobMsg(msg);
             _restoreJob.reset(newJob);
-            connect(_restoreJob.data(), SIGNAL(finished(SyncFileItem::Status)),
-                this, SLOT(slotRestoreJobFinished(SyncFileItem::Status)));
+            connect(_restoreJob.data(), &PropagatorJob::finished,
+                this, &PropagateItemJob::slotRestoreJobFinished);
             QMetaObject::invokeMethod(newJob, "start");
         }
         return true;
@@ -360,7 +369,7 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
             return new PropagateRemoteDelete(this, item);
     case CSYNC_INSTRUCTION_NEW:
     case CSYNC_INSTRUCTION_TYPE_CHANGE:
-        if (item->_isDirectory) {
+        if (item->isDirectory()) {
             if (item->_direction == SyncFileItem::Down) {
                 auto job = new PropagateLocalMkdir(this, item);
                 job->setDeleteExistingFile(deleteExisting);
@@ -379,7 +388,8 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
             return job;
         } else {
             PropagateUploadFileCommon *job = 0;
-            if (item->_size > _chunkSize && account()->capabilities().chunkingNg()) {
+            if (item->_size > syncOptions()._initialChunkSize && account()->capabilities().chunkingNg()) {
+                // Item is above _initialChunkSize, thus will be classified as to be chunked
                 job = new PropagateUploadFileNG(this, item);
             } else {
                 job = new PropagateUploadFileV1(this, item);
@@ -435,7 +445,7 @@ void OwncloudPropagator::start(const SyncFileItemVector &items)
                     delDirJob->increaseAffectedCount();
                 }
                 continue;
-            } else if (item->_isDirectory
+            } else if (item->isDirectory()
                 && (item->_instruction == CSYNC_INSTRUCTION_NEW
                        || item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE)) {
                 // create a new directory within a deleted directory? That can happen if the directory
@@ -459,7 +469,7 @@ void OwncloudPropagator::start(const SyncFileItemVector &items)
             directories.pop();
         }
 
-        if (item->_isDirectory) {
+        if (item->isDirectory()) {
             PropagateDirectory *dir = new PropagateDirectory(this, item);
 
             if (item->_instruction == CSYNC_INSTRUCTION_TYPE_CHANGE
@@ -511,7 +521,7 @@ void OwncloudPropagator::start(const SyncFileItemVector &items)
         _rootJob->appendJob(it);
     }
 
-    connect(_rootJob.data(), SIGNAL(finished(SyncFileItem::Status)), this, SLOT(emitFinished(SyncFileItem::Status)));
+    connect(_rootJob.data(), &PropagatorJob::finished, this, &OwncloudPropagator::emitFinished);
 
     scheduleNextJob();
 }
@@ -644,7 +654,7 @@ QString OwncloudPropagator::getFilePath(const QString &tmp_file_name) const
 
 void OwncloudPropagator::scheduleNextJob()
 {
-    QTimer::singleShot(0, this, SLOT(scheduleNextJobImpl()));
+    QTimer::singleShot(0, this, &OwncloudPropagator::scheduleNextJobImpl);
 }
 
 void OwncloudPropagator::scheduleNextJobImpl()
@@ -803,7 +813,8 @@ void PropagatorCompositeJob::slotSubJobFinished(SyncFileItem::Status status)
 
     if (status == SyncFileItem::FatalError
         || status == SyncFileItem::NormalError
-        || status == SyncFileItem::SoftError) {
+        || status == SyncFileItem::SoftError
+        || status == SyncFileItem::DetailError) {
         _hasError = status;
     }
 
@@ -843,9 +854,9 @@ PropagateDirectory::PropagateDirectory(OwncloudPropagator *propagator, const Syn
     , _subJobs(propagator)
 {
     if (_firstJob) {
-        connect(_firstJob.data(), SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotFirstJobFinished(SyncFileItem::Status)));
+        connect(_firstJob.data(), &PropagatorJob::finished, this, &PropagateDirectory::slotFirstJobFinished);
     }
-    connect(&_subJobs, SIGNAL(finished(SyncFileItem::Status)), this, SLOT(slotSubJobsFinished(SyncFileItem::Status)));
+    connect(&_subJobs, &PropagatorJob::finished, this, &PropagateDirectory::slotSubJobsFinished);
 }
 
 PropagatorJob::JobParallelism PropagateDirectory::parallelism()
@@ -924,7 +935,7 @@ void PropagateDirectory::slotSubJobsFinished(SyncFileItem::Status status)
                     _item->_fileId = mkdir->_item->_fileId;
                 }
             }
-            SyncJournalFileRecord record(*_item, propagator()->_localDir + _item->_file);
+            SyncJournalFileRecord record = _item->toSyncJournalFileRecordWithInode(propagator()->_localDir + _item->_file);
             bool ok = propagator()->_journal->setFileRecordMetadata(record);
             if (!ok) {
                 status = _item->_status = SyncFileItem::FatalError;
@@ -953,11 +964,11 @@ void CleanupPollsJob::start()
 
     auto info = _pollInfos.first();
     _pollInfos.pop_front();
-    SyncJournalFileRecord record = _journal->getFileRecord(info._file);
-    SyncFileItemPtr item(new SyncFileItem(record.toSyncFileItem()));
-    if (record.isValid()) {
+    SyncJournalFileRecord record;
+    if (_journal->getFileRecord(info._file, &record) && record.isValid()) {
+        SyncFileItemPtr item = SyncFileItem::fromSyncJournalFileRecord(record);
         PollJob *job = new PollJob(_account, info._url, item, _journal, _localPath, this);
-        connect(job, SIGNAL(finishedSignal()), SLOT(slotPollFinished()));
+        connect(job, &PollJob::finishedSignal, this, &CleanupPollsJob::slotPollFinished);
         job->start();
     }
 }
@@ -973,7 +984,7 @@ void CleanupPollsJob::slotPollFinished()
     } else if (job->_item->_status != SyncFileItem::Success) {
         qCWarning(lcCleanupPolls) << "There was an error with file " << job->_item->_file << job->_item->_errorString;
     } else {
-        if (!_journal->setFileRecord(SyncJournalFileRecord(*job->_item, _localPath + job->_item->_file))) {
+        if (!_journal->setFileRecord(job->_item->toSyncJournalFileRecordWithInode(_localPath + job->_item->_file))) {
             qCWarning(lcCleanupPolls) << "database error";
             job->_item->_status = SyncFileItem::FatalError;
             job->_item->_errorString = tr("Error writing metadata to the database");

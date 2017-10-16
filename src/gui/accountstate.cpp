@@ -16,10 +16,12 @@
 #include "accountmanager.h"
 #include "account.h"
 #include "creds/abstractcredentials.h"
+#include "creds/httpcredentials.h"
 #include "logger.h"
 #include "configfile.h"
 
 #include <QSettings>
+#include <QTimer>
 #include <qfontmetrics.h>
 
 namespace OCC {
@@ -32,15 +34,16 @@ AccountState::AccountState(AccountPtr account)
     , _state(AccountState::Disconnected)
     , _connectionStatus(ConnectionValidator::Undefined)
     , _waitingForNewCredentials(false)
+    , _maintenanceToConnectedDelay(60000 + (qrand() % (4 * 60000))) // 1-5min delay
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
-    connect(account.data(), SIGNAL(invalidCredentials()),
-        SLOT(slotInvalidCredentials()));
-    connect(account.data(), SIGNAL(credentialsFetched(AbstractCredentials *)),
-        SLOT(slotCredentialsFetched(AbstractCredentials *)));
-    connect(account.data(), SIGNAL(credentialsAsked(AbstractCredentials *)),
-        SLOT(slotCredentialsAsked(AbstractCredentials *)));
+    connect(account.data(), &Account::invalidCredentials,
+        this, &AccountState::slotInvalidCredentials);
+    connect(account.data(), &Account::credentialsFetched,
+        this, &AccountState::slotCredentialsFetched);
+    connect(account.data(), &Account::credentialsAsked,
+        this, &AccountState::slotCredentialsAsked);
     _timeSinceLastETagCheck.invalidate();
 }
 
@@ -131,6 +134,8 @@ QString AccountState::stateString(State state)
         return tr("Network error");
     case ConfigurationError:
         return tr("Configuration error");
+    case AskingCredentials:
+        return tr("Asking Credentials");
     }
     return tr("Unknown account state");
 }
@@ -149,6 +154,7 @@ void AccountState::signOutByUi()
 void AccountState::signIn()
 {
     if (_state == SignedOut) {
+        _waitingForNewCredentials = false;
         setState(Disconnected);
     }
 }
@@ -195,8 +201,8 @@ void AccountState::checkConnectivity()
 
     ConnectionValidator *conValidator = new ConnectionValidator(account());
     _connectionValidator = conValidator;
-    connect(conValidator, SIGNAL(connectionResult(ConnectionValidator::Status, QStringList)),
-        SLOT(slotConnectionValidatorResult(ConnectionValidator::Status, QStringList)));
+    connect(conValidator, &ConnectionValidator::connectionResult,
+        this, &AccountState::slotConnectionValidatorResult);
     if (isConnected()) {
         // Use a small authed propfind as a minimal ping when we're
         // already connected.
@@ -226,6 +232,23 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
     if (isSignedOut()) {
         qCWarning(lcAccountState) << "Signed out, ignoring" << connectionStatusString(status) << _account->url().toString();
         return;
+    }
+
+    // Come online gradually from 503 or maintenance mode
+    if (status == ConnectionValidator::Connected
+        && (_connectionStatus == ConnectionValidator::ServiceUnavailable
+               || _connectionStatus == ConnectionValidator::MaintenanceMode)) {
+        if (!_timeSinceMaintenanceOver.isValid()) {
+            qCInfo(lcAccountState) << "AccountState reconnection: delaying for"
+                                   << _maintenanceToConnectedDelay << "ms";
+            _timeSinceMaintenanceOver.start();
+            QTimer::singleShot(_maintenanceToConnectedDelay + 100, this, &AccountState::checkConnectivity);
+            return;
+        } else if (_timeSinceMaintenanceOver.elapsed() < _maintenanceToConnectedDelay) {
+            qCInfo(lcAccountState) << "AccountState reconnection: only"
+                                   << _timeSinceMaintenanceOver.elapsed() << "ms have passed";
+            return;
+        }
     }
 
     if (_connectionStatus != status) {
@@ -263,9 +286,11 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         setState(SignedOut);
         break;
     case ConnectionValidator::ServiceUnavailable:
+        _timeSinceMaintenanceOver.invalidate();
         setState(ServiceUnavailable);
         break;
     case ConnectionValidator::MaintenanceMode:
+        _timeSinceMaintenanceOver.invalidate();
         setState(MaintenanceMode);
         break;
     case ConnectionValidator::Timeout:
@@ -282,12 +307,17 @@ void AccountState::slotInvalidCredentials()
     qCInfo(lcAccountState) << "Invalid credentials for" << _account->url().toString()
                            << "asking user";
 
-    if (account()->credentials()->ready())
-        account()->credentials()->invalidateToken();
-    account()->credentials()->askFromUser();
-
-    setState(ConfigurationError);
     _waitingForNewCredentials = true;
+    setState(AskingCredentials);
+
+    if (account()->credentials()->ready()) {
+        account()->credentials()->invalidateToken();
+        if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
+            if (creds->refreshAccessToken())
+                return;
+        }
+    }
+    account()->credentials()->askFromUser();
 }
 
 void AccountState::slotCredentialsFetched(AbstractCredentials *)
@@ -326,28 +356,9 @@ void AccountState::slotCredentialsAsked(AbstractCredentials *credentials)
 
 std::unique_ptr<QSettings> AccountState::settings()
 {
-    auto s = Utility::settingsWithGroup(QLatin1String("Accounts"));
+    auto s = ConfigFile::settingsWithGroup(QLatin1String("Accounts"));
     s->beginGroup(_account->id());
     return s;
 }
-
-QString AccountState::shortDisplayNameForSettings(int width) const
-{
-    QString user = account()->credentials()->user();
-    QString host = account()->url().host();
-    int port = account()->url().port();
-    if (port > 0 && port != 80 && port != 443) {
-        host.append(QLatin1Char(':'));
-        host.append(QString::number(port));
-    }
-    if (width > 0) {
-        QFont f;
-        QFontMetrics fm(f);
-        host = fm.elidedText(host, Qt::ElideMiddle, width);
-        user = fm.elidedText(user, Qt::ElideRight, width);
-    }
-    return user + QLatin1String("\n") + host;
-}
-
 
 } // namespace OCC

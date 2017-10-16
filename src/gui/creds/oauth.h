@@ -15,6 +15,8 @@
 #pragma once
 #include <QPointer>
 #include <QTcpServer>
+#include <QUrl>
+#include "accountfwd.h"
 
 namespace OCC {
 
@@ -53,6 +55,7 @@ public:
     Q_ENUM(Result);
     void start();
     bool openBrowser();
+    QUrl authorisationLink() const;
 
 signals:
     /**
@@ -64,6 +67,9 @@ signals:
 private:
     Account *_account;
     QTcpServer _server;
+
+public:
+    QString _expectedUser;
 };
 
 

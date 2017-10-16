@@ -53,7 +53,7 @@ public:
     void setAccount(Account *account) Q_DECL_OVERRIDE;
     QString authType() const Q_DECL_OVERRIDE;
     QString user() const Q_DECL_OVERRIDE;
-    QNetworkAccessManager *getQNAM() const Q_DECL_OVERRIDE;
+    QNetworkAccessManager *createQNAM() const Q_DECL_OVERRIDE;
     bool ready() const Q_DECL_OVERRIDE;
     void fetchFromKeychain() Q_DECL_OVERRIDE;
     void askFromUser() Q_DECL_OVERRIDE;
@@ -84,6 +84,10 @@ private:
     void storeShibCookie(const QNetworkCookie &cookie);
     void removeShibCookie();
     void addToCookieJar(const QNetworkCookie &cookie);
+
+    /// Reads data from keychain, progressing to slotReadJobDone
+    void fetchFromKeychainHelper();
+
     QUrl _url;
     QByteArray prepareCookieData() const;
 
@@ -92,6 +96,7 @@ private:
     QPointer<ShibbolethWebView> _browser;
     QNetworkCookie _shibCookie;
     QString _user;
+    bool _keychainMigration;
 };
 
 } // namespace OCC

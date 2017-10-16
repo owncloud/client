@@ -43,7 +43,7 @@ public:
 
     virtual QString authType() const = 0;
     virtual QString user() const = 0;
-    virtual QNetworkAccessManager *getQNAM() const = 0;
+    virtual QNetworkAccessManager *createQNAM() const = 0;
 
     /** Whether there are credentials that can be used for a connection attempt. */
     virtual bool ready() const = 0;
@@ -85,7 +85,7 @@ public:
      */
     virtual void forgetSensitiveData() = 0;
 
-    static QString keychainKey(const QString &url, const QString &user);
+    static QString keychainKey(const QString &url, const QString &user, const QString &accountId);
 
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.

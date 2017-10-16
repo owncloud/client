@@ -5,15 +5,9 @@
 */
 
 #include <QtTest>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
 #include <QTemporaryDir>
-#endif
 
-#include "utility.h"
-
-#define STR_(X) #X
-#define STR(X) STR_(X)
-#define BIN_PATH STR(OWNCLOUD_BIN_PATH)
+#include "common/utility.h"
 
 using namespace OCC::Utility;
 
@@ -118,7 +112,7 @@ private slots:
             }
             // pass the binary name owncloud to the next call. This brakes branding,
             // but branding is not supposed to work with this.
-            QString ver = versionOfInstalledBinary(BIN_PATH+QLatin1String("/owncloud"));
+            QString ver = versionOfInstalledBinary(OWNCLOUD_BIN_PATH+QLatin1String("/owncloud"));
 	    qDebug() << "Version of installed ownCloud Binary: " << ver;
 	    QVERIFY( !ver.isEmpty());
 
@@ -160,15 +154,12 @@ private slots:
         QVERIFY(fsCasePreserving());
         qputenv("OWNCLOUD_TEST_CASE_PRESERVING", "0");
         QVERIFY(! fsCasePreserving());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
         qunsetenv("OWNCLOUD_TEST_CASE_PRESERVING");
         QVERIFY(isMac() || isWindows() ? fsCasePreserving() : ! fsCasePreserving());
-#endif
     }
 
     void testFileNamesEqual()
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
         QTemporaryDir dir;
         QVERIFY(dir.isValid());
         QDir dir2(dir.path());
@@ -194,7 +185,6 @@ private slots:
 
         dir.remove();
         qunsetenv("OWNCLOUD_TEST_CASE_PRESERVING");
-#endif
     }
 
 

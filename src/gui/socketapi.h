@@ -18,7 +18,7 @@
 
 #include "syncfileitem.h"
 #include "syncfilestatus.h"
-#include "ownsql.h"
+// #include "ownsql.h"
 
 #if defined(Q_OS_MAC)
 #include "socketapisocket_mac.h"
@@ -53,29 +53,39 @@ public slots:
     void slotUpdateFolderView(Folder *f);
     void slotUnregisterPath(const QString &alias);
     void slotRegisterPath(const QString &alias);
+    void broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus);
 
 signals:
-    void shareCommandReceived(const QString &sharePath, const QString &localPath, bool resharingAllowed);
-    void shareUserGroupCommandReceived(const QString &sharePath, const QString &localPath, bool resharingAllowed);
+    void shareCommandReceived(const QString &sharePath, const QString &localPath);
 
 private slots:
     void slotNewConnection();
     void onLostConnection();
     void slotSocketDestroyed(QObject *obj);
     void slotReadSocket();
-    void broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus);
+
+    void copyPrivateLinkToClipboard(const QString &link) const;
+    void emailPrivateLink(const QString &link) const;
 
 private:
     void broadcastMessage(const QString &msg, bool doWait = false);
 
     Q_INVOKABLE void command_RETRIEVE_FOLDER_STATUS(const QString &argument, SocketListener *listener);
     Q_INVOKABLE void command_RETRIEVE_FILE_STATUS(const QString &argument, SocketListener *listener);
-    Q_INVOKABLE void command_SHARE(const QString &localFile, SocketListener *listener);
 
     Q_INVOKABLE void command_VERSION(const QString &argument, SocketListener *listener);
 
     Q_INVOKABLE void command_SHARE_STATUS(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_SHARE_MENU_TITLE(const QString &argument, SocketListener *listener);
+
+    // The context menu actions
+    Q_INVOKABLE void command_SHARE(const QString &localFile, SocketListener *listener);
+    Q_INVOKABLE void command_COPY_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
+    Q_INVOKABLE void command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
+
+    /** Sends translated/branded strings that may be useful to the integration */
+    Q_INVOKABLE void command_GET_STRINGS(const QString &argument, SocketListener *listener);
+
     QString buildRegisterPathMessage(const QString &path);
 
     QSet<QString> _registeredAliases;
