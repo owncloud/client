@@ -17,3 +17,6 @@ copy_cached_file() {
 copy_cached_file "vcredist_x64.exe"
 copy_cached_file "vcredist_x86.exe"
 
+set +x
+echo "Downloads done."
+date
