@@ -105,4 +105,10 @@ On Release Day (for final release):
 * [ ] Days later: Update the updater script ```clientupdater.php``` (check the crash reporter if auto update is a good idea or we need a new release)
 * [ ] Tell GCX to increment the minimum supported version for enterprise customers
 * [ ] Check if minimum.supported.desktop.version (https://github.com/owncloud/core/blob/master/config/config.sample.php#L1152) needs to be updated in server
+
+A few days after the release (for final release)
+* [ ] Review changes in the release branch, merge back into master.
+* [ ] Update the updater script ```clientupdater.php``` (check the crash reporter if auto update is a good idea or we need a new release)
+* [ ] Execute announced deprecations. Disable builds for deprecated platforms. Update accordingly: https://doc.owncloud.org/server/latest/admin_manual/installation/system_requirements.html#desktop
+* [ ] Increment version number in nightly builds. Special case: after the last release in a branch, jump forward to the 'next release branch'... That may mean, this is nightly is the same as edge then. 
 ```
