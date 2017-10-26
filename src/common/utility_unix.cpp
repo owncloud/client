@@ -77,6 +77,7 @@ void setLaunchOnStartup_private(const QString &appName, const QString &guiName, 
            << QLatin1String("Type=") << QLatin1String("Application") << endl
            << QLatin1String("StartupNotify=") << "false" << endl
            << QLatin1String("X-GNOME-Autostart-enabled=") << "true" << endl;
+           << QLatin1String("X-GNOME-Autostart-Delay=10") << endl;
     } else {
         if (!QFile::remove(desktopFileLocation)) {
             qCWarning(lcUtility) << "Could not remove autostart desktop file";
