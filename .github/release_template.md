@@ -102,7 +102,6 @@ On Release Day (for final release):
 * [ ] Ensure marketing is aware (marketing@owncloud.com)
 * [ ] Take pride and celebrate!
 * [ ] Also update the testpilotcloud builds for that release version and make sure they show up on the download page
-* [ ] Days later: Update the updater script ```clientupdater.php``` (check the crash reporter if auto update is a good idea or we need a new release)
 * [ ] Tell GCX to increment the minimum supported version for enterprise customers
 * [ ] Check if minimum.supported.desktop.version (https://github.com/owncloud/core/blob/master/config/config.sample.php#L1152) needs to be updated in server
 
