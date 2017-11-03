@@ -724,9 +724,14 @@ void PropagateDownloadFile::downloadFinished()
 
     // In case of conflict, make a backup of the old file
     // Ignore conflicts where both files are binary equal
-    bool isConflict = _item->_instruction == CSYNC_INSTRUCTION_CONFLICT
-            && !FileSystem::fileEquals(fn, _tmpFile.fileName());
-    if (isConflict) {
+    bool createConflictFile = _item->_instruction == CSYNC_INSTRUCTION_CONFLICT;
+    enum ContentComparison { ContentsNotCompared, ContentsIdentical, ContentsDifferent };
+    ContentComparison contentComparison = ContentsNotCompared;
+    if (createConflictFile) {
+        contentComparison = FileSystem::fileEquals(fn, _tmpFile.fileName()) ? ContentsIdentical : ContentsDifferent;
+        createConflictFile = contentComparison == ContentsDifferent;
+    }
+    if (createConflictFile) {
         QString renameError;
         QString conflictFileName = FileSystem::makeConflictFileName(
                 fn, Utility::qDateTimeFromTime_t(FileSystem::getModTime(fn)));
@@ -793,7 +798,7 @@ void PropagateDownloadFile::downloadFinished()
         // To avoid that, the file is removed from the metadata table entirely
         // which makes it look like we're just about to initially download
         // it.
-        if (isConflict) {
+        if (createConflictFile) {
             propagator()->_journal->deleteFileRecord(fn);
             propagator()->_journal->commit("download finished");
         }
@@ -802,6 +807,33 @@ void PropagateDownloadFile::downloadFinished()
         // becomes available again, otherwise try again directly
         if (FileSystem::isFileLocked(fn)) {
             emit propagator()->seenLockedFile(fn);
+
+            // Special workaround to an old server bug
+            // See enterprise/2288
+            //
+            // If the file is locked but we observe a metadata-only change
+            // on the server, save the new metadata in the db anyway. This
+            // avoids creating conflicts down the line if the metadata change
+            // on the server was gratuitous.
+            //
+            // Technically this is wrong. Because if the mtime and etag actually
+            // changed on the server then this would update the db etag and
+            // mtime without changing the mtime of the file. The next sync would
+            // trigger an upload and overwrite the server's new mtime with the
+            // old one from the filesystem.
+            //
+            // Unfortunately we don't know which server version had the fix.
+            if (propagator()->account()->serverVersionInt() < Account::makeServerVersion(10, 0, 0)) {
+                if (contentComparison == ContentsNotCompared)
+                    contentComparison = FileSystem::fileEquals(fn, _tmpFile.fileName()) ? ContentsIdentical : ContentsDifferent;
+                if (contentComparison == ContentsIdentical) {
+                    if (!propagator()->_journal->setFileRecord(SyncJournalFileRecord(*_item, fn))) {
+                        done(SyncFileItem::FatalError, tr("Error writing metadata to the database"));
+                        return;
+                    }
+                    propagator()->_journal->commit("download file locked, identical");
+                }
+            }
         } else {
             propagator()->_anotherSyncNeeded = true;
         }
@@ -821,7 +853,7 @@ void PropagateDownloadFile::downloadFinished()
     }
     propagator()->_journal->setDownloadInfo(_item->_file, SyncJournalDb::DownloadInfo());
     propagator()->_journal->commit("download file start2");
-    done(isConflict ? SyncFileItem::Conflict : SyncFileItem::Success);
+    done(createConflictFile ? SyncFileItem::Conflict : SyncFileItem::Success);
 
     // handle the special recall file
     if(!_item->_remotePerm.contains("S")
