@@ -22,6 +22,7 @@
 #include "folderman.h"
 
 #include <QNetworkProxy>
+#include <QString>
 
 namespace OCC {
 
@@ -155,12 +156,25 @@ void NetworkSettings::saveProxySettings()
     } else if (_ui->systemProxyRadioButton->isChecked()) {
         cfgFile.setProxyType(QNetworkProxy::DefaultProxy);
     } else if (_ui->manualProxyRadioButton->isChecked()) {
-        int type = _ui->typeComboBox->itemData(_ui->typeComboBox->currentIndex()).toInt();
-        bool needsAuth = _ui->authRequiredcheckBox->isChecked();
-        QString user = _ui->userLineEdit->text();
-        QString pass = _ui->passwordLineEdit->text();
-        cfgFile.setProxyType(type, _ui->hostLineEdit->text(),
-            _ui->portSpinBox->value(), needsAuth, user, pass);
+
+        QString hostLineEditValue = _ui->hostLineEdit->text();
+
+        if(hostLineEditValue.isEmpty())
+        {
+            _ui->hostLineEdit->setStyleSheet("border: 1px solid red"); // Not sure if it is the best method
+            return;
+        }
+        else
+        {
+            _ui->hostLineEdit->setStyleSheet("border: 1px solid black"); // or blue
+
+            int type = _ui->typeComboBox->itemData(_ui->typeComboBox->currentIndex()).toInt();
+            bool needsAuth = _ui->authRequiredcheckBox->isChecked();
+            QString user = _ui->userLineEdit->text();
+            QString pass = _ui->passwordLineEdit->text();
+            cfgFile.setProxyType(type, _ui->hostLineEdit->text(),
+                _ui->portSpinBox->value(), needsAuth, user, pass);
+        }
     }
 
     ClientProxy proxy;
@@ -170,6 +184,9 @@ void NetworkSettings::saveProxySettings()
     // ...and set the folders dirty, they refresh their proxy next time they
     // start the sync.
     FolderMan::instance()->setDirtyProxy(true);
+
+    // start sync after a change
+    FolderMan::instance()->startScheduledSyncSoon();
 }
 
 void NetworkSettings::saveBWLimitSettings()
