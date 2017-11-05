@@ -161,7 +161,7 @@ void NetworkSettings::saveProxySettings()
 
         if(hostLineEditValue.isEmpty())
         {
-            _ui->hostLineEdit->setStyleSheet("border: 1px solid red"); // Not sure if it is the best method
+            _ui->hostLineEdit->setStyleSheet("border: 1px solid red");
             return;
         }
         else
