@@ -32,10 +32,15 @@
 #ifndef _CSYNC_PRIVATE_H
 #define _CSYNC_PRIVATE_H
 
+#include <unordered_map>
+#include <QHash>
 #include <stdint.h>
 #include <stdbool.h>
 #include <sqlite3.h>
+#include <map>
+#include <set>
 
+#include "common/syncjournaldb.h"
 #include "config_csync.h"
 #include "std/c_lib.h"
 #include "std/c_private.h"
@@ -43,6 +48,8 @@
 #include "csync_misc.h"
 
 #include "csync_macros.h"
+
+#include <QRegularExpression>
 
 /**
  * How deep to scan directories.
@@ -64,136 +71,154 @@ enum csync_replica_e {
   REMOTE_REPLICA
 };
 
-typedef struct csync_file_stat_s csync_file_stat_t;
+enum class LocalDiscoveryStyle {
+    FilesystemOnly, //< read all local data from the filesystem
+    DatabaseAndFilesystem, //< read from the db, except for listed paths
+};
+
+
+/*
+ * This is a structurere similar to QStringRef
+ * The difference is that it keeps the QByteArray by value and not by pointer
+ * And it only implements a very small subset of the API that is required by csync, the API can be
+ * added as we need it.
+ */
+class ByteArrayRef
+{
+    QByteArray _arr;
+    int _begin = 0;
+    int _size = -1;
+
+    /* Pointer to the beginning of the data. WARNING: not null terminated */
+    const char *data() const { return _arr.constData() + _begin; }
+    friend struct ByteArrayRefHash;
+
+public:
+    ByteArrayRef(QByteArray arr = {}, int begin = 0, int size = -1)
+        : _arr(std::move(arr))
+        , _begin(begin)
+        , _size(qMin(_arr.size() - begin, size < 0 ? _arr.size() - begin : size))
+    {
+    }
+    ByteArrayRef left(int l) const { return ByteArrayRef(_arr, _begin, l); };
+    char at(int x) const { return _arr.at(_begin + x); }
+    int size() const { return _size; }
+    int length() const { return _size; }
+    bool isEmpty() const { return _size == 0; }
+
+    friend bool operator==(const ByteArrayRef &a, const ByteArrayRef &b)
+    { return a.size() == b.size() && qstrncmp(a.data(), b.data(), a.size()) == 0; }
+};
+struct ByteArrayRefHash { uint operator()(const ByteArrayRef &a) const { return qHashBits(a.data(), a.size()); } };
 
 /**
  * @brief csync public structure
  */
-struct csync_s {
+struct OCSYNC_EXPORT csync_s {
+
+  class FileMap : public std::unordered_map<ByteArrayRef, std::unique_ptr<csync_file_stat_t>, ByteArrayRefHash> {
+  public:
+      csync_file_stat_t *findFile(const ByteArrayRef &key) const {
+          auto it = find(key);
+          return it != end() ? it->second.get() : nullptr;
+      }
+  };
+
   struct {
-      csync_auth_callback auth_function;
-      void *userdata;
-      csync_update_callback update_callback;
-      void *update_callback_userdata;
+      csync_auth_callback auth_function = nullptr;
+      void *userdata = nullptr;
+      csync_update_callback update_callback = nullptr;
+      void *update_callback_userdata = nullptr;
 
       /* hooks for checking the white list (uses the update_callback_userdata) */
-      int (*checkSelectiveSyncBlackListHook)(void*, const char*);
-      int (*checkSelectiveSyncNewFolderHook)(void*, const char* /* path */, const char* /* remotePerm */);
+      int (*checkSelectiveSyncBlackListHook)(void*, const QByteArray &) = nullptr;
+      int (*checkSelectiveSyncNewFolderHook)(void *, const QByteArray & /* path */, OCC::RemotePermissions) = nullptr;
 
 
-      csync_vio_opendir_hook remote_opendir_hook;
-      csync_vio_readdir_hook remote_readdir_hook;
-      csync_vio_closedir_hook remote_closedir_hook;
-      void *vio_userdata;
+      csync_vio_opendir_hook remote_opendir_hook = nullptr;
+      csync_vio_readdir_hook remote_readdir_hook = nullptr;
+      csync_vio_closedir_hook remote_closedir_hook = nullptr;
+      void *vio_userdata = nullptr;
 
       /* hook for comparing checksums of files during discovery */
-      csync_checksum_hook checksum_hook;
-      void *checksum_userdata;
+      csync_checksum_hook checksum_hook = nullptr;
+      void *checksum_userdata = nullptr;
 
   } callbacks;
-  c_strlist_t *excludes;
-  
+
+  OCC::SyncJournalDb *statedb;
+
+  c_strlist_t *excludes = nullptr; /* list of individual patterns collected from all exclude files */
+  struct TraversalExcludes {
+      ~TraversalExcludes() {
+          c_strlist_destroy(list_patterns_fnmatch);
+      }
+      void prepare(c_strlist_t *excludes);
+
+      QRegularExpression regexp_exclude;
+      c_strlist_t *list_patterns_fnmatch = nullptr;
+
+  } parsed_traversal_excludes;
+
   struct {
-    char *file;
-    sqlite3 *db;
-    int exists;
-
-    sqlite3_stmt* by_hash_stmt;
-    sqlite3_stmt* by_fileid_stmt;
-    sqlite3_stmt* by_inode_stmt;
-
-    int lastReturnValue;
-  } statedb;
+    std::unordered_map<ByteArrayRef, QByteArray, ByteArrayRefHash> folder_renamed_to; // map from->to
+    std::unordered_map<ByteArrayRef, QByteArray, ByteArrayRefHash> folder_renamed_from; // map to->from
+  } renames;
 
   struct {
-    char *uri;
-    c_rbtree_t *tree;
-    enum csync_replica_e type;
+    char *uri = nullptr;
+    FileMap files;
   } local;
 
   struct {
-    c_rbtree_t *tree;
-    enum csync_replica_e type;
-    int  read_from_db;
-    const char *root_perms; /* Permission of the root folder. (Since the root folder is not in the db tree, we need to keep a separate entry.) */
+    FileMap files;
+    bool read_from_db = false;
+    OCC::RemotePermissions root_perms; /* Permission of the root folder. (Since the root folder is not in the db tree, we need to keep a separate entry.) */
   } remote;
 
-
   /* replica we are currently walking */
-  enum csync_replica_e current;
-
-  /* replica we want to work on */
-  enum csync_replica_e replica;
+  enum csync_replica_e current = LOCAL_REPLICA;
 
   /* Used in the update phase so changes in the sub directories can be notified to
      parent directories */
-  csync_file_stat_t *current_fs;
+  csync_file_stat_t *current_fs = nullptr;
 
   /* csync error code */
-  enum csync_status_codes_e status_code;
+  enum csync_status_codes_e status_code = CSYNC_STATUS_OK;
 
-  char *error_string;
+  char *error_string = nullptr;
 
-  int status;
-  volatile int abort;
-  void *rename_info;
+  int status = CSYNC_STATUS_INIT;
+  volatile bool abort = false;
 
   /**
    * Specify if it is allowed to read the remote tree from the DB (default to enabled)
    */
-  bool read_remote_from_db;
+  bool read_remote_from_db = false;
+
+  LocalDiscoveryStyle local_discovery_style = LocalDiscoveryStyle::FilesystemOnly;
 
   /**
-   * If true, the DB is considered empty and all reads are skipped. (default is false)
-   * This is useful during the initial local discovery as it speeds it up significantly.
+   * List of folder-relative directory paths that should be scanned on the
+   * filesystem if the local_discovery_style suggests it.
+   *
+   * Their parents will be scanned too. The paths don't start with a /.
    */
-  bool db_is_empty;
+  std::set<QByteArray> locally_touched_dirs;
 
-  bool ignore_hidden_files;
+  bool ignore_hidden_files = true;
+
+  csync_s(const char *localUri, OCC::SyncJournalDb *statedb);
+  ~csync_s();
+  int reinitialize();
+
+  // For some reason MSVC references the copy constructor and/or the assignment operator
+  // if a class is exported. This is a problem since unique_ptr isn't copyable.
+  // Explicitly disable them to fix the issue.
+  // https://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/e39ab33d-1aaf-4125-b6de-50410d9ced1d
+  csync_s(const csync_s &) = delete;
+  csync_s &operator=(const csync_s &) = delete;
 };
-
-
-#ifdef _MSC_VER
-#pragma pack(1)
-#endif
-struct csync_file_stat_s {
-  uint64_t phash;   /* u64 */
-  time_t modtime;   /* u64 */
-  int64_t size;       /* u64 */
-  size_t pathlen;   /* u64 */
-  uint64_t inode;   /* u64 */
-  mode_t mode;      /* u32 */
-  enum csync_ftw_type_e type          : 4;
-  unsigned int child_modified         : 1;
-  unsigned int has_ignored_files      : 1; /* specify that a directory, or child directory contains ignored files */
-
-  char *destpath;   /* for renames */
-  const char *etag;
-  char file_id[FILE_ID_BUF_SIZE+1];  /* the ownCloud file id is fixed width in ownCloud. */
-  char *directDownloadUrl;
-  char *directDownloadCookies;
-  char remotePerm[REMOTE_PERM_BUF_SIZE+1];
-
-  // In the local tree, this can hold a checksum and its type if it is
-  //   computed during discovery for some reason.
-  // In the remote tree, this will have the server checksum, if available.
-  // In both cases, the format is "SHA1:baff".
-  const char *checksumHeader;
-
-  CSYNC_STATUS error_status;
-
-  enum csync_instructions_e instruction; /* u32 */
-  char path[1]; /* u8 */
-}
-#if !defined(__SUNPRO_C) && !defined(_MSC_VER)
-__attribute__ ((packed))
-#endif
-#ifdef _MSC_VER
-#pragma pack()
-#endif
-;
-
-OCSYNC_EXPORT void csync_file_stat_free(csync_file_stat_t *st);
 
 /*
  * context for the treewalk function

@@ -29,6 +29,7 @@
 #include "c_private.h"
 #include "c_lib.h"
 #include "c_string.h"
+#include "c_utf8.h"
 #include "csync_util.h"
 #include "csync_log.h"
 #include "csync_vio.h"
@@ -43,6 +44,8 @@ typedef struct dhandle_s {
   DIR *dh;
   char *path;
 } dhandle_t;
+
+static int _csync_vio_local_stat_mb(const mbchar_t *wuri, csync_file_stat_t *buf);
 
 csync_vio_handle_t *csync_vio_local_opendir(const char *name) {
   dhandle_t *handle = NULL;
@@ -83,31 +86,25 @@ int csync_vio_local_closedir(csync_vio_handle_t *dhandle) {
   return rc;
 }
 
-csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
+std::unique_ptr<csync_file_stat_t> csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
 
   dhandle_t *handle = NULL;
-  csync_vio_file_stat_t *file_stat = NULL;
 
   handle = (dhandle_t *) dhandle;
   struct _tdirent *dirent = NULL;
+  std::unique_ptr<csync_file_stat_t> file_stat;
 
-  errno = 0;
-  file_stat = csync_vio_file_stat_new();
-  if (file_stat == NULL) {
-    goto err;
-  }
-  file_stat->fields = CSYNC_VIO_FILE_STAT_FIELDS_NONE;
+  do {
+      dirent = _treaddir(handle->dh);
+      if (dirent == NULL)
+          return {};
+  } while (qstrcmp(dirent->d_name, ".") == 0 || qstrcmp(dirent->d_name, "..") == 0);
 
-  dirent = _treaddir(handle->dh);
-  if (dirent == NULL) {
-      goto err;
-  }
-  file_stat->name = c_utf8_from_locale(dirent->d_name);
-  if (file_stat->name == NULL) {
-      //file_stat->original_name = c_strdup(dirent->d_name);
-      if (asprintf(&file_stat->original_name, "%s/%s", handle->path, dirent->d_name) < 0) {
-          goto err;
-      }
+  file_stat.reset(new csync_file_stat_t);
+  file_stat->path = c_utf8_from_locale(dirent->d_name);
+  QByteArray fullPath = QByteArray() % const_cast<const char *>(handle->path) % '/' % QByteArray() % const_cast<const char *>(dirent->d_name);
+  if (file_stat->path.isNull()) {
+      file_stat->original_path = fullPath;
       CSYNC_LOG(CSYNC_LOG_PRIORITY_WARN, "Invalid characters in file/directory name, please rename: \"%s\" (%s)",
                 dirent->d_name, handle->path);
   }
@@ -122,101 +119,69 @@ csync_vio_file_stat_t *csync_vio_local_readdir(csync_vio_handle_t *dhandle) {
       break;
     case DT_DIR:
     case DT_REG:
-      file_stat->fields |= CSYNC_VIO_FILE_STAT_FIELDS_TYPE;
       if (dirent->d_type == DT_DIR) {
-        file_stat->type = CSYNC_VIO_FILE_TYPE_DIRECTORY;
+        file_stat->type = CSYNC_FTW_TYPE_DIR;
       } else {
-        file_stat->type = CSYNC_VIO_FILE_TYPE_REGULAR;
+        file_stat->type = CSYNC_FTW_TYPE_FILE;
       }
       break;
-    case DT_UNKNOWN:
-      file_stat->fields |= CSYNC_VIO_FILE_STAT_FIELDS_TYPE;
-      file_stat->type = CSYNC_VIO_FILE_TYPE_UNKNOWN;
     default:
       break;
   }
 #endif
 
+  if (file_stat->path.isNull())
+      return file_stat;
+
+  if (_csync_vio_local_stat_mb(fullPath.constData(), file_stat.get()) < 0) {
+      // Will get excluded by _csync_detect_update.
+      file_stat->type = CSYNC_FTW_TYPE_SKIP;
+  }
   return file_stat;
-
-err:
-  csync_vio_file_stat_destroy(file_stat);
-
-  return NULL;
 }
 
 
-int csync_vio_local_stat(const char *uri, csync_vio_file_stat_t *buf) {
-  csync_stat_t sb;
-
-  mbchar_t *wuri = c_utf8_path_to_locale( uri );
-
-  if( _tstat(wuri, &sb) < 0) {
+int csync_vio_local_stat(const char *uri, csync_file_stat_t *buf)
+{
+    mbchar_t *wuri = c_utf8_path_to_locale(uri);
+    *buf = csync_file_stat_t();
+    int rc = _csync_vio_local_stat_mb(wuri, buf);
     c_free_locale_string(wuri);
-    return -1;
-  }
+    return rc;
+}
 
-  buf->fields = CSYNC_VIO_FILE_STAT_FIELDS_NONE;
+static int _csync_vio_local_stat_mb(const mbchar_t *wuri, csync_file_stat_t *buf)
+{
+    csync_stat_t sb;
 
-  switch(sb.st_mode & S_IFMT) {
-    case S_IFBLK:
-      buf->type = CSYNC_VIO_FILE_TYPE_BLOCK_DEVICE;
-      break;
-    case S_IFCHR:
-      buf->type = CSYNC_VIO_FILE_TYPE_CHARACTER_DEVICE;
-      break;
+    if (_tstat(wuri, &sb) < 0) {
+        return -1;
+    }
+
+    switch (sb.st_mode & S_IFMT) {
     case S_IFDIR:
-      buf->type = CSYNC_VIO_FILE_TYPE_DIRECTORY;
-      break;
-    case S_IFIFO:
-      buf->type = CSYNC_VIO_FILE_TYPE_FIFO;
+      buf->type = CSYNC_FTW_TYPE_DIR;
       break;
     case S_IFREG:
-      buf->type = CSYNC_VIO_FILE_TYPE_REGULAR;
+      buf->type = CSYNC_FTW_TYPE_FILE;
       break;
     case S_IFLNK:
-      buf->type = CSYNC_VIO_FILE_TYPE_SYMBOLIC_LINK;
-      break;
     case S_IFSOCK:
-      buf->type = CSYNC_VIO_FILE_TYPE_SYMBOLIC_LINK;
+      buf->type = CSYNC_FTW_TYPE_SLINK;
       break;
     default:
-      buf->type = CSYNC_VIO_FILE_TYPE_UNKNOWN;
+      buf->type = CSYNC_FTW_TYPE_SKIP;
       break;
   }
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_TYPE;
 
-  buf->mode = sb.st_mode;
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_MODE;
-
-  if (buf->type == CSYNC_VIO_FILE_TYPE_SYMBOLIC_LINK) {
-    /* FIXME: handle symlink */
-    buf->flags = CSYNC_VIO_FILE_FLAGS_SYMLINK;
-  } else {
-    buf->flags = CSYNC_VIO_FILE_FLAGS_NONE;
-  }
 #ifdef __APPLE__
   if (sb.st_flags & UF_HIDDEN) {
-      buf->flags |= CSYNC_VIO_FILE_FLAGS_HIDDEN;
+      buf->is_hidden = true;
   }
 #endif
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_FLAGS;
 
   buf->inode = sb.st_ino;
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_INODE;
-
-  buf->atime = sb.st_atime;
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_ATIME;
-
-  buf->mtime = sb.st_mtime;
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_MTIME;
-
-  buf->ctime = sb.st_ctime;
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_CTIME;
-
+  buf->modtime = sb.st_mtime;
   buf->size = sb.st_size;
-  buf->fields |= CSYNC_VIO_FILE_STAT_FIELDS_SIZE;
-
-  c_free_locale_string(wuri);
   return 0;
 }

@@ -47,6 +47,9 @@ public:
     /// disable parallel upload in chunking
     bool chunkingParallelUploadDisabled() const;
 
+    /// Whether the "privatelink" DAV property is available
+    bool privateLinkPropertyAvailable() const;
+
     /// returns true if the capabilities report notifications
     bool notificationsAvailable() const;
 
@@ -101,6 +104,17 @@ public:
      * Example: [503, 500]
      */
     QList<int> httpErrorCodesThatResetFailingChunkedUploads() const;
+
+    /**
+     * Regex that, if contained in a filename, will result in it not being uploaded.
+     *
+     * For servers older than 8.1.0 it defaults to [\\:?*"<>|]
+     * For servers >= that version, it defaults to the empty regex (the server
+     * will indicate invalid characters through an upload error)
+     *
+     * Note that it just needs to be contained. The regex [ab] is contained in "car".
+     */
+    QString invalidFilenameRegex() const;
 
 private:
     QVariantMap _capabilities;

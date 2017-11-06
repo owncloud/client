@@ -23,10 +23,11 @@
 #include <string.h>
 #include <errno.h>
 
-#include "torture.h"
-
 #include "csync_private.h"
+#include "std/c_utf8.h"
 #include "vio/csync_vio.h"
+
+#include "torture.h"
 
 #define CSYNC_TEST_DIR "/tmp/csync_test/"
 #define CSYNC_TEST_DIRS "/tmp/csync_test/this/is/a/mkdirs/test"
@@ -48,9 +49,9 @@ static int setup(void **state)
     rc = system("rm -rf /tmp/csync_test");
     assert_int_equal(rc, 0);
 
-    csync_create(&csync, "/tmp/csync1");
+    csync = new CSYNC("/tmp/check_csync1", new OCC::SyncJournalDb(""));
 
-    csync->replica = LOCAL_REPLICA;
+    csync->current = LOCAL_REPLICA;
 
     *state = csync;
     return 0;
@@ -77,8 +78,9 @@ static int teardown(void **state) {
     CSYNC *csync = (CSYNC*)*state;
     int rc;
 
-    rc = csync_destroy(csync);
-    assert_int_equal(rc, 0);
+    auto statedb = csync->statedb;
+    delete csync;
+    delete statedb;
 
     rc = chdir(wd_buffer);
     assert_int_equal(rc, 0);
@@ -137,32 +139,12 @@ static void check_csync_vio_closedir_null(void **state)
     assert_int_equal(rc, -1);
 }
 
-static void check_csync_vio_readdir(void **state)
-{
-    CSYNC *csync = (CSYNC*)*state;
-    csync_vio_handle_t *dh;
-    csync_vio_file_stat_t *dirent;
-    int rc;
-
-    dh = csync_vio_opendir(csync, CSYNC_TEST_DIR);
-    assert_non_null(dh);
-
-    dirent = csync_vio_readdir(csync, dh);
-    assert_non_null(dirent);
-
-    csync_vio_file_stat_destroy(dirent);
-    rc = csync_vio_closedir(csync, dh);
-    assert_int_equal(rc, 0);
-}
-
-
 int torture_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test_setup_teardown(check_csync_vio_opendir, setup_dir, teardown),
         cmocka_unit_test_setup_teardown(check_csync_vio_opendir_perm, setup, teardown),
         cmocka_unit_test(check_csync_vio_closedir_null),
-        cmocka_unit_test_setup_teardown(check_csync_vio_readdir, setup_dir, teardown),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

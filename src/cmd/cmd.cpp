@@ -31,7 +31,7 @@
 #include "creds/httpcredentials.h"
 #include "simplesslerrorhandler.h"
 #include "syncengine.h"
-#include "syncjournaldb.h"
+#include "common/syncjournaldb.h"
 #include "config.h"
 #include "connectionvalidator.h"
 
@@ -39,6 +39,7 @@
 
 #include "theme.h"
 #include "netrcparser.h"
+#include "libsync/logger.h"
 
 #include "config.h"
 
@@ -189,15 +190,14 @@ void help()
     std::cout << "  --downlimit [n]        Limit the download speed of files to n KB/s" << std::endl;
     std::cout << "  -h                     Sync hidden files,do not ignore them" << std::endl;
     std::cout << "  --version, -v          Display version and exit" << std::endl;
-    std::cout << "  --debug                More verbose logging" << std::endl;
+    std::cout << "  --logdebug             More verbose logging" << std::endl;
     std::cout << "" << std::endl;
     exit(0);
 }
 
 void showVersion()
 {
-    const char *binaryName = APPLICATION_EXECUTABLE "cmd";
-    std::cout << binaryName << " version " << qPrintable(Theme::instance()->version()) << std::endl;
+    std::cout << qUtf8Printable(Theme::instance()->versionSwitchOutput());
     exit(0);
 }
 
@@ -268,6 +268,9 @@ void parseOptions(const QStringList &app_args, CmdOptions *options)
             options->uplimit = it.next().toInt() * 1000;
         } else if (option == "--downlimit" && !it.peekNext().startsWith("-")) {
             options->downlimit = it.next().toInt() * 1000;
+        } else if (option == "--logdebug") {
+            Logger::instance()->setLogFile("-");
+            Logger::instance()->setLogDebug(true);
         } else {
             help();
         }
@@ -331,6 +334,8 @@ int main(int argc, char **argv)
     csync_set_log_level(options.silent ? 1 : 11);
     if (options.silent) {
         qInstallMsgHandler(nullMessageHandler);
+    } else {
+        qSetMessagePattern("%{time MM-dd hh:mm:ss:zzz} [ %{type} %{category} ]%{if-debug}\t[ %{function} ]%{endif}:\t%{message}");
     }
 
     AccountPtr account = Account::create();
@@ -510,13 +515,9 @@ restart_sync:
     SyncEngine engine(account, options.source_dir, folder, &db);
     engine.setIgnoreHiddenFiles(options.ignoreHiddenFiles);
     engine.setNetworkLimits(options.uplimit, options.downlimit);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QObject::connect(&engine, &SyncEngine::finished,
         [&app](bool result) { app.exit(result ? EXIT_SUCCESS : EXIT_FAILURE); });
-#else
-    QObject::connect(&engine, SIGNAL(finished(bool)), &app, SLOT(quit()));
-#endif
-    QObject::connect(&engine, SIGNAL(transmissionProgress(ProgressInfo)), &cmd, SLOT(transmissionProgressSlot()));
+    QObject::connect(&engine, &SyncEngine::transmissionProgress, &cmd, &Cmd::transmissionProgressSlot);
 
 
     // Exclude lists

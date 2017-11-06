@@ -2,20 +2,22 @@
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
  * Copyright (C) by Daniel Molkentin <danimo@owncloud.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QStandardPaths>
-#endif
 
 namespace OCC {
 
@@ -38,15 +40,7 @@ static void setupFavLink_private(const QString &folder)
 // and respects the XDG_CONFIG_HOME env variable
 QString getUserAutostartDir_private()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QString config = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-#else
-    QString config = QFile::decodeName(qgetenv("XDG_CONFIG_HOME"));
-
-    if (config.isEmpty()) {
-        config = QDir::homePath() + QLatin1String("/.config");
-    }
-#endif
     config += QLatin1String("/autostart/");
     return config;
 }

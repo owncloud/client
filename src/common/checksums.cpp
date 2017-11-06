@@ -1,22 +1,23 @@
 /*
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include "config.h"
-#include "filesystem.h"
-#include "checksums.h"
-#include "syncfileitem.h"
-#include "propagatorjobs.h"
-#include "account.h"
+#include "filesystembase.h"
+#include "common/checksums.h"
 
 #include <QLoggingCategory>
 #include <qtconcurrentrun.h>
@@ -119,7 +120,7 @@ QByteArray parseChecksumHeaderType(const QByteArray &header)
 
 bool uploadChecksumEnabled()
 {
-    static bool enabled = qgetenv("OWNCLOUD_DISABLE_CHECKSUM_UPLOAD").isEmpty();
+    static bool enabled = qEnvironmentVariableIsEmpty("OWNCLOUD_DISABLE_CHECKSUM_UPLOAD");
     return enabled;
 }
 
@@ -130,6 +131,12 @@ QByteArray contentChecksumType()
         type = "SHA1";
     }
     return type;
+}
+
+static bool checksumComputationEnabled()
+{
+    static bool enabled = qgetenv("OWNCLOUD_DISABLE_CHECKSUM_COMPUTATIONS").isEmpty();
+    return enabled;
 }
 
 ComputeChecksum::ComputeChecksum(QObject *parent)
@@ -149,15 +156,22 @@ QByteArray ComputeChecksum::checksumType() const
 
 void ComputeChecksum::start(const QString &filePath)
 {
+    qCInfo(lcChecksums) << "Computing" << checksumType() << "checksum of" << filePath << "in a thread";
+
     // Calculate the checksum in a different thread first.
-    connect(&_watcher, SIGNAL(finished()),
-        this, SLOT(slotCalculationDone()),
+    connect(&_watcher, &QFutureWatcherBase::finished,
+        this, &ComputeChecksum::slotCalculationDone,
         Qt::UniqueConnection);
     _watcher.setFuture(QtConcurrent::run(ComputeChecksum::computeNow, filePath, checksumType()));
 }
 
 QByteArray ComputeChecksum::computeNow(const QString &filePath, const QByteArray &checksumType)
 {
+    if (!checksumComputationEnabled()) {
+        qCWarning(lcChecksums) << "Checksum computation disabled by environment variable";
+        return QByteArray();
+    }
+
     if (checksumType == checkSumMD5C) {
         return FileSystem::calcMd5(filePath);
     } else if (checksumType == checkSumSHA1C) {
@@ -207,8 +221,8 @@ void ValidateChecksumHeader::start(const QString &filePath, const QByteArray &ch
 
     auto calculator = new ComputeChecksum(this);
     calculator->setChecksumType(_expectedChecksumType);
-    connect(calculator, SIGNAL(done(QByteArray, QByteArray)),
-        SLOT(slotChecksumCalculated(QByteArray, QByteArray)));
+    connect(calculator, &ComputeChecksum::done,
+        this, &ValidateChecksumHeader::slotChecksumCalculated);
     calculator->start(filePath);
 }
 
@@ -230,23 +244,20 @@ CSyncChecksumHook::CSyncChecksumHook()
 {
 }
 
-const char *CSyncChecksumHook::hook(const char *path, const char *otherChecksumHeader, void * /*this_obj*/)
+QByteArray CSyncChecksumHook::hook(const QByteArray &path, const QByteArray &otherChecksumHeader, void * /*this_obj*/)
 {
     QByteArray type = parseChecksumHeaderType(QByteArray(otherChecksumHeader));
     if (type.isEmpty())
         return NULL;
 
-    QByteArray checksum = ComputeChecksum::computeNow(path, type);
+    qCInfo(lcChecksums) << "Computing" << type << "checksum of" << path << "in the csync hook";
+    QByteArray checksum = ComputeChecksum::computeNow(QString::fromUtf8(path), type);
     if (checksum.isNull()) {
         qCWarning(lcChecksums) << "Failed to compute checksum" << type << "for" << path;
         return NULL;
     }
 
-    QByteArray checksumHeader = makeChecksumHeader(type, checksum);
-    char *result = (char *)malloc(checksumHeader.size() + 1);
-    memcpy(result, checksumHeader.constData(), checksumHeader.size());
-    result[checksumHeader.size()] = 0;
-    return result;
+    return makeChecksumHeader(type, checksum);
 }
 
 }

@@ -1,17 +1,20 @@
 /*
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 
 #include <QDateTime>
 #include <QLoggingCategory>
@@ -21,8 +24,8 @@
 #include <QDir>
 
 #include "ownsql.h"
-#include "utility.h"
-#include "asserts.h"
+#include "common/utility.h"
+#include "common/asserts.h"
 
 #define SQLITE_SLEEP_TIME_USEC 100000
 #define SQLITE_REPEAT_COUNT 20
@@ -30,7 +33,7 @@
 #define SQLITE_DO(A)                                         \
     if (1) {                                                 \
         _errId = (A);                                        \
-        if (_errId != SQLITE_OK) {                           \
+        if (_errId != SQLITE_OK && _errId != SQLITE_DONE) {  \
             _error = QString::fromUtf8(sqlite3_errmsg(_db)); \
         }                                                    \
     }
@@ -280,6 +283,12 @@ bool SqlQuery::exec()
         if (_errId != SQLITE_DONE && _errId != SQLITE_ROW) {
             _error = QString::fromUtf8(sqlite3_errmsg(_db));
             qCWarning(lcSql) << "Sqlite exec statement error:" << _errId << _error << "in" << _sql;
+            if (_errId == SQLITE_IOERR) {
+                qCWarning(lcSql) << "IOERR extended errcode: " << sqlite3_extended_errcode(_db);
+#if SQLITE_VERSION_NUMBER >= 3012000
+                qCWarning(lcSql) << "IOERR system errno: " << sqlite3_system_errno(_db);
+#endif
+            }
         } else {
             qCDebug(lcSql) << "Last exec affected" << numRowsAffected() << "rows.";
         }

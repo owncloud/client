@@ -15,9 +15,9 @@
 #include "propagateremotemkdir.h"
 #include "owncloudpropagator_p.h"
 #include "account.h"
-#include "syncjournalfilerecord.h"
+#include "common/syncjournalfilerecord.h"
 #include "propagateremotedelete.h"
-#include "asserts.h"
+#include "common/asserts.h"
 
 #include <QFile>
 #include <QLoggingCategory>
@@ -60,10 +60,14 @@ void PropagateRemoteMkdir::slotStartMkcolJob()
     _job->start();
 }
 
-void PropagateRemoteMkdir::abort()
+void PropagateRemoteMkdir::abort(PropagatorJob::AbortType abortType)
 {
     if (_job && _job->reply())
         _job->reply()->abort();
+
+    if (abortType == AbortType::Asynchronous) {
+        emit abortFinished();
+    }
 }
 
 void PropagateRemoteMkdir::setDeleteExisting(bool enabled)
@@ -111,8 +115,8 @@ void PropagateRemoteMkdir::slotMkcolJobFinished()
         auto propfindJob = new PropfindJob(_job->account(), _job->path(), this);
         propfindJob->setProperties(QList<QByteArray>() << "getetag"
                                                        << "http://owncloud.org/ns:id");
-        QObject::connect(propfindJob, SIGNAL(result(QVariantMap)), this, SLOT(propfindResult(QVariantMap)));
-        QObject::connect(propfindJob, SIGNAL(finishedWithError()), this, SLOT(propfindError()));
+        QObject::connect(propfindJob, &PropfindJob::result, this, &PropagateRemoteMkdir::propfindResult);
+        QObject::connect(propfindJob, &PropfindJob::finishedWithError, this, &PropagateRemoteMkdir::propfindError);
         propfindJob->start();
         _job = propfindJob;
         return;
@@ -142,7 +146,7 @@ void PropagateRemoteMkdir::propfindError()
 void PropagateRemoteMkdir::success()
 {
     // save the file id already so we can detect rename or remove
-    SyncJournalFileRecord record(*_item, propagator()->_localDir + _item->destination());
+    SyncJournalFileRecord record = _item->toSyncJournalFileRecordWithInode(propagator()->_localDir + _item->destination());
     if (!propagator()->_journal->setFileRecord(record)) {
         done(SyncFileItem::FatalError, tr("Error writing metadata to the database"));
         return;

@@ -22,9 +22,8 @@
 #include "logger.h"
 #include "configfile.h"
 #include "networkjobs.h"
-#include "syncjournalfilerecord.h"
+#include "common/syncjournalfilerecord.h"
 #include "syncresult.h"
-#include "utility.h"
 #include "clientproxy.h"
 #include "syncengine.h"
 #include "syncrunfilelog.h"
@@ -83,32 +82,32 @@ Folder::Folder(const FolderDefinition &definition,
     if (!setIgnoredFiles())
         qCWarning(lcFolder, "Could not read system exclude file");
 
-    connect(_accountState.data(), SIGNAL(isConnectedChanged()), this, SIGNAL(canSyncChanged()));
-    connect(_engine.data(), SIGNAL(rootEtag(QString)), this, SLOT(etagRetreivedFromSyncEngine(QString)));
+    connect(_accountState.data(), &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
+    connect(_engine.data(), &SyncEngine::rootEtag, this, &Folder::etagRetreivedFromSyncEngine);
 
-    connect(_engine.data(), SIGNAL(started()), SLOT(slotSyncStarted()), Qt::QueuedConnection);
-    connect(_engine.data(), SIGNAL(finished(bool)), SLOT(slotSyncFinished(bool)), Qt::QueuedConnection);
-    connect(_engine.data(), SIGNAL(csyncUnavailable()), SLOT(slotCsyncUnavailable()), Qt::QueuedConnection);
+    connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
+    connect(_engine.data(), &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
+    connect(_engine.data(), &SyncEngine::csyncUnavailable, this, &Folder::slotCsyncUnavailable, Qt::QueuedConnection);
 
     //direct connection so the message box is blocking the sync.
-    connect(_engine.data(), SIGNAL(aboutToRemoveAllFiles(SyncFileItem::Direction, bool *)),
-        SLOT(slotAboutToRemoveAllFiles(SyncFileItem::Direction, bool *)));
-    connect(_engine.data(), SIGNAL(aboutToRestoreBackup(bool *)),
-        SLOT(slotAboutToRestoreBackup(bool *)));
-    connect(_engine.data(), SIGNAL(transmissionProgress(ProgressInfo)), this, SLOT(slotTransmissionProgress(ProgressInfo)));
-    connect(_engine.data(), SIGNAL(itemCompleted(const SyncFileItemPtr &)),
-        this, SLOT(slotItemCompleted(const SyncFileItemPtr &)));
-    connect(_engine.data(), SIGNAL(newBigFolder(QString, bool)),
-        this, SLOT(slotNewBigFolderDiscovered(QString, bool)));
-    connect(_engine.data(), SIGNAL(seenLockedFile(QString)), FolderMan::instance(), SLOT(slotSyncOnceFileUnlocks(QString)));
-    connect(_engine.data(), SIGNAL(aboutToPropagate(SyncFileItemVector &)),
-        SLOT(slotLogPropagationStart()));
+    connect(_engine.data(), &SyncEngine::aboutToRemoveAllFiles,
+        this, &Folder::slotAboutToRemoveAllFiles);
+    connect(_engine.data(), &SyncEngine::aboutToRestoreBackup,
+        this, &Folder::slotAboutToRestoreBackup);
+    connect(_engine.data(), &SyncEngine::transmissionProgress, this, &Folder::slotTransmissionProgress);
+    connect(_engine.data(), &SyncEngine::itemCompleted,
+        this, &Folder::slotItemCompleted);
+    connect(_engine.data(), &SyncEngine::newBigFolder,
+        this, &Folder::slotNewBigFolderDiscovered);
+    connect(_engine.data(), &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
+    connect(_engine.data(), &SyncEngine::aboutToPropagate,
+        this, &Folder::slotLogPropagationStart);
     connect(_engine.data(), &SyncEngine::syncError, this, &Folder::slotSyncError);
 
     _scheduleSelfTimer.setSingleShot(true);
     _scheduleSelfTimer.setInterval(SyncEngine::minimumFileAgeForUpload);
-    connect(&_scheduleSelfTimer, SIGNAL(timeout()),
-        SLOT(slotScheduleThisFolder()));
+    connect(&_scheduleSelfTimer, &QTimer::timeout,
+        this, &Folder::slotScheduleThisFolder);
 }
 
 Folder::~Folder()
@@ -289,7 +288,7 @@ void Folder::slotRunEtagJob()
     _requestEtagJob = new RequestEtagJob(account, remotePath(), this);
     _requestEtagJob->setTimeout(60 * 1000);
     // check if the etag is different when retrieved
-    QObject::connect(_requestEtagJob, SIGNAL(etagRetreived(QString)), this, SLOT(etagRetreived(QString)));
+    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetreived, this, &Folder::etagRetreived);
     FolderMan::instance()->slotScheduleETagJob(alias(), _requestEtagJob);
     // The _requestEtagJob is auto deleting itself on finish. Our guard pointer _requestEtagJob will then be null.
 }
@@ -449,12 +448,26 @@ int Folder::slotWipeErrorBlacklist()
 
 void Folder::slotWatchedPathChanged(const QString &path)
 {
+    if (!path.startsWith(this->path())) {
+        qCDebug(lcFolder) << "Changed path is not contained in folder, ignoring:" << path;
+        return;
+    }
+
+    auto relativePath = path.midRef(this->path().size());
+
+    // Add to list of locally modified paths
+    //
+    // We do this before checking for our own sync-related changes to make
+    // extra sure to not miss relevant changes.
+    auto relativePathBytes = relativePath.toUtf8();
+    _localDiscoveryPaths.insert(relativePathBytes);
+    qCDebug(lcFolder) << "local discovery: inserted" << relativePath << "due to file watcher";
+
 // The folder watcher fires a lot of bogus notifications during
 // a sync operation, both for actual user files and the database
 // and log. Therefore we check notifications against operations
 // the sync is doing to filter out our own changes.
 #ifdef Q_OS_MAC
-    Q_UNUSED(path)
 // On OSX the folder watcher does not report changes done by our
 // own process. Therefore nothing needs to be done here!
 #else
@@ -466,13 +479,12 @@ void Folder::slotWatchedPathChanged(const QString &path)
 #endif
 
     // Check that the mtime actually changed.
-    if (path.startsWith(this->path())) {
-        auto relativePath = path.mid(this->path().size());
-        auto record = _journal.getFileRecord(relativePath);
-        if (record.isValid() && !FileSystem::fileChanged(path, record._fileSize, Utility::qDateTimeToTime_t(record._modtime))) {
-            qCInfo(lcFolder) << "Ignoring spurious notification for file" << relativePath;
-            return; // probably a spurious notification
-        }
+    SyncJournalFileRecord record;
+    if (_journal.getFileRecord(relativePathBytes, &record)
+        && record.isValid()
+        && !FileSystem::fileChanged(path, record._fileSize, record._modtime)) {
+        qCInfo(lcFolder) << "Ignoring spurious notification for file" << relativePath;
+        return; // probably a spurious notification
     }
 
     emit watchedFileChangedExternally(path);
@@ -644,6 +656,36 @@ void Folder::startSync(const QStringList &pathList)
     setDirtyNetworkLimits();
     setSyncOptions();
 
+    static qint64 fullLocalDiscoveryInterval = []() {
+        auto interval = ConfigFile().fullLocalDiscoveryInterval();
+        QByteArray env = qgetenv("OWNCLOUD_FULL_LOCAL_DISCOVERY_INTERVAL");
+        if (!env.isEmpty()) {
+            interval = env.toLongLong();
+        }
+        return interval;
+    }();
+    if (_folderWatcher && _folderWatcher->isReliable()
+        && _timeSinceLastFullLocalDiscovery.isValid()
+        && (fullLocalDiscoveryInterval < 0
+               || _timeSinceLastFullLocalDiscovery.elapsed() < fullLocalDiscoveryInterval)) {
+        qCInfo(lcFolder) << "Allowing local discovery to read from the database";
+        _engine->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, _localDiscoveryPaths);
+
+        if (lcFolder().isDebugEnabled()) {
+            QByteArrayList paths;
+            for (auto &path : _localDiscoveryPaths)
+                paths.append(path);
+            qCDebug(lcFolder) << "local discovery paths: " << paths;
+        }
+
+        _previousLocalDiscoveryPaths = std::move(_localDiscoveryPaths);
+    } else {
+        qCInfo(lcFolder) << "Forbidding local discovery to read from the database";
+        _engine->setLocalDiscoveryOptions(LocalDiscoveryStyle::FilesystemOnly);
+        _previousLocalDiscoveryPaths.clear();
+    }
+    _localDiscoveryPaths.clear();
+
     _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles);
 
     QMetaObject::invokeMethod(_engine.data(), "startSync", Qt::QueuedConnection);
@@ -740,9 +782,7 @@ void Folder::slotSyncFinished(bool success)
 {
     qCInfo(lcFolder) << "Client version" << qPrintable(Theme::instance()->version())
                      << " Qt" << qVersion()
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                      << " SSL " << QSslSocket::sslLibraryVersionString().toUtf8().data()
-#endif
         ;
 
     bool syncError = !_syncResult.errorStrings().isEmpty();
@@ -784,6 +824,24 @@ void Folder::slotSyncFinished(bool success)
         journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, QStringList());
     }
 
+    // bug: This function uses many different criteria for "sync was successful" - investigate!
+    if ((_syncResult.status() == SyncResult::Success
+            || _syncResult.status() == SyncResult::Problem)
+        && success) {
+        if (_engine->lastLocalDiscoveryStyle() == LocalDiscoveryStyle::FilesystemOnly) {
+            _timeSinceLastFullLocalDiscovery.start();
+        }
+        qCDebug(lcFolder) << "Sync success, forgetting last sync's local discovery path list";
+    } else {
+        // On overall-failure we can't forget about last sync's local discovery
+        // paths yet, reuse them for the next sync again.
+        // C++17: Could use std::set::merge().
+        _localDiscoveryPaths.insert(
+            _previousLocalDiscoveryPaths.begin(), _previousLocalDiscoveryPaths.end());
+        qCDebug(lcFolder) << "Sync failed, keeping last sync's local discovery path list";
+    }
+    _previousLocalDiscoveryPaths.clear();
+
     emit syncStateChange();
 
     // The syncFinished result that is to be triggered here makes the folderman
@@ -792,7 +850,7 @@ void Folder::slotSyncFinished(bool success)
     // file system change notifications are ignored for that folder. And it takes
     // some time under certain conditions to make the file system notifications
     // all come in.
-    QTimer::singleShot(200, this, SLOT(slotEmitFinishedDelayed()));
+    QTimer::singleShot(200, this, &Folder::slotEmitFinishedDelayed);
 
     _lastSyncDuration = _timeSinceLastSyncStart.elapsed();
     _timeSinceLastSyncDone.start();
@@ -818,6 +876,17 @@ void Folder::slotSyncFinished(bool success)
 void Folder::slotEmitFinishedDelayed()
 {
     emit syncFinished(_syncResult);
+
+    // Immediately check the etag again if there was some sync activity.
+    if ((_syncResult.status() == SyncResult::Success
+            || _syncResult.status() == SyncResult::Problem)
+        && (_syncResult.firstItemDeleted()
+               || _syncResult.firstItemNew()
+               || _syncResult.firstItemRenamed()
+               || _syncResult.firstItemUpdated()
+               || _syncResult.firstNewConflictItem())) {
+        slotRunEtagJob();
+    }
 }
 
 // the progress comes without a folder and the valid path set. Add that here
@@ -831,12 +900,38 @@ void Folder::slotTransmissionProgress(const ProgressInfo &pi)
 // a item is completed: count the errors and forward to the ProgressDispatcher
 void Folder::slotItemCompleted(const SyncFileItemPtr &item)
 {
-    // add new directories or remove gone away dirs to the watcher
-    if (item->_isDirectory && item->_instruction == CSYNC_INSTRUCTION_NEW) {
-        FolderMan::instance()->addMonitorPath(alias(), path() + item->_file);
+    if (item->_instruction == CSYNC_INSTRUCTION_NONE || item->_instruction == CSYNC_INSTRUCTION_UPDATE_METADATA) {
+        // We only care about the updates that deserve to be shown in the UI
+        return;
     }
-    if (item->_isDirectory && item->_instruction == CSYNC_INSTRUCTION_REMOVE) {
-        FolderMan::instance()->removeMonitorPath(alias(), path() + item->_file);
+
+    // add new directories or remove gone away dirs to the watcher
+    if (item->isDirectory() && item->_instruction == CSYNC_INSTRUCTION_NEW) {
+        if (_folderWatcher)
+            _folderWatcher->addPath(path() + item->_file);
+    }
+    if (item->isDirectory() && item->_instruction == CSYNC_INSTRUCTION_REMOVE) {
+        if (_folderWatcher)
+            _folderWatcher->removePath(path() + item->_file);
+    }
+
+    // Success and failure of sync items adjust what the next sync is
+    // supposed to do.
+    //
+    // For successes, we want to wipe the file from the list to ensure we don't
+    // rediscover it even if this overall sync fails.
+    //
+    // For failures, we want to add the file to the list so the next sync
+    // will be able to retry it.
+    if (item->_status == SyncFileItem::Success
+        || item->_status == SyncFileItem::FileIgnored
+        || item->_status == SyncFileItem::Restoration
+        || item->_status == SyncFileItem::Conflict) {
+        if (_previousLocalDiscoveryPaths.erase(item->_file.toUtf8()))
+            qCDebug(lcFolder) << "local discovery: wiped" << item->_file;
+    } else {
+        _localDiscoveryPaths.insert(item->_file.toUtf8());
+        qCDebug(lcFolder) << "local discovery: inserted" << item->_file << "due to sync failure";
     }
 
     _syncResult.processCompletedItem(item);
@@ -891,6 +986,11 @@ void Folder::slotScheduleThisFolder()
     FolderMan::instance()->scheduleFolder(this);
 }
 
+void Folder::slotNextSyncFullLocalDiscovery()
+{
+    _timeSinceLastFullLocalDiscovery.invalidate();
+}
+
 void Folder::scheduleThisFolderSoon()
 {
     if (!_scheduleSelfTimer.isActive()) {
@@ -901,6 +1001,20 @@ void Folder::scheduleThisFolderSoon()
 void Folder::setSaveBackwardsCompatible(bool save)
 {
     _saveBackwardsCompatible = save;
+}
+
+void Folder::registerFolderWatcher()
+{
+    if (_folderWatcher)
+        return;
+    if (!QDir(path()).exists())
+        return;
+
+    _folderWatcher.reset(new FolderWatcher(path(), this));
+    connect(_folderWatcher.data(), &FolderWatcher::pathChanged,
+        this, &Folder::slotWatchedPathChanged);
+    connect(_folderWatcher.data(), &FolderWatcher::lostChanges,
+        this, &Folder::slotNextSyncFullLocalDiscovery);
 }
 
 void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction dir, bool *cancel)
@@ -966,6 +1080,12 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
     settings.setValue(QLatin1String("targetPath"), folder.targetPath);
     settings.setValue(QLatin1String("paused"), folder.paused);
     settings.setValue(QLatin1String("ignoreHiddenFiles"), folder.ignoreHiddenFiles);
+
+    // Happens only on Windows when the explorer integration is enabled.
+    if (!folder.navigationPaneClsid.isNull())
+        settings.setValue(QLatin1String("navigationPaneClsid"), folder.navigationPaneClsid);
+    else
+        settings.remove(QLatin1String("navigationPaneClsid"));
     settings.endGroup();
 }
 
@@ -979,6 +1099,7 @@ bool FolderDefinition::load(QSettings &settings, const QString &alias,
     folder->targetPath = settings.value(QLatin1String("targetPath")).toString();
     folder->paused = settings.value(QLatin1String("paused")).toBool();
     folder->ignoreHiddenFiles = settings.value(QLatin1String("ignoreHiddenFiles"), QVariant(true)).toBool();
+    folder->navigationPaneClsid = settings.value(QLatin1String("navigationPaneClsid")).toUuid();
     settings.endGroup();
 
     // Old settings can contain paths with native separators. In the rest of the

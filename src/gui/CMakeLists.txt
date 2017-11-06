@@ -5,7 +5,7 @@ add_subdirectory(updater)
 
 #TODO Move resources files
 qt_add_resources(MIRALL_RC_SRC ../../client.qrc)
-if ( IS_DIRECTORY ${OEM_THEME_DIR} )
+if (EXISTS "${OEM_THEME_DIR}/theme.qrc")
     qt_add_resources(MIRALL_RC_SRC ${OEM_THEME_DIR}/theme.qrc)
     set(theme_dir ${OEM_THEME_DIR}/theme)
 else()
@@ -57,6 +57,7 @@ set(client_SRCS
     ignorelisteditor.cpp
     lockwatcher.cpp
     logbrowser.cpp
+    navigationpanehelper.cpp
     networksettings.cpp
     ocsjob.cpp
     ocssharejob.cpp
@@ -129,6 +130,7 @@ set(updater_SRCS
 IF( APPLE )
     list(APPEND client_SRCS cocoainitializer_mac.mm)
     list(APPEND client_SRCS settingsdialogmac.cpp)
+    list(REMOVE_ITEM client_SRCS settingsdialog.cpp)
     list(APPEND client_SRCS socketapisocket_mac.mm)
     list(APPEND client_SRCS systray.mm)
 
@@ -241,6 +243,12 @@ if (NOT NO_SHIBBOLETH)
     list(APPEND ADDITIONAL_APP_MODULES WebKitWidgets)
 endif()
 
+if(UNIX AND NOT APPLE)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIE")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+endif()
+
 if(NOT BUILD_OWNCLOUD_OSX_BUNDLE)
 
     if(NOT WIN32)
@@ -291,7 +299,7 @@ set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
 )
 # Only relevant for Linux? On OS X it by default properly checks in the bundle directory next to the exe
 set_target_properties( ${APPLICATION_EXECUTABLE} PROPERTIES
-	INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE}" )
+	INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/${APPLICATION_EXECUTABLE};${CMAKE_INSTALL_RPATH}" )
 
 target_link_libraries( ${APPLICATION_EXECUTABLE} ${QT_LIBRARIES} )
 target_link_libraries( ${APPLICATION_EXECUTABLE} ${synclib_NAME} )

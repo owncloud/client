@@ -55,6 +55,8 @@ static const float buttonSizeRatio = 1.618; // golden ratio
 
 namespace OCC {
 
+#include "settingsdialogcommon.cpp"
+
 static QIcon circleMask(const QImage &avatar)
 {
     int dim = avatar.width();
@@ -93,7 +95,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     // People perceive this as a Window, so also make Ctrl+W work
     QAction *closeWindowAction = new QAction(this);
     closeWindowAction->setShortcut(QKeySequence("Ctrl+W"));
-    connect(closeWindowAction, SIGNAL(triggered()), SLOT(accept()));
+    connect(closeWindowAction, &QAction::triggered, this, &SettingsDialog::accept);
     addAction(closeWindowAction);
 
     setObjectName("Settings"); // required as group for saveGeometry call
@@ -109,8 +111,8 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     _toolBar->addAction(_activityAction);
     _activitySettings = new ActivitySettings;
     _ui->stack->addWidget(_activitySettings);
-    connect(_activitySettings, SIGNAL(guiLog(QString, QString)), _gui,
-        SLOT(slotShowOptionalTrayMessage(QString, QString)));
+    connect(_activitySettings, &ActivitySettings::guiLog, _gui,
+        &ownCloudGui::slotShowOptionalTrayMessage);
     _activitySettings->setNotificationRefreshInterval(cfg.notificationRefreshInterval());
 
     QAction *generalAction = createColorAwareAction(QLatin1String(":/client/resources/settings.png"), tr("General"));
@@ -129,24 +131,24 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     _actionGroupWidgets.insert(generalAction, generalSettings);
     _actionGroupWidgets.insert(networkAction, networkSettings);
 
-    connect(_actionGroup, SIGNAL(triggered(QAction *)), SLOT(slotSwitchPage(QAction *)));
+    connect(_actionGroup, &QActionGroup::triggered, this, &SettingsDialog::slotSwitchPage);
 
-    connect(AccountManager::instance(), SIGNAL(accountAdded(AccountState *)),
-        this, SLOT(accountAdded(AccountState *)));
-    connect(AccountManager::instance(), SIGNAL(accountRemoved(AccountState *)),
-        this, SLOT(accountRemoved(AccountState *)));
+    connect(AccountManager::instance(), &AccountManager::accountAdded,
+        this, &SettingsDialog::accountAdded);
+    connect(AccountManager::instance(), &AccountManager::accountRemoved,
+        this, &SettingsDialog::accountRemoved);
     foreach (auto ai, AccountManager::instance()->accounts()) {
         accountAdded(ai.data());
     }
 
-    QTimer::singleShot(1, this, SLOT(showFirstPage()));
+    QTimer::singleShot(1, this, &SettingsDialog::showFirstPage);
 
     QPushButton *closeButton = _ui->buttonBox->button(QDialogButtonBox::Close);
     connect(closeButton, SIGNAL(clicked()), SLOT(accept()));
 
     QAction *showLogWindow = new QAction(this);
     showLogWindow->setShortcut(QKeySequence("F12"));
-    connect(showLogWindow, SIGNAL(triggered()), gui, SLOT(slotToggleLogBrowser()));
+    connect(showLogWindow, &QAction::triggered, gui, &ownCloudGui::slotToggleLogBrowser);
     addAction(showLogWindow);
 
     customizeStyle();
@@ -179,9 +181,7 @@ void SettingsDialog::changeEvent(QEvent *e)
     switch (e->type()) {
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     case QEvent::ThemeChange:
-#endif
         customizeStyle();
         break;
     default:
@@ -238,7 +238,7 @@ void SettingsDialog::accountAdded(AccountState *s)
 
     if (!brandingSingleAccount) {
         accountAction->setToolTip(s->account()->displayName());
-        accountAction->setIconText(s->shortDisplayNameForSettings(height * buttonSizeRatio));
+        accountAction->setIconText(SettingsDialogCommon::shortDisplayNameForSettings(s->account().data(),  height * buttonSizeRatio));
     }
     _toolBar->insertAction(_toolBar->actions().at(0), accountAction);
     auto accountSettings = new AccountSettings(s, this);
@@ -247,11 +247,12 @@ void SettingsDialog::accountAdded(AccountState *s)
     _actionGroupWidgets.insert(accountAction, accountSettings);
     _actionForAccount.insert(s->account().data(), accountAction);
 
-    connect(accountSettings, SIGNAL(folderChanged()), _gui, SLOT(slotFoldersChanged()));
-    connect(accountSettings, SIGNAL(openFolderAlias(const QString &)),
-        _gui, SLOT(slotFolderOpenAction(QString)));
-    connect(accountSettings, SIGNAL(showIssuesList(QString)), SLOT(showIssuesList(QString)));
-    connect(s->account().data(), SIGNAL(accountChangedAvatar()), SLOT(slotAccountAvatarChanged()));
+    connect(accountSettings, &AccountSettings::folderChanged, _gui, &ownCloudGui::slotFoldersChanged);
+    connect(accountSettings, &AccountSettings::openFolderAlias,
+        _gui, &ownCloudGui::slotFolderOpenAction);
+    connect(accountSettings, &AccountSettings::showIssuesList, this, &SettingsDialog::showIssuesList);
+    connect(s->account().data(), &Account::accountChangedAvatar, this, &SettingsDialog::slotAccountAvatarChanged);
+    connect(s->account().data(), &Account::accountChangedDisplayName, this, &SettingsDialog::slotAccountDisplayNameChanged);
 
     slotRefreshActivity(s);
 }
@@ -266,6 +267,20 @@ void SettingsDialog::slotAccountAvatarChanged()
             if (!pix.isNull()) {
                 action->setIcon(circleMask(pix));
             }
+        }
+    }
+}
+
+void SettingsDialog::slotAccountDisplayNameChanged()
+{
+    Account *account = static_cast<Account *>(sender());
+    if (account && _actionForAccount.contains(account)) {
+        QAction *action = _actionForAccount[account];
+        if (action) {
+            QString displayName = account->displayName();
+            action->setText(displayName);
+            auto height = _toolBar->sizeHint().height();
+            action->setIconText(SettingsDialogCommon::shortDisplayNameForSettings(account, height * buttonSizeRatio));
         }
     }
 }

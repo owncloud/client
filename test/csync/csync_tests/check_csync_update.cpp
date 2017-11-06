@@ -17,9 +17,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-#include "torture.h"
-
 #include "csync_update.cpp"
+
+#include "torture.h"
 
 #define TESTDB "/tmp/check_csync/journal.db"
 
@@ -98,13 +98,10 @@ static int setup(void **state)
     assert_int_equal(rc, 0);
     rc = system("mkdir -p /tmp/check_csync1");
     assert_int_equal(rc, 0);
-    csync_create(&csync, "/tmp/check_csync1");
-    csync_init(csync, TESTDB);
 
     /* Create a new db with metadata */
     sqlite3 *db;
-    csync->statedb.file = c_strdup(TESTDB);
-    rc = sqlite3_open(csync->statedb.file, &db);
+    rc = sqlite3_open(TESTDB, &db);
     statedb_create_metadata_table(db);
     if( firstrun ) {
         statedb_insert_metadata(db);
@@ -112,8 +109,8 @@ static int setup(void **state)
     }
     sqlite3_close(db);
 
-    rc = csync_statedb_load(csync, TESTDB, &csync->statedb.db);
-    assert_int_equal(rc, 0);
+    csync = new CSYNC("/tmp/check_csync1", new OCC::SyncJournalDb(TESTDB));
+    assert_true(csync->statedb->isConnected());
 
     *state = csync;
     
@@ -129,8 +126,7 @@ static int setup_ftw(void **state)
     assert_int_equal(rc, 0);
     rc = system("mkdir -p /tmp/check_csync1");
     assert_int_equal(rc, 0);
-    csync_create(&csync, "/tmp");
-    csync_init(csync, TESTDB);
+    csync = new CSYNC("/tmp", new OCC::SyncJournalDb(TESTDB));
 
     sqlite3 *db = NULL;
     rc = sqlite3_open_v2(TESTDB, &db, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL);
@@ -139,10 +135,9 @@ static int setup_ftw(void **state)
     rc = sqlite3_close(db);
     assert_int_equal(rc, SQLITE_OK);
 
-    rc = csync_statedb_load(csync, TESTDB, &csync->statedb.db);
-    assert_int_equal(rc, 0);
+    csync = new CSYNC("/tmp", new OCC::SyncJournalDb(TESTDB));
+    assert_true(csync->statedb->isConnected());
 
-    csync->statedb.file = c_strdup( TESTDB );
     *state = csync;
     
     return 0;
@@ -151,11 +146,11 @@ static int setup_ftw(void **state)
 static int teardown(void **state)
 {
     CSYNC *csync = (CSYNC*)*state;
-    int rc;
 
-    unlink( csync->statedb.file);
-    rc = csync_destroy(csync);
-    assert_int_equal(rc, 0);
+    unlink(TESTDB);
+    auto statedb = csync->statedb;
+    delete csync;
+    delete statedb;
 
     *state = NULL;
     
@@ -176,69 +171,43 @@ static int teardown_rm(void **state) {
 }
 
 /* create a file stat, caller must free memory */
-static csync_vio_file_stat_t* create_fstat(const char *name,
+static std::unique_ptr<csync_file_stat_t> create_fstat(const char *name,
                                            ino_t inode,
                                            time_t mtime)
 {
-    csync_vio_file_stat_t *fs = NULL;
+    std::unique_ptr<csync_file_stat_t> fs(new csync_file_stat_t);
     time_t t;
 
-    fs = csync_vio_file_stat_new();
-    if (fs == NULL) {
-        return NULL;
-    }
-
     if (name && *name) {
-        fs->name = c_strdup(name);
+        fs->path = name;
     } else {
-        fs->name = c_strdup("file.txt");
+        fs->path = "file.txt";
     }
 
-    if (fs->name == NULL) {
-        csync_vio_file_stat_destroy(fs);
-        return NULL;
-    }
-
-    fs->fields = CSYNC_VIO_FILE_STAT_FIELDS_NONE;
-
-    fs->type = CSYNC_VIO_FILE_TYPE_REGULAR;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_TYPE;
-
+    fs->type = CSYNC_FTW_TYPE_FILE;
 
     if (inode == 0) {
         fs->inode = 619070;
     } else {
         fs->inode = inode;
     }
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_INODE;
-
 
     fs->size = 157459;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_SIZE;
-
-
 
     if (mtime == 0) {
-        fs->atime = fs->ctime = fs->mtime = time(&t);
+        fs->modtime = time(&t);
     } else {
-        fs->atime = fs->ctime = fs->mtime = mtime;
+        fs->modtime = mtime;
     }
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_ATIME;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_CTIME;
-    fs->fields |= CSYNC_VIO_FILE_STAT_FIELDS_MTIME;
 
     return fs;
 }
 
 static int failing_fn(CSYNC *ctx,
-                      const char *file,
-                      const csync_vio_file_stat_t *fs,
-                      int flag)
+                      std::unique_ptr<csync_file_stat_t> fs)
 {
   (void) ctx;
-  (void) file;
   (void) fs;
-  (void) flag;
 
   return -1;
 }
@@ -248,26 +217,20 @@ static void check_csync_detect_update(void **state)
 {
     CSYNC *csync = (CSYNC*)*state;
     csync_file_stat_t *st;
-    csync_vio_file_stat_t *fs;
+    std::unique_ptr<csync_file_stat_t> fs;
     int rc;
 
     fs = create_fstat("file.txt", 0, 1217597845);
-    assert_non_null(fs);
 
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/file.txt",
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
+    rc = _csync_detect_update(csync, std::move(fs));
     assert_int_equal(rc, 0);
 
     /* the instruction should be set to new  */
-    st = (csync_file_stat_t*)c_rbtree_node_data(csync->local.tree->root);
+    st = csync->local.files.begin()->second.get();
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
-
-    csync_vio_file_stat_destroy(fs);
 }
 
 /* Test behaviour in case no db is there. For that its important that the
@@ -277,53 +240,41 @@ static void check_csync_detect_update_db_none(void **state)
 {
     CSYNC *csync = (CSYNC*)*state;
     csync_file_stat_t *st;
-    csync_vio_file_stat_t *fs;
+    std::unique_ptr<csync_file_stat_t> fs;
     int rc;
 
     fs = create_fstat("file.txt", 0, 1217597845);
-    assert_non_null(fs);
 
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/file.txt",
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
+    rc = _csync_detect_update(csync, std::move(fs));
     assert_int_equal(rc, 0);
 
     /* the instruction should be set to new  */
-    st = (csync_file_stat_t*)c_rbtree_node_data(csync->local.tree->root);
+    st = csync->local.files.begin()->second.get();
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
 
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
-
-    csync_vio_file_stat_destroy(fs);
 }
 
 static void check_csync_detect_update_db_eval(void **state)
 {
     CSYNC *csync = (CSYNC*)*state;
     csync_file_stat_t *st;
-    csync_vio_file_stat_t *fs;
+    std::unique_ptr<csync_file_stat_t> fs;
     int rc;
 
     fs = create_fstat("file.txt", 0, 42);
-    assert_non_null(fs);
 
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/file.txt",
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
+    rc = _csync_detect_update(csync, std::move(fs));
     assert_int_equal(rc, 0);
 
     /* the instruction should be set to new  */
-    st = (csync_file_stat_t*)c_rbtree_node_data(csync->local.tree->root);
+    st = csync->local.files.begin()->second.get();
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
-
-    csync_vio_file_stat_destroy(fs);
 }
 
 
@@ -332,82 +283,55 @@ static void check_csync_detect_update_db_rename(void **state)
     CSYNC *csync = (CSYNC*)*state;
     // csync_file_stat_t *st;
 
-    csync_vio_file_stat_t *fs;
+    std::unique_ptr<csync_file_stat_t> fs;
     int rc = 0;
 
     fs = create_fstat("wurst.txt", 0, 42);
-    assert_non_null(fs);
-    csync_set_statedb_exists(csync, 1);
 
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/wurst.txt",
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
+    rc = _csync_detect_update(csync, std::move(fs));
     assert_int_equal(rc, 0);
 
     /* the instruction should be set to rename */
     /*
      * temporarily broken.
-    st = (csync_file_stat_t*)c_rbtree_node_data(csync->local.tree->root);
+    st = csync->local.files.begin()->second.get();
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_RENAME);
 
     st->instruction = CSYNC_INSTRUCTION_UPDATED;
     */
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
-
-    csync_vio_file_stat_destroy(fs);
 }
 
 static void check_csync_detect_update_db_new(void **state)
 {
     CSYNC *csync = (CSYNC*)*state;
     csync_file_stat_t *st;
-    csync_vio_file_stat_t *fs;
+    std::unique_ptr<csync_file_stat_t> fs;
     int rc;
 
     fs = create_fstat("file.txt", 42000, 0);
-    assert_non_null(fs);
 
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/file.txt",
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
+    rc = _csync_detect_update(csync, std::move(fs));
     assert_int_equal(rc, 0);
 
     /* the instruction should be set to new  */
-    st = (csync_file_stat_t*)c_rbtree_node_data(csync->local.tree->root);
+    st = csync->local.files.begin()->second.get();
     assert_int_equal(st->instruction, CSYNC_INSTRUCTION_NEW);
 
 
     /* create a statedb */
     csync_set_status(csync, 0xFFFF);
-
-    csync_vio_file_stat_destroy(fs);
 }
 
 static void check_csync_detect_update_null(void **state)
 {
     CSYNC *csync = (CSYNC*)*state;
-    csync_vio_file_stat_t *fs;
+    std::unique_ptr<csync_file_stat_t> fs;
     int rc;
 
-    fs = create_fstat("file.txt", 0, 0);
-    assert_non_null(fs);
-
-    rc = _csync_detect_update(csync,
-                              NULL,
-                              fs,
-                              CSYNC_FTW_TYPE_FILE);
+    rc = _csync_detect_update(csync, NULL);
     assert_int_equal(rc, -1);
-
-    rc = _csync_detect_update(csync,
-                              "/tmp/check_csync1/file.txt",
-                              NULL,
-                              CSYNC_FTW_TYPE_FILE);
-    assert_int_equal(rc, -1);
-
-    csync_vio_file_stat_destroy(fs);
 }
 
 static void check_csync_ftw(void **state)

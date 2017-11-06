@@ -1,15 +1,19 @@
 /*
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #ifndef SYNCJOURNALDB_H
@@ -19,10 +23,11 @@
 #include <qmutex.h>
 #include <QDateTime>
 #include <QHash>
+#include <functional>
 
-#include "utility.h"
-#include "ownsql.h"
-#include "syncjournalfilerecord.h"
+#include "common/utility.h"
+#include "common/ownsql.h"
+#include "common/syncjournalfilerecord.h"
 
 namespace OCC {
 class SyncJournalFileRecord;
@@ -33,7 +38,7 @@ class SyncJournalFileRecord;
  * This class is thread safe. All public functions lock the mutex.
  * @ingroup libsync
  */
-class OWNCLOUDSYNC_EXPORT SyncJournalDb : public QObject
+class OCSYNC_EXPORT SyncJournalDb : public QObject
 {
     Q_OBJECT
 public:
@@ -49,16 +54,18 @@ public:
     /// Migrate a csync_journal to the new path, if necessary. Returns false on error
     static bool maybeMigrateDb(const QString &localPath, const QString &absoluteJournalPath);
 
-    // to verify that the record could be queried successfully check
-    // with SyncJournalFileRecord::isValid()
-    SyncJournalFileRecord getFileRecord(const QString &filename);
+    // To verify that the record could be found check with SyncJournalFileRecord::isValid()
+    bool getFileRecord(const QString &filename, SyncJournalFileRecord *rec) { return getFileRecord(filename.toUtf8(), rec); }
+    bool getFileRecord(const QByteArray &filename, SyncJournalFileRecord *rec);
+    bool getFileRecordByInode(quint64 inode, SyncJournalFileRecord *rec);
+    bool getFileRecordsByFileId(const QByteArray &fileId, const std::function<void(const SyncJournalFileRecord &)> &rowCallback);
+    bool getFilesBelowPath(const QByteArray &path, const std::function<void(const SyncJournalFileRecord&)> &rowCallback);
     bool setFileRecord(const SyncJournalFileRecord &record);
 
     /// Like setFileRecord, but preserves checksums
     bool setFileRecordMetadata(const SyncJournalFileRecord &record);
 
     bool deleteFileRecord(const QString &filename, bool recursively = false);
-    int getFileRecordCount();
     bool updateFileRecordChecksum(const QString &filename,
         const QByteArray &contentChecksum,
         const QByteArray &contentChecksumType);
@@ -69,7 +76,7 @@ public:
 
     QString databaseFilePath() const;
 
-    static qint64 getPHash(const QString &);
+    static qint64 getPHash(const QByteArray &);
 
     void setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord &item);
     void wipeErrorBlacklistEntry(const QString &file);
@@ -102,7 +109,7 @@ public:
         int _chunk;
         int _transferid;
         quint64 _size; //currently unused
-        QDateTime _modtime;
+        qint64 _modtime;
         int _errorCount;
         bool _valid;
     };
@@ -111,7 +118,7 @@ public:
     {
         QString _file;
         QString _url;
-        time_t _modtime;
+        qint64 _modtime;
     };
 
     DownloadInfo getDownloadInfo(const QString &file);
@@ -127,7 +134,8 @@ public:
     SyncJournalErrorBlacklistRecord errorBlacklistEntry(const QString &);
     bool deleteStaleErrorBlacklistEntries(const QSet<QString> &keep);
 
-    void avoidRenamesOnNextSync(const QString &path);
+    void avoidRenamesOnNextSync(const QString &path) { avoidRenamesOnNextSync(path.toUtf8()); }
+    void avoidRenamesOnNextSync(const QByteArray &path);
     void setPollInfo(const PollInfo &);
     QVector<PollInfo> getPollInfos();
 
@@ -161,7 +169,8 @@ public:
      * _csync_detect_update skip them), the _invalid_ marker will stay and it. And any
      * child items in the db will be ignored when reading a remote tree from the database.
      */
-    void avoidReadFromDbOnNextSync(const QString &fileName);
+    void avoidReadFromDbOnNextSync(const QString &fileName) { avoidReadFromDbOnNextSync(fileName.toUtf8()); }
+    void avoidReadFromDbOnNextSync(const QByteArray &fileName);
 
     /**
      * Ensures full remote discovery happens on the next sync.
@@ -205,6 +214,7 @@ public:
     void clearFileTable();
 
 private:
+    int getFileRecordCount();
     bool updateDatabaseStructure();
     bool updateMetadataTableStructure();
     bool updateErrorBlacklistTableStructure();
@@ -227,9 +237,14 @@ private:
     QString _dbFile;
     QMutex _mutex; // Public functions are protected with the mutex.
     int _transaction;
+    bool _metadataTableIsEmpty;
 
     // NOTE! when adding a query, don't forget to reset it in SyncJournalDb::close
     QScopedPointer<SqlQuery> _getFileRecordQuery;
+    QScopedPointer<SqlQuery> _getFileRecordQueryByInode;
+    QScopedPointer<SqlQuery> _getFileRecordQueryByFileId;
+    QScopedPointer<SqlQuery> _getFilesBelowPathQuery;
+    QScopedPointer<SqlQuery> _getAllFilesQuery;
     QScopedPointer<SqlQuery> _setFileRecordQuery;
     QScopedPointer<SqlQuery> _setFileRecordChecksumQuery;
     QScopedPointer<SqlQuery> _setFileRecordLocalMetadataQuery;
@@ -255,13 +270,20 @@ private:
      * It means that they should not be written to the DB in any case since doing
      * that would write the etag and would void the purpose of avoidReadFromDbOnNextSync
      */
-    QList<QString> _avoidReadFromDbOnNextSyncFilter;
+    QList<QByteArray> _avoidReadFromDbOnNextSyncFilter;
+
+    /** The journal mode to use for the db.
+     *
+     * Typically WAL initially, but may be set to other modes via environment
+     * variable, for specific filesystems, or when WAL fails in a particular way.
+     */
+    QString _journalMode;
 };
 
-bool OWNCLOUDSYNC_EXPORT
+bool OCSYNC_EXPORT
 operator==(const SyncJournalDb::DownloadInfo &lhs,
     const SyncJournalDb::DownloadInfo &rhs);
-bool OWNCLOUDSYNC_EXPORT
+bool OCSYNC_EXPORT
 operator==(const SyncJournalDb::UploadInfo &lhs,
     const SyncJournalDb::UploadInfo &rhs);
 

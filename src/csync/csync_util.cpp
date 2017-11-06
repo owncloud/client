@@ -30,13 +30,12 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "c_jhash.h"
+#include "common/c_jhash.h"
 #include "csync_util.h"
 #include "vio/csync_vio.h"
 
 #define CSYNC_LOG_CATEGORY_NAME "csync.util"
 #include "csync_log.h"
-#include "csync_statedb.h"
 
 typedef struct {
   const char *instr_str;

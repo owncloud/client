@@ -15,24 +15,40 @@
 #include "sharemanager.h"
 #include "ocssharejob.h"
 #include "account.h"
+#include "folderman.h"
+#include "accountstate.h"
 
 #include <QUrl>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 
-namespace {
-struct CreateShare
-{
-    QString path;
-    OCC::Share::ShareType shareType;
-    QString shareWith;
-    OCC::Share::Permissions permissions;
-};
-} // anonymous namespace
-Q_DECLARE_METATYPE(CreateShare)
-
 namespace OCC {
+
+/**
+ * When a share is modified, we need to tell the folders so they can adjust overlay icons
+ */
+static void updateFolder(const AccountPtr &account, const QString &path)
+{
+    foreach (Folder *f, FolderMan::instance()->map()) {
+        if (f->accountState()->account() != account)
+            continue;
+        auto folderPath = f->remotePath();
+        if (path.startsWith(folderPath) && (path == folderPath || folderPath.endsWith('/') || path[folderPath.size()] == '/')) {
+            // Workaround the fact that the server does not invalidate the etags of parent directories
+            // when something is shared.
+            auto relative = path.midRef(folderPath.size());
+            if (relative.startsWith('/'))
+                relative = relative.mid(1);
+            f->journalDb()->avoidReadFromDbOnNextSync(relative.toString());
+
+            // Schedule a sync so it can update the remote permission flag and let the socket API
+            // know about the shared icon.
+            f->scheduleThisFolderSoon();
+        }
+    }
+}
+
 
 Share::Share(AccountPtr account,
     const QString &id,
@@ -54,6 +70,11 @@ AccountPtr Share::account() const
     return _account;
 }
 
+QString Share::path() const
+{
+    return _path;
+}
+
 QString Share::getId() const
 {
     return _id;
@@ -72,8 +93,8 @@ QSharedPointer<Sharee> Share::getShareWith() const
 void Share::setPermissions(Permissions permissions)
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotPermissionsSet(QJsonDocument, QVariant)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &Share::slotPermissionsSet);
+    connect(job, &OcsJob::ocsError, this, &Share::slotOcsError);
     job->setPermissions(getId(), permissions);
 }
 
@@ -91,14 +112,16 @@ Share::Permissions Share::getPermissions() const
 void Share::deleteShare()
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotDeleted()));
-    connect(job, SIGNAL(ocsError(int, const QString &)), SLOT(slotOcsError(int, const QString &)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &Share::slotDeleted);
+    connect(job, &OcsJob::ocsError, this, &Share::slotOcsError);
     job->deleteShare(getId());
 }
 
 void Share::slotDeleted()
 {
     emit shareDeleted();
+
+    updateFolder(_account, _path);
 }
 
 void Share::slotOcsError(int statusCode, const QString &message)
@@ -164,8 +187,8 @@ QString LinkShare::getName() const
 void LinkShare::setName(const QString &name)
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotNameSet(QJsonDocument, QVariant)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &LinkShare::slotNameSet);
+    connect(job, &OcsJob::ocsError, this, &LinkShare::slotOcsError);
     job->setName(getId(), name);
 }
 
@@ -177,8 +200,8 @@ QString LinkShare::getToken() const
 void LinkShare::setPassword(const QString &password)
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotPasswordSet(QJsonDocument, QVariant)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotSetPasswordError(int, QString)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &LinkShare::slotPasswordSet);
+    connect(job, &OcsJob::ocsError, this, &LinkShare::slotSetPasswordError);
     job->setPassword(getId(), password);
 }
 
@@ -191,8 +214,8 @@ void LinkShare::slotPasswordSet(const QJsonDocument &, const QVariant &value)
 void LinkShare::setExpireDate(const QDate &date)
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotExpireDateSet(QJsonDocument, QVariant)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &LinkShare::slotExpireDateSet);
+    connect(job, &OcsJob::ocsError, this, &LinkShare::slotOcsError);
     job->setExpireDate(getId(), date);
 }
 
@@ -234,8 +257,8 @@ void ShareManager::createLinkShare(const QString &path,
     const QString &password)
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotLinkShareCreated(QJsonDocument)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &ShareManager::slotLinkShareCreated);
+    connect(job, &OcsJob::ocsError, this, &ShareManager::slotOcsError);
     job->createLinkShare(path, name, password);
 }
 
@@ -258,6 +281,8 @@ void ShareManager::slotLinkShareCreated(const QJsonDocument &reply)
     QSharedPointer<LinkShare> share(parseLinkShare(data));
 
     emit linkShareCreated(share);
+
+    updateFolder(_account, share->path());
 }
 
 
@@ -267,51 +292,34 @@ void ShareManager::createShare(const QString &path,
     const Share::Permissions permissions)
 {
     auto job = new OcsShareJob(_account);
+    connect(job, &OcsJob::ocsError, this, &ShareManager::slotOcsError);
+    connect(job, &OcsShareJob::shareJobFinished, this,
+        [=](const QJsonDocument &reply) {
+            // Find existing share permissions (if this was shared with us)
+            Share::Permissions existingPermissions = SharePermissionDefault;
+            foreach (const QJsonValue &element, reply.object()["ocs"].toObject()["data"].toArray()) {
+                auto map = element.toObject();
+                if (map["file_target"] == path)
+                    existingPermissions = Share::Permissions(map["permissions"].toInt());
+            }
 
-    // Store values that we need for creating this share later.
-    CreateShare continuation;
-    continuation.path = path;
-    continuation.shareType = shareType;
-    continuation.shareWith = shareWith;
-    continuation.permissions = permissions;
-    _jobContinuation[job] = QVariant::fromValue(continuation);
+            // Limit the permissions we request for a share to the ones the item
+            // was shared with initially.
+            auto perm = permissions;
+            if (permissions == SharePermissionDefault) {
+                perm = existingPermissions;
+            } else if (existingPermissions != SharePermissionDefault) {
+                perm &= existingPermissions;
+            }
 
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotCreateShare(QJsonDocument)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
+            OcsShareJob *job = new OcsShareJob(_account);
+            connect(job, &OcsShareJob::shareJobFinished, this, &ShareManager::slotShareCreated);
+            connect(job, &OcsJob::ocsError, this, &ShareManager::slotOcsError);
+            job->createShare(path, shareType, shareWith, permissions);
+        });
     job->getSharedWithMe();
 }
 
-void ShareManager::slotCreateShare(const QJsonDocument &reply)
-{
-    if (!_jobContinuation.contains(sender()))
-        return;
-
-    CreateShare cont = _jobContinuation[sender()].value<CreateShare>();
-    if (cont.path.isEmpty())
-        return;
-    _jobContinuation.remove(sender());
-
-    // Find existing share permissions (if this was shared with us)
-    Share::Permissions existingPermissions = SharePermissionDefault;
-    foreach (const QJsonValue &element, reply.object()["ocs"].toObject()["data"].toArray()) {
-        auto map = element.toObject();
-        if (map["file_target"] == cont.path)
-            existingPermissions = Share::Permissions(map["permissions"].toInt());
-    }
-
-    // Limit the permissions we request for a share to the ones the item
-    // was shared with initially.
-    if (cont.permissions == SharePermissionDefault) {
-        cont.permissions = existingPermissions;
-    } else if (existingPermissions != SharePermissionDefault) {
-        cont.permissions &= existingPermissions;
-    }
-
-    OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotShareCreated(QJsonDocument)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
-    job->createShare(cont.path, cont.shareType, cont.shareWith, cont.permissions);
-}
 
 void ShareManager::slotShareCreated(const QJsonDocument &reply)
 {
@@ -320,13 +328,15 @@ void ShareManager::slotShareCreated(const QJsonDocument &reply)
     QSharedPointer<Share> share(parseShare(data));
 
     emit shareCreated(share);
+
+    updateFolder(_account, share->path());
 }
 
 void ShareManager::fetchShares(const QString &path)
 {
     OcsShareJob *job = new OcsShareJob(_account);
-    connect(job, SIGNAL(shareJobFinished(QJsonDocument, QVariant)), SLOT(slotSharesFetched(QJsonDocument)));
-    connect(job, SIGNAL(ocsError(int, QString)), SLOT(slotOcsError(int, QString)));
+    connect(job, &OcsShareJob::shareJobFinished, this, &ShareManager::slotSharesFetched);
+    connect(job, &OcsJob::ocsError, this, &ShareManager::slotOcsError);
     job->getShares(path);
 }
 

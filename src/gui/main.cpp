@@ -23,7 +23,7 @@
 
 #include "application.h"
 #include "theme.h"
-#include "utility.h"
+#include "common/utility.h"
 #include "cocoainitializer.h"
 
 #include "updater/updater.h"
@@ -56,11 +56,7 @@ int main(int argc, char **argv)
 // We do not define it on linux so the behaviour is kept the same
 // as other Qt apps in the desktop environment. (which may or may
 // not set this envoronment variable)
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
-#else
-    qputenv("QT_DEVICE_PIXEL_RATIO", "auto"); // See #4840, #4994
-#endif
 #endif // !Q_OS_WIN
 
 #ifdef Q_OS_MAC
@@ -92,7 +88,7 @@ int main(int argc, char **argv)
 
 // check a environment variable for core dumps
 #ifdef Q_OS_UNIX
-    if (!qgetenv("OWNCLOUD_CORE_DUMP").isEmpty()) {
+    if (!qEnvironmentVariableIsEmpty("OWNCLOUD_CORE_DUMP")) {
         struct rlimit core_limit;
         core_limit.rlim_cur = RLIM_INFINITY;
         core_limit.rlim_max = RLIM_INFINITY;
@@ -132,11 +128,9 @@ int main(int argc, char **argv)
         }
         return 0;
     }
-#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+    // We can't call isSystemTrayAvailable with appmenu-qt5 begause it hides the systemtray
+    // (issue #4693)
     if (qgetenv("QT_QPA_PLATFORMTHEME") != "appmenu-qt5")
-// We can't call isSystemTrayAvailable with appmenu-qt5 begause it hides the systemtray
-// (issue #4693)
-#endif
     {
         if (!QSystemTrayIcon::isSystemTrayAvailable()) {
             // If the systemtray is not there, we will wait one second for it to maybe start

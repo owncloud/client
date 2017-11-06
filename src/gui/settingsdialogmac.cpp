@@ -38,6 +38,9 @@
 
 namespace OCC {
 
+#include "settingsdialogcommon.cpp"
+
+
 // Duplicate in settingsdialog.cpp
 static QIcon circleMask(const QImage &avatar)
 {
@@ -146,7 +149,7 @@ void SettingsDialogMac::accountAdded(AccountState *s)
     QIcon accountIcon = MacStandardIcon::icon(MacStandardIcon::UserAccounts);
     auto accountSettings = new AccountSettings(s, this);
 
-    QString displayName = Theme::instance()->multiAccount() ? s->shortDisplayNameForSettings() : tr("Account");
+    QString displayName = Theme::instance()->multiAccount() ? SettingsDialogCommon::shortDisplayNameForSettings(s->account().data(), 0) : tr("Account");
 
     insertPreferencesPanel(0, accountIcon, displayName, accountSettings);
 
@@ -154,7 +157,8 @@ void SettingsDialogMac::accountAdded(AccountState *s)
     connect(accountSettings, &AccountSettings::openFolderAlias, _gui, &ownCloudGui::slotFolderOpenAction);
     connect(accountSettings, &AccountSettings::showIssuesList, this, &SettingsDialogMac::showIssuesList);
 
-    connect(s->account().data(), SIGNAL(accountChangedAvatar()), this, SLOT(slotAccountAvatarChanged()));
+    connect(s->account().data(), &Account::accountChangedAvatar, this, &SettingsDialogMac::slotAccountAvatarChanged);
+    connect(s->account().data(), &Account::accountChangedDisplayName, this, &SettingsDialogMac::slotAccountDisplayNameChanged);
 
     slotRefreshActivity(s);
 }
@@ -192,4 +196,23 @@ void SettingsDialogMac::slotAccountAvatarChanged()
         }
     }
 }
+
+void SettingsDialogMac::slotAccountDisplayNameChanged()
+{
+    Account *account = static_cast<Account *>(sender());
+    auto list = findChildren<AccountSettings *>(QString());
+    foreach (auto p, list) {
+        if (p->accountsState()->account() == account) {
+            int idx = indexForPanel(p);
+            QString displayName = account->displayName();
+            if (!displayName.isNull()) {
+                displayName = Theme::instance()->multiAccount()
+                        ? SettingsDialogCommon::shortDisplayNameForSettings(account, 0)
+                        : tr("Account");
+                setPreferencesPanelTitle(idx, displayName);
+            }
+        }
+    }
+}
+
 }

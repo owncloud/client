@@ -31,10 +31,15 @@
 
 #include "c_lib.h"
 #include "c_private.h"
+#include "c_utf8.h"
 
 #include "csync_private.h"
 #include "csync_exclude.h"
 #include "csync_misc.h"
+
+#include "common/utility.h"
+
+#include <QString>
 
 #ifdef _WIN32
 #include <io.h>
@@ -83,6 +88,7 @@ static const char *csync_exclude_expand_escapes(const char * input)
             case '"': out[o++] = '"'; break;
             case '?': out[o++] = '?'; break;
             case '\\': out[o++] = '\\'; break;
+            case '#': out[o++] = '#'; break;
             case 'a': out[o++] = '\a'; break;
             case 'b': out[o++] = '\b'; break;
             case 'f': out[o++] = '\f'; break;
@@ -180,18 +186,18 @@ out:
 // See http://support.microsoft.com/kb/74496 and
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
 // Additionally, we ignore '$Recycle.Bin', see https://github.com/owncloud/client/issues/2955
-static const char* win_reserved_words[] = {"CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5",
-                                           "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4",
-                                           "LPT5", "LPT6", "LPT7", "LPT8", "LPT9", "CLOCK$", "$Recycle.Bin" };
+static const char *win_reserved_words_3[] = { "CON", "PRN", "AUX", "NUL" };
+static const char *win_reserved_words_4[] = {
+    "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+    "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+};
+static const char *win_reserved_words_n[] = { "CLOCK$", "$Recycle.Bin" };
 
-bool csync_is_windows_reserved_word(const char* filename) {
+bool csync_is_windows_reserved_word(const char *filename)
+{
+    size_t len_filename = strlen(filename);
 
-  size_t win_reserve_words_len = sizeof(win_reserved_words) / sizeof(char*);
-  size_t j;
-
-  for (j = 0; j < win_reserve_words_len; j++) {
-    int len_reserved_word = strlen(win_reserved_words[j]);
-    int len_filename = strlen(filename);
+    // Drive letters
     if (len_filename == 2 && filename[1] == ':') {
         if (filename[0] >= 'a' && filename[0] <= 'z') {
             return true;
@@ -200,23 +206,37 @@ bool csync_is_windows_reserved_word(const char* filename) {
             return true;
         }
     }
-    if (c_strncasecmp(filename, win_reserved_words[j], len_reserved_word) == 0) {
-        if (len_filename == len_reserved_word) {
-            return true;
+
+    if (len_filename == 3 || (len_filename > 3 && filename[3] == '.')) {
+        for (const char *word : win_reserved_words_3) {
+            if (c_strncasecmp(filename, word, 3) == 0) {
+                return true;
+            }
         }
-        if ((len_filename > len_reserved_word) && (filename[len_reserved_word] == '.')) {
+    }
+
+    if (len_filename == 4 || (len_filename > 4 && filename[4] == '.')) {
+        for (const char *word : win_reserved_words_4) {
+            if (c_strncasecmp(filename, word, 4) == 0) {
+                return true;
+            }
+        }
+    }
+
+    for (const char *word : win_reserved_words_n) {
+        size_t len_word = strlen(word);
+        if (len_word == len_filename && c_strncasecmp(filename, word, len_word) == 0) {
             return true;
         }
     }
-  }
-  return false;
+
+    return false;
 }
 
 static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const char *path, int filetype, bool check_leading_dirs) {
     size_t i = 0;
     const char *bname = NULL;
     size_t blen = 0;
-    char *conflict = NULL;
     int rc = -1;
     CSYNC_EXCLUDE_TYPE match = CSYNC_NOT_EXCLUDED;
     CSYNC_EXCLUDE_TYPE type  = CSYNC_NOT_EXCLUDED;
@@ -231,20 +251,28 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
     }
     blen = strlen(bname);
 
-    rc = csync_fnmatch("._sync_*.db*", bname, 0);
-    if (rc == 0) {
-        match = CSYNC_FILE_SILENTLY_EXCLUDED;
-        goto out;
-    }
-    rc = csync_fnmatch(".sync_*.db*", bname, 0);
-    if (rc == 0) {
-        match = CSYNC_FILE_SILENTLY_EXCLUDED;
-        goto out;
-    }
-    rc = csync_fnmatch(".csync_journal.db*", bname, 0);
-    if (rc == 0) {
-        match = CSYNC_FILE_SILENTLY_EXCLUDED;
-        goto out;
+    // 9 = strlen(".sync_.db")
+    if (blen >= 9 && bname[0] == '.') {
+        rc = csync_fnmatch("._sync_*.db*", bname, 0);
+        if (rc == 0) {
+            match = CSYNC_FILE_SILENTLY_EXCLUDED;
+            goto out;
+        }
+        rc = csync_fnmatch(".sync_*.db*", bname, 0);
+        if (rc == 0) {
+            match = CSYNC_FILE_SILENTLY_EXCLUDED;
+            goto out;
+        }
+        rc = csync_fnmatch(".csync_journal.db*", bname, 0);
+        if (rc == 0) {
+            match = CSYNC_FILE_SILENTLY_EXCLUDED;
+            goto out;
+        }
+        rc = csync_fnmatch(".owncloudsync.log*", bname, 0);
+        if (rc == 0) {
+            match = CSYNC_FILE_SILENTLY_EXCLUDED;
+            goto out;
+        }
     }
 
     // check the strlen and ignore the file if its name is longer than 254 chars.
@@ -300,31 +328,11 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
         goto out;
     }
 
-    rc = csync_fnmatch(".owncloudsync.log*", bname, 0);
-    if (rc == 0) {
-        match = CSYNC_FILE_SILENTLY_EXCLUDED;
-        goto out;
-    }
-
-    /* Always ignore conflict files, not only via the exclude list */
-    rc = csync_fnmatch("*_conflict-*", bname, 0);
-    if (rc == 0) {
-        match = CSYNC_FILE_EXCLUDE_CONFLICT;
-        goto out;
-    }
-
-    if (getenv("CSYNC_CONFLICT_FILE_USERNAME")) {
-        rc = asprintf(&conflict, "*_conflict_%s-*", getenv("CSYNC_CONFLICT_FILE_USERNAME"));
-        if (rc < 0) {
-            goto out;
-        }
-        rc = csync_fnmatch(conflict, path, 0);
-        if (rc == 0) {
+    if (!OCC::Utility::shouldUploadConflictFiles()) {
+        if (OCC::Utility::isConflictFile(bname)) {
             match = CSYNC_FILE_EXCLUDE_CONFLICT;
-            SAFE_FREE(conflict);
             goto out;
         }
-        SAFE_FREE(conflict);
     }
 
     if( ! excludes ) {
@@ -426,8 +434,90 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(c_strlist_t *excludes, const ch
     return match;
 }
 
-CSYNC_EXCLUDE_TYPE csync_excluded_traversal(c_strlist_t *excludes, const char *path, int filetype) {
-  return _csync_excluded_common(excludes, path, filetype, false);
+/* Only for bnames (not paths) */
+static QString convertToBnameRegexpSyntax(QString exclude)
+{
+    QString s = QRegularExpression::escape(exclude).replace("\\*", ".*").replace("\\?", ".");
+    return s;
+}
+
+void csync_exclude_traversal_prepare(CSYNC *ctx)
+{
+    ctx->parsed_traversal_excludes.prepare(ctx->excludes);
+}
+
+void csync_s::TraversalExcludes::prepare(c_strlist_t *excludes)
+{
+    c_strlist_destroy(list_patterns_fnmatch);
+    list_patterns_fnmatch = nullptr;
+
+    // Start out with regexes that would match nothing
+    QString exclude_only = "a^";
+    QString exclude_and_remove = "a^";
+
+    size_t exclude_count = excludes ? excludes->count : 0;
+    for (unsigned int i = 0; i < exclude_count; i++) {
+        char *exclude = excludes->vector[i];
+        QString *builderToUse = & exclude_only;
+        if (exclude[0] == '\n') continue; // empty line
+        if (exclude[0] == '\r') continue; // empty line
+
+        /* If an exclude entry contains some fnmatch-ish characters, we use the C-style codepath without QRegularEpression */
+        if (strchr(exclude, '/') || strchr(exclude, '[') || strchr(exclude, '{') || strchr(exclude, '\\')) {
+            _csync_exclude_add(&list_patterns_fnmatch, exclude);
+            continue;
+        }
+
+        /* Those will attempt to use QRegularExpression */
+        if (exclude[0] == ']'){
+            exclude++;
+            builderToUse = &exclude_and_remove;
+        }
+        if (builderToUse->size() > 0) {
+            builderToUse->append("|");
+        }
+        builderToUse->append(convertToBnameRegexpSyntax(exclude));
+    }
+
+    QString pattern = "^(" + exclude_only + ")$|^(" + exclude_and_remove + ")$";
+    regexp_exclude.setPattern(pattern);
+    QRegularExpression::PatternOptions patternOptions = QRegularExpression::OptimizeOnFirstUsageOption;
+    if (OCC::Utility::fsCasePreserving())
+        patternOptions |= QRegularExpression::CaseInsensitiveOption;
+    regexp_exclude.setPatternOptions(patternOptions);
+    regexp_exclude.optimize();
+}
+
+CSYNC_EXCLUDE_TYPE csync_excluded_traversal(CSYNC *ctx, const char *path, int filetype) {
+    CSYNC_EXCLUDE_TYPE match = CSYNC_NOT_EXCLUDED;
+
+    /* Check only static patterns and only with the reduced list which is empty usually */
+    match = _csync_excluded_common(ctx->parsed_traversal_excludes.list_patterns_fnmatch, path, filetype, false);
+    if (match != CSYNC_NOT_EXCLUDED) {
+        return match;
+    }
+
+    if (ctx->excludes) {
+        /* Now check with our optimized regexps */
+        const char *bname = NULL;
+        /* split up the path */
+        bname = strrchr(path, '/');
+        if (bname) {
+            bname += 1; // don't include the /
+        } else {
+            bname = path;
+        }
+        QString p = QString::fromUtf8(bname);
+        auto m = ctx->parsed_traversal_excludes.regexp_exclude.match(p);
+        if (m.hasMatch()) {
+            if (!m.captured(1).isEmpty()) {
+                match = CSYNC_FILE_EXCLUDE_LIST;
+            } else if (!m.captured(2).isEmpty()) {
+                match = CSYNC_FILE_EXCLUDE_AND_REMOVE;
+            }
+        }
+    }
+    return match;
 }
 
 CSYNC_EXCLUDE_TYPE csync_excluded_no_ctx(c_strlist_t *excludes, const char *path, int filetype) {

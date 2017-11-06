@@ -1,17 +1,22 @@
 /*
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <QCryptographicHash>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QStringList>
@@ -19,27 +24,68 @@
 #include <QUrl>
 #include <QDir>
 
-#include "ownsql.h"
-
-#include "syncjournaldb.h"
-#include "syncjournalfilerecord.h"
-#include "utility.h"
+#include "common/syncjournaldb.h"
 #include "version.h"
-#include "filesystem.h"
-#include "asserts.h"
-#include "checksums.h"
+#include "filesystembase.h"
+#include "common/asserts.h"
+#include "common/checksums.h"
 
-#include "std/c_jhash.h"
+#include "common/c_jhash.h"
 
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcDb, "sync.database", QtInfoMsg)
 
+#define GET_FILE_RECORD_QUERY \
+        "SELECT path, inode, modtime, type, md5, fileid, remotePerm, filesize," \
+        "  ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum" \
+        " FROM metadata" \
+        "  LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id"
+
+static void fillFileRecordFromGetQuery(SyncJournalFileRecord &rec, SqlQuery &query)
+{
+    rec._path = query.baValue(0);
+    rec._inode = query.intValue(1);
+    rec._modtime = query.int64Value(2);
+    rec._type = query.intValue(3);
+    rec._etag = query.baValue(4);
+    rec._fileId = query.baValue(5);
+    rec._remotePerm = RemotePermissions(query.baValue(6).constData());
+    rec._fileSize = query.int64Value(7);
+    rec._serverHasIgnoredFiles = (query.intValue(8) > 0);
+    rec._checksumHeader = query.baValue(9);
+}
+
+static QString defaultJournalMode(const QString &dbPath)
+{
+#ifdef Q_OS_WIN
+    // See #2693: Some exFAT file systems seem unable to cope with the
+    // WAL journaling mode. They work fine with DELETE.
+    QString fileSystem = FileSystem::fileSystemForPath(dbPath);
+    qCInfo(lcDb) << "Detected filesystem" << fileSystem << "for" << dbPath;
+    if (fileSystem.contains("FAT")) {
+        qCInfo(lcDb) << "Filesystem contains FAT - using DELETE journal mode";
+        return "DELETE";
+    }
+#else
+    Q_UNUSED(dbPath)
+#endif
+    return "WAL";
+}
+
 SyncJournalDb::SyncJournalDb(const QString &dbFilePath, QObject *parent)
     : QObject(parent)
     , _dbFile(dbFilePath)
+    , _mutex(QMutex::Recursive)
     , _transaction(0)
+    , _metadataTableIsEmpty(false)
 {
+    // Allow forcing the journal mode for debugging
+    static QString envJournalMode = QString::fromLocal8Bit(qgetenv("OWNCLOUD_SQLITE_JOURNAL_MODE"));
+    _journalMode = envJournalMode;
+    if (_journalMode.isEmpty()) {
+        _journalMode = defaultJournalMode(_dbFile);
+    }
 }
 
 QString SyncJournalDb::makeDbName(const QString &localPath,
@@ -215,23 +261,6 @@ bool SyncJournalDb::sqlFail(const QString &log, const SqlQuery &query)
     return false;
 }
 
-static QString defaultJournalMode(const QString &dbPath)
-{
-#ifdef Q_OS_WIN
-    // See #2693: Some exFAT file systems seem unable to cope with the
-    // WAL journaling mode. They work fine with DELETE.
-    QString fileSystem = FileSystem::fileSystemForPath(dbPath);
-    qCInfo(lcDb) << "Detected filesystem" << fileSystem << "for" << dbPath;
-    if (fileSystem.contains("FAT")) {
-        qCInfo(lcDb) << "Filesystem contains FAT - using DELETE journal mode";
-        return "DELETE";
-    }
-#else
-    Q_UNUSED(dbPath)
-#endif
-    return "WAL";
-}
-
 bool SyncJournalDb::checkConnect()
 {
     if (_db.isOpen()) {
@@ -264,13 +293,7 @@ bool SyncJournalDb::checkConnect()
         qCInfo(lcDb) << "sqlite3 version" << pragma1.stringValue(0);
     }
 
-    // Allow forcing the journal mode for debugging
-    static QString env_journal_mode = QString::fromLocal8Bit(qgetenv("OWNCLOUD_SQLITE_JOURNAL_MODE"));
-    QString journal_mode = env_journal_mode;
-    if (journal_mode.isEmpty()) {
-        journal_mode = defaultJournalMode(_dbFile);
-    }
-    pragma1.prepare(QString("PRAGMA journal_mode=%1;").arg(journal_mode));
+    pragma1.prepare(QString("PRAGMA journal_mode=%1;").arg(_journalMode));
     if (!pragma1.exec()) {
         return sqlFail("Set PRAGMA journal_mode", pragma1);
     } else {
@@ -322,7 +345,28 @@ bool SyncJournalDb::checkConnect()
                         "PRIMARY KEY(phash)"
                         ");");
 
+#ifndef SQLITE_IOERR_SHMMAP
+// Requires sqlite >= 3.7.7 but old CentOS6 has sqlite-3.6.20
+// Definition taken from https://sqlite.org/c3ref/c_abort_rollback.html
+#define SQLITE_IOERR_SHMMAP            (SQLITE_IOERR | (21<<8))
+#endif
+
     if (!createQuery.exec()) {
+        // In certain situations the io error can be avoided by switching
+        // to the DELETE journal mode, see #5723
+        if (_journalMode != "DELETE"
+            && createQuery.errorId() == SQLITE_IOERR
+            && sqlite3_extended_errcode(_db.sqliteDb()) == SQLITE_IOERR_SHMMAP) {
+            qCWarning(lcDb) << "IO error SHMMAP on table creation, attempting with DELETE journal mode";
+
+            _journalMode = "DELETE";
+            createQuery.finish();
+            pragma1.finish();
+            commitTransaction();
+            _db.close();
+            return checkConnect();
+        }
+
         return sqlFail("Create table metadata", createQuery);
     }
 
@@ -484,12 +528,45 @@ bool SyncJournalDb::checkConnect()
 
     _getFileRecordQuery.reset(new SqlQuery(_db));
     if (_getFileRecordQuery->prepare(
-            "SELECT path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize,"
-            "  ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum"
-            " FROM metadata"
-            "  LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id"
+            GET_FILE_RECORD_QUERY
             " WHERE phash=?1")) {
         return sqlFail("prepare _getFileRecordQuery", *_getFileRecordQuery);
+    }
+
+    _getFileRecordQueryByInode.reset(new SqlQuery(_db));
+    if (_getFileRecordQueryByInode->prepare(
+            GET_FILE_RECORD_QUERY
+            " WHERE inode=?1")) {
+        return sqlFail("prepare _getFileRecordQueryByInode", *_getFileRecordQueryByInode);
+    }
+
+    _getFileRecordQueryByFileId.reset(new SqlQuery(_db));
+    if (_getFileRecordQueryByFileId->prepare(
+            GET_FILE_RECORD_QUERY
+            " WHERE fileid=?1")) {
+        return sqlFail("prepare _getFileRecordQueryByFileId", *_getFileRecordQueryByFileId);
+    }
+
+    // This query is used to skip discovery and fill the tree from the
+    // database instead
+    _getFilesBelowPathQuery.reset(new SqlQuery(_db));
+    if (_getFilesBelowPathQuery->prepare(
+            GET_FILE_RECORD_QUERY
+            " WHERE path > (?1||'/') AND path < (?1||'0')"
+            // We want to ensure that the contents of a directory are sorted
+            // directly behind the directory itself. Without this ORDER BY
+            // an ordering like foo, foo-2, foo/file would be returned.
+            // With the trailing /, we get foo-2, foo, foo/file. This property
+            // is used in fill_tree_from_db().
+            " ORDER BY path||'/' ASC")) {
+        return sqlFail("prepare _getFilesBelowPathQuery", *_getFilesBelowPathQuery);
+    }
+
+    _getAllFilesQuery.reset(new SqlQuery(_db));
+    if (_getAllFilesQuery->prepare(
+            GET_FILE_RECORD_QUERY
+            " ORDER BY path||'/' ASC")) {
+        return sqlFail("prepare _getAllFilesQuery", *_getAllFilesQuery);
     }
 
     _setFileRecordQuery.reset(new SqlQuery(_db));
@@ -618,6 +695,10 @@ bool SyncJournalDb::checkConnect()
     // don't start a new transaction now
     commitInternal(QString("checkConnect End"), false);
 
+    // This avoid reading from the DB if we already know it is empty
+    // thereby speeding up the initial discovery significantly.
+    _metadataTableIsEmpty = (getFileRecordCount() == 0);
+
     // Hide 'em all!
     FileSystem::setFileHidden(databaseFilePath(), true);
     FileSystem::setFileHidden(databaseFilePath() + "-wal", true);
@@ -635,6 +716,10 @@ void SyncJournalDb::close()
     commitTransaction();
 
     _getFileRecordQuery.reset(0);
+    _getFileRecordQueryByInode.reset(0);
+    _getFileRecordQueryByFileId.reset(0);
+    _getFilesBelowPathQuery.reset(0);
+    _getAllFilesQuery.reset(0);
     _setFileRecordQuery.reset(0);
     _setFileRecordChecksumQuery.reset(0);
     _setFileRecordLocalMetadataQuery.reset(0);
@@ -658,6 +743,7 @@ void SyncJournalDb::close()
 
     _db.close();
     _avoidReadFromDbOnNextSyncFilter.clear();
+    _metadataTableIsEmpty = false;
 }
 
 
@@ -844,18 +930,17 @@ QStringList SyncJournalDb::tableColumns(const QString &table)
     return columns;
 }
 
-qint64 SyncJournalDb::getPHash(const QString &file)
+qint64 SyncJournalDb::getPHash(const QByteArray &file)
 {
-    QByteArray utf8File = file.toUtf8();
     int64_t h;
 
     if (file.isEmpty()) {
         return -1;
     }
 
-    int len = utf8File.length();
+    int len = file.length();
 
-    h = c_jhash64((uint8_t *)utf8File.data(), len, 0);
+    h = c_jhash64((uint8_t *)file.data(), len, 0);
     return h;
 }
 
@@ -866,8 +951,8 @@ bool SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
 
     if (!_avoidReadFromDbOnNextSyncFilter.isEmpty()) {
         // If we are a directory that should not be read from db next time, don't write the etag
-        QString prefix = record._path + "/";
-        foreach (const QString &it, _avoidReadFromDbOnNextSyncFilter) {
+        QByteArray prefix = record._path + "/";
+        foreach (const QByteArray &it, _avoidReadFromDbOnNextSyncFilter) {
             if (it.startsWith(prefix)) {
                 qCInfo(lcDb) << "Filtered writing the etag of" << prefix << "because it is a prefix of" << it;
                 record._etag = "_invalid_";
@@ -878,36 +963,33 @@ bool SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
 
     qCInfo(lcDb) << "Updating file record for path:" << record._path << "inode:" << record._inode
                  << "modtime:" << record._modtime << "type:" << record._type
-                 << "etag:" << record._etag << "fileId:" << record._fileId << "remotePerm:" << record._remotePerm
+                 << "etag:" << record._etag << "fileId:" << record._fileId << "remotePerm:" << record._remotePerm.toString()
                  << "fileSize:" << record._fileSize << "checksum:" << record._checksumHeader;
 
     qlonglong phash = getPHash(record._path);
     if (checkConnect()) {
-        QByteArray arr = record._path.toUtf8();
-        int plen = arr.length();
+        int plen = record._path.length();
 
-        QString etag(record._etag);
+        QByteArray etag(record._etag);
         if (etag.isEmpty())
             etag = "";
-        QString fileId(record._fileId);
+        QByteArray fileId(record._fileId);
         if (fileId.isEmpty())
             fileId = "";
-        QString remotePerm(record._remotePerm);
-        if (remotePerm.isEmpty())
-            remotePerm = QString(); // have NULL in DB (vs empty)
+        QByteArray remotePerm = record._remotePerm.toString();
         QByteArray checksumType, checksum;
         parseChecksumHeader(record._checksumHeader, &checksumType, &checksum);
         int contentChecksumTypeId = mapChecksumType(checksumType);
         _setFileRecordQuery->reset_and_clear_bindings();
-        _setFileRecordQuery->bindValue(1, QString::number(phash));
+        _setFileRecordQuery->bindValue(1, phash);
         _setFileRecordQuery->bindValue(2, plen);
         _setFileRecordQuery->bindValue(3, record._path);
         _setFileRecordQuery->bindValue(4, record._inode);
         _setFileRecordQuery->bindValue(5, 0); // uid Not used
         _setFileRecordQuery->bindValue(6, 0); // gid Not used
         _setFileRecordQuery->bindValue(7, 0); // mode Not used
-        _setFileRecordQuery->bindValue(8, QString::number(Utility::qDateTimeToTime_t(record._modtime)));
-        _setFileRecordQuery->bindValue(9, QString::number(record._type));
+        _setFileRecordQuery->bindValue(8, record._modtime);
+        _setFileRecordQuery->bindValue(9, record._type);
         _setFileRecordQuery->bindValue(10, etag);
         _setFileRecordQuery->bindValue(11, fileId);
         _setFileRecordQuery->bindValue(12, remotePerm);
@@ -920,7 +1002,9 @@ bool SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
             return false;
         }
 
-        _setFileRecordQuery->reset_and_clear_bindings();
+        // Can't be true anymore.
+        _metadataTableIsEmpty = false;
+
         return true;
     } else {
         qCWarning(lcDb) << "Failed to connect database.";
@@ -936,23 +1020,20 @@ bool SyncJournalDb::deleteFileRecord(const QString &filename, bool recursively)
         // if (!recursively) {
         // always delete the actual file.
 
-        qlonglong phash = getPHash(filename);
+        qlonglong phash = getPHash(filename.toUtf8());
         _deleteFileRecordPhash->reset_and_clear_bindings();
-        _deleteFileRecordPhash->bindValue(1, QString::number(phash));
+        _deleteFileRecordPhash->bindValue(1, phash);
 
         if (!_deleteFileRecordPhash->exec()) {
             return false;
         }
 
-        _deleteFileRecordPhash->reset_and_clear_bindings();
         if (recursively) {
             _deleteFileRecordRecursively->reset_and_clear_bindings();
             _deleteFileRecordRecursively->bindValue(1, filename);
             if (!_deleteFileRecordRecursively->exec()) {
                 return false;
             }
-
-            _deleteFileRecordRecursively->reset_and_clear_bindings();
         }
         return true;
     } else {
@@ -962,53 +1043,130 @@ bool SyncJournalDb::deleteFileRecord(const QString &filename, bool recursively)
 }
 
 
-SyncJournalFileRecord SyncJournalDb::getFileRecord(const QString &filename)
+bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRecord *rec)
 {
     QMutexLocker locker(&_mutex);
 
-    qlonglong phash = getPHash(filename);
-    SyncJournalFileRecord rec;
+    // Reset the output var in case the caller is reusing it.
+    Q_ASSERT(rec);
+    rec->_path.clear();
+    Q_ASSERT(!rec->isValid());
 
-    if (!filename.isEmpty() && checkConnect()) {
+    if (_metadataTableIsEmpty)
+        return true; // no error, yet nothing found (rec->isValid() == false)
+
+    if (!checkConnect())
+        return false;
+
+    if (!filename.isEmpty()) {
         _getFileRecordQuery->reset_and_clear_bindings();
-        _getFileRecordQuery->bindValue(1, QString::number(phash));
+        _getFileRecordQuery->bindValue(1, getPHash(filename));
 
         if (!_getFileRecordQuery->exec()) {
-            locker.unlock();
             close();
-            return rec;
+            return false;
         }
 
         if (_getFileRecordQuery->next()) {
-            rec._path = _getFileRecordQuery->stringValue(0);
-            rec._inode = _getFileRecordQuery->intValue(1);
-            //rec._uid     = _getFileRecordQuery->value(2).toInt(&ok); Not Used
-            //rec._gid     = _getFileRecordQuery->value(3).toInt(&ok); Not Used
-            //rec._mode    = _getFileRecordQuery->intValue(4);
-            rec._modtime = Utility::qDateTimeFromTime_t(_getFileRecordQuery->int64Value(5));
-            rec._type = _getFileRecordQuery->intValue(6);
-            rec._etag = _getFileRecordQuery->baValue(7);
-            rec._fileId = _getFileRecordQuery->baValue(8);
-            rec._remotePerm = _getFileRecordQuery->baValue(9);
-            rec._fileSize = _getFileRecordQuery->int64Value(10);
-            rec._serverHasIgnoredFiles = (_getFileRecordQuery->intValue(11) > 0);
-            rec._checksumHeader = _getFileRecordQuery->baValue(12);
-            _getFileRecordQuery->reset_and_clear_bindings();
+            fillFileRecordFromGetQuery(*rec, *_getFileRecordQuery);
         } else {
             int errId = _getFileRecordQuery->errorId();
             if (errId != SQLITE_DONE) { // only do this if the problem is different from SQLITE_DONE
                 QString err = _getFileRecordQuery->error();
                 qCWarning(lcDb) << "No journal entry found for " << filename << "Error: " << err;
-                locker.unlock();
                 close();
-                locker.relock();
             }
         }
-        if (_getFileRecordQuery) {
-            _getFileRecordQuery->reset_and_clear_bindings();
-        }
     }
-    return rec;
+    return true;
+}
+
+bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *rec)
+{
+    QMutexLocker locker(&_mutex);
+
+    // Reset the output var in case the caller is reusing it.
+    Q_ASSERT(rec);
+    rec->_path.clear();
+    Q_ASSERT(!rec->isValid());
+
+    if (!inode || _metadataTableIsEmpty)
+        return true; // no error, yet nothing found (rec->isValid() == false)
+
+    if (!checkConnect())
+        return false;
+
+    _getFileRecordQueryByInode->reset_and_clear_bindings();
+    _getFileRecordQueryByInode->bindValue(1, inode);
+
+    if (!_getFileRecordQueryByInode->exec()) {
+        return false;
+    }
+
+    if (_getFileRecordQueryByInode->next()) {
+        fillFileRecordFromGetQuery(*rec, *_getFileRecordQueryByInode);
+    }
+
+    return true;
+}
+
+bool SyncJournalDb::getFileRecordsByFileId(const QByteArray &fileId, const std::function<void(const SyncJournalFileRecord &)> &rowCallback)
+{
+    QMutexLocker locker(&_mutex);
+
+    if (fileId.isEmpty() || _metadataTableIsEmpty)
+        return true; // no error, yet nothing found (rec->isValid() == false)
+
+    if (!checkConnect())
+        return false;
+
+    _getFileRecordQueryByFileId->reset_and_clear_bindings();
+    _getFileRecordQueryByFileId->bindValue(1, fileId);
+
+    if (!_getFileRecordQueryByFileId->exec()) {
+        return false;
+    }
+
+    while (_getFileRecordQueryByFileId->next()) {
+        SyncJournalFileRecord rec;
+        fillFileRecordFromGetQuery(rec, *_getFileRecordQueryByFileId);
+        rowCallback(rec);
+    }
+
+    return true;
+}
+
+bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::function<void(const SyncJournalFileRecord&)> &rowCallback)
+{
+    QMutexLocker locker(&_mutex);
+
+    if (_metadataTableIsEmpty)
+        return true; // no error, yet nothing found
+
+    if (!checkConnect())
+        return false;
+
+    // Since the path column doesn't store the starting /, the getFilesBelowPathQuery
+    // can't be used for the root path "". It would scan for (path > '/' and path < '0')
+    // and find nothing. So, unfortunately, we have to use a different query for
+    // retrieving the whole tree.
+    auto &query = path.isEmpty() ? _getAllFilesQuery : _getFilesBelowPathQuery;
+
+    query->reset_and_clear_bindings();
+    if (query == _getFilesBelowPathQuery)
+        query->bindValue(1, path);
+
+    if (!query->exec()) {
+        return false;
+    }
+
+    while (query->next()) {
+        SyncJournalFileRecord rec;
+        fillFileRecordFromGetQuery(rec, *query);
+        rowCallback(rec);
+    }
+
+    return true;
 }
 
 bool SyncJournalDb::postSyncCleanup(const QSet<QString> &filepathsToKeep,
@@ -1027,10 +1185,10 @@ bool SyncJournalDb::postSyncCleanup(const QSet<QString> &filepathsToKeep,
         return false;
     }
 
-    QStringList superfluousItems;
+    QByteArrayList superfluousItems;
 
     while (query.next()) {
-        const QString file = query.stringValue(1);
+        const QString file = query.baValue(1);
         bool keep = filepathsToKeep.contains(file);
         if (!keep) {
             foreach (const QString &prefix, prefixesToKeep) {
@@ -1041,12 +1199,12 @@ bool SyncJournalDb::postSyncCleanup(const QSet<QString> &filepathsToKeep,
             }
         }
         if (!keep) {
-            superfluousItems.append(query.stringValue(0));
+            superfluousItems.append(query.baValue(0));
         }
     }
 
     if (superfluousItems.count()) {
-        QString sql = "DELETE FROM metadata WHERE phash in (" + superfluousItems.join(",") + ")";
+        QByteArray sql = "DELETE FROM metadata WHERE phash in (" + superfluousItems.join(",") + ")";
         qCInfo(lcDb) << "Sync Journal cleanup for" << superfluousItems;
         SqlQuery delQuery(_db);
         delQuery.prepare(sql);
@@ -1065,15 +1223,11 @@ int SyncJournalDb::getFileRecordCount()
 {
     QMutexLocker locker(&_mutex);
 
-    if (!checkConnect()) {
-        return -1;
-    }
-
     SqlQuery query(_db);
     query.prepare("SELECT COUNT(*) FROM metadata");
 
     if (!query.exec()) {
-        return 0;
+        return -1;
     }
 
     if (query.next()) {
@@ -1081,7 +1235,7 @@ int SyncJournalDb::getFileRecordCount()
         return count;
     }
 
-    return 0;
+    return -1;
 }
 
 bool SyncJournalDb::updateFileRecordChecksum(const QString &filename,
@@ -1092,7 +1246,7 @@ bool SyncJournalDb::updateFileRecordChecksum(const QString &filename,
 
     qCInfo(lcDb) << "Updating file checksum" << filename << contentChecksum << contentChecksumType;
 
-    qlonglong phash = getPHash(filename);
+    qlonglong phash = getPHash(filename.toUtf8());
     if (!checkConnect()) {
         qCWarning(lcDb) << "Failed to connect database.";
         return false;
@@ -1102,7 +1256,7 @@ bool SyncJournalDb::updateFileRecordChecksum(const QString &filename,
     auto &query = _setFileRecordChecksumQuery;
 
     query->reset_and_clear_bindings();
-    query->bindValue(1, QString::number(phash));
+    query->bindValue(1, phash);
     query->bindValue(2, contentChecksum);
     query->bindValue(3, checksumTypeId);
 
@@ -1110,7 +1264,6 @@ bool SyncJournalDb::updateFileRecordChecksum(const QString &filename,
         return false;
     }
 
-    query->reset_and_clear_bindings();
     return true;
 }
 
@@ -1122,7 +1275,7 @@ bool SyncJournalDb::updateLocalMetadata(const QString &filename,
 
     qCInfo(lcDb) << "Updating local metadata for:" << filename << modtime << size << inode;
 
-    qlonglong phash = getPHash(filename);
+    qlonglong phash = getPHash(filename.toUtf8());
     if (!checkConnect()) {
         qCWarning(lcDb) << "Failed to connect database.";
         return false;
@@ -1131,7 +1284,7 @@ bool SyncJournalDb::updateLocalMetadata(const QString &filename,
     auto &query = _setFileRecordLocalMetadataQuery;
 
     query->reset_and_clear_bindings();
-    query->bindValue(1, QString::number(phash));
+    query->bindValue(1, phash);
     query->bindValue(2, inode);
     query->bindValue(3, modtime);
     query->bindValue(4, size);
@@ -1140,16 +1293,17 @@ bool SyncJournalDb::updateLocalMetadata(const QString &filename,
         return false;
     }
 
-    query->reset_and_clear_bindings();
     return true;
 }
 
 bool SyncJournalDb::setFileRecordMetadata(const SyncJournalFileRecord &record)
 {
-    SyncJournalFileRecord existing = getFileRecord(record._path);
+    SyncJournalFileRecord existing;
+    if (!getFileRecord(record._path, &existing))
+        return false;
 
     // If there's no existing record, just insert the new one.
-    if (existing._path.isEmpty()) {
+    if (!existing.isValid()) {
         return setFileRecord(record);
     }
 
@@ -1188,7 +1342,6 @@ static bool deleteBatch(SqlQuery &query, const QStringList &entries, const QStri
             return false;
         }
     }
-    query.reset_and_clear_bindings(); // viel hilft viel ;-)
 
     return true;
 }
@@ -1212,7 +1365,6 @@ SyncJournalDb::DownloadInfo SyncJournalDb::getDownloadInfo(const QString &file)
         } else {
             res._valid = false;
         }
-        _getDownloadInfoQuery->reset_and_clear_bindings();
     }
     return res;
 }
@@ -1235,9 +1387,6 @@ void SyncJournalDb::setDownloadInfo(const QString &file, const SyncJournalDb::Do
         if (!_setDownloadInfoQuery->exec()) {
             return;
         }
-
-        _setDownloadInfoQuery->reset_and_clear_bindings();
-
     } else {
         _deleteDownloadInfoQuery->reset_and_clear_bindings();
         _deleteDownloadInfoQuery->bindValue(1, file);
@@ -1245,8 +1394,6 @@ void SyncJournalDb::setDownloadInfo(const QString &file, const SyncJournalDb::Do
         if (!_deleteDownloadInfoQuery->exec()) {
             return;
         }
-
-        _deleteDownloadInfoQuery->reset_and_clear_bindings();
     }
 }
 
@@ -1324,10 +1471,9 @@ SyncJournalDb::UploadInfo SyncJournalDb::getUploadInfo(const QString &file)
             res._transferid = _getUploadInfoQuery->intValue(1);
             res._errorCount = _getUploadInfoQuery->intValue(2);
             res._size = _getUploadInfoQuery->int64Value(3);
-            res._modtime = Utility::qDateTimeFromTime_t(_getUploadInfoQuery->int64Value(4));
+            res._modtime = _getUploadInfoQuery->int64Value(4);
             res._valid = ok;
         }
-        _getUploadInfoQuery->reset_and_clear_bindings();
     }
     return res;
 }
@@ -1347,13 +1493,11 @@ void SyncJournalDb::setUploadInfo(const QString &file, const SyncJournalDb::Uplo
         _setUploadInfoQuery->bindValue(3, i._transferid);
         _setUploadInfoQuery->bindValue(4, i._errorCount);
         _setUploadInfoQuery->bindValue(5, i._size);
-        _setUploadInfoQuery->bindValue(6, Utility::qDateTimeToTime_t(i._modtime));
+        _setUploadInfoQuery->bindValue(6, i._modtime);
 
         if (!_setUploadInfoQuery->exec()) {
             return;
         }
-
-        _setUploadInfoQuery->reset_and_clear_bindings();
     } else {
         _deleteUploadInfoQuery->reset_and_clear_bindings();
         _deleteUploadInfoQuery->bindValue(1, file);
@@ -1361,8 +1505,6 @@ void SyncJournalDb::setUploadInfo(const QString &file, const SyncJournalDb::Uplo
         if (!_deleteUploadInfoQuery->exec()) {
             return;
         }
-
-        _deleteUploadInfoQuery->reset_and_clear_bindings();
     }
 }
 
@@ -1422,7 +1564,6 @@ SyncJournalErrorBlacklistRecord SyncJournalDb::errorBlacklistEntry(const QString
                     _getErrorBlacklistQuery->intValue(7));
                 entry._file = file;
             }
-            _getErrorBlacklistQuery->reset_and_clear_bindings();
         }
     }
 
@@ -1538,17 +1679,17 @@ void SyncJournalDb::setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord
         return;
     }
 
+    _setErrorBlacklistQuery->reset_and_clear_bindings();
     _setErrorBlacklistQuery->bindValue(1, item._file);
     _setErrorBlacklistQuery->bindValue(2, item._lastTryEtag);
-    _setErrorBlacklistQuery->bindValue(3, QString::number(item._lastTryModtime));
+    _setErrorBlacklistQuery->bindValue(3, item._lastTryModtime);
     _setErrorBlacklistQuery->bindValue(4, item._retryCount);
     _setErrorBlacklistQuery->bindValue(5, item._errorString);
-    _setErrorBlacklistQuery->bindValue(6, QString::number(item._lastTryTime));
-    _setErrorBlacklistQuery->bindValue(7, QString::number(item._ignoreDuration));
+    _setErrorBlacklistQuery->bindValue(6, item._lastTryTime);
+    _setErrorBlacklistQuery->bindValue(7, item._ignoreDuration);
     _setErrorBlacklistQuery->bindValue(8, item._renameTarget);
     _setErrorBlacklistQuery->bindValue(9, item._errorCategory);
     _setErrorBlacklistQuery->exec();
-    _setErrorBlacklistQuery->reset_and_clear_bindings();
 }
 
 QVector<SyncJournalDb::PollInfo> SyncJournalDb::getPollInfos()
@@ -1593,7 +1734,7 @@ void SyncJournalDb::setPollInfo(const SyncJournalDb::PollInfo &info)
     } else {
         SqlQuery query("INSERT OR REPLACE INTO poll (path, modtime, pollpath) VALUES( ? , ? , ? )", _db);
         query.bindValue(1, info._file);
-        query.bindValue(2, QString::number(info._modtime));
+        query.bindValue(2, info._modtime);
         query.bindValue(3, info._url);
         query.exec();
     }
@@ -1653,7 +1794,7 @@ void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType ty
     }
 }
 
-void SyncJournalDb::avoidRenamesOnNextSync(const QString &path)
+void SyncJournalDb::avoidRenamesOnNextSync(const QByteArray &path)
 {
     QMutexLocker locker(&_mutex);
 
@@ -1669,11 +1810,10 @@ void SyncJournalDb::avoidRenamesOnNextSync(const QString &path)
 
     // We also need to remove the ETags so the update phase refreshes the directory paths
     // on the next sync
-    locker.unlock();
     avoidReadFromDbOnNextSync(path);
 }
 
-void SyncJournalDb::avoidReadFromDbOnNextSync(const QString &fileName)
+void SyncJournalDb::avoidReadFromDbOnNextSync(const QByteArray &fileName)
 {
     // Make sure that on the next sync, fileName is not read from the DB but uses the PROPFIND to
     // get the info from the server
@@ -1800,6 +1940,7 @@ void SyncJournalDb::setDataFingerprint(const QByteArray &dataFingerprint)
 
 void SyncJournalDb::clearFileTable()
 {
+    QMutexLocker lock(&_mutex);
     SqlQuery query(_db);
     query.prepare("DELETE FROM metadata;");
     query.exec();

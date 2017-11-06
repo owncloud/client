@@ -29,6 +29,7 @@
 #include "accessmanager.h"
 #include "theme.h"
 #include "configfile.h"
+#include "cookiejar.h"
 
 namespace {
 const char ShibbolethWebViewGeometryC[] = "ShibbolethWebView/Geometry";
@@ -42,7 +43,7 @@ public:
     UserAgentWebPage(QObject *parent)
         : QWebPage(parent)
     {
-        if (!qgetenv("OWNCLOUD_SHIBBOLETH_DEBUG").isEmpty()) {
+        if (!qEnvironmentVariableIsEmpty("OWNCLOUD_SHIBBOLETH_DEBUG")) {
             settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
         }
     }
@@ -63,27 +64,26 @@ ShibbolethWebView::ShibbolethWebView(AccountPtr account, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     QWebPage *page = new UserAgentWebPage(this);
-    connect(page, SIGNAL(loadStarted()),
-        this, SLOT(slotLoadStarted()));
-    connect(page, SIGNAL(loadFinished(bool)),
-        this, SLOT(slotLoadFinished(bool)));
+    connect(page, &QWebPage::loadStarted,
+        this, &ShibbolethWebView::slotLoadStarted);
+    connect(page, &QWebPage::loadFinished,
+        this, &ShibbolethWebView::slotLoadFinished);
 
     // Make sure to accept the same SSL certificate issues as the regular QNAM we use for syncing
-    QObject::connect(page->networkAccessManager(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
-        _account.data(), SLOT(slotHandleSslErrors(QNetworkReply *, QList<QSslError>)));
+    QObject::connect(page->networkAccessManager(), &QNetworkAccessManager::sslErrors,
+        _account.data(), &Account::slotHandleSslErrors);
 
     // The Account keeps ownership of the cookie jar, it must outlive this webview.
     account->lendCookieJarTo(page->networkAccessManager());
-    connect(page->networkAccessManager()->cookieJar(),
-        SIGNAL(newCookiesForUrl(QList<QNetworkCookie>, QUrl)),
-        this, SLOT(onNewCookiesForUrl(QList<QNetworkCookie>, QUrl)));
+    connect(static_cast<CookieJar *>(page->networkAccessManager()->cookieJar()), &CookieJar::newCookiesForUrl,
+        this, &ShibbolethWebView::onNewCookiesForUrl);
 
     page->mainFrame()->load(account->url());
     this->setPage(page);
     setWindowTitle(tr("%1 - Authenticate").arg(Theme::instance()->appNameGUI()));
 
     // Debug view to display the cipher suite
-    if (!qgetenv("OWNCLOUD_SHIBBOLETH_DEBUG").isEmpty()) {
+    if (!qEnvironmentVariableIsEmpty("OWNCLOUD_SHIBBOLETH_DEBUG")) {
         // open an additional window to display some cipher debug info
         QWebPage *debugPage = new UserAgentWebPage(this);
         debugPage->mainFrame()->load(QUrl("https://cc.dcsec.uni-hannover.de/"));

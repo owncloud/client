@@ -15,9 +15,9 @@
 
 #include "syncfilestatustracker.h"
 #include "syncengine.h"
-#include "syncjournaldb.h"
-#include "syncjournalfilerecord.h"
-#include "asserts.h"
+#include "common/syncjournaldb.h"
+#include "common/syncjournalfilerecord.h"
+#include "common/asserts.h"
 
 #include <QLoggingCategory>
 
@@ -94,6 +94,7 @@ static inline bool showErrorInSocketApi(const SyncFileItem &item)
     return item._instruction == CSYNC_INSTRUCTION_ERROR
         || status == SyncFileItem::NormalError
         || status == SyncFileItem::FatalError
+        || status == SyncFileItem::DetailError
         || status == SyncFileItem::BlacklistedError
         || item._hasBlacklistEntry;
 }
@@ -110,13 +111,13 @@ static inline bool showWarningInSocketApi(const SyncFileItem &item)
 SyncFileStatusTracker::SyncFileStatusTracker(SyncEngine *syncEngine)
     : _syncEngine(syncEngine)
 {
-    connect(syncEngine, SIGNAL(aboutToPropagate(SyncFileItemVector &)),
-        SLOT(slotAboutToPropagate(SyncFileItemVector &)));
-    connect(syncEngine, SIGNAL(itemCompleted(const SyncFileItemPtr &)),
-        SLOT(slotItemCompleted(const SyncFileItemPtr &)));
-    connect(syncEngine, SIGNAL(finished(bool)), SLOT(slotSyncFinished()));
-    connect(syncEngine, SIGNAL(started()), SLOT(slotSyncEngineRunningChanged()));
-    connect(syncEngine, SIGNAL(finished(bool)), SLOT(slotSyncEngineRunningChanged()));
+    connect(syncEngine, &SyncEngine::aboutToPropagate,
+        this, &SyncFileStatusTracker::slotAboutToPropagate);
+    connect(syncEngine, &SyncEngine::itemCompleted,
+        this, &SyncFileStatusTracker::slotItemCompleted);
+    connect(syncEngine, &SyncEngine::finished, this, &SyncFileStatusTracker::slotSyncFinished);
+    connect(syncEngine, &SyncEngine::started, this, &SyncFileStatusTracker::slotSyncEngineRunningChanged);
+    connect(syncEngine, &SyncEngine::finished, this, &SyncFileStatusTracker::slotSyncEngineRunningChanged);
 }
 
 SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
@@ -144,9 +145,9 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
         return SyncFileStatus::StatusSync;
 
     // First look it up in the database to know if it's shared
-    SyncJournalFileRecord rec = _syncEngine->journal()->getFileRecord(relativePath);
-    if (rec.isValid()) {
-        return resolveSyncAndErrorStatus(relativePath, rec._remotePerm.contains("S") ? Shared : NotShared);
+    SyncJournalFileRecord rec;
+    if (_syncEngine->journal()->getFileRecord(relativePath, &rec) && rec.isValid()) {
+        return resolveSyncAndErrorStatus(relativePath, rec._remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared);
     }
 
     // Must be a new file not yet in the database, check if it's syncing or has an error.
@@ -225,7 +226,7 @@ void SyncFileStatusTracker::slotAboutToPropagate(SyncFileItemVector &items)
             _syncProblems[item->_file] = SyncFileStatus::StatusWarning;
         }
 
-        SharedFlag sharedFlag = item->_remotePerm.contains("S") ? Shared : NotShared;
+        SharedFlag sharedFlag = item->_remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared;
         if (item->_instruction != CSYNC_INSTRUCTION_NONE
             && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA
             && item->_instruction != CSYNC_INSTRUCTION_IGNORE
@@ -271,7 +272,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
         _syncProblems.erase(item->_file);
     }
 
-    SharedFlag sharedFlag = item->_remotePerm.contains("S") ? Shared : NotShared;
+    SharedFlag sharedFlag = item->_remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared;
     if (item->_instruction != CSYNC_INSTRUCTION_NONE
         && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA
         && item->_instruction != CSYNC_INSTRUCTION_IGNORE

@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QStringList>
 #include <QSharedPointer>
+#include <set>
 
 #include <csync.h>
 
@@ -34,11 +35,11 @@
 #include "excludedfiles.h"
 #include "syncfileitem.h"
 #include "progressdispatcher.h"
-#include "utility.h"
+#include "common/utility.h"
 #include "syncfilestatustracker.h"
 #include "accountfwd.h"
 #include "discoveryphase.h"
-#include "checksums.h"
+#include "common/checksums.h"
 
 class QProcess;
 
@@ -92,6 +93,7 @@ public:
     AccountPtr account() const;
     SyncJournalDb *journal() const { return _journal; }
     QString localPath() const { return _localPath; }
+
     /**
      * Minimum age, in milisecond, of a file that can be uploaded.
      * Files more recent than that are not going to be uploaeded as they are considered
@@ -99,14 +101,28 @@ public:
      */
     static qint64 minimumFileAgeForUpload; // in ms
 
+    /**
+     * Control whether local discovery should read from filesystem or db.
+     *
+     * If style is Partial, the paths is a set of file paths relative to
+     * the synced folder. All the parent directories of these paths will not
+     * be read from the db and scanned on the filesystem.
+     *
+     * Note, the style and paths are only retained for the next sync and
+     * revert afterwards. Use _lastLocalDiscoveryStyle to discover the last
+     * sync's style.
+     */
+    void setLocalDiscoveryOptions(LocalDiscoveryStyle style, std::set<QByteArray> dirs = {});
+
+    /** Access the last sync run's local discovery style */
+    LocalDiscoveryStyle lastLocalDiscoveryStyle() const { return _lastLocalDiscoveryStyle; }
+
 signals:
     void csyncUnavailable();
 
     // During update, before reconcile
     void rootEtag(QString);
 
-    // before actual syncing (after update+reconcile) for each item
-    void syncItemDiscovered(const SyncFileItem &);
     // after the above signals. with the items that actually need propagating
     void aboutToPropagate(SyncFileItemVector &);
 
@@ -170,9 +186,9 @@ private:
 
     QString journalDbFilePath() const;
 
-    static int treewalkLocal(TREE_WALK_FILE *, void *);
-    static int treewalkRemote(TREE_WALK_FILE *, void *);
-    int treewalkFile(TREE_WALK_FILE *, bool);
+    static int treewalkLocal(csync_file_stat_t *file, csync_file_stat_t *other, void *);
+    static int treewalkRemote(csync_file_stat_t *file, csync_file_stat_t *other, void *);
+    int treewalkFile(csync_file_stat_t *file, csync_file_stat_t *other, bool);
     bool checkErrorBlacklisting(SyncFileItem &item);
 
     // Cleans up unnecessary downloadinfo entries in the journal as well
@@ -194,7 +210,7 @@ private:
     QMap<QString, SyncFileItemPtr> _syncItemMap;
 
     AccountPtr _account;
-    CSYNC *_csync_ctx;
+    QScopedPointer<CSYNC> _csync_ctx;
     bool _needsUpdate;
     bool _syncRunning;
     QString _localPath;
@@ -235,7 +251,7 @@ private:
      * to recover
      */
     void checkForPermission(SyncFileItemVector &syncItems);
-    QByteArray getPermissions(const QString &file) const;
+    RemotePermissions getPermissions(const QString &file) const;
 
     /**
      * Instead of downloading files from the server, upload the files to the server
@@ -259,9 +275,6 @@ private:
     int _downloadLimit;
     SyncOptions _syncOptions;
 
-    // hash containing the permissions on the remote directory
-    QHash<QString, QByteArray> _remotePerms;
-
     /// Hook for computing checksums from csync_update
     CSyncChecksumHook _checksum_hook;
 
@@ -275,6 +288,9 @@ private:
 
     /** List of unique errors that occurred in a sync run. */
     QSet<QString> _uniqueErrors;
+
+    /** The kind of local discovery the last sync run used */
+    LocalDiscoveryStyle _lastLocalDiscoveryStyle = LocalDiscoveryStyle::DatabaseAndFilesystem;
 };
 }
 

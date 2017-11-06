@@ -132,6 +132,11 @@ bool Capabilities::chunkingParallelUploadDisabled() const
     return _capabilities["dav"].toMap()["chunkingParallelUploadDisabled"].toBool();
 }
 
+bool Capabilities::privateLinkPropertyAvailable() const
+{
+    return _capabilities["files"].toMap()["privateLinks"].toBool();
+}
+
 QList<int> Capabilities::httpErrorCodesThatResetFailingChunkedUploads() const
 {
     QList<int> list;
@@ -139,5 +144,10 @@ QList<int> Capabilities::httpErrorCodesThatResetFailingChunkedUploads() const
         list.push_back(t.toInt());
     }
     return list;
+}
+
+QString Capabilities::invalidFilenameRegex() const
+{
+    return _capabilities["dav"].toMap()["invalidFilenameRegex"].toString();
 }
 }

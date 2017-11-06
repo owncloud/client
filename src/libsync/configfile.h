@@ -16,7 +16,9 @@
 #define CONFIGFILE_H
 
 #include "owncloudlib.h"
+#include <memory>
 #include <QSharedPointer>
+#include <QSettings>
 #include <QString>
 #include <QVariant>
 
@@ -70,6 +72,13 @@ public:
     /* Force sync interval, in milliseconds */
     quint64 forceSyncInterval(const QString &connection = QString()) const;
 
+    /**
+     * Interval in milliseconds within which full local discovery is required
+     *
+     * Use -1 to disable regular full local discoveries.
+     */
+    qint64 fullLocalDiscoveryInterval() const;
+
     bool monoIcons() const;
     void setMonoIcons(bool);
 
@@ -114,6 +123,9 @@ public:
     bool optionalDesktopNotifications() const;
     void setOptionalDesktopNotifications(bool show);
 
+    bool showInExplorerNavigationPane() const;
+    void setShowInExplorerNavigationPane(bool show);
+
     int timeout() const;
     quint64 chunkSize() const;
     quint64 maxChunkSize() const;
@@ -136,6 +148,10 @@ public:
     void setCertificatePath(const QString &cPath);
     QString certificatePasswd() const;
     void setCertificatePasswd(const QString &cPasswd);
+
+    /**  Returns a new settings pre-set in a specific group.  The Settings will be created
+         with the given parent. If no parent is specified, the caller must destroy the settings */
+    static std::unique_ptr<QSettings> settingsWithGroup(const QString &group, QObject *parent = 0);
 
 protected:
     QVariant getPolicySetting(const QString &policy, const QVariant &defaultValue = QVariant()) const;

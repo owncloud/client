@@ -24,12 +24,12 @@
 #include "csync_private.h"
 #include "csync_reconcile.h"
 #include "csync_util.h"
-#include "csync_statedb.h"
 #include "csync_rename.h"
-#include "c_jhash.h"
+#include "common/c_jhash.h"
+#include "common/asserts.h"
 
-#define CSYNC_LOG_CATEGORY_NAME "csync.reconciler"
-#include "csync_log.h"
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(lcReconcile, "sync.csync.reconciler", QtInfoMsg)
 
 // Needed for PRIu64 on MinGW in C++ mode.
 #define __STDC_FORMAT_MACROS
@@ -37,33 +37,29 @@
 
 /* Check if a file is ignored because one parent is ignored.
  * return the node of the ignored directoy if it's the case, or NULL if it is not ignored */
-static c_rbnode_t *_csync_check_ignored(c_rbtree_t *tree, const char *path, int pathlen) {
-    uint64_t h = 0;
-    c_rbnode_t *node = NULL;
-
+static csync_file_stat_t *_csync_check_ignored(csync_s::FileMap *tree, const ByteArrayRef &path)
+{
     /* compute the size of the parent directory */
-    int parentlen = pathlen - 1;
-    while (parentlen > 0 && path[parentlen] != '/') {
+    int parentlen = path.size() - 1;
+    while (parentlen > 0 && path.at(parentlen) != '/') {
         parentlen--;
     }
     if (parentlen <= 0) {
-        return NULL;
+        return nullptr;
     }
-
-    h = c_jhash64((uint8_t *) path, parentlen, 0);
-    node = c_rbtree_find(tree, &h);
-    if (node) {
-        csync_file_stat_t *n = (csync_file_stat_t*)node->data;
-        if (n->instruction == CSYNC_INSTRUCTION_IGNORE) {
+    ByteArrayRef parentPath = path.left(parentlen);
+    csync_file_stat_t *fs = tree->findFile(parentPath);
+    if (fs) {
+        if (fs->instruction == CSYNC_INSTRUCTION_IGNORE) {
             /* Yes, we are ignored */
-            return node;
+            return fs;
         } else {
             /* Not ignored */
-            return NULL;
+            return nullptr;
         }
     } else {
         /* Try if the parent itself is ignored */
-        return _csync_check_ignored(tree, path, parentlen);
+        return _csync_check_ignored(tree, parentPath);
     }
 }
 
@@ -83,7 +79,7 @@ static bool _csync_is_collision_safe_hash(const char *checksum_header)
 /**
  * The main function in the reconcile pass.
  *
- * It's called for each entry in the local and remote rbtrees by
+ * It's called for each entry in the local and remote files by
  * csync_reconcile()
  *
  * Before the reconcile phase the trees already know about changes
@@ -107,52 +103,38 @@ static bool _csync_is_collision_safe_hash(const char *checksum_header)
  * (timestamp is newer), it is not overwritten. If both files, on the
  * source and the destination, have been changed, the newer file wins.
  */
-static int _csync_merge_algorithm_visitor(void *obj, void *data) {
-    csync_file_stat_t *cur = NULL;
-    csync_file_stat_t *other = NULL;
-    csync_file_stat_t *tmp = NULL;
-    uint64_t h = 0;
-    int len = 0;
-
-    CSYNC *ctx = NULL;
-    c_rbtree_t *tree = NULL;
-    c_rbnode_t *node = NULL;
-
-    cur = (csync_file_stat_t *) obj;
-    ctx = (CSYNC *) data;
+static int _csync_merge_algorithm_visitor(csync_file_stat_t *cur, CSYNC * ctx) {
+    csync_s::FileMap *our_tree = nullptr;
+    csync_s::FileMap *other_tree = nullptr;
 
     /* we need the opposite tree! */
     switch (ctx->current) {
     case LOCAL_REPLICA:
-        tree = ctx->remote.tree;
+        our_tree = &ctx->local.files;
+        other_tree = &ctx->remote.files;
         break;
     case REMOTE_REPLICA:
-        tree = ctx->local.tree;
+        our_tree = &ctx->remote.files;
+        other_tree = &ctx->local.files;
         break;
     default:
         break;
     }
 
-    node = c_rbtree_find(tree, &cur->phash);
+    csync_file_stat_t *other = other_tree->findFile(cur->path);;
 
-    if (!node) {
+    if (!other) {
         /* Check the renamed path as well. */
-        char *renamed_path = csync_rename_adjust_path(ctx, cur->path);
-        if (!c_streq(renamed_path, cur->path)) {
-            len = strlen( renamed_path );
-            h = c_jhash64((uint8_t *) renamed_path, len, 0);
-            node = c_rbtree_find(tree, &h);
-        }
-        SAFE_FREE(renamed_path);
+        other = other_tree->findFile(csync_rename_adjust_path(ctx, cur->path));
     }
-    if (!node) {
+    if (!other) {
         /* Check if it is ignored */
-        node = _csync_check_ignored(tree, cur->path, cur->pathlen);
+        other = _csync_check_ignored(other_tree, cur->path);
         /* If it is ignored, other->instruction will be  IGNORE so this one will also be ignored */
     }
 
     /* file only found on current replica */
-    if (node == NULL) {
+    if (!other) {
         switch(cur->instruction) {
         /* file has been modified */
         case CSYNC_INSTRUCTION_EVAL:
@@ -172,77 +154,99 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
             }
             cur->instruction = CSYNC_INSTRUCTION_REMOVE;
             break;
-        case CSYNC_INSTRUCTION_EVAL_RENAME:
-            if(ctx->current == LOCAL_REPLICA ) {
-                /* use the old name to find the "other" node */
-                tmp = csync_statedb_get_stat_by_inode(ctx, cur->inode);
-                CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "Finding opposite temp through inode %" PRIu64 ": %s",
-                          cur->inode, tmp ? "true":"false");
-            } else if( ctx->current == REMOTE_REPLICA ) {
-                tmp = csync_statedb_get_stat_by_file_id(ctx, cur->file_id);
-                CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "Finding opposite temp through file ID %s: %s",
-                          cur->file_id, tmp ? "true":"false");
-            } else {
-                CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "Unknown replica...");
-            }
+        case CSYNC_INSTRUCTION_EVAL_RENAME: {
+            // By default, the EVAL_RENAME decays into a NEW
+            cur->instruction = CSYNC_INSTRUCTION_NEW;
 
-            if( tmp ) {
-                len = strlen( tmp->path );
-                if( len > 0 ) {
-                    h = c_jhash64((uint8_t *) tmp->path, len, 0);
-                    /* First, check that the file is NOT in our tree (another file with the same name was added) */
-                    node = c_rbtree_find(ctx->current == REMOTE_REPLICA ? ctx->remote.tree : ctx->local.tree, &h);
-                    if (node) {
-                        CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "Origin found in our tree : %s", tmp->path);
-                    } else {
-                        /* Find the temporar file in the other tree. */
-                        node = c_rbtree_find(tree, &h);
-                        CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "PHash of temporary opposite (%s): %" PRIu64 " %s",
-                                tmp->path , h, node ? "found": "not found" );
-                        if (node) {
-                            other = (csync_file_stat_t*)node->data;
-                        } else {
-                            /* the renamed file could not be found in the opposite tree. That is because it
-                            * is not longer existing there, maybe because it was renamed or deleted.
-                            * The journal is cleaned up later after propagation.
-                            */
-                        }
-                    }
+            bool processedRename = false;
+            auto renameCandidateProcessing = [&](const OCC::SyncJournalFileRecord &base) {
+                if (processedRename)
+                    return;
+                if (!base.isValid())
+                    return;
+
+                /* First, check that the file is NOT in our tree (another file with the same name was added) */
+                if (our_tree->findFile(base._path)) {
+                    qCDebug(lcReconcile, "Origin found in our tree : %s", base._path.constData());
+                } else {
+                    /* Find the potential rename source file in the other tree.
+                    * If the renamed file could not be found in the opposite tree, that is because it
+                    * is not longer existing there, maybe because it was renamed or deleted.
+                    * The journal is cleaned up later after propagation.
+                    */
+                    other = other_tree->findFile(base._path);
+                    qCDebug(lcReconcile, "Rename origin in other tree (%s) %s",
+                        base._path.constData(), other ? "found" : "not found");
                 }
 
                 if(!other) {
-                    cur->instruction = CSYNC_INSTRUCTION_NEW;
-                } else if (other->instruction == CSYNC_INSTRUCTION_NONE
-                           || other->instruction == CSYNC_INSTRUCTION_UPDATE_METADATA
-                           || cur->type == CSYNC_FTW_TYPE_DIR) {
+                    // Stick with the NEW
+                    return;
+                } else if (other->instruction == CSYNC_INSTRUCTION_RENAME) {
+                    // Some other EVAL_RENAME already claimed other.
+                    // We do nothing: maybe a different candidate for
+                    // other is found as well?
+                    qCDebug(lcReconcile, "Other has already been renamed to %s",
+                        other->rename_path.constData());
+                } else if (cur->type == CSYNC_FTW_TYPE_DIR
+                    // The local replica is reconciled first, so the remote tree would
+                    // have either NONE or UPDATE_METADATA if the remote file is safe to
+                    // move.
+                    // In the remote replica, REMOVE is also valid (local has already
+                    // been reconciled). NONE can still happen if the whole parent dir
+                    // was set to REMOVE by the local reconcile.
+                    || other->instruction == CSYNC_INSTRUCTION_NONE
+                    || other->instruction == CSYNC_INSTRUCTION_UPDATE_METADATA
+                    || other->instruction == CSYNC_INSTRUCTION_REMOVE) {
+                    qCDebug(lcReconcile, "Switching %s to RENAME to %s",
+                        other->path.constData(), cur->path.constData());
                     other->instruction = CSYNC_INSTRUCTION_RENAME;
-                    other->destpath = c_strdup( cur->path );
-                    if( !c_streq(cur->file_id, "") ) {
-                        csync_vio_set_file_id( other->file_id, cur->file_id );
+                    other->rename_path = cur->path;
+                    if( !cur->file_id.isEmpty() ) {
+                        other->file_id = cur->file_id;
                     }
                     other->inode = cur->inode;
                     cur->instruction = CSYNC_INSTRUCTION_NONE;
-                } else if (other->instruction == CSYNC_INSTRUCTION_REMOVE) {
-                    other->instruction = CSYNC_INSTRUCTION_RENAME;
-                    other->destpath = c_strdup( cur->path );
+                    // We have consumed 'other': exit this loop to not consume another one.
+                    processedRename = true;
+                } else if (our_tree->findFile(csync_rename_adjust_path(ctx, other->path)) == cur) {
+                    // If we're here, that means that the other side's reconcile will be able
+                    // to work against cur: The filename itself didn't change, only a parent
+                    // directory was renamed! In that case it's safe to ignore the rename
+                    // since the parent directory rename will already deal with it.
 
-                    if( !c_streq(cur->file_id, "") ) {
-                        csync_vio_set_file_id( other->file_id, cur->file_id );
-                    }
-                    other->inode = cur->inode;
+                    // Local: The remote reconcile will be able to deal with this.
+                    // Remote: The local replica has already dealt with this.
+                    //         See the EVAL_RENAME case when other was found directly.
+                    qCDebug(lcReconcile, "File in a renamed directory, other side's instruction: %d",
+                        other->instruction);
                     cur->instruction = CSYNC_INSTRUCTION_NONE;
-                } else if (other->instruction == CSYNC_INSTRUCTION_NEW) {
-                    CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE, "OOOO=> NEW detected in other tree!");
-                    cur->instruction = CSYNC_INSTRUCTION_CONFLICT;
                 } else {
-                    assert(other->type != CSYNC_FTW_TYPE_DIR);
-                    cur->instruction = CSYNC_INSTRUCTION_NONE;
-                    other->instruction = CSYNC_INSTRUCTION_SYNC;
+                    // This can, for instance, happen when there was a local change in other
+                    // and the instruction in the local tree is NEW while cur has EVAL_RENAME
+                    // due to a remote move of the same file. In these scenarios we just
+                    // want the instruction to stay NEW.
+                    qCDebug(lcReconcile, "Other already has instruction %d",
+                        other->instruction);
                 }
-                csync_file_stat_free(tmp);
-           }
+            };
+
+            if (ctx->current == LOCAL_REPLICA) {
+                /* use the old name to find the "other" node */
+                OCC::SyncJournalFileRecord base;
+                qCDebug(lcReconcile, "Finding rename origin through inode %" PRIu64 "",
+                    cur->inode);
+                ctx->statedb->getFileRecordByInode(cur->inode, &base);
+                renameCandidateProcessing(base);
+            } else {
+                ASSERT(ctx->current == REMOTE_REPLICA);
+                qCDebug(lcReconcile, "Finding rename origin through file ID %s",
+                    cur->file_id.constData());
+                ctx->statedb->getFileRecordsByFileId(cur->file_id, renameCandidateProcessing);
+            }
 
             break;
+        }
         default:
             break;
         }
@@ -251,7 +255,6 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
         /*
      * file found on the other replica
      */
-        other = (csync_file_stat_t *) node->data;
 
         switch (cur->instruction) {
         case CSYNC_INSTRUCTION_UPDATE_METADATA:
@@ -270,13 +273,13 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
         case CSYNC_INSTRUCTION_NEW:
             // This operation is usually a no-op and will by default return false
             if (csync_file_locked_or_open(ctx->local.uri, cur->path)) {
-                CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "[Reconciler] IGNORING file %s/%s since it is locked / open", ctx->local.uri, cur->path);
+                qCDebug(lcReconcile, "[Reconciler] IGNORING file %s/%s since it is locked / open", ctx->local.uri, cur->path.constData());
                 cur->instruction = CSYNC_INSTRUCTION_ERROR;
                 if (cur->error_status == CSYNC_STATUS_OK) // don't overwrite error
                     cur->error_status = CYSNC_STATUS_FILE_LOCKED_OR_OPEN;
                 break;
             } else {
-                //CSYNC_LOG(CSYNC_LOG_PRIORITY_DEBUG, "[Reconciler] not ignoring file %s/%s", ctx->local.uri, cur->path);
+                //qCDebug(lcReconcile, "[Reconciler] not ignoring file %s/%s", ctx->local.uri, cur->path);
             }
             switch (other->instruction) {
             /* file on other replica is changed or new */
@@ -341,10 +344,19 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
                 break;
             case CSYNC_INSTRUCTION_IGNORE:
                 cur->instruction = CSYNC_INSTRUCTION_IGNORE;
-            break;
+                break;
             default:
                 break;
             }
+            // Ensure we're not leaving discovery-only instructions
+            // in place. This can happen, for instance, when other's
+            // instruction is EVAL_RENAME because the parent dir was renamed.
+            // NEW is safer than EVAL because it will end up with
+            // propagation unless it's changed by something, and EVAL and
+            // NEW are treated equivalently during reconcile.
+            if (cur->instruction == CSYNC_INSTRUCTION_EVAL)
+                cur->instruction = CSYNC_INSTRUCTION_NEW;
+            break;
         default:
             break;
         }
@@ -357,38 +369,38 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
     {
         if(cur->type == CSYNC_FTW_TYPE_DIR)
         {
-            CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE,
+            qCDebug(lcReconcile,
                       "%-30s %s dir:  %s",
                       csync_instruction_str(cur->instruction),
                       repo,
-                      cur->path);
+                      cur->path.constData());
         }
         else
         {
-            CSYNC_LOG(CSYNC_LOG_PRIORITY_TRACE,
+            qCDebug(lcReconcile,
                       "%-30s %s file: %s",
                       csync_instruction_str(cur->instruction),
                       repo,
-                      cur->path);
+                      cur->path.constData());
         }
     }
     else
     {
         if(cur->type == CSYNC_FTW_TYPE_DIR)
         {
-            CSYNC_LOG(CSYNC_LOG_PRIORITY_INFO,
+            qCInfo(lcReconcile,
                       "%-30s %s dir:  %s",
                       csync_instruction_str(cur->instruction),
                       repo,
-                      cur->path);
+                      cur->path.constData());
         }
         else
         {
-            CSYNC_LOG(CSYNC_LOG_PRIORITY_INFO,
+            qCInfo(lcReconcile,
                       "%-30s %s file: %s",
                       csync_instruction_str(cur->instruction),
                       repo,
-                      cur->path);
+                      cur->path.constData());
         }
     }
 
@@ -396,25 +408,26 @@ static int _csync_merge_algorithm_visitor(void *obj, void *data) {
 }
 
 int csync_reconcile_updates(CSYNC *ctx) {
-  int rc;
-  c_rbtree_t *tree = NULL;
+  csync_s::FileMap *tree = nullptr;
 
   switch (ctx->current) {
     case LOCAL_REPLICA:
-      tree = ctx->local.tree;
+      tree = &ctx->local.files;
       break;
     case REMOTE_REPLICA:
-      tree = ctx->remote.tree;
+      tree = &ctx->remote.files;
       break;
     default:
       break;
   }
 
-  rc = c_rbtree_walk(tree, (void *) ctx, _csync_merge_algorithm_visitor);
-  if( rc < 0 ) {
-    ctx->status_code = CSYNC_STATUS_RECONCILE_ERROR;
+  for (auto &pair : *tree) {
+    if (_csync_merge_algorithm_visitor(pair.second.get(), ctx) < 0) {
+      ctx->status_code = CSYNC_STATUS_RECONCILE_ERROR;
+      return -1;
+    }
   }
-  return rc;
+  return 0;
 }
 
 /* vim: set ts=8 sw=2 et cindent: */

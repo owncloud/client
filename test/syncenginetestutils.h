@@ -11,7 +11,7 @@
 #include "logger.h"
 #include "filesystem.h"
 #include "syncengine.h"
-#include "syncjournaldb.h"
+#include "common/syncjournaldb.h"
 
 #include <QDir>
 #include <QNetworkReply>
@@ -41,7 +41,7 @@ inline QString getFilePathFromUrl(const QUrl &url) {
 
 
 inline QString generateEtag() {
-    return QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch(), 16);
+    return QString::number(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch(), 16);
 }
 inline QByteArray generateFileId() {
     return QByteArray::number(qrand(), 16);
@@ -97,7 +97,7 @@ public:
         file.write(buf.data(), size % buf.size());
         file.close();
         // Set the mtime 30 seconds in the past, for some tests that need to make sure that the mtime differs.
-        OCC::FileSystem::setModTime(file.fileName(), OCC::Utility::qDateTimeToTime_t(QDateTime::currentDateTime().addSecs(-30)));
+        OCC::FileSystem::setModTime(file.fileName(), OCC::Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc().addSecs(-30)));
         QCOMPARE(file.size(), size);
     }
     void setContents(const QString &relativePath, char contentChar) override {
@@ -161,12 +161,15 @@ public:
     FileInfo(const QString &name, qint64 size) : name{name}, isDir{false}, size{size} { }
     FileInfo(const QString &name, qint64 size, char contentChar) : name{name}, isDir{false}, size{size}, contentChar{contentChar} { }
     FileInfo(const QString &name, const std::initializer_list<FileInfo> &children) : name{name} {
-        QString p = path();
-        for (const auto &source : children) {
-            auto &dest = this->children[source.name] = source;
-            dest.parentPath = p;
-            dest.fixupParentPathRecursively();
-        }
+        for (const auto &source : children)
+            addChild(source);
+    }
+
+    void addChild(const FileInfo &info)
+    {
+        auto &dest = this->children[info.name] = info;
+        dest.parentPath = path();
+        dest.fixupParentPathRecursively();
     }
 
     void remove(const QString &relativePath) override {
@@ -433,6 +436,8 @@ public:
             abort();
             return;
         }
+        fileInfo->lastModified = OCC::Utility::qDateTimeFromTime_t(request.rawHeader("X-OC-Mtime").toLongLong());
+        remoteRootFileInfo.find(fileName, /*invalidate_etags=*/true);
         QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
     }
 
@@ -597,6 +602,9 @@ public:
         size -= len;
         return len;
     }
+
+    // useful to be public for testing
+    using QNetworkReply::setRawHeader;
 };
 
 
@@ -606,8 +614,10 @@ class FakeChunkMoveReply : public QNetworkReply
     FileInfo *fileInfo;
 public:
     FakeChunkMoveReply(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo,
-                       QNetworkAccessManager::Operation op, const QNetworkRequest &request,
-                       QObject *parent) : QNetworkReply{parent} {
+        QNetworkAccessManager::Operation op, const QNetworkRequest &request,
+        quint64 delayMs, QObject *parent)
+        : QNetworkReply{ parent }
+    {
         setRequest(request);
         setUrl(request.url());
         setOperation(op);
@@ -662,7 +672,10 @@ public:
             abort();
             return;
         }
-        QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
+        fileInfo->lastModified = OCC::Utility::qDateTimeFromTime_t(request.rawHeader("X-OC-Mtime").toLongLong());
+        remoteRootFileInfo.find(fileName, /*invalidate_etags=*/true);
+
+        QTimer::singleShot(delayMs, this, &FakeChunkMoveReply::respond);
     }
 
     Q_INVOKABLE void respond() {
@@ -713,6 +726,24 @@ public:
     int _httpErrorCode;
 };
 
+// A reply that never responds
+class FakeHangingReply : public QNetworkReply
+{
+    Q_OBJECT
+public:
+    FakeHangingReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
+        : QNetworkReply(parent)
+    {
+        setRequest(request);
+        setUrl(request.url());
+        setOperation(op);
+        open(QIODevice::ReadOnly);
+    }
+
+    void abort() override {}
+    qint64 readData(char *, qint64) override { return 0; }
+};
+
 class FakeQNAM : public QNetworkAccessManager
 {
 public:
@@ -738,6 +769,10 @@ public:
 protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request,
                                          QIODevice *outgoingData = 0) {
+        if (_override) {
+            if (auto reply = _override(op, request))
+                return reply;
+        }
         const QString fileName = getFilePathFromUrl(request.url());
         Q_ASSERT(!fileName.isNull());
         if (_errorPaths.contains(fileName))
@@ -745,11 +780,6 @@ protected:
 
         bool isUpload = request.url().path().startsWith(sUploadUrl.path());
         FileInfo &info = isUpload ? _uploadFileInfo : _remoteRootFileInfo;
-
-        if (_override) {
-            if (auto reply = _override(op, request))
-                return reply;
-        }
 
         auto verb = request.attribute(QNetworkRequest::CustomVerbAttribute);
         if (verb == "PROPFIND")
@@ -766,7 +796,7 @@ protected:
         else if (verb == QLatin1String("MOVE") && !isUpload)
             return new FakeMoveReply{info, op, request, this};
         else if (verb == QLatin1String("MOVE") && isUpload)
-            return new FakeChunkMoveReply{info, _remoteRootFileInfo, op, request, this};
+            return new FakeChunkMoveReply{ info, _remoteRootFileInfo, op, request, 0, this };
         else {
             qDebug() << verb << outgoingData;
             Q_UNREACHABLE();
@@ -810,6 +840,7 @@ public:
         OCC::Logger::instance()->setLogFile("-");
 
         QDir rootDir{_tempDir.path()};
+        qDebug() << "FakeFolder operating on" << rootDir;
         toDisk(rootDir, fileTemplate);
 
         _fakeQnam = new FakeQNAM(fileTemplate);
@@ -827,6 +858,7 @@ public:
     }
 
     OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
+    OCC::SyncJournalDb &syncJournal() const { return *_journalDb; }
 
     FileModifier &localModifier() { return _localModifier; }
     FileInfo &remoteModifier() { return _fakeQnam->currentRemoteState(); }
@@ -923,6 +955,11 @@ private:
             } else {
                 QFile f{diskChild.filePath()};
                 f.open(QFile::ReadOnly);
+                auto content = f.read(1);
+                if (content.size() == 0) {
+                    qWarning() << "Empty file at:" << diskChild.filePath();
+                    continue;
+                }
                 char contentChar = f.read(1).at(0);
                 templateFi.children.insert(diskChild.fileName(), FileInfo{diskChild.fileName(), diskChild.size(), contentChar});
             }

@@ -48,7 +48,7 @@ public:
      * This will query the server and either uses OAuth via _asyncAuth->start()
      * or call showDialog to ask the password
      */
-    Q_INVOKABLE void askFromUser() Q_DECL_OVERRIDE;
+    void askFromUser() Q_DECL_OVERRIDE;
     /**
      * In case of oauth, return an URL to the link to open the browser.
      * An invalid URL otherwise
@@ -60,11 +60,13 @@ public:
 private slots:
     void asyncAuthResult(OAuth::Result, const QString &user, const QString &accessToken, const QString &refreshToken);
     void showDialog();
+    void askFromUserAsync();
 
 signals:
     void authorisationLinkChanged();
 
 private:
+
     QScopedPointer<OAuth, QScopedPointerObjectDeleteLater<OAuth>> _asyncAuth;
 };
 

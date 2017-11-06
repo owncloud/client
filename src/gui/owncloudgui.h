@@ -23,7 +23,6 @@
 #include <QPointer>
 #include <QAction>
 #include <QMenu>
-#include <QSignalMapper>
 #include <QSize>
 #include <QTimer>
 
@@ -99,7 +98,6 @@ public slots:
     void slotRemoveDestroyedShareDialogs();
 
 private slots:
-    void slotDisplayIdle();
     void slotLogin();
     void slotLogout();
     void slotUnpauseAllFolders();
@@ -144,10 +142,6 @@ private:
     QAction *_actionCrash;
 
     QList<QAction *> _recentItemsActions;
-
-    QSignalMapper *_folderOpenActionMapper;
-    QSignalMapper *_recentItemsMapper;
-
     Application *_app;
 };
 

@@ -17,7 +17,6 @@ set(CSTDLIB_LINK_LIBRARIES
 set(cstdlib_SRCS
   c_alloc.c
   c_path.c
-  c_rbtree.c
   c_string.c
   c_time.c
   c_utf8.cpp
@@ -36,9 +35,5 @@ include_directories(
 add_library(${CSTDLIB_LIBRARY} STATIC ${cstdlib_SRCS})
 if(NOT WIN32)
     add_definitions( -fPIC )
-    qt5_use_modules(${CSTDLIB_LIBRARY} Core)
 endif()
-if(NOT HAVE_FNMATCH AND WIN32)
-  # needed for PathMatchSpec for our fnmatch replacement
-  target_link_libraries(${CSTDLIB_LIBRARY} ${SHLWAPI_LIBRARY})
-endif()
+qt5_use_modules(${CSTDLIB_LIBRARY} Core)

@@ -2,22 +2,24 @@
  * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
  * Copyright (C) by Daniel Molkentin <danimo@owncloud.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include "config.h"
 
-#include "utility.h"
-
+#include "common/utility.h"
 #include "version.h"
-#include "configfile.h"
 
 // Note:  This file must compile without QtGui
 #include <QCoreApplication>
@@ -31,17 +33,9 @@
 #include <QThread>
 #include <QDateTime>
 #include <QSysInfo>
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QTextDocument>
-#else
 #include <QStandardPaths>
-#endif
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 #include <QCollator>
-#endif
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
 #include <QSysInfo>
-#endif
 
 
 #ifdef Q_OS_UNIX
@@ -52,6 +46,7 @@
 
 #include <math.h>
 #include <stdarg.h>
+#include <cstring>
 
 #if defined(Q_OS_WIN)
 #include "utility_win.cpp"
@@ -246,22 +241,8 @@ QString Utility::compactFormatDouble(double value, int prec, const QString &unit
 
 QString Utility::escape(const QString &in)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    return Qt::escape(in);
-#else
     return in.toHtmlEscaped();
-#endif
 }
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-// In Qt 4,  QThread::sleep functions are protected.
-// This is a hack to make them visible in this namespace.
-struct QThread : ::QThread
-{
-    using ::QThread::sleep;
-    using ::QThread::usleep;
-};
-#endif
 
 void Utility::sleep(int sec)
 {
@@ -378,75 +359,35 @@ QString Utility::fileNameForGuiUse(const QString &fName)
     return fName;
 }
 
+QByteArray Utility::normalizeEtag(QByteArray etag)
+{
+    /* strip "XXXX-gzip" */
+    if(etag.startsWith('"') && etag.endsWith("-gzip\"")) {
+        etag.chop(6);
+        etag.remove(0, 1);
+    }
+    /* strip trailing -gzip */
+    if(etag.endsWith("-gzip")) {
+        etag.chop(5);
+    }
+    /* strip normal quotes */
+    if (etag.startsWith('"') && etag.endsWith('"')) {
+        etag.chop(1);
+        etag.remove(0, 1);
+    }
+    etag.squeeze();
+    return etag;
+}
+
 bool Utility::hasDarkSystray()
 {
     return hasDarkSystray_private();
 }
 
 
-bool Utility::isWindows()
-{
-#ifdef Q_OS_WIN
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool Utility::isMac()
-{
-#ifdef Q_OS_MAC
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool Utility::isUnix()
-{
-#ifdef Q_OS_UNIX
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool Utility::isLinux()
-{
-#if defined(Q_OS_LINUX)
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool Utility::isBSD()
-{
-#if defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD) || defined(Q_OS_OPENBSD)
-    return true;
-#else
-    return false;
-#endif
-}
-
 QString Utility::platformName()
 {
-    QString re("Windows");
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
-    if (isMac()) {
-        re = QLatin1String("MacOSX");
-    } else if (isLinux()) {
-        re = QLatin1String("Linux");
-    } else if (isBSD()) {
-        re = QLatin1String("BSD");
-    } else if (isUnix()) {
-        re = QLatin1String("Unix");
-    }
-#else
-    re = QSysInfo::prettyProductName();
-#endif
-    return re;
+    return QSysInfo::prettyProductName();
 }
 
 void Utility::crash()
@@ -524,7 +465,7 @@ static const char STOPWATCH_END_TAG[] = "_STOPWATCH_END";
 
 void Utility::StopWatch::start()
 {
-    _startTime = QDateTime::currentDateTime();
+    _startTime = QDateTime::currentDateTimeUtc();
     _timer.start();
 }
 
@@ -576,16 +517,10 @@ quint64 Utility::StopWatch::durationOfLap(const QString &lapName) const
 
 void Utility::sortFilenames(QStringList &fileNames)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     QCollator collator;
     collator.setNumericMode(true);
     collator.setCaseSensitivity(Qt::CaseInsensitive);
     qSort(fileNames.begin(), fileNames.end(), collator);
-#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    fileNames.sort(Qt::CaseInsensitive);
-#else
-    fileNames.sort();
-#endif
 }
 
 QUrl Utility::concatUrlPath(const QUrl &url, const QString &concatPath,
@@ -611,18 +546,41 @@ QUrl Utility::concatUrlPath(const QUrl &url, const QString &concatPath,
     return tmpUrl;
 }
 
-Q_GLOBAL_STATIC(QString, g_configFileName)
-
-std::unique_ptr<QSettings> Utility::settingsWithGroup(const QString &group, QObject *parent)
+bool Utility::isConflictFile(const char *name)
 {
-    if (g_configFileName()->isEmpty()) {
-        // cache file name
-        ConfigFile cfg;
-        *g_configFileName() = cfg.configFile();
+    const char *bname = std::strrchr(name, '/');
+    if (bname) {
+        bname += 1;
+    } else {
+        bname = name;
     }
-    std::unique_ptr<QSettings> settings(new QSettings(*g_configFileName(), QSettings::IniFormat, parent));
-    settings->beginGroup(group);
-    return settings;
+
+    if (std::strstr(bname, "_conflict-"))
+        return true;
+
+    if (shouldUploadConflictFiles()) {
+        // For uploads, we want to consider files with any kind of username tag
+        // as conflict files. (pattern *_conflict_*-)
+        const char *startOfMarker = std::strstr(bname, "_conflict_");
+        if (startOfMarker && std::strchr(startOfMarker, '-'))
+            return true;
+    } else {
+        // Old behavior: optionally, files with the specific string in the env variable
+        // appended are also considered conflict files.
+        static auto conflictFileUsername = qgetenv("CSYNC_CONFLICT_FILE_USERNAME");
+        static auto usernameConflictId = QByteArray("_conflict_" + conflictFileUsername + "-");
+        if (!conflictFileUsername.isEmpty() && std::strstr(bname, usernameConflictId.constData())) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Utility::shouldUploadConflictFiles()
+{
+    static bool uploadConflictFiles = qEnvironmentVariableIntValue("OWNCLOUD_UPLOAD_CONFLICT_FILES") != 0;
+    return uploadConflictFiles;
 }
 
 } // namespace OCC

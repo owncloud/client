@@ -34,25 +34,6 @@ class AccountState;
 class OwncloudWizard;
 
 /**
- * @brief The DetermineAuthTypeJob class
- * @ingroup gui
- */
-class DetermineAuthTypeJob : public AbstractNetworkJob
-{
-    Q_OBJECT
-public:
-    explicit DetermineAuthTypeJob(AccountPtr account, QObject *parent = 0);
-    void start() Q_DECL_OVERRIDE;
-signals:
-    void authType(WizardCommon::AuthType);
-private slots:
-    bool finished() Q_DECL_OVERRIDE;
-
-private:
-    int _redirects;
-};
-
-/**
  * @brief The OwncloudSetupWizard class
  * @ingroup gui
  */
@@ -68,12 +49,16 @@ signals:
     void ownCloudWizardDone(int);
 
 private slots:
-    void slotDetermineAuthType(const QString &);
+    void slotCheckServer(const QString &);
     void slotSystemProxyLookupDone(const QNetworkProxy &proxy);
-    void slotContinueDetermineAuth();
-    void slotOwnCloudFoundAuth(const QUrl &, const QJsonObject &);
-    void slotNoOwnCloudFoundAuth(QNetworkReply *reply);
-    void slotNoOwnCloudFoundAuthTimeout(const QUrl &url);
+
+    void slotFindServer();
+    void slotFindServerBehindRedirect();
+    void slotFoundServer(const QUrl &, const QJsonObject &);
+    void slotNoServerFound(QNetworkReply *reply);
+    void slotNoServerFoundTimeout(const QUrl &url);
+
+    void slotDetermineAuthType();
 
     void slotConnectToOCUrl(const QString &);
     void slotAuthError();

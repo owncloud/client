@@ -28,7 +28,7 @@
 #include <QSharedPointer>
 #include <QPixmap>
 
-#include "utility.h"
+#include "common/utility.h"
 #include <memory>
 #include "capabilities.h"
 
@@ -44,6 +44,7 @@ class Account;
 typedef QSharedPointer<Account> AccountPtr;
 class QuotaInfo;
 class AccessManager;
+class SimpleNetworkJob;
 
 
 /**
@@ -82,6 +83,9 @@ public:
     QString davUser() const;
     void setDavUser(const QString &newDavUser);
 
+    QString davDisplayName() const;
+    void setDavDisplayName(const QString &newDisplayName);
+
     QImage avatar() const;
     void setAvatar(const QImage &img);
 
@@ -107,16 +111,33 @@ public:
     /** Returns webdav entry URL, based on url() */
     QUrl davUrl() const;
 
-    /** Returns a permalink url for a file */
-    QUrl filePermalinkUrl(const QByteArray &numericFileId) const;
+    /** Returns the legacy permalink url for a file.
+     *
+     * This uses the old way of manually building the url. New code should
+     * use the "privatelink" property accessible via PROPFIND.
+     */
+    QUrl deprecatedPrivateLinkUrl(const QByteArray &numericFileId) const;
 
     /** Holds the accounts credentials */
     AbstractCredentials *credentials() const;
     void setCredentials(AbstractCredentials *cred);
 
+    /** Create a network request on the account's QNAM.
+     *
+     * Network requests in AbstractNetworkJobs are created through
+     * this function. Other places should prefer to use jobs or
+     * sendRequest().
+     */
+    QNetworkReply *sendRawRequest(const QByteArray &verb,
+        const QUrl &url,
+        QNetworkRequest req = QNetworkRequest(),
+        QIODevice *data = 0);
 
-    // For creating various network requests
-    QNetworkReply *sendRequest(const QByteArray &verb,
+    /** Create and start network job for a simple one-off request.
+     *
+     * More complicated requests typically create their own job types.
+     */
+    SimpleNetworkJob *sendRequest(const QByteArray &verb,
         const QUrl &url,
         QNetworkRequest req = QNetworkRequest(),
         QIODevice *data = 0);
@@ -191,7 +212,7 @@ public:
 
     /** True when the server supports HTTP2  */
     bool isHttp2Supported() { return _http2Supported; }
-    void setHttp2Supported(bool value) { _http2Supported = value; };
+    void setHttp2Supported(bool value) { _http2Supported = value; }
 
     void clearCookieJar();
     void lendCookieJarTo(QNetworkAccessManager *guest);
@@ -207,6 +228,7 @@ public:
 public slots:
     /// Used when forgetting credentials
     void clearQNAMCache();
+    void slotHandleSslErrors(QNetworkReply *, QList<QSslError>);
 
 signals:
     /// Emitted whenever there's network activity
@@ -227,9 +249,9 @@ signals:
     void serverVersionChanged(Account *account, const QString &newVersion, const QString &oldVersion);
 
     void accountChangedAvatar();
+    void accountChangedDisplayName();
 
 protected Q_SLOTS:
-    void slotHandleSslErrors(QNetworkReply *, QList<QSslError>);
     void slotCredentialsFetched();
     void slotCredentialsAsked();
 
@@ -240,6 +262,7 @@ private:
     QWeakPointer<Account> _sharedThis;
     QString _id;
     QString _davUser;
+    QString _displayName;
     QImage _avatarImg;
     QMap<QString, QVariant> _settingsMap;
     QUrl _url;
