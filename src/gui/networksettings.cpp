@@ -168,7 +168,7 @@ void NetworkSettings::saveProxySettings()
         }
         else
         {
-            _ui->hostLineEdit->setStyleSheet("border: 1px solid black"); // or blue
+            _ui->hostLineEdit->setStyleSheet("border: native");
 
             int type = _ui->typeComboBox->itemData(_ui->typeComboBox->currentIndex()).toInt();
             bool needsAuth = _ui->authRequiredcheckBox->isChecked();
