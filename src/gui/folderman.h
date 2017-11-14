@@ -178,9 +178,6 @@ public:
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
 
-    /** Will start a sync after a bit of delay. */
-    void startScheduledSyncSoon();
-
     void setDirtyProxy(bool value = true);
     void setDirtyNetworkLimits();
 
@@ -279,6 +276,9 @@ private:
 
     /* unloads a folder object, does not delete it */
     void unloadFolder(Folder *);
+
+    /** Will start a sync after a bit of delay. */
+    void startScheduledSyncSoon();
 
     // finds all folder configuration files
     // and create the folders

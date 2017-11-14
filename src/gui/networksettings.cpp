@@ -20,9 +20,11 @@
 #include "application.h"
 #include "configfile.h"
 #include "folderman.h"
+#include "accountmanager.h"
 
 #include <QNetworkProxy>
 #include <QString>
+#include <QList>
 
 namespace OCC {
 
@@ -185,8 +187,20 @@ void NetworkSettings::saveProxySettings()
     // start the sync.
     FolderMan::instance()->setDirtyProxy(true);
 
-    // start sync after a change
-    FolderMan::instance()->startScheduledSyncSoon();
+    QList<AccountStatePtr> accountList = AccountManager::instance()->accounts();
+
+    for(int i=0; i < accountList->count(); i++)
+    {
+         if(accountList[i]->isConnected())
+        {
+            acouuntList[i]->disconnectByProxySettings();
+            accountList[i]->checkConnectivity();
+        }
+        else
+        {
+            accountList[i]->checkConnectivity();
+        }
+    }
 }
 
 void NetworkSettings::saveBWLimitSettings()

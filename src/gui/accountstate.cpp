@@ -151,6 +151,11 @@ void AccountState::signOutByUi()
     setState(SignedOut);
 }
 
+void AccountState::disconnectByProxySettings()
+{
+    setState(Disconnected);
+}
+
 void AccountState::signIn()
 {
     if (_state == SignedOut) {

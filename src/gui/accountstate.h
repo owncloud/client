@@ -105,6 +105,9 @@ public:
      * for the account and forgets the password. */
     void signOutByUi();
 
+    /** Disconnects the account if proxy settings are changed */
+    void disconnectByProxySettings();
+
     /// Move from SignedOut state to Disconnected (attempting to connect)
     void signIn();
 
