@@ -5,14 +5,22 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 # csync is required.
 include_directories(${CMAKE_SOURCE_DIR}/src/csync
                     ${CMAKE_BINARY_DIR}/src/csync
+                    ${CMAKE_SOURCE_DIR}/src/3rdparty/zsync/c
                    )
-
 if ( APPLE )
     list(APPEND OS_SPECIFIC_LINK_LIBRARIES
          /System/Library/Frameworks/CoreServices.framework
          /System/Library/Frameworks/Foundation.framework
          /System/Library/Frameworks/AppKit.framework
     )
+endif()
+
+if ( WIN32 )
+    list(APPEND OS_SPECIFIC_LINK_LIBRARIES
+        ws2_32
+    )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FILE_OFFSET_BITS=64")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FILE_OFFSET_BITS=64")
 endif()
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD|NetBSD|OpenBSD")
@@ -43,7 +51,9 @@ set(libsync_SRCS
     owncloudtheme.cpp
     progressdispatcher.cpp
     propagatorjobs.cpp
+    propagatecommonzsync.cpp
     propagatedownload.cpp
+    propagatedownloadzsync.cpp
     propagateupload.cpp
     propagateuploadv1.cpp
     propagateuploadng.cpp
@@ -59,7 +69,17 @@ set(libsync_SRCS
     creds/dummycredentials.cpp
     creds/abstractcredentials.cpp
     creds/credentialscommon.cpp
+    ../3rdparty/zsync/c/librcksum/hash.c
+    ../3rdparty/zsync/c/librcksum/md4.c
+    ../3rdparty/zsync/c/librcksum/range.c
+    ../3rdparty/zsync/c/librcksum/rsum.c
+    ../3rdparty/zsync/c/librcksum/state.c
+    ../3rdparty/zsync/c/libzsync/sha1.c
+    ../3rdparty/zsync/c/libzsync/zsync.c
+    ../3rdparty/zsync/c/progress.c
 )
+
+set_source_files_properties(../3rdparty/zsync/c/libzsync/zsync.c PROPERTIES COMPILE_FLAGS -DVERSION=\\"0.6.3\\")
 
 if(TOKEN_AUTH_ONLY)
     set (libsync_SRCS ${libsync_SRCS} creds/tokencredentials.cpp)
