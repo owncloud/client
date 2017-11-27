@@ -7,3 +7,10 @@
 [submodule "src/3rdparty/libcrashreporter-qt"]
 	path = src/3rdparty/libcrashreporter-qt
 	url = git://github.com/dschmidt/libcrashreporter-qt.git
+[submodule "src/3rdparty/qmsgpack"]
+	path = src/3rdparty/qmsgpack
+	url = https://github.com/romixlab/qmsgpack.git
+[submodule "src/3rdparty/qwamp"]
+	path = src/3rdparty/qwamp
+	url = https://github.com/DeepDiver1975/qwamp.git
+

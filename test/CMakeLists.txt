@@ -1,6 +1,8 @@
 include_directories(${QT_INCLUDES}
                     ${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/3rdparty/qtokenizer
+                    ${CMAKE_SOURCE_DIR}/src/3rdparty/qwamp
+                    ${CMAKE_SOURCE_DIR}/src/3rdparty/qmsgpack/src
                     ${CMAKE_SOURCE_DIR}/src/csync
                     ${CMAKE_SOURCE_DIR}/src/csync/std
                     ${CMAKE_SOURCE_DIR}/src/gui
@@ -67,6 +69,14 @@ list(APPEND FolderMan_SRC ../src/gui/syncrunfilelog.cpp )
 list(APPEND FolderMan_SRC ../src/gui/lockwatcher.cpp )
 list(APPEND FolderMan_SRC ../src/gui/guiutility.cpp )
 list(APPEND FolderMan_SRC ../src/gui/navigationpanehelper.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qmsgpack/src/msgpack.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qmsgpack/src/private/pack_p.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qmsgpack/src/private/unpack_p.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qmsgpack/src/private/qt_types_p.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qmsgpack/src/stream/time.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qmsgpack/src/msgpackstream.cpp )
+list(APPEND FolderMan_SRC ../src/3rdparty/qwamp/qwamp.cpp )
+
 list(APPEND FolderMan_SRC ${FolderWatcher_SRC})
 list(APPEND FolderMan_SRC stub.cpp )
 owncloud_add_test(FolderMan "${FolderMan_SRC}")

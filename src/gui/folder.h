@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QUuid>
+#include <QTcpSocket>
 #include <set>
 
 class QThread;
@@ -268,7 +269,6 @@ public slots:
     void slotAboutToRemoveAllFiles(SyncFileItem::Direction, bool *);
     void slotAboutToRestoreBackup(bool *);
 
-
     /**
       * Starts a sync operation
       *
@@ -353,6 +353,7 @@ private:
     bool _csyncUnavail;
     bool _proxyDirty;
     QPointer<RequestEtagJob> _requestEtagJob;
+    QScopedPointer<QTcpSocket> _webSocket;
     QString _lastEtag;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;

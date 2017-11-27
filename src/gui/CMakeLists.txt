@@ -157,6 +157,13 @@ set(3rdparty_SRC
     ../3rdparty/qtsingleapplication/qtlocalpeer.cpp
     ../3rdparty/qtsingleapplication/qtsingleapplication.cpp
     ../3rdparty/qtsingleapplication/qtsinglecoreapplication.cpp
+    ../3rdparty/qmsgpack/src/msgpack.cpp
+    ../3rdparty/qmsgpack/src/private/pack_p.cpp
+    ../3rdparty/qmsgpack/src/private/unpack_p.cpp
+    ../3rdparty/qmsgpack/src/private/qt_types_p.cpp
+    ../3rdparty/qmsgpack/src/stream/time.cpp
+    ../3rdparty/qmsgpack/src/msgpackstream.cpp
+    ../3rdparty/qwamp/qwamp.cpp
    )
 
 if (APPLE)
@@ -178,6 +185,8 @@ set(3rdparty_INC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/qtlockedfile
     ${CMAKE_SOURCE_DIR}/src/3rdparty/qtmacgoodies/src
     ${CMAKE_SOURCE_DIR}/src/3rdparty/qtsingleapplication
+    ${CMAKE_SOURCE_DIR}/src/3rdparty/qwamp
+    ${CMAKE_SOURCE_DIR}/src/3rdparty/qmsgpack/src
     )
 
 include_directories(${3rdparty_INC})

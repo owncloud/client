@@ -218,6 +218,10 @@ add_definitions( -D_WIN32_WINNT=0x0600)
 add_definitions( -DWINVER=0x0600)
 endif( WIN32 )
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 include(QtVersionAbstraction)
 setup_qt()
 if (${Qt5Core_VERSION_MAJOR} EQUAL "5")
