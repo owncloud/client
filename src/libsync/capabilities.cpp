@@ -150,4 +150,15 @@ QString Capabilities::invalidFilenameRegex() const
 {
     return _capabilities["dav"].toMap()["invalidFilenameRegex"].toString();
 }
+
+QString Capabilities::getWebSocketUrl() const
+{
+    if (!_capabilities.contains("websocket")) {
+        return "";
+    }
+    if (!_capabilities["websocket"].toMap().contains("url")) {
+        return "";
+    }
+    return _capabilities["websocket"].toMap()["url"].toString();
+}
 }

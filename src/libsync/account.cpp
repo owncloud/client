@@ -160,13 +160,13 @@ void Account::setCredentials(AbstractCredentials *cred)
         _am->setCookieJar(jar);
     }
     connect(_am.data(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
-        SLOT(slotHandleSslErrors(QNetworkReply *, QList<QSslError>)));
+            SLOT(slotHandleSslErrors(QNetworkReply *, QList<QSslError>)));
     connect(_am.data(), &QNetworkAccessManager::proxyAuthenticationRequired,
-        this, &Account::proxyAuthenticationRequired);
+            this, &Account::proxyAuthenticationRequired);
     connect(_credentials.data(), &AbstractCredentials::fetched,
-        this, &Account::slotCredentialsFetched);
+            this, &Account::slotCredentialsFetched);
     connect(_credentials.data(), &AbstractCredentials::asked,
-        this, &Account::slotCredentialsAsked);
+            this, &Account::slotCredentialsAsked);
 }
 
 QUrl Account::davUrl() const
@@ -177,7 +177,7 @@ QUrl Account::davUrl() const
 QUrl Account::deprecatedPrivateLinkUrl(const QByteArray &numericFileId) const
 {
     return Utility::concatUrlPath(_userVisibleUrl,
-        QLatin1String("/index.php/f/") + QUrl::toPercentEncoding(QString::fromLatin1(numericFileId)));
+                                  QLatin1String("/index.php/f/") + QUrl::toPercentEncoding(QString::fromLatin1(numericFileId)));
 }
 
 /**
@@ -223,9 +223,9 @@ void Account::resetNetworkAccessManager()
 
     _am->setCookieJar(jar); // takes ownership of the old cookie jar
     connect(_am.data(), SIGNAL(sslErrors(QNetworkReply *, QList<QSslError>)),
-        SLOT(slotHandleSslErrors(QNetworkReply *, QList<QSslError>)));
+            SLOT(slotHandleSslErrors(QNetworkReply *, QList<QSslError>)));
     connect(_am.data(), &QNetworkAccessManager::proxyAuthenticationRequired,
-        this, &Account::proxyAuthenticationRequired);
+            this, &Account::proxyAuthenticationRequired);
 }
 
 QNetworkAccessManager *Account::networkAccessManager()
@@ -435,6 +435,7 @@ const Capabilities &Account::capabilities() const
 void Account::setCapabilities(const QVariantMap &caps)
 {
     _capabilities = Capabilities(caps);
+    emit accountChangedCapabilities();
 }
 
 QString Account::serverVersion() const
@@ -447,8 +448,8 @@ int Account::serverVersionInt() const
     // FIXME: Use Qt 5.5 QVersionNumber
     auto components = serverVersion().split('.');
     return makeServerVersion(components.value(0).toInt(),
-        components.value(1).toInt(),
-        components.value(2).toInt());
+                             components.value(1).toInt(),
+                             components.value(2).toInt());
 }
 
 int Account::makeServerVersion(int majorVersion, int minorVersion, int patchVersion)

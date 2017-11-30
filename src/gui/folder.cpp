@@ -85,6 +85,7 @@ Folder::Folder(const FolderDefinition &definition,
         qCWarning(lcFolder, "Could not read system exclude file");
 
     connect(_accountState.data(), &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
+    connect(_accountState->account().data(), &Account::accountChangedCapabilities, this, &Folder::slotAccountCapabilitiesChanged);
     connect(_engine.data(), &SyncEngine::rootEtag, this, &Folder::etagRetreivedFromSyncEngine);
 
     connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
@@ -110,55 +111,7 @@ Folder::Folder(const FolderDefinition &definition,
     _scheduleSelfTimer.setInterval(SyncEngine::minimumFileAgeForUpload);
     connect(&_scheduleSelfTimer, &QTimer::timeout,
             this, &Folder::slotScheduleThisFolder);
-
-    //initialize wamp connection
-    QWamp::Session *session;
-    _webSocket.reset(new QTcpSocket());
-//    QByteArray wsUrl = qgetenv("OWNCLOUD_WEBSOCKET_URL");
-    QByteArray wsUrl = "ws://localhost:8080/ws";
-    QObject::connect(_webSocket.data(), &QTcpSocket::connected, [&]() {
-
-        QString sessionName("sessionName");
-        session = new QWamp::Session(sessionName, *_webSocket.data(), QWamp::Session::MessageFormat::Msgpack, true);
-
-        QObject::connect(session, &QWamp::Session::joined, [&](qint64 s) {
-            qDebug() << "Session joined to realm1 with session ID " << s;
-
-            session->subscribe("etag-changed-channel", [&](const QVariantList& args, const QVariantMap& options) {
-                qDebug() << "Event received";
-            });
-        });
-
-        QObject::connect(session, &QWamp::Session::started, [&]() {
-            session->join("realm1");
-        });
-        session->start();
-    });
-
-    QObject::connect(_webSocket.data(), static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError err)>(&QAbstractSocket::error), [&](QAbstractSocket::SocketError err) {
-        qInfo() << "tcp error: " << err;
-        qInfo() << _webSocket->errorString();
-    });
-    qInfo() << "Connecting to websocket " << wsUrl;
-//        _webSocket->open(QUrl::fromEncoded(wsUrl));
-    _webSocket->abort();
-    _webSocket->connectToHost("localhost", 8080);
 }
-
-//    bool success;
-//    QVariantMap json = QtJson::parse(message, success).toMap();
-//    if (success) {
-//        QString notificationEtag = json["etag"].toString();
-//        QString notificationUser = json["user"].toString();
-//        QString user = _accountState->account()->credentials()->user();
-//        if (user == notificationUser && _lastEtag != notificationEtag) {
-//            qDebug() << "* [WebSocket] Compare etag with previous etag: last:" << _lastEtag << ", received:" << notificationEtag << "-> CHANGED";
-//            _lastEtag = notificationEtag;
-//            slotScheduleThisFolder();
-//            _accountState->tagLastSuccessfullETagRequest();
-//        }
-//    }
-
 
 Folder::~Folder()
 {
@@ -363,6 +316,63 @@ void Folder::etagRetreivedFromSyncEngine(const QString &etag)
     _lastEtag = etag;
 }
 
+void Folder::slotAccountCapabilitiesChanged()
+{
+    const Capabilities& capabilities = _accountState->account()->capabilities();
+    QString wsUrl = capabilities.getWebSocketUrl();
+    if (wsUrl.isEmpty()) {
+        return;
+    }
+
+    //initialize wamp connection
+    QWamp::Session *session;
+    _webSocket.reset(new QTcpSocket());
+    QUrl webSocketUrl(wsUrl);
+    QObject::connect(_webSocket.data(), &QTcpSocket::connected, [&]() {
+
+        QString sessionName("sessionName");
+        session = new QWamp::Session(sessionName, *_webSocket.data(), QWamp::Session::MessageFormat::Msgpack, true);
+
+        QObject::connect(session, &QWamp::Session::joined, [&](qint64 s) {
+            qDebug() << "Session joined to realm1 with session ID " << s;
+
+            session->subscribe("etag-changed-channel", [&](const QVariantList& args, const QVariantMap& options) {
+                qDebug() << "Event received";
+                //    bool success;
+                //    QVariantMap json = QtJson::parse(message, success).toMap();
+                //    if (success) {
+                //        QString notificationEtag = json["etag"].toString();
+                //        QString notificationUser = json["user"].toString();
+                //        QString user = _accountState->account()->credentials()->user();
+                //        if (user == notificationUser && _lastEtag != notificationEtag) {
+                //            qDebug() << "* [WebSocket] Compare etag with previous etag: last:" << _lastEtag << ", received:" << notificationEtag << "-> CHANGED";
+                //            _lastEtag = notificationEtag;
+                //            slotScheduleThisFolder();
+                //            _accountState->tagLastSuccessfullETagRequest();
+                //        }
+                //    }
+            });
+        });
+
+        QObject::connect(session, &QWamp::Session::started, [&]() {
+            session->join("realm1");
+        });
+        session->start();
+    });
+
+    QObject::connect(_webSocket.data(), static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError err)>(&QAbstractSocket::error), [&](QAbstractSocket::SocketError err) {
+        qInfo() << "tcp error: " << err;
+        qInfo() << _webSocket->errorString();
+    });
+    qInfo() << "Connecting to websocket " << wsUrl;
+    _webSocket->abort();
+    // TODO: start QSslSocket
+    if (webSocketUrl.scheme() == "ws") {
+        _webSocket->connectToHost(webSocketUrl.host(), webSocketUrl.port());
+    } else {
+        qCCritical(lcFolder) << "Invalid web socket scheme: " << webSocketUrl;
+    }
+}
 
 void Folder::showSyncResultPopup()
 {

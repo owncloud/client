@@ -74,7 +74,7 @@ public:
 
     /// Reads a folder definition from a settings group with the name 'alias'.
     static bool load(QSettings &settings, const QString &alias,
-        FolderDefinition *folder);
+                     FolderDefinition *folder);
 
     /// Ensure / as separator and trailing /.
     static QString prepareLocalPath(const QString &path);
@@ -108,7 +108,9 @@ public:
     /**
      * The account the folder is configured on.
      */
-    AccountState *accountState() const { return _accountState.data(); }
+    AccountState *accountState() const {
+        return _accountState.data();
+    }
 
     /**
      * alias or nickname
@@ -139,8 +141,12 @@ public:
      */
     QString remotePath() const;
 
-    void setNavigationPaneClsid(const QUuid &clsid) { _definition.navigationPaneClsid = clsid; }
-    QUuid navigationPaneClsid() const { return _definition.navigationPaneClsid; }
+    void setNavigationPaneClsid(const QUuid &clsid) {
+        _definition.navigationPaneClsid = clsid;
+    }
+    QUuid navigationPaneClsid() const {
+        return _definition.navigationPaneClsid;
+    }
 
     /**
      * remote folder path with server url
@@ -195,14 +201,28 @@ public:
     void setIgnoreHiddenFiles(bool ignore);
 
     // Used by the Socket API
-    SyncJournalDb *journalDb() { return &_journal; }
-    SyncEngine &syncEngine() { return *_engine; }
+    SyncJournalDb *journalDb() {
+        return &_journal;
+    }
+    SyncEngine &syncEngine() {
+        return *_engine;
+    }
 
-    RequestEtagJob *etagJob() { return _requestEtagJob; }
-    qint64 msecSinceLastSync() const { return _timeSinceLastSyncDone.elapsed(); }
-    qint64 msecLastSyncDuration() const { return _lastSyncDuration; }
-    int consecutiveFollowUpSyncs() const { return _consecutiveFollowUpSyncs; }
-    int consecutiveFailingSyncs() const { return _consecutiveFailingSyncs; }
+    RequestEtagJob *etagJob() {
+        return _requestEtagJob;
+    }
+    qint64 msecSinceLastSync() const {
+        return _timeSinceLastSyncDone.elapsed();
+    }
+    qint64 msecLastSyncDuration() const {
+        return _lastSyncDuration;
+    }
+    int consecutiveFollowUpSyncs() const {
+        return _consecutiveFollowUpSyncs;
+    }
+    int consecutiveFailingSyncs() const {
+        return _consecutiveFailingSyncs;
+    }
 
     /// Saves the folder data in the account's settings.
     void saveToSettings() const;
@@ -321,6 +341,7 @@ private slots:
 
     /** Ensures that the next sync performs a full local discovery. */
     void slotNextSyncFullLocalDiscovery();
+    void slotAccountCapabilitiesChanged();
 
 private:
     bool setIgnoredFiles();
@@ -342,7 +363,7 @@ private:
     };
 
     void createGuiLog(const QString &filename, LogStatus status, int count,
-        const QString &renameTarget = QString::null);
+                      const QString &renameTarget = QString::null);
 
     AccountStatePtr _accountState;
     FolderDefinition _definition;

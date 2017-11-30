@@ -97,7 +97,9 @@ public:
 
     /** Server url of the account */
     void setUrl(const QUrl &url);
-    QUrl url() const { return _url; }
+    QUrl url() const {
+        return _url;
+    }
 
     /// Adjusts _userVisibleUrl once the host to use is discovered.
     void setUserVisibleHost(const QString &host);
@@ -108,7 +110,9 @@ public:
      * @returns the (themeable) dav path for the account.
      */
     QString davPath() const;
-    void setDavPath(const QString &s) { _davPath = s; }
+    void setDavPath(const QString &s) {
+        _davPath = s;
+    }
     void setNonShib(bool nonShib);
 
     /** Returns webdav entry URL, based on url() */
@@ -132,22 +136,24 @@ public:
      * sendRequest().
      */
     QNetworkReply *sendRawRequest(const QByteArray &verb,
-        const QUrl &url,
-        QNetworkRequest req = QNetworkRequest(),
-        QIODevice *data = 0);
+                                  const QUrl &url,
+                                  QNetworkRequest req = QNetworkRequest(),
+                                  QIODevice *data = 0);
 
     /** Create and start network job for a simple one-off request.
      *
      * More complicated requests typically create their own job types.
      */
     SimpleNetworkJob *sendRequest(const QByteArray &verb,
-        const QUrl &url,
-        QNetworkRequest req = QNetworkRequest(),
-        QIODevice *data = 0);
+                                  const QUrl &url,
+                                  QNetworkRequest req = QNetworkRequest(),
+                                  QIODevice *data = 0);
 
     /** The ssl configuration during the first connection */
     QSslConfiguration getOrCreateSslConfig();
-    QSslConfiguration sslConfiguration() const { return _sslConfiguration; }
+    QSslConfiguration sslConfiguration() const {
+        return _sslConfiguration;
+    }
     void setSslConfiguration(const QSslConfiguration &config);
     // Because of bugs in Qt, we use this to store info needed for the SSL Button
     QSslCipher _sessionCipher;
@@ -156,7 +162,9 @@ public:
 
 
     /** The certificates of the account */
-    QList<QSslCertificate> approvedCerts() const { return _approvedCerts; }
+    QList<QSslCertificate> approvedCerts() const {
+        return _approvedCerts;
+    }
     void setApprovedCerts(const QList<QSslCertificate> certs);
     void addApprovedCerts(const QList<QSslCertificate> certs);
 
@@ -214,8 +222,12 @@ public:
     bool rootEtagChangesNotOnlySubFolderEtags();
 
     /** True when the server supports HTTP2  */
-    bool isHttp2Supported() { return _http2Supported; }
-    void setHttp2Supported(bool value) { _http2Supported = value; }
+    bool isHttp2Supported() {
+        return _http2Supported;
+    }
+    void setHttp2Supported(bool value) {
+        _http2Supported = value;
+    }
 
     void clearCookieJar();
     void lendCookieJarTo(QNetworkAccessManager *guest);
@@ -253,6 +265,7 @@ signals:
 
     void accountChangedAvatar();
     void accountChangedDisplayName();
+    void accountChangedCapabilities();
 
 protected Q_SLOTS:
     void slotCredentialsFetched();

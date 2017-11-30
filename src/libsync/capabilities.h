@@ -56,6 +56,9 @@ public:
     /// returns true if the capabilities are loaded already.
     bool isValid() const;
 
+    /// returns the websocket url or null if not configured
+    QString getWebSocketUrl() const;
+
     /**
      * Returns the checksum types the server understands.
      *
