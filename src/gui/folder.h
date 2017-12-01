@@ -23,6 +23,8 @@
 #include "clientproxy.h"
 #include "networkjobs.h"
 
+#include "qwamp.h"
+
 #include <csync.h>
 
 #include <QObject>
@@ -375,6 +377,7 @@ private:
     bool _proxyDirty;
     QPointer<RequestEtagJob> _requestEtagJob;
     QScopedPointer<QTcpSocket> _webSocket;
+    QScopedPointer<QWamp::Session> _session;
     QString _lastEtag;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;

@@ -34,8 +34,6 @@
 
 #include "creds/abstractcredentials.h"
 
-#include "qwamp.h"
-
 #include <QTimer>
 #include <QUrl>
 #include <QDir>
@@ -324,40 +322,39 @@ void Folder::slotAccountCapabilitiesChanged()
         return;
     }
 
+    if (_webSocket) {
+        return;
+    }
     //initialize wamp connection
-    QWamp::Session *session;
     _webSocket.reset(new QTcpSocket());
     QUrl webSocketUrl(wsUrl);
     QObject::connect(_webSocket.data(), &QTcpSocket::connected, [&]() {
 
         QString sessionName("sessionName");
-        session = new QWamp::Session(sessionName, *_webSocket.data(), QWamp::Session::MessageFormat::Msgpack, true);
+        _session.reset(new QWamp::Session(sessionName, *_webSocket.data(), QWamp::Session::MessageFormat::Msgpack, true));
 
-        QObject::connect(session, &QWamp::Session::joined, [&](qint64 s) {
+        QObject::connect(_session.data(), &QWamp::Session::joined, [&](qint64 s) {
             qDebug() << "Session joined to realm1 with session ID " << s;
 
-            session->subscribe("etag-changed-channel", [&](const QVariantList& args, const QVariantMap& options) {
+            // TODO: add current userid
+            _session->subscribe("files.root-etag-changed.admin", [&](const QVariantList& args, const QVariantMap& options) {
                 qDebug() << "Event received";
-                //    bool success;
-                //    QVariantMap json = QtJson::parse(message, success).toMap();
-                //    if (success) {
-                //        QString notificationEtag = json["etag"].toString();
-                //        QString notificationUser = json["user"].toString();
-                //        QString user = _accountState->account()->credentials()->user();
-                //        if (user == notificationUser && _lastEtag != notificationEtag) {
-                //            qDebug() << "* [WebSocket] Compare etag with previous etag: last:" << _lastEtag << ", received:" << notificationEtag << "-> CHANGED";
-                //            _lastEtag = notificationEtag;
-                //            slotScheduleThisFolder();
-                //            _accountState->tagLastSuccessfullETagRequest();
-                //        }
-                //    }
+                QString notificationEtag = args.at(0).toString();
+                QString notificationUser = args.at(1).toString();
+                QString user = _accountState->account()->credentials()->user();
+                if (user == notificationUser && _lastEtag != notificationEtag) {
+                    qDebug() << "* [WebSocket] Compare etag with previous etag: last:" << _lastEtag << ", received:" << notificationEtag << "-> CHANGED";
+                    _lastEtag = notificationEtag;
+                    slotScheduleThisFolder();
+                    _accountState->tagLastSuccessfullETagRequest();
+                }
             });
         });
 
-        QObject::connect(session, &QWamp::Session::started, [&]() {
-            session->join("realm1");
+        QObject::connect(_session.data(), &QWamp::Session::started, [&]() {
+            _session->join("realm1");
         });
-        session->start();
+        _session->start();
     });
 
     QObject::connect(_webSocket.data(), static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError err)>(&QAbstractSocket::error), [&](QAbstractSocket::SocketError err) {
