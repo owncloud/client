@@ -75,6 +75,13 @@ public:
     void addExcludeFilePath(const QString &path);
 
     /**
+     * Whether conflict files shall be excluded.
+     *
+     * Defaults to true.
+     */
+    void setExcludeConflictFiles(bool onoff);
+
+    /**
      * Checks whether a file or directory should be excluded.
      *
      * @param filePath     the absolute path to the file
@@ -188,6 +195,8 @@ private:
     QRegularExpression _bnameActivationRegexDir;
     QRegularExpression _fullRegexFile;
     QRegularExpression _fullRegexDir;
+
+    bool _excludeConflictFiles = true;
 
     friend class ExcludedFilesTest;
 };
