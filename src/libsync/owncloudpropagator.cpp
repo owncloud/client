@@ -348,6 +348,7 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
         if (item->_direction == SyncFileItem::Up) {
             return new PropagateRemoteMove(this, item);
         } else {
+            qDebug() << item->_file << item->_type;
             return new PropagateLocalRename(this, item);
         }
     case CSYNC_INSTRUCTION_IGNORE:
@@ -588,6 +589,11 @@ bool OwncloudPropagator::hasCaseClashAccessibilityProblem(const QString &relfile
 QString OwncloudPropagator::getFilePath(const QString &tmp_file_name) const
 {
     return _localDir + tmp_file_name;
+}
+
+QString OwncloudPropagator::placeholderFilePath(const QString &fileName) const
+{
+    return getFilePath(fileName) + QLatin1String(".owncloud");
 }
 
 void OwncloudPropagator::scheduleNextJob()
