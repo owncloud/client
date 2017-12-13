@@ -85,7 +85,7 @@ void ServerNotificationHandler::slotNotificationsReceived(const QJsonDocument &j
             // is rendered as a link text
             if( s.contains(QChar(' '))) {
                 const QStringList li = s.split(QChar(' '));
-                a._link = QUrl(li.at(1));
+                a._link = QUrl::fromEncoded(li.at(1).toLocal8Bit());
                 a._linkText = li.at(0);
             } else {
                 a._link = QUrl(s);
