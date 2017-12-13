@@ -57,6 +57,7 @@ public:
     QString _message;
     QString _file;
     QUrl _link;
+    QString _linkText;
     QDateTime _dateTime;
     QString _accName;
 
