@@ -69,6 +69,7 @@ GeneralSettings::GeneralSettings(QWidget *parent) :
     connect(_ui->newFolderLimitCheckBox, SIGNAL(toggled(bool)), SLOT(saveMiscSettings()));
     connect(_ui->newFolderLimitSpinBox, SIGNAL(valueChanged(int)), SLOT(saveMiscSettings()));
     connect(_ui->newExternalStorage, SIGNAL(toggled(bool)), SLOT(saveMiscSettings()));
+    connect(_ui->moveToTrashCheckBox, SIGNAL(toggled(bool)), SLOT(saveMiscSettings()));
 
 #ifndef WITH_CRASHREPORTER
     _ui->crashreporterCheckBox->setVisible(false);
@@ -119,6 +120,7 @@ void GeneralSettings::loadMiscSettings()
     _ui->newFolderLimitCheckBox->setChecked(newFolderLimit.first);
     _ui->newFolderLimitSpinBox->setValue(newFolderLimit.second);
     _ui->newExternalStorage->setChecked(cfgFile.confirmExternalStorage());
+    _ui->moveToTrashCheckBox->setChecked(cfgFile.moveToTrash());
     _ui->monoIconsCheckBox->setChecked(cfgFile.monoIcons());
 }
 
@@ -155,6 +157,7 @@ void GeneralSettings::saveMiscSettings()
     cfgFile.setNewBigFolderSizeLimit(_ui->newFolderLimitCheckBox->isChecked(),
                                         _ui->newFolderLimitSpinBox->value());
     cfgFile.setConfirmExternalStorage(_ui->newExternalStorage->isChecked());
+    cfgFile.setMoveToTrash(_ui->moveToTrashCheckBox->isChecked());
 }
 
 void GeneralSettings::slotToggleLaunchOnStartup(bool enable)
