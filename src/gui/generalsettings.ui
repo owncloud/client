@@ -129,6 +129,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="moveToTrashCheckBox">
+        <property name="text">
+         <string>Move deleted files to trash</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="crashreporterCheckBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">

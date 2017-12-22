@@ -162,6 +162,9 @@ bool uncheckedRenameReplace(const QString &originFileName,
  */
 bool OWNCLOUDSYNC_EXPORT remove(const QString &fileName, QString *errorString = 0);
 
+#ifdef Q_OS_UNIX
+bool moveToTrash(const QString &filename);
+#endif
 /**
  * Replacement for QFile::open(ReadOnly) followed by a seek().
  * This version sets a more permissive sharing mode on Windows.

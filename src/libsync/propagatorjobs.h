@@ -40,11 +40,12 @@ static const char checkSumAdlerC[] = "Adler32";
 class PropagateLocalRemove : public PropagateItemJob {
     Q_OBJECT
 public:
-    PropagateLocalRemove (OwncloudPropagator* propagator,const SyncFileItemPtr& item)  : PropagateItemJob(propagator, item) {}
+    PropagateLocalRemove (OwncloudPropagator* propagator,const SyncFileItemPtr& item)  : PropagateItemJob(propagator, item), _moveToTrash(-1) {}
     void start() Q_DECL_OVERRIDE;
 private:
     bool removeRecursively(const QString &path);
     QString _error;
+    int _moveToTrash;
 };
 
 /**

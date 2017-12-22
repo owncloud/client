@@ -13,6 +13,7 @@
  * for more details.
  */
 
+#include "configfile.h"
 #include "propagatorjobs.h"
 #include "owncloudpropagator_p.h"
 #include "propagateremotemove.h"
@@ -50,6 +51,13 @@ namespace OCC {
  */
 bool PropagateLocalRemove::removeRecursively(const QString& path)
 {
+#ifdef Q_OS_UNIX
+    if (_moveToTrash == -1){
+        ConfigFile cfgFile;
+        _moveToTrash = cfgFile.moveToTrash() ? 1 : 0;
+    }
+#endif
+
     bool success = true;
     QString absolute = propagator()->_localDir + _item->_file + path;
     QDirIterator di(absolute, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
@@ -59,21 +67,27 @@ bool PropagateLocalRemove::removeRecursively(const QString& path)
     while (di.hasNext()) {
         di.next();
         const QFileInfo& fi = di.fileInfo();
-        bool ok;
+        bool ok = true;
         // The use of isSymLink here is okay:
         // we never want to go into this branch for .lnk files
         bool isDir = fi.isDir() && !fi.isSymLink();
-        if (isDir) {
-            ok = removeRecursively(path + QLatin1Char('/') + di.fileName()); // recursive
-        } else {
-            QString removeError;
-            ok = FileSystem::remove(di.filePath(), &removeError);
-            if (!ok) {
-                _error += PropagateLocalRemove::tr("Error removing '%1': %2;").
-                    arg(QDir::toNativeSeparators(di.filePath()), removeError) + " ";
-                qDebug() << "Error removing " << di.filePath() << ':' << removeError;
+#ifdef Q_OS_UNIX
+        if (_moveToTrash == 0) {
+#endif
+            if (isDir) {
+                ok = removeRecursively(path + QLatin1Char('/') + di.fileName()); // recursive
+            } else {
+                QString removeError;
+                ok = FileSystem::remove(di.filePath(), &removeError);
+                if (!ok) {
+                    _error += PropagateLocalRemove::tr("Error removing '%1': %2;").
+                        arg(QDir::toNativeSeparators(di.filePath()), removeError) + " ";
+                    qDebug() << "Error removing " << di.filePath() << ':' << removeError;
+                }
             }
+#ifdef Q_OS_UNIX
         }
+#endif
         if (success && !ok) {
             // We need to delete the entries from the database now from the deleted vector
             foreach(const auto &it, deleted) {
@@ -93,7 +107,16 @@ bool PropagateLocalRemove::removeRecursively(const QString& path)
         }
     }
     if (success) {
-        success = QDir().rmdir(absolute);
+#ifdef Q_OS_UNIX
+        if (_moveToTrash == 0) {
+#endif
+            success = QDir().rmdir(absolute);
+#ifdef Q_OS_UNIX
+        }
+        if (_moveToTrash == 1) {
+            success = FileSystem::remove(absolute);
+        }
+#endif
         if (!success) {
             _error += PropagateLocalRemove::tr("Could not remove folder '%1'")
                 .arg(QDir::toNativeSeparators(absolute)) + " ";
