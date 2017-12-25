@@ -19,6 +19,8 @@
 #include "filesystembase.h"
 
 #include <QDateTime>
+#include <QDir>
+#include <QUrl>
 #include <QFile>
 #include <QCryptographicHash>
 
@@ -403,7 +405,7 @@ QByteArray FileSystem::calcAdler32(const QString &filename)
 }
 #endif
 
-bool FileSystem::remove(const QString &fileName, QString *errorString)
+bool FileSystem::remove(const QString &fileName, QString *errorString, bool _moveToTrash)
 {
 #ifdef Q_OS_WIN
     // You cannot delete a read-only file on windows, but we want to
@@ -412,15 +414,75 @@ bool FileSystem::remove(const QString &fileName, QString *errorString)
         setFileReadOnly(fileName, false);
     }
 #endif
-    QFile f(fileName);
-    if (!f.remove()) {
-        if (errorString) {
-            *errorString = f.errorString();
+#ifdef Q_OS_UNIX
+    if(_moveToTrash){
+        Q_UNUSED(errorString);
+        qDebug() << "moving" << fileName << "to trash";
+        if (!moveToTrash(fileName)) {
+            return false;
         }
+    }
+    if(!_moveToTrash) {
+#endif
+        QFile f(fileName);
+        if (!f.remove()) {
+            if (errorString) {
+                *errorString = f.errorString();
+            }
+            return false;
+        }
+#ifdef Q_OS_UNIX
+    }
+#endif
+    return true;
+}
+
+#ifdef Q_OS_UNIX
+bool FileSystem::moveToTrash(const QString &fileName)
+{
+    QString trashPath, trashFilePath, trashInfoPath;
+    QString xdgDataHome = QFile::decodeName(qgetenv("XDG_DATA_HOME"));
+    if (xdgDataHome.isEmpty()) {
+        trashPath=QDir::homePath()+"/.local/share/Trash/";  // trash path that should exist
+    } else {
+        trashPath=xdgDataHome+"/Trash/";
+    }
+
+    trashFilePath=trashPath+"files/";                   // trash file path contain delete files
+    trashInfoPath=trashPath+"info/";                    // trash info path contain delete files information
+
+    if (!(QDir().mkpath(trashFilePath) && QDir().mkpath(trashInfoPath)))
+        return false; //mkpath will return true if path exists
+
+    // create file format for trash info file----- START
+    QFileInfo f(fileName);
+    QFile infoFile(trashInfoPath+f.fileName()+".trashinfo");     //filename+.trashinfo //  create file information file in /.local/share/Trash/info/ folder
+
+    infoFile.open(QIODevice::ReadWrite);
+
+    QTextStream stream(&infoFile);         // for write data on open file
+
+    QByteArray info = "[Trash Info]\n";
+    info += "Path=";
+    info += QUrl::toPercentEncoding(f.absoluteFilePath(),"~_-./");
+    info += '\n';
+    info += "DeletionDate=";
+    info += QDateTime::currentDateTime().toString(Qt::ISODate).toLatin1();
+    info += '\n';
+
+    stream << info;
+
+    infoFile.close();
+
+    // create info file format of trash file----- END
+
+    QDir file;
+    if (!file.rename(f.absoluteFilePath(),trashFilePath+f.fileName())){  // rename(file old path, file trash path)
         return false;
     }
     return true;
 }
+#endif
 
 bool FileSystem::isFileLocked(const QString &fileName)
 {
