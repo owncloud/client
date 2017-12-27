@@ -20,8 +20,11 @@
 #include "application.h"
 #include "configfile.h"
 #include "folderman.h"
+#include "accountmanager.h"
 
 #include <QNetworkProxy>
+#include <QString>
+#include <QList>
 
 namespace OCC {
 
@@ -155,12 +158,25 @@ void NetworkSettings::saveProxySettings()
     } else if (_ui->systemProxyRadioButton->isChecked()) {
         cfgFile.setProxyType(QNetworkProxy::DefaultProxy);
     } else if (_ui->manualProxyRadioButton->isChecked()) {
-        int type = _ui->typeComboBox->itemData(_ui->typeComboBox->currentIndex()).toInt();
-        bool needsAuth = _ui->authRequiredcheckBox->isChecked();
-        QString user = _ui->userLineEdit->text();
-        QString pass = _ui->passwordLineEdit->text();
-        cfgFile.setProxyType(type, _ui->hostLineEdit->text(),
-            _ui->portSpinBox->value(), needsAuth, user, pass);
+
+        QString hostLineEditValue = _ui->hostLineEdit->text();
+
+        if(hostLineEditValue.isEmpty())
+        {
+            _ui->hostLineEdit->setStyleSheet("border: 1px solid red");
+            return;
+        }
+        else
+        {
+            _ui->hostLineEdit->setStyleSheet("border: native");
+
+            int type = _ui->typeComboBox->itemData(_ui->typeComboBox->currentIndex()).toInt();
+            bool needsAuth = _ui->authRequiredcheckBox->isChecked();
+            QString user = _ui->userLineEdit->text();
+            QString pass = _ui->passwordLineEdit->text();
+            cfgFile.setProxyType(type, _ui->hostLineEdit->text(),
+                _ui->portSpinBox->value(), needsAuth, user, pass);
+        }
     }
 
     ClientProxy proxy;
@@ -170,6 +186,21 @@ void NetworkSettings::saveProxySettings()
     // ...and set the folders dirty, they refresh their proxy next time they
     // start the sync.
     FolderMan::instance()->setDirtyProxy(true);
+
+    QList<AccountStatePtr> accountList = AccountManager::instance()->accounts();
+
+    for(int i=0; i < accountList->count(); i++)
+    {
+         if(accountList[i]->isConnected())
+        {
+            acouuntList[i]->disconnectByProxySettings();
+            accountList[i]->checkConnectivity();
+        }
+        else
+        {
+            accountList[i]->checkConnectivity();
+        }
+    }
 }
 
 void NetworkSettings::saveBWLimitSettings()
