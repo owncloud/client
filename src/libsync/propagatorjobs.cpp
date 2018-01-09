@@ -150,8 +150,15 @@ void PropagateLocalRemove::start()
         }
     } else {
         QString removeError;
+#ifdef Q_OS_UNIX
+    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
+#endif
         if (FileSystem::fileExists(filename)
-            && !FileSystem::remove(filename, &removeError)) {
+            && !FileSystem::remove(filename, &removeError,
+#ifdef Q_OS_UNIX
+    _moveToTrash
+#endif
+            )) {
             done(SyncFileItem::NormalError, removeError);
             return;
         }
