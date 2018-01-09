@@ -75,8 +75,9 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
         // we never want to go into this branch for .lnk files
         bool isDir = fi.isDir() && !fi.isSymLink();
 #ifdef Q_OS_UNIX
-        if (!_moveToTrash) {
+        if (!_moveToTrash)
 #endif
+        {
             if (isDir) {
                 ok = removeRecursively(path + QLatin1Char('/') + di.fileName()); // recursive
             } else {
@@ -87,9 +88,7 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
                     qCWarning(lcPropagateLocalRemove) << "Error removing " << di.filePath() << ':' << removeError;
                 }
             }
-#ifdef Q_OS_UNIX
         }
-#endif
         if (success && !ok) {
             // We need to delete the entries from the database now from the deleted vector
             foreach (const auto &it, deleted) {
@@ -110,12 +109,13 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
     }
     if (success) {
 #ifdef Q_OS_UNIX
-        if (!_moveToTrash) {
+        if (!_moveToTrash)
 #endif
+        {
             success = QDir().rmdir(absolute);
-#ifdef Q_OS_UNIX
         }
-        if (_moveToTrash) {
+#ifdef Q_OS_UNIX
+        else {
             QString removeError;
             success = FileSystem::remove(absolute, &removeError, true);
         }

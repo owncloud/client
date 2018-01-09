@@ -421,9 +421,9 @@ bool FileSystem::remove(const QString &fileName, QString *errorString, bool _mov
         if (!moveToTrash(fileName)) {
             return false;
         }
-    }
-    if(!_moveToTrash) {
+    } else
 #endif
+    {
         QFile f(fileName);
         if (!f.remove()) {
             if (errorString) {
@@ -431,9 +431,7 @@ bool FileSystem::remove(const QString &fileName, QString *errorString, bool _mov
             }
             return false;
         }
-#ifdef Q_OS_UNIX
     }
-#endif
     return true;
 }
 
