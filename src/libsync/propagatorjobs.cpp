@@ -13,8 +13,8 @@
  * for more details.
  */
 
-#include "configfile.h"
 #include "propagatorjobs.h"
+#include "owncloudpropagator.h"
 #include "owncloudpropagator_p.h"
 #include "propagateremotemove.h"
 #include "common/utility.h"
@@ -56,9 +56,7 @@ QByteArray localFileIdFromFullId(const QByteArray &id)
 bool PropagateLocalRemove::removeRecursively(const QString &path)
 {
 #ifdef Q_OS_UNIX
-    ConfigFile cfgFile;
-    if (_moveToTrash != cfgFile.moveToTrash())
-        _moveToTrash = cfgFile.moveToTrash();
+    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
 #endif
 
     bool success = true;
