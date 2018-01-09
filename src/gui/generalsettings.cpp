@@ -69,7 +69,11 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     connect(_ui->newFolderLimitCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
     connect(_ui->newFolderLimitSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &GeneralSettings::saveMiscSettings);
     connect(_ui->newExternalStorage, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
+#ifdef Q_OS_UNIX
     connect(_ui->moveToTrashCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
+#else
+    _ui->moveToTrashCheckBox->setVisible(false);
+#endif
 
 #ifndef WITH_CRASHREPORTER
     _ui->crashreporterCheckBox->setVisible(false);
