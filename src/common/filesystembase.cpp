@@ -450,9 +450,33 @@ bool FileSystem::moveToTrashFunc(const QString &fileName)
     if (!(QDir().mkpath(trashFilePath) && QDir().mkpath(trashInfoPath)))
         return false; //mkpath will return true if path exists
 
-    // create file format for trash info file----- START
     QFileInfo f(fileName);
-    QFile infoFile(trashInfoPath+f.fileName()+".trashinfo");     //filename+.trashinfo //  create file information file in /.local/share/Trash/info/ folder
+
+    QDir file;
+    int suffix_number = 1;
+    if (file.exists(trashFilePath+f.fileName())){ //file in trash already exists, move to "filename.1"
+        QString path = trashFilePath+f.fileName()+".";
+        while (file.exists(path+QString(suffix_number))){ //or to "filename.2" if "filename.1" exists, etc
+            suffix_number++;
+        }
+        if (!file.rename(f.absoluteFilePath(),path+QString(suffix_number))){  // rename(file old path, file trash path)
+            return false;
+        }
+    } else {
+        if (!file.rename(f.absoluteFilePath(),trashFilePath+f.fileName())){  // rename(file old path, file trash path)
+            return false;
+        }
+    }
+
+    // create file format for trash info file----- START
+    QFile infoFile;
+    if (file.exists(trashFilePath+f.fileName())) { //TrashInfo file already exists, create "filename.1.trashinfo"
+        QString filename = trashInfoPath+f.fileName()+"."+QString(suffix_number)+".trashinfo";
+        infoFile.setFileName(filename);     //filename+.trashinfo //  create file information file in /.local/share/Trash/info/ folder
+    } else {
+        QString filename = trashInfoPath+f.fileName()+".trashinfo";
+        infoFile.setFileName(filename);     //filename+.trashinfo //  create file information file in /.local/share/Trash/info/ folder
+    }
 
     infoFile.open(QIODevice::ReadWrite);
 
@@ -472,10 +496,6 @@ bool FileSystem::moveToTrashFunc(const QString &fileName)
 
     // create info file format of trash file----- END
 
-    QDir file;
-    if (!file.rename(f.absoluteFilePath(),trashFilePath+f.fileName())){  // rename(file old path, file trash path)
-        return false;
-    }
     return true;
 }
 #endif
