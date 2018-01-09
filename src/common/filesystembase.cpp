@@ -405,7 +405,7 @@ QByteArray FileSystem::calcAdler32(const QString &filename)
 }
 #endif
 
-bool FileSystem::remove(const QString &fileName, QString *errorString, bool _moveToTrash)
+bool FileSystem::remove(const QString &fileName, QString *errorString, bool moveToTrash)
 {
 #ifdef Q_OS_WIN
     // You cannot delete a read-only file on windows, but we want to
@@ -415,10 +415,10 @@ bool FileSystem::remove(const QString &fileName, QString *errorString, bool _mov
     }
 #endif
 #ifdef Q_OS_UNIX
-    if(_moveToTrash){
+    if(moveToTrash){
         Q_UNUSED(errorString);
         qDebug() << "moving" << fileName << "to trash";
-        if (!moveToTrash(fileName)) {
+        if (!moveToTrashFunc(fileName)) {
             return false;
         }
     } else
@@ -436,7 +436,7 @@ bool FileSystem::remove(const QString &fileName, QString *errorString, bool _mov
 }
 
 #ifdef Q_OS_UNIX
-bool FileSystem::moveToTrash(const QString &fileName)
+bool FileSystem::moveToTrashFunc(const QString &fileName)
 {
     QString trashPath, trashFilePath, trashInfoPath;
     QString xdgDataHome = QFile::decodeName(qgetenv("XDG_DATA_HOME"));
