@@ -470,7 +470,7 @@ bool FileSystem::moveToTrashFunc(const QString &fileName)
 
     // create file format for trash info file----- START
     QFile infoFile;
-    if (file.exists(trashInfoPath+f.fileName())) { //TrashInfo file already exists, create "filename.1.trashinfo"
+    if (file.exists(trashInfoPath+f.fileName()+".trashinfo")) { //TrashInfo file already exists, create "filename.1.trashinfo"
         QString filename = trashInfoPath+f.fileName()+"."+QString::number(suffix_number)+".trashinfo";
         infoFile.setFileName(filename);     //filename+.trashinfo //  create file information file in /.local/share/Trash/info/ folder
     } else {
