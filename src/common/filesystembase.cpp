@@ -416,8 +416,6 @@ bool FileSystem::remove(const QString &fileName, QString *errorString, bool move
 #endif
 #ifdef Q_OS_UNIX
     if(moveToTrash){
-        Q_UNUSED(errorString);
-        qDebug() << "moving" << fileName << "to trash";
         if (!moveToTrashFunc(fileName)) {
             return false;
         }

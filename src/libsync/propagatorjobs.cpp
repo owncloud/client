@@ -114,6 +114,7 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
         }
 #ifdef Q_OS_UNIX
         else {
+            qCDebug(lcPropagateLocalRemove) << "moving" << absolute << "to trash";
             QString removeError;
             success = FileSystem::remove(absolute, &removeError, true);
         }
