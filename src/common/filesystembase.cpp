@@ -405,7 +405,7 @@ QByteArray FileSystem::calcAdler32(const QString &filename)
 }
 #endif
 
-bool FileSystem::remove(const QString &fileName, QString *errorString, bool moveToTrash)
+bool FileSystem::remove(const QString &fileName, QString *errorString)
 {
 #ifdef Q_OS_WIN
     // You cannot delete a read-only file on windows, but we want to
@@ -414,27 +414,18 @@ bool FileSystem::remove(const QString &fileName, QString *errorString, bool move
         setFileReadOnly(fileName, false);
     }
 #endif
-#ifdef Q_OS_UNIX
-    if(moveToTrash){
-        if (!moveToTrashFunc(fileName)) {
-            return false;
+    QFile f(fileName);
+    if (!f.remove()) {
+        if (errorString) {
+            *errorString = f.errorString();
         }
-    } else
-#endif
-    {
-        QFile f(fileName);
-        if (!f.remove()) {
-            if (errorString) {
-                *errorString = f.errorString();
-            }
-            return false;
-        }
+        return false;
     }
     return true;
 }
 
 #ifdef Q_OS_UNIX
-bool FileSystem::moveToTrashFunc(const QString &fileName)
+bool FileSystem::moveToTrash(const QString &fileName, QString *errorString)
 {
     QString trashPath, trashFilePath, trashInfoPath;
     QString xdgDataHome = QFile::decodeName(qgetenv("XDG_DATA_HOME"));
@@ -447,8 +438,10 @@ bool FileSystem::moveToTrashFunc(const QString &fileName)
     trashFilePath=trashPath+"files/";                   // trash file path contain delete files
     trashInfoPath=trashPath+"info/";                    // trash info path contain delete files information
 
-    if (!(QDir().mkpath(trashFilePath) && QDir().mkpath(trashInfoPath)))
+    if (!(QDir().mkpath(trashFilePath) && QDir().mkpath(trashInfoPath))) {
+        *errorString = QString("Could not make directories in trash");
         return false; //mkpath will return true if path exists
+    }
 
     QFileInfo f(fileName);
 
@@ -456,14 +449,16 @@ bool FileSystem::moveToTrashFunc(const QString &fileName)
     int suffix_number = 1;
     if (file.exists(trashFilePath+f.fileName())){ //file in trash already exists, move to "filename.1"
         QString path = trashFilePath+f.fileName()+".";
-        while (file.exists(path+QString(suffix_number))){ //or to "filename.2" if "filename.1" exists, etc
+        while (file.exists(path+QString(suffix_number))) { //or to "filename.2" if "filename.1" exists, etc
             suffix_number++;
         }
-        if (!file.rename(f.absoluteFilePath(),path+QString::number(suffix_number))){  // rename(file old path, file trash path)
+        if (!file.rename(f.absoluteFilePath(),path+QString::number(suffix_number))) {  // rename(file old path, file trash path)
+            *errorString = QString("Could not move '%1' to '%2'").arg(f.absoluteFilePath(), path+QString::number(suffix_number));
             return false;
         }
     } else {
-        if (!file.rename(f.absoluteFilePath(),trashFilePath+f.fileName())){  // rename(file old path, file trash path)
+        if (!file.rename(f.absoluteFilePath(),trashFilePath+f.fileName())) {  // rename(file old path, file trash path)
+            *errorString = QString("Could not move '%1' to '%2'").arg(f.absoluteFilePath(), trashFilePath+f.fileName());
             return false;
         }
     }

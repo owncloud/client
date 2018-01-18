@@ -107,10 +107,10 @@ namespace FileSystem {
      * Equivalent to QFile::remove(), except on Windows, where it will also
      * successfully remove read-only files.
      */
-    bool OCSYNC_EXPORT remove(const QString &fileName, QString *errorString = 0, bool moveToTrash = false);
+    bool OCSYNC_EXPORT remove(const QString &fileName, QString *errorString = 0);
 
 #ifdef Q_OS_UNIX
-    bool moveToTrashFunc(const QString &filename);
+    bool OCSYNC_EXPORT moveToTrash(const QString &filename, QString *errorString);
 #endif
     /**
      * Replacement for QFile::open(ReadOnly) followed by a seek().

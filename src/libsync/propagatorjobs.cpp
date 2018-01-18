@@ -55,10 +55,6 @@ QByteArray localFileIdFromFullId(const QByteArray &id)
  */
 bool PropagateLocalRemove::removeRecursively(const QString &path)
 {
-#ifdef Q_OS_UNIX
-    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
-#endif
-
     bool success = true;
     QString absolute = propagator()->_localDir + _item->_file + path;
     QDirIterator di(absolute, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
@@ -68,23 +64,18 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
     while (di.hasNext()) {
         di.next();
         const QFileInfo &fi = di.fileInfo();
-        bool ok = true;
+        bool ok;
         // The use of isSymLink here is okay:
         // we never want to go into this branch for .lnk files
         bool isDir = fi.isDir() && !fi.isSymLink();
-#ifdef Q_OS_UNIX
-        if (!_moveToTrash)
-#endif
-        {
-            if (isDir) {
-                ok = removeRecursively(path + QLatin1Char('/') + di.fileName()); // recursive
-            } else {
-                QString removeError;
-                ok = FileSystem::remove(di.filePath(), &removeError);
-                if (!ok) {
-                    _error += PropagateLocalRemove::tr("Error removing '%1': %2;").arg(QDir::toNativeSeparators(di.filePath()), removeError) + " ";
-                    qCWarning(lcPropagateLocalRemove) << "Error removing " << di.filePath() << ':' << removeError;
-                }
+        if (isDir) {
+            ok = removeRecursively(path + QLatin1Char('/') + di.fileName()); // recursive
+        } else {
+            QString removeError;
+            ok = FileSystem::remove(di.filePath(), &removeError);
+            if (!ok) {
+                _error += PropagateLocalRemove::tr("Error removing '%1': %2;").arg(QDir::toNativeSeparators(di.filePath()), removeError) + " ";
+                qCWarning(lcPropagateLocalRemove) << "Error removing " << di.filePath() << ':' << removeError;
             }
         }
         if (success && !ok) {
@@ -106,19 +97,7 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
         }
     }
     if (success) {
-#ifdef Q_OS_UNIX
-        if (!_moveToTrash)
-#endif
-        {
-            success = QDir().rmdir(absolute);
-        }
-#ifdef Q_OS_UNIX
-        else {
-            qCDebug(lcPropagateLocalRemove) << "moving" << absolute << "to trash";
-            QString removeError;
-            success = FileSystem::remove(absolute, &removeError, true);
-        }
-#endif
+        success = QDir().rmdir(absolute);
         if (!success) {
             _error += PropagateLocalRemove::tr("Could not remove folder '%1'")
                           .arg(QDir::toNativeSeparators(absolute))
@@ -131,6 +110,10 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
 
 void PropagateLocalRemove::start()
 {
+#ifdef Q_OS_UNIX
+    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
+#endif
+
     if (propagator()->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
@@ -143,24 +126,32 @@ void PropagateLocalRemove::start()
         return;
     }
 
+    QString removeError;
     if (_item->isDirectory()) {
-        if (QDir(filename).exists() && !removeRecursively(QString())) {
-            done(SyncFileItem::NormalError, _error);
-            return;
+        if (_moveToTrash) {
+            if (QDir(filename).exists() && !FileSystem::moveToTrash(filename, &removeError)) {
+                done(SyncFileItem::NormalError, removeError);
+                return;
+            }
+        } else {
+            if (QDir(filename).exists() && !removeRecursively(QString())) {
+                done(SyncFileItem::NormalError, _error);
+                return;
+            }
         }
     } else {
-        QString removeError;
-#ifdef Q_OS_UNIX
-    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
-#endif
-        if (FileSystem::fileExists(filename)
-            && !FileSystem::remove(filename, &removeError
-#ifdef Q_OS_UNIX
-    , _moveToTrash
-#endif
-            )) {
-            done(SyncFileItem::NormalError, removeError);
-            return;
+        if (_moveToTrash) {
+            if (FileSystem::fileExists(filename)
+                && !FileSystem::moveToTrash(filename, &removeError)) {
+                done(SyncFileItem::NormalError, removeError);
+                return;
+            }
+        } else {
+            if (FileSystem::fileExists(filename)
+                && !FileSystem::remove(filename, &removeError)) {
+                done(SyncFileItem::NormalError, removeError);
+                return;
+            }
         }
     }
     propagator()->reportProgress(*_item, 0);
