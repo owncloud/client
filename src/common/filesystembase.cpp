@@ -449,7 +449,7 @@ bool FileSystem::moveToTrash(const QString &fileName, QString *errorString)
     int suffix_number = 1;
     if (file.exists(trashFilePath+f.fileName())){ //file in trash already exists, move to "filename.1"
         QString path = trashFilePath+f.fileName()+".";
-        while (file.exists(path+QString(suffix_number))) { //or to "filename.2" if "filename.1" exists, etc
+        while (file.exists(path+QString::number(suffix_number))) { //or to "filename.2" if "filename.1" exists, etc
             suffix_number++;
         }
         if (!file.rename(f.absoluteFilePath(),path+QString::number(suffix_number))) {  // rename(file old path, file trash path)
