@@ -71,9 +71,8 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     connect(_ui->newExternalStorage, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
 #ifdef Q_OS_UNIX
     connect(_ui->moveToTrashCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
-#else
-    _ui->moveToTrashCheckBox->setVisible(false);
 #endif
+    _ui->moveToTrashCheckBox->setVisible(false);
 
 #ifndef WITH_CRASHREPORTER
     _ui->crashreporterCheckBox->setVisible(false);
