@@ -120,7 +120,9 @@ public:
     /**
     * URL to help file
     */
-    virtual QString helpUrl() const { return QString::null; }
+    virtual QString helpUrl() const {
+        return QString::null;
+    }
 
     /**
      * Setting a value here will pre-define the server url.
@@ -149,7 +151,9 @@ public:
     /**
      * Override to encforce a particular locale, i.e. "de" or "pt_BR"
      */
-    virtual QString enforcedLocale() const { return QString::null; }
+    virtual QString enforcedLocale() const {
+        return QString::null;
+    }
 
     /** colored, white or black */
     QString systrayIconFlavor(bool mono, bool sysTrayMenuVisible = false) const;
@@ -267,8 +271,9 @@ public:
      * @value UserIDCustom Specify string in \ref customUserID
      */
     enum UserIDType { UserIDUserName = 0,
-        UserIDEmail,
-        UserIDCustom };
+                      UserIDEmail,
+                      UserIDCustom
+                    };
 
     /** @brief What to display as the userID (e.g. in the wizards)
      *
@@ -335,6 +340,10 @@ public:
      */
     virtual QString versionSwitchOutput() const;
 
+    /**
+     * @brief Defines the default for the lauch on startup option
+     */
+    virtual bool lauchOnStartupDefault() const;
 
 protected:
 #ifndef TOKEN_AUTH_ONLY
