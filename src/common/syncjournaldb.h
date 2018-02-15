@@ -269,6 +269,8 @@ private:
     /* This is the list of paths we called avoidReadFromDbOnNextSync on.
      * It means that they should not be written to the DB in any case since doing
      * that would write the etag and would void the purpose of avoidReadFromDbOnNextSync
+     *
+     * The contained paths have a trailing /.
      */
     QList<QByteArray> _avoidReadFromDbOnNextSyncFilter;
 

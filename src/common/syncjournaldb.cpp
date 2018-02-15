@@ -942,9 +942,10 @@ bool SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
 
     if (!_avoidReadFromDbOnNextSyncFilter.isEmpty()) {
         // If we are a directory that should not be read from db next time, don't write the etag
+        QByteArray prefix = record._path + "/";
         foreach (const QByteArray &it, _avoidReadFromDbOnNextSyncFilter) {
-            if (it.startsWith(record._path)) {
-                qCInfo(lcDb) << "Filtered writing the etag of" << record._path << "because it is a prefix of" << it;
+            if (it.startsWith(prefix)) {
+                qCInfo(lcDb) << "Filtered writing the etag of" << prefix << "because it is a prefix of" << it;
                 record._etag = "_invalid_";
                 break;
             }
@@ -1815,8 +1816,10 @@ void SyncJournalDb::avoidReadFromDbOnNextSync(const QByteArray &fileName)
     query.bindValue(1, argument);
     query.exec();
 
-    // Prevent future overwrite of the etag for this sync
-    _avoidReadFromDbOnNextSyncFilter.append(fileName);
+    // Prevent future overwrite of the etags of this folder and all
+    // parent folders for this sync
+    argument.append('/');
+    _avoidReadFromDbOnNextSyncFilter.append(argument);
 }
 
 void SyncJournalDb::forceRemoteDiscoveryNextSync()

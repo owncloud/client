@@ -202,12 +202,14 @@ private slots:
 
         makeEntry("foodir", 2);
         makeEntry("otherdir", 2);
-        makeEntry("foo%", 2);
-        makeEntry("foodi_", 2);
+        makeEntry("foo%", 2); // wildcards don't apply
+        makeEntry("foodi_", 2); // wildcards don't apply
         makeEntry("foodir/file", 0);
         makeEntry("foodir/subdir", 2);
         makeEntry("foodir/subdir/file", 0);
         makeEntry("foodir/otherdir", 2);
+        makeEntry("fo", 2); // prefix, but does not match
+        makeEntry("foodir/sub", 2); // prefix, but does not match
         makeEntry("foodir/subdir/subsubdir", 2);
         makeEntry("foodir/subdir/subsubdir/file", 0);
         makeEntry("foodir/subdir/otherdir", 2);
@@ -223,20 +225,27 @@ private slots:
         QCOMPARE(getEtag("foodir/subdir/file"), initialEtag);
         QCOMPARE(getEtag("foodir/subdir/subsubdir/file"), initialEtag);
 
+        QCOMPARE(getEtag("fo"), initialEtag);
         QCOMPARE(getEtag("foo%"), initialEtag);
         QCOMPARE(getEtag("foodi_"), initialEtag);
         QCOMPARE(getEtag("otherdir"), initialEtag);
         QCOMPARE(getEtag("foodir/otherdir"), initialEtag);
+        QCOMPARE(getEtag("foodir/sub"), initialEtag);
         QCOMPARE(getEtag("foodir/subdir/otherdir"), initialEtag);
 
         // Indirect effects: setFileRecord() calls filter etags
         initialEtag = "etag2";
+
         makeEntry("foodir", 2);
-        makeEntry("foodir/subdir", 2);
-        makeEntry("foodir/subdir/subsubdir", 2);
         QCOMPARE(getEtag("foodir"), invalidEtag);
+        makeEntry("foodir/subdir", 2);
         QCOMPARE(getEtag("foodir/subdir"), invalidEtag);
+        makeEntry("foodir/subdir/subsubdir", 2);
         QCOMPARE(getEtag("foodir/subdir/subsubdir"), initialEtag);
+        makeEntry("fo", 2);
+        QCOMPARE(getEtag("fo"), initialEtag);
+        makeEntry("foodir/sub", 2);
+        QCOMPARE(getEtag("foodir/sub"), initialEtag);
     }
 
     void testRecursiveDelete()
