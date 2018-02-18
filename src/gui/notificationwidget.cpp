@@ -47,9 +47,13 @@ void NotificationWidget::setActivity(const Activity &activity)
     QString subject = activity._subject;
     if( !activity._link.isEmpty() ) {
         // append a link to the message, if that is empty, to subject
-        subject.append(QString("&nbsp;<a href=\"%1\">%2</a>")
-                       .arg(activity._link.toString(QUrl::FullyEncoded))
-                       .arg(activity._linkText));
+        QString lText = activity._linkText;
+        if( lText.isEmpty() ) {
+            lText = tr("[link]");
+        }
+        subject.append( QString("&nbsp;<a href=\"%1\">%2</a>")
+                        .arg(activity._link.toString(QUrl::FullyEncoded),
+                             lText.toHtmlEscaped() ));
         _ui._subjectLabel->setTextFormat(Qt::RichText);
         _ui._subjectLabel->setOpenExternalLinks(true);
 
