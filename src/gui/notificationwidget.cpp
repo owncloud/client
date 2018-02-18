@@ -44,7 +44,7 @@ void NotificationWidget::setActivity(const Activity &activity)
     _ui._subjectLabel->setVisible(!activity._subject.isEmpty());
     _ui._messageLabel->setVisible(!activity._message.isEmpty());
 
-    QString subject = activity._subject;
+    QString subject = activity._subject.toHtmlEscaped();
     if( !activity._link.isEmpty() ) {
         // append a link to the message, if that is empty, to subject
         QString lText = activity._linkText;
