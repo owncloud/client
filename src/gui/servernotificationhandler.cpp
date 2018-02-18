@@ -79,19 +79,7 @@ void ServerNotificationHandler::slotNotificationsReceived(const QJsonDocument &j
         a._id = json.value("notification_id").toInt();
         a._subject = json.value("subject").toString();
         a._message = json.value("message").toString();
-        QString s = json.value("link").toString();
-        if (!s.isEmpty()) {
-            // if there is a real whitespace in the link, the part before the space
-            // is rendered as a link text
-            if( s.contains(QChar(' '))) {
-                const QStringList li = s.split(QChar(' '));
-                a._link = QUrl::fromEncoded(li.at(1).toLocal8Bit());
-                a._linkText = li.at(0);
-            } else {
-                a._link = QUrl(s);
-                a._linkText = QString("[%1]").arg(tr("link"));
-            }
-        }
+        a.extractLink (json.value("link").toString());
         a._dateTime = QDateTime::fromString(json.value("datetime").toString(), Qt::ISODate);
 
         auto actions = json.value("actions").toArray();

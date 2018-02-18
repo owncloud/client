@@ -70,6 +70,23 @@ public:
 
 
     Identifier ident() const;
+
+    void extractLink( const QString& s )
+    {
+        if (!s.isEmpty()) {
+            // if there is a real whitespace in the link, the part before the space
+            // is rendered as a link text
+            int charPos = s.lastIndexOf(QChar(' '));
+            if( charPos > -1 ) {
+                const QString link = s.mid(charPos+1); // all chars from the char to back
+                _link = QUrl::fromEncoded(link.toUtf8());
+                _linkText = s.mid(0, charPos).toHtmlEscaped();
+            } else {
+                _link = QUrl(s);
+                _linkText.clear();
+            }
+        }
+    }
 };
 
 bool operator==(const Activity &rhs, const Activity &lhs);
