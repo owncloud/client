@@ -11,7 +11,7 @@
 
 using namespace OCC;
 
-class TestServerNotify: public QObject
+class TestActivityData: public QObject
 {
     Q_OBJECT
 
@@ -64,5 +64,5 @@ private slots:
     }
 };
 
-QTEST_APPLESS_MAIN(TestServerNotify)
-#include "testservernotify.moc"
+QTEST_APPLESS_MAIN(TestActivityData)
+#include "testactivitydata.moc"
