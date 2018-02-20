@@ -332,7 +332,9 @@ void Application::slotownCloudWizardDone(int res)
         slotCheckConnection();
 
         // If one account is configured: enable autostart
-        bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
+        bool shouldSetAutoStart =
+            (accountMan->accounts().size() == 1)
+            && Theme::instance()->lauchOnStartupDefault();
 #ifdef Q_OS_MAC
         // Don't auto start when not being 'installed'
         shouldSetAutoStart = shouldSetAutoStart

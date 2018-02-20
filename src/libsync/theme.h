@@ -335,6 +335,12 @@ public:
      */
     virtual QString versionSwitchOutput() const;
 
+    /**
+     * @brief Defines the default for the lauch on startup option
+     *
+     * Defaults to true.
+     */
+    virtual bool lauchOnStartupDefault() const;
 
 protected:
 #ifndef TOKEN_AUTH_ONLY

@@ -528,5 +528,9 @@ QString Theme::versionSwitchOutput() const
     return helpText;
 }
 
+bool Theme::lauchOnStartupDefault() const
+{
+    return true;
+}
 
 } // end namespace client
