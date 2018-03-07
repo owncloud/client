@@ -56,12 +56,13 @@ public:
     QString _subject;
     QString _message;
     QString _file;
-    QUrl _link;
-    QString _linkText;
+    QUrl _link;        /* a link that might be passed as part of the activity */
+    QString _linkText; /* unescaped label of the link above */
     QDateTime _dateTime;
-    QString _accName;
+    QString _accName;  /* display name of the account involved */
 
-    QVector<ActivityLink> _links;
+    QVector<ActivityLink> _links; /* These links are transformed into buttons that
+                                   * call links as reactions on the activity */
     /**
      * @brief Sort operator to sort the list youngest first.
      * @param val
@@ -77,10 +78,10 @@ public:
             // if there is a real whitespace in the link, the part before the space
             // is rendered as a link text
             int charPos = s.lastIndexOf(QChar(' '));
-            if( charPos > -1 ) {
+            if (charPos > -1) {
                 const QString link = s.mid(charPos+1); // all chars from the char to back
                 _link = QUrl::fromEncoded(link.toUtf8());
-                _linkText = s.mid(0, charPos).toHtmlEscaped();
+                _linkText = s.mid(0, charPos);
             } else {
                 _link = QUrl(s);
                 _linkText.clear();
