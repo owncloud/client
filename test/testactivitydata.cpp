@@ -9,6 +9,8 @@
 #include "activitydata.h"
 #include "common/utility.h"
 
+#define LS(D) QLatin1String(D)
+
 using namespace OCC;
 
 class TestActivityData: public QObject
@@ -29,38 +31,38 @@ private slots:
         Activity a;
         QString link("http://owncloud.org");
         a.extractLink(link);
-        QCOMPARE(a._link.host(), "owncloud.org");
+        QCOMPARE(a._link.host(), LS("owncloud.org"));
     
         Activity b;
         QString link2("Linktext http://owncloud.org");
         b.extractLink(link2);
-        QCOMPARE(b._link.host(), "owncloud.org");
-        QCOMPARE(b._linkText, "Linktext" );
+        QCOMPARE(b._link.host(), LS("owncloud.org"));
+        QCOMPARE(b._linkText, LS("Linktext"));
     }
     void testLinkSplitText() {
         Activity a;
         QString link("Link Text http://owncloud.org");
         a.extractLink(link);
-        QCOMPARE(a._link.host(), "owncloud.org");
-        QCOMPARE(a._linkText, "Link Text" );
+        QCOMPARE(a._link.host(), LS("owncloud.org"));
+        QCOMPARE(a._linkText, LS("Link Text"));
     }
     void testLinkEncoding() {
         Activity a;
         QString link("http://owncloud.org?foo=bar");
         a.extractLink(link);
-        QCOMPARE(a._link.host(), "owncloud.org");
-        QCOMPARE(a._link.query(), "foo=bar");
+        QCOMPARE(a._link.host(), LS("owncloud.org"));
+        QCOMPARE(a._link.query(), LS("foo=bar"));
         
         Activity b;
         b.extractLink("http://owncloud.org?foo=bar%20baz");
-        QCOMPARE(b._link.host(), "owncloud.org");
-        QCOMPARE(b._link.query(QUrl::EncodeSpaces), "foo=bar%20baz");
+        QCOMPARE(b._link.host(), LS("owncloud.org"));
+        QCOMPARE(b._link.query(QUrl::EncodeSpaces), LS("foo=bar%20baz"));
 
         Activity c;
         c.extractLink("дру́жба http://owncloud.org?foo=bar%20baz");
-        QCOMPARE(c._link.host(), "owncloud.org");
-        QCOMPARE(c._link.query(QUrl::EncodeSpaces), "foo=bar%20baz");
-        QCOMPARE(c._linkText,  "дру́жба" );
+        QCOMPARE(c._link.host(), LS("owncloud.org"));
+        QCOMPARE(c._link.query(QUrl::EncodeSpaces), LS("foo=bar%20baz"));
+        QCOMPARE(c._linkText,  QString::fromUtf8("дру́жба"));
     }
 };
 
