@@ -1,8 +1,8 @@
 /*
  *    This software is in the public domain, furnished "as is", without technical
- *       support, and with no warranty, express or implied, as to its usefulness for
- *          any purpose.
- *          */
+ *    support, and with no warranty, express or implied, as to its usefulness for
+ *    any purpose.
+ */
 
 #include <QtTest>
 
@@ -29,38 +29,38 @@ private slots:
         Activity a;
         QString link("http://owncloud.org");
         a.extractLink(link);
-        QVERIFY(a._link.host() == "owncloud.org");
+        QCOMPARE(a._link.host(), "owncloud.org");
     
         Activity b;
         QString link2("Linktext http://owncloud.org");
         b.extractLink(link2);
-        QVERIFY(b._link.host() == "owncloud.org");
-        QVERIFY(b._linkText == "Linktext" );
+        QCOMPARE(b._link.host(), "owncloud.org");
+        QCOMPARE(b._linkText, "Linktext" );
     }
     void testLinkSplitText() {
         Activity a;
         QString link("Link Text http://owncloud.org");
         a.extractLink(link);
-        QVERIFY(a._link.host() == "owncloud.org");
-        QVERIFY(a._linkText == "Link Text" );
+        QCOMPARE(a._link.host(), "owncloud.org");
+        QCOMPARE(a._linkText, "Link Text" );
     }
     void testLinkEncoding() {
         Activity a;
         QString link("http://owncloud.org?foo=bar");
         a.extractLink(link);
-        QVERIFY(a._link.host() == "owncloud.org");
-        QVERIFY(a._link.query() == "foo=bar");
+        QCOMPARE(a._link.host(), "owncloud.org");
+        QCOMPARE(a._link.query(), "foo=bar");
         
         Activity b;
         b.extractLink("http://owncloud.org?foo=bar%20baz");
-        QVERIFY(b._link.host() == "owncloud.org");
-        QVERIFY(b._link.query(QUrl::EncodeSpaces) == "foo=bar%20baz");
+        QCOMPARE(b._link.host(), "owncloud.org");
+        QCOMPARE(b._link.query(QUrl::EncodeSpaces), "foo=bar%20baz");
 
         Activity c;
         c.extractLink("дру́жба http://owncloud.org?foo=bar%20baz");
-        QVERIFY(c._link.host() == "owncloud.org");
-        QVERIFY(c._link.query(QUrl::EncodeSpaces) == "foo=bar%20baz");
-        QVERIFY(c._linkText == "дру́жба" );
+        QCOMPARE(c._link.host(), "owncloud.org");
+        QCOMPARE(c._link.query(QUrl::EncodeSpaces), "foo=bar%20baz");
+        QCOMPARE(c._linkText,  "дру́жба" );
     }
 };
 
