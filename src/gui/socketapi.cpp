@@ -361,7 +361,8 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 {
     QString statusString;
 
-    Folder *syncFolder = FolderMan::instance()->folderForPath(argument);
+    QString relativePath;
+    Folder *syncFolder = FolderMan::instance()->folderForPath(argument, &relativePath);
     if (!syncFolder) {
         // this can happen in offline mode e.g.: nothing to worry about
         statusString = QLatin1String("NOP");
@@ -376,7 +377,6 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
         QString directory = systemPath.left(systemPath.lastIndexOf('/'));
         listener->registerMonitoredDirectory(qHash(directory));
 
-        QString relativePath = systemPath.mid(syncFolder->cleanPath().length() + 1);
         SyncFileStatus fileStatus = syncFolder->syncEngine().syncFileStatusTracker().fileStatus(relativePath);
         statusString = fileStatus.toSocketAPIString();
     }
@@ -389,7 +389,8 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
 {
     auto theme = Theme::instance();
 
-    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    QString file;
+    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile, &file);
     if (!shareFolder) {
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         // files that are not within a sync folder are not synced.
@@ -403,7 +404,6 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
         listener->sendMessage(message);
     } else {
         const QString localFileClean = QDir::cleanPath(localFile);
-        const QString file = localFileClean.mid(shareFolder->cleanPath().length() + 1);
         SyncFileStatus fileStatus = shareFolder->syncEngine().syncFileStatusTracker().fileStatus(file);
 
         // Verify the file is on the server (to our knowledge of course)
@@ -436,13 +436,13 @@ void SocketApi::command_VERSION(const QString &, SocketListener *listener)
 
 void SocketApi::command_SHARE_STATUS(const QString &localFile, SocketListener *listener)
 {
-    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    QString file;
+    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile, &file);
 
     if (!shareFolder) {
         const QString message = QLatin1String("SHARE_STATUS:NOP:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
     } else {
-        const QString file = QDir::cleanPath(localFile).mid(shareFolder->cleanPath().length() + 1);
         SyncFileStatus fileStatus = shareFolder->syncEngine().syncFileStatusTracker().fileStatus(file);
 
         // Verify the file is on the server (to our knowledge of course)
@@ -492,14 +492,12 @@ void SocketApi::command_SHARE_MENU_TITLE(const QString &, SocketListener *listen
 // Fetches the private link url asynchronously and then calls the target slot
 static void fetchPrivateLinkUrlHelper(const QString &localFile, SocketApi *target, void (SocketApi::*targetFun)(const QString &url) const)
 {
-    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile);
+    QString file;
+    Folder *shareFolder = FolderMan::instance()->folderForPath(localFile, &file);
     if (!shareFolder) {
         qCWarning(lcSocketApi) << "Unknown path" << localFile;
         return;
     }
-
-    const QString localFileClean = QDir::cleanPath(localFile);
-    const QString file = localFileClean.mid(shareFolder->cleanPath().length() + 1);
 
     AccountPtr account = shareFolder->accountState()->account();
 
@@ -525,6 +523,22 @@ void SocketApi::command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListe
 void SocketApi::command_OPEN_PRIVATE_LINK(const QString &localFile, SocketListener *)
 {
     fetchPrivateLinkUrlHelper(localFile, this, &SocketApi::openPrivateLink);
+}
+
+void SocketApi::command_DOWNLOAD_PLACEHOLDER(const QString &filesArg, SocketListener *)
+{
+    QStringList files = filesArg.split(QLatin1Char('\x1e')); // Record Separator
+    auto placeholderSuffix = QStringLiteral(APPLICATION_DOTPLACEHOLDER_SUFFIX);
+
+    for (const auto &file : files) {
+        if (!file.endsWith(placeholderSuffix))
+            continue;
+        QString relativePath;
+        auto folder = FolderMan::instance()->folderForPath(file, &relativePath);
+        if (folder) {
+            folder->downloadPlaceholder(relativePath);
+        }
+    }
 }
 
 void SocketApi::copyPrivateLinkToClipboard(const QString &link) const
@@ -565,9 +579,25 @@ void SocketApi::command_GET_STRINGS(const QString &argument, SocketListener *lis
 void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListener *listener)
 {
     listener->sendMessage(QString("GET_MENU_ITEMS:BEGIN"));
-    bool hasSeveralFiles = argument.contains(QLatin1Char('\x1e')); // Record Separator
-    Folder *syncFolder = hasSeveralFiles ? nullptr : FolderMan::instance()->folderForPath(argument);
-    if (syncFolder && syncFolder->accountState()->isConnected()) {
+    QStringList files = argument.split(QLatin1Char('\x1e')); // Record Separator
+
+    // Find the common sync folder.
+    // syncFolder will be null if files are in different folders.
+    Folder *syncFolder = nullptr;
+    for (const auto &file : files) {
+        auto folder = FolderMan::instance()->folderForPath(file);
+        if (folder != syncFolder) {
+            if (!syncFolder) {
+                syncFolder = folder;
+            } else {
+                syncFolder = nullptr;
+                break;
+            }
+        }
+    }
+
+    // Sharing actions show for single files only
+    if (syncFolder && files.size() == 1 && syncFolder->accountState()->isConnected()) {
         QString systemPath = QDir::cleanPath(argument);
         if (systemPath.endsWith(QLatin1Char('/'))) {
             systemPath.truncate(systemPath.length() - 1);
@@ -595,6 +625,19 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
 
         listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_PRIVATE_LINK") + flagString + tr("Open in browser"));
     }
+
+    // Placeholder download action
+    if (syncFolder) {
+        auto placeholderSuffix = QStringLiteral(APPLICATION_DOTPLACEHOLDER_SUFFIX);
+        bool hasPlaceholderFile = false;
+        for (const auto &file : files) {
+            if (file.endsWith(placeholderSuffix))
+                hasPlaceholderFile = true;
+        }
+        if (hasPlaceholderFile)
+            listener->sendMessage(QLatin1String("MENU_ITEM:DOWNLOAD_PLACEHOLDER::") + tr("Download file(s)", "", files.size()));
+    }
+
     listener->sendMessage(QString("GET_MENU_ITEMS:END"));
 }
 
