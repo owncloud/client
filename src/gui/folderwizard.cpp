@@ -482,7 +482,8 @@ FolderWizardSelectiveSync::FolderWizardSelectiveSync(const AccountPtr &account)
     QVBoxLayout *layout = new QVBoxLayout(this);
     _selectiveSync = new SelectiveSyncWidget(account, this);
     layout->addWidget(_selectiveSync);
-    _placeholderCheckBox = new QCheckBox(tr("Download placeholders instead of downloading the files (Experimental)"));
+    _placeholderCheckBox = new QCheckBox(tr("Create placeholders instead of downloading files (experimental)"));
+    connect(_placeholderCheckBox, &QCheckBox::clicked, this, &FolderWizardSelectiveSync::placeholderCheckboxClicked);
     layout->addWidget(_placeholderCheckBox);
 }
 
@@ -523,6 +524,14 @@ void FolderWizardSelectiveSync::cleanupPage()
         alias = Theme::instance()->appName();
     _selectiveSync->setFolderInfo(targetPath, alias);
     QWizardPage::cleanupPage();
+}
+
+void FolderWizardSelectiveSync::placeholderCheckboxClicked()
+{
+    if (_placeholderCheckBox->isChecked()) {
+        if (!OwncloudWizard::askExperimentalPlaceholderFeature())
+            _placeholderCheckBox->setChecked(false);
+    }
 }
 
 

@@ -31,6 +31,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QMessageBox>
 
 #include <stdlib.h>
 
@@ -243,6 +244,24 @@ AbstractCredentials *OwncloudWizard::getCredentials() const
     }
 
     return 0;
+}
+
+bool OwncloudWizard::askExperimentalPlaceholderFeature()
+{
+    QMessageBox msgBox(
+        QMessageBox::Warning,
+        tr("Enable experimental feature?"),
+        tr("When the \"synchronize placeholders\" mode is enabled no files will be downloaded initially. "
+           "Instead, a tiny \".owncloud\" file will be created for each file on the server. "
+           "The contents can be downloaded by running these files or by using their context menu."
+           "\n\n"
+           "This is a new, experimental mode. If you decide to use it, please report any "
+           "issues that come up."));
+    QPushButton *yesBtn = msgBox.addButton(tr("Enable experimental mode"), QMessageBox::DestructiveRole);
+    msgBox.addButton(tr("Stay safe"), QMessageBox::AcceptRole);
+    msgBox.exec();
+
+    return msgBox.clickedButton() == yesBtn;
 }
 
 } // end namespace

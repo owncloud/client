@@ -70,6 +70,12 @@ public:
     void displayError(const QString &, bool retryHTTPonly);
     AbstractCredentials *getCredentials() const;
 
+    /**
+     * Shows a dialog explaining the placeholder mode and warning about it
+     * being experimental. Returns true if the user agreed to activating it.
+     */
+    static bool askExperimentalPlaceholderFeature();
+
     // FIXME: Can those be local variables?
     // Set from the OwncloudSetupPage, later used from OwncloudHttpCredsPage
     QSslKey _clientSslKey;

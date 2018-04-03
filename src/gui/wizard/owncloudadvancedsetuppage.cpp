@@ -17,6 +17,7 @@
 #include <QFileDialog>
 #include <QUrl>
 #include <QTimer>
+#include <QMessageBox>
 
 #include "QProgressIndicator.h"
 
@@ -59,7 +60,9 @@ OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
 
     connect(_ui.rSyncEverything, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotSyncEverythingClicked);
     connect(_ui.rSelectiveSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotSelectiveSyncClicked);
+    connect(_ui.rPlaceholderSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotPlaceholderSyncClicked);
     connect(_ui.bSelectiveSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotSelectiveSyncClicked);
+    connect(_ui.bPlaceholderSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotPlaceholderSyncClicked);
 
     QIcon appIcon = theme->applicationIcon();
     _ui.lServerIcon->setText(QString());
@@ -292,9 +295,6 @@ void OwncloudAdvancedSetupPage::slotSelectFolder()
 
 void OwncloudAdvancedSetupPage::slotSelectiveSyncClicked()
 {
-    // Because clicking on it also changes it, restore it to the previous state in case the user cancelled the dialog
-    _ui.rSyncEverything->setChecked(_selectiveSyncBlacklist.isEmpty());
-
     AccountPtr acc = static_cast<OwncloudWizard *>(wizard())->account();
     SelectiveSyncDialog *dlg = new SelectiveSyncDialog(acc, _remoteFolder, _selectiveSyncBlacklist, this);
 
@@ -317,7 +317,7 @@ void OwncloudAdvancedSetupPage::slotSelectiveSyncClicked()
     if (updateBlacklist) {
         if (!_selectiveSyncBlacklist.isEmpty()) {
             _ui.rSelectiveSync->blockSignals(true);
-            _ui.rSelectiveSync->setChecked(true);
+            setRadioChecked(_ui.rSelectiveSync);
             _ui.rSelectiveSync->blockSignals(false);
             auto s = dlg->estimatedSize();
             if (s > 0) {
@@ -326,23 +326,48 @@ void OwncloudAdvancedSetupPage::slotSelectiveSyncClicked()
                 _ui.lSelectiveSyncSizeLabel->setText(QString());
             }
         } else {
-            _ui.rSyncEverything->setChecked(true);
+            setRadioChecked(_ui.rSyncEverything);
             _ui.lSelectiveSyncSizeLabel->setText(QString());
         }
         wizard()->setProperty("blacklist", _selectiveSyncBlacklist);
     }
 }
 
+void OwncloudAdvancedSetupPage::slotPlaceholderSyncClicked()
+{
+    if (!OwncloudWizard::askExperimentalPlaceholderFeature())
+        return;
+
+    _ui.lSelectiveSyncSizeLabel->setText(QString());
+    _selectiveSyncBlacklist.clear();
+
+    setRadioChecked(_ui.rPlaceholderSync);
+}
+
 void OwncloudAdvancedSetupPage::slotSyncEverythingClicked()
 {
     _ui.lSelectiveSyncSizeLabel->setText(QString());
-    _ui.rSyncEverything->setChecked(true);
+    setRadioChecked(_ui.rSyncEverything);
     _selectiveSyncBlacklist.clear();
 }
 
 void OwncloudAdvancedSetupPage::slotQuotaRetrieved(const QVariantMap &result)
 {
     _ui.lSyncEverythingSizeLabel->setText(tr("(%1)").arg(Utility::octetsToString(result["size"].toDouble())));
+}
+
+void OwncloudAdvancedSetupPage::setRadioChecked(QRadioButton *radio)
+{
+    // We don't want clicking the radio buttons to immediately adjust the checked state
+    // for selective sync and placeholder sync, so we keep them uncheckable until
+    // they should be checked.
+    radio->setCheckable(true);
+    radio->setChecked(true);
+
+    if (radio != _ui.rSelectiveSync)
+        _ui.rSelectiveSync->setCheckable(false);
+    if (radio != _ui.rPlaceholderSync)
+        _ui.rPlaceholderSync->setCheckable(false);
 }
 
 } // namespace OCC

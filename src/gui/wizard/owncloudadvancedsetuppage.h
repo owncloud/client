@@ -56,9 +56,12 @@ private slots:
     void slotSelectFolder();
     void slotSyncEverythingClicked();
     void slotSelectiveSyncClicked();
+    void slotPlaceholderSyncClicked();
     void slotQuotaRetrieved(const QVariantMap &result);
 
 private:
+    void setRadioChecked(QRadioButton *radio);
+
     void setupCustomization();
     void updateStatus();
     bool dataChanged();
