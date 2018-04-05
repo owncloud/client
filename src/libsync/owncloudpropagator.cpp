@@ -348,7 +348,6 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
         if (item->_direction == SyncFileItem::Up) {
             return new PropagateRemoteMove(this, item);
         } else {
-            qDebug() << item->_file << item->_type;
             return new PropagateLocalRename(this, item);
         }
     case CSYNC_INSTRUCTION_IGNORE:
