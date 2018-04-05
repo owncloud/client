@@ -391,17 +391,10 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string/>
+             <string>Create placeholders instead of downloading files (experimental)</string>
             </property>
             <property name="checkable">
              <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="bPlaceholderSync">
-            <property name="text">
-             <string>Create placeholders instead of downloading files (experimental)</string>
             </property>
            </widget>
           </item>

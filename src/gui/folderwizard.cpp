@@ -528,9 +528,13 @@ void FolderWizardSelectiveSync::cleanupPage()
 
 void FolderWizardSelectiveSync::placeholderCheckboxClicked()
 {
+    // The click has already had an effect on the box, so if it's
+    // checked it was newly activated.
     if (_placeholderCheckBox->isChecked()) {
-        if (!OwncloudWizard::askExperimentalPlaceholderFeature())
-            _placeholderCheckBox->setChecked(false);
+        OwncloudWizard::askExperimentalPlaceholderFeature([this](bool enable) {
+            if (!enable)
+                _placeholderCheckBox->setChecked(false);
+        });
     }
 }
 

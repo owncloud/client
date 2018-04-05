@@ -41,6 +41,7 @@ public:
     bool validatePage() Q_DECL_OVERRIDE;
     QString localFolder() const;
     QStringList selectiveSyncBlacklist() const;
+    bool usePlaceholderSync() const;
     bool isConfirmBigFolderChecked() const;
     void setRemoteFolder(const QString &remoteFolder);
     void setMultipleFoldersExist(bool exist);

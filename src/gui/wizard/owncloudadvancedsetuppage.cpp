@@ -62,7 +62,6 @@ OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
     connect(_ui.rSelectiveSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotSelectiveSyncClicked);
     connect(_ui.rPlaceholderSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotPlaceholderSyncClicked);
     connect(_ui.bSelectiveSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotSelectiveSyncClicked);
-    connect(_ui.bPlaceholderSync, &QAbstractButton::clicked, this, &OwncloudAdvancedSetupPage::slotPlaceholderSyncClicked);
 
     QIcon appIcon = theme->applicationIcon();
     _ui.lServerIcon->setText(QString());
@@ -225,6 +224,11 @@ QStringList OwncloudAdvancedSetupPage::selectiveSyncBlacklist() const
     return _selectiveSyncBlacklist;
 }
 
+bool OwncloudAdvancedSetupPage::usePlaceholderSync() const
+{
+    return _ui.rPlaceholderSync->isChecked();
+}
+
 bool OwncloudAdvancedSetupPage::isConfirmBigFolderChecked() const
 {
     return _ui.rSyncEverything->isChecked() && _ui.confCheckBoxSize->isChecked();
@@ -335,13 +339,14 @@ void OwncloudAdvancedSetupPage::slotSelectiveSyncClicked()
 
 void OwncloudAdvancedSetupPage::slotPlaceholderSyncClicked()
 {
-    if (!OwncloudWizard::askExperimentalPlaceholderFeature())
-        return;
+    OwncloudWizard::askExperimentalPlaceholderFeature([this](bool enable) {
+        if (!enable)
+            return;
 
-    _ui.lSelectiveSyncSizeLabel->setText(QString());
-    _selectiveSyncBlacklist.clear();
-
-    setRadioChecked(_ui.rPlaceholderSync);
+        _ui.lSelectiveSyncSizeLabel->setText(QString());
+        _selectiveSyncBlacklist.clear();
+        setRadioChecked(_ui.rPlaceholderSync);
+    });
 }
 
 void OwncloudAdvancedSetupPage::slotSyncEverythingClicked()
