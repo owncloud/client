@@ -79,10 +79,7 @@ void ServerNotificationHandler::slotNotificationsReceived(const QJsonDocument &j
         a._id = json.value("notification_id").toInt();
         a._subject = json.value("subject").toString();
         a._message = json.value("message").toString();
-        QString s = json.value("link").toString();
-        if (!s.isEmpty()) {
-            a._link = QUrl(s);
-        }
+        a.extractLink (json.value("link").toString());
         a._dateTime = QDateTime::fromString(json.value("datetime").toString(), Qt::ISODate);
 
         auto actions = json.value("actions").toArray();

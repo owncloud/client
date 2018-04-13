@@ -38,7 +38,7 @@ owncloud_add_test(XmlParse "")
 owncloud_add_test(ChecksumValidator "")
 
 owncloud_add_test(ExcludedFiles "")
-
+owncloud_add_test(ActivityData "")
 owncloud_add_test(FileSystem "")
 owncloud_add_test(Utility "")
 owncloud_add_test(SyncEngine "syncenginetestutils.h")
