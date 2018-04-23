@@ -312,8 +312,12 @@ bool FolderStatusModel::setData(const QModelIndex &index, const QVariant &value,
             if (checked == Qt::Unchecked) {
                 QModelIndex parent = index.parent();
                 auto parentInfo = infoForIndex(parent);
-                if (parentInfo && parentInfo->_checked == Qt::Checked) {
-                    setData(parent, Qt::PartiallyChecked, Qt::CheckStateRole);
+                if (parentInfo && parentInfo->_checked != Qt::Unchecked) {
+                    // Check the state of the siblings to find out if it should be marked unchecked
+                    // or partially checked.
+                    auto hasSubChecked = std::any_of(parentInfo->_subs.cbegin(), parentInfo->_subs.cend(),
+                        [&] (const auto &sub) { return sub._checked != Qt::Unchecked; } );
+                    setData(parent, hasSubChecked ? Qt::PartiallyChecked : Qt::Unchecked, Qt::CheckStateRole);
                 }
 
                 // Uncheck all the children
