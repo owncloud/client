@@ -24,6 +24,20 @@ KWallet, so that the sync client can login automatically.
 You will also find links to source code archives and older versions on the 
 download page.
 
+System Requirements
+----------------------------------
+
+- Windows 7+
+- Mac OS X 10.7+ (**64-bit only**)
+- CentOS 6 & 7 (64-bit only)
+- Debian 8.0 & 9.0
+- Fedora 25 & 26 & 27
+- Ubuntu 16.04 & 17.04 & 17.10
+- openSUSE Leap 42.2 & 42.3
+
+.. note::
+   For Linux distributions, we support, if technically feasible, the latest 2 versions per platform and the previous Ubuntu `LTS`_.
+
 Installation Wizard
 -------------------
 
@@ -53,12 +67,7 @@ server, and when it is successful you'll see two buttons: one to connect to
 your ownCloud Web GUI, and one to open your local folder. It will also start 
 synchronizing your files.
 
-.. image:: images/client-4.png
-   :alt: A successful server connection, showing a button to connect to your 
-    Web GUI, and one to open your local ownCloud folder
-
-Click the Finish button, and you're all done. 
-
 .. Links
    
 .. _ownCloud download page: https://owncloud.com/download/#desktop-clients
+.. _LTS: https://wiki.ubuntu.com/LTS
