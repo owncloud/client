@@ -1,0 +1,13 @@
+How to use:
+
+Build the docker image
+
+  docker build --tag qtbuild .
+
+Build the client:  (replace $SOURCES to the path where we can find the client and qtkeychain)
+
+  docker run -i -t -v $SOURCES/client:/build/client:ro -v $SOURCES/qtkeychain:/build/qtkeychain:ro -v $PWD:/build/results  qtbuild:latest /build/results/script.sh
+
+The appimage is created in the local directory
+
+
