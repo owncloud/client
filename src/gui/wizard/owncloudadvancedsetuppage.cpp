@@ -104,6 +104,7 @@ bool OwncloudAdvancedSetupPage::isComplete() const
 void OwncloudAdvancedSetupPage::initializePage()
 {
     WizardCommon::initErrorLabel(_ui.errorLabel);
+    _ui.syncModeLabel->setVisible(false);
 
     if (!ConfigFile().showExperimentalOptions()) {
         // If the layout were wrapped in a widget, the auto-grouping of the
@@ -180,10 +181,10 @@ void OwncloudAdvancedSetupPage::updateStatus()
         _ui.resolutionWidget->setVisible(false);
     }
 
+    _ui.syncModeLabel->setVisible(true);
     _ui.syncModeLabel->setText(t);
-    _ui.syncModeLabel->setFixedHeight(_ui.syncModeLabel->sizeHint().height());
-    wizard()->resize(wizard()->sizeHint());
     setErrorString(errorStr);
+    wizard()->resize(wizard()->sizeHint());
     emit completeChanged();
 }
 
