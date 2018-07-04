@@ -283,16 +283,6 @@ static int _csync_detect_update(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> f
       bool metadata_differ = (ctx->current == REMOTE_REPLICA && (fs->file_id != base._fileId
                                                           || fs->remotePerm != base._remotePerm))
                            || (ctx->current == LOCAL_REPLICA && fs->inode != base._inode);
-      if (fs->type == ItemTypeDirectory && ctx->current == REMOTE_REPLICA
-              && !metadata_differ) {
-          /* If both etag and file id are equal for a directory, read all contents from
-           * the database.
-           * The metadata comparison ensure that we fetch all the file id or permission when
-           * upgrading owncloud
-           */
-          qCDebug(lcUpdate, "Reading from database: %s", fs->path.constData());
-          ctx->remote.read_from_db = true;
-      }
       /* If it was remembered in the db that the remote dir has ignored files, store
        * that so that the reconciler can make advantage of.
        */
@@ -586,10 +576,9 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_file_stat_t *directory_fs, unsi
   QByteArray fullpath;
   csync_vio_handle_t *dh = NULL;
   std::unique_ptr<csync_file_stat_t> dirent;
-  int read_from_db = 0;
   int rc = 0;
 
-  bool do_read_from_db = (ctx->current == REMOTE_REPLICA && ctx->remote.read_from_db);
+  bool do_read_from_db = false;
   const char *db_uri = uri;
 
   if (ctx->current == LOCAL_REPLICA && ctx->should_discover_locally_fn) {
@@ -598,14 +587,20 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_file_stat_t *directory_fs, unsi
           ++local_uri;
       db_uri = local_uri;
       do_read_from_db = !ctx->should_discover_locally_fn(QByteArray(local_uri));
+  } else if (ctx->current == REMOTE_REPLICA && directory_fs && directory_fs->instruction == CSYNC_INSTRUCTION_NONE) {
+      /* If there was any change, instruction would be at least CSYNC_INSTRUCTION_UPDATE_METADATA.
+       * If all metadata (including etag) are equal for a directory, read all contents from
+       * the database.
+       * The metadata comparison ensure that we fetch all the file id or permission when
+       * upgrading owncloud.
+       */
+      do_read_from_db = true;
   }
 
   if (!depth) {
     mark_current_item_ignored(directory_fs, CSYNC_STATUS_INDIVIDUAL_TOO_DEEP);
     return 0;
   }
-
-  read_from_db = ctx->remote.read_from_db;
 
   // if the etag of this dir is still the same, its content is restored from the
   // database.
@@ -763,7 +758,6 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_file_stat_t *directory_fs, unsi
       goto error;
     }
     if (rc != 0) {
-        ctx->remote.read_from_db = read_from_db;
         continue;
     }
 
@@ -790,17 +784,14 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_file_stat_t *directory_fs, unsi
         /* If a directory has ignored files, put the flag on the parent directory as well */
         directory_fs->has_ignored_files = true;
     }
-
-    ctx->remote.read_from_db = read_from_db;
   }
 
   csync_vio_closedir(ctx, dh);
-  qCDebug(lcUpdate, " <= Closing walk for %s with read_from_db %d", uri, read_from_db);
+  qCDebug(lcUpdate, " <= Closing walk for %s", uri);
 
   return rc;
 
 error:
-  ctx->remote.read_from_db = read_from_db;
   if (dh != NULL) {
     csync_vio_closedir(ctx, dh);
   }

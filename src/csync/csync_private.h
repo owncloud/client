@@ -166,7 +166,6 @@ struct OCSYNC_EXPORT csync_s {
 
   struct {
     FileMap files;
-    bool read_from_db = false;
     OCC::RemotePermissions root_perms; /* Permission of the root folder. (Since the root folder is not in the db tree, we need to keep a separate entry.) */
   } remote;
 
