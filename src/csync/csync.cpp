@@ -235,7 +235,6 @@ int csync_s::reinitialize() {
   status_code = CSYNC_STATUS_OK;
 
   remote.read_from_db = 0;
-  read_remote_from_db = true;
 
   local.files.clear();
   remote.files.clear();

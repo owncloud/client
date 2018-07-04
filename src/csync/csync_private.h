@@ -185,11 +185,6 @@ struct OCSYNC_EXPORT csync_s {
   int status = CSYNC_STATUS_INIT;
   volatile bool abort = false;
 
-  /**
-   * Specify if it is allowed to read the remote tree from the DB (default to enabled)
-   */
-  bool read_remote_from_db = false;
-
   std::function<bool(const QByteArray &)> should_discover_locally_fn;
 
   bool ignore_hidden_files = true;
