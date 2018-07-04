@@ -36,13 +36,15 @@
  *
  * @param  uri          The uri/path to the directory tree to walk.
  *
+ * @param directory_fs    The file entry corresponding to that directory. nullptr for the root item
+ *
  * @param  depth        The max depth to walk down the tree.
  *
  * @return 0 on success, < 0 on error. If fn() returns non-zero, then the tree
  *         walk is terminated and the value returned by fn() is returned as the
  *         result.
  */
-int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth);
+int csync_ftw(CSYNC *ctx, const char *uri, csync_file_stat_t *directory_fs, unsigned int depth);
 
 #endif /* _CSYNC_UPDATE_H */
 

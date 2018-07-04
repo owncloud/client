@@ -321,7 +321,7 @@ static void check_csync_ftw(void **state)
     CSYNC *csync = (CSYNC*)*state;
     int rc;
 
-    rc = csync_ftw(csync, "/tmp", MAX_DEPTH);
+    rc = csync_ftw(csync, "/tmp", nullptr, MAX_DEPTH);
     assert_int_equal(rc, 0);
 }
 
@@ -330,7 +330,7 @@ static void check_csync_ftw_empty_uri(void **state)
     CSYNC *csync = (CSYNC*)*state;
     int rc;
 
-    rc = csync_ftw(csync, "", MAX_DEPTH);
+    rc = csync_ftw(csync, "", nullptr, MAX_DEPTH);
     assert_int_equal(rc, -1);
 }
 

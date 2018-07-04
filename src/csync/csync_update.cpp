@@ -171,10 +171,6 @@ static int _csync_detect_update(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> f
 
   if (excluded > CSYNC_NOT_EXCLUDED || fs->type == ItemTypeSoftLink) {
       fs->instruction = CSYNC_INSTRUCTION_IGNORE;
-      if (ctx->current_fs) {
-          ctx->current_fs->has_ignored_files = true;
-      }
-
       goto out;
   }
 
@@ -481,8 +477,6 @@ out:
       }
   }
 
-  ctx->current_fs = fs.get();
-
   qCInfo(lcUpdate, "file: %s, instruction: %s <<=", fs->path.constData(),
       csync_instruction_str(fs->instruction));
 
@@ -577,22 +571,17 @@ static bool fill_tree_from_db(CSYNC *ctx, const char *uri, bool singleFile = fal
 
 /* set the current item to an ignored state.
  * If the item is set to ignored, the update phase continues, ie. its not a hard error */
-static bool mark_current_item_ignored( CSYNC *ctx, CSYNC_STATUS status )
+static bool mark_current_item_ignored( csync_file_stat_t *item, CSYNC_STATUS status )
 {
-    if(!ctx) {
+    if (!item)
         return false;
-    }
-
-    if (ctx->current_fs) {
-        ctx->current_fs->instruction = CSYNC_INSTRUCTION_IGNORE;
-        ctx->current_fs->error_status = status;
-        return true;
-    }
-    return false;
+    item->instruction = CSYNC_INSTRUCTION_IGNORE;
+    item->error_status = status;
+    return true;
 }
 
 /* File tree walker */
-int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
+int csync_ftw(CSYNC *ctx, const char *uri, csync_file_stat_t *directory_fs, unsigned int depth) {
   QByteArray filename;
   QByteArray fullpath;
   csync_vio_handle_t *dh = NULL;
@@ -612,7 +601,7 @@ int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
   }
 
   if (!depth) {
-    mark_current_item_ignored(ctx, CSYNC_STATUS_INDIVIDUAL_TOO_DEEP);
+    mark_current_item_ignored(directory_fs, CSYNC_STATUS_INDIVIDUAL_TOO_DEEP);
     return 0;
   }
 
@@ -640,7 +629,7 @@ int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
       ctx->status_code = csync_errno_to_status(errno, CSYNC_STATUS_OPENDIR_ERROR);
       if (errno == EACCES) {
           qCWarning(lcUpdate, "Permission denied.");
-          if (mark_current_item_ignored(ctx, CSYNC_STATUS_PERMISSION_DENIED)) {
+          if (mark_current_item_ignored(directory_fs, CSYNC_STATUS_PERMISSION_DENIED)) {
               return 0;
           }
       } else if(errno == ENOENT) {
@@ -651,10 +640,10 @@ int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
       // A file or directory should be ignored and sync must continue. See #3490
       else if(errno == ERRNO_FORBIDDEN) {
           qCWarning(lcUpdate, "Directory access Forbidden (File Firewall?)");
-          if( mark_current_item_ignored(ctx, CSYNC_STATUS_FORBIDDEN) ) {
+          if( mark_current_item_ignored(directory_fs, CSYNC_STATUS_FORBIDDEN) ) {
               return 0;
           }
-          /* if current_fs is not defined here, better throw an error */
+          /* For the root directory, throw an error */
       }
       // The server usually replies with the custom "503 Storage not available"
       // if some path is temporarily unavailable. But in some cases a standard 503
@@ -662,10 +651,10 @@ int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
       // 503 as request to ignore the folder. See #3113 #2884.
       else if(errno == ERRNO_STORAGE_UNAVAILABLE || errno == ERRNO_SERVICE_UNAVAILABLE) {
           qCWarning(lcUpdate, "Storage was not available!");
-          if( mark_current_item_ignored(ctx, CSYNC_STATUS_STORAGE_UNAVAILABLE ) ) {
+          if( mark_current_item_ignored(directory_fs, CSYNC_STATUS_STORAGE_UNAVAILABLE ) ) {
               return 0;
           }
-          /* if current_fs is not defined here, better throw an error */
+          /* For the root directory, throw an error */
       } else {
           qCWarning(lcUpdate, "opendir failed for %s - errno %d", uri, errno);
       }
@@ -762,12 +751,10 @@ int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
     }
 
     bool recurse = dirent->type == ItemTypeDirectory;
-    csync_file_stat_t *previous_fs = ctx->current_fs;
-    QScopedValueRollback<csync_file_stat_t *> rollback(ctx->current_fs);
 
     /* Call walker function for each file */
+    auto fs = dirent.get(); // Will only stay valid if _csync_detect_update returns 0.
     int rc = _csync_detect_update(ctx, std::move(dirent));
-    /* this function may update ctx->current and ctx->read_from_db */
 
     if (rc < 0) {
       if (CSYNC_STATUS_IS_OK(ctx->status_code)) {
@@ -775,32 +762,33 @@ int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
       }
       goto error;
     }
+    if (rc != 0) {
+        ctx->remote.read_from_db = read_from_db;
+        continue;
+    }
 
-    if (recurse && rc == 0
-        && (!ctx->current_fs || ctx->current_fs->instruction != CSYNC_INSTRUCTION_IGNORE)) {
-      rc = csync_ftw(ctx, fullpath, depth - 1);
+    if (recurse && fs->instruction != CSYNC_INSTRUCTION_IGNORE) {
+      rc = csync_ftw(ctx, fullpath, fs, depth - 1);
       if (rc < 0) {
         goto error;
       }
 
-      if (ctx->current_fs && !ctx->current_fs->child_modified
-          && ctx->current_fs->instruction == CSYNC_INSTRUCTION_EVAL) {
+      if (!fs->child_modified && fs->instruction == CSYNC_INSTRUCTION_EVAL) {
           if (ctx->current == REMOTE_REPLICA) {
-              ctx->current_fs->instruction = CSYNC_INSTRUCTION_UPDATE_METADATA;
+              fs->instruction = CSYNC_INSTRUCTION_UPDATE_METADATA;
           } else {
-              ctx->current_fs->instruction = CSYNC_INSTRUCTION_NONE;
+              fs->instruction = CSYNC_INSTRUCTION_NONE;
           }
-      }
-
-      if (ctx->current_fs && previous_fs && ctx->current_fs->has_ignored_files) {
-          /* If a directory has ignored files, put the flag on the parent directory as well */
-          previous_fs->has_ignored_files = ctx->current_fs->has_ignored_files;
       }
     }
 
-    if (ctx->current_fs && previous_fs && ctx->current_fs->child_modified) {
+    if (directory_fs && fs->child_modified) {
         /* If a directory has modified files, put the flag on the parent directory as well */
-        previous_fs->child_modified = ctx->current_fs->child_modified;
+        directory_fs->child_modified = fs->child_modified;
+    }
+    if (directory_fs && (fs->instruction == CSYNC_INSTRUCTION_IGNORE || fs->has_ignored_files)) {
+        /* If a directory has ignored files, put the flag on the parent directory as well */
+        directory_fs->has_ignored_files = true;
     }
 
     ctx->remote.read_from_db = read_from_db;

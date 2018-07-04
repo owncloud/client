@@ -173,10 +173,6 @@ struct OCSYNC_EXPORT csync_s {
   /* replica we are currently walking */
   enum csync_replica_e current = LOCAL_REPLICA;
 
-  /* Used in the update phase so changes in the sub directories can be notified to
-     parent directories */
-  csync_file_stat_t *current_fs = nullptr;
-
   /* csync error code */
   enum csync_status_codes_e status_code = CSYNC_STATUS_OK;
 
