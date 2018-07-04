@@ -40,8 +40,7 @@ Afterwards, we have two trees that tell us what happened relative to the journal
 
   - Details
     - csync_update() uses csync_ftw() on the local and remote trees, one after the other.
-    - csync_ftw() iterates through the entities in a tree and calls csync_walker() for each.
-    - csync_walker() calls _csync_detect_update() on each.
+    - csync_ftw() iterates (recursively) through the entities in a tree and calls _csync_detect_update() on each.
     - _csync_detect_update() compares the item to its journal entry (if any) to detect new, changed or renamed files. This is the main function of this pass.
 
 

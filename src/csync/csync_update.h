@@ -25,36 +25,6 @@
 #include "csync.h"
 
 /**
- * @file csync_update.h
- *
- * @brief Update Detection
- *
- * TODO
- *
- * @defgroup csyncUpdateDetectionInternals csync update detection internals
- * @ingroup csyncInternalAPI
- *
- * @{
- */
-
-typedef int (*csync_walker_fn) (CSYNC *ctx, std::unique_ptr<csync_file_stat_t> fs);
-
-/**
- * @brief The walker function to use in the file tree walker.
- *
- * @param  ctx          The used csync context.
- *
- * @param  file         The file we are researching.
- *
- * @param  fs           The stat information we got.
- *
- * @param  flag         The flag describing the type of the file.
- *
- * @return 0 on success, < 0 on error.
- */
-int csync_walker(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> fs);
-
-/**
  * @brief The file tree walker.
  *
  * This function walks through the directory tree that is located under the uri
@@ -66,16 +36,13 @@ int csync_walker(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> fs);
  *
  * @param  uri          The uri/path to the directory tree to walk.
  *
- * @param  fn           The walker function to call once for each entry.
- *
  * @param  depth        The max depth to walk down the tree.
  *
  * @return 0 on success, < 0 on error. If fn() returns non-zero, then the tree
  *         walk is terminated and the value returned by fn() is returned as the
  *         result.
  */
-int csync_ftw(CSYNC *ctx, const char *uri, csync_walker_fn fn,
-    unsigned int depth);
+int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth);
 
 #endif /* _CSYNC_UPDATE_H */
 

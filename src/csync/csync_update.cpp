@@ -48,6 +48,7 @@
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QFile>
+#include <QtCore/QScopedValueRollback>
 
 // Needed for PRIu64 on MinGW in C++ mode.
 #define __STDC_FORMAT_MACROS
@@ -500,43 +501,6 @@ out:
   return 0;
 }
 
-int csync_walker(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> fs) {
-  int rc = -1;
-
-  if (ctx->abort) {
-    qCDebug(lcUpdate, "Aborted!");
-    ctx->status_code = CSYNC_STATUS_ABORTED;
-    return -1;
-  }
-
-  switch (fs->type) {
-    case ItemTypeFile:
-      if (ctx->current == REMOTE_REPLICA) {
-          qCDebug(lcUpdate, "file: %s [file_id=%s size=%" PRIu64 "]", fs->path.constData(), fs->file_id.constData(), fs->size);
-      } else {
-          qCDebug(lcUpdate, "file: %s [inode=%" PRIu64 " size=%" PRIu64 "]", fs->path.constData(), fs->inode, fs->size);
-      }
-      break;
-  case ItemTypeDirectory: /* enter directory */
-      if (ctx->current == REMOTE_REPLICA) {
-          qCDebug(lcUpdate, "directory: %s [file_id=%s]", fs->path.constData(), fs->file_id.constData());
-      } else {
-          qCDebug(lcUpdate, "directory: %s [inode=%" PRIu64 "]", fs->path.constData(), fs->inode);
-      }
-      break;
-  case ItemTypeSoftLink:
-    qCDebug(lcUpdate, "symlink: %s - not supported", fs->path.constData());
-    break;
-  default:
-    return 0;
-    break;
-  }
-
-  rc = _csync_detect_update(ctx, std::move(fs));
-
-  return rc;
-}
-
 static bool fill_tree_from_db(CSYNC *ctx, const char *uri, bool singleFile = false)
 {
     int64_t count = 0;
@@ -632,8 +596,7 @@ static bool mark_current_item_ignored( CSYNC *ctx, csync_file_stat_t *previous_f
 }
 
 /* File tree walker */
-int csync_ftw(CSYNC *ctx, const char *uri, csync_walker_fn fn,
-    unsigned int depth) {
+int csync_ftw(CSYNC *ctx, const char *uri, unsigned int depth) {
   QByteArray filename;
   QByteArray fullpath;
   csync_vio_handle_t *dh = NULL;
@@ -715,6 +678,13 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_walker_fn fn,
   }
 
   while ((dirent = csync_vio_readdir(ctx, dh))) {
+
+    if (ctx->abort) {
+        qCDebug(lcUpdate, "Aborted!");
+        ctx->status_code = CSYNC_STATUS_ABORTED;
+        goto error;
+    }
+
     /* Conversion error */
     if (dirent->path.isEmpty() && !dirent->original_path.isEmpty()) {
         ctx->status_code = CSYNC_STATUS_INVALID_CHARACTERS;
@@ -774,27 +744,47 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_walker_fn fn,
         dirent->path = dirent->path.mid(strlen(ctx->local.uri) + 1);
     }
 
-    previous_fs = ctx->current_fs;
+    switch (dirent->type) {
+    case ItemTypeFile:
+        if (ctx->current == REMOTE_REPLICA) {
+            qCDebug(lcUpdate, "file: %s [file_id=%s size=%" PRIu64 "]", dirent->path.constData(), dirent->file_id.constData(), dirent->size);
+        } else {
+            qCDebug(lcUpdate, "file: %s [inode=%" PRIu64 " size=%" PRIu64 "]", dirent->path.constData(), dirent->inode, dirent->size);
+        }
+        break;
+    case ItemTypeDirectory: /* enter directory */
+        if (ctx->current == REMOTE_REPLICA) {
+            qCDebug(lcUpdate, "directory: %s [file_id=%s]", dirent->path.constData(), dirent->file_id.constData());
+        } else {
+            qCDebug(lcUpdate, "directory: %s [inode=%" PRIu64 "]", dirent->path.constData(), dirent->inode);
+        }
+        break;
+    case ItemTypeSoftLink:
+        qCDebug(lcUpdate, "symlink: %s - not supported", dirent->path.constData());
+        break;
+    default:
+        continue;
+    }
+
     bool recurse = dirent->type == ItemTypeDirectory;
+    previous_fs = ctx->current_fs;
+    QScopedValueRollback<csync_file_stat_t *> rollback(ctx->current_fs);
 
     /* Call walker function for each file */
-    rc = fn(ctx, std::move(dirent));
+    int rc = _csync_detect_update(ctx, std::move(dirent));
     /* this function may update ctx->current and ctx->read_from_db */
 
     if (rc < 0) {
       if (CSYNC_STATUS_IS_OK(ctx->status_code)) {
           ctx->status_code = CSYNC_STATUS_UPDATE_ERROR;
       }
-
-      ctx->current_fs = previous_fs;
       goto error;
     }
 
     if (recurse && rc == 0
         && (!ctx->current_fs || ctx->current_fs->instruction != CSYNC_INSTRUCTION_IGNORE)) {
-      rc = csync_ftw(ctx, fullpath, fn, depth - 1);
+      rc = csync_ftw(ctx, fullpath, depth - 1);
       if (rc < 0) {
-        ctx->current_fs = previous_fs;
         goto error;
       }
 
@@ -818,7 +808,6 @@ int csync_ftw(CSYNC *ctx, const char *uri, csync_walker_fn fn,
         previous_fs->child_modified = ctx->current_fs->child_modified;
     }
 
-    ctx->current_fs = previous_fs;
     ctx->remote.read_from_db = read_from_db;
   }
 
