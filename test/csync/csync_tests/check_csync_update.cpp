@@ -204,15 +204,6 @@ static std::unique_ptr<csync_file_stat_t> create_fstat(const char *name,
     return fs;
 }
 
-static int failing_fn(CSYNC *ctx,
-                      std::unique_ptr<csync_file_stat_t> fs)
-{
-  (void) ctx;
-  (void) fs;
-
-  return -1;
-}
-
 /* detect a new file */
 static void check_csync_detect_update(void **state)
 {
@@ -330,7 +321,7 @@ static void check_csync_ftw(void **state)
     CSYNC *csync = (CSYNC*)*state;
     int rc;
 
-    rc = csync_ftw(csync, "/tmp", csync_walker, MAX_DEPTH);
+    rc = csync_ftw(csync, "/tmp", nullptr, MAX_DEPTH);
     assert_int_equal(rc, 0);
 }
 
@@ -339,16 +330,7 @@ static void check_csync_ftw_empty_uri(void **state)
     CSYNC *csync = (CSYNC*)*state;
     int rc;
 
-    rc = csync_ftw(csync, "", csync_walker, MAX_DEPTH);
-    assert_int_equal(rc, -1);
-}
-
-static void check_csync_ftw_failing_fn(void **state)
-{
-    CSYNC *csync = (CSYNC*)*state;
-    int rc;
-
-    rc = csync_ftw(csync, "/tmp", failing_fn, MAX_DEPTH);
+    rc = csync_ftw(csync, "", nullptr, MAX_DEPTH);
     assert_int_equal(rc, -1);
 }
 
@@ -363,7 +345,6 @@ int torture_run_tests(void)
 
         cmocka_unit_test_setup_teardown(check_csync_ftw, setup_ftw, teardown_rm),
         cmocka_unit_test_setup_teardown(check_csync_ftw_empty_uri, setup_ftw, teardown_rm),
-        cmocka_unit_test_setup_teardown(check_csync_ftw_failing_fn, setup_ftw, teardown_rm),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

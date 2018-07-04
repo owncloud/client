@@ -88,7 +88,7 @@ int csync_update(CSYNC *ctx) {
 
   qCInfo(lcCSync, "## Starting local discovery ##");
 
-  rc = csync_ftw(ctx, ctx->local.uri, csync_walker, MAX_DEPTH);
+  rc = csync_ftw(ctx, ctx->local.uri, nullptr, MAX_DEPTH);
   if (rc < 0) {
     if(ctx->status_code == CSYNC_STATUS_OK) {
         ctx->status_code = csync_errno_to_status(errno, CSYNC_STATUS_UPDATE_ERROR);
@@ -106,7 +106,7 @@ int csync_update(CSYNC *ctx) {
 
   qCInfo(lcCSync, "## Starting remote discovery ##");
 
-  rc = csync_ftw(ctx, "", csync_walker, MAX_DEPTH);
+  rc = csync_ftw(ctx, "", nullptr, MAX_DEPTH);
   if (rc < 0) {
       if(ctx->status_code == CSYNC_STATUS_OK) {
           ctx->status_code = csync_errno_to_status(errno, CSYNC_STATUS_UPDATE_ERROR);
@@ -233,9 +233,6 @@ int csync_s::reinitialize() {
   int rc = 0;
 
   status_code = CSYNC_STATUS_OK;
-
-  remote.read_from_db = 0;
-  read_remote_from_db = true;
 
   local.files.clear();
   remote.files.clear();

@@ -844,8 +844,6 @@ void SyncEngine::startSync()
     _csync_ctx->upload_conflict_files = _account->capabilities().uploadConflictFiles();
     _excludedFiles->setExcludeConflictFiles(!_account->capabilities().uploadConflictFiles());
 
-    _csync_ctx->read_remote_from_db = true;
-
     _lastLocalDiscoveryStyle = _localDiscoveryStyle;
     _csync_ctx->should_discover_locally_fn = [this](const QByteArray &path) {
         return shouldDiscoverLocally(path);

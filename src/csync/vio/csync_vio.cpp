@@ -35,7 +35,6 @@
 csync_vio_handle_t *csync_vio_opendir(CSYNC *ctx, const char *name) {
   switch(ctx->current) {
     case REMOTE_REPLICA:
-      ASSERT(!ctx->remote.read_from_db);
       return ctx->callbacks.remote_opendir_hook(name, ctx->callbacks.vio_userdata);
       break;
     case LOCAL_REPLICA:
@@ -60,7 +59,6 @@ int csync_vio_closedir(CSYNC *ctx, csync_vio_handle_t *dhandle) {
 
   switch(ctx->current) {
   case REMOTE_REPLICA:
-      ASSERT(!ctx->remote.read_from_db);
       ctx->callbacks.remote_closedir_hook(dhandle, ctx->callbacks.vio_userdata);
       rc = 0;
       break;
@@ -77,7 +75,6 @@ int csync_vio_closedir(CSYNC *ctx, csync_vio_handle_t *dhandle) {
 std::unique_ptr<csync_file_stat_t> csync_vio_readdir(CSYNC *ctx, csync_vio_handle_t *dhandle) {
   switch(ctx->current) {
     case REMOTE_REPLICA:
-      ASSERT(!ctx->remote.read_from_db);
       return ctx->callbacks.remote_readdir_hook(dhandle, ctx->callbacks.vio_userdata);
       break;
     case LOCAL_REPLICA:

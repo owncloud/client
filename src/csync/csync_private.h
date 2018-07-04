@@ -166,16 +166,11 @@ struct OCSYNC_EXPORT csync_s {
 
   struct {
     FileMap files;
-    bool read_from_db = false;
     OCC::RemotePermissions root_perms; /* Permission of the root folder. (Since the root folder is not in the db tree, we need to keep a separate entry.) */
   } remote;
 
   /* replica we are currently walking */
   enum csync_replica_e current = LOCAL_REPLICA;
-
-  /* Used in the update phase so changes in the sub directories can be notified to
-     parent directories */
-  csync_file_stat_t *current_fs = nullptr;
 
   /* csync error code */
   enum csync_status_codes_e status_code = CSYNC_STATUS_OK;
@@ -187,11 +182,6 @@ struct OCSYNC_EXPORT csync_s {
 
   int status = CSYNC_STATUS_INIT;
   volatile bool abort = false;
-
-  /**
-   * Specify if it is allowed to read the remote tree from the DB (default to enabled)
-   */
-  bool read_remote_from_db = false;
 
   std::function<bool(const QByteArray &)> should_discover_locally_fn;
 
