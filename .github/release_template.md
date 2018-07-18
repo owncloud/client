@@ -39,8 +39,8 @@ For all alphas, betas and RCs (Copy this section for each alpha/beta/rc):
 * [ ] Edit ```VERSION.cmake``` to set the suffix to beta1, beta2 etc. Commit the result to the release branch only
 * [ ] Make sure to increase the version number of the branched of release, e.g. if you release 2.3.2 then you should change VERSION.cmake in 2.3 to 2.3.3 since that branch now will be 2.3.3
 * [ ] Create build for using owncloud-client-trigger (uncheck the "nightly build" checkbox, use the proper dropdown for version suffix) for theme 'ownCloud'
+* [ ] Download the ownCloud*.tar.xz source and sign it with gpg. Copy the signature into a new .asc file in the same download.owncloud.com directory (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
 * [ ] Create build for using owncloud-client-trigger (uncheck the "nightly build" checkbox, use the proper dropdown for version suffix) for theme 'testpilotcloud'
-* [ ] Only now download the last created source .tar.xz and sign it with gpg. Copy the signature into a new .asc file. (timing issue because currently 'testpilotcloud' re-creates the source .tar.xz)
 * (no need to copy builds as they are already in testing directory or repository) (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
 * [ ] Mac: Perform smoke test (Install, make sure it does not explode, and check if all version indicators are correct)
 * [ ] Win: Perform smoke test (Install, make sure it does not explode, and check if all version indicators are correct)
@@ -70,11 +70,10 @@ On Release Day (for final release):
 * [ ] Branch off a release branch called VERSION  (without v, v is for tags)
 * [ ] Edit ```VERSION.cmake``` to set the suffix to "" etc. Commit the result to the release branch only
 * [ ] Create build for using owncloud-client-trigger (uncheck the "nightly build" checkbox, use the proper dropdown for version suffix) for theme 'ownCloud'
+* [ ] Download the ownCloud*.tar.xz source and sign it with gpg. Copy the signature into a new .asc file in the same download.owncloud.com directory (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
 * [ ] Create build for using owncloud-client-trigger (uncheck the "nightly build" checkbox, use the proper dropdown for version suffix) for theme 'testpilotcloud'
-* [ ] Only now download the last created source .tar.xz and sign it with gpg. Copy the signature into a new .asc file. (timing issue because currently 'testpilotcloud' re-creates the source .tar.xz) (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
 * [ ] Branch isv:ownCloud:desktop to isv:ownCloud:desktop:client-X.Y.Z before overwriting https://github.com/owncloud/administration/blob/master/jenkins/obs_integration/obs-backup-prj.sh (the linux packages will land in the :testing repository still)
   ```obs-backup-prj.sh isv:ownCloud:desktop isv:ownCloud:desktop:client-2.4.1 owncloud-client 2.4.1 # (if not already done)```
-
 * [ ] Re-download Mac builds and check signature. Interactive in installer window
 * [ ] Re-download Win build check signature. From Mac or Linux: ```osslsigncode verify ownCloud-version-setup.exe```
 * [ ] Mac: Perform smoke test (Install, make sure it does not explode, and check if all version indicators are correct)
