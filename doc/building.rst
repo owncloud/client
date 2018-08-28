@@ -50,15 +50,14 @@ repositories`_ to see all the Linux client repos.
    repo for your Debian or Ubuntu version, like this example for Debian 9 
    (run as root)::
  
-    echo 'deb-src 
-    http://download.opensuse.org/repositories/isv:/ownCloud:/desktop/Debian_9.0/ /' >> /etc/apt/sources.list.d/owncloud-client.list
+    echo 'deb-src http://download.opensuse.org/repositories/isv:/ownCloud:/desktop/Debian_9.0/ /' >> /etc/apt/sources.list.d/owncloud-client.list
 
 2. Install the dependencies using the following commands for your specific Linux 
 distribution. Make sure the repositories for source packages are enabled.
   
-   * Debian/Ubuntu: ``apt update; apt build-dep owncloud-client``
-   * openSUSE/SLES: ``zypper ref; zypper si -d owncloud-client``
-   * Fedora/CentOS/RHEL: ``yum install yum-utils; yum-builddep owncloud-client``
+   * Debian/Ubuntu: ``apt update; apt build-dep --assume-yes owncloud-client``
+   * openSUSE/SLES: ``zypper ref; zypper si -d -y owncloud-client``
+   * Fedora/CentOS/RHEL: ``yum install -y yum-utils; yum-builddep -y owncloud-client``
 
 3. Follow the :ref:`generic-build-instructions`, starting with step 2.
 
