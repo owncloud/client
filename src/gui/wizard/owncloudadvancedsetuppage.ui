@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
-    <height>604</height>
+    <width>916</width>
+    <height>719</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -236,6 +236,30 @@
          <number>0</number>
         </property>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QRadioButton" name="rDefaultFolders">
+            <property name="text">
+             <string>A&amp;pply default folders configuration (recommended)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QRadioButton" name="rSyncEverything">
@@ -397,7 +421,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is selected, the wizard will close without synchronizing anything. You can use the &amp;quot;Add Folder Sync Connection&amp;quot; button from the account settings to choose which pair of local and remote folder you wish to synchronize&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Manually create folder sync connections </string>
+             <string>Ma&amp;nually create folder sync connections </string>
             </property>
            </widget>
           </item>
@@ -427,7 +451,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Use virtual files instead of downloading content immediately (e&amp;xperimental)</string>
+             <string>&amp;Use virtual files instead of downloading content immediately (experimental)</string>
             </property>
             <property name="checkable">
              <bool>false</bool>
@@ -486,8 +510,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>899</width>
-        <height>68</height>
+        <width>904</width>
+        <height>80</height>
        </rect>
       </property>
       <property name="sizePolicy">

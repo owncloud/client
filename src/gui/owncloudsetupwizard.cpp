@@ -353,7 +353,35 @@ void OwncloudSetupWizard::testOwnCloudConnect()
     // so don't automatically follow redirects.
     job->setFollowRedirects(false);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
-    connect(job, &PropfindJob::result, _ocWizard, &OwncloudWizard::successfulStep);
+    connect(job, &PropfindJob::result, this, [this, account] {
+        auto *job2 = account->sendRequest("GET", Utility::concatUrlPath(account->davUrl(), ".desktopclientconfig"));
+        job2->setIgnoreCredentialFailure(true);
+        QObject::connect(job2, &SimpleNetworkJob::finishedSignal, this, [this, account] (QNetworkReply *reply) {
+            if (reply->error()) {
+                if (reply->error() == QNetworkReply::ContentNotFoundError) {
+                    // Ignore a 404 error, the file can be missing (default case)
+                    _ocWizard->successfulStep();
+                } else {
+                    // Note: slotAuthError uses sender() which should be job2
+                    slotAuthError();
+                }
+                return;
+            }
+            auto jsonData = reply->readAll();
+            QJsonParseError jsonParseError;
+            QJsonDocument json = QJsonDocument::fromJson(jsonData, &jsonParseError);
+            if (jsonParseError.error != QJsonParseError::NoError) {
+                // Invalid JSON
+                qCWarning(lcWizard) << "Error while parsing .desktopclientconfig" << jsonParseError.errorString() << jsonData;
+                // Silently ignore the error (consider the file was not there)
+            } else {
+                // TODO: make it a real parameter
+                account->setProperty("oc_serverConfig", json);
+            }
+            _ocWizard->successfulStep();
+        });
+    });
+
     connect(job, &PropfindJob::finishedWithError, this, &OwncloudSetupWizard::slotAuthError);
     job->start();
 }
@@ -362,7 +390,7 @@ void OwncloudSetupWizard::slotAuthError()
 {
     QString errorMsg;
 
-    PropfindJob *job = qobject_cast<PropfindJob *>(sender());
+    AbstractNetworkJob *job = qobject_cast<AbstractNetworkJob *>(sender());
     if (!job) {
         qCWarning(lcWizard) << "Can't check for authed redirects. This slot should be invoked from PropfindJob!";
         return;
@@ -610,32 +638,62 @@ void OwncloudSetupWizard::slotAssistantFinished(int result)
         FolderMan *folderMan = FolderMan::instance();
         auto account = applyAccountChanges();
 
+        QJsonDocument configJson = account->account()->property("oc_serverConfig").toJsonDocument();
+        bool hasServerConfig = configJson.isObject() && !configJson.object()["default_folders"].toArray().isEmpty();
+        qWarning() << configJson << hasServerConfig;
+
         QString localFolder = FolderDefinition::prepareLocalPath(_ocWizard->localFolder());
 
         bool startFromScratch = _ocWizard->field("OCSyncFromScratch").toBool();
         if (!startFromScratch || ensureStartFromScratch(localFolder)) {
-            qCInfo(lcWizard) << "Adding folder definition for" << localFolder << _remoteFolder;
-            FolderDefinition folderDefinition;
-            folderDefinition.localPath = localFolder;
-            folderDefinition.targetPath = FolderDefinition::prepareTargetPath(_remoteFolder);
-            folderDefinition.ignoreHiddenFiles = folderMan->ignoreHiddenFiles();
-            if (_ocWizard->useVirtualFileSync()) {
-                folderDefinition.virtualFilesMode = bestAvailableVfsMode();
-            }
-            if (folderMan->navigationPaneHelper().showInExplorerNavigationPane())
-                folderDefinition.navigationPaneClsid = QUuid::createUuid();
+            if (!hasServerConfig) {
+                qCInfo(lcWizard) << "Adding folder definition for" << localFolder << _remoteFolder;
+                FolderDefinition folderDefinition;
+                folderDefinition.localPath = localFolder;
+                folderDefinition.targetPath = FolderDefinition::prepareTargetPath(_remoteFolder);
+                folderDefinition.ignoreHiddenFiles = folderMan->ignoreHiddenFiles();
+                if (_ocWizard->useVirtualFileSync()) {
+                    folderDefinition.virtualFilesMode = bestAvailableVfsMode();
+                }
+                if (folderMan->navigationPaneHelper().showInExplorerNavigationPane())
+                    folderDefinition.navigationPaneClsid = QUuid::createUuid();
 
-            auto f = folderMan->addFolder(account, folderDefinition);
-            if (f) {
-                if (folderDefinition.virtualFilesMode != Vfs::Off && _ocWizard->useVirtualFileSync())
-                    f->setNewFilesAreVirtual(true);
+                auto f = folderMan->addFolder(account, folderDefinition);
+                if (f) {
+                    if (folderDefinition.virtualFilesMode != Vfs::Off && _ocWizard->useVirtualFileSync())
+                        f->setNewFilesAreVirtual(true);
 
-                f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList,
-                    _ocWizard->selectiveSyncBlacklist());
-                if (!_ocWizard->isConfirmBigFolderChecked()) {
-                    // The user already accepted the selective sync dialog. everything is in the white list
-                    f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
-                        QStringList() << QLatin1String("/"));
+                    f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList,
+                        _ocWizard->selectiveSyncBlacklist());
+                    if (!_ocWizard->isConfirmBigFolderChecked()) {
+                        // The user already accepted the selective sync dialog. everything is in the white list
+                        f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
+                            QStringList() << QLatin1String("/"));
+                    }
+                }
+            } else {
+                auto array = configJson.object()["default_folders"].toArray();
+                // FIXME!  check consistency of the config and that the folder can be created
+                for (const auto &x : array) {
+                    QString remoteFolder = x.toObject()["remote_folder"].toString();
+                    QString name = QFileInfo(remoteFolder).fileName();
+                    FolderDefinition folderDefinition;
+                    folderDefinition.localPath = (array.size() == 1) ? localFolder : QString(localFolder + name + '/');
+                    QDir(localFolder).mkpath(folderDefinition.localPath);
+                    folderDefinition.targetPath = FolderDefinition::prepareTargetPath(remoteFolder);
+                    folderDefinition.ignoreHiddenFiles = folderMan->ignoreHiddenFiles();
+                    if (folderMan->navigationPaneHelper().showInExplorerNavigationPane())
+                        folderDefinition.navigationPaneClsid = QUuid::createUuid();
+
+                    auto f = folderMan->addFolder(account, folderDefinition);
+                    if (f) {
+                        if (folderDefinition.virtualFilesMode != Vfs::Off && _ocWizard->useVirtualFileSync())
+                            f->setNewFilesAreVirtual(true);
+
+                        QStringList list;
+                        foreach (const auto &l, x.toObject()["black_list"].toArray()) { list << l.toString(); }
+                        f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, list);
+                    }
                 }
             }
             _ocWizard->appendToConfigurationLog(tr("<font color=\"green\"><b>Local sync folder %1 successfully created!</b></font>").arg(localFolder));

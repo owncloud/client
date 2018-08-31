@@ -18,6 +18,9 @@
 #include <QUrl>
 #include <QTimer>
 #include <QMessageBox>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 #include "QProgressIndicator.h"
 
@@ -69,15 +72,6 @@ OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
     _ui.lServerIcon->setPixmap(appIcon.pixmap(48));
     _ui.lLocalIcon->setText(QString());
     _ui.lLocalIcon->setPixmap(QPixmap(Theme::hidpiFileName(":/client/resources/folder-sync.png")));
-
-    if (theme->wizardHideExternalStorageConfirmationCheckbox()) {
-        _ui.confCheckBoxExternal->hide();
-    }
-    if (theme->wizardHideFolderSizeLimitCheckbox()) {
-        _ui.confCheckBoxSize->hide();
-        _ui.confSpinBox->hide();
-        _ui.confTraillingSizeLabel->hide();
-    }
 }
 
 void OwncloudAdvancedSetupPage::setupCustomization()
@@ -110,14 +104,6 @@ void OwncloudAdvancedSetupPage::initializePage()
         labelSizeHint.width(),
         qMax<int>(1.3 * labelSizeHint.height(), _progressIndi->height()));
 
-    if (!Theme::instance()->showVirtualFilesOption() || bestAvailableVfsMode() == Vfs::Off) {
-        // If the layout were wrapped in a widget, the auto-grouping of the
-        // radio buttons no longer works and there are surprising margins.
-        // Just manually hide the button and remove the layout.
-        _ui.rVirtualFileSync->hide();
-        _ui.wSyncStrategy->layout()->removeItem(_ui.lVirtualFileSync);
-    }
-
     _checking = false;
     _ui.lSelectiveSyncSizeLabel->setText(QString());
     _ui.lSyncEverythingSizeLabel->setText(QString());
@@ -139,11 +125,31 @@ void OwncloudAdvancedSetupPage::initializePage()
     connect(quotaJob, &PropfindJob::result, this, &OwncloudAdvancedSetupPage::slotQuotaRetrieved);
     quotaJob->start();
 
+    QJsonDocument configJson = acc->property("oc_serverConfig").toJsonDocument();
+    bool hasServerConfig = configJson.isObject() && !configJson.object()["default_folders"].toArray().isEmpty();
+    Theme *theme = Theme::instance();
 
-    if (Theme::instance()->wizardSelectiveSyncDefaultNothing()) {
+    _ui.rDefaultFolders->setVisible(hasServerConfig);
+    _ui.rSyncEverything->setVisible(!hasServerConfig);
+    _ui.lSyncEverythingSizeLabel->setVisible(!hasServerConfig);
+    _ui.rSelectiveSync->setVisible(!hasServerConfig);
+    _ui.bSelectiveSync->setVisible(!hasServerConfig);
+    _ui.lSelectiveSyncSizeLabel->setVisible(!hasServerConfig);
+    _ui.rVirtualFileSync->setVisible(!hasServerConfig && Theme::instance()->showVirtualFilesOption() && bestAvailableVfsMode() != Vfs::Off);
+
+    _ui.confCheckBoxExternal->setVisible(!hasServerConfig && !theme->wizardHideExternalStorageConfirmationCheckbox());
+    _ui.confCheckBoxSize->setVisible(!hasServerConfig && !theme->wizardHideFolderSizeLimitCheckbox());
+    _ui.confSpinBox->setVisible(!hasServerConfig && !theme->wizardHideFolderSizeLimitCheckbox());
+    _ui.confTraillingSizeLabel->setVisible(!hasServerConfig && !theme->wizardHideFolderSizeLimitCheckbox());;
+
+    if (hasServerConfig) {
+        setRadioChecked(_ui.rDefaultFolders);
+    } else if (theme->wizardSelectiveSyncDefaultNothing()) {
         _selectiveSyncBlacklist = QStringList("/");
         setRadioChecked(_ui.rSelectiveSync);
         QTimer::singleShot(0, this, &OwncloudAdvancedSetupPage::slotSelectiveSyncClicked);
+    } else {
+        setRadioChecked(_ui.rSyncEverything);
     }
 
     ConfigFile cfgFile;
