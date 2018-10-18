@@ -92,6 +92,11 @@ OCUpdater::OCUpdater(const QUrl &url)
 {
 }
 
+void OCUpdater::setUpdateUrl(const QUrl &url)
+{
+    _updateUrl = url;
+}
+
 bool OCUpdater::performUpdate()
 {
     ConfigFile cfg;
@@ -179,6 +184,81 @@ void OCUpdater::setDownloadState(DownloadState state)
     }
 }
 
+#if defined(Q_OS_WIN)
+// Following functions are taken from https://github.com/qt/qtbase/blob/5.8/src/corelib/io/qprocess_win.cpp
+// to make use of this fix https://github.com/qt/qtbase/commit/bec2fc19fd18768b16925597871c77a61e716abd
+// for QTBUG-53833: Without this we get an ugly powershell window on update. In 2.5/master we use Qt 5.10
+// which obviously already has the fix.
+static QString qt_create_commandline(const QString &program, const QStringList &arguments)
+{
+    QString args;
+    if (!program.isEmpty()) {
+        QString programName = program;
+        if (!programName.startsWith(QLatin1Char('\"')) && !programName.endsWith(QLatin1Char('\"')) && programName.contains(QLatin1Char(' ')))
+            programName = QLatin1Char('\"') + programName + QLatin1Char('\"');
+        programName.replace(QLatin1Char('/'), QLatin1Char('\\'));
+
+        // add the prgram as the first arg ... it works better
+        args = programName + QLatin1Char(' ');
+    }
+
+    for (int i=0; i<arguments.size(); ++i) {
+        QString tmp = arguments.at(i);
+        // Quotes are escaped and their preceding backslashes are doubled.
+        tmp.replace(QRegExp(QLatin1String("(\\\\*)\"")), QLatin1String("\\1\\1\\\""));
+        if (tmp.isEmpty() || tmp.contains(QLatin1Char(' ')) || tmp.contains(QLatin1Char('\t'))) {
+            // The argument must not end with a \ since this would be interpreted
+            // as escaping the quote -- rather put the \ behind the quote: e.g.
+            // rather use "foo"\ than "foo\"
+            int i = tmp.length();
+            while (i > 0 && tmp.at(i - 1) == QLatin1Char('\\'))
+                --i;
+            tmp.insert(i, QLatin1Char('"'));
+            tmp.prepend(QLatin1Char('"'));
+        }
+        args += QLatin1Char(' ') + tmp;
+    }
+    return args;
+}
+
+bool startDetached(const QString &program, const QStringList &arguments, const QString &workingDir = QString(), qint64 *pid = 0)
+{
+    // static const DWORD errorElevationRequired = 740;
+
+    QString args = qt_create_commandline(program, arguments);
+    bool success = false;
+    PROCESS_INFORMATION pinfo;
+
+    DWORD dwCreationFlags = (GetConsoleWindow() ? 0 : CREATE_NO_WINDOW);
+    dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
+    STARTUPINFOW startupInfo = { sizeof( STARTUPINFO ), 0, 0, 0,
+                                 (ulong)CW_USEDEFAULT, (ulong)CW_USEDEFAULT,
+                                 (ulong)CW_USEDEFAULT, (ulong)CW_USEDEFAULT,
+                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                               };
+    success = CreateProcess(0, (wchar_t*)args.utf16(),
+                            0, 0, FALSE, dwCreationFlags, 0,
+                            workingDir.isEmpty() ? 0 : (wchar_t*)workingDir.utf16(),
+                            &startupInfo, &pinfo);
+
+    // if (success) {
+        CloseHandle(pinfo.hThread);
+        CloseHandle(pinfo.hProcess);
+        if (pid)
+            *pid = pinfo.dwProcessId;
+    // } else if (GetLastError() == errorElevationRequired) {
+    //     success = startDetachedUacPrompt(program, arguments, workingDir, pid);
+    // }
+
+    return success;
+}
+#else
+bool startDetached(const QString &program, const QStringList &arguments, const QString &workingDir = QString(), qint64 *pid = 0)
+{
+    return QProcess::startDetached(program, arguments, workingDir, pid);
+}
+#endif
+
 void OCUpdater::slotStartInstaller()
 {
     ConfigFile cfg;
@@ -187,8 +267,30 @@ void OCUpdater::slotStartInstaller()
     settings.setValue(autoUpdateAttemptedC, true);
     settings.sync();
     qCInfo(lcUpdater) << "Running updater" << updateFile;
-    QProcess::startDetached(updateFile, QStringList() << "/S"
-                                                      << "/launch");
+
+    if(updateFile.endsWith(".exe")) {
+        QProcess::startDetached(updateFile, QStringList() << "/S"
+                                                          << "/launch");
+    } else if(updateFile.endsWith(".msi")) {
+        // When MSIs are installed without gui they cannot launch applications
+        // as they lack the user context. That is why we need to run the client
+        // manually here. We wrap the msiexec and client invocation in a powershell
+        // script because owncloud.exe will be shut down for installation.
+        // | Out-Null forces powershell to wait for msiexec to finish.
+        auto preparePathForPowershell = [](QString path) {
+            path.replace("'", "''");
+
+            return QDir::toNativeSeparators(path);
+        };
+
+        QString msiLogFile = cfg.configPath() + "msi.log";
+        QString command = QString("&{msiexec /norestart /passive /i '%1' /L*V '%2'| Out-Null ; &'%3'}")
+             .arg(preparePathForPowershell(updateFile))
+             .arg(preparePathForPowershell(msiLogFile))
+             .arg(preparePathForPowershell(QCoreApplication::applicationFilePath()));
+
+        startDetached("powershell.exe", QStringList{"-Command", command});
+    }
 }
 
 void OCUpdater::checkForUpdate()
@@ -298,7 +400,7 @@ void NSISUpdater::versionInfoArrived(const UpdateInfo &info)
             showDialog(info);
         }
         if (!url.isEmpty()) {
-            _targetFile = cfg.configPath() + url.mid(url.lastIndexOf('/'));
+            _targetFile = cfg.configPath() + url.mid(url.lastIndexOf('/')+1);
             if (QFile(_targetFile).exists()) {
                 setDownloadState(DownloadComplete);
             } else {

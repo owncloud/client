@@ -1,6 +1,29 @@
 ChangeLog
 =========
 
+version 2.4.3 (2018-08-xx)
+* Windows: Don't ignore files with FILE_ATTRIBUTE_TEMPORARY (#6696, #6610)
+* OAuth2: Fix infinite loop when the refresh token is expired
+* Windows MSI: Fix crash in the auto updater
+* Nautilus: Guard against None state (#6643)
+
+version 2.4.2 (2018-07-18)
+* Linux: Tray workarounds (#6545)
+* Fix nautilus/nemo shell issues (#6393, #6406)
+* Updater: Add update channel feature (#6259)
+* Updater: Support EXE->MSI upgrade
+* SyncJournal: Fixes for sync folders on removable media (#6049, #6049)
+* SslButton: Add HTTP/2 info (#3146)
+* Fix assert when using ownCloud server 5 (which you should not) (#6403)
+* Normalize local path (#4424)
+* Blacklisting must prevent parent etag updates (#6411)
+* macdeployqt: Adjust minimum version based on our Qt (#5932)
+* macOS: Unload the Finder extension on exit (#5382, #3819)
+* Upload: Adjust timeout for final job based on file size (#6527)
+* Sync: When detecting a local move, keep the local mtime (#6629)
+* Credentials: Retry fetching from the keychain in case the keychain is still starting (#4274, #6522)
+* OAuth2: Try to refresh the token even if the credentials weren't ready (#6522)
+
 version 2.4.1 (2018-02-xx)
 * Ignore files with file names that can't be encoded for the filesystem (#6287, #5676, #5719)
 * Issues: Speed up insertion and add hard upper limit (#6272)
