@@ -205,12 +205,12 @@ Application::Application(int &argc, char **argv)
             qCInfo(lcApplication) << "Migrating old config from" << oldDir << "to" << confDir;
 
             if (!QFile::rename(oldDir, confDir)) {
-                qCWarning(lcApplication) << "Failed to move the old config file to its new location (" << oldDir << "to" << confDir << ")";
+                qCWarning(lcApplication) << "Failed to move the old config directory to its new location (" << oldDir << "to" << confDir << ")";
 
                 // Try to move the files one by one
                 if (QFileInfo(confDir).isDir() || QDir().mkdir(confDir)) {
                     const QStringList filesList = QDir(oldDir).entryList(QDir::Files);
-                    qCInfo(lcApplication) << "Will move the independent files" << filesList;
+                    qCInfo(lcApplication) << "Will move the individual files" << filesList;
                     for (const auto &name : filesList) {
                         if (!QFile::rename(oldDir + "/" + name,  confDir + "/" + name)) {
                             qCWarning(lcApplication) << "Fallback move of " << name << "also failed";
