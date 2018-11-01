@@ -335,19 +335,23 @@ bool UploadDevice::prepareAndOpen(const QString &fileName, qint64 start, qint64 
 
     QFile file(fileName);
     QString openError;
+    qCDebug(lcPropagateUpload) << "prepareAndOpen: openAndSeekFileSharedRead" << start;
     if (!FileSystem::openAndSeekFileSharedRead(&file, &openError, start)) {
         setErrorString(openError);
         return false;
     }
 
     size = qBound(0ll, size, FileSystem::getSize(fileName) - start);
+    qCDebug(lcPropagateUpload) << "prepareAndOpen: creating storage for" << size << "bytes";
     _data.resize(size);
+    qCDebug(lcPropagateUpload) << "prepareAndOpen: reading from file";
     auto read = file.read(_data.data(), size);
     if (read != size) {
         setErrorString(file.errorString());
         return false;
     }
 
+    qCDebug(lcPropagateUpload) << "prepareAndOpen: done";
     return QIODevice::open(QIODevice::ReadOnly);
 }
 
