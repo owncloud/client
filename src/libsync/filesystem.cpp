@@ -25,6 +25,10 @@
 #include "vio/csync_vio_local.h"
 #include "std/c_time.h"
 
+#ifdef Q_OS_UNIX
+#include <sys/time.h>
+#endif
+
 #ifdef Q_OS_WIN32
 #include <winsock2.h>
 #endif
