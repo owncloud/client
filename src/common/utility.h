@@ -123,6 +123,7 @@ namespace Utility {
     inline bool isUnix();
     inline bool isLinux(); // use with care
     inline bool isBSD(); // use with care, does not match OS X
+    inline bool isHaiku();
 
     OCSYNC_EXPORT QString platformName();
     // crash helper for --debug
@@ -286,6 +287,15 @@ inline bool Utility::isLinux()
 inline bool Utility::isBSD()
 {
 #if defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD) || defined(Q_OS_OPENBSD)
+    return true;
+#else
+    return false;
+#endif
+}
+
+inline bool Utility::isHaiku()
+{
+#if defined(Q_OS_HAIKU)
     return true;
 #else
     return false;

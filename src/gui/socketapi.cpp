@@ -245,7 +245,7 @@ SocketApi::SocketApi(QObject *parent)
         _system(QStringLiteral("pluginkit"), {QStringLiteral("-e"), QStringLiteral("use"), QStringLiteral("-i"), QStringLiteral(APPLICATION_REV_DOMAIN ".FinderSyncExt")});
 
 #endif
-    } else if (Utility::isLinux() || Utility::isBSD()) {
+    } else if (Utility::isLinux() || Utility::isBSD() || Utility::isHaiku()) {
         QString runtimeDir;
         runtimeDir = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
         socketPath = runtimeDir + "/" + Theme::instance()->appName() + "/socket";
