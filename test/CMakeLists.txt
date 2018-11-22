@@ -38,9 +38,9 @@ owncloud_add_test(LockedFiles "syncenginetestutils.h")
 
 owncloud_add_test(FolderWatcher)
 
-if( UNIX AND NOT APPLE )
+if( UNIX AND NOT APPLE AND NOT HAIKU )
     owncloud_add_test(InotifyWatcher)
-endif(UNIX AND NOT APPLE)
+endif(UNIX AND NOT APPLE AND NOT HAIKU )
 
 owncloud_add_benchmark(LargeSync "syncenginetestutils.h")
 

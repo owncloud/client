@@ -118,7 +118,7 @@ IF( APPLE )
    endif()
 ENDIF()
 
-IF( NOT WIN32 AND NOT APPLE )
+IF( NOT WIN32 AND NOT APPLE AND NOT HAIKU )
     list(APPEND client_SRCS folderwatcher_linux.cpp)
 ENDIF()
 IF( WIN32 )
@@ -128,6 +128,9 @@ IF( WIN32 )
 ENDIF()
 IF( APPLE )
     list(APPEND client_SRCS folderwatcher_mac.cpp)
+ENDIF()
+IF( HAIKU )
+    list(APPEND client_SRCS folderwatcher_haiku.cpp)
 ENDIF()
 
 set(3rdparty_SRC

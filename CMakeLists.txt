@@ -145,7 +145,7 @@ if(BUILD_CLIENT)
         find_package(Sparkle)
     endif(APPLE)
 
-    if(UNIX AND NOT APPLE)
+    if(UNIX AND NOT APPLE AND NOT HAIKU)
         find_package(Inotify REQUIRED)
     endif()
     find_package(Sphinx)
