@@ -72,6 +72,11 @@ if (APPLE)
     target_link_libraries("${csync_NAME}" ${FOUNDATION_LIBRARY} ${CORESERVICES_LIBRARY})
 endif()
 
+# For src/common/utility_haiku.cpp
+if (HAIKU)
+    target_link_libraries("${csync_NAME}" be)
+endif()
+
 set_target_properties(
   "${csync_NAME}"
     PROPERTIES

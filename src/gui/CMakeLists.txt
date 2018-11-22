@@ -185,6 +185,10 @@ if (APPLE)
     target_link_libraries(owncloudCore PUBLIC Qt5::MacExtras)
 endif()
 
+if (HAIKU)
+    target_link_libraries(owncloudCore PUBLIC be)
+endif()
+
 if(WITH_CRASHREPORTER)
     target_link_libraries(owncloudCore PUBLIC crashreporter-handler)
 
