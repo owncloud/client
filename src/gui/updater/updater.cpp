@@ -79,6 +79,8 @@ QUrlQuery Updater::getQueryParams()
         platform = QLatin1String("win32");
     } else if (Utility::isMac()) {
         platform = QLatin1String("macos");
+    } else if (Utility::isHaiku()) {
+        platform = QLatin1String("haiku");
     }
 
     QString sysInfo = getSystemInfo();
