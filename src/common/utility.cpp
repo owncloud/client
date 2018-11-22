@@ -52,6 +52,8 @@
 #include "utility_win.cpp"
 #elif defined(Q_OS_MAC)
 #include "utility_mac.cpp"
+#elif defined(Q_OS_HAIKU)
+#include "utility_haiku.cpp"
 #else
 #include "utility_unix.cpp"
 #endif
@@ -169,6 +171,8 @@ static QLatin1String platform()
     return QLatin1String("OpenBSD");
 #elif defined(Q_OS_SOLARIS)
     return QLatin1String("Solaris");
+#elif defined(Q_OS_HAIKU)
+    return QLatin1String("Haiku");
 #else
     return QSysInfo::productType();
 #endif
