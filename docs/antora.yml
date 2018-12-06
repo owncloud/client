@@ -1,4 +1,4 @@
-name: client
+name: desktop
 title: Desktop Client
 version: master
 start_page: ROOT:introduction.adoc
