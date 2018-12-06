@@ -93,6 +93,7 @@ public:
 
         auto menuaction = new QAction(parentWidget);
         menuaction->setText(helper->contextMenuTitle());
+        menuaction->setIcon(QIcon::fromTheme(QStringLiteral("owncloud")));
         menuaction->setMenu(menu);
         return { menuaction };
     }
