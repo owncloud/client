@@ -238,7 +238,14 @@ class MenuExtension_ownCloud(GObject.GObject, Nautilus.MenuProvider):
         done = False
         start = time.time()
         timeout = 0.1 # 100ms
-        menu_items = []
+        empty = True
+
+        item_owncloud = Nautilus.MenuItem(
+            name='IntegrationMenu', label=self.strings.get('CONTEXT_MENU_TITLE', appname))
+        menu = Nautilus.Menu()
+        item_owncloud.set_submenu(menu)
+        menu_stack = [ menu ]
+        icon = "";
         while not done:
             dt = time.time() - start
             if dt >= timeout:
@@ -247,35 +254,52 @@ class MenuExtension_ownCloud(GObject.GObject, Nautilus.MenuProvider):
                 break
             for line in socketConnect.get_available_responses():
                 # Process lines we don't care about
-                if done or not (line.startswith('GET_MENU_ITEMS:') or line.startswith('MENU_ITEM:')):
+                if done:
                     socketConnect.handle_server_response(line)
-                    continue
-                if line == 'GET_MENU_ITEMS:END':
+                elif line == 'GET_MENU_ITEMS:END':
                     done = True
                     # don't break - we'd discard other responses
-                if line.startswith('MENU_ITEM:'):
+                elif line.startswith('MENU_ITEM:'):
                     args = line.split(':')
                     if len(args) < 4:
                         continue
-                    menu_items.append([args[1], 'd' not in args[2], ':'.join(args[3:])])
+                    action = args[1]
+                    item = Nautilus.MenuItem(name=action, label=':'.join(args[3:]),
+                                             sensitive='d' not in args[2], icon = icon)
+                    item.connect("activate", self.context_menu_action, action, filesstring)
+                    menu_stack[-1].append_item(item)
+                    icon = ""
+                    empty = False
+                elif line.startswith('SEPARATOR:'):
+                    # How to do a separator? This just add an empty item
+                    menu_stack[-1].append_item(Nautilus.MenuItem(name = "separator", label="",
+                                                                 sensitive=False))
+                elif line.startswith('SUBMENU_BEGIN:'):
+                    args = line.split(':')
+                    if len(args) < 3:
+                        continue
+                    submenu = Nautilus.Menu()
+                    item = Nautilus.MenuItem(name="submenu", label=':'.join(args[2:]),
+                                             sensitive='d' not in args[1], icon = icon)
+                    item.set_submenu(submenu)
+                    menu_stack[-1].append_item(item)
+                    menu_stack.append(submenu)
+                    icon = ""
+                elif line.startswith('SUBMENU_END:'):
+                    menu_stack.pop()
+                elif line.startswith('MENU_ICON:'):
+                    args = line.split(':')
+                    if len(args) < 2:
+                        continue
+                    icon = ':'.join(args[1:])
+                else:
+                    socketConnect.handle_server_response(line)
 
         if not done:
             return self.legacy_menu_items(files)
 
-        if len(menu_items) == 0:
+        if empty:
             return []
-
-        # Set up the 'ownCloud...' submenu
-        item_owncloud = Nautilus.MenuItem(
-            name='IntegrationMenu', label=self.strings.get('CONTEXT_MENU_TITLE', appname))
-        menu = Nautilus.Menu()
-        item_owncloud.set_submenu(menu)
-
-        for action, enabled, label in menu_items:
-            item = Nautilus.MenuItem(name=action, label=label, sensitive=enabled)
-            item.connect("activate", self.context_menu_action, action, filesstring)
-            menu.append_item(item)
-
         return [item_owncloud]
 
 
