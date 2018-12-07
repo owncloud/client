@@ -21,6 +21,7 @@ set_package_properties(DolphinVcs PROPERTIES
 
 set(KDE_INSTALL_DIRS_NO_DEPRECATED TRUE)
 include(KDEInstallDirs)
+set(PLUGIN_INSTALL_DIR "${KDE_INSTALL_PLUGINDIR}")
 include(KDECMakeSettings)
 include(KDECompilerSettings)
 include(ECMMarkNonGuiExecutable)
