@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <random>
+#include <exception>
 
 #include "config.h"
 #include "common/asserts.h"
@@ -435,6 +436,32 @@ void Application::slotCrashFatal()
     qFatal("la Qt fatale");
 }
 
+class ExceptionCrashTestHelper : public QObject
+{
+    Q_OBJECT
+public:
+    void crashSoon() {
+        qDebug()<< Q_FUNC_INFO<<QThread::currentThread();
+        QMetaObject::invokeMethod(this, "crashSoonHere", Qt::QueuedConnection);
+    }
+    // Happening on thread
+    Q_INVOKABLE void crashSoonHere() {
+        qDebug()<< Q_FUNC_INFO<<QThread::currentThread();
+        throw new std::runtime_error(std::string("Viva La Threaded Exception!"));
+    }
+};
+#include "application.moc"
+void Application::slotCrashException()
+{
+    qDebug() << "Throwing exception from new thread";
+    ExceptionCrashTestHelper *helper = new ExceptionCrashTestHelper();
+    QThread *thread = new QThread();
+    helper->moveToThread(thread);
+    thread->start();
+    helper->crashSoon();
+}
+
+
 
 void Application::slotownCloudWizardDone(int res)
 {
@@ -753,6 +780,26 @@ bool Application::event(QEvent *event)
     }
 #endif
     return SharedTools::QtSingleApplication::event(event);
+}
+
+bool Application::notify(QObject *receiver, QEvent *event)
+{
+    bool returnValue(false);
+    try
+    {
+        returnValue = SharedTools::QtSingleApplication::notify(receiver, event);
+    }
+    catch (std::exception *e)
+    {
+        qDebug() <<  typeid(e).name()<<"std Exception caught:" << e->what();
+        throw;  // FIXME Make sure we hook into our crash reporter here
+    }
+    catch (void *e)
+    {
+        qWarning() <<  typeid(e).name()<<"Exception caught:" << e;
+        throw; // FIXME Make sure we hook into our crash reporter here
+    }
+    return returnValue;
 }
 
 } // namespace OCC

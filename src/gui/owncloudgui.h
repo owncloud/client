@@ -154,7 +154,7 @@ private:
     QAction *_actionCrash;
     QAction *_actionCrashEnforce;
     QAction *_actionCrashFatal;
-
+    QAction *_actionCrashException;
 
     QList<QAction *> _recentItemsActions;
     Application *_app;

@@ -662,7 +662,7 @@ void ownCloudGui::updateContextMenu()
         _contextMenu->addAction(_actionCrash);
         _contextMenu->addAction(_actionCrashEnforce);
         _contextMenu->addAction(_actionCrashFatal);
-
+        _contextMenu->addAction(_actionCrashException);
     }
 
     _contextMenu->addSeparator();
@@ -807,10 +807,13 @@ void ownCloudGui::setupActions()
         connect(_actionCrashEnforce, &QAction::triggered, _app, &Application::slotCrashEnforce);
         _actionCrashFatal = new QAction("Crash now - qFatal", this);
         connect(_actionCrashFatal, &QAction::triggered, _app, &Application::slotCrashFatal);
+        _actionCrashException = new QAction("Crash now - exception", this);
+        connect(_actionCrashException, &QAction::triggered, _app, &Application::slotCrashException);
     } else {
         _actionCrash = 0;
         _actionCrashEnforce = 0;
         _actionCrashFatal = 0;
+        _actionCrashException = 0;
     }
 }
 
