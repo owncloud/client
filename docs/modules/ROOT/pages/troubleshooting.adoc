@@ -5,78 +5,11 @@ The following two general issues can result in failed synchronization:
 * The server setup is incorrect.
 * The client contains a bug.
 
-<<<<<<< HEAD
-When reporting bugs, it is helpful if you first determine what part of
-the system is causing the issue.
-
-Identifying Basic Functionality Problems
-----------------------------------------
-
-Performing a general ownCloud Server test::
-  The first step in troubleshooting synchronization issues is to verify
-  that you can log on to the ownCloud web application. To verify
-  connectivity to the ownCloud server try logging in via your Web
-  browser.
-  +
-  If you are not prompted for your username and password, or if a red
-  warning box appears on the page, your server setup requires
-  modification. Please verify that your server installation is working
-  correctly.
-Ensure the WebDAV API is working::
-  If all desktop clients fail to connect to the ownCloud Server, but
-  access using the Web interface functions properly, the problem is
-  often a misconfiguration of the WebDAV API.
-  +
-  The ownCloud Client uses the built-in WebDAV access of the server
-  content. Verify that you can log on to ownCloud's WebDAV server. To
-  verify connectivity with the ownCloud WebDAV server:
-  +
-  * Open a browser window and enter the address to the ownCloud WebDAV
-  server.
-  +
-  For example, if your ownCloud instance is installed at
-  `http://yourserver.com/owncloud`, your WebDAV server address is
-  `http://yourserver.com/owncloud/remote.php/webdav`.
-  +
-  If you are prompted for your username and password but, after
-  providing the correct credentials, authentication fails, please ensure
-  that your authentication backend is configured properly.
-Use a WebDAV command line tool to test::
-  A more sophisticated test method for troubleshooting synchronization
-  issues is to use a WebDAV command line client and log into the
-  ownCloud WebDAV server. One such command line client -- called
-  `cadaver` -- is available for Linux distributions. You can use this
-  application to further verify that the WebDAV server is running
-  properly using PROPFIND calls.
-  +
-  As an example, after installing the `cadaver` app, you can issue the
-  `propget` command to obtain various properties pertaining to the
-  current directory and also verify WebDAV server connection.
-
-"CSync unknown error"
----------------------
-
-If you see this error message stop your client, delete the
-`.sync_xxxxxxx.db` file, and then restart your client. There is a
-hidden `.sync_xxxxxxx.db` file inside the folder of every account
-configured on your client.
-
-Note
-
-Please note that this will also erase some of your settings about which
-files to download.
-
-See https://github.com/owncloud/client/issues/5226 for more discussion
-of this issue.
-
-Isolating other issues
-----------------------
-=======
 When reporting bugs, it is helpful if you first determine what part of the system is causing the issue.
 
 == Identifying Basic Functionality Problems
 
-=== Performing a general ownCloud Server test
+=== Performing a General ownCloud Server Test
 
 The first step in troubleshooting synchronization issues is to verify that you can log on to the ownCloud web application.
 To verify connectivity to the ownCloud server try logging in via your Web browser.
@@ -84,7 +17,7 @@ To verify connectivity to the ownCloud server try logging in via your Web browse
 If you are not prompted for your username and password, or if a red warning box appears on the page, your server setup requires modification.
 Please verify that your server installation is working correctly.
 
-=== Ensure the WebDAV API is working
+=== Ensure the WebDAV API is Working
 
 If all desktop clients fail to connect to the ownCloud Server, but access using the Web interface functions properly, the problem is often a misconfiguration of the WebDAV API.
 The ownCloud Client uses the built-in WebDAV access of the server content.
@@ -96,7 +29,7 @@ To verify connectivity with the ownCloud WebDAV server:
   For example, if your ownCloud instance is installed at `http://yourserver.com/owncloud`, your WebDAV server address isi `http://yourserver.com/owncloud/remote.php/webdav`. If you are prompted for your username and password but, after.
   providing the correct credentials, authentication fails, please ensure that your authentication backend is configured properly.
 
-=== Use a WebDAV command line tool to test
+=== Use a WebDAV Command Line Tool to Test
 
 A more sophisticated test method for troubleshooting synchronization issues is to use a WebDAV command line client and log into the ownCloud WebDAV server.
 One such command line client -- called `cadaver` -- is available for Linux distributions.
@@ -112,8 +45,7 @@ NOTE: Please note that this will also erase some of your settings about which fi
 
 See https://github.com/owncloud/client/issues/5226 for more discussion of this issue.
 
-== Isolating other issues
->>>>>>> Replace reStructuredText formatting with AsciiDoc and reflow text
+== Isolating Other Issues
 
 Other issues can affect synchronization of your ownCloud files:
 
