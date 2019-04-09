@@ -383,7 +383,6 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             missingData.append(tr("file id"));
         if (!missingData.isEmpty()) {
             item->_instruction = CSYNC_INSTRUCTION_ERROR;
-            item->_status = SyncFileItem::NormalError;
             _childIgnored = true;
             item->_errorString = tr("server reported no %1").arg(missingData.join(QLatin1String(", ")));
             emit _discoveryData->itemDiscovered(item);
@@ -1137,13 +1136,11 @@ bool ProcessDirectoryJob::checkPermissions(const OCC::SyncFileItemPtr &item)
         } else if (item->isDirectory() && !perms.hasPermission(RemotePermissions::CanAddSubDirectories)) {
             qCWarning(lcDisco) << "checkForPermission: ERROR" << item->_file;
             item->_instruction = CSYNC_INSTRUCTION_ERROR;
-            item->_status = SyncFileItem::NormalError;
             item->_errorString = tr("Not allowed because you don't have permission to add subfolders to that folder");
             return false;
         } else if (!item->isDirectory() && !perms.hasPermission(RemotePermissions::CanAddFile)) {
             qCWarning(lcDisco) << "checkForPermission: ERROR" << item->_file;
             item->_instruction = CSYNC_INSTRUCTION_ERROR;
-            item->_status = SyncFileItem::NormalError;
             item->_errorString = tr("Not allowed because you don't have permission to add files in that folder");
             return false;
         }
@@ -1337,31 +1334,34 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
             if (_localQueryDone)
                 this->process();
         } else {
+            auto dirErrorOrFatal = [&](csync_instructions_e instr) {
+                if (_dirItem) {
+                    _dirItem->_instruction = instr;
+                    _dirItem->_errorString = results.error().message;
+                    emit this->finished();
+                } else {
+                    // Fatal for the root job since it has no SyncFileItem
+                    emit _discoveryData->fatalError(tr("Server replied with an error while reading directory '%1' : %2")
+                        .arg(_currentFolder._server, results.error().message));
+                }
+            };
+
             if (results.error().code == 403) {
                 // 403 Forbidden can be sent by the server if the file firewall is active.
                 // A file or directory should be ignored and sync must continue. See #3490
                 qCWarning(lcDisco, "Directory access Forbidden (File Firewall?)");
-                if (_dirItem) {
-                    _dirItem->_instruction = CSYNC_INSTRUCTION_IGNORE;
-                    _dirItem->_errorString = results.error().message;
-                    emit this->finished();
-                    return;
-                }
+                dirErrorOrFatal(CSYNC_INSTRUCTION_IGNORE);
             } else if (results.error().code == 503) {
                 // The server usually replies with the custom "503 Storage not available"
                 // if some path is temporarily unavailable. But in some cases a standard 503
                 // is returned too. Thus we can't distinguish the two and will treat any
                 // 503 as request to ignore the folder. See #3113 #2884.
                 qCWarning(lcDisco(), "Storage was not available!");
-                if (_dirItem) {
-                    _dirItem->_instruction = CSYNC_INSTRUCTION_IGNORE;
-                    _dirItem->_errorString = results.error().message;
-                    emit this->finished();
-                    return;
-                }
+                dirErrorOrFatal(CSYNC_INSTRUCTION_IGNORE);
+            } else {
+                qCWarning(lcDisco) << "Server error in directory" << _currentFolder._server << results.error().message;
+                dirErrorOrFatal(CSYNC_INSTRUCTION_ERROR);
             }
-            emit _discoveryData->fatalError(tr("Server replied with an error while reading directory '%1' : %2")
-                .arg(_currentFolder._server, results.error().message));
         }
     });
     connect(serverJob, &DiscoverySingleDirectoryJob::firstDirectoryPermissions, this,

@@ -64,15 +64,16 @@ private slots:
         QTest::addColumn<int>("errorKind");
         QTest::addColumn<QString>("expectedErrorString");
 
-        QString httpErrorMessage = "Server replied with an error while reading directory 'B' : Internal Server Fake Error";
+        QString httpErrorMessage = "Internal Server Fake Error";
 
+        QTest::newRow("403") << 403 << httpErrorMessage;
         QTest::newRow("404") << 404 << httpErrorMessage;
         QTest::newRow("500") << 500 << httpErrorMessage;
         QTest::newRow("503") << 503 << httpErrorMessage;
         // 200 should be an error since propfind should return 207
         QTest::newRow("200") << 200 << httpErrorMessage;
-        QTest::newRow("InvalidXML") << +InvalidXML << "error while reading directory 'B' : Unknown error";
-        QTest::newRow("Timeout") << +Timeout << "error while reading directory 'B' : Operation canceled";
+        QTest::newRow("InvalidXML") << +InvalidXML << "Unknown error";
+        QTest::newRow("Timeout") << +Timeout << "Operation canceled";
     }
 
 
@@ -81,7 +82,8 @@ private slots:
     {
         QFETCH(int, errorKind);
         QFETCH(QString, expectedErrorString);
-        bool syncSucceeds = errorKind == 503; // 503 just ignore the temporarily unavailable directory
+        // 403/503 just ignore the temporarily unavailable directory
+        bool syncSucceeds = errorKind == 503 || errorKind == 403;
 
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
 
@@ -96,9 +98,10 @@ private slots:
         auto oldLocalState = fakeFolder.currentLocalState();
         auto oldRemoteState = fakeFolder.currentRemoteState();
 
+        QString errorFolder = "webdav/B";
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *)
                 -> QNetworkReply *{
-            if (req.attribute(QNetworkRequest::CustomVerbAttribute) == "PROPFIND" && req.url().path().endsWith("/B")) {
+            if (req.attribute(QNetworkRequest::CustomVerbAttribute) == "PROPFIND" && req.url().path().endsWith(errorFolder)) {
                 if (errorKind == InvalidXML) {
                     return new FakeBrokenXmlPropfindReply(fakeFolder.remoteModifier(), op, req, this);
                 } else if (errorKind == Timeout) {
@@ -113,22 +116,32 @@ private slots:
         // So the test that test timeout finishes fast
         QScopedValueRollback<int> setHttpTimeout(AbstractNetworkJob::httpTimeout, errorKind == Timeout ? 1 : 10000);
 
-        QSignalSpy errorSpy(&fakeFolder.syncEngine(), &SyncEngine::syncError);
+        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         QCOMPARE(fakeFolder.syncOnce(), syncSucceeds);
-        qDebug() << "errorSpy=" << errorSpy;
 
         // The folder B should not have been sync'ed (and in particular not removed)
         QCOMPARE(oldLocalState.children["B"], fakeFolder.currentLocalState().children["B"]);
         QCOMPARE(oldRemoteState.children["B"], fakeFolder.currentRemoteState().children["B"]);
         if (!syncSucceeds) {
-            // Check we got the right error
-            QCOMPARE(errorSpy.count(), 1);
-            QVERIFY(errorSpy[0][0].toString().contains(expectedErrorString));
+            QCOMPARE(findItem(completeSpy, "B")->_instruction, CSYNC_INSTRUCTION_ERROR);
         } else {
-            // The other folder should have been sync'ed as the sync just ignored the faulty dir
-            QCOMPARE(fakeFolder.currentRemoteState().children["A"], fakeFolder.currentLocalState().children["A"]);
-            QCOMPARE(fakeFolder.currentRemoteState().children["C"], fakeFolder.currentLocalState().children["C"]);
+            QCOMPARE(findItem(completeSpy, "B")->_instruction, CSYNC_INSTRUCTION_IGNORE);
         }
+        QVERIFY(findItem(completeSpy, "B")->_errorString.contains(expectedErrorString));
+
+        // The other folder should have been sync'ed as the sync just ignored the faulty dir
+        QCOMPARE(fakeFolder.currentRemoteState().children["A"], fakeFolder.currentLocalState().children["A"]);
+        QCOMPARE(fakeFolder.currentRemoteState().children["C"], fakeFolder.currentLocalState().children["C"]);
+        QCOMPARE(findItem(completeSpy, "A/z1")->_instruction, CSYNC_INSTRUCTION_NEW);
+
+        //
+        // Check the same discovery error on the sync root
+        //
+        errorFolder = "webdav/";
+        QSignalSpy errorSpy(&fakeFolder.syncEngine(), &SyncEngine::syncError);
+        QVERIFY(!fakeFolder.syncOnce());
+        QVERIFY(errorSpy.size() == 1);
+        QVERIFY(errorSpy[0][0].toString().contains(expectedErrorString));
     }
 
     void testMissingData()
