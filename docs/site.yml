@@ -4,7 +4,7 @@ site:
 content:
   sources:
   - url: ../
-    branches: HEAD
+    branches: [HEAD,2.6]
     start_path: docs/
 
 ui:
