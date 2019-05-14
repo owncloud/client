@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Automatic Updater :: ownCloud Desktop Client Documentation</title>
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">ownCloud Desktop Client Documentation</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://owncloud.org/news/">News</a>
+        <a class="navbar-item" href="https://owncloud.org/features/">Features</a>
+        <a class="navbar-item" href="https://demo.owncloud.org/">Demo</a>
+        <a class="navbar-item" href="/">Documentation</a>
+        <a class="navbar-item" href="https://owncloud.org/contribute/">Contribute</a>
+        <a class="navbar-item" href="https://owncloud.org/support">Support</a>
+        <a class="navbar-item" href="https://owncloud.com/">Enterprise Edition</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="https://owncloud.org/install/">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="main-wrapper">
+<div class="navigation-container" data-component="desktop" data-version="2.5">
+  <aside class="navigation">
+    <div class="panels">
+<div class="navigation-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="introduction.html">Desktop Client</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installing.html">Installing the Desktop Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="navigating.html">Using the Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="conflicts.html">Conflicts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Usage</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/options.html">Options</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/configuration_file.html">Configuration File</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/environment_variables.html">Environment Variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/command_line_client.html">Command-Line Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/low_disk_space.html">Low Disk Space</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="automatic_updater.html">The Automatic Updater</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="glossary.html">Glossary</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Appendices</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="building.html">Building the Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="architecture.html">History and Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Desktop Client</span>
+    <span class="version">2.5</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Desktop Client</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="introduction.html">2.5</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+  <main class="main">
+<div class="toolbar" role="navigation">
+  <button class="navigation-toggle"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="introduction.html">Desktop Client</a></li>
+    <li class="crumb"><a href="automatic_updater.html">The Automatic Updater</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/settermjd/Workspace/clients/ownCloud/client/docs/modules/ROOT/pages/automatic_updater.adoc" rel="noopener noreferrer" target="_blank">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1>The Automatic Updater</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#basic-workflow">Basic Workflow</a>
+<ul class="sectlevel2">
+<li><a href="#windows">Windows</a></li>
+<li><a href="#macos-x">macOS X</a></li>
+<li><a href="#linux">Linux</a></li>
+</ul>
+</li>
+<li><a href="#preventing-automatic-updates">Preventing Automatic Updates</a>
+<ul class="sectlevel2">
+<li><a href="#preventing-automatic-updates-in-windows-environments">Preventing Automatic Updates in Windows Environments</a></li>
+<li><a href="#preventing-automatic-updates-in-macos-x-environments">Preventing Automatic Updates in macOS X Environments</a></li>
+<li><a href="#preventing-automatic-updates-in-linux-environments">Preventing Automatic Updates in Linux Environments</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Automatic Updater ensures that you always have the latest features and bug fixes for your ownCloud synchronization client.</p>
+</div>
+<div class="paragraph">
+<p>The Automatic Updater updates only on macOS X and Windows computers; Linux users only need to use their normal package managers.
+However, on Linux systems the Updater will check for updates and notify you when a new version is available.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Because of various technical issues, desktop sync clients older than 1.7 will not be allowed to connect and sync with the ownCloud 8.1+ server.
+It is highly recommended to keep your client updated.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="basic-workflow"><a class="anchor" href="#basic-workflow"></a>Basic Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following sections describe how to use the Automatic Updater on different operating systems.</p>
+</div>
+<div class="sect2">
+<h3 id="windows"><a class="anchor" href="#windows"></a>Windows</h3>
+<div class="paragraph">
+<p>The ownCloud client checks for updates and downloads them when available.
+You can view the update status under <code>Settings &#8594; General &#8594; Updates</code> in the ownCloud client.</p>
+</div>
+<div class="paragraph">
+<p>If an update is available, and has been successfully downloaded, the ownCloud client starts a silent update prior to its next launch and then restarts itself.
+Should the silent update fail, the client offers a manual download.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Administrative privileges are required to perform the update.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="macos-x"><a class="anchor" href="#macos-x"></a>macOS X</h3>
+<div class="paragraph">
+<p>If a new update is available, the ownCloud client initializes a pop-up dialog to alert you of the update and requesting that you update to the latest version.
+Due to their use of the Sparkle frameworks, this is the default process for macOS X applications.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="linux"><a class="anchor" href="#linux"></a>Linux</h3>
+<div class="paragraph">
+<p>Linux distributions provide their own update tools, so ownCloud clients that use the Linux operating system do not perform any updates on their own.
+The client will inform you (<code>Settings &#8594; General &#8594; Updates</code>) when an update is available.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="preventing-automatic-updates"><a class="anchor" href="#preventing-automatic-updates"></a>Preventing Automatic Updates</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In controlled environments, such as companies or universities, you might not want to enable the auto-update mechanism, as it interferes with controlled deployment tools and policies.
+To address this case, it is possible to disable the auto-updater entirely.
+The following sections describe how to disable the auto-update mechanism for different operating systems.</p>
+</div>
+<div class="sect2">
+<h3 id="preventing-automatic-updates-in-windows-environments"><a class="anchor" href="#preventing-automatic-updates-in-windows-environments"></a>Preventing Automatic Updates in Windows Environments</h3>
+<div class="paragraph">
+<p>Users may disable automatic updates by adding this line to the <code>[General]</code> section of their <code>owncloud.cfg</code> files:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>skipUpdateCheck=true</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Windows administrators have more options for preventing automatic updates in Windows environments by using one of two methods.
+The first method allows users to override the automatic update check mechanism, whereas the second method prevents any manual overrides.</p>
+</div>
+<div class="paragraph">
+<p>To prevent automatic updates, but allow manual overrides:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Edit these Registry keys:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>(32-bit-Windows) <code>HKEY_LOCAL_MACHINE\Software\ownCloud\ownCloud</code></p>
+</li>
+<li>
+<p>(64-bit-Windows) <code>HKEY_LOCAL_MACHINE\Software\Wow6432Node\ownCloud\ownCloud</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Add the key <code>skipUpdateCheck</code> (of type DWORD).</p>
+</li>
+<li>
+<p>Specify a value of <code>1</code> to the machine.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>To manually override this key, use the same value in <code>HKEY_CURRENT_USER</code>.</p>
+</div>
+<div class="paragraph">
+<p>To prevent automatic updates and disallow manual overrides:</p>
+</div>
+<div class="paragraph">
+<p>This is the preferred method of controlling the updater behavior using Group Policies.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Edit this Registry key:</p>
+<div class="literalblock">
+<div class="content">
+<pre>`HKEY_LOCAL_MACHINE\Software\Policies\ownCloud\ownCloud`</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Add the key <code>skipUpdateCheck</code> (of type DWORD).</p>
+</li>
+<li>
+<p>Specify a value of <code>1</code> to the machine.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Enterprise branded clients (see <a href="https://doc.owncloud.org/branded_clients/">Building Branded ownCloud Clients</a>) have different key names, which are set in ownBrander using the Application Vendor and Application Name fields.
+Your key names look like this:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>``HKEY_LOCAL_MACHINE\Software\Policies\myCompanyName\myAppName``</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="preventing-automatic-updates-in-macos-x-environments"><a class="anchor" href="#preventing-automatic-updates-in-macos-x-environments"></a>Preventing Automatic Updates in macOS X Environments</h3>
+<div class="paragraph">
+<p>You can disable the automatic update mechanism, in the macOS X operating system, by copying the file <code>owncloud.app/Contents/Resources/deny_autoupdate_com.owncloud.desktopclient.plist</code> to <code>/Library/Preferences/com.owncloud.desktopclient.plist</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="preventing-automatic-updates-in-linux-environments"><a class="anchor" href="#preventing-automatic-updates-in-linux-environments"></a>Preventing Automatic Updates in Linux Environments</h3>
+<div class="paragraph">
+<p>Because the Linux client does not provide automatic updating functionality, there is no need to remove the automatic-update check.
+However, if you want to disable it edit your desktop client configuration file, <code>$HOME/.config/ownCloud/owncloud.cfg</code>.
+Add this line to the [General] section:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>skipUpdateCheck=true</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+  </main>
+</div>
+<footer class="footer">
+<div class="container">
+   <div class="row-full">
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>About ownCloud</h4>
+          <ul id="menu-about" class="menu">
+            <li class="menu-enterprise"><a href="https://owncloud.com/">Enterprise</a></li>
+            <li class="menu-events"><a href="https://owncloud.org/events/">Events</a></li>
+            <li class="menu-news"><a href="https://owncloud.org/news/">News</a></li>
+            <li class="menu-privacy"><a href="https://owncloud.org/privacy-policy/">Privacy policy</a></li>
+            <li class="menu-imprint"><a href="https://owncloud.org/imprint/">Imprint</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Resources</h4>
+          <ul id="menu-support-and-documentation" class="menu">
+            <li class="menu-faq"><a href="https://owncloud.org/faq/">FAQ</a></li>
+            <li class="menu-help"><a href="https://owncloud.org/help/">Help</a></li>
+            <li class="menu-documentation"><a href="https://doc.owncloud.org">Documentation</a></li>
+            <li class="menu-security"><a href="https://owncloud.org/security/">Security</a></li>
+            <li class="menu-changelog"><a href="https://owncloud.org/changelog/">Changelog</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Interact</h4>
+          <ul id="menu-interact" class="menu">
+            <li class="menu-irc-channel"><a href="https://webchat.freenode.net/?channels=owncloud">IRC Channel</a></li>
+            <li class="menu-mailing-list"><a href="https://mailman.owncloud.org/mailman/listinfo/">Mailing List</a></li>
+            <li class="menu-forums"><a href="https://central.owncloud.org">Forums</a></li>
+            <li class="menu-bug-tracker"><a href="https://owncloud.org/community">Get involved</a></li>
+            <li class="menu-promote"><a href="https://owncloud.org/promote/">Discuss ownCloud with others</a></li>
+          </ul>
+        </div>
+     </div>
+   </div>
+   <p>
+     This page was built using the Antora default UI.<br />
+     The source code for this UI is licensed under the terms of the MPL-2.0 license.<br />
+     &copy; Copyright 2011-2018, The ownCloud developers.
+   </p>
+ </div>
+</footer>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+<link href="https://fonts.googleapis.com/css?family=Raleway|Roboto" rel="stylesheet">
+  </body>
+</html>

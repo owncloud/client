@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix C: Troubleshooting :: ownCloud Desktop Client Documentation</title>
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">ownCloud Desktop Client Documentation</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://owncloud.org/news/">News</a>
+        <a class="navbar-item" href="https://owncloud.org/features/">Features</a>
+        <a class="navbar-item" href="https://demo.owncloud.org/">Demo</a>
+        <a class="navbar-item" href="/">Documentation</a>
+        <a class="navbar-item" href="https://owncloud.org/contribute/">Contribute</a>
+        <a class="navbar-item" href="https://owncloud.org/support">Support</a>
+        <a class="navbar-item" href="https://owncloud.com/">Enterprise Edition</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="https://owncloud.org/install/">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="main-wrapper">
+<div class="navigation-container" data-component="desktop" data-version="2.5">
+  <aside class="navigation">
+    <div class="panels">
+<div class="navigation-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="introduction.html">Desktop Client</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installing.html">Installing the Desktop Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="navigating.html">Using the Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="conflicts.html">Conflicts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Usage</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/options.html">Options</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/configuration_file.html">Configuration File</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/environment_variables.html">Environment Variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/command_line_client.html">Command-Line Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/low_disk_space.html">Low Disk Space</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="automatic_updater.html">The Automatic Updater</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="glossary.html">Glossary</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Appendices</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="building.html">Building the Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="architecture.html">History and Architecture</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Desktop Client</span>
+    <span class="version">2.5</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Desktop Client</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="introduction.html">2.5</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+  <main class="main">
+<div class="toolbar" role="navigation">
+  <button class="navigation-toggle"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="introduction.html">Desktop Client</a></li>
+    <li class="crumb">Appendices</li>
+    <li class="crumb"><a href="troubleshooting.html">Troubleshooting</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/settermjd/Workspace/clients/ownCloud/client/docs/modules/ROOT/pages/troubleshooting.adoc" rel="noopener noreferrer" target="_blank">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1>Appendix C: Troubleshooting</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#identifying-basic-functionality-problems">Identifying Basic Functionality Problems</a></li>
+<li><a href="#csync-unknown-error">"CSync unknown error"</a></li>
+<li><a href="#isolating-other-issues">Isolating Other Issues</a></li>
+<li><a href="#log-files">Log Files</a>
+<ul class="sectlevel2">
+<li><a href="#obtaining-the-client-log-file">Obtaining the Client Log File</a></li>
+<li><a href="#owncloud-server-log-file">ownCloud Server Log File</a></li>
+<li><a href="#webserver-log-files">Webserver Log Files</a></li>
+</ul>
+</li>
+<li><a href="#core-dumps">Core Dumps</a></li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following two general issues can result in failed synchronization:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The server setup is incorrect.</p>
+</li>
+<li>
+<p>The client contains a bug.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When reporting bugs, it is helpful if you first determine what part of the system is causing the issue.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="identifying-basic-functionality-problems"><a class="anchor" href="#identifying-basic-functionality-problems"></a>Identifying Basic Functionality Problems</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Performing a general ownCloud Server test</dt>
+<dd>
+<p> The first step in troubleshooting synchronization issues is to verify that you can log on to the ownCloud web application.
+To verify connectivity to the ownCloud server try logging in via your Web browser.
+<br>
+ If you are not prompted for your username and password, or if a red warning box appears on the page, your server setup requires modification.
+Please verify that your server installation is working correctly.</p>
+</dd>
+<dt class="hdlist1">Ensure the WebDAV API is working</dt>
+<dd>
+<p> If all desktop clients fail to connect to the ownCloud Server, but access using the Web interface functions properly, the problem is often a misconfiguration of the WebDAV API.
+<br>
+ The ownCloud Client uses the built-in WebDAV access of the server content.
+Verify that you can log on to ownCloud’s WebDAV server.
+To verify connectivity with the ownCloud WebDAV server:
+<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Open a browser window and enter the address to the ownCloud WebDAV server.
+For example, if your ownCloud instance is installed at <code><a href="http://yourserver.com/owncloud" class="bare">http://yourserver.com/owncloud</a></code>, your WebDAV server address is <code><a href="http://yourserver.com/owncloud/remote.php/webdav" class="bare">http://yourserver.com/owncloud/remote.php/webdav</a></code>.
+If you are prompted for your username and password but, after providing the correct credentials, authentication fails, please ensure that your authentication backend is configured properly.</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Use a WebDAV command line tool to test</dt>
+<dd>
+<p> A more sophisticated test method for troubleshooting synchronization issues is to use a WebDAV command line client and log into the ownCloud WebDAV server.
+One such command line client – called <code>cadaver</code> – is available for Linux distributions.
+You can use this application to further verify that the WebDAV server is running properly using PROPFIND calls.
+<br>
+ As an example, after installing the <code>cadaver</code> app, you can issue the <code>propget</code> command to obtain various properties pertaining to the current directory and also verify WebDAV server connection.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="csync-unknown-error"><a class="anchor" href="#csync-unknown-error"></a>"CSync unknown error"</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you see this error message stop your client, delete the <code>._sync_xxxxxxx.db</code> file, and then restart your client.
+There is a hidden <code>._sync_xxxxxxx.db</code> file inside the folder of every account configured on your client.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Please note that this will also erase some of your settings about which files to download.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>See <a href="https://github.com/owncloud/client/issues/5226" class="bare">https://github.com/owncloud/client/issues/5226</a> for more discussion of this issue.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="isolating-other-issues"><a class="anchor" href="#isolating-other-issues"></a>Isolating Other Issues</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Other issues can affect synchronization of your ownCloud files:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you find that the results of the synchronizations are unreliable, please ensure that the folder to which you are synchronizing is not shared with other synchronization applications.</p>
+</li>
+<li>
+<p>Synchronizing the same directory with ownCloud and other synchronization software such as Unison, rsync, Microsoft Windows Offline Folders, or other cloud services such as Dropbox or Microsoft SkyDrive is not supported and should not be attempted.
+In the worst case, it is possible that synchronizing folders or files using ownCloud and other synchronization software or services can result in data loss.</p>
+</li>
+<li>
+<p>If you find that only specific files are not synchronized, the synchronization protocol might be having an effect.
+Some files are automatically ignored because they are system files, other files might be ignored because their filename contains characters that are not supported on certain file systems.
+For more detailed information see <a href="architecture.html#ignored-files" class="page">the ignored files documentation</a>.</p>
+</li>
+<li>
+<p>If you are operating your own server, and use the local storage backend (the default), make sure that ownCloud has exclusive access to the directory.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The data directory on the server is exclusive to ownCloud and must not be modified manually.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>If you are using a different file backend on the server, you can try to exclude a bug in the backend by reverting to the built-in backend.</p>
+</li>
+<li>
+<p>If you are experiencing slow upload/download speed or similar performance issues be aware that those could be caused by on-access virus scanning solutions, either on the server (like the files_antivirus app) or the client.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="log-files"><a class="anchor" href="#log-files"></a>Log Files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Effectively debugging software requires as much relevant information as can be obtained.
+To assist the ownCloud support personnel, please try to provide as many relevant logs as possible.
+Log output can help with tracking down problems and, if you report a bug, log output can help to resolve an issue more quickly.</p>
+</div>
+<div class="paragraph">
+<p>The client log file is often the most helpful log to provide.</p>
+</div>
+<div class="sect2">
+<h3 id="obtaining-the-client-log-file"><a class="anchor" href="#obtaining-the-client-log-file"></a>Obtaining the Client Log File</h3>
+<div class="paragraph">
+<p>There are several ways to produce log files.
+The most commonly useful is enabling logging to a temporary directory, described first.</p>
+</div>
+<div class="paragraph">
+<p>Note: Client log files contain file and folder names, metadata, server urls and other private information.
+Only upload them if you are comfortable sharing the information.
+Logs are often essential for tracking down a problem though, so please consider providing them to developers privately.</p>
+</div>
+<div class="sect3">
+<h4 id="logging-to-a-temporary-directory"><a class="anchor" href="#logging-to-a-temporary-directory"></a>Logging to a Temporary Directory</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open the ownCloud Desktop Client.</p>
+</li>
+<li>
+<p>Press F12 or Ctrl-L or Cmd+L on your keyboard.</p>
+<div class="paragraph">
+<p><span class="image"><img src="_images/log_output_window.png" alt="The Log Output window opens."></span></p>
+</div>
+</li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="3">
+<li>
+<p>Enable the "Permanently save logs" checkbox.</p>
+</li>
+<li>
+<p>Look at its tooltip and take note of the directory the logs will be saved to.</p>
+</li>
+<li>
+<p>Navigate to this directory.</p>
+</li>
+<li>
+<p>Select the logs for the timeframe in which the issue occurred.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Note that the choice to enable logging will be persist across client restarts.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="saving-files-directly"><a class="anchor" href="#saving-files-directly"></a>Saving Files Directly</h4>
+<div class="paragraph">
+<p>The ownCloud client allows you to save log files directly to a custom file or directory.
+This is a useful option for easily reproducible problems, as well as for cases where you want logs to be saved to a different location.</p>
+</div>
+<div class="paragraph">
+<p>To save log files to a file or a directory:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>To save to a file, start the client using the <code>--logfile &lt;file&gt;</code> command, where <code>&lt;file&gt;</code> is the filename to which you want to save the file.</p>
+</li>
+<li>
+<p>To save to a directory, start the client using the <code>--logdir &lt;dir&gt;</code> command, where <code>&lt;dir&gt;</code> is an existing directory.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>When using the <code>--logdir</code> command, each sync run creates a new file.
+To limit the amount of data that accumulates over time, you can specify the <code>--logexpire &lt;hours&gt;</code> command.
+When combined with the <code>--logdir</code> command, the client automatically erases saved log data in the directory that is older than the specified number of hours.</p>
+</div>
+<div class="paragraph">
+<p>Adding the <code>--logdebug</code> flag increases the verbosity of the generated log files.</p>
+</div>
+<div class="paragraph">
+<p>As an example, to define a test where you keep log data for two days, you can issue the following command:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>owncloud --logdir /tmp/owncloud_logs --logexpire 48</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="owncloud-server-log-file"><a class="anchor" href="#owncloud-server-log-file"></a>ownCloud Server Log File</h3>
+<div class="paragraph">
+<p>The ownCloud server also maintains an ownCloud specific log file.
+This log file must be enabled through the ownCloud Administration page.
+On that page, you can adjust the log level.
+We recommend that when setting the log file level that you set it to a verbose level like <code>Debug</code> or <code>Info</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can view the server log file using the web interface or you can open it directly from the file system in the ownCloud server data directory.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="webserver-log-files"><a class="anchor" href="#webserver-log-files"></a>Webserver Log Files</h3>
+<div class="paragraph">
+<p>It can be helpful to view your webserver’s error log file to isolate any ownCloud-related problems.
+For Apache on Linux, the error logs are typically located in the <code>/var/log/apache2</code> directory.
+Some helpful files include the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>error_log</code> – Maintains errors associated with PHP code.</p>
+</li>
+<li>
+<p><code>access_log</code> – Typically records all requests handled by the server; very useful as a debugging tool because the log line contains information specific to each request and its result.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can find more information about Apache logging at <code><a href="http://httpd.apache.org/docs/current/logs.html" class="bare">http://httpd.apache.org/docs/current/logs.html</a></code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="core-dumps"><a class="anchor" href="#core-dumps"></a>Core Dumps</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>On macOS X and Linux systems, and in the unlikely event the client software crashes, the client is able to write a core dump file.
+Obtaining a core dump file can assist ownCloud Customer Support tremendously in the debugging process.</p>
+</div>
+<div class="paragraph">
+<p>To enable the writing of core dump files, you must define the <code>OWNCLOUD_CORE_DUMP</code> environment variable on the system.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>OWNCLOUD_CORE_DUMP=1 owncloud</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command starts the client with core dumping enabled and saves the files in the current working directory.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Core dump files can be fairly large.
+Before enabling core dumps on your system, ensure that you have enough disk space to accommodate these files.
+Also, due to their size, we strongly recommend that you properly compress any core dump files prior to sending them to ownCloud Customer Support.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</article>
+  </main>
+</div>
+<footer class="footer">
+<div class="container">
+   <div class="row-full">
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>About ownCloud</h4>
+          <ul id="menu-about" class="menu">
+            <li class="menu-enterprise"><a href="https://owncloud.com/">Enterprise</a></li>
+            <li class="menu-events"><a href="https://owncloud.org/events/">Events</a></li>
+            <li class="menu-news"><a href="https://owncloud.org/news/">News</a></li>
+            <li class="menu-privacy"><a href="https://owncloud.org/privacy-policy/">Privacy policy</a></li>
+            <li class="menu-imprint"><a href="https://owncloud.org/imprint/">Imprint</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Resources</h4>
+          <ul id="menu-support-and-documentation" class="menu">
+            <li class="menu-faq"><a href="https://owncloud.org/faq/">FAQ</a></li>
+            <li class="menu-help"><a href="https://owncloud.org/help/">Help</a></li>
+            <li class="menu-documentation"><a href="https://doc.owncloud.org">Documentation</a></li>
+            <li class="menu-security"><a href="https://owncloud.org/security/">Security</a></li>
+            <li class="menu-changelog"><a href="https://owncloud.org/changelog/">Changelog</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Interact</h4>
+          <ul id="menu-interact" class="menu">
+            <li class="menu-irc-channel"><a href="https://webchat.freenode.net/?channels=owncloud">IRC Channel</a></li>
+            <li class="menu-mailing-list"><a href="https://mailman.owncloud.org/mailman/listinfo/">Mailing List</a></li>
+            <li class="menu-forums"><a href="https://central.owncloud.org">Forums</a></li>
+            <li class="menu-bug-tracker"><a href="https://owncloud.org/community">Get involved</a></li>
+            <li class="menu-promote"><a href="https://owncloud.org/promote/">Discuss ownCloud with others</a></li>
+          </ul>
+        </div>
+     </div>
+   </div>
+   <p>
+     This page was built using the Antora default UI.<br />
+     The source code for this UI is licensed under the terms of the MPL-2.0 license.<br />
+     &copy; Copyright 2011-2018, The ownCloud developers.
+   </p>
+ </div>
+</footer>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+<link href="https://fonts.googleapis.com/css?family=Raleway|Roboto" rel="stylesheet">
+  </body>
+</html>

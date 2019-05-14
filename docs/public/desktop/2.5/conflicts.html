@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conflicts :: ownCloud Desktop Client Documentation</title>
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">ownCloud Desktop Client Documentation</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://owncloud.org/news/">News</a>
+        <a class="navbar-item" href="https://owncloud.org/features/">Features</a>
+        <a class="navbar-item" href="https://demo.owncloud.org/">Demo</a>
+        <a class="navbar-item" href="/">Documentation</a>
+        <a class="navbar-item" href="https://owncloud.org/contribute/">Contribute</a>
+        <a class="navbar-item" href="https://owncloud.org/support">Support</a>
+        <a class="navbar-item" href="https://owncloud.com/">Enterprise Edition</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="https://owncloud.org/install/">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="main-wrapper">
+<div class="navigation-container" data-component="desktop" data-version="2.5">
+  <aside class="navigation">
+    <div class="panels">
+<div class="navigation-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="introduction.html">Desktop Client</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installing.html">Installing the Desktop Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="navigating.html">Using the Synchronization Client</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="conflicts.html">Conflicts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Usage</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/options.html">Options</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/configuration_file.html">Configuration File</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/environment_variables.html">Environment Variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/command_line_client.html">Command-Line Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/low_disk_space.html">Low Disk Space</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="automatic_updater.html">The Automatic Updater</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="glossary.html">Glossary</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Appendices</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="building.html">Building the Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="architecture.html">History and Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Desktop Client</span>
+    <span class="version">2.5</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Desktop Client</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="introduction.html">2.5</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+  <main class="main">
+<div class="toolbar" role="navigation">
+  <button class="navigation-toggle"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="introduction.html">Desktop Client</a></li>
+    <li class="crumb"><a href="conflicts.html">Conflicts</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/settermjd/Workspace/clients/ownCloud/client/docs/modules/ROOT/pages/conflicts.adoc" rel="noopener noreferrer" target="_blank">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1>Conflicts</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#overview">Overview</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#uploading-conflicts-experimental">Uploading conflicts (experimental)</a></li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="overview"><a class="anchor" href="#overview"></a>Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The ownCloud desktop client uploads local changes and downloads remote changes.
+When a file has changed on the local side and on the remote between synchronization runs the client will be unable to resolve the situation on its own.
+It will create a conflict file with the local version, download the remote version and notify the user that a conflict occurred which needs attention.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="example"><a class="anchor" href="#example"></a>Example</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Imagine there is a file called <code>mydata.txt</code> your synchronized folder.
+It has not changed for a while and contains the text "contents" locally and remotely.
+Now, nearly at the same time you update it locally to say "local contents" while the file on the server gets updated to contain "remote contents" by someone else.</p>
+</div>
+<div class="paragraph">
+<p>When attempting to upload your local changes the desktop client will notice that the server version has also changed.
+It creates a conflict and you will now have two files on your local machine:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>mydata.txt</code> containing "remote contents"</p>
+</li>
+<li>
+<p><code>mydata (conflicted copy 2018-04-10 093612).txt</code> containing "local contents"</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this situation the file <code>mydata.txt</code> has the remote changes (and will continue to be updated with further remote changes when they happen), but your local adjustments have not been sent to the server (unless the server enables conflict uploading, see below).</p>
+</div>
+<div class="paragraph">
+<p>The desktop client notifies you of this situation via system notifications, the system tray icon and a yellow "unresolved conflicts" badge in the account settings window.
+Clicking this badge shows a list that includes the unresolved conflicts and clicking one of them opens an explorer window pointing at the relevant file.</p>
+</div>
+<div class="paragraph">
+<p>To resolve this conflict, open both files, compare the differences and copy your local changes from the "conflicted copy" file into the base file where applicable.
+In this example you might change <code>mydata.txt</code> to say "local and remote contents" and delete the file with "conflicted copy" in its name.
+With that, the conflict is resolved.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="uploading-conflicts-experimental"><a class="anchor" href="#uploading-conflicts-experimental"></a>Uploading conflicts (experimental)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default the conflict file (the file with "conflicted copy" in its name that contains your local conflicting changes) is not uploaded to the server.
+The idea is that you, the author of the changes, are the best person for resolving the conflict and showing the conflict to other users might create confusion.</p>
+</div>
+<div class="paragraph">
+<p>However, in some scenarios it makes a lot of sense to upload these conflicting changes such that local work can become visible even if the conflict won’t be resolved immediately.</p>
+</div>
+<div class="paragraph">
+<p>In the future there might be a server-wide switch for this behavior.
+For now it can already be tested by setting the environment variable <code>OWNCLOUD_UPLOAD_CONFLICT_FILES=1</code>.</p>
+</div>
+</div>
+</div>
+</article>
+  </main>
+</div>
+<footer class="footer">
+<div class="container">
+   <div class="row-full">
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>About ownCloud</h4>
+          <ul id="menu-about" class="menu">
+            <li class="menu-enterprise"><a href="https://owncloud.com/">Enterprise</a></li>
+            <li class="menu-events"><a href="https://owncloud.org/events/">Events</a></li>
+            <li class="menu-news"><a href="https://owncloud.org/news/">News</a></li>
+            <li class="menu-privacy"><a href="https://owncloud.org/privacy-policy/">Privacy policy</a></li>
+            <li class="menu-imprint"><a href="https://owncloud.org/imprint/">Imprint</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Resources</h4>
+          <ul id="menu-support-and-documentation" class="menu">
+            <li class="menu-faq"><a href="https://owncloud.org/faq/">FAQ</a></li>
+            <li class="menu-help"><a href="https://owncloud.org/help/">Help</a></li>
+            <li class="menu-documentation"><a href="https://doc.owncloud.org">Documentation</a></li>
+            <li class="menu-security"><a href="https://owncloud.org/security/">Security</a></li>
+            <li class="menu-changelog"><a href="https://owncloud.org/changelog/">Changelog</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Interact</h4>
+          <ul id="menu-interact" class="menu">
+            <li class="menu-irc-channel"><a href="https://webchat.freenode.net/?channels=owncloud">IRC Channel</a></li>
+            <li class="menu-mailing-list"><a href="https://mailman.owncloud.org/mailman/listinfo/">Mailing List</a></li>
+            <li class="menu-forums"><a href="https://central.owncloud.org">Forums</a></li>
+            <li class="menu-bug-tracker"><a href="https://owncloud.org/community">Get involved</a></li>
+            <li class="menu-promote"><a href="https://owncloud.org/promote/">Discuss ownCloud with others</a></li>
+          </ul>
+        </div>
+     </div>
+   </div>
+   <p>
+     This page was built using the Antora default UI.<br />
+     The source code for this UI is licensed under the terms of the MPL-2.0 license.<br />
+     &copy; Copyright 2011-2018, The ownCloud developers.
+   </p>
+ </div>
+</footer>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+<link href="https://fonts.googleapis.com/css?family=Raleway|Roboto" rel="stylesheet">
+  </body>
+</html>

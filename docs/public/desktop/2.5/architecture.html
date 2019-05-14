@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix B: History and Architecture :: ownCloud Desktop Client Documentation</title>
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">ownCloud Desktop Client Documentation</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://owncloud.org/news/">News</a>
+        <a class="navbar-item" href="https://owncloud.org/features/">Features</a>
+        <a class="navbar-item" href="https://demo.owncloud.org/">Demo</a>
+        <a class="navbar-item" href="/">Documentation</a>
+        <a class="navbar-item" href="https://owncloud.org/contribute/">Contribute</a>
+        <a class="navbar-item" href="https://owncloud.org/support">Support</a>
+        <a class="navbar-item" href="https://owncloud.com/">Enterprise Edition</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="https://owncloud.org/install/">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="main-wrapper">
+<div class="navigation-container" data-component="desktop" data-version="2.5">
+  <aside class="navigation">
+    <div class="panels">
+<div class="navigation-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="introduction.html">Desktop Client</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installing.html">Installing the Desktop Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="navigating.html">Using the Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="conflicts.html">Conflicts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Usage</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/options.html">Options</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/configuration_file.html">Configuration File</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/environment_variables.html">Environment Variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/command_line_client.html">Command-Line Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/low_disk_space.html">Low Disk Space</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="automatic_updater.html">The Automatic Updater</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="glossary.html">Glossary</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Appendices</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="building.html">Building the Client</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="architecture.html">History and Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Desktop Client</span>
+    <span class="version">2.5</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Desktop Client</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="introduction.html">2.5</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+  <main class="main">
+<div class="toolbar" role="navigation">
+  <button class="navigation-toggle"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="introduction.html">Desktop Client</a></li>
+    <li class="crumb">Appendices</li>
+    <li class="crumb"><a href="architecture.html">History and Architecture</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/settermjd/Workspace/clients/ownCloud/client/docs/modules/ROOT/pages/architecture.adoc" rel="noopener noreferrer" target="_blank">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1>Appendix B: History and Architecture</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#the-synchronization-process">The Synchronization Process</a></li>
+<li><a href="#synchronization-by-time-versus-etag">Synchronization by Time versus ETag</a></li>
+<li><a href="#comparison-and-conflict-cases">Comparison and Conflict Cases</a></li>
+<li><a href="#checksum-algorithm-negotiation">Checksum Algorithm Negotiation</a>
+<ul class="sectlevel2">
+<li><a href="#upload">Upload</a></li>
+<li><a href="#chunked-upload">Chunked Upload</a></li>
+<li><a href="#download">Download</a></li>
+</ul>
+</li>
+<li><a href="#ignored-files">Ignored Files</a></li>
+<li><a href="#the-sync-journal">The Sync Journal</a></li>
+<li><a href="#custom-webdav-properties">Custom WebDAV Properties</a></li>
+<li><a href="#server-side-permissions">Server Side Permissions</a></li>
+<li><a href="#file-or-directory-size">File or Directory Size</a></li>
+<li><a href="#fileid">FileID</a></li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>ownCloud provides desktop sync clients to synchronize the contents of local directories from computers, tablets, and handheld devices to the ownCloud server.</p>
+</div>
+<div class="paragraph">
+<p>Synchronization is accomplished using <a href="http://www.csync.org">csync</a>, a bidirectional file synchronizing tool that provides both a command line client as well as a library.
+A special module for csync was written to synchronize with the ownCloud built-in WebDAV server.</p>
+</div>
+<div class="paragraph">
+<p>The ownCloud Client software is written in C++ using the <a href="http://www.qt-project.org">Qt Framework</a>.
+As a result, the ownCloud Client runs on Linux, Windows, and MacOS.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-synchronization-process"><a class="anchor" href="#the-synchronization-process"></a>The Synchronization Process</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The process of synchronization keeps files in two separate repositories the same.
+When synchronized:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If a file is added to one repository it is copied to the other synchronized repository.</p>
+</li>
+<li>
+<p>When a file is changed in one repository, the change is propagated to any other synchronized repository.</p>
+</li>
+<li>
+<p>If a file is deleted in one repository, it is deleted in any other.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It is important to note that the ownCloud synchronization process does not use a typical client/server system where the server is always master.
+This is a major difference between the ownCloud synchronization process and other systems like a file backup, where only changes to files or folders and the addition of new files are propagated, but these files and folders are never deleted unless explicitly deleted in the backup.</p>
+</div>
+<div class="paragraph">
+<p>During synchronization, the ownCloud Client checks both repositories for changes frequently.
+This process is referred to as a <em>sync run</em>.
+In between sync runs, the local repository is monitored by a file system monitoring process that starts a sync run immediately if something was edited, added, or removed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="synchronization-by-time-versus-etag"><a class="anchor" href="#synchronization-by-time-versus-etag"></a>Synchronization by Time versus ETag</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Until the release of ownCloud 4.5 and ownCloud Client 1.1, the ownCloud synchronization process employed a single file property – the file modification time – to decide which file was newer and needed to be synchronized to the other repository.</p>
+</div>
+<div class="paragraph">
+<p>The <em>modification timestamp</em> is part of the files metadata.
+It is available on every relevant filesystem and is the typical indicator for a file change.
+Modification timestamps do not require special action to create, and have a general meaning.
+One design goal of csync is to not require a special server component.
+This design goal is why csync was chosen as the backend component.</p>
+</div>
+<div class="paragraph">
+<p>To compare the modification times of two files from different systems, csync must operate on the same base.
+Before ownCloud Client version 1.1.0, csync required both device repositories to run on the exact same time.
+This requirement was achieved through the use of enterprise standard <a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP time synchronization</a> on all machines.</p>
+</div>
+<div class="paragraph">
+<p>Because this timing strategy is rather fragile without the use of NTP, ownCloud 4.5 introduced a unique number (for each file?) that changes whenever the file changes.
+Although this number is a unique value, it is not a hash of the file.
+Instead, it is a randomly chosen number, that is transmitted in the <a href="http://en.wikipedia.org/wiki/HTTP_ETag">Etag</a> field.
+Because the file number changes if the file changes, its use is guaranteed to determine if one of the files has changed and, thereby, launching a synchronization process.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+ownCloud Client release 1.1 and later requires file ID capabilities on the ownCloud server.
+Servers that run with release earlier than 4.5.0 do not support using the file ID functionality.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Before the 1.3.0 release of the Desktop Client, the synchronization process might create false conflict files if time deviates.
+Original and changed files conflict only in their timestamp, but not in their content.
+This behavior was changed to employ a binary check if files differ.</p>
+</div>
+<div class="paragraph">
+<p>Like files, directories also hold a unique ID that changes whenever one of the contained files or directories is modified.
+Because this is a recursive process, it significantly reduces the effort required for a synchronization cycle, because the client only analyzes directories with a modified ID.</p>
+</div>
+<div class="paragraph">
+<p>The following table outlines the different synchronization methods used, depending on server/client combination:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 97%;">
+<colgroup>
+<col style="width: 31%;">
+<col style="width: 28%;">
+<col style="width: 41%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Server Version</th>
+<th class="tableblock halign-left valign-top">Client Version</th>
+<th class="tableblock halign-left valign-top">Sync Methods</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.0.x or earlier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.0.5 or earlier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time Stamp</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.0.x or earlier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.1 or later</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">n/a (incompatible)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.5 or later</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.0.5 or earlier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time Stamp</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.5 or later</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.1 or later</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File ID, Time Stamp</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>We strongly recommend using ownCloud Server release 4.5 or later when using ownCloud Client 1.1 or later.
+Using an incompatible time stamp-based synchronization mechanism can lead to data loss in rare cases, especially when multiple clients are involved and one utilizes a non-synchronized NTP time.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="comparison-and-conflict-cases"><a class="anchor" href="#comparison-and-conflict-cases"></a>Comparison and Conflict Cases</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As mentioned above, during a <em>sync run</em> the client must first detect if one of the two repositories have changed files.
+On the local repository, the client traverses the file tree and compares the modification time of each file with an expected value stored in its database.
+If the value is not the same, the client determines that the file has been modified in the local repository.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+On the local side, the modification time is a good attribute to use for detecting changes, because the value does not depend on time shifts and such.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For the remote (that is, ownCloud server) repository, the client compares the ETag of each file with its expected value.
+Again, the expected ETag value is queried from the client database.
+If the ETag is the same, the file has not changed and no synchronization occurs.</p>
+</div>
+<div class="paragraph">
+<p>In the event a file has changed on both the local and the remote repository since the last sync run, it can not easily be decided which version of the file is the one that should be used.
+However, changes to any side will not be lost.
+Instead, a <em>conflict case</em> is created.
+The client resolves this conflict by renaming the local file, appending a conflict label and timestamp, and saving the remote file under the original file name.</p>
+</div>
+<div class="paragraph">
+<p>Example: Assume there is a conflict in message.txt because its contents have changed both locally and remotely since the last sync run.
+The local file with the local changes will be renamed to <code>message (conflicted copy 2016-01-01 153110).txt</code> and the remote file will be downloaded and saved as message.txt.</p>
+</div>
+<div class="paragraph">
+<p>Conflict files are always created on the client and never on the server.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="checksum-algorithm-negotiation"><a class="anchor" href="#checksum-algorithm-negotiation"></a>Checksum Algorithm Negotiation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In ownCloud 10.0 we implemented a checksum feature which checks the file integrity on upload and download by computing a checksum after the file transfer finishes.
+The client queries the server capabilities after login to decide which checksum algorithm to use.
+Currently, SHA1 is hard-coded in the official server release and can’t be changed by the end-user.
+Note that the server additionally also supports MD5 and Adler-32, but the desktop client will always use the checksum algorithm announced in the capabilities:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">GET http://localhost:8000/ocs/v1.php/cloud/capabilities?format=json</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+    "ocs":{
+        "meta":{
+            "status":"ok",
+            "statuscode":100,
+            "message":"OK",
+            "totalitems":"",
+            "itemsperpage":""
+        },
+        "data":{
+            "version":{
+                "major":10,
+                "minor":0,
+                "micro":0,
+                "string":"10.0.0 beta",
+                "edition":"Community"
+            },
+            "capabilities":{
+                "core":{
+                    "pollinterval":60,
+                    "webdav-root":"remote.php/webdav"
+                },
+                "dav":{
+                    "chunking":"1.0"
+                },
+                "files_sharing":{
+                    "api_enabled":true,
+                    "public":{
+                        "enabled":true,
+                        "password":{
+                            "enforced":false
+                        },
+                        "expire_date":{
+                            "enabled":false
+                        },
+                        "send_mail":false,
+                        "upload":true
+                    },
+                    "user":{
+                        "send_mail":false
+                    },
+                    "resharing":true,
+                    "group_sharing":true,
+                    "federation":{
+                        "outgoing":true,
+                        "incoming":true
+                    }
+                },
+                "checksums":{
+                    "supportedTypes":[
+                        "SHA1"
+                    ],
+                    "preferredUploadType":"SHA1"
+                },
+                "files":{
+                    "bigfilechunking":true,
+                    "blacklisted_files":[
+                        ".htaccess"
+                    ],
+                    "undelete":true,
+                    "versioning":true
+                }
+            }
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="upload"><a class="anchor" href="#upload"></a>Upload</h3>
+<div class="paragraph">
+<p>A checksum is calculated with the previously negotiated algorithm by the client and sent along with the file in an HTTP Header. <code>OC-Checksum: [algorithm]:[checksum]</code></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/checksums/client-activity.png" alt="image"></span></p>
+</div>
+<div class="paragraph">
+<p>During file upload, the server computes SHA1, MD5, and Adler-32 checksums and compares one of them to the checksum supplied by the client.</p>
+</div>
+<div class="paragraph">
+<p>On mismatch, the server returns HTTP Status code 400 (Bad Request) thus signaling the client that the upload failed.
+The server then discards the upload, and the client blacklists the file:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/checksums/testing-checksums.png" alt="image"></span></p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;d:error xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns"&gt;
+  &lt;s:exception&gt;Sabre\DAV\Exception\BadRequest&lt;/s:exception&gt;
+  &lt;s:message&gt;The computed checksum does not match the one received from the
+client.&lt;/s:message&gt;
+&lt;/d:error&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The client retries the upload using exponential back-off.
+On success (matching checksum) the computed checksums are stored by the server in <code>oc_filecache</code> alongside the file.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="chunked-upload"><a class="anchor" href="#chunked-upload"></a>Chunked Upload</h3>
+<div class="paragraph">
+<p>Mostly same as above.
+The checksum of the full file is sent with every chunk of the file.
+But the server only compares the checksum after receiving the checksum sent with the last chunk.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="download"><a class="anchor" href="#download"></a>Download</h3>
+<div class="paragraph">
+<p>The server sends the checksum in an HTTP header with the file. (same format as above).
+If no checksum is found in <code>oc_filecache</code> (freshly mounted external storage) it is computed and stored in <code>oc_filecache</code> on the first download.
+The checksum is then provided on all subsequent downloads but not on the first.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ignored-files"><a class="anchor" href="#ignored-files"></a>Ignored Files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The ownCloud Client supports the ability to exclude or ignore certain files from the synchronization process.
+Some system wide file patterns that are used to exclude or ignore files are included with the client by default and the ownCloud Client provides the ability to add custom patterns.</p>
+</div>
+<div class="paragraph">
+<p>By default, the ownCloud Client ignores the following files:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Files matched by one of the patterns defined in the Ignored Files Editor.</p>
+</li>
+<li>
+<p>Files starting with <code>.<em>sync</em>*.db*</code>, <code>.sync_*.db*</code>, <code>.csync_journal.db*</code>, <code>.owncloudsync.log*</code>, as these files are reserved for journalling.</p>
+</li>
+<li>
+<p>Files with a name longer than 254 characters.</p>
+</li>
+<li>
+<p>The file <code>Desktop.ini</code> in the root of a synced folder.</p>
+</li>
+<li>
+<p>Files matching the pattern <code><strong>_conflict-</strong></code> unless conflict file uploading is enabled.</p>
+</li>
+<li>
+<p>Files matching the pattern <code><strong>(conflicted copy</strong></code> unless conflict file uploading is enabled.</p>
+</li>
+<li>
+<p>Windows only: Files containing characters that do not work on typical Windows filesystems <code>(\</code>\, /, :, ?, *, ", &gt;, &lt;, |`)`.</p>
+</li>
+<li>
+<p>Windows only: Files with a trailing space or dot.</p>
+</li>
+<li>
+<p>Windows only: Filenames that are reserved on Windows.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If a pattern selected using a checkbox in <a href="visualtour.html#the-ignored-files-editor" class="page">the Ignored Files Editor</a> (or if a line in the exclude file starts with the character <code>]</code> directly followed by the file pattern), files matching the pattern are considered <em>fleeting meta data</em>.</p>
+</div>
+<div class="paragraph">
+<p>These files are ignored and <em>removed</em> by the client if found in the synchronized folder.
+This is suitable for meta files created by some applications that have no sustainable meaning.</p>
+</div>
+<div class="paragraph">
+<p>If a pattern ends with the forward slash (<code>/</code>) character, only directories are matched.
+The pattern is only applied for directory components of filenames selected using the checkbox.</p>
+</div>
+<div class="paragraph">
+<p>To match filenames against the exclude patterns, the UNIX standard C library function <code>fnmatch</code> is used.
+This process checks the filename against the specified pattern using standard shell wildcard pattern matching.
+For more information, please refer to <a href="http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01">The opengroup website</a>.</p>
+</div>
+<div class="paragraph">
+<p>The path that is checked is the relative path under the sync root directory.</p>
+</div>
+<div class="paragraph">
+<p><strong>Pattern and File Match Examples:</strong></p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 59%;">
+<colgroup>
+<col style="width: 28%;">
+<col style="width: 72%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Pattern</th>
+<th class="tableblock halign-left valign-top">File Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>~$*</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>~$foo</code>, <code>~$example.doc</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fl?p</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flip</code>, <code>flap</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>moo/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>map/moo/</code>, <code>moo/</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-sync-journal"><a class="anchor" href="#the-sync-journal"></a>The Sync Journal</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The client stores the ETag number in a per-directory database, called the <em>journal</em>.
+This database is a hidden file contained in the directory to be synchronized.</p>
+</div>
+<div class="paragraph">
+<p>If the journal database is removed, the ownCloud Client CSync backend rebuilds the database by comparing the files and their modification times.
+This process ensures that both server and client are synchronized using the appropriate NTP time before restarting the client following a database removal.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="custom-webdav-properties"><a class="anchor" href="#custom-webdav-properties"></a>Custom WebDAV Properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the communication between client and server a couple of custom WebDAV properties were introduced.
+They are either needed for sync functionality or help have a positive effect on synchronization performance.</p>
+</div>
+<div class="paragraph">
+<p>This chapter describes additional XML elements which the server returns in response to a successful PROPFIND request on a file or directory.
+The elements are returned in the namespace <code>oc</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="server-side-permissions"><a class="anchor" href="#server-side-permissions"></a>Server Side Permissions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The XML element <code>&lt;oc:permissions&gt;</code> represents the permission- and sharing state of the item.
+It is a list of characters, and each of the chars has a meaning as outlined in the table below:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 94%;">
+<colgroup>
+<col style="width: 11%;">
+<col style="width: 25%;">
+<col style="width: 64%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Resource</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File or Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">is shared</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File or Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can share (includes re-share)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File or Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">is mounted (like on Dropbox, Samba, etc.)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can write file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can create file in folder</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can create folder (mkdir)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File or Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can delete file or folder</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">N</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File or Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can rename file or folder</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">V</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File or Folder</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">can move file or folder</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&lt;oc:permissions&gt;RDNVCK&lt;/oc:permissions&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="file-or-directory-size"><a class="anchor" href="#file-or-directory-size"></a>File or Directory Size</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The XML element <code>&lt;oc:size&gt;</code> represents the file- or directory size in bytes.
+For directories, the size of the whole file tree underneath the directory is accumulated.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&lt;oc:size&gt;2429176697&lt;/oc:size&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="fileid"><a class="anchor" href="#fileid"></a>FileID</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The XML element <code>&lt;oc:id&gt;</code> represents the so called file ID.
+It is a non volatile string id that stays constant as long as the file exists.
+It is not changed if the file changes or is renamed or moved.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&lt;oc:id&gt;00000020oc5cfy6qqizm&lt;/oc:id&gt;</pre>
+</div>
+</div>
+</div>
+</div>
+</article>
+  </main>
+</div>
+<footer class="footer">
+<div class="container">
+   <div class="row-full">
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>About ownCloud</h4>
+          <ul id="menu-about" class="menu">
+            <li class="menu-enterprise"><a href="https://owncloud.com/">Enterprise</a></li>
+            <li class="menu-events"><a href="https://owncloud.org/events/">Events</a></li>
+            <li class="menu-news"><a href="https://owncloud.org/news/">News</a></li>
+            <li class="menu-privacy"><a href="https://owncloud.org/privacy-policy/">Privacy policy</a></li>
+            <li class="menu-imprint"><a href="https://owncloud.org/imprint/">Imprint</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Resources</h4>
+          <ul id="menu-support-and-documentation" class="menu">
+            <li class="menu-faq"><a href="https://owncloud.org/faq/">FAQ</a></li>
+            <li class="menu-help"><a href="https://owncloud.org/help/">Help</a></li>
+            <li class="menu-documentation"><a href="https://doc.owncloud.org">Documentation</a></li>
+            <li class="menu-security"><a href="https://owncloud.org/security/">Security</a></li>
+            <li class="menu-changelog"><a href="https://owncloud.org/changelog/">Changelog</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Interact</h4>
+          <ul id="menu-interact" class="menu">
+            <li class="menu-irc-channel"><a href="https://webchat.freenode.net/?channels=owncloud">IRC Channel</a></li>
+            <li class="menu-mailing-list"><a href="https://mailman.owncloud.org/mailman/listinfo/">Mailing List</a></li>
+            <li class="menu-forums"><a href="https://central.owncloud.org">Forums</a></li>
+            <li class="menu-bug-tracker"><a href="https://owncloud.org/community">Get involved</a></li>
+            <li class="menu-promote"><a href="https://owncloud.org/promote/">Discuss ownCloud with others</a></li>
+          </ul>
+        </div>
+     </div>
+   </div>
+   <p>
+     This page was built using the Antora default UI.<br />
+     The source code for this UI is licensed under the terms of the MPL-2.0 license.<br />
+     &copy; Copyright 2011-2018, The ownCloud developers.
+   </p>
+ </div>
+</footer>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+<link href="https://fonts.googleapis.com/css?family=Raleway|Roboto" rel="stylesheet">
+  </body>
+</html>

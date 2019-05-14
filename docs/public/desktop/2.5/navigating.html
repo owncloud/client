@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using the Synchronization Client :: ownCloud Desktop Client Documentation</title>
+    <meta name="generator" content="Antora 2.0.0">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+
+  </head>
+  <body class="article">
+<header class="header" role="banner">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="../..">ownCloud Desktop Client Documentation</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://owncloud.org/news/">News</a>
+        <a class="navbar-item" href="https://owncloud.org/features/">Features</a>
+        <a class="navbar-item" href="https://demo.owncloud.org/">Demo</a>
+        <a class="navbar-item" href="/">Documentation</a>
+        <a class="navbar-item" href="https://owncloud.org/contribute/">Contribute</a>
+        <a class="navbar-item" href="https://owncloud.org/support">Support</a>
+        <a class="navbar-item" href="https://owncloud.com/">Enterprise Edition</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button is-primary" href="https://owncloud.org/install/">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="main-wrapper">
+<div class="navigation-container" data-component="desktop" data-version="2.5">
+  <aside class="navigation">
+    <div class="panels">
+<div class="navigation-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="introduction.html">Desktop Client</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="introduction.html">Introduction</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installing.html">Installing the Desktop Synchronization Client</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="navigating.html">Using the Synchronization Client</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="conflicts.html">Conflicts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Advanced Usage</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/options.html">Options</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/configuration_file.html">Configuration File</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/environment_variables.html">Environment Variables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/command_line_client.html">Command-Line Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="advanced_usage/low_disk_space.html">Low Disk Space</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="automatic_updater.html">The Automatic Updater</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="glossary.html">Glossary</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-toggle"></button>
+    <span class="nav-text">Appendices</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="building.html">Building the Client</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="architecture.html">History and Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="troubleshooting.html">Troubleshooting</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="navigation-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Desktop Client</span>
+    <span class="version">2.5</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">Desktop Client</span>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="introduction.html">2.5</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+  <main class="main">
+<div class="toolbar" role="navigation">
+  <button class="navigation-toggle"></button>
+<nav class="crumbs" aria-label="breadcrumbs">
+  <ul>
+    <li class="crumb"><a href="introduction.html">Desktop Client</a></li>
+    <li class="crumb"><a href="navigating.html">Using the Synchronization Client</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="file:///Users/settermjd/Workspace/clients/ownCloud/client/docs/modules/ROOT/pages/navigating.adoc" rel="noopener noreferrer" target="_blank">Edit this Page</a></div>
+</div>
+<article class="doc">
+<h1>Using the Synchronization Client</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#systray-icon">Systray Icon</a>
+<ul class="sectlevel2">
+<li><a href="#configuring-owncloud-account-settings">Configuring ownCloud Account Settings</a></li>
+<li><a href="#adding-new-accounts">Adding New Accounts</a></li>
+</ul>
+</li>
+<li><a href="#file-manager-overlay-icons">File Manager Overlay Icons</a></li>
+<li><a href="#sharing-from-your-desktop">Sharing From Your Desktop</a></li>
+<li><a href="#activity-window">Activity Window</a></li>
+<li><a href="#server-notifications">Server Notifications</a></li>
+<li><a href="#general-window">General Window</a></li>
+<li><a href="#using-the-network-window">Using the Network Window</a></li>
+<li><a href="#using-the-ignored-files-editor">Using the Ignored Files Editor</a></li>
+</ul>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The ownCloud Desktop Client remains in the background and is visible as an icon in the system tray (Windows, KDE), menu bar (macOS), or notification area (Linux).</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/icon.png" alt="Status icon" width="little cloud with green circle and white checkmark"></span></p>
+</div>
+<div class="paragraph">
+<p>The status indicator uses icons to indicate the current status of your synchronization.
+The green circle with the white checkmark tells you that your synchronization is current and you are connected to your ownCloud server.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/icon-syncing.png" alt="Status icon" width="little cloud with blue circle and white semi-circles"></span></p>
+</div>
+<div class="paragraph">
+<p>The blue icon with the white semi-circles means synchronization is in progress.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/icon-paused.png" alt="Status icon" width="little cloud with yellow circle and vertical parallel lines"></span></p>
+</div>
+<div class="paragraph">
+<p>The yellow icon with the parallel lines tells you your synchronization has been paused. (Most likely by you.)</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/icon-offline.png" alt="Status icon" width="little gray cloud with gray circle and three horizontal white dots"></span></p>
+</div>
+<div class="paragraph">
+<p>The gray icon with three white dots means your sync client has lost its connection with your ownCloud server.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/icon-information.png" alt="Status icon" width="little cloud with letter "i" in white circle"></span></p>
+</div>
+<div class="paragraph">
+<p>When you see a white circle with the letter "i" that is the informational icon, so you should click it to see what it has to tell you.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/icon-error.png" alt="Status icon" width="little cloud with red circle and white x"></span></p>
+</div>
+<div class="paragraph">
+<p>The red circle with the white "x" indicates a configuration error, such as an incorrect login or server URL.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="systray-icon"><a class="anchor" href="#systray-icon"></a>Systray Icon</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A right-click on the systray icon opens a menu for quick access to multiple operations.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/menu.png" alt="the right-click sync client menu"></span></p>
+</div>
+<div class="paragraph">
+<p>This menu provides the following options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Quick access to your accounts</p>
+</li>
+<li>
+<p>Sync status</p>
+</li>
+<li>
+<p>Recent Changes, showing latest activities</p>
+</li>
+<li>
+<p>Settings</p>
+</li>
+<li>
+<p>Help menu</p>
+</li>
+<li>
+<p>Pause synchronizations</p>
+</li>
+<li>
+<p>An option to log in or log out of all of your accounts at once</p>
+</li>
+<li>
+<p>Quit ownCloud, logging out and closing the client</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A left-click on your systray icon opens the desktop client to the account settings window.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/client6.png" alt="Account settings window"></span></p>
+</div>
+<div class="sect2">
+<h3 id="configuring-owncloud-account-settings"><a class="anchor" href="#configuring-owncloud-account-settings"></a>Configuring ownCloud Account Settings</h3>
+<div class="paragraph">
+<p>At the top of the window are tabs for each configured sync account, and three others for Activity, General and Network settings.
+On your account tabs you have the following features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Connection status, showing which ownCloud server you are connected to, and your ownCloud username.</p>
+</li>
+<li>
+<p>An <strong>Account</strong> button, which contains a dropdown menu with <strong>Add New</strong>, <strong>Log Out</strong>, and <strong>Remove</strong>.</p>
+</li>
+<li>
+<p>Used and available space on the server.</p>
+</li>
+<li>
+<p>Current synchronization status.</p>
+</li>
+<li>
+<p><strong>Add Folder Sync Connection</strong> button.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The little button with three dots (the overflow menu) that sits to the right of the sync status bar offers four additional options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Open Folder</p>
+</li>
+<li>
+<p>Choose What to Sync (This appears only when your file tree is collapsed, and expands the file tree)</p>
+</li>
+<li>
+<p>Pause Sync / Resume Sync</p>
+</li>
+<li>
+<p>Remove folder sync connection</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Open Folder</strong> opens your local ownCloud sync folder.</p>
+</div>
+<div class="paragraph">
+<p><strong>Pause Sync</strong> pauses sync operations without making any changes to your account.
+It will continue to update file and folder lists, without downloading or updating files.
+To stop all sync activity use <strong>Remove Folder Sync Connection</strong>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/client-7.png" alt="Extra options for sync operations"></span></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+ownCloud does not preserve the mtime (modification time) of directories, though it does update the mtimes on files.
+See <a href="https://github.com/owncloud/core/issues/7009">Wrong folder date when syncing</a> for discussion of this.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="adding-new-accounts"><a class="anchor" href="#adding-new-accounts"></a>Adding New Accounts</h3>
+<div class="paragraph">
+<p>You may configure multiple ownCloud accounts in your desktop sync client.
+Simply click the <strong>Account</strong> &gt; <strong>Add New</strong> button on any account tab to add a new account, and then follow the account creation wizard.
+The new account will appear as a new tab in the settings dialog, where you can adjust its settings at any time.
+Use <strong>Account</strong> &gt; <strong>Remove</strong> to delete accounts.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="file-manager-overlay-icons"><a class="anchor" href="#file-manager-overlay-icons"></a>File Manager Overlay Icons</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The ownCloud sync client provides overlay icons, in addition to the normal file type icons, for your system file manager (Explorer on Windows, Finder on Mac and Nautilus on Linux) to indicate the sync status of your ownCloud files.</p>
+</div>
+<div class="paragraph">
+<p>The overlay icons are similar to the systray icons introduced above.
+They behave differently on files and directories according to sync status and errors.</p>
+</div>
+<div class="paragraph">
+<p>The overlay icon of an individual file indicates its current sync state.
+If the file is in sync with the server version, it displays a green checkmark.</p>
+</div>
+<div class="paragraph">
+<p>If the file is ignored from syncing, for example because it is on your exclude list, or because it is a symbolic link, it displays a warning icon.</p>
+</div>
+<div class="paragraph">
+<p>If there is a sync error, or the file is blacklisted, it displays an eye-catching red X.</p>
+</div>
+<div class="paragraph">
+<p>If the file is waiting to be synced, or is currently syncing, the overlay icon displays a blue cycling icon.</p>
+</div>
+<div class="paragraph">
+<p>When the client is offline, no icons are shown to reflect that the folder is currently out of sync and no changes are synced to the server.</p>
+</div>
+<div class="paragraph">
+<p>The overlay icon of a synced directory indicates the status of the files in the directory.
+If there are any sync errors, the directory is marked with a warning icon.</p>
+</div>
+<div class="paragraph">
+<p>If a directory includes ignored files that are marked with warning icons that does not change the status of the parent directories.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sharing-from-your-desktop"><a class="anchor" href="#sharing-from-your-desktop"></a>Sharing From Your Desktop</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The ownCloud desktop sync client integrates with your file manager: Finder on macOS X, Explorer on Windows, and Nautilus on Linux. (Linux users must install the <code>owncloud-client-nautilus</code> plugin.) You can create share links, and share with internal ownCloud users the same way as in your ownCloud Web interface.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/mac-share.png" alt="Sync client integration in Windows Explorer."></span></p>
+</div>
+<div class="paragraph">
+<p>Right-click your systray icon, hover over the account you want to use, and left-click "Open folder [folder name] to quickly enter your local ownCloud folder.
+Right-click the file or folder you want to share to expose the share dialog, and click <strong>Share with ownCloud</strong>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/share-1.png" alt="Sharing from Windows Explorer."></span></p>
+</div>
+<div class="paragraph">
+<p>The share dialog has all the same options as your ownCloud Web interface.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/share-2.png" alt="Share dialog in Windows Explorer."></span></p>
+</div>
+<div class="paragraph">
+<p>Use <strong>Share with ownCloud</strong> to see who you have shared with, and to modify their permissions, or to delete the share.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="activity-window"><a class="anchor" href="#activity-window"></a>Activity Window</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Activity window contains the log of your recent activities, organized over three tabs: <strong>Server Activities</strong>, which includes new shares and files downloaded and deleted, <strong>Sync Protocol</strong>, which displays local activities such as which local folders your files went into, and <strong>Not Synced</strong> shows errors such as files not synced.
+Double clicking an entry pointing to an existing file in <strong>Server Activities</strong> or <strong>Sync Protocol</strong> will open the folder containing the file and highlight it.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/client-8.png" alt="Activity windows logs all server and client activities."></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="server-notifications"><a class="anchor" href="#server-notifications"></a>Server Notifications</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Starting with version 2.2.0, the client will display notifications from your ownCloud server that require manual interaction by you.
+For example, when a user on a remote ownCloud creates a new Federated share for you, you can accept it from your desktop client.</p>
+</div>
+<div class="paragraph">
+<p>The desktop client automatically checks for available notifications automatically on a regular basis.
+Notifications are displayed in the Server Activity tab, and if you have <strong>Show Desktop Notifications</strong> enabled (General tab) you’ll also see a systray notification.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/client12.png" alt="Activity window with notification."></span></p>
+</div>
+<div class="paragraph">
+<p>This also displays notifications sent to users by the ownCloud admin via the Announcements app.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="general-window"><a class="anchor" href="#general-window"></a>General Window</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The General window has configuration options such as <strong>Launch on System Startup</strong>, <strong>Use Monochrome Icons</strong>, and <strong>Show Desktop Notifications</strong>.
+This is where you will find the <strong>Edit Ignored Files</strong> button, to launch the ignored files editor, and <strong>Ask confirmation before downloading folders larger than [folder size]</strong>.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/client-9.png" alt="General window contains configuration options."></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-the-network-window"><a class="anchor" href="#using-the-network-window"></a>Using the Network Window</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Network settings window enables you to define network proxy settings, and also to limit download and upload bandwidth.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/settings_network.png" alt="image"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-the-ignored-files-editor"><a class="anchor" href="#using-the-ignored-files-editor"></a>Using the Ignored Files Editor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You might have some local files or directories that you do not want to backup and store on the server.
+To identify and exclude these files or directories, you can use the <em>Ignored Files Editor</em> (General tab.)</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="_images/ignored_files_editor.png" alt="image"></span></p>
+</div>
+<div class="paragraph">
+<p>For your convenience, the editor is pre-populated with a default list of typical ignore patterns.
+These patterns are contained in a system file (typically <code>sync-exclude.lst</code>) located in the ownCloud Client application directory.
+You cannot modify these pre-populated patterns directly from the editor.
+However, if necessary, you can hover over any pattern in the list to show the path and filename associated with that pattern, locate the file, and edit the <code>sync-exclude.lst</code> file.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Modifying the global exclude definition file might render the client unusable or result in undesired behavior.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each line in the editor contains an ignore pattern string.
+When creating custom patterns, in addition to being able to use normal characters to define an ignore pattern, you can use wildcards characters for matching values.
+As an example, you can use an asterisk (<code>*</code>) to identify an arbitrary number of characters or a question mark (<code>?</code>) to identify a single character.</p>
+</div>
+<div class="paragraph">
+<p>Patterns that end with a slash character (<code>/</code>) are applied to only directory components of the path being checked.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Custom entries are currently not validated for syntactical correctness by the editor, so you will not see any warnings for bad syntax.
+If your synchronization does not work as you expected, check your syntax.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each pattern string in the list is preceded by a checkbox.
+When the check box contains a check mark, in addition to ignoring the file or directory component matched by the pattern, any matched files are also deemed "fleeting metadata" and removed by the client.</p>
+</div>
+<div class="paragraph">
+<p>In addition to excluding files and directories that use patterns defined in this list:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The ownCloud Client always excludes files containing characters that cannot be synchronized to other file systems.</p>
+</li>
+<li>
+<p>Files are removed that cause individual errors three times during a synchronization.
+However, the client provides the option of retrying a synchronization three additional times on files that produce errors.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For more detailed information see <a href="architecture.html#ignored-files" class="page">the ignored files documentation</a>.</p>
+</div>
+</div>
+</div>
+</article>
+  </main>
+</div>
+<footer class="footer">
+<div class="container">
+   <div class="row-full">
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>About ownCloud</h4>
+          <ul id="menu-about" class="menu">
+            <li class="menu-enterprise"><a href="https://owncloud.com/">Enterprise</a></li>
+            <li class="menu-events"><a href="https://owncloud.org/events/">Events</a></li>
+            <li class="menu-news"><a href="https://owncloud.org/news/">News</a></li>
+            <li class="menu-privacy"><a href="https://owncloud.org/privacy-policy/">Privacy policy</a></li>
+            <li class="menu-imprint"><a href="https://owncloud.org/imprint/">Imprint</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Resources</h4>
+          <ul id="menu-support-and-documentation" class="menu">
+            <li class="menu-faq"><a href="https://owncloud.org/faq/">FAQ</a></li>
+            <li class="menu-help"><a href="https://owncloud.org/help/">Help</a></li>
+            <li class="menu-documentation"><a href="https://doc.owncloud.org">Documentation</a></li>
+            <li class="menu-security"><a href="https://owncloud.org/security/">Security</a></li>
+            <li class="menu-changelog"><a href="https://owncloud.org/changelog/">Changelog</a></li>
+          </ul>
+        </div>
+     </div>
+     <div class="col-third">
+        <div class="footer-nav">
+          <h4>Interact</h4>
+          <ul id="menu-interact" class="menu">
+            <li class="menu-irc-channel"><a href="https://webchat.freenode.net/?channels=owncloud">IRC Channel</a></li>
+            <li class="menu-mailing-list"><a href="https://mailman.owncloud.org/mailman/listinfo/">Mailing List</a></li>
+            <li class="menu-forums"><a href="https://central.owncloud.org">Forums</a></li>
+            <li class="menu-bug-tracker"><a href="https://owncloud.org/community">Get involved</a></li>
+            <li class="menu-promote"><a href="https://owncloud.org/promote/">Discuss ownCloud with others</a></li>
+          </ul>
+        </div>
+     </div>
+   </div>
+   <p>
+     This page was built using the Antora default UI.<br />
+     The source code for this UI is licensed under the terms of the MPL-2.0 license.<br />
+     &copy; Copyright 2011-2018, The ownCloud developers.
+   </p>
+ </div>
+</footer>
+<script src="../../assets/js/site.js"></script>
+<script src="../../assets/js/vendor/highlight.js"></script>
+<script>hljs.initHighlighting()</script>
+<link href="https://fonts.googleapis.com/css?family=Raleway|Roboto" rel="stylesheet">
+  </body>
+</html>

@@ -1,0 +1,6 @@
+name: desktop
+title: Desktop Client
+version: '2.5'
+start_page: ROOT:introduction.adoc
+nav:
+- modules/ROOT/nav.adoc
