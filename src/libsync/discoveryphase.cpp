@@ -321,6 +321,7 @@ static void propertyMapToRemoteInfo(const QMap<QString, QString> &map, RemoteInf
 
 void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, const QMap<QString, QString> &map)
 {
+    qDebug() << Q_FUNC_INFO << _ignoredFirst << file << map;
     if (!_ignoredFirst) {
         // The first entry is for the folder itself, we should process it differently.
         _ignoredFirst = true;
