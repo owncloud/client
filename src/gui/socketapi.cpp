@@ -1155,7 +1155,7 @@ void SocketApi::command_ASYNC_GET_WIDGET_PROPERTY(const QSharedPointer<SocketApi
         }
     }
 
-    job->resolve(value.toUtf8().constData());
+    job->resolve(value);
 }
 
 void SocketApi::command_ASYNC_SET_WIDGET_PROPERTY(const QSharedPointer<SocketApiJob> &job)
@@ -1169,7 +1169,8 @@ void SocketApi::command_ASYNC_SET_WIDGET_PROPERTY(const QSharedPointer<SocketApi
         return;
     }
     widget->setProperty(arguments["property"].toString().toUtf8().constData(),
-                        arguments["value"].toString().toUtf8().constData());
+                        arguments["value"]);
+
     job->resolve();
 }
 
