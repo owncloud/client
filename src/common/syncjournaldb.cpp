@@ -63,6 +63,7 @@ static void fillFileRecordFromGetQuery(SyncJournalFileRecord &rec, SqlQuery &que
     rec._fileSize = query.int64Value(7);
     rec._serverHasIgnoredFiles = (query.intValue(8) > 0);
     rec._checksumHeader = query.baValue(9);
+    rec._isAlwaysValid = true;
 }
 
 static QByteArray defaultJournalMode(const QString &dbPath)
@@ -366,8 +367,11 @@ bool SyncJournalDb::checkConnect()
                                     auto text = reinterpret_cast<const char*>(sqlite3_value_text(argv[0]));
                                     const char *end = std::strrchr(text, '/');
                                     if (!end) end = text;
-                                    sqlite3_result_int64(ctx, c_jhash64(reinterpret_cast<const uint8_t*>(text),
-                                                                        end - text, 0));
+                                    auto result = c_jhash64(reinterpret_cast<const uint8_t*>(text), end - text, 0);
+                                    // The path "" has a null parent_hash
+                                    if (text[0] == '\0')
+                                        result = 0;
+                                    sqlite3_result_int64(ctx, result);
                                 }, nullptr, nullptr);
 
     /* Because insert is so slow, we do everything in a transaction, and only need one call to commit */
@@ -618,12 +622,22 @@ bool SyncJournalDb::checkConnect()
         return sqlFail("prepare _getErrorBlacklistQuery", _getErrorBlacklistQuery);
     }
 
+    // Create an entry for the root if it's missing
+    SyncJournalFileRecord rec;
+    getFileRecord(QByteArrayLiteral(""), &rec);
+    if (!rec.isValid()) {
+        rec._path = "";
+        rec._isAlwaysValid = true;
+        setFileRecord(rec);
+    }
+
     // don't start a new transaction now
     commitInternal(QString("checkConnect End"), false);
 
     // This avoid reading from the DB if we already know it is empty
     // thereby speeding up the initial discovery significantly.
-    _metadataTableIsEmpty = (getFileRecordCount() == 0);
+    // It's ok to start out ignoring the "root" folder entry.
+    _metadataTableIsEmpty = (getFileRecordCount() <= 1);
 
     // Hide 'em all!
     FileSystem::setFileHidden(databaseFilePath(), true);
@@ -990,6 +1004,7 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
     // Reset the output var in case the caller is reusing it.
     Q_ASSERT(rec);
     rec->_path.clear();
+    rec->_isAlwaysValid = false;
     Q_ASSERT(!rec->isValid());
 
     if (_metadataTableIsEmpty)
@@ -998,27 +1013,25 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
     if (!checkConnect())
         return false;
 
-    if (!filename.isEmpty()) {
-        if (!_getFileRecordQuery.initOrReset(QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE phash=?1"), _db))
-            return false;
+    if (!_getFileRecordQuery.initOrReset(QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE phash=?1"), _db))
+        return false;
 
-        _getFileRecordQuery.bindValue(1, getPHash(filename));
+    _getFileRecordQuery.bindValue(1, getPHash(filename));
 
-        if (!_getFileRecordQuery.exec()) {
-            close();
-            return false;
-        }
+    if (!_getFileRecordQuery.exec()) {
+        close();
+        return false;
+    }
 
-        auto next = _getFileRecordQuery.next();
-        if (!next.ok) {
-            QString err = _getFileRecordQuery.error();
-            qCWarning(lcDb) << "No journal entry found for " << filename << "Error: " << err;
-            close();
-            return false;
-        }
-        if (next.hasData) {
-            fillFileRecordFromGetQuery(*rec, _getFileRecordQuery);
-        }
+    auto next = _getFileRecordQuery.next();
+    if (!next.ok) {
+        QString err = _getFileRecordQuery.error();
+        qCWarning(lcDb) << "No journal entry found for " << filename << "Error: " << err;
+        close();
+        return false;
+    }
+    if (next.hasData) {
+        fillFileRecordFromGetQuery(*rec, _getFileRecordQuery);
     }
     return true;
 }
@@ -1030,6 +1043,7 @@ bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *r
     // Reset the output var in case the caller is reusing it.
     Q_ASSERT(rec);
     rec->_path.clear();
+    rec->_isAlwaysValid = false;
     Q_ASSERT(!rec->isValid());
 
     if (!inode || _metadataTableIsEmpty)
@@ -1038,7 +1052,7 @@ bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *r
     if (!checkConnect())
         return false;
 
-    if (!_getFileRecordQueryByInode.initOrReset(QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE inode=?1"), _db))
+    if (!_getFileRecordQueryByInode.initOrReset(QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE inode=?1 AND path != ''"), _db))
         return false;
 
     _getFileRecordQueryByInode.bindValue(1, inode);
@@ -1065,7 +1079,7 @@ bool SyncJournalDb::getFileRecordsByFileId(const QByteArray &fileId, const std::
     if (!checkConnect())
         return false;
 
-    if (!_getFileRecordQueryByFileId.initOrReset(QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE fileid=?1"), _db))
+    if (!_getFileRecordQueryByFileId.initOrReset(QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE fileid=?1 AND path != ''"), _db))
         return false;
 
     _getFileRecordQueryByFileId.bindValue(1, fileId);
@@ -1100,32 +1114,24 @@ bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::functio
 
     SqlQuery *query = nullptr;
 
-    if(path.isEmpty()) {
-        // Since the path column doesn't store the starting /, the getFilesBelowPathQuery
-        // can't be used for the root path "". It would scan for (path > '/' and path < '0')
-        // and find nothing. So, unfortunately, we have to use a different query for
-        // retrieving the whole tree.
-
-        if (!_getAllFilesQuery.initOrReset(QByteArrayLiteral( GET_FILE_RECORD_QUERY " ORDER BY path||'/' ASC"), _db))
-            return false;
-        query = &_getAllFilesQuery;
-    } else {
-        // This query is used to skip discovery and fill the tree from the
-        // database instead
-        if (!_getFilesBelowPathQuery.initOrReset(QByteArrayLiteral(
-                GET_FILE_RECORD_QUERY
-                " WHERE " IS_PREFIX_PATH_OF("?1", "path")
-                // We want to ensure that the contents of a directory are sorted
-                // directly behind the directory itself. Without this ORDER BY
-                // an ordering like foo, foo-2, foo/file would be returned.
-                // With the trailing /, we get foo-2, foo, foo/file. This property
-                // is used in fill_tree_from_db().
-                " ORDER BY path||'/' ASC"), _db)) {
-            return false;
-        }
-        query = &_getFilesBelowPathQuery;
-        query->bindValue(1, path);
+    // This query is used to skip discovery and fill the tree from the
+    // database instead
+    if (!_getFilesBelowPathQuery.initOrReset(QByteArrayLiteral(
+            GET_FILE_RECORD_QUERY
+            // Since the path column doesn't store the starting "/" IS_PREFIX_PATH_OF
+            // does not work for the root path "". It would scan for (path > '/' and path < '0')
+            // and find nothing.
+            " WHERE " IS_PREFIX_PATH_OF("?1", "path") " OR (?1 == '' AND path != '')"
+            // We want to ensure that the contents of a directory are sorted
+            // directly behind the directory itself. Without this ORDER BY
+            // an ordering like foo, foo-2, foo/file would be returned.
+            // With the trailing /, we get foo-2, foo, foo/file. This property
+            // is used in fill_tree_from_db().
+            " ORDER BY path||'/' ASC"), _db)) {
+        return false;
     }
+    query = &_getFilesBelowPathQuery;
+    query->bindValue(1, path);
 
     if (!query->exec()) {
         return false;

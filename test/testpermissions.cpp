@@ -32,7 +32,7 @@ static void assertCsyncJournalOk(SyncJournalDb &journal)
 
     SqlDatabase db;
     QVERIFY(db.openReadOnly(journal.databaseFilePath()));
-    SqlQuery q("SELECT count(*) from metadata where length(fileId) == 0", db);
+    SqlQuery q("SELECT count(*) from metadata where path != '' and length(fileId) == 0", db);
     QVERIFY(q.exec());
     QVERIFY(q.next().hasData);
     QCOMPARE(q.intValue(0), 0);

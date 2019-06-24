@@ -49,6 +49,7 @@ private slots:
         QVERIFY(_db.getFileRecord(QByteArrayLiteral("nonexistant"), &record));
         QVERIFY(!record.isValid());
 
+        record._isAlwaysValid = true;
         record._path = "foo";
         // Use a value that exceeds uint32 and isn't representable by the
         // signed int being cast to uint64 either (like uint64::max would be)
@@ -63,6 +64,7 @@ private slots:
         QVERIFY(_db.setFileRecord(record));
 
         SyncJournalFileRecord storedRecord;
+        storedRecord._isAlwaysValid = true;
         QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), &storedRecord));
         QVERIFY(storedRecord == record);
 
@@ -90,11 +92,25 @@ private slots:
         QVERIFY(!record.isValid());
     }
 
+    void testFileRecordRoot()
+    {
+        SyncJournalFileRecord record;
+        record._isAlwaysValid = true;
+        record._path = "";
+        record._etag = "789789";
+        QVERIFY(_db.setFileRecord(record));
+
+        SyncJournalFileRecord storedRecord;
+        QVERIFY(_db.getFileRecord(QByteArrayLiteral(""), &storedRecord));
+        QVERIFY(storedRecord == record);
+    }
+
     void testFileRecordChecksum()
     {
         // Try with and without a checksum
         {
             SyncJournalFileRecord record;
+            record._isAlwaysValid = true;
             record._path = "foo-checksum";
             record._remotePerm = RemotePermissions::fromDbValue(" ");
             record._checksumHeader = "MD5:mychecksum";
@@ -116,6 +132,7 @@ private slots:
         }
         {
             SyncJournalFileRecord record;
+            record._isAlwaysValid = true;
             record._path = "foo-nochecksum";
             record._remotePerm = RemotePermissions();
             record._modtime = Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc());

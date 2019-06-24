@@ -40,7 +40,7 @@ class OCSYNC_EXPORT SyncJournalFileRecord
 public:
     bool isValid() const
     {
-        return !_path.isEmpty();
+        return !_path.isEmpty() || _isAlwaysValid;
     }
 
     /** Returns a guess for the numeric part of the full id in _fileId.
@@ -69,8 +69,11 @@ public:
     QByteArray _fileId;
     qint64 _fileSize = 0;
     RemotePermissions _remotePerm;
-    bool _serverHasIgnoredFiles = false;
     QByteArray _checksumHeader;
+    bool _serverHasIgnoredFiles = false;
+
+    /// Used to make a valid but empty-path FileRecord
+    bool _isAlwaysValid = false;
 };
 
 bool OCSYNC_EXPORT

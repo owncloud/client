@@ -1015,6 +1015,7 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, Proce
         // we must not store the size/modtime from the file system)
         OCC::SyncJournalFileRecord rec;
         if (_discoveryData->_statedb->getFileRecord(path._original, &rec)) {
+            rec._isAlwaysValid = true;
             rec._path = path._original.toUtf8();
             rec._etag = serverEntry.etag;
             rec._fileId = serverEntry.fileId;

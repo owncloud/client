@@ -53,7 +53,8 @@ bool SyncJournalErrorBlacklistRecord::isValid() const
 bool operator==(const SyncJournalFileRecord &lhs,
     const SyncJournalFileRecord &rhs)
 {
-    return lhs._path == rhs._path
+    return lhs._isAlwaysValid == rhs._isAlwaysValid
+        && lhs._path == rhs._path
         && lhs._inode == rhs._inode
         && lhs._modtime == rhs._modtime
         && lhs._type == rhs._type
