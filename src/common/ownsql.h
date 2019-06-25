@@ -115,6 +115,11 @@ public:
      */
     int prepare(const QByteArray &sql, bool allow_failure = false);
 
+    /**
+     * Shorthand for prepare(); exec(); finish();
+     */
+    bool run(const QByteArray &sql);
+
     ~SqlQuery();
     QString error() const;
     int errorId() const;

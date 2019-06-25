@@ -47,7 +47,7 @@ Q_LOGGING_CATEGORY(lcDb, "sync.database", QtInfoMsg)
 
 #define GET_FILE_RECORD_QUERY \
         "SELECT path, inode, modtime, type, md5, fileid, remotePerm, filesize," \
-        "  ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum" \
+        "  ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum, metadata.id" \
         " FROM metadata" \
         "  LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id"
 
@@ -63,7 +63,7 @@ static void fillFileRecordFromGetQuery(SyncJournalFileRecord &rec, SqlQuery &que
     rec._fileSize = query.int64Value(7);
     rec._serverHasIgnoredFiles = (query.intValue(8) > 0);
     rec._checksumHeader = query.baValue(9);
-    rec._isAlwaysValid = true;
+    rec._metadataId = query.int64Value(10);
 }
 
 static QByteArray defaultJournalMode(const QString &dbPath)
@@ -293,6 +293,80 @@ bool SyncJournalDb::checkConnect()
         return false;
     }
 
+    if (!dbPragmas())
+        return false;
+    if (!createTables())
+        return false;
+
+    bool forceRemoteDiscovery = false;
+    if (!versionCheck(forceRemoteDiscovery))
+        return false;
+
+    commitInternal("checkConnect");
+
+    bool rc = updateDatabaseStructure();
+    if (!rc) {
+        qCWarning(lcDb) << "Failed to update the database structure!";
+    }
+
+    /*
+     * If we are upgrading from a client version older than 1.5,
+     * we cannot read from the database because we need to fetch the files id and etags.
+     *
+     *  If 1.8.0 caused missing data in the local tree, so we also don't read from DB
+     *  to get back the files that were gone.
+     *  In 1.8.1 we had a fix to re-get the data, but this one here is better
+     */
+    if (forceRemoteDiscovery) {
+        forceRemoteDiscoveryNextSyncLocked();
+    }
+    if (!_deleteDownloadInfoQuery.initOrReset("DELETE FROM downloadinfo WHERE path=?1", _db)) {
+        return sqlFail("prepare _deleteDownloadInfoQuery", _deleteDownloadInfoQuery);
+    }
+
+
+    if (!_deleteUploadInfoQuery.initOrReset("DELETE FROM uploadinfo WHERE path=?1", _db)) {
+        return sqlFail("prepare _deleteUploadInfoQuery", _deleteUploadInfoQuery);
+    }
+
+    QByteArray sql("SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId "
+                   "FROM blacklist WHERE path=?1");
+    if (Utility::fsCasePreserving()) {
+        // if the file system is case preserving we have to check the blacklist
+        // case insensitively
+        sql += " COLLATE NOCASE";
+    }
+    if (!_getErrorBlacklistQuery.initOrReset(sql, _db)) {
+        return sqlFail("prepare _getErrorBlacklistQuery", _getErrorBlacklistQuery);
+    }
+
+    // Create an entry for the root if it's missing
+    SyncJournalFileRecord rec;
+    getFileRecord(QByteArrayLiteral(""), &rec);
+    if (!rec.isValid()) {
+        rec._path = "";
+        setFileRecord(rec);
+    }
+
+    // don't start a new transaction now
+    commitInternal(QString("checkConnect End"), false);
+
+    // This avoid reading from the DB if we already know it is empty
+    // thereby speeding up the initial discovery significantly.
+    // It's ok to start out ignoring the "root" folder entry.
+    _metadataTableIsEmpty = (getFileRecordCount() <= 1);
+
+    // Hide 'em all!
+    FileSystem::setFileHidden(databaseFilePath(), true);
+    FileSystem::setFileHidden(databaseFilePath() + "-wal", true);
+    FileSystem::setFileHidden(databaseFilePath() + "-shm", true);
+    FileSystem::setFileHidden(databaseFilePath() + "-journal", true);
+
+    return rc;
+}
+
+bool SyncJournalDb::dbPragmas()
+{
     SqlQuery pragma1(_db);
     pragma1.prepare("SELECT sqlite_version();");
     if (!pragma1.exec()) {
@@ -374,11 +448,17 @@ bool SyncJournalDb::checkConnect()
                                     sqlite3_result_int64(ctx, result);
                                 }, nullptr, nullptr);
 
+    return true;
+}
+
+bool SyncJournalDb::createTables()
+{
     /* Because insert is so slow, we do everything in a transaction, and only need one call to commit */
     startTransaction();
 
     SqlQuery createQuery(_db);
     createQuery.prepare("CREATE TABLE IF NOT EXISTS metadata("
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                         "phash INTEGER(8),"
                         "pathlen INTEGER,"
                         "path VARCHAR(4096),"
@@ -396,7 +476,7 @@ bool SyncJournalDb::checkConnect()
                         // ignoredChildrenRemote
                         // contentChecksum
                         // contentChecksumTypeId
-                        "PRIMARY KEY(phash)"
+                        "UNIQUE(phash)"
                         ");");
 
 #ifndef SQLITE_IOERR_SHMMAP
@@ -415,7 +495,6 @@ bool SyncJournalDb::checkConnect()
 
             _journalMode = "DELETE";
             createQuery.finish();
-            pragma1.finish();
             commitTransaction();
             _db.close();
             return checkConnect();
@@ -502,8 +581,14 @@ bool SyncJournalDb::checkConnect()
     }
 
     // create the flags table.
+    if (tableColumns("flags").contains("path")) {
+        // in pre-2.6 versions the flags table had a "path" column, drop intermediate verison
+        SqlQuery query(_db);
+        query.prepare("DROP TABLE flags;", true);
+        query.exec();
+    }
     createQuery.prepare("CREATE TABLE IF NOT EXISTS flags ("
-                        "path TEXT PRIMARY KEY,"
+                        "id INTEGER PRIMARY KEY," // metadata.id
                         "pinState INTEGER"
                         ");");
     if (!createQuery.exec()) {
@@ -531,9 +616,13 @@ bool SyncJournalDb::checkConnect()
         return sqlFail("Create table version", createQuery);
     }
 
-    bool forceRemoteDiscovery = false;
+    return true;
+}
 
+bool SyncJournalDb::versionCheck(bool &forceRemoteDiscovery)
+{
     SqlQuery versionQuery("SELECT major, minor, patch FROM version;", _db);
+    SqlQuery createQuery(_db);
     if (!versionQuery.next().hasData) {
         // If there was no entry in the table, it means we are likely upgrading from 1.5
         qCInfo(lcDb) << "possibleUpgradeFromMirall_1_5 detected!";
@@ -584,68 +673,7 @@ bool SyncJournalDb::checkConnect()
         }
     }
 
-    commitInternal("checkConnect");
-
-    bool rc = updateDatabaseStructure();
-    if (!rc) {
-        qCWarning(lcDb) << "Failed to update the database structure!";
-    }
-
-    /*
-     * If we are upgrading from a client version older than 1.5,
-     * we cannot read from the database because we need to fetch the files id and etags.
-     *
-     *  If 1.8.0 caused missing data in the local tree, so we also don't read from DB
-     *  to get back the files that were gone.
-     *  In 1.8.1 we had a fix to re-get the data, but this one here is better
-     */
-    if (forceRemoteDiscovery) {
-        forceRemoteDiscoveryNextSyncLocked();
-    }
-    if (!_deleteDownloadInfoQuery.initOrReset("DELETE FROM downloadinfo WHERE path=?1", _db)) {
-        return sqlFail("prepare _deleteDownloadInfoQuery", _deleteDownloadInfoQuery);
-    }
-
-
-    if (!_deleteUploadInfoQuery.initOrReset("DELETE FROM uploadinfo WHERE path=?1", _db)) {
-        return sqlFail("prepare _deleteUploadInfoQuery", _deleteUploadInfoQuery);
-    }
-
-    QByteArray sql("SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId "
-                   "FROM blacklist WHERE path=?1");
-    if (Utility::fsCasePreserving()) {
-        // if the file system is case preserving we have to check the blacklist
-        // case insensitively
-        sql += " COLLATE NOCASE";
-    }
-    if (!_getErrorBlacklistQuery.initOrReset(sql, _db)) {
-        return sqlFail("prepare _getErrorBlacklistQuery", _getErrorBlacklistQuery);
-    }
-
-    // Create an entry for the root if it's missing
-    SyncJournalFileRecord rec;
-    getFileRecord(QByteArrayLiteral(""), &rec);
-    if (!rec.isValid()) {
-        rec._path = "";
-        rec._isAlwaysValid = true;
-        setFileRecord(rec);
-    }
-
-    // don't start a new transaction now
-    commitInternal(QString("checkConnect End"), false);
-
-    // This avoid reading from the DB if we already know it is empty
-    // thereby speeding up the initial discovery significantly.
-    // It's ok to start out ignoring the "root" folder entry.
-    _metadataTableIsEmpty = (getFileRecordCount() <= 1);
-
-    // Hide 'em all!
-    FileSystem::setFileHidden(databaseFilePath(), true);
-    FileSystem::setFileHidden(databaseFilePath() + "-wal", true);
-    FileSystem::setFileHidden(databaseFilePath() + "-shm", true);
-    FileSystem::setFileHidden(databaseFilePath() + "-journal", true);
-
-    return rc;
+    return true;
 }
 
 void SyncJournalDb::close()
@@ -686,13 +714,6 @@ bool SyncJournalDb::updateMetadataTableStructure()
             sqlFail("updateMetadataTableStructure: Add column fileid", query);
             re = false;
         }
-
-        query.prepare("CREATE INDEX metadata_file_id ON metadata(fileid);");
-        if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index fileid", query);
-            re = false;
-        }
-        commitInternal("update database structure: add fileid col");
     }
     if (columns.indexOf("remotePerm") == -1) {
         SqlQuery query(_db);
@@ -711,36 +732,6 @@ bool SyncJournalDb::updateMetadataTableStructure()
             re = false;
         }
         commitInternal("update database structure: add filesize col");
-    }
-
-    if (1) {
-        SqlQuery query(_db);
-        query.prepare("CREATE INDEX IF NOT EXISTS metadata_inode ON metadata(inode);");
-        if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index inode", query);
-            re = false;
-        }
-        commitInternal("update database structure: add inode index");
-    }
-
-    if (1) {
-        SqlQuery query(_db);
-        query.prepare("CREATE INDEX IF NOT EXISTS metadata_path ON metadata(path);");
-        if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index path", query);
-            re = false;
-        }
-        commitInternal("update database structure: add path index");
-    }
-
-    if (1) {
-        SqlQuery query(_db);
-        query.prepare("CREATE INDEX IF NOT EXISTS metadata_parent ON metadata(parent_hash(path));");
-        if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index parent", query);
-            re = false;
-        }
-        commitInternal("update database structure: add parent index");
     }
 
     if (columns.indexOf("ignoredChildrenRemote") == -1) {
@@ -770,6 +761,89 @@ bool SyncJournalDb::updateMetadataTableStructure()
             re = false;
         }
         commitInternal("update database structure: add contentChecksumTypeId col");
+    }
+
+    // Add an 'id' column that allows for linking to other tables by file-identity,
+    // i.e. persistent across moves/renames and that's not externally controlled
+    // (like fileid is; it's is also a string unfortunately).
+    // Adding such a column isn't supported by sqlite - the table needs to be recreated.
+    if (columns.indexOf("id") == -1) {
+        SqlQuery query(_db);
+
+        query.prepare("SELECT sql FROM sqlite_master WHERE name = 'metadata';");
+        if (!query.exec() || !query.next().hasData) {
+            sqlFail("updateMetadataTableStructure: could not retrieve metadata table spec", query);
+            re = false;
+        }
+        auto createSql = query.baValue(0);
+
+        auto expectedStart = QByteArray("CREATE TABLE metadata(");
+        auto newStart = QByteArray("CREATE TABLE metadata_migration(id INTEGER PRIMARY KEY AUTOINCREMENT,");
+        if (!createSql.startsWith(expectedStart)) {
+            sqlFail("updateMetadataTableStructure: unexpected metadata table structure", query);
+            re = false;
+        }
+        createSql.replace(expectedStart, newStart);
+        createSql.replace("PRIMARY KEY(phash)", "UNIQUE(phash)");
+
+        query.run("DROP TABLE IF EXISTS metadata_migration;");
+
+        if (!query.run(createSql)) {
+            sqlFail("updateMetadataTableStructure: could not create metadata_migration table", query);
+            re = false;
+        }
+
+        if (!query.run("INSERT INTO metadata_migration SELECT NULL AS id, * FROM metadata;")) {
+            sqlFail("updateMetadataTableStructure: could not migrate data to metadata_migration table", query);
+            re = false;
+        }
+
+        // Don't proceed unless everything up to here was fine
+        ENFORCE(re, "preparation for migration to add id column failed");
+
+        // Warning: Dropping the table can only work if all other SqlQueries are finished!
+        commitInternal("update database structure: commit before drop table");
+        query.run("DROP TABLE metadata;");
+
+        if (!query.run("ALTER TABLE metadata_migration RENAME TO metadata;")) {
+            sqlFail("updateMetadataTableStructure: could rename metadata_migration", query);
+            re = false;
+        }
+
+        // If we couldn't rename the table, we also need to restart
+        ENFORCE(re, "move of migration to add id column failed");
+
+        commitInternal("update database structure: add id col");
+    }
+
+    // Add metadata table indexes
+    if (1) {
+        SqlQuery query(_db);
+        query.prepare("CREATE INDEX IF NOT EXISTS metadata_inode ON metadata(inode);");
+        if (!query.exec()) {
+            sqlFail("updateMetadataTableStructure: create index inode", query);
+            re = false;
+        }
+
+        query.prepare("CREATE INDEX IF NOT EXISTS metadata_path ON metadata(path);");
+        if (!query.exec()) {
+            sqlFail("updateMetadataTableStructure: create index path", query);
+            re = false;
+        }
+
+        query.prepare("CREATE INDEX IF NOT EXISTS metadata_parent ON metadata(parent_hash(path));");
+        if (!query.exec()) {
+            sqlFail("updateMetadataTableStructure: create index parent", query);
+            re = false;
+        }
+
+        query.prepare("CREATE INDEX IF NOT EXISTS metadata_file_id ON metadata(fileid);");
+        if (!query.exec()) {
+            sqlFail("updateMetadataTableStructure: create index fileid", query);
+            re = false;
+        }
+
+        commitInternal("update database structure: indexes");
     }
 
     auto uploadInfoColumns = tableColumns("uploadinfo");
@@ -928,8 +1002,8 @@ bool SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
 
         if (!_setFileRecordQuery.initOrReset(QByteArrayLiteral(
             "INSERT OR REPLACE INTO metadata "
-            "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId) "
-            "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16);"), _db)) {
+            "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId, id) "
+            "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);"), _db)) {
             return false;
         }
 
@@ -949,6 +1023,11 @@ bool SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
         _setFileRecordQuery.bindValue(14, record._serverHasIgnoredFiles ? 1 : 0);
         _setFileRecordQuery.bindValue(15, checksum);
         _setFileRecordQuery.bindValue(16, contentChecksumTypeId);
+        if (record._metadataId > 0) {
+            _setFileRecordQuery.bindValue(17, record._metadataId);
+        } else {
+            _setFileRecordQuery.bindValue(17, QVariant());
+        }
 
         if (!_setFileRecordQuery.exec()) {
             return false;
@@ -1004,7 +1083,7 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
     // Reset the output var in case the caller is reusing it.
     Q_ASSERT(rec);
     rec->_path.clear();
-    rec->_isAlwaysValid = false;
+    rec->_metadataId = 0;
     Q_ASSERT(!rec->isValid());
 
     if (_metadataTableIsEmpty)
@@ -1043,7 +1122,7 @@ bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *r
     // Reset the output var in case the caller is reusing it.
     Q_ASSERT(rec);
     rec->_path.clear();
-    rec->_isAlwaysValid = false;
+    rec->_metadataId = 0;
     Q_ASSERT(!rec->isValid());
 
     if (!inode || _metadataTableIsEmpty)
@@ -1595,6 +1674,16 @@ bool SyncJournalDb::deleteStaleErrorBlacklistEntries(const QSet<QString> &keep)
     return deleteBatch(delQuery, superfluousPaths, "blacklist");
 }
 
+void SyncJournalDb::deleteStaleFlagsEntries()
+{
+    QMutexLocker locker(&_mutex);
+    if (!checkConnect())
+        return;
+
+    SqlQuery delQuery("DELETE FROM flags WHERE id NOT IN (SELECT id from metadata);", _db);
+    delQuery.exec();
+}
+
 int SyncJournalDb::errorBlackListEntryCount()
 {
     int re = 0;
@@ -2070,7 +2159,7 @@ void SyncJournalDb::clearFileTable()
 {
     QMutexLocker lock(&_mutex);
     SqlQuery query(_db);
-    query.prepare("DELETE FROM metadata;");
+    query.prepare("DELETE FROM metadata WHERE path != '';");
     query.exec();
 }
 
@@ -2104,7 +2193,7 @@ Optional<PinState> SyncJournalDb::PinStateInterface::rawForPath(const QByteArray
 
     auto &query = _db->_getRawPinStateQuery;
     ASSERT(query.initOrReset(QByteArrayLiteral(
-            "SELECT pinState FROM flags WHERE path == ?1;"),
+            "SELECT pinState FROM flags JOIN metadata ON flags.id = metadata.id WHERE path == ?1;"),
         _db->_db));
     query.bindValue(1, path);
     query.exec();
@@ -2127,7 +2216,7 @@ Optional<PinState> SyncJournalDb::PinStateInterface::effectiveForPath(const QByt
 
     auto &query = _db->_getEffectivePinStateQuery;
     ASSERT(query.initOrReset(QByteArrayLiteral(
-            "SELECT pinState FROM flags WHERE"
+            "SELECT pinState FROM flags JOIN metadata ON flags.id = metadata.id WHERE"
             // explicitly allow "" to represent the root path
             // (it'd be great if paths started with a / and "/" could be the root)
             " (" IS_PREFIX_PATH_OR_EQUAL("path", "?1") " OR path == '')"
@@ -2162,7 +2251,7 @@ Optional<PinState> SyncJournalDb::PinStateInterface::effectiveForPathRecursive(c
     // Find all the non-inherited pin states below the item
     auto &query = _db->_getSubPinsQuery;
     ASSERT(query.initOrReset(QByteArrayLiteral(
-            "SELECT DISTINCT pinState FROM flags WHERE"
+            "SELECT DISTINCT pinState FROM flags JOIN metadata ON flags.id = metadata.id WHERE"
             " (" IS_PREFIX_PATH_OF("?1", "path") " OR ?1 == '')"
             " AND pinState is not null and pinState != 0;"),
         _db->_db));
@@ -2197,7 +2286,7 @@ void SyncJournalDb::PinStateInterface::setForPath(const QByteArray &path, PinSta
             //"INSERT INTO flags(path, pinState) VALUES(?1, ?2)"
             //" ON CONFLICT(path) DO UPDATE SET pinState=?2;"),
             // Simple version that doesn't work nicely with multiple columns:
-            "INSERT OR REPLACE INTO flags(path, pinState) VALUES(?1, ?2);"),
+            "INSERT OR REPLACE INTO flags(id, pinState) SELECT id, ?2 FROM metadata WHERE path == ?1;"),
         _db->_db));
     query.bindValue(1, path);
     query.bindValue(2, static_cast<int>(state));
@@ -2212,9 +2301,10 @@ void SyncJournalDb::PinStateInterface::wipeForPathAndBelow(const QByteArray &pat
 
     auto &query = _db->_wipePinStateQuery;
     ASSERT(query.initOrReset(QByteArrayLiteral(
-            "DELETE FROM flags WHERE "
+            "DELETE FROM flags WHERE id IN"
+            " (SELECT id FROM metadata WHERE"
             // Allow "" to delete everything
-            " (" IS_PREFIX_PATH_OR_EQUAL("?1", "path") " OR ?1 == '');"),
+            "   (" IS_PREFIX_PATH_OR_EQUAL("?1", "path") " OR ?1 == ''));"),
         _db->_db));
     query.bindValue(1, path);
     query.exec();
@@ -2227,7 +2317,7 @@ SyncJournalDb::PinStateInterface::rawList()
     if (!_db->checkConnect())
         return {};
 
-    SqlQuery query("SELECT path, pinState FROM flags;", _db->_db);
+    SqlQuery query("SELECT path, pinState FROM flags JOIN metadata ON flags.id = metadata.id;", _db->_db);
     query.exec();
 
     QVector<QPair<QByteArray, PinState>> result;

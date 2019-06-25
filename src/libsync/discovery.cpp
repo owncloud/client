@@ -553,6 +553,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
         auto postProcessRename = [this, item, base, originalPath](PathTuple &path) {
             auto adjustedOriginalPath = _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Up);
             _discoveryData->_renamedItemsRemote.insert(originalPath, path._target);
+            item->_metadataId = base._metadataId;
             item->_modtime = base._modtime;
             item->_inode = base._inode;
             item->_instruction = CSYNC_INSTRUCTION_RENAME;
@@ -918,6 +919,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
             item->_remotePerm = base._remotePerm;
             item->_etag = base._etag;
             item->_type = base._type;
+            item->_metadataId = base._metadataId;
 
             // Discard any download/dehydrate tags on the base file.
             // They could be preserved and honored in a follow-up sync,
@@ -1015,7 +1017,6 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, Proce
         // we must not store the size/modtime from the file system)
         OCC::SyncJournalFileRecord rec;
         if (_discoveryData->_statedb->getFileRecord(path._original, &rec)) {
-            rec._isAlwaysValid = true;
             rec._path = path._original.toUtf8();
             rec._etag = serverEntry.etag;
             rec._fileId = serverEntry.fileId;
@@ -1461,13 +1462,7 @@ void ProcessDirectoryJob::setupDbPinStateActions(SyncJournalFileRecord &record)
     if (!isVfsWithSuffix())
         return;
 
-    QByteArray pinPath = record._path;
-    if (record.isVirtualFile()) {
-        const auto suffix = _discoveryData->_syncOptions._vfs->fileSuffix().toUtf8();
-        if (pinPath.endsWith(suffix))
-            pinPath.chop(suffix.size());
-    }
-    auto pin = _discoveryData->_statedb->internalPinStates().rawForPath(pinPath);
+    auto pin = _discoveryData->_statedb->internalPinStates().rawForPath(record._path);
     if (!pin || *pin == PinState::Inherited)
         pin = _pinState;
 

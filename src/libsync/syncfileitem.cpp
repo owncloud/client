@@ -27,6 +27,7 @@ Q_LOGGING_CATEGORY(lcFileItem, "sync.fileitem", QtInfoMsg)
 SyncJournalFileRecord SyncFileItem::toSyncJournalFileRecordWithInode(const QString &localFileName) const
 {
     SyncJournalFileRecord rec;
+    rec._metadataId = _metadataId;
     rec._path = destination().toUtf8();
     rec._modtime = _modtime;
 
@@ -61,6 +62,7 @@ SyncJournalFileRecord SyncFileItem::toSyncJournalFileRecordWithInode(const QStri
 SyncFileItemPtr SyncFileItem::fromSyncJournalFileRecord(const SyncJournalFileRecord &rec)
 {
     auto item = SyncFileItemPtr::create();
+    item->_metadataId = rec._metadataId;
     item->_file = rec._path;
     item->_inode = rec._inode;
     item->_modtime = rec._modtime;

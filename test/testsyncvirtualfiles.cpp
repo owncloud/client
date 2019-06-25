@@ -1033,6 +1033,11 @@ private slots:
 
         auto setPin = [&] (const QByteArray &path, PinState state) {
             fakeFolder.syncJournal().internalPinStates().setForPath(path, state);
+            auto newState = fakeFolder.syncJournal().internalPinStates().rawForPath(path);
+            if (!newState || state != *newState) {
+                qWarning() << path << int(state) << int(*newState);
+                QTest::qFail("couldn't set pin state", __FILE__, __LINE__);
+            }
         };
 
         fakeFolder.remoteModifier().mkdir("local");
@@ -1072,7 +1077,7 @@ private slots:
 
         triggerDownload(fakeFolder, "unspec/file1");
         setPin("local/file2", PinState::OnlineOnly);
-        setPin("online/file2", PinState::AlwaysLocal);
+        setPin("online/file2.owncloud", PinState::AlwaysLocal);
         QVERIFY(fakeFolder.syncOnce());
 
         QCOMPARE(*vfs->availability("unspec"), VfsItemAvailability::AllHydrated);
@@ -1148,6 +1153,17 @@ private slots:
         QCOMPARE(*vfs->pinState("onlinerenamed2/file1rename"), PinState::Unspecified);
 
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+
+        // When a file is deleted and later a new file has the same name, the old pin
+        // state isn't preserved.
+        QCOMPARE(*vfs->pinState("onlinerenamed2/file1rename"), PinState::Unspecified);
+        fakeFolder.remoteModifier().remove("onlinerenamed2/file1rename");
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(*vfs->pinState("onlinerenamed2/file1rename"), PinState::OnlineOnly);
+        fakeFolder.remoteModifier().insert("onlinerenamed2/file1rename");
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(*vfs->pinState("onlinerenamed2/file1rename"), PinState::OnlineOnly);
+        QCOMPARE(*vfs->pinState("onlinerenamed2/file1rename.owncloud"), PinState::OnlineOnly);
     }
 };
 

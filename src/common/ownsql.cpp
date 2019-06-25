@@ -275,6 +275,16 @@ int SqlQuery::prepare(const QByteArray &sql, bool allow_failure)
     return _errId;
 }
 
+bool SqlQuery::run(const QByteArray &sql)
+{
+    if (prepare(sql) != SQLITE_OK)
+        return false;
+    if (!exec())
+        return false;
+    finish();
+    return true;
+}
+
 /**
  * There is no overloads to QByteArray::startWith that takes Qt::CaseInsensitive.
  * Returns true if 'a' starts with 'b' in a case insensitive way
@@ -416,6 +426,10 @@ void SqlQuery::bindValue(int pos, const QVariant &value)
     case QVariant::ByteArray: {
         auto ba = value.toByteArray();
         res = sqlite3_bind_text(_stmt, pos, ba.constData(), ba.size(), SQLITE_TRANSIENT);
+        break;
+    }
+    case QVariant::Invalid: {
+        res = sqlite3_bind_null(_stmt, pos);
         break;
     }
     default: {

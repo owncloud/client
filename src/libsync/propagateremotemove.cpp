@@ -206,12 +206,9 @@ void PropagateRemoteMove::finalize()
     // to the new record. It is not a problem to skip it here.
     SyncJournalFileRecord oldRecord;
     propagator()->_journal->getFileRecord(_item->_originalFile, &oldRecord);
-    auto &vfs = propagator()->syncOptions()._vfs;
-    auto pinState = vfs->pinState(_item->_originalFile);
 
     // Delete old db data.
     propagator()->_journal->deleteFileRecord(_item->_originalFile);
-    vfs->setPinState(_item->_originalFile, PinState::Inherited);
 
     SyncFileItem newItem(*_item);
     newItem._type = _item->_type;
@@ -226,11 +223,6 @@ void PropagateRemoteMove::finalize()
     }
     if (!propagator()->updateMetadata(newItem)) {
         done(SyncFileItem::FatalError, tr("Error writing metadata to the database"));
-        return;
-    }
-    if (pinState && *pinState != PinState::Inherited
-        && !vfs->setPinState(newItem._renameTarget, *pinState)) {
-        done(SyncFileItem::NormalError, tr("Error setting pin state"));
         return;
     }
 

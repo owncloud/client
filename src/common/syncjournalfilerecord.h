@@ -40,7 +40,7 @@ class OCSYNC_EXPORT SyncJournalFileRecord
 public:
     bool isValid() const
     {
-        return !_path.isEmpty() || _isAlwaysValid;
+        return _metadataId != 0 || !_path.isNull();
     }
 
     /** Returns a guess for the numeric part of the full id in _fileId.
@@ -61,6 +61,9 @@ public:
     bool isFile() const { return _type == ItemTypeFile || _type == ItemTypeVirtualFileDehydration; }
     bool isVirtualFile() const { return _type == ItemTypeVirtualFile || _type == ItemTypeVirtualFileDownload; }
 
+    /// Id into metadata table, not server file id
+    quint64 _metadataId = 0;
+
     QByteArray _path;
     quint64 _inode = 0;
     qint64 _modtime = 0;
@@ -71,9 +74,6 @@ public:
     RemotePermissions _remotePerm;
     QByteArray _checksumHeader;
     bool _serverHasIgnoredFiles = false;
-
-    /// Used to make a valid but empty-path FileRecord
-    bool _isAlwaysValid = false;
 };
 
 bool OCSYNC_EXPORT

@@ -49,7 +49,6 @@ private slots:
         QVERIFY(_db.getFileRecord(QByteArrayLiteral("nonexistant"), &record));
         QVERIFY(!record.isValid());
 
-        record._isAlwaysValid = true;
         record._path = "foo";
         // Use a value that exceeds uint32 and isn't representable by the
         // signed int being cast to uint64 either (like uint64::max would be)
@@ -64,8 +63,8 @@ private slots:
         QVERIFY(_db.setFileRecord(record));
 
         SyncJournalFileRecord storedRecord;
-        storedRecord._isAlwaysValid = true;
         QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), &storedRecord));
+        record._metadataId = storedRecord._metadataId;
         QVERIFY(storedRecord == record);
 
         // Update checksum
@@ -95,13 +94,13 @@ private slots:
     void testFileRecordRoot()
     {
         SyncJournalFileRecord record;
-        record._isAlwaysValid = true;
         record._path = "";
         record._etag = "789789";
         QVERIFY(_db.setFileRecord(record));
 
         SyncJournalFileRecord storedRecord;
         QVERIFY(_db.getFileRecord(QByteArrayLiteral(""), &storedRecord));
+        record._metadataId = storedRecord._metadataId;
         QVERIFY(storedRecord == record);
     }
 
@@ -110,7 +109,6 @@ private slots:
         // Try with and without a checksum
         {
             SyncJournalFileRecord record;
-            record._isAlwaysValid = true;
             record._path = "foo-checksum";
             record._remotePerm = RemotePermissions::fromDbValue(" ");
             record._checksumHeader = "MD5:mychecksum";
@@ -128,11 +126,11 @@ private slots:
             // Attention: compare time_t types here, as QDateTime seem to maintain
             // milliseconds internally, which disappear in sqlite. Go for full seconds here.
             QVERIFY(storedRecord._modtime == record._modtime);
+            record._metadataId = storedRecord._metadataId;
             QVERIFY(storedRecord == record);
         }
         {
             SyncJournalFileRecord record;
-            record._isAlwaysValid = true;
             record._path = "foo-nochecksum";
             record._remotePerm = RemotePermissions();
             record._modtime = Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc());
@@ -141,6 +139,7 @@ private slots:
 
             SyncJournalFileRecord storedRecord;
             QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo-nochecksum"), &storedRecord));
+            record._metadataId = storedRecord._metadataId;
             QVERIFY(storedRecord == record);
         }
     }
@@ -347,6 +346,9 @@ private slots:
     void testPinState()
     {
         auto make = [&](const QByteArray &path, PinState state) {
+            SyncJournalFileRecord rec;
+            rec._path = path;
+            _db.setFileRecord(rec);
             _db.internalPinStates().setForPath(path, state);
             auto pinState = _db.internalPinStates().rawForPath(path);
             QVERIFY(pinState);
@@ -475,6 +477,45 @@ private slots:
         QCOMPARE(getRaw("online"), PinState::Inherited);
         list = _db.internalPinStates().rawList();
         QCOMPARE(list->size(), 0);
+    }
+
+    void testMetadataUpdate()
+    {
+        _db.close();
+        SqlDatabase db;
+        QVERIFY(db.openOrCreateReadWrite(_db.databaseFilePath()));
+        SqlQuery q(db);
+        QVERIFY(q.run("DROP TABLE metadata;"));
+        QVERIFY(q.run("CREATE TABLE IF NOT EXISTS metadata("
+                      "phash INTEGER(8),"
+                      "pathlen INTEGER,"
+                      "path VARCHAR(4096),"
+                      "inode INTEGER,"
+                      "uid INTEGER,"
+                      "gid INTEGER,"
+                      "mode INTEGER,"
+                      "modtime INTEGER(8),"
+                      "type INTEGER,"
+                      "md5 VARCHAR(32),"
+                      "PRIMARY KEY(phash)"
+                      ");"));
+        QVERIFY(q.run("INSERT INTO metadata VALUES(1, 3, 'foo', 1, 0, 0, 0, 0, 0, 'etag1')"));
+        QVERIFY(q.run("INSERT INTO metadata VALUES(2, 3, 'bar', 2, 0, 0, 0, 0, 0, 'etag2')"));
+        db.close();
+
+        _db.open();
+        SyncJournalFileRecord rec;
+        _db.getFileRecordByInode(1, &rec);
+        QVERIFY(rec.isValid());
+        QCOMPARE(rec._path, QByteArrayLiteral("foo"));
+        QCOMPARE(rec._metadataId, 1ull);
+
+        _db.getFileRecordByInode(2, &rec);
+        QVERIFY(rec.isValid());
+        QCOMPARE(rec._path, QByteArrayLiteral("bar"));
+        QCOMPARE(rec._metadataId, 2ull);
+
+        _db.clearFileTable();
     }
 
 private:
