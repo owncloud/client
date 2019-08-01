@@ -221,14 +221,18 @@ bool LsColXMLParser::parseSome(const QByteArray &xml)
                 qDebug() << "INSIDE PROP ";
                 insideProp = true;
                 continue;
-            } else if (name == QLatin1String("resourcetype") && reader.namespaceUri() == QLatin1String("DAV:") && insideProp) {
-                insideResourcetype = true; // resourcetype is the only nested property we care about
-                continue;
+            } else if (insideProp && reader.namespaceUri() == QLatin1String("DAV:") && currentPropName.isEmpty()) {
+                // There might be nested properties like hen having <oc:share-types><oc:share-type>0</oc:share-type></oc:share-types>
+                currentPropName = currentName;
+                if (name == QLatin1String("resourcetype")) {
+                    insideResourcetype = true; // resourcetype
+                    continue;
+                }
             } else if (name == QLatin1String("collection")  && reader.namespaceUri() == QLatin1String("DAV:") && insidePropstat && insideProp && insideResourcetype) {
                 qDebug() << "ISCOLLECTION"<<currentHref;
                 currentTmpProperties.insert(QLatin1String("resourcetype"),  QLatin1String("collection"));
                 folders.append(currentHref);
-            } else if (name == QLatin1String("status") && reader.namespaceUri() == QLatin1String("DAV:") && insidePropstat) {
+            } else if (name == QLatin1String("status") && reader.namespaceUri() == QLatin1String("DAV:") && insidePropstat && !insideProp) {
                 insideStatus = true;
                 continue;
             } else {
@@ -257,7 +261,7 @@ bool LsColXMLParser::parseSome(const QByteArray &xml)
                 }
             }
             // FIXME reader.name is empty now when between..
-            currentTmpProperties.insert(name, propertyContent);
+            currentTmpProperties.insert(currentPropName, propertyContent);
         } else if (type == QXmlStreamReader::Characters  && insideHref) {
             // We don't use URL encoding in our request URL (which is the expected path) (QNAM will do it for us)
             // but the result will have URL encoding..
@@ -290,6 +294,8 @@ bool LsColXMLParser::parseSome(const QByteArray &xml)
                     insideStatus = false;
                 } else if (reader.name() == "prop" && insideProp) {
                     insideProp = false;
+                } else if (reader.name() == currentPropName && insideProp) {
+                    currentPropName.clear(); // This is not 100% correct if there would be a nested property like <prop><a><a>bla</a></a></prop>
                 } else if (reader.name() == "resourcetype" && insideResourcetype) {
                     insideResourcetype = false;
                 }

@@ -81,7 +81,8 @@ protected:
     QString _expectedPath;
     QXmlStreamReader reader;
     QStringList folders;
-    QString currentName;
+    QString currentName; // any element name
+    QString currentPropName; // element name of a direct child in <prop>
     QString currentHref;
     QMap<QString, QString> currentTmpProperties;
     QMap<QString, QString> currentHttp200Properties;
