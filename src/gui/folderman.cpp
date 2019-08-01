@@ -582,8 +582,10 @@ void FolderMan::scheduleFolder(Folder *f)
             _socketApi->slotUpdateFolderView(f);
             return;
         }
-        f->prepareToSync();
-        emit folderSyncStateChange(f);
+        if (!f->isSyncRunning()) {
+            f->resetSyncResult();
+            emit folderSyncStateChange(f);
+        }
         _scheduledFolders.enqueue(f);
         emit scheduleQueueChanged();
     } else {
@@ -605,8 +607,10 @@ void FolderMan::scheduleFolderNext(Folder *f)
 
     _scheduledFolders.removeAll(f);
 
-    f->prepareToSync();
-    emit folderSyncStateChange(f);
+    if (!f->isSyncRunning()) {
+        f->resetSyncResult();
+        emit folderSyncStateChange(f);
+    }
     _scheduledFolders.prepend(f);
     emit scheduleQueueChanged();
 
@@ -791,6 +795,7 @@ void FolderMan::slotStartScheduledFolderSync()
         registerFolderWithSocketApi(folder);
 
         _currentSyncFolder = folder;
+        folder->resetSyncResult();
         folder->startSync(QStringList());
     }
 }
@@ -956,6 +961,12 @@ void FolderMan::slotFolderSyncFinished(const SyncResult &)
         qPrintable(f->shortGuiLocalPath()),
         qPrintable(f->accountState()->account()->displayName()),
         qPrintable(f->remoteUrl().toString()));
+
+    // if it's scheduled to run again, move to waiting state immediately
+    if (_scheduledFolders.contains(f)) {
+        f->resetSyncState();
+        emit folderSyncStateChange(f);
+    }
 
     if (f == _currentSyncFolder) {
         _lastSyncFolder = _currentSyncFolder;

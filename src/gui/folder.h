@@ -187,7 +187,7 @@ public:
      */
     bool canSync() const;
 
-    void prepareToSync();
+    void resetSyncResult();
 
     /**
      * True if the folder is busy and can't initiate
