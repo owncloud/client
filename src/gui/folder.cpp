@@ -924,13 +924,13 @@ void Folder::slotSyncFinished(bool success)
 
     auto anotherSyncNeeded = _engine->isAnotherSyncNeeded();
 
-    if (syncError) {
+    if (_definition.paused) {
+        // Maybe the sync was terminated because the user paused the folder
+        _syncResult.setStatus(SyncResult::Paused);
+    } else if (syncError) {
         _syncResult.setStatus(SyncResult::Error);
     } else if (_syncResult.foundFilesNotSynced()) {
         _syncResult.setStatus(SyncResult::Problem);
-    } else if (_definition.paused) {
-        // Maybe the sync was terminated because the user paused the folder
-        _syncResult.setStatus(SyncResult::Paused);
     } else {
         _syncResult.setStatus(SyncResult::Success);
     }
