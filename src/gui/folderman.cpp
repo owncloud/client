@@ -518,6 +518,8 @@ void FolderMan::slotFolderSyncPaused(Folder *f, bool paused)
         scheduleFolder(f);
     } else {
         _disabledFolders.insert(f);
+        if (_scheduledFolders.removeAll(f) > 0)
+            emit scheduleQueueChanged();
     }
 }
 
