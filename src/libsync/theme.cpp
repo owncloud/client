@@ -66,7 +66,10 @@ QString Theme::statusHeaderText(SyncResult::Status status) const
     case SyncResult::NotYetStarted:
         resultStr = QCoreApplication::translate("theme", "Waiting to start sync");
         break;
-    case SyncResult::SyncRunning:
+    case SyncResult::SyncDiscovery:
+        resultStr = QCoreApplication::translate("theme", "Sync is running");
+        break;
+    case SyncResult::SyncPropagation:
         resultStr = QCoreApplication::translate("theme", "Sync is running");
         break;
     case SyncResult::Success:
@@ -80,9 +83,6 @@ QString Theme::statusHeaderText(SyncResult::Status status) const
         break;
     case SyncResult::SetupError:
         resultStr = QCoreApplication::translate("theme", "Setup Error");
-        break;
-    case SyncResult::SyncPrepare:
-        resultStr = QCoreApplication::translate("theme", "Preparing to sync");
         break;
     case SyncResult::SyncAbortRequested:
         resultStr = QCoreApplication::translate("theme", "Aborting...");
@@ -386,14 +386,14 @@ QIcon Theme::syncStateIcon(SyncResult::Status status, bool sysTray, bool sysTray
         statusIcon = QLatin1String("state-information");
         break;
     case SyncResult::NotYetStarted:
-    case SyncResult::SyncRunning:
+    case SyncResult::SyncPropagation:
+    case SyncResult::SyncDiscovery:
         statusIcon = QLatin1String("state-sync");
         break;
     case SyncResult::SyncAbortRequested:
     case SyncResult::Paused:
         statusIcon = QLatin1String("state-pause");
         break;
-    case SyncResult::SyncPrepare:
     case SyncResult::Success:
         statusIcon = QLatin1String("state-ok");
         break;

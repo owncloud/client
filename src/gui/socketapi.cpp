@@ -436,7 +436,7 @@ void SocketApi::slotUpdateFolderView(Folder *f)
 
     if (f) {
         // do only send UPDATE_VIEW for a couple of status
-        if (f->syncResult().status() == SyncResult::SyncPrepare
+        if (f->syncResult().status() == SyncResult::SyncDiscovery
             || f->syncResult().status() == SyncResult::Success
             || f->syncResult().status() == SyncResult::Paused
             || f->syncResult().status() == SyncResult::Problem

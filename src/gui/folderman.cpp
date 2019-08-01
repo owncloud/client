@@ -1284,8 +1284,8 @@ void FolderMan::trayOverallStatus(const QList<Folder *> &folders,
                 case SyncResult::NotYetStarted:
                     various++;
                     break;
-                case SyncResult::SyncPrepare:
-                case SyncResult::SyncRunning:
+                case SyncResult::SyncDiscovery:
+                case SyncResult::SyncPropagation:
                     runSeen++;
                     break;
                 case SyncResult::Problem: // don't show the problem icon in tray.
@@ -1311,7 +1311,7 @@ void FolderMan::trayOverallStatus(const QList<Folder *> &folders,
             // only if all folders are paused
             *status = SyncResult::Paused;
         } else if (runSeen > 0) {
-            *status = SyncResult::SyncRunning;
+            *status = SyncResult::SyncPropagation;
         } else if (goodSeen > 0) {
             *status = SyncResult::Success;
         }
@@ -1329,10 +1329,10 @@ QString FolderMan::trayTooltipStatusString(
     case SyncResult::NotYetStarted:
         folderMessage = tr("Waiting to start syncing.");
         break;
-    case SyncResult::SyncPrepare:
-        folderMessage = tr("Preparing for sync.");
+    case SyncResult::SyncDiscovery:
+        folderMessage = tr("Sync is running.");
         break;
-    case SyncResult::SyncRunning:
+    case SyncResult::SyncPropagation:
         folderMessage = tr("Sync is running.");
         break;
     case SyncResult::Success:

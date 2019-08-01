@@ -798,7 +798,7 @@ void Folder::startSync(const QStringList &pathList)
     }
 
     _timeSinceLastSyncStart.start();
-    _syncResult.setStatus(SyncResult::SyncPrepare);
+    _syncResult.setStatus(SyncResult::SyncDiscovery);
     emit syncStateChange();
 
     qCInfo(lcFolder) << "*** Start syncing " << remoteUrl().toString() << " -" << APPLICATION_NAME << "client version"
@@ -902,7 +902,7 @@ void Folder::slotSyncError(const QString &message, ErrorCategory category)
 void Folder::slotSyncStarted()
 {
     qCInfo(lcFolder) << "#### Propagation start ####################################################";
-    _syncResult.setStatus(SyncResult::SyncRunning);
+    _syncResult.setStatus(SyncResult::SyncPropagation);
     emit syncStateChange();
 }
 
@@ -1151,7 +1151,7 @@ void Folder::slotHydrationStarts()
 
     // Let everyone know we're syncing
     _syncResult.reset();
-    _syncResult.setStatus(SyncResult::SyncRunning);
+    _syncResult.setStatus(SyncResult::SyncPropagation);
     emit syncStarted();
     emit syncStateChange();
 }

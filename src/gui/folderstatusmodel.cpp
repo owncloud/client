@@ -215,7 +215,8 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             ? QStringList(tr("Virtual file support is enabled."))
             : QStringList();
     case FolderStatusDelegate::SyncRunning:
-        return f->syncResult().status() == SyncResult::SyncRunning;
+        return f->syncResult().status() == SyncResult::SyncPropagation
+            || f->syncResult().status() == SyncResult::SyncDiscovery;
     case FolderStatusDelegate::HeaderRole:
         return f->shortGuiRemotePathOrAppName();
     case FolderStatusDelegate::FolderAliasRole:
@@ -244,10 +245,10 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             if (f->syncPaused()) {
                 return theme->folderDisabledIcon();
             } else {
-                if (status == SyncResult::SyncPrepare) {
-                    return theme->syncStateIcon(SyncResult::SyncRunning);
+                if (status == SyncResult::SyncDiscovery) {
+                    return theme->syncStateIcon(SyncResult::SyncPropagation);
                 } else if (status == SyncResult::Undefined) {
-                    return theme->syncStateIcon(SyncResult::SyncRunning);
+                    return theme->syncStateIcon(SyncResult::SyncPropagation);
                 } else {
                     // The "Problem" *result* just means some files weren't
                     // synced, so we show "Success" in these cases. But we
@@ -1079,9 +1080,9 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
         }
         pi = SubFolderInfo::Progress();
         pi._overallSyncString = message;
-    } else if (state == SyncResult::SyncPrepare) {
+    } else if (state == SyncResult::SyncDiscovery) {
         pi = SubFolderInfo::Progress();
-        pi._overallSyncString = tr("Preparing to sync...");
+        pi._overallSyncString = tr("Checking for changes...");
     } else if (state == SyncResult::Problem || state == SyncResult::Success) {
         // Reset the progress info after a sync.
         pi = SubFolderInfo::Progress();

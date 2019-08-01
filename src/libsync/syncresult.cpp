@@ -54,8 +54,8 @@ QString SyncResult::statusString() const
     case NotYetStarted:
         re = QLatin1String("Not yet Started");
         break;
-    case SyncRunning:
-        re = QLatin1String("Sync Running");
+    case SyncPropagation:
+        re = QLatin1String("Sync Propagation");
         break;
     case Success:
         re = QLatin1String("Success");
@@ -66,8 +66,8 @@ QString SyncResult::statusString() const
     case SetupError:
         re = QLatin1String("SetupError");
         break;
-    case SyncPrepare:
-        re = QLatin1String("SyncPrepare");
+    case SyncDiscovery:
+        re = QLatin1String("Sync Discovery");
         break;
     case Problem:
         re = QLatin1String("Success, some files were ignored.");
