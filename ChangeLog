@@ -2,14 +2,12 @@ ChangeLog
 =========
 
 version 2.6.0 (2019-08)
-(last update on 08f58ff30409981943bba06266860f49fe1aebf5)
+(last update on 2801455b4b35855c663fed6b1fe45441dc05cb19)
 
 Major changes and additions:
 * Rewrote discovery code for performance improvements and better maintainability.
 * Add experimental native virtual files mode for Windows 10.
   (https://github.com/owncloud/client/wiki/Virtual-Files-on-Windows-10)
-* Add experimental capability to sync file deltas. (#179)
-  (https://github.com/owncloud/client/wiki/DeltaSync)
 * Improvements and fixes for all virtual files mode
   (https://github.com/owncloud/client/wiki/Virtual-Files)
 * Add basic support for libcloudproviders for gtk/gnome integration (#7209)
@@ -18,6 +16,7 @@ Major changes and additions:
 Small changes and bug fixes:
 * Sync: Better detection of complex renames
 * Sync: Add workarounds so HTTP2 may be enabled with Qt >=5.12.4 (#7092, #7174)
+* Sync: Add experimental capability to sync file deltas (needs server support) (#179)
 * Sync: When propagating new remote directories, set local mtime to server mtime (#7119)
 * Sync: Add support for asynchronous upload operations (core#31851)
 * Sync: Handle blacklisted_files server capability (#434)
@@ -34,6 +33,10 @@ Small changes and bug fixes:
 * Sync: Reduce memory use during uploads by not reading whole chunks to memory (#7226)
 * Sync: Don't abort on 404, 500, 503 errors (#5088, #5859, #7199)
 * Sync: Fix parsing of etags, improving move detection (#7271, #7345)
+* Sync: Fix potential crash in threaded checksum computations (#7368)
+* Sync: Avoid opening too many files when many checksums need to be computed (#7372)
+* Sync: Don't abort sync on "Storage temporarily unavailable" (#5088)
+* Sync: Fix error when encountering read-only temporaries (#7419)
 * Vfs: The online-only/available-locally flag applies to new remote files now.
 * Vfs: Introduce actions and warning text for switching vfs on and off.
 * Vfs: Cannot be used with selective sync at the same time.
@@ -61,6 +64,8 @@ Small changes and bug fixes:
 * GUI: Add "Show file versions" context menu action (#7196)
 * GUI: Fix layout in "Add Certificate" dialog (#7184)
 * GUI: Fix duplicated error message for fatal errors (#5088)
+* GUI: Fix selective sync ui initial state after account creation (#7336)
+* GUI: Improve help text in ignore editor (#7162)
 * Sharing: Fix issues with enforced passwords and expiry (#7246, #7245)
 * Sharing: Fix resharing an item in a share with limited permissions (#7275)
 * Sharing: Use the default expiration date even when not enforced (#7256)
@@ -72,16 +77,19 @@ Small changes and bug fixes:
 * Updater: Show a nicer version string In the "available update" notification (#6602)
 * Updater: Set correct state on network error (#3933)
 * Updater: Provide more useful options on update failure (#7217)
+* Updater: Improved logging (#3475, #7388)
 * DB: Database path for new folders now starts with ".sync_", avoiding the "._" (#5904)
 * File hashes: Add support for SHA256 and SHA3
 * Cmd: Respect chunk sizing environment variables (#7078)
 * Log: Don't write to logdir if --logfile is passed (#6909)
 * Log: Make --logfile - work on Windows
 * Log: Make --logdir compress logs reliably (#7353)
+* Log: Print critical and fatal messages to stderr as well
 * Doc: Migrate the documentation to Antora (#6785)
 * Doc: Update Windows build instructions
 * Doc: Add explanation of how to manually change server url (#6579)
 * Doc: List more environment variables
+* Doc: List more config file options (owncloud/docs#1365)
 * Build: Fix KDEInstallDirs deprecation warnings (#6922)
 * Build: Fixes for compiling on "remarkable" tablet (#6870)
 * Build: Add PLUGINDIR variable for finding vfs plugins (#7027)
