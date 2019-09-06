@@ -53,6 +53,7 @@
 #include <QProcess>
 #include <QElapsedTimer>
 #include <qtextcodec.h>
+#include <qtconcurrentrun.h>
 
 namespace OCC {
 
@@ -622,7 +623,18 @@ void SyncEngine::slotDiscoveryFinished()
         return;
     }
 
-    qCInfo(lcEngine) << "#### Discovery end #################################################### " << _stopWatch.addLapTime(QLatin1String("Discovery Finished")) << "ms";
+    qCInfo(lcEngine) << "#### Discovery end #################################################### Discovery Finished" << _stopWatch.addLapTime(QLatin1String("Discovery Finished")) << "ms" << QThread::currentThread();
+    QFuture<void> future = QtConcurrent::run([=]() {
+        // Sort items per destination
+        qDebug() << "Start sorting" << _syncItems.length() << "items in thread" << QThread::currentThread();
+        std::sort(_syncItems.begin(), _syncItems.end());
+        qDebug() << "Ended sorting" <<  QThread::currentThread();
+        QMetaObject::invokeMethod(this, "slotDiscoveryFinishedSorted", Qt::QueuedConnection); // goes back to main thread
+    });
+}
+
+void SyncEngine::slotDiscoveryFinishedSorted() {
+    qCInfo(lcEngine) << "#### Discovery end #################################################### Discovery Finished SORTED" << _stopWatch.addLapTime(QLatin1String("Discovery Finished SORTED")) << "ms" << QThread::currentThread();
 
     // Sanity check
     if (!_journal->open()) {
@@ -672,13 +684,12 @@ void SyncEngine::slotDiscoveryFinished()
         _anotherSyncNeeded = ImmediateFollowUp;
     }
 
-    // Sort items per destination
-    std::sort(_syncItems.begin(), _syncItems.end());
-
     _localDiscoveryPaths.clear();
 
     // To announce the beginning of the sync
     emit aboutToPropagate(_syncItems);
+    qCInfo(lcEngine) << "#### Discovery end #################################################### Reconcile (aboutToPropagate OK)" << _stopWatch.addLapTime(QLatin1String("Reconcile (aboutToPropagate OK)")) << "ms";
+
 
     // it's important to do this before ProgressInfo::start(), to announce start of new sync
     _progressInfo->_status = ProgressInfo::Propagation;
@@ -731,7 +742,7 @@ void SyncEngine::slotDiscoveryFinished()
     _propagator->start(_syncItems);
     _syncItems.clear();
 
-    qCInfo(lcEngine) << "#### Post-Reconcile end #################################################### " << _stopWatch.addLapTime(QLatin1String("Post-Reconcile Finished")) << "ms";
+    qCInfo(lcEngine) << "#### Post-Reconcile end #################################################### Post-Reconcile Finished " << _stopWatch.addLapTime(QLatin1String("Post-Reconcile Finished")) << "ms";
 }
 
 void SyncEngine::slotCleanPollsJobAborted(const QString &error)

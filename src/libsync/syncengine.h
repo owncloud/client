@@ -187,6 +187,7 @@ private slots:
 
     void slotItemCompleted(const SyncFileItemPtr &item);
     void slotDiscoveryFinished();
+    void slotDiscoveryFinishedSorted(); // continuation
     void slotPropagationFinished(bool success);
     void slotProgress(const SyncFileItem &item, qint64 curent);
     void updateFileTotal(const SyncFileItem &item, qint64 newSize);
