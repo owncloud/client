@@ -146,10 +146,10 @@ Please chose a disk with sufficient free space.
 
 Last but not least, you need to chose the compiler you want to use.
 The official builds only supports {ms-visual-studio-2017-url}[Microsoft Visual Studio 2017].
-However, if you're feeling adventurous, you can also try to use {mingw-w64-url}[Mingw-w64]. 
+However, if you're feeling adventurous, you can also try to use {mingw-w64-url}[Mingw-w64] or {mingw-w32-url}[Mingw-w32]. 
 In contrast to Visual Studio, which you need to install in advance, KDE Craft can install `Mingw-w64` for you.
 
-TIP: Unless you need 32bit builds, you should stick to the default of x64 builds.
+TIP: Unless you need 64bit builds, you should stick to the default of x86 builds.
 
 === Setup KDE Craft
 
