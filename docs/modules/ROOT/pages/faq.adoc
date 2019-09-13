@@ -43,7 +43,7 @@ Don’t worry – you can still use the client with an unsupported server, but d
 
 == There Was A Warning About Changes In Synchronized Folders Not Being Tracked Reliably
 
-On Linux when the synchronized folder contains very many subfolders the operating system may not allow for enough `inotify` watches to monitor the changes in all of them.
+On Linux or MacOS when the synchronized folder contains very many subfolders the operating system may not allow for enough `inotify` watches to monitor the changes in all of them.
 
 In this case the client will not be able to immediately start the synchronization process when a file in one of the unmonitored folders changes.
 Instead, the client will show the warning and manually scan folders for changes in a regular interval (two hours by default).
