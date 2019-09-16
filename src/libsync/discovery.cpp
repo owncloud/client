@@ -1273,7 +1273,13 @@ auto ProcessDirectoryJob::checkMovePermissions(RemotePermissions srcPerm, const 
         // We are not allowed to move or rename this file
         sourceOK = false;
     }
-    return MovePermissionResult{sourceOK, destinationOK, destinationNewOK};
+
+    // Older compilers don't like brace initialization
+    MovePermissionResult result;
+    result.sourceOk = sourceOK;
+    result.destinationOk = destinationOK;
+    result.destinationNewOk = destinationNewOK;
+    return result;
 }
 
 void ProcessDirectoryJob::subJobFinished()
