@@ -19,7 +19,6 @@
 #include "configfile.h"
 #include "progressdispatcher.h"
 #include "owncloudsetupwizard.h"
-#include "sharedialog.h"
 #include "settingsdialog.h"
 #include "logger.h"
 #include "logbrowser.h"
@@ -127,12 +126,6 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
     if (reason == QSystemTrayIcon::Trigger) {
         if (OwncloudSetupWizard::bringWizardToFrontIfVisible()) {
             // brought wizard to front
-        } else if (_shareDialogs.size() > 0) {
-            // Share dialog(s) be hidden by other apps, bring them back
-            Q_FOREACH (const QPointer<ShareDialog> &shareDialog, _shareDialogs) {
-                Q_ASSERT(shareDialog.data());
-                raiseDialog(shareDialog);
-            }
         } else {
 #ifdef Q_OS_MAC
             // on macOS, a left click always opens menu.
@@ -1090,69 +1083,6 @@ void ownCloudGui::raiseDialog(QWidget *raiseWidget)
 #endif
     }
 }
-
-
-void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage)
-{
-    QString file;
-    const auto folder = FolderMan::instance()->folderForPath(localPath, &file);
-    if (!folder) {
-        qCWarning(lcApplication) << "Could not open share dialog for" << localPath << "no responsible folder found";
-        return;
-    }
-
-    const auto accountState = folder->accountState();
-
-    SyncJournalFileRecord fileRecord;
-
-    bool resharingAllowed = true; // lets assume the good
-    if (folder->journalDb()->getFileRecord(file, &fileRecord) && fileRecord.isValid()) {
-        // check the permission: Is resharing allowed?
-        if (!fileRecord._remotePerm.isNull() && !fileRecord._remotePerm.hasPermission(RemotePermissions::CanReshare)) {
-            resharingAllowed = false;
-        }
-    }
-
-    // As a first approximation, set the set of permissions that can be granted
-    // either to everything (resharing allowed) or nothing (no resharing).
-    //
-    // The correct value will be found with a propfind from ShareDialog.
-    // (we want to show the dialog directly, not wait for the propfind first)
-    SharePermissions maxSharingPermissions =
-        SharePermissionRead
-        | SharePermissionUpdate | SharePermissionCreate | SharePermissionDelete
-        | SharePermissionShare;
-    if (!resharingAllowed) {
-        maxSharingPermissions = SharePermission(0);
-    }
-
-
-    ShareDialog *w = nullptr;
-    if (_shareDialogs.contains(localPath) && _shareDialogs[localPath]) {
-        qCInfo(lcApplication) << "Raising share dialog" << sharePath << localPath;
-        w = _shareDialogs[localPath];
-    } else {
-        qCInfo(lcApplication) << "Opening share dialog" << sharePath << localPath << maxSharingPermissions;
-        w = new ShareDialog(accountState, sharePath, localPath, maxSharingPermissions, fileRecord.legacyDeriveNumericFileId(), startPage);
-        w->setAttribute(Qt::WA_DeleteOnClose, true);
-
-        _shareDialogs[localPath] = w;
-        connect(w, &QObject::destroyed, this, &ownCloudGui::slotRemoveDestroyedShareDialogs);
-    }
-    raiseDialog(w);
-}
-
-void ownCloudGui::slotRemoveDestroyedShareDialogs()
-{
-    QMutableMapIterator<QString, QPointer<ShareDialog>> it(_shareDialogs);
-    while (it.hasNext()) {
-        it.next();
-        if (!it.value() || it.value() == sender()) {
-            it.remove();
-        }
-    }
-}
-
 void ownCloudGui::slotAbout()
 {
     QString title = tr("About %1").arg(Theme::instance()->appNameGUI());

@@ -27,10 +27,6 @@ set(client_UI_SRCS
     activitywidget.ui
     synclogdialog.ui
     settingsdialog.ui
-    sharedialog.ui
-    sharelinkwidget.ui
-    shareusergroupwidget.ui
-    shareuserline.ui
     sslerrordialog.ui
     addcertificatedialog.ui
     proxyauthdialog.ui
@@ -75,10 +71,7 @@ set(client_SRCS
     activityitemdelegate.cpp
     selectivesyncdialog.cpp
     settingsdialog.cpp
-    sharedialog.cpp
-    sharelinkwidget.cpp
     sharemanager.cpp
-    shareusergroupwidget.cpp
     sharee.cpp
     socketapi.cpp
     sslbutton.cpp

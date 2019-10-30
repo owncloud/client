@@ -31,15 +31,10 @@ namespace OCC {
 class Folder;
 
 class SettingsDialog;
-class ShareDialog;
+
 class Application;
 class LogBrowser;
 class AccountState;
-
-enum class ShareDialogStartPage {
-    UsersAndGroups,
-    PublicLinks,
-};
 
 /**
  * @brief The ownCloudGui class
@@ -93,17 +88,6 @@ public slots:
     void slotAccountStateChanged();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
-    /**
-     * Open a share dialog for a file or folder.
-     *
-     * sharePath is the full remote path to the item,
-     * localPath is the absolute local path to it (so not relative
-     * to the folder).
-     */
-    void slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
-
-    void slotRemoveDestroyedShareDialogs();
-
 private slots:
     void slotLogin();
     void slotLogout();
@@ -135,7 +119,6 @@ private:
     bool _workaroundFakeDoubleClick = false;
     bool _workaroundManualVisibility = false;
     QTimer _delayedTrayUpdateTimer;
-    QMap<QString, QPointer<ShareDialog>> _shareDialogs;
 
     QAction *_actionLogin;
     QAction *_actionLogout;

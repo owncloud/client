@@ -452,45 +452,16 @@ void SocketApi::broadcastMessage(const QString &msg, bool doWait)
     }
 }
 
-void SocketApi::processShareRequest(const QString &localFile, SocketListener *listener, ShareDialogStartPage startPage)
+void SocketApi::processShareRequest(const QString &localFile, ShareDialogStartPage startPage)
 {
-    auto theme = Theme::instance();
-
-    auto fileData = FileData::get(localFile);
-    auto shareFolder = fileData.folder;
-    if (!shareFolder) {
-        const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
-        // files that are not within a sync folder are not synced.
-        listener->sendMessage(message);
-    } else if (!shareFolder->accountState()->isConnected()) {
-        const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
-        // if the folder isn't connected, don't open the share dialog
-        listener->sendMessage(message);
-    } else if (!theme->linkSharing() && (!theme->userGroupSharing() || shareFolder->accountState()->account()->serverVersionInt() < Account::makeServerVersion(8, 2, 0))) {
-        const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
-        listener->sendMessage(message);
-    } else {
-        // If the file doesn't have a journal record, it might not be uploaded yet
-        if (!fileData.journalRecord().isValid()) {
-            const QString message = QLatin1String("SHARE:NOTSYNCED:") + QDir::toNativeSeparators(localFile);
-            listener->sendMessage(message);
-            return;
-        }
-
-        auto &remotePath = fileData.serverRelativePath;
-
-        // Can't share root folder
-        if (remotePath == "/") {
-            const QString message = QLatin1String("SHARE:CANNOTSHAREROOT:") + QDir::toNativeSeparators(localFile);
-            listener->sendMessage(message);
-            return;
-        }
-
-        const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
-        listener->sendMessage(message);
-
-        emit shareCommandReceived(remotePath, fileData.localPath, startPage);
-    }
+    fetchPrivateLinkUrlHelper(localFile, [startPage](const QString &link) {
+        QUrl url(link);
+        QUrlQuery query(url);
+        query.addQueryItem(QStringLiteral("details"), QStringLiteral("shareTabView"));
+        Q_UNUSED(startPage); //FIXME
+        url.setQuery(query);
+        Utility::openBrowser(url, nullptr);
+    });
 }
 
 void SocketApi::broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus)
@@ -533,12 +504,15 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
-    processShareRequest(localFile, listener, ShareDialogStartPage::UsersAndGroups);
+    processShareRequest(localFile, ShareDialogStartPage::UsersAndGroups);
+    const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
+    listener->sendMessage(message);
+
 }
 
-void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener)
+void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *)
 {
-    processShareRequest(localFile, listener, ShareDialogStartPage::PublicLinks);
+    processShareRequest(localFile, ShareDialogStartPage::PublicLinks);
 }
 
 void SocketApi::command_VERSION(const QString &, SocketListener *listener)
@@ -679,7 +653,7 @@ void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListene
     connect(job, &GetOrCreatePublicLinkShare::done, this,
             [](const QString &url) { copyUrlToClipboard(url); });
     connect(job, &GetOrCreatePublicLinkShare::error, this,
-            [=]() { emit shareCommandReceived(fileData.serverRelativePath, fileData.localPath, ShareDialogStartPage::PublicLinks); });
+            [=]() { processShareRequest(localFile, ShareDialogStartPage::PublicLinks); });
     job->run();
 }
 

@@ -33,7 +33,6 @@
 #include "sslerrordialog.h"
 #include "theme.h"
 #include "clientproxy.h"
-#include "sharedialog.h"
 #include "accountmanager.h"
 #include "creds/abstractcredentials.h"
 #include "updater/ocupdater.h"
@@ -325,9 +324,6 @@ Application::Application(int &argc, char **argv)
     foreach (auto ai, AccountManager::instance()->accounts()) {
         slotAccountStateAdded(ai.data());
     }
-
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived,
-        _gui.data(), &ownCloudGui::slotShowShareDialog);
 
     // startup procedure.
     connect(&_checkConnectionTimer, &QTimer::timeout, this, &Application::slotCheckConnection);
