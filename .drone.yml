@@ -18,7 +18,7 @@ steps:
   commands:
   - mkdir -p "build-gcc-release-make"
   - cd "build-gcc-release-make"
-  - cmake -G"Unix Makefiles" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DCMAKE_BUILD_TYPE="Release" -DBUILD_TESTING=1 ..
+  - cmake -G"Unix Makefiles" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DCMAKE_BUILD_TYPE="Release" -DBUILD_TESTING=1 .. -DCMAKE_INSTALL_PREFIX=~/installed
   environment:
     LC_ALL: C.UTF-8
 
@@ -28,6 +28,15 @@ steps:
   commands:
   - cd "build-gcc-release-make"
   - make -j4
+  environment:
+    LC_ALL: C.UTF-8
+
+- name: install
+  pull: always
+  image: owncloudci/client
+  commands:
+  - cd "build-gcc-release-make"
+  - make -j4 install
   environment:
     LC_ALL: C.UTF-8
 
@@ -68,7 +77,7 @@ steps:
   commands:
   - mkdir -p "build-clang-debug-ninja"
   - cd "build-clang-debug-ninja"
-  - cmake -G"Ninja" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_BUILD_TYPE="Debug" -DBUILD_TESTING=1 ..
+  - cmake -G"Ninja" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_BUILD_TYPE="Debug" -DBUILD_TESTING=1 .. -DCMAKE_INSTALL_PREFIX=~/install2
   environment:
     LC_ALL: C.UTF-8
 
@@ -78,6 +87,15 @@ steps:
   commands:
   - cd "build-clang-debug-ninja"
   - ninja -j4
+  environment:
+    LC_ALL: C.UTF-8
+
+- name: ninja_install
+  pull: always
+  image: owncloudci/client
+  commands:
+  - cd "build-clang-debug-ninja"
+  - ninja install
   environment:
     LC_ALL: C.UTF-8
 
