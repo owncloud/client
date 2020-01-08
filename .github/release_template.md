@@ -62,7 +62,7 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 * [ ] Linux: Run https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/RUN.sh with repo=https://download.opensuse.org/repositories/isv:/ownCloud:/desktop:/testing
 * [ ] review everything :-)
 
-* [ ] Linux: add/remove build targets https://handbook.owncloud.com/release_processes/client/supported_platforms.html @hvonreth @jnweiger
+* [ ] Linux: add/remove [build targets](https://handbook.owncloud.com/release_processes/client/supported_platforms.html) @hvonreth @jnweiger
 * [ ] Create a signed tag using ```git tag -u E94E7B37 tagname``` (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge) @guruz @jnweiger (TODO: is this still needed?)
 * [ ] Update the wordpress content at owncloud.org/download @florian 
 * [ ] Inform packagers: @dragotin (openSUSE)
