@@ -12,7 +12,7 @@ Major/Minor release templete. Enter here, when we have three estimated dates:
 * Date of QA start
 * Date of final
 
-### Before branching off:
+### Before Branching Off:
 
 * [ ] Dev: Check [dependencies](https://handbook.owncloud.com/release_processes/client/dependencies.html) for updates - @TheOneRing @guruz
 * [ ] Dev: Update [ChangeLog](https://handbook.owncloud.com/release_processes/client/change_log.html) - @TheOneRing @guruz
@@ -21,7 +21,8 @@ Major/Minor release templete. Enter here, when we have three estimated dates:
 * [ ] QA: Update [documentation](https://handbook.owncloud.com/release_processes/client/documentation.html) -  @HanaGemela @jnweiger
 * [ ] QA: Check Sprint Board for remaining issues -  @HanaGemela @jnweiger
 
-### On the day of the first daily build of the new branch:
+### On the Day of the First Daily Build of the New Branch:
+
 * [ ] Dev: Internally announce it feature freeze - @TheOneRing @guruz
 * [ ] Dev: Edit [`VERSION.cmake`](https://handbook.owncloud.com/release_processes/client/branch.html#version-cmake) - @TheOneRing @guruz
 * [ ] QA: Adjust [Linux Templates](https://handbook.owncloud.com/release_processes/client/branch.html#linux-templates) - @HanaGemela @jnweiger
@@ -32,7 +33,8 @@ Major/Minor release templete. Enter here, when we have three estimated dates:
 * [ ] QA: Use `obs-copyprj.sh` to backup the desktop project to `desktop:client-2.6.x` (unless already done) - @HanaGemela @jnweiger
 * [ ] Dev: Start running automated tests on the dailies - @TheOneRing @guruz
 
-### After the first daily build of the new branch:
+### After the First Daily Build of the New Branch:
+
 * [ ] Announce the new branch to community and advertise dailies for public testing 
 
 TODO: WHen do we call it beta or RC?
@@ -40,7 +42,7 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 
 * [ ] QA: [Antivirus scan](https://handbook.owncloud.com/release_processes/client/virus.html) - @HanaGemela @jnweiger 
 
-### For all (betas?) and RCs (Copy this section for each beta/rc):
+### For All (Betas?) and RCs (Copy this Section for each Beta/RC):
 (ongoing * [ ] Make sure previous minor/major version's branch is merged into current major branch (or everything cherry-picked))
 * [ ] Add latest updates to Changelog in the client source repository.
 * [ ] Branch off a release branch called VERSION-rcX or VERSION-betaX  (without v, v is for tags)
@@ -61,33 +63,39 @@ TODO: move to patch-release checklist * [ ] Make sure to increase the version nu
 * [ ] update the wordpress content at owncloud.org/download @florian 
 * [ ] Inform packagers: @dragotin (openSUSE)
 * [ ] Announce on https://central.owncloud.org (copy old announcement, link to changelog, download links etc)
-TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz + @hvonreth
+TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz @hvonreth
 * [ ] Inform community mailinglists devel@owncloud.org and testpilots@owncloud.org (make sure to mention it is an rc). Link to the central post so discussion happens there.
-* [ ] Check crash reporter after some days https://handbook.owncloud.com/release_processes/client/desktop.html#update-the-updater @guruz + @hvonreth
-* [ ] Update the owncloud hosted auto updater according to https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy  (beta/unstable channel!)
+* [ ] Check crash reporter after some days https://handbook.owncloud.com/release_processes/client/desktop.html#update-the-updater @guruz @hvonreth
+* [ ] Update the owncloud hosted auto updater according to https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy  (beta/unstable channel!) @hgemela @jnweiger
+
+
+### One Week Before the Final Release:
+
+* For Major/Minor releases:
+** [ ] Communicate the release schedule on rocket-chat #release-coordination and mailinglist release-coordination@owncloud.com. Give a high level overview of the upcoming new features, changes etc.
+** [ ] Ensure marketing is aware (marketing@owncloud.com) and prepared for the release (social, .com website, cust.communications)
+** [ ] Inform GCX knows the next version is about 1 week out (gcx@owncloud.com)
+
+### One Day Before the Final Release:
+* [ ] Check crash reporter for bad crashes od this RC (same crash happening to many users) @guruz @hvonreth
+* [ ] Check the translations coming from transifex: All synchronized? TODO: (20181109jw: where? how?)
+* [ ] Review drone results: `make test` TDOD: Mac, Lin, Win? https://drone.owncloud.services/client/build-linux
+* [ ] Run the tx.pl scripts on the final code tag (20181109jw: really? What does that test?) @oggofart
+* [ ] Run smashbox (20180719 jw: FIXME: add details, how?) (ask @dschmidt, put link to smashbox results here)
+* [ ] Inform product management and marketing that we are 1 day out
+
+### On Release Day (for the Final Release):
+For major, minor, and patch releases, but skip this section for ALPHA/BETA
+
+* [ ] Add last updates to Changelog in the client source repository @hvonreth @hgemela
+* [ ] Branch off a release branch once QA is done, tag with a release vA.B.C (with v, as v is for tags) @hvonreth @guruz
+* [ ] Edit ```VERSION.cmake``` hange suffix from 'git' or 'rc' to empty string "". Commit the result to the release branch only @hvonreth @guruz
+* [ ] Create build for theme 'ownCloud' using jenkins-int client-trigger (uncheck "daily build", uncheck "private", version suffix "") @jnweiger @hvonreth
+* [ ] Create build for theme 'testpilotcloud' using jenkins-int client-trigger (uncheck "daily build", uncheck "private", version suffix "") @jnweiger @hvonreth
+* Build results are in https://download.owncloud.com/desktop/testing -- Win and Mac binaries are there, Linux packages are listed in a *repo.html file
 
 ###############################################
 
-### One week before the final release:
-* [ ] Communicate the release schedule on mailinglist release-coordination@owncloud.com. Give a high level overview of the upcoming new features, changes etc.
-* [ ] Ensure marketing is aware (marketing@owncloud.com) and prepared for the release (social, .com website, cust.communications)
-* [ ] Inform GCX knows the next version is about 1 week out (gcx@owncloud.com)
-
-### One day before final Release:
-* [ ] Check crash reporter for bad crashes od this RC (same crash happening to many users)
-* [ ] Check the translations coming from transifex: All synchronized? (20181109jw: where? how?)
-* [ ] Run the tx.pl scripts on the final code tag (20181109jw: really? What does that test?)
-* [ ] Run ```make test```
-* [ ] Run smashbox (20180719 jw: FIXME: add details, how?)
-* [ ] Inform product management and marketing that we are 1 day out
-
-### On Release Day (for final release):
-* [ ] Add last updates to Changelog in the client source repository.
-* [ ] Branch off a release branch called VERSION  (without v, v is for tags)
-* [ ] Edit ```VERSION.cmake``` to set the suffix to "" etc. Commit the result to the release branch only
-* [ ] Create build for theme 'ownCloud' using client-trigger (uncheck the "daily build" checkbox, use the proper dropdown for version suffix)
-* [ ] Create build for theme 'testpilotcloud' using client-trigger (uncheck the "daily build" checkbox, use the proper dropdown for version suffix)
-* Build results are in https://download.owncloud.com/desktop/testing -- win and mac binaries are there, linux packages are listed in a *repo.html file. 
 * [ ] Check if *tar.xz.asc files are there. If not resort to https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge
 * [ ] Branch isv:ownCloud:desktop to isv:ownCloud:desktop:client-X.Y.Z using https://github.com/owncloud/administration/blob/master/jenkins/obs_integration/ (the Linux packages will always land in the :testing repository)
   ```obs-deepcopy-prj.sh isv:ownCloud:desktop isv:ownCloud:desktop:client-2.5.1```
@@ -127,7 +135,7 @@ TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz 
 * [ ] Tell GCX to increment the minimum supported version for enterprise customers
 * [ ] Check if minimum.supported.desktop.version (https://github.com/owncloud/core/blob/master/config/config.sample.php#L1152) needs to be updated in server
 
-### 15 minutes after after release:
+### 15 Minutes After the Release:
 * [ ] Test all advertised download links to have the expected version
 * [ ] Check for build errors in OBS, do
 ```obs-deepcopy-prj.sh isv:ownCloud:desktop isv:ownCloud:desktop:client-2.X.X```
@@ -140,3 +148,6 @@ A few days after the release (for final release)
 * [ ] Update the owncloud hosted auto updater according to https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy  
 * [ ] Increment version number in daily builds. Special case: after the last release in a branch, jump forward to the 'next release branch'... That may mean, this is nightly is the same as edge then.
 
+### Finally
+
+ * [ ] Ensure that the [client release template](https://github.com/owncloud/client/edit/notes-from-the-etherpad/.github/release_template.md) is up to date
