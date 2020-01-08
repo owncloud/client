@@ -41,10 +41,6 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 * [ ] QA: [Antivirus scan](https://handbook.owncloud.com/release_processes/client/virus.html) - @HanaGemela @jnweiger 
 
 ### For all (betas?) and RCs (Copy this section for each beta/rc):
-* [ ] Ensure the crash reporter server is up.
-TODO: log into sentry, see if there is a fresh report. sentry.io and one more component in our infrastructure. And/or trigger a crash.
-( ongoing task: * [ ] Check crash reporter for bad crashes of the last stable (same crash happening to many users) )
-
 (ongoing * [ ] Make sure previous minor/major version's branch is merged into current major branch (or everything cherry-picked))
 * [ ] Add latest updates to Changelog in the client source repository.
 * [ ] Branch off a release branch called VERSION-rcX or VERSION-betaX  (without v, v is for tags)
@@ -59,21 +55,18 @@ TODO: move to patch-release checklist * [ ] Make sure to increase the version nu
 * [ ] Linux: Run https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/RUN.sh with repo=https://download.opensuse.org/repositories/isv:/ownCloud:/desktop:/testing
 * [ ] review everything :-)
 
-###############################################
 
-* [ ] Linux: add/remove build targets in isv:ownCloud:Qt51215 and isv:ownCloud:desktop:testing to match the list of supported platforms and announced(!) deprecations. Keep in sync with https://doc.owncloud.org/server/latest/admin_manual/installation/system_requirements.html#desktop and https://github.com/owncloud/ownbrander/blob/master/brand-items.php#L1651
-
-TODO guruz: is this still needed?
-* [ ] Create a signed tag using ```git tag -u E94E7B37 tagname``` (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
-
-* [ ] update the wordpress content at owncloud.org/download (Attention: No staging!)
-* [ ] Inform packagers @dragotin (openSUSE), @hefee (Debian), ??? (Fedora)
-* [ ] Announce on https://central.owncloud.org
-TODO: itemize what goes into the announcement: deprecation warnings. ...
-
+* [ ] Linux: add/remove build targets https://handbook.owncloud.com/release_processes/client/supported_platforms.html @hvonreth @jnweiger
+* [ ] Create a signed tag using ```git tag -u E94E7B37 tagname``` (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge) @guruz @jnweiger (TODO: is this still needed?)
+* [ ] update the wordpress content at owncloud.org/download @florian 
+* [ ] Inform packagers: @dragotin (openSUSE)
+* [ ] Announce on https://central.owncloud.org (copy old announcement, link to changelog, download links etc)
+TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz + @hvonreth
 * [ ] Inform community mailinglists devel@owncloud.org and testpilots@owncloud.org (make sure to mention it is an rc). Link to the central post so discussion happens there.
-* [ ] Check crash reporter
+* [ ] Check crash reporter after some days https://handbook.owncloud.com/release_processes/client/desktop.html#update-the-updater @guruz + @hvonreth
 * [ ] Update the owncloud hosted auto updater according to https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy  (beta/unstable channel!)
+
+###############################################
 
 ### One week before the final release:
 * [ ] Communicate the release schedule on mailinglist release-coordination@owncloud.com. Give a high level overview of the upcoming new features, changes etc.
