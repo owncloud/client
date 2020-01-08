@@ -46,7 +46,7 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 * [ ] QA: [Antivirus scan](https://handbook.owncloud.com/release_processes/client/virus.html) - @HanaGemela @jnweiger 
 
 
-### For All (Betas?) and RCs (Copy this Section for each Beta/RC):
+### For All Sprint Builds:
 
 (ongoing * [ ] Make sure previous minor/major version's branch is merged into current major branch (or everything cherry-picked))
 
