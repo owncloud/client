@@ -83,7 +83,7 @@ Skip this section for patch releases.
 
 
 ### One Day Before the Final Release:
-* [ ] Check crash reporter for bad crashes od this RC (same crash happening to many users) @guruz @hvonreth
+* [ ] Check [crash reporter](https://handbook.owncloud.com/release_processes/client/desktop.html#crash-reporter) for bad crashes of this RC (same crash happening to many users) @guruz @hvonreth
 * [ ] Check the translations coming from transifex: All synchronized? TODO: (20181109jw: where? how?)
 * [ ] Review drone results: `make test` TDOD: Mac, Lin, Win? https://drone.owncloud.services/client/build-linux
 * [ ] Run the tx.pl scripts on the final code tag (20181109jw: really? What does that test?) @oggofart
