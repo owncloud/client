@@ -64,7 +64,7 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 
 * [ ] Linux: add/remove build targets https://handbook.owncloud.com/release_processes/client/supported_platforms.html @hvonreth @jnweiger
 * [ ] Create a signed tag using ```git tag -u E94E7B37 tagname``` (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge) @guruz @jnweiger (TODO: is this still needed?)
-* [ ] update the wordpress content at owncloud.org/download @florian 
+* [ ] Update the wordpress content at owncloud.org/download @florian 
 * [ ] Inform packagers: @dragotin (openSUSE)
 * [ ] Announce on https://central.owncloud.org (copy old announcement, link to changelog, download links etc)
 TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz @hvonreth
