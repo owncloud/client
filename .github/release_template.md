@@ -70,7 +70,7 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz @hvonreth
 * [ ] Inform community mailinglists devel@owncloud.org and testpilots@owncloud.org (make sure to mention it is an rc). Link to the central post so discussion happens there.
 * [ ] Check crash reporter after some days https://handbook.owncloud.com/release_processes/client/desktop.html#update-the-updater @guruz @hvonreth
-* [ ] Update the owncloud hosted auto updater according to https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy  (beta/unstable channel!) @hgemela @jnweiger
+* [ ] Update unstable channel in the owncloud hosted [auto updater](https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy) @hgemela @jnweiger
 
 
 ### One Week Before the Final Release:
