@@ -1,16 +1,17 @@
 <!--
 This is the template for new release issues.
-(originated from https://github.com/owncloud/client/wiki/Release%20Checklist%20Template)
-(20181109jw: One of these two should be deleted. They will never be in sync otherwise.)
+TODO: split off a patch release template, so that this one is clearly only for major/minor releases.
 -->
 
-Open an issue called 'Release 2.x.0' in Client repository and copy below text into a task and tick the items:
+Open an issue called 'Release 2.x.0' in client repository and copy below text into a task and tick the items:
 <hr>
 
-Major/Minor release templete. Enter here, when we have three estimated dates:
+Major/Minor release template. Enter here, when we have three estimated dates:
+
 * Date of feature freeze
 * Date of QA start
 * Date of final
+
 
 ### Before Branching Off:
 
@@ -20,6 +21,7 @@ Major/Minor release templete. Enter here, when we have three estimated dates:
 * [ ] QA: Review list of [supported platforms](https://handbook.owncloud.com/release_processes/client/supported_platforms.html) -  @HanaGemela @jnweiger @TheOneRing @guruz
 * [ ] QA: Update [documentation](https://handbook.owncloud.com/release_processes/client/documentation.html) -  @HanaGemela @jnweiger
 * [ ] QA: Check Sprint Board for remaining issues -  @HanaGemela @jnweiger
+
 
 ### On the Day of the First Daily Build of the New Branch:
 
@@ -33,6 +35,7 @@ Major/Minor release templete. Enter here, when we have three estimated dates:
 * [ ] QA: Use `obs-copyprj.sh` to backup the desktop project to `desktop:client-2.6.x` (unless already done) - @HanaGemela @jnweiger
 * [ ] Dev: Start running automated tests on the dailies - @TheOneRing @guruz
 
+
 ### After the First Daily Build of the New Branch:
 
 * [ ] Announce the new branch to community and advertise dailies for public testing 
@@ -42,13 +45,15 @@ TODO: describe what dailies we have in documentation. (Platforms, Versions, Mast
 
 * [ ] QA: [Antivirus scan](https://handbook.owncloud.com/release_processes/client/virus.html) - @HanaGemela @jnweiger 
 
+
 ### For All (Betas?) and RCs (Copy this Section for each Beta/RC):
+
 (ongoing * [ ] Make sure previous minor/major version's branch is merged into current major branch (or everything cherry-picked))
+
 * [ ] Add latest updates to Changelog in the client source repository.
 * [ ] Branch off a release branch called VERSION-rcX or VERSION-betaX  (without v, v is for tags)
 * [ ] Edit ```VERSION.cmake``` to set the suffix to beta1, beta2 etc in the release branch.
-
-TODO: move to patch-release checklist * [ ] Make sure to increase the version number of the branched of release, e.g. if you release 2.3.2 then you should change VERSION.cmake in 2.3 to 2.3.3 since that branch now will be 2.3.3
+* [ ] (TODO: move to patch-release checklist) Make sure to increase the version number of the branched of release, e.g. if you release 2.3.2 then you should change VERSION.cmake in 2.3 to 2.3.3 since that branch now will be 2.3.3
 * [ ] jenkins.int: Create build for theme 'ownCloud' using client-trigger (uncheck the "daily build" checkbox, use rcX or betaX dropdown for version suffix)
 * [ ] jenkins.int: Create build for theme 'testpilotcloud' using client-trigger (uncheck the "daily build" checkbox, use the rcX or betaX dropdown for version suffix)
 * Build results are in https://download.owncloud.com/desktop/testing -- win and mac binaries are there, linux packages are listed in a *repo.html file pointing to the repository.
@@ -56,7 +61,6 @@ TODO: move to patch-release checklist * [ ] Make sure to increase the version nu
 * [ ] Run [the smoke test](https://handbook.owncloud.com/release_processes/client/smoke_test.html)
 * [ ] Linux: Run https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/RUN.sh with repo=https://download.opensuse.org/repositories/isv:/ownCloud:/desktop:/testing
 * [ ] review everything :-)
-
 
 * [ ] Linux: add/remove build targets https://handbook.owncloud.com/release_processes/client/supported_platforms.html @hvonreth @jnweiger
 * [ ] Create a signed tag using ```git tag -u E94E7B37 tagname``` (https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge) @guruz @jnweiger (TODO: is this still needed?)
@@ -71,10 +75,12 @@ TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz 
 
 ### One Week Before the Final Release:
 
-* For Major/Minor releases:
-** [ ] Communicate the release schedule on rocket-chat #release-coordination and mailinglist release-coordination@owncloud.com. Give a high level overview of the upcoming new features, changes etc.
-** [ ] Ensure marketing is aware (marketing@owncloud.com) and prepared for the release (social, .com website, cust.communications)
-** [ ] Inform GCX knows the next version is about 1 week out (gcx@owncloud.com)
+Skip this section for patch releases.
+
+* [ ] Communicate the release schedule on rocket-chat #release-coordination and mailinglist release-coordination@owncloud.com. Give a high level overview of the upcoming new features, changes etc.
+* [ ] Ensure marketing is aware (marketing@owncloud.com) and prepared for the release (social, .com website, cust.communications)
+* [ ] Inform GCX knows the next version is about 1 week out (gcx@owncloud.com)
+
 
 ### One Day Before the Final Release:
 * [ ] Check crash reporter for bad crashes od this RC (same crash happening to many users) @guruz @hvonreth
@@ -83,6 +89,7 @@ TODO: itemize what goes into the announcement: deprecation warnings. ... @guruz 
 * [ ] Run the tx.pl scripts on the final code tag (20181109jw: really? What does that test?) @oggofart
 * [ ] Run smashbox (20180719 jw: FIXME: add details, how?) (ask @dschmidt, put link to smashbox results here)
 * [ ] Inform product management and marketing that we are 1 day out
+
 
 ### On Release Day (for the Final Release):
 For major, minor, and patch releases, but skip this section for ALPHA/BETA
