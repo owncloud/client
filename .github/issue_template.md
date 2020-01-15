@@ -33,6 +33,8 @@ Storage backend (external storage):
 ### Client configuration
 Client version:
 
+Virtual File(No, Suffix, Windows):
+
 Operating system:
 
 OS language:
