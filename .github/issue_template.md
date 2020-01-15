@@ -33,7 +33,7 @@ Storage backend (external storage):
 ### Client configuration
 Client version:
 
-Virtual File(No, Suffix, Windows):
+Virtual Files enabled (No, Suffix, Windows):
 
 Operating system:
 
@@ -59,4 +59,3 @@ logs.
 2. Web server error log:
 
 3. Server logfile: ownCloud log (data/owncloud.log):
-
