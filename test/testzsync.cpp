@@ -16,7 +16,7 @@ QStringList findConflicts(const FileInfo &dir)
 {
     QStringList conflicts;
     for (const auto &item : dir.children) {
-        if (item.name.contains("conflict")) {
+        if (item.name.contains(QLatin1String("conflict"))) {
             conflicts.append(item.path());
         }
     }
@@ -53,13 +53,13 @@ private slots:
         // Preparation, create files and upload them, capturing metadata
         // (because letting the client compute the metadata is easiest)
 
-        fakeFolder.localModifier().insert("A/a0", size);
-        fakeFolder.localModifier().appendByte("A/a0", 'X');
+        fakeFolder.localModifier().insert(QStringLiteral("A/a0"), size);
+        fakeFolder.localModifier().appendByte(QStringLiteral("A/a0"), 'X');
         qsrand(QDateTime::currentDateTime().toTime_t());
         const int nModifications = 10;
         for (int i = 0; i < nModifications; i++) {
             quint64 offset = qrand() % size;
-            fakeFolder.localModifier().modifyByte("A/a0", offset, 'Y');
+            fakeFolder.localModifier().modifyByte(QStringLiteral("A/a0"), offset, 'Y');
         }
 
         // Keep hold of original file contents for a0
@@ -68,18 +68,18 @@ private slots:
         QByteArray data = f.readAll();
         f.close();
 
-        fakeFolder.localModifier().insert("A/threeBlocks", 3 * ZSYNC_BLOCKSIZE);
-        fakeFolder.localModifier().insert("A/threeBlocksPlusOne", 3 * ZSYNC_BLOCKSIZE + 1);
-        fakeFolder.localModifier().insert("A/threeBlocksMinusOne", 3 * ZSYNC_BLOCKSIZE - 1);
+        fakeFolder.localModifier().insert(QStringLiteral("A/threeBlocks"), 3 * ZSYNC_BLOCKSIZE);
+        fakeFolder.localModifier().insert(QStringLiteral("A/threeBlocksPlusOne"), 3 * ZSYNC_BLOCKSIZE + 1);
+        fakeFolder.localModifier().insert(QStringLiteral("A/threeBlocksMinusOne"), 3 * ZSYNC_BLOCKSIZE - 1);
 
         // Capture the zsync metadata during upload for later use
         // This fills metadata by filename
         auto transactionId = [] (const QUrl &url) {
-            auto components = url.path().split("/");
+            auto components = url.path().split(QStringLiteral("/"));
             return components[components.size() - 2];
         };
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *data) -> QNetworkReply * {
-            if (op == QNetworkAccessManager::PutOperation && request.url().toString().endsWith(".zsync")) {
+            if (op == QNetworkAccessManager::PutOperation && request.url().toString().endsWith(QLatin1String(".zsync"))) {
                 metadata[transactionId(request.url())] = data->readAll();
                 return new FakePutReply{ fakeFolder.uploadState(), op, request, metadata[transactionId(request.url())], this };
             }
@@ -101,16 +101,16 @@ private slots:
 
         // The new local file is like the original,
         // but without the modifications and the appendByte
-        fakeFolder.localModifier().remove("A/a0");
-        fakeFolder.localModifier().insert("A/a0", size);
+        fakeFolder.localModifier().remove(QStringLiteral("A/a0"));
+        fakeFolder.localModifier().insert(QStringLiteral("A/a0"), size);
         auto currentMtime = QDateTime::currentDateTimeUtc();
-        fakeFolder.remoteModifier().setModTime("A/a0", currentMtime);
+        fakeFolder.remoteModifier().setModTime(QStringLiteral("A/a0"), currentMtime);
         quint64 transferedData = 0;
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
             QUrlQuery query(request.url());
             if (op == QNetworkAccessManager::GetOperation) {
-                if (query.hasQueryItem("zsync")) {
-                    return new FakeGetWithDataReply{ fakeFolder.remoteModifier(), metadata["a0"], op, request, this };
+                if (query.hasQueryItem(QStringLiteral("zsync"))) {
+                    return new FakeGetWithDataReply{ fakeFolder.remoteModifier(), metadata[QStringLiteral("a0")], op, request, this };
                 }
 
                 auto reply = new FakeGetWithDataReply{ fakeFolder.remoteModifier(), data, op, request, this };
@@ -132,7 +132,7 @@ private slots:
         f.close();
 
         // Check the conflict creation
-        auto conflicts = findConflicts(fakeFolder.currentLocalState().children["A"]);
+        auto conflicts = findConflicts(fakeFolder.currentLocalState().children[QStringLiteral("A")]);
         QCOMPARE(conflicts.size(), 1);
         for (auto c : conflicts) {
             fakeFolder.localModifier().remove(c);
@@ -143,38 +143,38 @@ private slots:
         // Test 2: The remote file has grown, not on a zsync block boundary
 
         // Setup the local state
-        fakeFolder.remoteModifier().insert("A/growthSameBlock", 3 * ZSYNC_BLOCKSIZE - 1);
-        fakeFolder.remoteModifier().insert("A/growthNewBlock", 3 * ZSYNC_BLOCKSIZE);
-        fakeFolder.remoteModifier().insert("A/shrinkSameBlock", 3 * ZSYNC_BLOCKSIZE);
-        fakeFolder.remoteModifier().insert("A/shrinkFewerBlock", 3 * ZSYNC_BLOCKSIZE + 1);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/growthSameBlock"), 3 * ZSYNC_BLOCKSIZE - 1);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/growthNewBlock"), 3 * ZSYNC_BLOCKSIZE);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/shrinkSameBlock"), 3 * ZSYNC_BLOCKSIZE);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/shrinkFewerBlock"), 3 * ZSYNC_BLOCKSIZE + 1);
         QVERIFY(fakeFolder.syncOnce());
 
         // Grow/shrink files on the remote side
-        fakeFolder.remoteModifier().remove("A/growthSameBlock");
-        fakeFolder.remoteModifier().remove("A/growthNewBlock");
-        fakeFolder.remoteModifier().remove("A/shrinkSameBlock");
-        fakeFolder.remoteModifier().remove("A/shrinkFewerBlock");
-        fakeFolder.remoteModifier().insert("A/growthSameBlock", 3 * ZSYNC_BLOCKSIZE);
-        fakeFolder.remoteModifier().insert("A/growthNewBlock", 3 * ZSYNC_BLOCKSIZE + 1);
-        fakeFolder.remoteModifier().insert("A/shrinkSameBlock", 3 * ZSYNC_BLOCKSIZE - 1);
-        fakeFolder.remoteModifier().insert("A/shrinkFewerBlock", 3 * ZSYNC_BLOCKSIZE);
+        fakeFolder.remoteModifier().remove(QStringLiteral("A/growthSameBlock"));
+        fakeFolder.remoteModifier().remove(QStringLiteral("A/growthNewBlock"));
+        fakeFolder.remoteModifier().remove(QStringLiteral("A/shrinkSameBlock"));
+        fakeFolder.remoteModifier().remove(QStringLiteral("A/shrinkFewerBlock"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/growthSameBlock"), 3 * ZSYNC_BLOCKSIZE);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/growthNewBlock"), 3 * ZSYNC_BLOCKSIZE + 1);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/shrinkSameBlock"), 3 * ZSYNC_BLOCKSIZE - 1);
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/shrinkFewerBlock"), 3 * ZSYNC_BLOCKSIZE);
 
         // inject appropriate zsync metadata and actual data replies
         QMap<QString, QByteArray> downloads;
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
             QUrlQuery query(request.url());
             if (op == QNetworkAccessManager::GetOperation) {
-                auto filename = request.url().path().split("/").last();
-                if (query.hasQueryItem("zsync")) {
+                auto filename = request.url().path().split(QStringLiteral("/")).last();
+                if (query.hasQueryItem(QStringLiteral("zsync"))) {
                     QByteArray meta;
-                    if (filename == "growthSameBlock") {
-                        meta = metadata["threeBlocks"];
-                    } else if (filename == "growthNewBlock") {
-                        meta = metadata["threeBlocksPlusOne"];
-                    } else if (filename == "shrinkSameBlock") {
-                        meta = metadata["threeBlocksMinusOne"];
-                    } else if (filename == "shrinkFewerBlock") {
-                        meta = metadata["threeBlocks"];
+                    if (filename == QLatin1String("growthSameBlock")) {
+                        meta = metadata[QStringLiteral("threeBlocks")];
+                    } else if (filename == QLatin1String("growthNewBlock")) {
+                        meta = metadata[QStringLiteral("threeBlocksPlusOne")];
+                    } else if (filename == QLatin1String("shrinkSameBlock")) {
+                        meta = metadata[QStringLiteral("threeBlocksMinusOne")];
+                    } else if (filename == QLatin1String("shrinkFewerBlock")) {
+                        meta = metadata[QStringLiteral("threeBlocks")];
                     } else {
                         Q_ASSERT(false);
                     }
@@ -214,9 +214,9 @@ private slots:
         QByteArray metadata;
 
         // Test 1: NEW file upload with zsync metadata
-        fakeFolder.localModifier().insert("A/a0", size);
+        fakeFolder.localModifier().insert(QStringLiteral("A/a0"), size);
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *data) -> QNetworkReply * {
-            if (op == QNetworkAccessManager::PutOperation && request.url().toString().endsWith(".zsync")) {
+            if (op == QNetworkAccessManager::PutOperation && request.url().toString().endsWith(QLatin1String(".zsync"))) {
                 metadata = data->readAll();
                 return new FakePutReply{ fakeFolder.uploadState(), op, request, metadata, this };
             }
@@ -230,16 +230,16 @@ private slots:
         // Test 2: Modify local contents and ensure that modified chunks are sent
         QVector<quint64> mods;
         qsrand(QDateTime::currentDateTime().toTime_t());
-        fakeFolder.localModifier().appendByte("A/a0", 'X');
+        fakeFolder.localModifier().appendByte(QStringLiteral("A/a0"), 'X');
         mods.append(blockstart_from_offset(size + 1));
         for (int i = 0; i < 10; i++) {
             quint64 offset = qrand() % size;
-            fakeFolder.localModifier().modifyByte("A/a0", offset, 'Y');
+            fakeFolder.localModifier().modifyByte(QStringLiteral("A/a0"), offset, 'Y');
             mods.append(blockstart_from_offset(offset));
         }
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
             QUrlQuery query(request.url());
-            if (op == QNetworkAccessManager::GetOperation && query.hasQueryItem("zsync")) {
+            if (op == QNetworkAccessManager::GetOperation && query.hasQueryItem(QStringLiteral("zsync"))) {
                 return new FakeGetWithDataReply{ fakeFolder.remoteModifier(), metadata, op, request, this };
             }
 
@@ -250,7 +250,7 @@ private slots:
             return nullptr;
         });
         QVERIFY(fakeFolder.syncOnce());
-        fakeFolder.remoteModifier().appendByte("A/a0", 'X');
+        fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a0"), 'X');
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 
@@ -274,11 +274,11 @@ private slots:
             // Handle .zsync file storage and retrieval - note that preparing a PUT already updates the
             // zsync file data before the upload is finalized with a MOVE here.
             QUrlQuery query(request.url());
-            if (request.url().toString().endsWith(".zsync") && op == QNetworkAccessManager::PutOperation) {
+            if (request.url().toString().endsWith(QLatin1String(".zsync")) && op == QNetworkAccessManager::PutOperation) {
                 metadata = data->readAll();
                 return new FakePutReply{ fakeFolder.uploadState(), op, request, metadata, this };
             }
-            if (op == QNetworkAccessManager::GetOperation && query.hasQueryItem("zsync")) {
+            if (op == QNetworkAccessManager::GetOperation && query.hasQueryItem(QStringLiteral("zsync"))) {
                 return new FakeGetWithDataReply{ fakeFolder.remoteModifier(), metadata, op, request, this };
             }
             // Grab chunk offset and size
@@ -294,7 +294,7 @@ private slots:
 
         // Test 1: NEW file upload with zsync metadata
         auto totalSize = 2 * zsyncBlockSize + 5;
-        fakeFolder.localModifier().insert("a0", totalSize);
+        fakeFolder.localModifier().insert(QStringLiteral("a0"), totalSize);
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 2);
@@ -304,7 +304,7 @@ private slots:
         // Test 2: Appending data to the file
         putChunks.clear();
         totalSize += 1;
-        fakeFolder.localModifier().appendByte("a0", 'Q');
+        fakeFolder.localModifier().appendByte(QStringLiteral("a0"), 'Q');
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 1);
@@ -313,8 +313,8 @@ private slots:
         // Test 3: reduce the file size
         putChunks.clear();
         totalSize -= 10;
-        fakeFolder.localModifier().remove("a0");
-        fakeFolder.localModifier().insert("a0", totalSize);
+        fakeFolder.localModifier().remove(QStringLiteral("a0"));
+        fakeFolder.localModifier().insert(QStringLiteral("a0"), totalSize);
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 1);
@@ -323,8 +323,8 @@ private slots:
         // Test 4: add a large amount, such that the zsync block gets chunked
         putChunks.clear();
         totalSize += int(1.5 * chunkSize);
-        fakeFolder.localModifier().remove("a0");
-        fakeFolder.localModifier().insert("a0", totalSize);
+        fakeFolder.localModifier().remove(QStringLiteral("a0"));
+        fakeFolder.localModifier().insert(QStringLiteral("a0"), totalSize);
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 3);
@@ -336,8 +336,8 @@ private slots:
         // Test 5: append and change an early block at the same time
         putChunks.clear();
         totalSize += 1;
-        fakeFolder.localModifier().appendByte("a0", 'Q');
-        fakeFolder.localModifier().modifyByte("a0", 5, 'Q');
+        fakeFolder.localModifier().appendByte(QStringLiteral("a0"), 'Q');
+        fakeFolder.localModifier().modifyByte(QStringLiteral("a0"), 5, 'Q');
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 2);
@@ -347,9 +347,9 @@ private slots:
         // Test 6: Shrink to an aligned size
         putChunks.clear();
         totalSize = 2 * zsyncBlockSize;
-        fakeFolder.localModifier().remove("a0");
-        fakeFolder.localModifier().insert("a0", totalSize);
-        fakeFolder.localModifier().modifyByte("a0", 5, 'Q'); // same data as before
+        fakeFolder.localModifier().remove(QStringLiteral("a0"));
+        fakeFolder.localModifier().insert(QStringLiteral("a0"), totalSize);
+        fakeFolder.localModifier().modifyByte(QStringLiteral("a0"), 5, 'Q'); // same data as before
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 0);
@@ -357,9 +357,9 @@ private slots:
         // Test 7: Grow to an aligned size
         putChunks.clear();
         totalSize = 3 * zsyncBlockSize;
-        fakeFolder.localModifier().remove("a0");
-        fakeFolder.localModifier().insert("a0", totalSize);
-        fakeFolder.localModifier().modifyByte("a0", 5, 'Q'); // same data as before
+        fakeFolder.localModifier().remove(QStringLiteral("a0"));
+        fakeFolder.localModifier().insert(QStringLiteral("a0"), totalSize);
+        fakeFolder.localModifier().modifyByte(QStringLiteral("a0"), 5, 'Q'); // same data as before
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(putChunks.size() == 1);

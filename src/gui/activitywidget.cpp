@@ -373,10 +373,10 @@ void ActivityWidget::slotSendNotificationRequest(const QString &accountName, con
     qCInfo(lcActivity) << "Server Notification Request " << verb << link << "on account" << accountName;
     NotificationWidget *theSender = qobject_cast<NotificationWidget *>(sender());
 
-    const QStringList validVerbs = QStringList() << "GET"
-                                                 << "PUT"
-                                                 << "POST"
-                                                 << "DELETE";
+    const QStringList validVerbs = QStringList() << QStringLiteral("GET")
+                                                 << QStringLiteral("PUT")
+                                                 << QStringLiteral("POST")
+                                                 << QStringLiteral("DELETE");
 
     if (validVerbs.contains(verb)) {
         AccountStatePtr acc = AccountManager::instance()->account(accountName);

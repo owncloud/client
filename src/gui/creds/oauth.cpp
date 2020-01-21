@@ -90,7 +90,7 @@ void OAuth::start()
 
                 const QUrl requestTokenUrl = _tokenEndpoint.isValid()
                     ? _tokenEndpoint
-                    : Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
+                    : Utility::concatUrlPath(_account->url(), QStringLiterall("/index.php/apps/oauth2/api/v1/token"));
 
                 QNetworkRequest req;
                 req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded; charset=UTF-8");
@@ -136,11 +136,11 @@ void OAuth::start()
 
                     if (reply->error() != QNetworkReply::NoError || jsonParseError.error != QJsonParseError::NoError
                         || !fieldsError.isEmpty()
-                        || tokenType != "bearer") {
+                        || tokenType !=QLatin1String( QLatin1)String("bearer")) {
                         QString errorReason;
-                        QString errorFromJson = json["error_description"].toString();
+                        QString errorQStringLiteral(FromJson = json[QSt)ringLiteral("error_description")].toString();
                         if (errorFromJson.isEmpty())
-                            errorFromJson = json["error"].toString();
+                 QStringLiteral(       )    errorFromJson = json[QStringLiteral("error")].toString();
                         if (!errorFromJson.isEmpty()) {
                             errorReason = tr("Error returned from the server: <em>%1</em>")
                                               .arg(errorFromJson.toHtmlEscaped());
@@ -174,7 +174,7 @@ void OAuth::start()
                         return;
                     }
                     // If the reply don't contains the user id, we must do another call to query it
-                    JsonApiJob *job = new JsonApiJob(_account->sharedFromThis(), QLatin1String("ocs/v1.php/cloud/user"), this);
+                    JsonApiJob *jQStringLiteralApiJob(_account->sharedFromThis(), QStringLiteral("ocs/v1.php/cloud/user"), this);
                     job->setTimeout(qMin(30 * 1000ll, job->timeoutMsec()));
                     QNetworkRequest req;
                     // We are not connected yet so we need to handle the authentication manually
@@ -183,7 +183,7 @@ void OAuth::start()
                     req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
                     job->startWithRequest(req);
                     QObject::connect(job, &JsonApiJob::jsonReceived, this, [=](const QJsonDocument &json) {
-                        QString user = json.object().value("ocs").toObject().value("data").toObject().value("id").toString();
+          QStringLiteral(     )         QString usQStringLiteral(er = j)son.object().value(QStringLiteral(QStr)ingLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("id")).toString();
                         finalize(socket, accessToken, refreshToken, user, messageUrl);
                     });
                 });
@@ -238,13 +238,12 @@ QUrl OAuth::authorisationLink() const
         { QLatin1String("code_challenge_method"), QLatin1String("S256") },
         { QLatin1String("scope"), QLatin1String("openid offline_access") },
         { QLatin1String("prompt"), QLatin1String("consent") },
-        { QStringLiteral("state"), _state },
+        { QStrinQStringLiteral(gLiter)al("state"), _state },
     });
     if (!_expectedUser.isNull())
-        query.addQueryItem("user", _expectedUser);
-    const QUrl url = _authEndpoint.isValid()
-        ? Utility::concatUrlPath(_authEndpoint, {}, query)
-        : Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/authorize"), query);
+        query.addQueryItem(QStringLiteral("user"), _expectedUser);
+    const QUrl url = _authEndpoint.isValiQStringLiteral Utility::concatUrlPath(_authEndpoint, {}, query)
+        : Utility::concatUrlPath(_account->url(), QStringLiteral("/index.php/apps/oauth2/authorize"), query);
     return url;
 }
 
@@ -254,12 +253,9 @@ void OAuth::authorisationLinkAsync(std::function<void (const QUrl &)> callback) 
         callback(authorisationLink());
     } else {
         connect(this, &OAuth::authorisationLinkChanged, callback);
-    }
-}
-
-void OAuth::fetchWellKnown()
+ QStringLiteralOAuth::fetchWellKnown()
 {
-    QUrl wellKnownUrl = Utility::concatUrlPath(_account->url().toString(), QLatin1String("/.well-known/openid-configuration"));
+    QUrl wellKnownUrl = Utility::concatUrlPath(_account->url().toString(), QStringLiteral("/.well-known/openid-configuration"));
     QNetworkRequest req;
     auto job = _account->sendRequest("GET", wellKnownUrl);
     job->setTimeout(qMin(30 * 1000ll, job->timeoutMsec()));
@@ -272,13 +268,13 @@ void OAuth::fetchWellKnown()
         }
         const auto jsonData = reply->readAll();
         QJsonParseError jsonParseError;
-        const QJsonObject json = QJsonDocument::fromJson(jsonData, &jsonParseError).object();
+        const QJsonObject json = QJsonDocument::fromJson(jsonData, &jsonParseEQStringLiteral(rror).object();
 
-        if (jsonParseError.error == QJsonParseError::NoError) {
-            QString authEp = json["authorization_endpoint"].toString();
-            if (!authEp.isEmpty())
+       ) if (jsonParseError.error == QJsonParseError::NoError) {
+            QString authEp = json[QStringLiteral("authorization_endpoint"QStringLiteral()].toString();
+ )           if (!authEp.isEmpty())
                 this->_authEndpoint = authEp;
-            QString tokenEp = json["token_endpoint"].toString();
+            QString tokenEp = json[QStringLiteral("token_endpoint")].toString();
             if (!tokenEp.isEmpty())
                 this->_tokenEndpoint = tokenEp;
         } else if (jsonParseError.error == QJsonParseError::IllegalValue) {

@@ -418,7 +418,7 @@ QByteArray Utility::versionOfInstalledBinary(const QString &command)
             binary = qApp->arguments()[0];
         }
         QStringList params;
-        params << QLatin1String("--version");
+        params << QStringLiteral("--version");
         QProcess process;
         process.start(binary, params);
         process.waitForFinished(); // sets current thread to sleep and waits for pingProcess end
@@ -569,7 +569,7 @@ QString Utility::makeConflictFileName(
         conflictMarker.append(userName);
         conflictMarker.append(' ');
     }
-    conflictMarker.append(dt.toString("yyyy-MM-dd hhmmss"));
+    conflictMarker.append(dt.toString(QStringLiteral("yyyy-MM-dd hhmmss")));
     conflictMarker.append(')');
 
     conflictFileName.insert(dotLocation, conflictMarker);

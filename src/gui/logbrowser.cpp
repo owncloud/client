@@ -42,7 +42,7 @@ LogBrowser::LogBrowser(QWidget *parent)
     : QDialog(parent)
 {
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-    setObjectName("LogBrowser"); // for save/restoreGeometry()
+    setObjectName(QStringLiteral("LogBrowser")); // for save/restoreGeometry()
     setWindowTitle(tr("Log Output"));
     setMinimumWidth(600);
 
@@ -102,7 +102,7 @@ LogBrowser::LogBrowser(QWidget *parent)
     setModal(false);
 
     QAction *showLogWindow = new QAction(this);
-    showLogWindow->setShortcut(QKeySequence("F12"));
+    showLogWindow->setShortcut(QKeySequence(QStringLiteral("F12")));
     connect(showLogWindow, &QAction::triggered, this, &QWidget::close);
     addAction(showLogWindow);
 

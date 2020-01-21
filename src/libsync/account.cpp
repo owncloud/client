@@ -119,7 +119,7 @@ QString Account::displayName() const
         host.append(QLatin1Char(':'));
         host.append(QString::number(port));
     }
-    QString dn = QString("%1 (%2)").arg(host, user);
+    QString dn = QStringLiteral("%1 (%2)").arg(host, user);
     return dn;
 }
 
@@ -471,7 +471,7 @@ bool Account::serverVersionUnsupported() const
         return false;
     }
     // Older version which is not "end of life" according to https://github.com/owncloud/core/wiki/Maintenance-and-Release-Schedule
-    return serverVersionInt() < makeServerVersion(10, 0, 0) || serverVersion().endsWith("Nextcloud");
+    return serverVersionInt() < makeServerVersion(10, 0, 0) || serverVersion().endsWith(QLatin1String("Nextcloud"));
 }
 
 void Account::setServerVersion(const QString &version)

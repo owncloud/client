@@ -235,7 +235,7 @@ QString Folder::cleanPath() const
 {
     QString cleanedPath = QDir::cleanPath(_canonicalLocalPath);
 
-    if (cleanedPath.length() == 3 && cleanedPath.endsWith(":/"))
+    if (cleanedPath.length() == 3 && cleanedPath.endsWith(QLatin1String(":/")))
         cleanedPath.remove(2, 1);
 
     return cleanedPath;
@@ -707,7 +707,7 @@ void Folder::saveToSettings() const
     FolderDefinition::save(*settings, _definition);
 
     // Technically redundant, just for older clients
-    settings->setValue(QLatin1String("usePlaceholders"), newFilesAreVirtual());
+    settings->setValue(QStringLiteral("usePlaceholders"), newFilesAreVirtual());
 
     settings->sync();
     qCInfo(lcFolder) << "Saved folder" << _definition.alias << "to settings, status" << settings->status();
@@ -716,13 +716,13 @@ void Folder::saveToSettings() const
 void Folder::removeFromSettings() const
 {
     auto settings = _accountState->settings();
-    settings->beginGroup(QLatin1String("Folders"));
+    settings->beginGroup(QStringLiteral("Folders"));
     settings->remove(FolderMan::escapeAlias(_definition.alias));
     settings->endGroup();
-    settings->beginGroup(QLatin1String("Multifolders"));
+    settings->beginGroup(QStringLiteral("Multifolders"));
     settings->remove(FolderMan::escapeAlias(_definition.alias));
     settings->endGroup();
-    settings->beginGroup(QLatin1String("FoldersWithPlaceholders"));
+    settings->beginGroup(QStringLiteral("FoldersWithPlaceholders"));
     settings->remove(FolderMan::escapeAlias(_definition.alias));
 }
 
@@ -1066,7 +1066,7 @@ void Folder::slotNewBigFolderDiscovered(const QString &newF, bool isExternal)
 
 void Folder::slotLogPropagationStart()
 {
-    _fileLog->logLap("Propagation starts");
+    _fileLog->logLap(QStringLiteral("Propagation starts"));
 }
 
 void Folder::slotScheduleThisFolder()
@@ -1235,11 +1235,11 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction dir, bool *cancel
 
 void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
 {
-    settings.setValue(QLatin1String("localPath"), folder.localPath);
-    settings.setValue(QLatin1String("journalPath"), folder.journalPath);
-    settings.setValue(QLatin1String("targetPath"), folder.targetPath);
-    settings.setValue(QLatin1String("paused"), folder.paused);
-    settings.setValue(QLatin1String("ignoreHiddenFiles"), folder.ignoreHiddenFiles);
+    settings.setValue(QStringLiteral("localPath"), folder.localPath);
+    settings.setValue(QStringLiteral("journalPath"), folder.journalPath);
+    settings.setValue(QStringLiteral("targetPath"), folder.targetPath);
+    settings.setValue(QStringLiteral("paused"), folder.paused);
+    settings.setValue(QStringLiteral("ignoreHiddenFiles"), folder.ignoreHiddenFiles);
 
     settings.setValue(QStringLiteral("virtualFilesMode"), Vfs::modeToString(folder.virtualFilesMode));
 
@@ -1252,21 +1252,21 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
 
     // Happens only on Windows when the explorer integration is enabled.
     if (!folder.navigationPaneClsid.isNull())
-        settings.setValue(QLatin1String("navigationPaneClsid"), folder.navigationPaneClsid);
+        settings.setValue(QStringLiteral("navigationPaneClsid"), folder.navigationPaneClsid);
     else
-        settings.remove(QLatin1String("navigationPaneClsid"));
+        settings.remove(QStringLiteral("navigationPaneClsid"));
 }
 
 bool FolderDefinition::load(QSettings &settings, const QString &alias,
     FolderDefinition *folder)
 {
     folder->alias = FolderMan::unescapeAlias(alias);
-    folder->localPath = settings.value(QLatin1String("localPath")).toString();
-    folder->journalPath = settings.value(QLatin1String("journalPath")).toString();
-    folder->targetPath = settings.value(QLatin1String("targetPath")).toString();
-    folder->paused = settings.value(QLatin1String("paused")).toBool();
-    folder->ignoreHiddenFiles = settings.value(QLatin1String("ignoreHiddenFiles"), QVariant(true)).toBool();
-    folder->navigationPaneClsid = settings.value(QLatin1String("navigationPaneClsid")).toUuid();
+    folder->localPath = settings.value(QStringLiteral("localPath")).toString();
+    folder->journalPath = settings.value(QStringLiteral("journalPath")).toString();
+    folder->targetPath = settings.value(QStringLiteral("targetPath")).toString();
+    folder->paused = settings.value(QStringLiteral("paused")).toBool();
+    folder->ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"), QVariant(true)).toBool();
+    folder->navigationPaneClsid = settings.value(QStringLiteral("navigationPaneClsid")).toUuid();
 
     folder->virtualFilesMode = Vfs::Off;
     QString vfsModeString = settings.value(QStringLiteral("virtualFilesMode")).toString();
@@ -1277,7 +1277,7 @@ bool FolderDefinition::load(QSettings &settings, const QString &alias,
             qCWarning(lcFolder) << "Unknown virtualFilesMode:" << vfsModeString << "assuming 'off'";
         }
     } else {
-        if (settings.value(QLatin1String("usePlaceholders")).toBool()) {
+        if (settings.value(QStringLiteral("usePlaceholders")).toBool()) {
             folder->virtualFilesMode = Vfs::WithSuffix;
             folder->upgradeVfsMode = true; // maybe winvfs is available?
         }

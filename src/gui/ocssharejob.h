@@ -46,7 +46,7 @@ public:
      *
      * @param path Path to request shares for (default all shares)
      */
-    void getShares(const QString &path = "");
+    void getShares(const QString &path = QLatin1String(""));
 
     /**
      * Delete the current Share
@@ -114,7 +114,7 @@ public:
      */
     void createShare(const QString &path,
         const Share::ShareType shareType,
-        const QString &shareWith = "",
+        const QString &shareWith = QLatin1String(""),
         const Share::Permissions permissions = SharePermissionRead);
 
     /**

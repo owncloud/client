@@ -204,7 +204,7 @@ ProtocolWidget::ProtocolWidget(QWidget *parent)
     _ui->_treeWidget->setColumnCount(5);
     _ui->_treeWidget->setRootIsDecorated(false);
     _ui->_treeWidget->setTextElideMode(Qt::ElideMiddle);
-    _ui->_treeWidget->header()->setObjectName("ActivityListHeader");
+    _ui->_treeWidget->header()->setObjectName(QStringLiteral("ActivityListHeader"));
 #if defined(Q_OS_MAC)
     _ui->_treeWidget->setMinimumWidth(400);
 #endif

@@ -83,7 +83,7 @@ namespace {
 
     QString applicationTrPath()
     {
-        QString devTrPath = qApp->applicationDirPath() + QString::fromLatin1("/../src/gui/");
+        QString devTrPath = qApp->applicationDirPath() + QLatin1String("/../src/gui/");
         if (QDir(devTrPath).exists()) {
             // might miss Qt, QtKeyChain, etc.
             qCWarning(lcApplication) << "Running from build location! Translations may be incomplete!";
@@ -149,7 +149,7 @@ bool Application::configVersionMigration()
             return false;
         }
 
-        auto settings = ConfigFile::settingsWithGroup("foo");
+        auto settings = ConfigFile::settingsWithGroup(QStringLiteral("foo"));
         settings->endGroup();
 
         // Wipe confusing keys from the future, ignore the others
@@ -186,7 +186,7 @@ Application::Application(int &argc, char **argv)
 
     // TODO: Can't set this without breaking current config paths
     //    setOrganizationName(QLatin1String(APPLICATION_VENDOR));
-    setOrganizationDomain(QLatin1String(APPLICATION_REV_DOMAIN));
+    setOrganizationDomain(QStringLiteral(APPLICATION_REV_DOMAIN));
     setApplicationName(_theme->appName());
     setWindowIcon(_theme->applicationIcon());
 
@@ -327,7 +327,7 @@ Application::Application(int &argc, char **argv)
     _proxy.setupQtProxyFromConfig(); // folders have to be defined first, than we set up the Qt proxy.
 
     // Enable word wrapping of QInputDialog (#4197)
-    setStyleSheet("QInputDialog QLabel { qproperty-wordWrap:1; }");
+    setStyleSheet(QStringLiteral("QInputDialog QLabel { qproperty-wordWrap:1; }"));
 
     connect(AccountManager::instance(), &AccountManager::accountAdded,
         this, &Application::slotAccountStateAdded);
@@ -512,7 +512,7 @@ void Application::setupLogging()
     // Possibly configure logging from config file
     LogBrowser::setupLoggingFromConfig();
 
-    qCInfo(lcApplication) << QString::fromLatin1("################## %1 locale:[%2] ui_lang:[%3] version:[%4] os:[%5]").arg(_theme->appName()).arg(QLocale::system().name()).arg(property("ui_lang").toString()).arg(_theme->version()).arg(Utility::platformName());
+    qCInfo(lcApplication) << QStringLiteral("################## %1 locale:[%2] ui_lang:[%3] version:[%4] os:[%5]").arg(_theme->appName()).arg(QLocale::system().name()).arg(property("ui_lang").toString()).arg(_theme->version()).arg(Utility::platformName());
 }
 
 void Application::slotUseMonoIconsChanged(bool)
@@ -684,10 +684,10 @@ QString substLang(const QString &lang)
 
     // Simplified Chinese
     if (lang == QLatin1String("zh_Hans"))
-        return QLatin1String("zh_CN");
+        return QStringLiteral("zh_CN");
     // Traditional Chinese
     if (lang == QLatin1String("zh_Hant"))
-        return QLatin1String("zh_TW");
+        return QStringLiteral("zh_TW");
     return lang;
 }
 

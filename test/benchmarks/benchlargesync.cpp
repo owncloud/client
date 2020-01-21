@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
     FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
-    addBunchOfFiles<10, 8, 4>(0, "", fakeFolder.localModifier());
+    addBunchOfFiles<10, 8, 4>(0, QLatin1String(""), fakeFolder.localModifier());
 
     qDebug() << "NUMFILES" << numFiles;
     qDebug() << "NUMDIRS" << numDirs;

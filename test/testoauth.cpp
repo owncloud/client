@@ -21,10 +21,10 @@ class DesktopServiceHook : public QObject
 signals:
     void hooked(const QUrl &);
 public:
-    DesktopServiceHook() { QDesktopServices::setUrlHandler("oauthtest", this, "hooked"); }
+    DesktopServiceHook() { QDesktopServices::setUrlHandler(QStringLiteral("oauthtest"), this, "hooked"); }
 };
 
-static const QUrl sOAuthTestServer("oauthtest://someserver/owncloud");
+static const QUrl sOAuthTestServer(QStringLiteral("oauthtest://someserver/owncloud"));
 
 
 class FakePostReply : public QNetworkReply
@@ -50,7 +50,7 @@ public:
 
     Q_INVOKABLE virtual void respond() {
         if (aborted) {
-            setError(OperationCanceledError, "Operation Canceled");
+            setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
             emit metaDataChanged();
             emit finished();
             return;
@@ -133,7 +133,7 @@ public:
         account->setCredentials(new FakeCredentials{fakeQnam});
         fakeQnam->setParent(this);
         fakeQnam->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device)  {
-            if (req.url().path().endsWith(".well-known/openid-configuration"))
+            if (req.url().path().endsWith(QLatin1String(".well-known/openid-configuration")))
                 return this->wellKnownReply(op, req);
             ASSERT(device);
             ASSERT(device->bytesAvailable()>0); // OAuth2 always sends around POST data.
@@ -157,7 +157,7 @@ public:
         QUrlQuery query(url);
         QCOMPARE(query.queryItemValue(QLatin1String("response_type")), QLatin1String("code"));
         QCOMPARE(query.queryItemValue(QLatin1String("client_id")), Theme::instance()->oauthClientId());
-        QUrl redirectUri(query.queryItemValue(QLatin1String("redirect_uri")));
+        QUrl redirectUri(query.queryItemValue(QStringLiteral("redirect_uri")));
         QCOMPARE(redirectUri.host(), QLatin1String("localhost"));
         redirectUri.setQuery(QStringLiteral("code=%1&state=%2").arg(code, query.queryItemValue(QStringLiteral("state"))));
         createBrowserReply(QNetworkRequest(redirectUri));
@@ -274,7 +274,7 @@ private slots:
                     };
                     foreach (const auto &x, payloads) {
                         auto socket = new QTcpSocket(this);
-                        socket->connectToHost("localhost", port);
+                        socket->connectToHost(QStringLiteral("localhost"), port);
                         QVERIFY(socket->waitForConnected());
                         socket->write(x);
                     }
@@ -364,7 +364,7 @@ private slots:
                 ASSERT(browserReply);
                 ASSERT(request.url().toString().startsWith("oauthtest://openidserver/token_endpoint"));
                 auto req = request;
-                req.setUrl(request.url().toString().replace("oauthtest://openidserver/token_endpoint",
+                req.setUrl(request.url().toString().replace(QLatin1String("oauthtest://openidserver/token_endpoint"),
                         sOAuthTestServer.toString() + "/index.php/apps/oauth2/api/v1/token"));
                 return OAuthTestCase::tokenReply(op, req);
             }

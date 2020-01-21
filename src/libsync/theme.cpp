@@ -131,7 +131,7 @@ QIcon Theme::themeIcon(const QString &name, bool sysTray, bool sysTrayMenuVisibl
     if (sysTray) {
         flavor = systrayIconFlavor(_mono, sysTrayMenuVisible);
     } else {
-        flavor = QLatin1String("colored");
+        flavor = QStringLiteral("colored");
     }
 
     QString key = name + "," + flavor;
@@ -145,7 +145,7 @@ QIcon Theme::themeIcon(const QString &name, bool sysTray, bool sysTrayMenuVisibl
         QList<int> sizes;
         sizes << 16 << 22 << 32 << 48 << 64 << 128 << 256 << 512 << 1024;
         foreach (int size, sizes) {
-            QString pixmapName = QString::fromLatin1(":/client/theme/%1/%2-%3.png").arg(flavor).arg(name).arg(size);
+            QString pixmapName = QStringLiteral(":/client/theme/%1/%2-%3.png").arg(flavor).arg(name).arg(size);
             if (QFile::exists(pixmapName)) {
                 QPixmap px(pixmapName);
                 // HACK, get rid of it by supporting FDO icon themes, this is really just emulating ubuntu-mono
@@ -160,7 +160,7 @@ QIcon Theme::themeIcon(const QString &name, bool sysTray, bool sysTrayMenuVisibl
         }
         if (cached.isNull()) {
             foreach (int size, sizes) {
-                QString pixmapName = QString::fromLatin1(":/client/resources/%1-%2.png").arg(name).arg(size);
+                QString pixmapName = QStringLiteral(":/client/resources/%1-%2.png").arg(name).arg(size);
                 if (QFile::exists(pixmapName)) {
                     cached.addFile(pixmapName);
                 }
@@ -220,12 +220,12 @@ bool Theme::multiAccount() const
 
 QString Theme::defaultServerFolder() const
 {
-    return QLatin1String("/");
+    return QStringLiteral("/");
 }
 
 QString Theme::helpUrl() const
 {
-    return QString::fromLatin1("https://doc.owncloud.org/desktop/%1.%2/").arg(MIRALL_VERSION_MAJOR).arg(MIRALL_VERSION_MINOR);
+    return QStringLiteral("https://doc.owncloud.org/desktop/%1.%2/").arg(MIRALL_VERSION_MAJOR).arg(MIRALL_VERSION_MINOR);
 }
 
 QString Theme::conflictHelpUrl() const
@@ -259,7 +259,7 @@ QString Theme::systrayIconFlavor(bool mono, bool sysTrayMenuVisible) const
     Q_UNUSED(sysTrayMenuVisible)
     QString flavor;
     if (mono) {
-        flavor = Utility::hasDarkSystray() ? QLatin1String("white") : QLatin1String("black");
+        flavor = Utility::hasDarkSystray() ? QStringLiteral("white") : QStringLiteral("black");
 
 #ifdef Q_OS_MAC
         if (sysTrayMenuVisible) {
@@ -267,7 +267,7 @@ QString Theme::systrayIconFlavor(bool mono, bool sysTrayMenuVisible) const
         }
 #endif
     } else {
-        flavor = QLatin1String("colored");
+        flavor = QStringLiteral("colored");
     }
     return flavor;
 }
@@ -285,13 +285,13 @@ bool Theme::systrayUseMonoIcons() const
 
 bool Theme::monoIconsAvailable() const
 {
-    QString themeDir = QString::fromLatin1(":/client/theme/%1/").arg(Theme::instance()->systrayIconFlavor(true));
+    QString themeDir = QStringLiteral(":/client/theme/%1/").arg(Theme::instance()->systrayIconFlavor(true));
     return QDir(themeDir).exists();
 }
 
 QString Theme::updateCheckUrl() const
 {
-    return QLatin1String("https://updates.owncloud.com/client/");
+    return QStringLiteral("https://updates.owncloud.com/client/");
 }
 
 qint64 Theme::newBigFolderSizeLimit() const
@@ -314,9 +314,9 @@ QString Theme::gitSHA1() const
 {
     QString devString;
 #ifdef GIT_SHA1
-    const QString githubPrefix(QLatin1String(
+    const QString githubPrefix(QStringLiteral(
         "https://github.com/owncloud/client/commit/"));
-    const QString gitSha1(QLatin1String(GIT_SHA1));
+    const QString gitSha1(QStringLiteral(GIT_SHA1));
     devString = QCoreApplication::translate("ownCloudTheme::about()",
         "<p><small>Built from Git revision <a href=\"%1\">%2</a>"
         " on %3, %4 using Qt %5, %6</small></p>")
@@ -335,7 +335,7 @@ QString Theme::about() const
     QString vendor = APPLICATION_VENDOR;
     // Ideally, the vendor should be "ownCloud GmbH", but it cannot be changed without
     // changing the location of the settings and other registery keys.
-    if (vendor == "ownCloud") vendor = QLatin1String("ownCloud GmbH");
+    if (vendor == QLatin1String("ownCloud")) vendor = QStringLiteral("ownCloud GmbH");
 
     QString devString;
     devString = tr("<p>Version %2. For more information visit <a href=\"%3\">https://%4</a></p>"
@@ -352,7 +352,7 @@ QString Theme::about() const
                .arg(Utility::escape(vendor), Utility::escape(APPLICATION_NAME));
 
     devString += gitSHA1();
-    devString += QString("<p><small>Using virtual files plugin: %1</small></p>")
+    devString += QStringLiteral("<p><small>Using virtual files plugin: %1</small></p>")
         .arg(Vfs::modeToString(bestAvailableVfsMode()));
 
     return devString;
@@ -371,20 +371,20 @@ QVariant Theme::customMedia(CustomMediaType type)
 
     switch (type) {
     case oCSetupTop:
-        key = QLatin1String("oCSetupTop");
+        key = QStringLiteral("oCSetupTop");
         break;
     case oCSetupSide:
-        key = QLatin1String("oCSetupSide");
+        key = QStringLiteral("oCSetupSide");
         break;
     case oCSetupBottom:
-        key = QLatin1String("oCSetupBottom");
+        key = QStringLiteral("oCSetupBottom");
         break;
     case oCSetupResultTop:
-        key = QLatin1String("oCSetupResultTop");
+        key = QStringLiteral("oCSetupResultTop");
         break;
     }
 
-    QString imgPath = QString::fromLatin1(":/client/theme/colored/%1.png").arg(key);
+    QString imgPath = QStringLiteral(":/client/theme/colored/%1.png").arg(key);
     if (QFile::exists(imgPath)) {
         QPixmap pix(imgPath);
         if (pix.isNull()) {
@@ -405,28 +405,28 @@ QIcon Theme::syncStateIcon(SyncResult::Status status, bool sysTray, bool sysTray
     switch (status) {
     case SyncResult::Undefined:
         // this can happen if no sync connections are configured.
-        statusIcon = QLatin1String("state-information");
+        statusIcon = QStringLiteral("state-information");
         break;
     case SyncResult::NotYetStarted:
     case SyncResult::SyncRunning:
-        statusIcon = QLatin1String("state-sync");
+        statusIcon = QStringLiteral("state-sync");
         break;
     case SyncResult::SyncAbortRequested:
     case SyncResult::Paused:
-        statusIcon = QLatin1String("state-pause");
+        statusIcon = QStringLiteral("state-pause");
         break;
     case SyncResult::SyncPrepare:
     case SyncResult::Success:
-        statusIcon = QLatin1String("state-ok");
+        statusIcon = QStringLiteral("state-ok");
         break;
     case SyncResult::Problem:
-        statusIcon = QLatin1String("state-information");
+        statusIcon = QStringLiteral("state-information");
         break;
     case SyncResult::Error:
     case SyncResult::SetupError:
     // FIXME: Use state-problem once we have an icon.
     default:
-        statusIcon = QLatin1String("state-error");
+        statusIcon = QStringLiteral("state-error");
     }
 
     return themeIcon(statusIcon, sysTray, sysTrayMenuVisible);
@@ -484,12 +484,12 @@ bool Theme::wizardSelectiveSyncDefaultNothing() const
 
 QString Theme::webDavPath() const
 {
-    return QLatin1String("remote.php/webdav/");
+    return QStringLiteral("remote.php/webdav/");
 }
 
 QString Theme::webDavPathNonShib() const
 {
-    return QLatin1String("remote.php/nonshib-webdav/");
+    return QStringLiteral("remote.php/nonshib-webdav/");
 }
 
 bool Theme::linkSharing() const
@@ -535,17 +535,17 @@ QString Theme::wizardUrlHint() const
 
 QString Theme::quotaBaseFolder() const
 {
-    return QLatin1String("/");
+    return QStringLiteral("/");
 }
 
 QString Theme::oauthClientId() const
 {
-    return "xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69";
+    return QStringLiteral("xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69");
 }
 
 QString Theme::oauthClientSecret() const
 {
-    return "UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh";
+    return QStringLiteral("UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh");
 }
 
 QString Theme::versionSwitchOutput() const

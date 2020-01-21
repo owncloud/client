@@ -501,7 +501,7 @@ QString ExcludedFiles::convertToRegexpSyntax(QString exclude, bool wildcardsMatc
             }
             // Translate [! to [^
             QString bracketExpr = exclude.mid(i, j - i + 1);
-            if (bracketExpr.startsWith("[!"))
+            if (bracketExpr.startsWith(QLatin1String("[!")))
                 bracketExpr[1] = '^';
             regex.append(bracketExpr);
             i = j;
@@ -653,7 +653,7 @@ void ExcludedFiles::prepare()
     // The empty pattern would match everything - change it to match-nothing
     auto emptyMatchNothing = [](QString &pattern) {
         if (pattern.isEmpty())
-            pattern = "a^";
+            pattern = QLatin1String("a^");
     };
     emptyMatchNothing(fullFileDirKeep);
     emptyMatchNothing(fullFileDirRemove);

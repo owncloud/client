@@ -47,17 +47,17 @@ namespace WizardCommon {
 
     QString titleTemplate()
     {
-        return QString::fromLatin1("<font color=\"%1\" size=\"5\">").arg(Theme::instance()->wizardHeaderTitleColor().name()) + QString::fromLatin1("%1</font>");
+        return QStringLiteral("<font color=\"%1\" size=\"5\">").arg(Theme::instance()->wizardHeaderTitleColor().name()) + QLatin1String("%1</font>");
     }
 
     QString subTitleTemplate()
     {
-        return QString::fromLatin1("<font color=\"%1\">").arg(Theme::instance()->wizardHeaderTitleColor().name()) + QString::fromLatin1("%1</font>");
+        return QStringLiteral("<font color=\"%1\">").arg(Theme::instance()->wizardHeaderTitleColor().name()) + QLatin1String("%1</font>");
     }
 
     void initErrorLabel(QLabel *errorLabel)
     {
-        QString style = QLatin1String("border: 1px solid #eed3d7; border-radius: 5px; padding: 3px;"
+        QString style = QStringLiteral("border: 1px solid #eed3d7; border-radius: 5px; padding: 3px;"
                                       "background-color: #f2dede; color: #b94a48;");
 
         errorLabel->setStyleSheet(style);

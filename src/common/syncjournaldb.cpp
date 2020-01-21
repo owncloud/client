@@ -107,9 +107,9 @@ QString SyncJournalDb::makeDbName(const QString &localPath,
     const QString &remotePath,
     const QString &user)
 {
-    QString journalPath = QLatin1String(".sync_");
+    QString journalPath = QStringLiteral(".sync_");
 
-    QString key = QString::fromUtf8("%1@%2:%3").arg(user, remoteUrl.toString(), remotePath);
+    QString key = QStringLiteral("%1@%2:%3").arg(user, remoteUrl.toString(), remotePath);
 
     QByteArray ba = QCryptographicHash::hash(key.toUtf8(), QCryptographicHash::Md5);
     journalPath.append(ba.left(6).toHex());
@@ -295,7 +295,7 @@ bool SyncJournalDb::checkConnect()
     SqlQuery pragma1(_db);
     pragma1.prepare("SELECT sqlite_version();");
     if (!pragma1.exec()) {
-        return sqlFail("SELECT sqlite_version()", pragma1);
+        return sqlFail(QStringLiteral("SELECT sqlite_version()"), pragma1);
     } else {
         pragma1.next();
         qCInfo(lcDb) << "sqlite3 version" << pragma1.stringValue(0);
@@ -307,7 +307,7 @@ bool SyncJournalDb::checkConnect()
         locking_mode_env = "EXCLUSIVE";
     pragma1.prepare("PRAGMA locking_mode=" + locking_mode_env + ";");
     if (!pragma1.exec()) {
-        return sqlFail("Set PRAGMA locking_mode", pragma1);
+        return sqlFail(QStringLiteral("Set PRAGMA locking_mode"), pragma1);
     } else {
         pragma1.next();
         qCInfo(lcDb) << "sqlite3 locking_mode=" << pragma1.stringValue(0);
@@ -315,7 +315,7 @@ bool SyncJournalDb::checkConnect()
 
     pragma1.prepare("PRAGMA journal_mode=" + _journalMode + ";");
     if (!pragma1.exec()) {
-        return sqlFail("Set PRAGMA journal_mode", pragma1);
+        return sqlFail(QStringLiteral("Set PRAGMA journal_mode"), pragma1);
     } else {
         pragma1.next();
         qCInfo(lcDb) << "sqlite3 journal_mode=" << pragma1.stringValue(0);
@@ -326,7 +326,7 @@ bool SyncJournalDb::checkConnect()
     if (!env_temp_store.isEmpty()) {
         pragma1.prepare("PRAGMA temp_store = " + env_temp_store + ";");
         if (!pragma1.exec()) {
-            return sqlFail("Set PRAGMA temp_store", pragma1);
+            return sqlFail(QStringLiteral("Set PRAGMA temp_store"), pragma1);
         }
         qCInfo(lcDb) << "sqlite3 with temp_store =" << env_temp_store;
     }
@@ -338,14 +338,14 @@ bool SyncJournalDb::checkConnect()
         synchronousMode = "NORMAL";
     pragma1.prepare("PRAGMA synchronous = " + synchronousMode + ";");
     if (!pragma1.exec()) {
-        return sqlFail("Set PRAGMA synchronous", pragma1);
+        return sqlFail(QStringLiteral("Set PRAGMA synchronous"), pragma1);
     } else {
         qCInfo(lcDb) << "sqlite3 synchronous=" << synchronousMode;
     }
 
     pragma1.prepare("PRAGMA case_sensitive_like = ON;");
     if (!pragma1.exec()) {
-        return sqlFail("Set PRAGMA case_sensitivity", pragma1);
+        return sqlFail(QStringLiteral("Set PRAGMA case_sensitivity"), pragma1);
     }
 
     {
@@ -357,7 +357,7 @@ bool SyncJournalDb::checkConnect()
         SqlQuery query(_db);
         query.prepare("DROP INDEX IF EXISTS metadata_parent;");
         if (!query.exec()) {
-            return sqlFail("updateMetadataTableStructure: remove index metadata_parent", query);
+            return sqlFail(QStringLiteral("updateMetadataTableStructure: remove index metadata_parent"), query);
         }
     }
 
@@ -417,7 +417,7 @@ bool SyncJournalDb::checkConnect()
             return checkConnect();
         }
 
-        return sqlFail("Create table metadata", createQuery);
+        return sqlFail(QStringLiteral("Create table metadata"), createQuery);
     }
 
     createQuery.prepare("CREATE TABLE IF NOT EXISTS downloadinfo("
@@ -429,7 +429,7 @@ bool SyncJournalDb::checkConnect()
                         ");");
 
     if (!createQuery.exec()) {
-        return sqlFail("Create table downloadinfo", createQuery);
+        return sqlFail(QStringLiteral("Create table downloadinfo"), createQuery);
     }
 
     createQuery.prepare("CREATE TABLE IF NOT EXISTS uploadinfo("
@@ -444,7 +444,7 @@ bool SyncJournalDb::checkConnect()
                         ");");
 
     if (!createQuery.exec()) {
-        return sqlFail("Create table uploadinfo", createQuery);
+        return sqlFail(QStringLiteral("Create table uploadinfo"), createQuery);
     }
 
     // create the blacklist table.
@@ -458,7 +458,7 @@ bool SyncJournalDb::checkConnect()
                         ");");
 
     if (!createQuery.exec()) {
-        return sqlFail("Create table blacklist", createQuery);
+        return sqlFail(QStringLiteral("Create table blacklist"), createQuery);
     }
 
     createQuery.prepare("CREATE TABLE IF NOT EXISTS async_poll("
@@ -467,7 +467,7 @@ bool SyncJournalDb::checkConnect()
                         "filesize BIGINT,"
                         "pollpath VARCHAR(4096));");
     if (!createQuery.exec()) {
-        return sqlFail("Create table async_poll", createQuery);
+        return sqlFail(QStringLiteral("Create table async_poll"), createQuery);
     }
 
     // create the selectivesync table.
@@ -477,7 +477,7 @@ bool SyncJournalDb::checkConnect()
                         ");");
 
     if (!createQuery.exec()) {
-        return sqlFail("Create table selectivesync", createQuery);
+        return sqlFail(QStringLiteral("Create table selectivesync"), createQuery);
     }
 
     // create the checksumtype table.
@@ -486,7 +486,7 @@ bool SyncJournalDb::checkConnect()
                         "name TEXT UNIQUE"
                         ");");
     if (!createQuery.exec()) {
-        return sqlFail("Create table version", createQuery);
+        return sqlFail(QStringLiteral("Create table version"), createQuery);
     }
 
     // create the datafingerprint table.
@@ -494,7 +494,7 @@ bool SyncJournalDb::checkConnect()
                         "fingerprint TEXT UNIQUE"
                         ");");
     if (!createQuery.exec()) {
-        return sqlFail("Create table datafingerprint", createQuery);
+        return sqlFail(QStringLiteral("Create table datafingerprint"), createQuery);
     }
 
     // create the flags table.
@@ -503,7 +503,7 @@ bool SyncJournalDb::checkConnect()
                         "pinState INTEGER"
                         ");");
     if (!createQuery.exec()) {
-        return sqlFail("Create table flags", createQuery);
+        return sqlFail(QStringLiteral("Create table flags"), createQuery);
     }
 
     // create the conflicts table.
@@ -514,7 +514,7 @@ bool SyncJournalDb::checkConnect()
                         "baseModtime INTEGER"
                         ");");
     if (!createQuery.exec()) {
-        return sqlFail("Create table conflicts", createQuery);
+        return sqlFail(QStringLiteral("Create table conflicts"), createQuery);
     }
 
     createQuery.prepare("CREATE TABLE IF NOT EXISTS version("
@@ -524,7 +524,7 @@ bool SyncJournalDb::checkConnect()
                         "custom VARCHAR(256)"
                         ");");
     if (!createQuery.exec()) {
-        return sqlFail("Create table version", createQuery);
+        return sqlFail(QStringLiteral("Create table version"), createQuery);
     }
 
     bool forceRemoteDiscovery = false;
@@ -541,7 +541,7 @@ bool SyncJournalDb::checkConnect()
         createQuery.bindValue(3, MIRALL_VERSION_PATCH);
         createQuery.bindValue(4, MIRALL_VERSION_BUILD);
         if (!createQuery.exec()) {
-            return sqlFail("Update version", createQuery);
+            return sqlFail(QStringLiteral("Update version"), createQuery);
         }
 
     } else {
@@ -575,12 +575,12 @@ bool SyncJournalDb::checkConnect()
             createQuery.bindValue(6, minor);
             createQuery.bindValue(7, patch);
             if (!createQuery.exec()) {
-                return sqlFail("Update version", createQuery);
+                return sqlFail(QStringLiteral("Update version"), createQuery);
             }
         }
     }
 
-    commitInternal("checkConnect");
+    commitInternal(QStringLiteral("checkConnect"));
 
     bool rc = updateDatabaseStructure();
     if (!rc) {
@@ -599,12 +599,12 @@ bool SyncJournalDb::checkConnect()
         forceRemoteDiscoveryNextSyncLocked();
     }
     if (!_deleteDownloadInfoQuery.initOrReset("DELETE FROM downloadinfo WHERE path=?1", _db)) {
-        return sqlFail("prepare _deleteDownloadInfoQuery", _deleteDownloadInfoQuery);
+        return sqlFail(QStringLiteral("prepare _deleteDownloadInfoQuery"), _deleteDownloadInfoQuery);
     }
 
 
     if (!_deleteUploadInfoQuery.initOrReset("DELETE FROM uploadinfo WHERE path=?1", _db)) {
-        return sqlFail("prepare _deleteUploadInfoQuery", _deleteUploadInfoQuery);
+        return sqlFail(QStringLiteral("prepare _deleteUploadInfoQuery"), _deleteUploadInfoQuery);
     }
 
     QByteArray sql("SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId "
@@ -615,11 +615,11 @@ bool SyncJournalDb::checkConnect()
         sql += " COLLATE NOCASE";
     }
     if (!_getErrorBlacklistQuery.initOrReset(sql, _db)) {
-        return sqlFail("prepare _getErrorBlacklistQuery", _getErrorBlacklistQuery);
+        return sqlFail(QStringLiteral("prepare _getErrorBlacklistQuery"), _getErrorBlacklistQuery);
     }
 
     // don't start a new transaction now
-    commitInternal(QString("checkConnect End"), false);
+    commitInternal(QStringLiteral("checkConnect End"), false);
 
     // This avoid reading from the DB if we already know it is empty
     // thereby speeding up the initial discovery significantly.
@@ -669,93 +669,93 @@ bool SyncJournalDb::updateMetadataTableStructure()
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN fileid VARCHAR(128);");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: Add column fileid", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: Add column fileid"), query);
             re = false;
         }
 
         query.prepare("CREATE INDEX metadata_file_id ON metadata(fileid);");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index fileid", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: create index fileid"), query);
             re = false;
         }
-        commitInternal("update database structure: add fileid col");
+        commitInternal(QStringLiteral("update database structure: add fileid col"));
     }
     if (columns.indexOf("remotePerm") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN remotePerm VARCHAR(128);");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: add column remotePerm", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add column remotePerm"), query);
             re = false;
         }
-        commitInternal("update database structure (remotePerm)");
+        commitInternal(QStringLiteral("update database structure (remotePerm)"));
     }
     if (columns.indexOf("filesize") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN filesize BIGINT;");
         if (!query.exec()) {
-            sqlFail("updateDatabaseStructure: add column filesize", query);
+            sqlFail(QStringLiteral("updateDatabaseStructure: add column filesize"), query);
             re = false;
         }
-        commitInternal("update database structure: add filesize col");
+        commitInternal(QStringLiteral("update database structure: add filesize col"));
     }
 
     if (1) {
         SqlQuery query(_db);
         query.prepare("CREATE INDEX IF NOT EXISTS metadata_inode ON metadata(inode);");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index inode", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: create index inode"), query);
             re = false;
         }
-        commitInternal("update database structure: add inode index");
+        commitInternal(QStringLiteral("update database structure: add inode index"));
     }
 
     if (1) {
         SqlQuery query(_db);
         query.prepare("CREATE INDEX IF NOT EXISTS metadata_path ON metadata(path);");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index path", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: create index path"), query);
             re = false;
         }
-        commitInternal("update database structure: add path index");
+        commitInternal(QStringLiteral("update database structure: add path index"));
     }
 
     if (1) {
         SqlQuery query(_db);
         query.prepare("CREATE INDEX IF NOT EXISTS metadata_parent ON metadata(parent_hash(path));");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: create index parent", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: create index parent"), query);
             re = false;
         }
-        commitInternal("update database structure: add parent index");
+        commitInternal(QStringLiteral("update database structure: add parent index"));
     }
 
     if (columns.indexOf("ignoredChildrenRemote") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN ignoredChildrenRemote INT;");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: add ignoredChildrenRemote column", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add ignoredChildrenRemote column"), query);
             re = false;
         }
-        commitInternal("update database structure: add ignoredChildrenRemote col");
+        commitInternal(QStringLiteral("update database structure: add ignoredChildrenRemote col"));
     }
 
     if (columns.indexOf("contentChecksum") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN contentChecksum TEXT;");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: add contentChecksum column", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add contentChecksum column"), query);
             re = false;
         }
-        commitInternal("update database structure: add contentChecksum col");
+        commitInternal(QStringLiteral("update database structure: add contentChecksum col"));
     }
     if (columns.indexOf("contentChecksumTypeId") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE metadata ADD COLUMN contentChecksumTypeId INTEGER;");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: add contentChecksumTypeId column", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add contentChecksumTypeId column"), query);
             re = false;
         }
-        commitInternal("update database structure: add contentChecksumTypeId col");
+        commitInternal(QStringLiteral("update database structure: add contentChecksumTypeId col"));
     }
 
     auto uploadInfoColumns = tableColumns("uploadinfo");
@@ -765,10 +765,10 @@ bool SyncJournalDb::updateMetadataTableStructure()
         SqlQuery query(_db);
         query.prepare("ALTER TABLE uploadinfo ADD COLUMN contentChecksum TEXT;");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: add contentChecksum column", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add contentChecksum column"), query);
             re = false;
         }
-        commitInternal("update database structure: add contentChecksum col for uploadinfo");
+        commitInternal(QStringLiteral("update database structure: add contentChecksum col for uploadinfo"));
     }
 
     auto conflictsColumns = tableColumns("conflicts");
@@ -778,7 +778,7 @@ bool SyncJournalDb::updateMetadataTableStructure()
         SqlQuery query(_db);
         query.prepare("ALTER TABLE conflicts ADD COLUMN basePath TEXT;");
         if (!query.exec()) {
-            sqlFail("updateMetadataTableStructure: add basePath column", query);
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add basePath column"), query);
             re = false;
         }
     }
@@ -799,50 +799,50 @@ bool SyncJournalDb::updateErrorBlacklistTableStructure()
         SqlQuery query(_db);
         query.prepare("ALTER TABLE blacklist ADD COLUMN lastTryTime INTEGER(8);");
         if (!query.exec()) {
-            sqlFail("updateBlacklistTableStructure: Add lastTryTime fileid", query);
+            sqlFail(QStringLiteral("updateBlacklistTableStructure: Add lastTryTime fileid"), query);
             re = false;
         }
         query.prepare("ALTER TABLE blacklist ADD COLUMN ignoreDuration INTEGER(8);");
         if (!query.exec()) {
-            sqlFail("updateBlacklistTableStructure: Add ignoreDuration fileid", query);
+            sqlFail(QStringLiteral("updateBlacklistTableStructure: Add ignoreDuration fileid"), query);
             re = false;
         }
-        commitInternal("update database structure: add lastTryTime, ignoreDuration cols");
+        commitInternal(QStringLiteral("update database structure: add lastTryTime, ignoreDuration cols"));
     }
     if (columns.indexOf("renameTarget") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE blacklist ADD COLUMN renameTarget VARCHAR(4096);");
         if (!query.exec()) {
-            sqlFail("updateBlacklistTableStructure: Add renameTarget", query);
+            sqlFail(QStringLiteral("updateBlacklistTableStructure: Add renameTarget"), query);
             re = false;
         }
-        commitInternal("update database structure: add renameTarget col");
+        commitInternal(QStringLiteral("update database structure: add renameTarget col"));
     }
 
     if (columns.indexOf("errorCategory") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE blacklist ADD COLUMN errorCategory INTEGER(8);");
         if (!query.exec()) {
-            sqlFail("updateBlacklistTableStructure: Add errorCategory", query);
+            sqlFail(QStringLiteral("updateBlacklistTableStructure: Add errorCategory"), query);
             re = false;
         }
-        commitInternal("update database structure: add errorCategory col");
+        commitInternal(QStringLiteral("update database structure: add errorCategory col"));
     }
 
     if (columns.indexOf("requestId") == -1) {
         SqlQuery query(_db);
         query.prepare("ALTER TABLE blacklist ADD COLUMN requestId VARCHAR(36);");
         if (!query.exec()) {
-            sqlFail("updateBlacklistTableStructure: Add requestId", query);
+            sqlFail(QStringLiteral("updateBlacklistTableStructure: Add requestId"), query);
             re = false;
         }
-        commitInternal("update database structure: add errorCategory col");
+        commitInternal(QStringLiteral("update database structure: add errorCategory col"));
     }
 
     SqlQuery query(_db);
     query.prepare("CREATE INDEX IF NOT EXISTS blacklist_index ON blacklist(path collate nocase);");
     if (!query.exec()) {
-        sqlFail("updateErrorBlacklistTableStructure: create index blacklit", query);
+        sqlFail(QStringLiteral("updateErrorBlacklistTableStructure: create index blacklit"), query);
         re = false;
     }
 
@@ -1309,7 +1309,7 @@ static bool deleteBatch(SqlQuery &query, const QStringList &entries, const QStri
     if (entries.isEmpty())
         return true;
 
-    qCDebug(lcDb) << "Removing stale " << qPrintable(name) << " entries: " << entries.join(", ");
+    qCDebug(lcDb) << "Removing stale " << qPrintable(name) << " entries: " << entries.join(QStringLiteral(", "));
     // FIXME: Was ported from execBatch, check if correct!
     foreach (const QString &entry, entries) {
         query.reset_and_clear_bindings();
@@ -1406,7 +1406,7 @@ QVector<SyncJournalDb::DownloadInfo> SyncJournalDb::getAndDeleteStaleDownloadInf
         }
     }
 
-    if (!deleteBatch(_deleteDownloadInfoQuery, superfluousPaths, "downloadinfo"))
+    if (!deleteBatch(_deleteDownloadInfoQuery, superfluousPaths, QStringLiteral("downloadinfo")))
         return empty_result;
 
     return deleted_entries;
@@ -1421,7 +1421,7 @@ int SyncJournalDb::downloadInfoCount()
         SqlQuery query("SELECT count(*) FROM downloadinfo", _db);
 
         if (!query.exec()) {
-            sqlFail("Count number of downloadinfo entries failed", query);
+            sqlFail(QStringLiteral("Count number of downloadinfo entries failed"), query);
         }
         if (query.next().hasData) {
             re = query.intValue(0);
@@ -1525,7 +1525,7 @@ QVector<uint> SyncJournalDb::deleteStaleUploadInfos(const QSet<QString> &keep)
         }
     }
 
-    deleteBatch(_deleteUploadInfoQuery, superfluousPaths, "uploadinfo");
+    deleteBatch(_deleteUploadInfoQuery, superfluousPaths, QStringLiteral("uploadinfo"));
     return ids;
 }
 
@@ -1586,7 +1586,7 @@ bool SyncJournalDb::deleteStaleErrorBlacklistEntries(const QSet<QString> &keep)
 
     SqlQuery delQuery(_db);
     delQuery.prepare("DELETE FROM blacklist WHERE path = ?");
-    return deleteBatch(delQuery, superfluousPaths, "blacklist");
+    return deleteBatch(delQuery, superfluousPaths, QStringLiteral("blacklist"));
 }
 
 void SyncJournalDb::deleteStaleFlagsEntries()
@@ -1608,7 +1608,7 @@ int SyncJournalDb::errorBlackListEntryCount()
         SqlQuery query("SELECT count(*) FROM blacklist", _db);
 
         if (!query.exec()) {
-            sqlFail("Count number of blacklist entries failed", query);
+            sqlFail(QStringLiteral("Count number of blacklist entries failed"), query);
         }
         if (query.next().hasData) {
             re = query.intValue(0);
@@ -1626,7 +1626,7 @@ int SyncJournalDb::wipeErrorBlacklist()
         query.prepare("DELETE FROM blacklist");
 
         if (!query.exec()) {
-            sqlFail("Deletion of whole blacklist failed", query);
+            sqlFail(QStringLiteral("Deletion of whole blacklist failed"), query);
             return -1;
         }
         return query.numRowsAffected();
@@ -1647,7 +1647,7 @@ void SyncJournalDb::wipeErrorBlacklistEntry(const QString &file)
         query.prepare("DELETE FROM blacklist WHERE path=?1");
         query.bindValue(1, file);
         if (!query.exec()) {
-            sqlFail("Deletion of blacklist item failed.", query);
+            sqlFail(QStringLiteral("Deletion of blacklist item failed."), query);
         }
     }
 }
@@ -1661,7 +1661,7 @@ void SyncJournalDb::wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::
         query.prepare("DELETE FROM blacklist WHERE errorCategory=?1");
         query.bindValue(1, category);
         if (!query.exec()) {
-            sqlFail("Deletion of blacklist category failed.", query);
+            sqlFail(QStringLiteral("Deletion of blacklist category failed."), query);
         }
     }
 }
@@ -1816,7 +1816,7 @@ void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType ty
         }
     }
 
-    commitInternal("setSelectiveSyncList");
+    commitInternal(QStringLiteral("setSelectiveSyncList"));
 }
 
 void SyncJournalDb::avoidRenamesOnNextSync(const QByteArray &path)

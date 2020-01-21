@@ -54,7 +54,7 @@ Q_LOGGING_CATEGORY(lcZsyncPut, "sync.networkjob.zsync.put", QtInfoMsg)
 
 bool isZsyncPropagationEnabled(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
 {
-    if (propagator->account()->capabilities().zsyncSupportedVersion() != "1.0") {
+    if (propagator->account()->capabilities().zsyncSupportedVersion() != QLatin1String("1.0")) {
         qCInfo(lcPropagator) << "[zsync disabled] Lack of server support.";
         return false;
     }

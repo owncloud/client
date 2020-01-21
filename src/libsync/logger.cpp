@@ -65,7 +65,7 @@ Logger::Logger(QObject *parent)
     , _logExpire(0)
     , _logDebug(false)
 {
-    qSetMessagePattern("%{time MM-dd hh:mm:ss:zzz} [ %{type} %{category} ]%{if-debug}\t[ %{function} ]%{endif}:\t%{message}");
+    qSetMessagePattern(QStringLiteral("%{time MM-dd hh:mm:ss:zzz} [ %{type} %{category} ]%{if-debug}\t[ %{function} ]%{endif}:\t%{message}"));
 #ifndef NO_MSG_HANDLER
     qInstallMessageHandler(mirallLogCatcher);
 #else
@@ -100,7 +100,7 @@ void Logger::log(Log log)
 {
     QString msg;
     if (_showTime) {
-        msg = log.timeStamp.toString(QLatin1String("MM-dd hh:mm:ss:zzz")) + QLatin1Char(' ');
+        msg = log.timeStamp.toString(QStringLiteral("MM-dd hh:mm:ss:zzz")) + QLatin1Char(' ');
     }
 
     msg += QString().sprintf("%p ", (void *)QThread::currentThread());
@@ -203,7 +203,7 @@ void Logger::setLogDebug(bool debug)
 
 QString Logger::temporaryFolderLogDirPath() const
 {
-    QString dirName = APPLICATION_SHORTNAME + QString("-logdir");
+    QString dirName = APPLICATION_SHORTNAME + QStringLiteral("-logdir");
     return QDir::temp().filePath(dirName);
 }
 
@@ -261,15 +261,15 @@ void Logger::enterNextLogFile()
 
         QDir dir(_logDirectory);
         if (!dir.exists()) {
-            dir.mkpath(".");
+            dir.mkpath(QStringLiteral("."));
         }
 
         // Tentative new log name, will be adjusted if one like this already exists
         QDateTime now = QDateTime::currentDateTime();
-        QString newLogName = now.toString("yyyyMMdd_HHmm") + "_owncloud.log";
+        QString newLogName = now.toString(QStringLiteral("yyyyMMdd_HHmm")) + "_owncloud.log";
 
         // Expire old log files and deal with conflicts
-        QStringList files = dir.entryList(QStringList("*owncloud.log.*"),
+        QStringList files = dir.entryList(QStringList(QStringLiteral("*owncloud.log.*")),
             QDir::Files, QDir::Name);
         QRegExp rx(R"(.*owncloud\.log\.(\d+).*)");
         int maxNumber = -1;
@@ -293,7 +293,7 @@ void Logger::enterNextLogFile()
         // Compress the previous log file. On a restart this can be the most recent
         // log file.
         auto logToCompress = previousLog;
-        if (logToCompress.isEmpty() && files.size() > 0 && !files.last().endsWith(".gz"))
+        if (logToCompress.isEmpty() && files.size() > 0 && !files.last().endsWith(QLatin1String(".gz")))
             logToCompress = dir.absoluteFilePath(files.last());
         if (!logToCompress.isEmpty()) {
             QString compressedName = logToCompress + ".gz";

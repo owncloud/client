@@ -317,7 +317,7 @@ QString AbstractNetworkJob::errorStringParsingBody(QByteArray *body)
     QString extra = extractErrorMessage(replyBody);
     // Don't append the XML error message to a OC-ErrorString message.
     if (!extra.isEmpty() && !reply()->hasRawHeader("OC-ErrorString")) {
-        return QString::fromLatin1("%1 (%2)").arg(base, extra);
+        return QStringLiteral("%1 (%2)").arg(base, extra);
     }
 
     return base;
@@ -333,7 +333,7 @@ void AbstractNetworkJob::start()
     _timer.start();
 
     const QUrl url = account()->url();
-    const QString displayUrl = QString("%1://%2%3").arg(url.scheme()).arg(url.host()).arg(url.path());
+    const QString displayUrl = QStringLiteral("%1://%2%3").arg(url.scheme()).arg(url.host()).arg(url.path());
 
     QString parentMetaObjectName = parent() ? parent()->metaObject()->className() : "";
     qCInfo(lcNetworkJob) << metaObject()->className() << "created for" << displayUrl << "+" << path() << parentMetaObjectName;
@@ -358,7 +358,7 @@ void AbstractNetworkJob::onTimedOut()
 QString AbstractNetworkJob::replyStatusString() {
     Q_ASSERT(reply());
     if (reply()->error() == QNetworkReply::NoError) {
-        return QLatin1String("OK");
+        return QStringLiteral("OK");
     } else {
         QString enumStr = QMetaEnum::fromType<QNetworkReply::NetworkError>().valueToKey(static_cast<int>(reply()->error()));
         return QStringLiteral("%1 %2").arg(enumStr, errorString());
@@ -409,7 +409,7 @@ QString errorMessage(const QString &baseError, const QByteArray &body)
     QString msg = baseError;
     QString extra = extractErrorMessage(body);
     if (!extra.isEmpty()) {
-        msg += QString::fromLatin1(" (%1)").arg(extra);
+        msg += QStringLiteral(" (%1)").arg(extra);
     }
     return msg;
 }

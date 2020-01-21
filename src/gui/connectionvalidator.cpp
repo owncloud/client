@@ -119,7 +119,7 @@ void ConnectionValidator::slotStatusFound(const QUrl &url, const QJsonObject &in
 
     // Check for maintenance mode: Servers send "true", so go through QVariant
     // to parse it correctly.
-    if (info["maintenance"].toVariant().toBool()) {
+    if (info[QStringLiteral("maintenance")].toVariant().toBool()) {
         reportResult(MaintenanceMode);
         return;
     }
@@ -169,7 +169,7 @@ void ConnectionValidator::checkAuthentication()
     // simply GET the webdav root, will fail if credentials are wrong.
     // continue in slotAuthCheck here :-)
     qCDebug(lcConnectionValidator) << "# Check whether authenticated propfind works.";
-    PropfindJob *job = new PropfindJob(_account, "/", this);
+    PropfindJob *job = new PropfindJob(_account, QStringLiteral("/"), this);
     job->setTimeout(timeoutToUseMsec);
     job->setProperties(QList<QByteArray>() << "getlastmodified");
     connect(job, &PropfindJob::result, this, &ConnectionValidator::slotAuthSuccess);
@@ -219,14 +219,14 @@ void ConnectionValidator::slotAuthSuccess()
 void ConnectionValidator::checkServerCapabilities()
 {
     // The main flow now needs the capabilities
-    JsonApiJob *job = new JsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/capabilities"), this);
+    JsonApiJob *job = new JsonApiJob(_account, QStringLiteral("ocs/v1.php/cloud/capabilities"), this);
     job->setTimeout(timeoutToUseMsec);
     QObject::connect(job, &JsonApiJob::jsonReceived, this, &ConnectionValidator::slotCapabilitiesRecieved);
     job->start();
 
     // And we'll retrieve the ocs config in parallel
     // note that 'this' might be destroyed before the job finishes, so intentionally not parented
-    auto configJob = new JsonApiJob(_account, QLatin1String("ocs/v1.php/config"));
+    auto configJob = new JsonApiJob(_account, QStringLiteral("ocs/v1.php/config"));
     configJob->setTimeout(timeoutToUseMsec);
     auto account = _account; // capturing account by value will make it live long enough
     QObject::connect(configJob, &JsonApiJob::jsonReceived, _account.data(),
@@ -238,12 +238,12 @@ void ConnectionValidator::checkServerCapabilities()
 
 void ConnectionValidator::slotCapabilitiesRecieved(const QJsonDocument &json)
 {
-    auto caps = json.object().value("ocs").toObject().value("data").toObject().value("capabilities").toObject();
+    auto caps = json.object().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("capabilities")).toObject();
     qCInfo(lcConnectionValidator) << "Server capabilities" << caps;
     _account->setCapabilities(caps.toVariantMap());
 
     // New servers also report the version in the capabilities
-    QString serverVersion = caps["core"].toObject()["status"].toObject()["version"].toString();
+    QString serverVersion = caps[QStringLiteral("core")].toObject()[QStringLiteral("status")].toObject()[QStringLiteral("version")].toString();
     if (!serverVersion.isEmpty() && !setAndCheckServerVersion(serverVersion)) {
         return;
     }
@@ -253,7 +253,7 @@ void ConnectionValidator::slotCapabilitiesRecieved(const QJsonDocument &json)
 
 void ConnectionValidator::ocsConfigReceived(const QJsonDocument &json, AccountPtr account)
 {
-    QString host = json.object().value("ocs").toObject().value("data").toObject().value("host").toString();
+    QString host = json.object().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("host")).toString();
     if (host.isEmpty()) {
         qCWarning(lcConnectionValidator) << "Could not extract 'host' from ocs config reply";
         return;
@@ -264,7 +264,7 @@ void ConnectionValidator::ocsConfigReceived(const QJsonDocument &json, AccountPt
 
 void ConnectionValidator::fetchUser()
 {
-    JsonApiJob *job = new JsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/user"), this);
+    JsonApiJob *job = new JsonApiJob(_account, QStringLiteral("ocs/v1.php/cloud/user"), this);
     job->setTimeout(timeoutToUseMsec);
     QObject::connect(job, &JsonApiJob::jsonReceived, this, &ConnectionValidator::slotUserFetched);
     job->start();
@@ -299,11 +299,11 @@ bool ConnectionValidator::setAndCheckServerVersion(const QString &version)
 
 void ConnectionValidator::slotUserFetched(const QJsonDocument &json)
 {
-    QString user = json.object().value("ocs").toObject().value("data").toObject().value("id").toString();
+    QString user = json.object().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("id")).toString();
     if (!user.isEmpty()) {
         _account->setDavUser(user);
     }
-    QString displayName = json.object().value("ocs").toObject().value("data").toObject().value("display-name").toString();
+    QString displayName = json.object().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("display-name")).toString();
     if (!displayName.isEmpty()) {
         _account->setDavDisplayName(displayName);
     }

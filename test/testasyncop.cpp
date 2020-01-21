@@ -81,14 +81,14 @@ private slots:
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData) -> QNetworkReply * {
             auto path = request.url().path();
 
-            if (op == QNetworkAccessManager::GetOperation && path.startsWith("/async-poll/")) {
+            if (op == QNetworkAccessManager::GetOperation && path.startsWith(QLatin1String("/async-poll/"))) {
                 auto file = path.mid(sizeof("/async-poll/") - 1);
                 Q_ASSERT(testCases.contains(file));
                 auto &testCase = testCases[file];
                 return testCase.pollRequest(&testCase, request);
             }
 
-            if (op == QNetworkAccessManager::PutOperation && !path.contains("/uploads/")) {
+            if (op == QNetworkAccessManager::PutOperation && !path.contains(QLatin1String("/uploads/"))) {
                 // Not chunking
                 auto file = getFilePathFromUrl(request.url());
                 Q_ASSERT(testCases.contains(file));
@@ -149,18 +149,18 @@ private slots:
             fakeFolder.localModifier().insert(file, size);
             testCases[file] = TestCase(std::move(cb));
         };
-        fakeFolder.localModifier().mkdir("success");
-        insertFile("success/chunked_success", options._maxChunkSize * 3, successCallback);
-        insertFile("success/single_success", 300, successCallback);
-        insertFile("success/chunked_patience", options._maxChunkSize * 3,
+        fakeFolder.localModifier().mkdir(QStringLiteral("success"));
+        insertFile(QStringLiteral("success/chunked_success"), options._maxChunkSize * 3, successCallback);
+        insertFile(QStringLiteral("success/single_success"), 300, successCallback);
+        insertFile(QStringLiteral("success/chunked_patience"), options._maxChunkSize * 3,
             waitAndChain(waitAndChain(successCallback)));
-        insertFile("success/single_patience", 300,
+        insertFile(QStringLiteral("success/single_patience"), 300,
             waitAndChain(waitAndChain(successCallback)));
-        fakeFolder.localModifier().mkdir("err");
-        insertFile("err/chunked_error", options._maxChunkSize * 3, errorCallback);
-        insertFile("err/single_error", 300, errorCallback);
-        insertFile("err/chunked_error2", options._maxChunkSize * 3, waitAndChain(errorCallback));
-        insertFile("err/single_error2", 300, waitAndChain(errorCallback));
+        fakeFolder.localModifier().mkdir(QStringLiteral("err"));
+        insertFile(QStringLiteral("err/chunked_error"), options._maxChunkSize * 3, errorCallback);
+        insertFile(QStringLiteral("err/single_error"), 300, errorCallback);
+        insertFile(QStringLiteral("err/chunked_error2"), options._maxChunkSize * 3, waitAndChain(errorCallback));
+        insertFile(QStringLiteral("err/single_error2"), 300, waitAndChain(errorCallback));
 
         // First sync should finish by itself.
         // All the things in "success/" should be transfered, the things in "err/" not
@@ -169,15 +169,15 @@ private slots:
         QCOMPARE(*fakeFolder.currentLocalState().find("success"),
             *fakeFolder.currentRemoteState().find("success"));
         testCases.clear();
-        testCases["err/chunked_error"] = TestCase(successCallback);
-        testCases["err/chunked_error2"] = TestCase(successCallback);
-        testCases["err/single_error"] = TestCase(successCallback);
-        testCases["err/single_error2"] = TestCase(successCallback);
+        testCases[QStringLiteral("err/chunked_error")] = TestCase(successCallback);
+        testCases[QStringLiteral("err/chunked_error2")] = TestCase(successCallback);
+        testCases[QStringLiteral("err/single_error")] = TestCase(successCallback);
+        testCases[QStringLiteral("err/single_error2")] = TestCase(successCallback);
 
-        fakeFolder.localModifier().mkdir("waiting");
-        insertFile("waiting/small", 300, waitForeverCallback);
-        insertFile("waiting/willNotConflict", 300, waitForeverCallback);
-        insertFile("waiting/big", options._maxChunkSize * 3,
+        fakeFolder.localModifier().mkdir(QStringLiteral("waiting"));
+        insertFile(QStringLiteral("waiting/small"), 300, waitForeverCallback);
+        insertFile(QStringLiteral("waiting/willNotConflict"), 300, waitForeverCallback);
+        insertFile(QStringLiteral("waiting/big"), options._maxChunkSize * 3,
             waitAndChain(waitAndChain([&](TestCase *tc, const QNetworkRequest &request) {
                 QTimer::singleShot(0, &fakeFolder.syncEngine(), &SyncEngine::abort);
                 return waitAndChain(waitForeverCallback)(tc, request);
@@ -192,16 +192,16 @@ private slots:
         QCOMPARE(*fakeFolder.currentLocalState().find("err"),
             *fakeFolder.currentRemoteState().find("err"));
 
-        testCases["waiting/small"].pollRequest = waitAndChain(waitAndChain(successCallback));
-        testCases["waiting/big"].pollRequest = waitAndChain(successCallback);
-        testCases["waiting/willNotConflict"].pollRequest =
+        testCases[QStringLiteral("waiting/small")].pollRequest = waitAndChain(waitAndChain(successCallback));
+        testCases[QStringLiteral("waiting/big")].pollRequest = waitAndChain(successCallback);
+        testCases[QStringLiteral("waiting/willNotConflict")].pollRequest =
             [&fakeFolder, &successCallback](TestCase *tc, const QNetworkRequest &request) {
                 auto &remoteModifier = fakeFolder.remoteModifier(); // successCallback destroys the capture
                 auto reply = successCallback(tc, request);
                 // This is going to succeed, and after we just change the file.
                 // This should not be a conflict, but this should be downloaded in the
                 // next sync
-                remoteModifier.appendByte("waiting/willNotConflict");
+                remoteModifier.appendByte(QStringLiteral("waiting/willNotConflict"));
                 return reply;
             };
 
@@ -211,7 +211,7 @@ private slots:
         int nDELETE = 0;
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
             auto path = request.url().path();
-            if (op == QNetworkAccessManager::GetOperation && path.startsWith("/async-poll/")) {
+            if (op == QNetworkAccessManager::GetOperation && path.startsWith(QLatin1String("/async-poll/"))) {
                 auto file = path.mid(sizeof("/async-poll/") - 1);
                 Q_ASSERT(testCases.contains(file));
                 auto &testCase = testCases[file];

@@ -455,7 +455,7 @@ void PropagateUploadFileNG::startNewUpload()
     pi._contentChecksum = _item->_checksumHeader;
     pi._size = _item->_size;
     propagator()->_journal->setUploadInfo(_item->_file, pi);
-    propagator()->_journal->commit("Upload info");
+    propagator()->_journal->commit(QStringLiteral("Upload info"));
     QMap<QByteArray, QByteArray> headers;
     headers["OC-Total-Length"] = QByteArray::number(_item->_size);
     auto job = new MkColJob(propagator()->account(), chunkUrl(), headers, this);
@@ -593,7 +593,7 @@ void PropagateUploadFileNG::slotZsyncGenerationFinished(const QString &generated
     }
 
     QMap<QByteArray, QByteArray> headers;
-    QUrl url = Utility::concatUrlPath(chunkUrl(), ".zsync");
+    QUrl url = Utility::concatUrlPath(chunkUrl(), QStringLiteral(".zsync"));
 
     _sent += FileSystem::getSize(generatedFileName);
     _bytesToUpload += FileSystem::getSize(generatedFileName);
@@ -725,7 +725,7 @@ void PropagateUploadFileNG::slotPutFinished()
         auto uploadInfo = propagator()->_journal->getUploadInfo(_item->_file);
         uploadInfo._errorCount = 0;
         propagator()->_journal->setUploadInfo(_item->_file, uploadInfo);
-        propagator()->_journal->commit("Upload info");
+        propagator()->_journal->commit(QStringLiteral("Upload info"));
     }
     startNextChunk();
 }

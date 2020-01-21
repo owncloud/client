@@ -87,7 +87,7 @@ int Capabilities::defaultPermissions() const
 bool Capabilities::notificationsAvailable() const
 {
     // We require the OCS style API in 9.x, can't deal with the REST one only found in 8.2
-    return _capabilities.contains("notifications") && _capabilities.value("notifications").toMap().contains("ocs-endpoints");
+    return _capabilities.contains(QStringLiteral("notifications")) && _capabilities.value(QStringLiteral("notifications")).toMap().contains(QStringLiteral("ocs-endpoints"));
 }
 
 bool Capabilities::isValid() const
@@ -106,7 +106,7 @@ QList<QByteArray> Capabilities::supportedChecksumTypes() const
 
 QByteArray Capabilities::preferredUploadChecksumType() const
 {
-    return _capabilities.value("checksums").toMap().value("preferredUploadType").toByteArray();
+    return _capabilities.value(QStringLiteral("checksums")).toMap().value(QStringLiteral("preferredUploadType")).toByteArray();
 }
 
 QByteArray Capabilities::uploadChecksumType() const
@@ -127,22 +127,22 @@ bool Capabilities::chunkingNg() const
         return false;
     if (chunkng == "1")
         return true;
-    return _capabilities.value("dav").toMap().value("chunking").toByteArray() >= "1.0";
+    return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunking")).toByteArray() >= "1.0";
 }
 
 bool Capabilities::chunkingParallelUploadDisabled() const
 {
-    return _capabilities.value("dav").toMap().value("chunkingParallelUploadDisabled").toBool();
+    return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunkingParallelUploadDisabled")).toBool();
 }
 
 bool Capabilities::privateLinkPropertyAvailable() const
 {
-    return _capabilities.value("files").toMap().value("privateLinks").toBool();
+    return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("privateLinks")).toBool();
 }
 
 bool Capabilities::privateLinkDetailsParamAvailable() const
 {
-    return _capabilities.value("files").toMap().value("privateLinksDetailsParam").toBool();
+    return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("privateLinksDetailsParam")).toBool();
 }
 
 QList<int> Capabilities::httpErrorCodesThatResetFailingChunkedUploads() const
@@ -171,7 +171,7 @@ bool Capabilities::uploadConflictFiles() const
 
 bool Capabilities::versioningEnabled() const
 {
-    return _capabilities.value("files").toMap().value("versioning").toBool();
+    return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("versioning")).toBool();
 }
 
 QString Capabilities::zsyncSupportedVersion() const
@@ -181,6 +181,6 @@ QString Capabilities::zsyncSupportedVersion() const
 
 QStringList Capabilities::blacklistedFiles() const
 {
-    return _capabilities.value("files").toMap().value("blacklisted_files").toStringList();
+    return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("blacklisted_files")).toStringList();
 }
 }

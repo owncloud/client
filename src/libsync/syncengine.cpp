@@ -438,7 +438,7 @@ void SyncEngine::startSync()
     if (!QDir(_localPath).exists()) {
         _anotherSyncNeeded = DelayedFollowUp;
         // No _tr, it should only occur in non-mirall
-        syncError("Unable to find local sync folder.");
+        syncError(QStringLiteral("Unable to find local sync folder."));
         finalize(false);
         return;
     }
@@ -474,7 +474,7 @@ void SyncEngine::startSync()
         qCInfo(lcEngine) << "Sync with existing sync journal";
     }
 
-    QString verStr("Using Qt ");
+    QString verStr(QStringLiteral("Using Qt "));
     verStr.append(qVersion());
 
     verStr.append(" SSL library ").append(QSslSocket::sslLibraryVersionString().toUtf8().data());
@@ -557,7 +557,7 @@ void SyncEngine::startSync()
         // files with names that contain these.
         // It's important to respect the capability also for older servers -- the
         // version check doesn't make sense for custom servers.
-        invalidFilenamePattern = "[\\\\:?*\"<>|]";
+        invalidFilenamePattern = QLatin1String("[\\\\:?*\"<>|]");
     }
     if (!invalidFilenamePattern.isEmpty())
         _discoveryPhase->_invalidFilenameRx = QRegExp(invalidFilenamePattern);
@@ -622,7 +622,7 @@ void SyncEngine::slotDiscoveryFinished()
         return;
     }
 
-    qCInfo(lcEngine) << "#### Discovery end #################################################### " << _stopWatch.addLapTime(QLatin1String("Discovery Finished")) << "ms";
+    qCInfo(lcEngine) << "#### Discovery end #################################################### " << _stopWatch.addLapTime(QStringLiteral("Discovery Finished")) << "ms";
 
     // Sanity check
     if (!_journal->open()) {
@@ -632,7 +632,7 @@ void SyncEngine::slotDiscoveryFinished()
         return;
     } else {
         // Commits a possibly existing (should not though) transaction and starts a new one for the propagate phase
-        _journal->commitIfNeededAndStartNewTransaction("Post discovery");
+        _journal->commitIfNeededAndStartNewTransaction(QStringLiteral("Post discovery"));
     }
 
     _progressInfo->_currentDiscoveredRemoteFolder.clear();
@@ -674,14 +674,14 @@ void SyncEngine::slotDiscoveryFinished()
 
     Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end()));
 
-    qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) #################################################### " << _stopWatch.addLapTime(QLatin1String("Reconcile (aboutToPropagate)")) << "ms";
+    qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) #################################################### " << _stopWatch.addLapTime(QStringLiteral("Reconcile (aboutToPropagate)")) << "ms";
 
     _localDiscoveryPaths.clear();
 
     // To announce the beginning of the sync
     emit aboutToPropagate(_syncItems);
 
-    qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate OK) #################################################### "<< _stopWatch.addLapTime(QLatin1String("Reconcile (aboutToPropagate OK)")) << "ms";
+    qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate OK) #################################################### "<< _stopWatch.addLapTime(QStringLiteral("Reconcile (aboutToPropagate OK)")) << "ms";
 
     // it's important to do this before ProgressInfo::start(), to announce start of new sync
     _progressInfo->_status = ProgressInfo::Propagation;
@@ -701,7 +701,7 @@ void SyncEngine::slotDiscoveryFinished()
     }
 
     // do a database commit
-    _journal->commit("post treewalk");
+    _journal->commit(QStringLiteral("post treewalk"));
 
     _propagator = QSharedPointer<OwncloudPropagator>(
         new OwncloudPropagator(_account, _localPath, _remotePath, _journal));
@@ -725,7 +725,7 @@ void SyncEngine::slotDiscoveryFinished()
     deleteStaleDownloadInfos(_syncItems);
     deleteStaleUploadInfos(_syncItems);
     deleteStaleErrorBlacklistEntries(_syncItems);
-    _journal->commit("post stale entry removal");
+    _journal->commit(QStringLiteral("post stale entry removal"));
 
     // Emit the started signal only after the propagator has been set up.
     if (_needsUpdate)
@@ -734,7 +734,7 @@ void SyncEngine::slotDiscoveryFinished()
     _propagator->start(_syncItems);
     _syncItems.clear();
 
-    qCInfo(lcEngine) << "#### Post-Reconcile end #################################################### " << _stopWatch.addLapTime(QLatin1String("Post-Reconcile Finished")) << "ms";
+    qCInfo(lcEngine) << "#### Post-Reconcile end #################################################### " << _stopWatch.addLapTime(QStringLiteral("Post-Reconcile Finished")) << "ms";
 }
 
 void SyncEngine::slotCleanPollsJobAborted(const QString &error)
@@ -783,7 +783,7 @@ void SyncEngine::slotPropagationFinished(bool success)
     conflictRecordMaintenance();
 
     _journal->deleteStaleFlagsEntries();
-    _journal->commit("All Finished.", false);
+    _journal->commit(QStringLiteral("All Finished."), false);
 
     // Send final progress information even if no
     // files needed propagation, but clear the lastCompletedItem
@@ -797,7 +797,7 @@ void SyncEngine::slotPropagationFinished(bool success)
 
 void SyncEngine::finalize(bool success)
 {
-    qCInfo(lcEngine) << "Sync run took " << _stopWatch.addLapTime(QLatin1String("Sync Finished")) << "ms";
+    qCInfo(lcEngine) << "Sync run took " << _stopWatch.addLapTime(QStringLiteral("Sync Finished")) << "ms";
     _stopWatch.stop();
 
     if (_discoveryPhase) {

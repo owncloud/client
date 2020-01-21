@@ -26,7 +26,7 @@ PluginFactory::~PluginFactory() = default;
 
 QString pluginFileName(const QString &type, const QString &name)
 {
-    return QString(QLatin1String("%1sync_%2_%3"))
+    return QStringLiteral("%1sync_%2_%3")
             .arg(APPLICATION_EXECUTABLE, type, name);
 }
 

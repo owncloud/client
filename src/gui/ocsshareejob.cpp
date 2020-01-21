@@ -21,7 +21,7 @@ namespace OCC {
 OcsShareeJob::OcsShareeJob(AccountPtr account)
     : OcsJob(account)
 {
-    setPath("ocs/v1.php/apps/files_sharing/api/v1/sharees");
+    setPath(QStringLiteral("ocs/v1.php/apps/files_sharing/api/v1/sharees"));
     connect(this, &OcsJob::jobFinished, this, &OcsShareeJob::jobDone);
 }
 
@@ -32,10 +32,10 @@ void OcsShareeJob::getSharees(const QString &search,
 {
     setVerb("GET");
 
-    addParam(QString::fromLatin1("search"), search);
-    addParam(QString::fromLatin1("itemType"), itemType);
-    addParam(QString::fromLatin1("page"), QString::number(page));
-    addParam(QString::fromLatin1("perPage"), QString::number(perPage));
+    addParam(QStringLiteral("search"), search);
+    addParam(QStringLiteral("itemType"), itemType);
+    addParam(QStringLiteral("page"), QString::number(page));
+    addParam(QStringLiteral("perPage"), QString::number(perPage));
 
     start();
 }

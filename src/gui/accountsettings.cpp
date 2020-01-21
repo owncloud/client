@@ -191,7 +191,7 @@ void AccountSettings::createAccountToolbox()
 {
     QMenu *menu = new QMenu(ui->_accountToolbox);
     _addAccountAction = new QAction(tr("Add new"), this);
-    _addAccountAction->setObjectName("addAccountAction");
+    _addAccountAction->setObjectName(QStringLiteral("addAccountAction"));
     menu->addAction(_addAccountAction);
     connect(_addAccountAction, &QAction::triggered, this, &AccountSettings::slotOpenAccountWizard);
 
@@ -214,7 +214,7 @@ QString AccountSettings::selectedFolderAlias() const
 {
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
     if (!selected.isValid())
-        return "";
+        return QLatin1String("");
     return _model->data(selected, FolderStatusDelegate::FolderAliasRole).toString();
 }
 
@@ -427,7 +427,7 @@ void AccountSettings::slotFolderWizardAccepted()
 
     FolderDefinition definition;
     definition.localPath = FolderDefinition::prepareLocalPath(
-        folderWizard->field(QLatin1String("sourceFolder")).toString());
+        folderWizard->field(QStringLiteral("sourceFolder")).toString());
     definition.targetPath = FolderDefinition::prepareTargetPath(
         folderWizard->property("targetPath").toString());
 
@@ -439,7 +439,7 @@ void AccountSettings::slotFolderWizardAccepted()
         QDir dir(definition.localPath);
         if (!dir.exists()) {
             qCInfo(lcAccountSettings) << "Creating folder" << definition.localPath;
-            if (!dir.mkpath(".")) {
+            if (!dir.mkpath(QStringLiteral("."))) {
                 QMessageBox::warning(this, tr("Folder creation failed"),
                     tr("<p>Could not create local folder <i>%1</i>.")
                         .arg(QDir::toNativeSeparators(definition.localPath)));
@@ -472,7 +472,7 @@ void AccountSettings::slotFolderWizardAccepted()
 
         // The user already accepted the selective sync dialog. everything is in the white list
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
-            QStringList() << QLatin1String("/"));
+            QStringList() << QStringLiteral("/"));
         folderMan->scheduleAllFolders();
         emit folderChanged();
     }
@@ -671,7 +671,7 @@ void AccountSettings::slotSetCurrentFolderAvailability(PinState state)
 
 void AccountSettings::showConnectionLabel(const QString &message, QStringList errors)
 {
-    const QString errStyle = QLatin1String("color:#ffffff; background-color:#bb4d4d;padding:5px;"
+    const QString errStyle = QStringLiteral("color:#ffffff; background-color:#bb4d4d;padding:5px;"
                                            "border-width: 1px; border-style: solid; border-color: #aaaaaa;"
                                            "border-radius:5px;");
     if (errors.isEmpty()) {
@@ -830,7 +830,7 @@ void AccountSettings::slotAccountStateChanged()
             _model->slotUpdateFolderState(folder);
         }
 
-        const QString server = QString::fromLatin1("<a href=\"%1\">%2</a>")
+        const QString server = QStringLiteral("<a href=\"%1\">%2</a>")
                                    .arg(Utility::escape(account->url().toString()),
                                        Utility::escape(safeUrl.toString()));
         QString serverWithUser = server;
@@ -927,7 +927,7 @@ void AccountSettings::slotLinkActivated(const QString &link)
 {
     // Parse folder alias and filename from the link, calculate the index
     // and select it if it exists.
-    const QStringList li = link.split(QLatin1String("?folder="));
+    const QStringList li = link.split(QStringLiteral("?folder="));
     if (li.count() > 1) {
         QString myFolder = li[0];
         const QString alias = li[1];
@@ -987,7 +987,7 @@ void AccountSettings::refreshSelectiveSyncStatus()
             }
             QModelIndex theIndx = _model->indexForPath(folder, myFolder);
             if (theIndx.isValid()) {
-                msg += QString::fromLatin1("<a href=\"%1?folder=%2\">%1</a>")
+                msg += QStringLiteral("<a href=\"%1?folder=%2\">%1</a>")
                            .arg(Utility::escape(myFolder), Utility::escape(folder->alias()));
             } else {
                 msg += myFolder; // no link because we do not know the index yet.

@@ -139,7 +139,7 @@ bool AccountManager::restoreFromLegacySettings()
         QFileInfo fi(oCCfgFile);
         if (fi.isReadable()) {
             std::unique_ptr<QSettings> oCSettings(new QSettings(oCCfgFile, QSettings::IniFormat));
-            oCSettings->beginGroup(QLatin1String("ownCloud"));
+            oCSettings->beginGroup(QStringLiteral("ownCloud"));
 
             // Check the theme url to see if it is the same url that the oC config was for
             QString overrideUrl = Theme::instance()->overrideServerUrl();
@@ -236,7 +236,7 @@ void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool s
     }
 
     // Save accepted certificates.
-    settings.beginGroup(QLatin1String("General"));
+    settings.beginGroup(QStringLiteral("General"));
     qCInfo(lcAccountManager) << "Saving " << acc->approvedCerts().count() << " unknown certs.";
     QByteArray certs;
     Q_FOREACH (const QSslCertificate &cert, acc->approvedCerts()) {
@@ -283,7 +283,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
     // We want to only restore settings for that auth type and the user value
     acc->_settingsMap.insert(QLatin1String(userC), settings.value(userC));
-    QString authTypePrefix = "http_";
+    QString authTypePrefix = QStringLiteral("http_");
     Q_FOREACH (QString key, settings.childKeys()) {
         if (!key.startsWith(authTypePrefix))
             continue;
@@ -293,7 +293,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     acc->setCredentials(new HttpCredentialsGui);
 
     // now the server cert, it is in the general group
-    settings.beginGroup(QLatin1String("General"));
+    settings.beginGroup(QStringLiteral("General"));
     acc->setApprovedCerts(QSslCertificate::fromData(settings.value(caCertsKeyC).toByteArray()));
     settings.endGroup();
 

@@ -50,9 +50,9 @@ QString FormatWarningsWizardPage::formatWarnings(const QStringList &warnings) co
     } else if (warnings.count() > 1) {
         ret = tr("<b>Warning:</b>") + " <ul>";
         Q_FOREACH (QString warning, warnings) {
-            ret += QString::fromLatin1("<li>%1</li>").arg(warning);
+            ret += QStringLiteral("<li>%1</li>").arg(warning);
         }
-        ret += "</ul>";
+        ret += QLatin1String("</ul>");
     }
 
     return ret;
@@ -63,7 +63,7 @@ FolderWizardLocalPath::FolderWizardLocalPath(const AccountPtr &account)
     , _account(account)
 {
     _ui.setupUi(this);
-    registerField(QLatin1String("sourceFolder*"), _ui.localFolderLineEdit);
+    registerField(QStringLiteral("sourceFolder*"), _ui.localFolderLineEdit);
     connect(_ui.localFolderChooseBtn, &QAbstractButton::clicked, this, &FolderWizardLocalPath::slotChooseLocalFolder);
     _ui.localFolderChooseBtn->setToolTip(tr("Click to select a local folder to sync."));
 
@@ -332,7 +332,7 @@ void FolderWizardRemotePath::slotUpdateDirectories(const QStringList &list)
 
 void FolderWizardRemotePath::slotRefreshFolders()
 {
-    runLsColJob("/");
+    runLsColJob(QStringLiteral("/"));
     _ui.folderTreeWidget->clear();
     _ui.folderEntry->clear();
 }
@@ -397,7 +397,7 @@ void FolderWizardRemotePath::slotTypedPathError(QNetworkReply *reply)
     // is selected in the tree view.
     int httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     if (httpCode == 404) {
-        showWarn(""); // hides the warning pane
+        showWarn(QLatin1String("")); // hides the warning pane
         return;
     }
 
@@ -509,7 +509,7 @@ void FolderWizardSelectiveSync::initializePage()
         alias = Theme::instance()->appName();
     QStringList initialBlacklist;
     if (Theme::instance()->wizardSelectiveSyncDefaultNothing()) {
-        initialBlacklist = QStringList("/");
+        initialBlacklist = QStringList(QStringLiteral("/"));
     }
     _selectiveSync->setFolderInfo(targetPath, alias, initialBlacklist);
     QWizardPage::initializePage();

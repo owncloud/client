@@ -260,7 +260,7 @@ void ShareLinkWidget::slotSharesFetched(const QList<QSharedPointer<Share>> &shar
         table->setItem(row, 0, nameItem);
 
         auto dotdotdotButton = new QToolButton;
-        dotdotdotButton->setText("...");
+        dotdotdotButton->setText(QStringLiteral("..."));
         dotdotdotButton->setProperty(propertyShareC, QVariant::fromValue(linkShare));
         connect(dotdotdotButton, &QAbstractButton::clicked, this, &ShareLinkWidget::slotContextMenuButtonClicked);
         table->setCellWidget(row, 1, dotdotdotButton);
@@ -344,7 +344,7 @@ void ShareLinkWidget::slotShareSelectionChanged()
     if (!selectionUnchanged) {
         if (share && share->isPasswordSet()) {
             _ui->checkBox_password->setChecked(true);
-            _ui->lineEdit_password->setPlaceholderText("********");
+            _ui->lineEdit_password->setPlaceholderText(QStringLiteral("********"));
             _ui->lineEdit_password->setEnabled(true);
         } else if (createNew && _passwordRequired) {
             _ui->checkBox_password->setChecked(true);
@@ -465,7 +465,7 @@ void ShareLinkWidget::slotPasswordSet()
     _ui->checkBox_password->setEnabled(true);
     _ui->lineEdit_password->setText(QString());
     if (share->isPasswordSet()) {
-        _ui->lineEdit_password->setPlaceholderText("********");
+        _ui->lineEdit_password->setPlaceholderText(QStringLiteral("********"));
         _ui->lineEdit_password->setEnabled(true);
     } else {
         _ui->lineEdit_password->setPlaceholderText(QString());

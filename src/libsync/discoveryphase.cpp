@@ -115,7 +115,7 @@ void DiscoveryPhase::checkSelectiveSyncNewFolder(const QString &path, RemotePerm
     QObject::connect(propfindJob, &PropfindJob::finishedWithError,
         this, [=] { return callback(false); });
     QObject::connect(propfindJob, &PropfindJob::result, this, [=](const QVariantMap &values) {
-        auto result = values.value(QLatin1String("size")).toLongLong();
+        auto result = values.value(QStringLiteral("size")).toLongLong();
         if (result >= limit) {
             // we tell the UI there is a new folder
             emit newBigFolder(path, false);
@@ -359,11 +359,11 @@ static void propertyMapToRemoteInfo(const QMap<QString, QString> &map, RemoteInf
     for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
         QString property = it.key();
         QString value = it.value();
-        if (property == "resourcetype") {
-            result.isDirectory = value.contains("collection");
-        } else if (property == "getlastmodified") {
+        if (property == QLatin1String("resourcetype")) {
+            result.isDirectory = value.contains(QLatin1String("collection"));
+        } else if (property == QLatin1String("getlastmodified")) {
             result.modtime = oc_httpdate_parse(value.toUtf8());
-        } else if (property == "getcontentlength") {
+        } else if (property == QLatin1String("getcontentlength")) {
             // See #4573, sometimes negative size values are returned
             bool ok = false;
             qlonglong ll = value.toLongLong(&ok);
@@ -372,19 +372,19 @@ static void propertyMapToRemoteInfo(const QMap<QString, QString> &map, RemoteInf
             } else {
                 result.size = 0;
             }
-        } else if (property == "getetag") {
+        } else if (property == QLatin1String("getetag")) {
             result.etag = Utility::normalizeEtag(value.toUtf8());
-        } else if (property == "id") {
+        } else if (property == QLatin1String("id")) {
             result.fileId = value.toUtf8();
-        } else if (property == "downloadURL") {
+        } else if (property == QLatin1String("downloadURL")) {
             result.directDownloadUrl = value;
-        } else if (property == "dDC") {
+        } else if (property == QLatin1String("dDC")) {
             result.directDownloadCookies = value;
-        } else if (property == "permissions") {
+        } else if (property == QLatin1String("permissions")) {
             result.remotePerm = RemotePermissions::fromServerString(value);
-        } else if (property == "checksums") {
+        } else if (property == QLatin1String("checksums")) {
             result.checksumHeader = findBestChecksum(value.toUtf8());
-        } else if (property == "share-types" && !value.isEmpty()) {
+        } else if (property == QLatin1String("share-types") && !value.isEmpty()) {
             // Since QMap is sorted, "share-types" is always after "permissions".
             if (result.remotePerm.isNull()) {
                 qWarning() << "Server returned a share type, but no permissions?";
@@ -396,7 +396,7 @@ static void propertyMapToRemoteInfo(const QMap<QString, QString> &map, RemoteInf
                 // Piggy back on the persmission field
                 result.remotePerm.setPermission(RemotePermissions::IsShared);
             }
-        } else if (property == "zsync" && value.toUtf8() == "true") {
+        } else if (property == QLatin1String("zsync") && value.toUtf8() == "true") {
             // Since QMap is sorted, "zsync" is always after "permissions".
             if (result.remotePerm.isNull()) {
                 qWarning() << "Server returned no permissions";
@@ -413,13 +413,13 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, con
     if (!_ignoredFirst) {
         // The first entry is for the folder itself, we should process it differently.
         _ignoredFirst = true;
-        if (map.contains("permissions")) {
-            auto perm = RemotePermissions::fromServerString(map.value("permissions"));
+        if (map.contains(QStringLiteral("permissions"))) {
+            auto perm = RemotePermissions::fromServerString(map.value(QStringLiteral("permissions")));
             emit firstDirectoryPermissions(perm);
             _isExternalStorage = perm.hasPermission(RemotePermissions::IsMounted);
         }
-        if (map.contains("data-fingerprint")) {
-            _dataFingerprint = map.value("data-fingerprint").toUtf8();
+        if (map.contains(QStringLiteral("data-fingerprint"))) {
+            _dataFingerprint = map.value(QStringLiteral("data-fingerprint")).toUtf8();
             if (_dataFingerprint.isEmpty()) {
                 // Placeholder that means that the server supports the feature even if it did not set one.
                 _dataFingerprint = "[empty]";
@@ -452,9 +452,9 @@ void DiscoverySingleDirectoryJob::directoryListingIteratedSlot(QString file, con
     }
 
     //This works in concerto with the RequestEtagJob and the Folder object to check if the remote folder changed.
-    if (map.contains("getetag")) {
+    if (map.contains(QStringLiteral("getetag"))) {
         if (_firstEtag.isEmpty()) {
-            _firstEtag = parseEtag(map.value("getetag").toUtf8()); // for directory itself
+            _firstEtag = parseEtag(map.value(QStringLiteral("getetag")).toUtf8()); // for directory itself
         }
     }
 }
@@ -485,7 +485,7 @@ void DiscoverySingleDirectoryJob::lsJobFinishedWithErrorSlot(QNetworkReply *r)
     QString msg = r->errorString();
     qCWarning(lcDiscovery) << "LSCOL job error" << r->errorString() << httpCode << r->error();
     if (r->error() == QNetworkReply::NoError
-        && !contentType.contains("application/xml; charset=utf-8")) {
+        && !contentType.contains(QLatin1String("application/xml; charset=utf-8"))) {
         msg = tr("Server error: PROPFIND reply is not XML formatted!");
 
     }

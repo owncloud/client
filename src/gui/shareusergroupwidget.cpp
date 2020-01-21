@@ -63,7 +63,7 @@ ShareUserGroupWidget::ShareUserGroupWidget(AccountPtr account,
     , _disableCompleterActivated(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setObjectName("SharingDialogUG"); // required as group for saveGeometry call
+    setObjectName(QStringLiteral("SharingDialogUG")); // required as group for saveGeometry call
 
     _ui->setupUi(this);
 
@@ -72,7 +72,7 @@ ShareUserGroupWidget::ShareUserGroupWidget(AccountPtr account,
 
     _completer = new QCompleter(this);
     _completerModel = new ShareeModel(_account,
-        _isFile ? QLatin1String("file") : QLatin1String("folder"),
+        _isFile ? QStringLiteral("file") : QStringLiteral("folder"),
         _completer);
     connect(_completerModel, &ShareeModel::shareesReady, this, &ShareUserGroupWidget::slotShareesReady);
     connect(_completerModel, &ShareeModel::displayErrorMessage, this, &ShareUserGroupWidget::displayError);
@@ -160,7 +160,7 @@ void ShareUserGroupWidget::searchForSharees()
     ShareeModel::ShareeSet blacklist;
 
     // Add the current user to _sharees since we can't share with ourself
-    QSharedPointer<Sharee> currentUser(new Sharee(_account->credentials()->user(), "", Sharee::Type::User));
+    QSharedPointer<Sharee> currentUser(new Sharee(_account->credentials()->user(), QLatin1String(""), Sharee::Type::User));
     blacklist << currentUser;
 
     foreach (auto sw, _ui->scrollArea->findChildren<ShareUserLine *>()) {
@@ -416,7 +416,7 @@ ShareUserLine::ShareUserLine(QSharedPointer<Share> share,
     connect(share.data(), &Share::permissionsSet, this, &ShareUserLine::slotPermissionsSet);
     connect(share.data(), &Share::shareDeleted, this, &ShareUserLine::slotShareDeleted);
 
-    _ui->deleteShareButton->setIcon(QIcon::fromTheme(QLatin1String("user-trash"),
+    _ui->deleteShareButton->setIcon(QIcon::fromTheme(QStringLiteral("user-trash"),
         QIcon(QLatin1String(":/client/resources/delete.png"))));
 
     if (!share->account()->capabilities().shareResharing()) {
@@ -446,7 +446,7 @@ void ShareUserLine::loadAvatar()
 
     // See core/js/placeholder.js for details on colors and styling
     const QColor bg = QColor::fromHslF(hue, 0.7, 0.68);
-    const QString style = QString(R"(* {
+    const QString style = QStringLiteral(R"(* {
         color: #fff;
         background-color: %1;
         border-radius: %2px;
@@ -480,7 +480,7 @@ void ShareUserLine::slotAvatarLoaded(QImage avatar)
     _ui->avatar->setPixmap(QPixmap::fromImage(avatar));
 
     // Remove the stylesheet for the fallback avatar
-    _ui->avatar->setStyleSheet("");
+    _ui->avatar->setStyleSheet(QLatin1String(""));
 }
 
 void ShareUserLine::on_deleteShareButton_clicked()

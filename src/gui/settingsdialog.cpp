@@ -99,11 +99,11 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     // People perceive this as a Window, so also make Ctrl+W work
     QAction *closeWindowAction = new QAction(this);
-    closeWindowAction->setShortcut(QKeySequence("Ctrl+W"));
+    closeWindowAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+W")));
     connect(closeWindowAction, &QAction::triggered, this, &SettingsDialog::accept);
     addAction(closeWindowAction);
 
-    setObjectName("Settings"); // required as group for saveGeometry call
+    setObjectName(QStringLiteral("Settings")); // required as group for saveGeometry call
     setWindowTitle(Theme::instance()->appNameGUI());
 
     _actionGroup = new QActionGroup(this);
@@ -111,7 +111,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     // Note: all the actions have a '\n' because the account name is in two lines and
     // all buttons must have the same size in order to keep a good layout
-    _activityAction = createColorAwareAction(QLatin1String(":/client/resources/activity.png"), tr("Activity"));
+    _activityAction = createColorAwareAction(QStringLiteral(":/client/resources/activity.png"), tr("Activity"));
     _actionGroup->addAction(_activityAction);
     _toolBar->addAction(_activityAction);
     _activitySettings = new ActivitySettings;
@@ -120,14 +120,14 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
         &ownCloudGui::slotShowOptionalTrayMessage);
     _activitySettings->setNotificationRefreshInterval(cfg.notificationRefreshInterval());
 
-    QAction *generalAction = createColorAwareAction(QLatin1String(":/client/resources/settings.png"), tr("General"));
+    QAction *generalAction = createColorAwareAction(QStringLiteral(":/client/resources/settings.png"), tr("General"));
     _actionGroup->addAction(generalAction);
     _toolBar->addAction(generalAction);
     GeneralSettings *generalSettings = new GeneralSettings;
     _ui->stack->addWidget(generalSettings);
     QObject::connect(generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
 
-    QAction *networkAction = createColorAwareAction(QLatin1String(":/client/resources/network.png"), tr("Network"));
+    QAction *networkAction = createColorAwareAction(QStringLiteral(":/client/resources/network.png"), tr("Network"));
     _actionGroup->addAction(networkAction);
     _toolBar->addAction(networkAction);
     NetworkSettings *networkSettings = new NetworkSettings;
@@ -137,7 +137,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     _toolBar->addWidget(spacer);
 
-    QAction *quitAction = createColorAwareAction(QLatin1String(":/client/resources/quit.png"), tr("Quit %1").arg(qApp->applicationName()));
+    QAction *quitAction = createColorAwareAction(QStringLiteral(":/client/resources/quit.png"), tr("Quit %1").arg(qApp->applicationName()));
     quitAction->setCheckable(false);
     connect(quitAction, &QAction::triggered, this, [this] {
         const auto reply = QMessageBox::question(this, tr("Quit %1").arg(qApp->applicationName()),
@@ -169,7 +169,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     connect(closeButton, SIGNAL(clicked()), SLOT(accept()));
 
     QAction *showLogWindow = new QAction(this);
-    showLogWindow->setShortcut(QKeySequence("F12"));
+    showLogWindow->setShortcut(QKeySequence(QStringLiteral("F12")));
     connect(showLogWindow, &QAction::triggered, gui, &ownCloudGui::slotToggleLogBrowser);
     addAction(showLogWindow);
 
@@ -261,7 +261,7 @@ void SettingsDialog::accountAdded(AccountState *s)
     QImage avatar = s->account()->avatar();
     const QString actionText = brandingSingleAccount ? tr("Account") : s->account()->displayName();
     if (avatar.isNull()) {
-        accountAction = createColorAwareAction(QLatin1String(":/client/resources/account.png"),
+        accountAction = createColorAwareAction(QStringLiteral(":/client/resources/account.png"),
             actionText);
     } else {
         QIcon icon(QPixmap::fromImage(AvatarJob::makeCircularAvatar(avatar)));
@@ -274,7 +274,7 @@ void SettingsDialog::accountAdded(AccountState *s)
     }
     _toolBar->insertAction(_toolBar->actions().at(0), accountAction);
     auto accountSettings = new AccountSettings(s, this);
-    QString objectName = QLatin1String("accountSettings_");
+    QString objectName = QStringLiteral("accountSettings_");
     objectName += s->account()->displayName();
     accountSettings->setObjectName(objectName);
     _ui->stack->insertWidget(0 , accountSettings);
@@ -410,7 +410,7 @@ public:
         }
 
         QToolButton *btn = new QToolButton(parent);
-        QString objectName = QLatin1String("settingsdialog_toolbutton_");
+        QString objectName = QStringLiteral("settingsdialog_toolbutton_");
         objectName += text();
         btn->setObjectName(objectName);
 

@@ -86,7 +86,7 @@ SslErrorDialog::~SslErrorDialog()
 
 QString SslErrorDialog::styleSheet() const
 {
-    const QString style = QLatin1String(
+    const QString style = QStringLiteral(
         "#cert {margin-left: 5px;} "
         "#ca_error { color:#a00011; margin-left:5px; margin-right:5px; }"
         "#ca_error p { margin-top: 2px; margin-bottom:2px; }"

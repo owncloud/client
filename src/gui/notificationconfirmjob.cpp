@@ -23,7 +23,7 @@ namespace OCC {
 Q_DECLARE_LOGGING_CATEGORY(lcNotifications)
 
 NotificationConfirmJob::NotificationConfirmJob(AccountPtr account)
-    : AbstractNetworkJob(account, "")
+    : AbstractNetworkJob(account, QLatin1String(""))
     , _widget(0)
 {
     setIgnoreCredentialFailure(true);
@@ -66,7 +66,7 @@ bool NotificationConfirmJob::finished()
     // FIXME: check for the reply code!
     const QString replyStr = reply()->readAll();
 
-    if (replyStr.contains("<?xml version=\"1.0\"?>")) {
+    if (replyStr.contains(QLatin1String("<?xml version=\"1.0\"?>"))) {
         QRegExp rex("<statuscode>(\\d+)</statuscode>");
         if (replyStr.contains(rex)) {
             // this is a error message coming back from ocs.

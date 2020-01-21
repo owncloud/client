@@ -24,7 +24,7 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcServerNotification, "gui.servernotification", QtInfoMsg)
 
-const QString notificationsPath = QLatin1String("ocs/v2.php/apps/notifications/api/v1/notifications");
+const QString notificationsPath = QStringLiteral("ocs/v2.php/apps/notifications/api/v1/notifications");
 
 ServerNotificationHandler::ServerNotificationHandler(QObject *parent)
     : QObject(parent)
@@ -65,7 +65,7 @@ void ServerNotificationHandler::slotNotificationsReceived(const QJsonDocument &j
         return;
     }
 
-    auto notifies = json.object().value("ocs").toObject().value("data").toArray();
+    auto notifies = json.object().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toArray();
 
     AccountState *ai = qvariant_cast<AccountState *>(sender()->property("AccountStatePtr"));
 
@@ -76,23 +76,23 @@ void ServerNotificationHandler::slotNotificationsReceived(const QJsonDocument &j
         auto json = element.toObject();
         a._type = Activity::NotificationType;
         a._accName = ai->account()->displayName();
-        a._id = json.value("notification_id").toInt();
-        a._subject = json.value("subject").toString();
-        a._message = json.value("message").toString();
-        QString s = json.value("link").toString();
+        a._id = json.value(QStringLiteral("notification_id")).toInt();
+        a._subject = json.value(QStringLiteral("subject")).toString();
+        a._message = json.value(QStringLiteral("message")).toString();
+        QString s = json.value(QStringLiteral("link")).toString();
         if (!s.isEmpty()) {
             a._link = QUrl(s);
         }
-        a._dateTime = QDateTime::fromString(json.value("datetime").toString(), Qt::ISODate);
+        a._dateTime = QDateTime::fromString(json.value(QStringLiteral("datetime")).toString(), Qt::ISODate);
 
-        auto actions = json.value("actions").toArray();
+        auto actions = json.value(QStringLiteral("actions")).toArray();
         foreach (auto action, actions) {
             auto actionJson = action.toObject();
             ActivityLink al;
-            al._label = QUrl::fromPercentEncoding(actionJson.value("label").toString().toUtf8());
-            al._link = actionJson.value("link").toString();
-            al._verb = actionJson.value("type").toString().toUtf8();
-            al._isPrimary = actionJson.value("primary").toBool();
+            al._label = QUrl::fromPercentEncoding(actionJson.value(QStringLiteral("label")).toString().toUtf8());
+            al._link = actionJson.value(QStringLiteral("link")).toString();
+            al._verb = actionJson.value(QStringLiteral("type")).toString().toUtf8();
+            al._isPrimary = actionJson.value(QStringLiteral("primary")).toBool();
 
             a._links.append(al);
         }

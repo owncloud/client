@@ -28,9 +28,9 @@
  */
 
 
-static const QUrl sRootUrl("owncloud://somehost/owncloud/remote.php/webdav/");
-static const QUrl sRootUrl2("owncloud://somehost/owncloud/remote.php/dav/files/admin/");
-static const QUrl sUploadUrl("owncloud://somehost/owncloud/remote.php/dav/uploads/admin/");
+static const QUrl sRootUrl(QStringLiteral("owncloud://somehost/owncloud/remote.php/webdav/"));
+static const QUrl sRootUrl2(QStringLiteral("owncloud://somehost/owncloud/remote.php/dav/files/admin/"));
+static const QUrl sUploadUrl(QStringLiteral("owncloud://somehost/owncloud/remote.php/dav/uploads/admin/"));
 
 inline QString getFilePathFromUrl(const QUrl &url) {
     QString path = url.path();
@@ -373,8 +373,8 @@ public:
         QBuffer buffer{&payload};
         buffer.open(QIODevice::WriteOnly);
         QXmlStreamWriter xml( &buffer );
-        xml.writeNamespace(davUri, "d");
-        xml.writeNamespace(ocUri, "oc");
+        xml.writeNamespace(davUri, QStringLiteral("d"));
+        xml.writeNamespace(ocUri, QStringLiteral("oc"));
         xml.writeStartDocument();
         xml.writeStartElement(davUri, QStringLiteral("multistatus"));
         auto writeFileResponse = [&](const FileInfo &fileInfo) {
@@ -392,7 +392,7 @@ public:
                 xml.writeEmptyElement(davUri, QStringLiteral("resourcetype"));
 
             auto gmtDate = fileInfo.lastModified.toUTC();
-            auto stringDate = QLocale::c().toString(gmtDate, "ddd, dd MMM yyyy HH:mm:ss 'GMT'");
+            auto stringDate = QLocale::c().toString(gmtDate, QStringLiteral("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
             xml.writeTextElement(davUri, QStringLiteral("getlastmodified"), stringDate);
             xml.writeTextElement(davUri, QStringLiteral("getcontentlength"), QString::number(fileInfo.size));
             xml.writeTextElement(davUri, QStringLiteral("getetag"), QStringLiteral("\"%1\"").arg(fileInfo.etag));
@@ -404,7 +404,7 @@ public:
             xml.writeTextElement(ocUri, QStringLiteral("zsync"), QStringLiteral("true"));
             buffer.write(fileInfo.extraDavProperties);
             xml.writeEndElement(); // prop
-            xml.writeTextElement(davUri, QStringLiteral("status"), "HTTP/1.1 200 OK");
+            xml.writeTextElement(davUri, QStringLiteral("status"), QStringLiteral("HTTP/1.1 200 OK"));
             xml.writeEndElement(); // propstat
             xml.writeEndElement(); // response
         };
@@ -431,7 +431,7 @@ public:
 
     Q_INVOKABLE void respond404() {
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 404);
-        setError(InternalServerError, "Not Found");
+        setError(InternalServerError, QStringLiteral("Not Found"));
         emit metaDataChanged();
         emit finished();
     }
@@ -493,7 +493,7 @@ public:
 
     void abort() override
     {
-        setError(OperationCanceledError, "abort");
+        setError(OperationCanceledError, QStringLiteral("abort"));
         emit finished();
     }
     qint64 readData(char *, qint64) override { return 0; }
@@ -615,7 +615,7 @@ public:
 
     Q_INVOKABLE void respond() {
         if (aborted) {
-            setError(OperationCanceledError, "Operation Canceled");
+            setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
             emit metaDataChanged();
             emit finished();
             return;
@@ -634,7 +634,7 @@ public:
     }
 
     void abort() override {
-        setError(OperationCanceledError, "Operation Canceled");
+        setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
         aborted = true;
     }
     qint64 bytesAvailable() const override {
@@ -694,7 +694,7 @@ public:
     Q_INVOKABLE void respond()
     {
         if (aborted) {
-            setError(OperationCanceledError, "Operation Canceled");
+            setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
             emit metaDataChanged();
             emit finished();
             return;
@@ -712,7 +712,7 @@ public:
 
     void abort() override
     {
-        setError(OperationCanceledError, "Operation Canceled");
+        setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
         aborted = true;
     }
     qint64 bytesAvailable() const override
@@ -762,9 +762,9 @@ public:
         bool zsync = false;
         Q_ASSERT(!source.isEmpty());
         Q_ASSERT(source.endsWith("/.file") || source.endsWith("/.file.zsync"));
-        if (source.endsWith("/.file"))
+        if (source.endsWith(QLatin1String("/.file")))
             source = source.left(source.length() - qstrlen("/.file"));
-        if (source.endsWith("/.file.zsync")) {
+        if (source.endsWith(QLatin1String("/.file.zsync"))) {
             source = source.left(source.length() - qstrlen("/.file.zsync"));
             zsync = true;
         }
@@ -780,8 +780,8 @@ public:
         Q_ASSERT(!fileName.isEmpty());
 
         // Ignore .zsync metadata
-        if (sourceFolder->children.contains(".zsync"))
-            sourceFolder->children.remove(".zsync");
+        if (sourceFolder->children.contains(QStringLiteral(".zsync")))
+            sourceFolder->children.remove(QStringLiteral(".zsync"));
 
         // Compute the size and content from the chunks if possible
         for (auto chunkName : sourceFolder->children.keys()) {
@@ -845,14 +845,14 @@ public:
 
     Q_INVOKABLE void respondPreconditionFailed() {
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 412);
-        setError(InternalServerError, "Precondition Failed");
+        setError(InternalServerError, QStringLiteral("Precondition Failed"));
         emit metaDataChanged();
         emit finished();
     }
 
     void abort() override
     {
-        setError(OperationCanceledError, "abort");
+        setError(OperationCanceledError, QStringLiteral("abort"));
         emit finished();
     }
 
@@ -887,8 +887,8 @@ public:
         int count = 0;
 
         // Ignore .zsync metadata
-        if (sourceFolder->children.contains(".zsync"))
-            sourceFolder->children.remove(".zsync");
+        if (sourceFolder->children.contains(QStringLiteral(".zsync")))
+            sourceFolder->children.remove(QStringLiteral(".zsync"));
 
         for (auto chunkName : sourceFolder->children.keys()) {
             auto &x = sourceFolder->children[chunkName];
@@ -943,7 +943,7 @@ public:
     Q_INVOKABLE void respondPreconditionFailed()
     {
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 412);
-        setError(InternalServerError, "Precondition Failed");
+        setError(InternalServerError, QStringLiteral("Precondition Failed"));
         emit metaDataChanged();
         emit finished();
     }
@@ -1006,7 +1006,7 @@ public:
         setOperation(op);
         open(QIODevice::ReadOnly);
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, httpErrorCode);
-        setError(InternalServerError, "Internal Server Fake Error");
+        setError(InternalServerError, QStringLiteral("Internal Server Fake Error"));
         QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
     }
 
@@ -1154,8 +1154,8 @@ class FakeCredentials : public OCC::AbstractCredentials
     QNetworkAccessManager *_qnam;
 public:
     FakeCredentials(QNetworkAccessManager *qnam) : _qnam{qnam} { }
-    virtual QString authType() const { return "test"; }
-    virtual QString user() const { return "admin"; }
+    virtual QString authType() const { return QStringLiteral("test"); }
+    virtual QString user() const { return QStringLiteral("admin"); }
     virtual QNetworkAccessManager *createQNAM() const { return _qnam; }
     virtual bool ready() const { return true; }
     virtual void fetchFromKeychain() { }
@@ -1182,7 +1182,7 @@ public:
     {
         // Needs to be done once
         OCC::SyncEngine::minimumFileAgeForUpload = std::chrono::milliseconds(0);
-        OCC::Logger::instance()->setLogFile("-");
+        OCC::Logger::instance()->setLogFile(QStringLiteral("-"));
 
         QDir rootDir{_tempDir.path()};
         qDebug() << "FakeFolder operating on" << rootDir;
@@ -1192,13 +1192,13 @@ public:
         _account = OCC::Account::create();
         _account->setUrl(QUrl(QStringLiteral("http://admin:admin@localhost/owncloud")));
         _account->setCredentials(new FakeCredentials{_fakeQnam});
-        _account->setDavDisplayName("fakename");
-        _account->setServerVersion("10.0.0");
+        _account->setDavDisplayName(QStringLiteral("fakename"));
+        _account->setServerVersion(QStringLiteral("10.0.0"));
 
         _journalDb.reset(new OCC::SyncJournalDb(localPath() + ".sync_test.db"));
-        _syncEngine.reset(new OCC::SyncEngine(_account, localPath(), "", _journalDb.get()));
+        _syncEngine.reset(new OCC::SyncEngine(_account, localPath(), QLatin1String(""), _journalDb.get()));
         // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
-        _syncEngine->excludedFiles().addManualExclude("]*.~*");
+        _syncEngine->excludedFiles().addManualExclude(QStringLiteral("]*.~*"));
 
         // Ensure we have a valid VfsOff instance "running"
         switchToVfs(_syncEngine->syncOptions()._vfs);
@@ -1221,11 +1221,11 @@ public:
 
         OCC::VfsSetupParams vfsParams;
         vfsParams.filesystemPath = localPath();
-        vfsParams.remotePath = "/";
+        vfsParams.remotePath = QLatin1String("/");
         vfsParams.account = _account;
         vfsParams.journal = _journalDb.get();
-        vfsParams.providerName = "OC-TEST";
-        vfsParams.providerVersion = "0.1";
+        vfsParams.providerName = QLatin1String("OC-TEST");
+        vfsParams.providerVersion = QLatin1String("0.1");
         vfsParams.enableShellIntegration = enableShell;
         QObject::connect(_syncEngine.get(), &QObject::destroyed, vfs.data(), [vfs]() {
             vfs->stop();
@@ -1425,11 +1425,11 @@ namespace OCC {
 inline void addFiles(QStringList &dest, const FileInfo &fi)
 {
     if (fi.isDir) {
-        dest += QString("%1 - dir").arg(fi.path());
+        dest += QStringLiteral("%1 - dir").arg(fi.path());
         foreach (const FileInfo &fi, fi.children)
             addFiles(dest, fi);
     } else {
-        dest += QString("%1 - %2 %3-bytes").arg(fi.path()).arg(fi.size).arg(fi.contentChar);
+        dest += QStringLiteral("%1 - %2 %3-bytes").arg(fi.path()).arg(fi.size).arg(fi.contentChar);
     }
 }
 
@@ -1439,7 +1439,7 @@ inline QString toStringNoElide(const FileInfo &fi)
     foreach (const FileInfo &fi, fi.children)
         addFiles(files, fi);
     files.sort();
-    return QString("FileInfo with %1 files(\n\t%2\n)").arg(files.size()).arg(files.join("\n\t"));
+    return QStringLiteral("FileInfo with %1 files(\n\t%2\n)").arg(files.size()).arg(files.join(QStringLiteral("\n\t")));
 }
 
 inline char *toString(const FileInfo &fi)
@@ -1451,7 +1451,7 @@ inline void addFilesDbData(QStringList &dest, const FileInfo &fi)
 {
     // could include etag, permissions etc, but would need extra work
     if (fi.isDir) {
-        dest += QString("%1 - %2 %3 %4").arg(
+        dest += QStringLiteral("%1 - %2 %3 %4").arg(
             fi.name,
             fi.isDir ? "dir" : "file",
             QString::number(fi.lastModified.toSecsSinceEpoch()),
@@ -1459,7 +1459,7 @@ inline void addFilesDbData(QStringList &dest, const FileInfo &fi)
         foreach (const FileInfo &fi, fi.children)
             addFilesDbData(dest, fi);
     } else {
-        dest += QString("%1 - %2 %3 %4 %5").arg(
+        dest += QStringLiteral("%1 - %2 %3 %4 %5").arg(
             fi.name,
             fi.isDir ? "dir" : "file",
             QString::number(fi.size),
@@ -1473,5 +1473,5 @@ inline char *printDbData(const FileInfo &fi)
     QStringList files;
     foreach (const FileInfo &fi, fi.children)
         addFilesDbData(files, fi);
-    return QTest::toString(QString("FileInfo with %1 files(%2)").arg(files.size()).arg(files.join(", ")));
+    return QTest::toString(QStringLiteral("FileInfo with %1 files(%2)").arg(files.size()).arg(files.join(QStringLiteral(", "))));
 }

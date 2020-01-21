@@ -521,7 +521,7 @@ void PropagateDownloadFile::startDownload()
         pi._tmpfile = tmpFileName;
         pi._valid = true;
         propagator()->_journal->setDownloadInfo(_item->_file, pi);
-        propagator()->_journal->commit("download file start");
+        propagator()->_journal->commit(QStringLiteral("download file start"));
     }
 
     if (_item->_remotePerm.hasPermission(RemotePermissions::HasZSyncMetadata) && isZsyncPropagationEnabled(propagator(), _item)) {
@@ -751,7 +751,7 @@ void PropagateDownloadFile::slotGetFinished()
         // This happened when trying to resume a file. The Content-Range header was files, Content-Length was == 0
         qCDebug(lcPropagateDownload) << bodySize << _item->_size << _tmpFile.size() << job->resumeStart();
         FileSystem::remove(_tmpFile.fileName());
-        done(SyncFileItem::SoftError, QLatin1String("Broken webserver returning empty content length for non-empty file on resume"));
+        done(SyncFileItem::SoftError, QStringLiteral("Broken webserver returning empty content length for non-empty file on resume"));
         return;
     }
 
@@ -846,7 +846,7 @@ namespace { // Anonymous namespace for the recall feature
             dotLocation = recallFileName.size();
         }
 
-        QString timeString = QDateTime::currentDateTimeUtc().toString("yyyyMMdd-hhmmss");
+        QString timeString = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyyMMdd-hhmmss"));
         recallFileName.insert(dotLocation, "_.sys.admin#recall#-" + timeString);
 
         return recallFileName;
@@ -999,7 +999,7 @@ void PropagateDownloadFile::downloadFinished()
     emit propagator()->touchedFile(fn);
     // The fileChanged() check is done above to generate better error messages.
     if (!FileSystem::uncheckedRenameReplace(_tmpFile.fileName(), fn, &error)) {
-        qCWarning(lcPropagateDownload) << QString("Rename failed: %1 => %2").arg(_tmpFile.fileName()).arg(fn);
+        qCWarning(lcPropagateDownload) << QStringLiteral("Rename failed: %1 => %2").arg(_tmpFile.fileName()).arg(fn);
         // If the file is locked, we want to retry this sync when it
         // becomes available again, otherwise try again directly
         if (FileSystem::isFileLocked(fn)) {
@@ -1060,14 +1060,14 @@ void PropagateDownloadFile::updateMetadata(bool isConflict)
         return;
     }
     propagator()->_journal->setDownloadInfo(_item->_file, SyncJournalDb::DownloadInfo());
-    propagator()->_journal->commit("download file start2");
+    propagator()->_journal->commit(QStringLiteral("download file start2"));
 
     done(isConflict ? SyncFileItem::Conflict : SyncFileItem::Success);
 
     // handle the special recall file
     if (!_item->_remotePerm.hasPermission(RemotePermissions::IsShared)
         && (_item->_file == QLatin1String(".sys.admin#recall#")
-               || _item->_file.endsWith("/.sys.admin#recall#"))) {
+               || _item->_file.endsWith(QLatin1String("/.sys.admin#recall#")))) {
         handleRecallFile(fn, propagator()->_localDir, *propagator()->_journal);
     }
 

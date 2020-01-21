@@ -32,11 +32,11 @@ QString SyncRunFileLog::dateTimeStr(const QDateTime &dt)
 
 QString SyncRunFileLog::directionToStr(SyncFileItem::Direction dir)
 {
-    QString re("N");
+    QString re(QStringLiteral("N"));
     if (dir == SyncFileItem::Up) {
-        re = QLatin1String("Up");
+        re = QStringLiteral("Up");
     } else if (dir == SyncFileItem::Down) {
-        re = QLatin1String("Down");
+        re = QStringLiteral("Down");
     }
     return re;
 }
@@ -47,43 +47,43 @@ QString SyncRunFileLog::instructionToStr(csync_instructions_e inst)
 
     switch (inst) {
     case CSYNC_INSTRUCTION_NONE:
-        re = "INST_NONE";
+        re = QLatin1String("INST_NONE");
         break;
     case CSYNC_INSTRUCTION_EVAL:
-        re = "INST_EVAL";
+        re = QLatin1String("INST_EVAL");
         break;
     case CSYNC_INSTRUCTION_REMOVE:
-        re = "INST_REMOVE";
+        re = QLatin1String("INST_REMOVE");
         break;
     case CSYNC_INSTRUCTION_RENAME:
-        re = "INST_RENAME";
+        re = QLatin1String("INST_RENAME");
         break;
     case CSYNC_INSTRUCTION_EVAL_RENAME:
-        re = "INST_EVAL_RENAME";
+        re = QLatin1String("INST_EVAL_RENAME");
         break;
     case CSYNC_INSTRUCTION_NEW:
-        re = "INST_NEW";
+        re = QLatin1String("INST_NEW");
         break;
     case CSYNC_INSTRUCTION_CONFLICT:
-        re = "INST_CONFLICT";
+        re = QLatin1String("INST_CONFLICT");
         break;
     case CSYNC_INSTRUCTION_IGNORE:
-        re = "INST_IGNORE";
+        re = QLatin1String("INST_IGNORE");
         break;
     case CSYNC_INSTRUCTION_SYNC:
-        re = "INST_SYNC";
+        re = QLatin1String("INST_SYNC");
         break;
     case CSYNC_INSTRUCTION_STAT_ERROR:
-        re = "INST_STAT_ERR";
+        re = QLatin1String("INST_STAT_ERR");
         break;
     case CSYNC_INSTRUCTION_ERROR:
-        re = "INST_ERROR";
+        re = QLatin1String("INST_ERROR");
         break;
     case CSYNC_INSTRUCTION_TYPE_CHANGE:
-        re = "INST_TYPE_CHANGE";
+        re = QLatin1String("INST_TYPE_CHANGE");
         break;
     case CSYNC_INSTRUCTION_UPDATE_METADATA:
-        re = "INST_METADATA";
+        re = QLatin1String("INST_METADATA");
         break;
     }
 

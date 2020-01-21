@@ -108,7 +108,7 @@ IssuesWidget::IssuesWidget(QWidget *parent)
     _ui->_treeWidget->setColumnCount(4);
     _ui->_treeWidget->setRootIsDecorated(false);
     _ui->_treeWidget->setTextElideMode(Qt::ElideMiddle);
-    _ui->_treeWidget->header()->setObjectName("ActivityErrorListHeader");
+    _ui->_treeWidget->header()->setObjectName(QStringLiteral("ActivityErrorListHeader"));
 #if defined(Q_OS_MAC)
     _ui->_treeWidget->setMinimumWidth(400);
 #endif
@@ -264,7 +264,7 @@ void IssuesWidget::slotProgressInfo(const QString &folder, const ProgressInfo &p
                 return true;
 
             auto path = QFileInfo(ProtocolItem::extraData(item).path).dir().path();
-            if (path == ".")
+            if (path == QLatin1String("."))
                 path.clear();
 
             return engine.shouldDiscoverLocally(path);
@@ -482,7 +482,7 @@ void IssuesWidget::addError(const QString &folderAlias, const QString &message,
     const QString longTimeStr = ProtocolItem::timeString(timestamp, QLocale::LongFormat);
 
     columns << timeStr;
-    columns << ""; // no "File" entry
+    columns << QLatin1String(""); // no "File" entry
     columns << folder->shortGuiLocalPath();
     columns << message;
 
@@ -515,7 +515,7 @@ void IssuesWidget::addErrorWidget(QTreeWidgetItem *item, const QString &message,
         label->setElideMode(Qt::ElideMiddle);
         layout->addWidget(label);
 
-        auto button = new QPushButton("Retry all uploads", widget);
+        auto button = new QPushButton(QStringLiteral("Retry all uploads"), widget);
         button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
         auto folderAlias = ProtocolItem::extraData(item).folderName;
         connect(button, &QPushButton::clicked,

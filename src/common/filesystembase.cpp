@@ -484,7 +484,7 @@ bool FileSystem::isFileLocked(const QString &fileName)
 
 bool FileSystem::isLnkFile(const QString &filename)
 {
-    return filename.endsWith(".lnk");
+    return filename.endsWith(QLatin1String(".lnk"));
 }
 
 bool FileSystem::isJunction(const QString &filename)

@@ -108,7 +108,7 @@ bool RequestEtagJob::finished()
     if (httpCode == 207) {
         // Parse DAV response
         QXmlStreamReader reader(reply());
-        reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration("d", "DAV:"));
+        reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration(QStringLiteral("d"), QStringLiteral("DAV:")));
         QString etag;
         while (!reader.atEnd()) {
             QXmlStreamReader::TokenType type = reader.readNext();
@@ -209,7 +209,7 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
 {
     // Parse DAV response
     QXmlStreamReader reader(xml);
-    reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration("d", "DAV:"));
+    reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration(QStringLiteral("d"), QStringLiteral("DAV:")));
 
     QStringList folders;
     QString currentHref;
@@ -239,7 +239,7 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
                 insidePropstat = true;
             } else if (name == QLatin1String("status") && insidePropstat) {
                 QString httpStatus = reader.readElementText();
-                if (httpStatus.startsWith("HTTP/1.1 200")) {
+                if (httpStatus.startsWith(QLatin1String("HTTP/1.1 200"))) {
                     currentPropsHaveHttp200 = true;
                 } else {
                     currentPropsHaveHttp200 = false;
@@ -256,7 +256,7 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
         if (type == QXmlStreamReader::StartElement && insidePropstat && insideProp) {
             // All those elements are properties
             QString propertyContent = readContentsAsString(reader);
-            if (name == QLatin1String("resourcetype") && propertyContent.contains("collection")) {
+            if (name == QLatin1String("resourcetype") && propertyContent.contains(QLatin1String("collection"))) {
                 folders.append(currentHref);
             } else if (name == QLatin1String("size")) {
                 bool ok = false;
@@ -379,7 +379,7 @@ bool LsColJob::finished()
 
     QString contentType = reply()->header(QNetworkRequest::ContentTypeHeader).toString();
     int httpCode = reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    if (httpCode == 207 && contentType.contains("application/xml; charset=utf-8")) {
+    if (httpCode == 207 && contentType.contains(QLatin1String("application/xml; charset=utf-8"))) {
         LsColXMLParser parser;
         connect(&parser, &LsColXMLParser::directoryListingSubfolders,
             this, &LsColJob::directoryListingSubfolders);
@@ -535,7 +535,7 @@ bool CheckServerJob::finished()
         }
 
         qCInfo(lcCheckServerJob) << "status.php returns: " << status << " " << reply()->error() << " Reply: " << reply();
-        if (status.object().contains("installed")) {
+        if (status.object().contains(QStringLiteral("installed"))) {
             emit instanceFound(_serverUrl, status.object());
         } else {
             qCWarning(lcCheckServerJob) << "No proper answer on " << reply()->url();
@@ -607,7 +607,7 @@ bool PropfindJob::finished()
     if (http_result_code == 207) {
         // Parse DAV response
         QXmlStreamReader reader(reply());
-        reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration("d", "DAV:"));
+        reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration(QStringLiteral("d"), QStringLiteral("DAV:")));
 
         QVariantMap items;
         // introduced to nesting is ignored
@@ -649,9 +649,9 @@ AvatarJob::AvatarJob(AccountPtr account, const QString &userId, int size, QObjec
     : AbstractNetworkJob(account, QString(), parent)
 {
     if (account->serverVersionInt() >= Account::makeServerVersion(10, 0, 0)) {
-        _avatarUrl = Utility::concatUrlPath(account->url(), QString("remote.php/dav/avatars/%1/%2.png").arg(userId, QString::number(size)));
+        _avatarUrl = Utility::concatUrlPath(account->url(), QStringLiteral("remote.php/dav/avatars/%1/%2.png").arg(userId, QString::number(size)));
     } else {
-        _avatarUrl = Utility::concatUrlPath(account->url(), QString("index.php/avatar/%1/%2").arg(userId, QString::number(size)));
+        _avatarUrl = Utility::concatUrlPath(account->url(), QStringLiteral("index.php/avatar/%1/%2").arg(userId, QString::number(size)));
     }
 }
 
@@ -815,7 +815,7 @@ void OCC::JsonApiJob::startWithRequest(QNetworkRequest req)
 {
     req.setRawHeader("OCS-APIREQUEST", "true");
     auto query = _additionalParams;
-    query.addQueryItem(QLatin1String("format"), QLatin1String("json"));
+    query.addQueryItem(QStringLiteral("format"), QStringLiteral("json"));
     QUrl url = Utility::concatUrlPath(account()->url(), path(), query);
     sendRequest("GET", url, req);
     AbstractNetworkJob::start();
@@ -835,7 +835,7 @@ bool JsonApiJob::finished()
     }
 
     QString jsonStr = QString::fromUtf8(reply()->readAll());
-    if (jsonStr.contains("<?xml version=\"1.0\"?>")) {
+    if (jsonStr.contains(QLatin1String("<?xml version=\"1.0\"?>"))) {
         QRegExp rex("<statuscode>(\\d+)</statuscode>");
         if (jsonStr.contains(rex)) {
             // this is a error message coming back from ocs.
@@ -933,8 +933,8 @@ void fetchPrivateLinkUrl(AccountPtr account, const QString &remotePath,
         << "http://owncloud.org/ns:privatelink");
     job->setTimeout(10 * 1000);
     QObject::connect(job, &PropfindJob::result, target, [=](const QVariantMap &result) {
-        auto privateLinkUrl = result["privatelink"].toString();
-        auto numericFileId = result["fileid"].toByteArray();
+        auto privateLinkUrl = result[QStringLiteral("privatelink")].toString();
+        auto numericFileId = result[QStringLiteral("fileid")].toByteArray();
         if (!privateLinkUrl.isEmpty()) {
             targetFun(privateLinkUrl);
         } else if (!numericFileId.isEmpty()) {

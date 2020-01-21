@@ -67,7 +67,7 @@ private slots:
     }
 
     void testInvalidNetrc() {
-       NetrcParser parser("/invalid");
+       NetrcParser parser(QStringLiteral("/invalid"));
        QVERIFY(!parser.parse());
     }
 };

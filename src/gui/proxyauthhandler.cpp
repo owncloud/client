@@ -43,8 +43,8 @@ ProxyAuthHandler::ProxyAuthHandler()
 
     _configFile.reset(new ConfigFile);
     _settings.reset(new QSettings(_configFile->configFile(), QSettings::IniFormat));
-    _settings->beginGroup(QLatin1String("Proxy"));
-    _settings->beginGroup(QLatin1String("Credentials"));
+    _settings->beginGroup(QStringLiteral("Proxy"));
+    _settings->beginGroup(QStringLiteral("Credentials"));
 }
 
 ProxyAuthHandler::~ProxyAuthHandler()
@@ -261,10 +261,10 @@ void ProxyAuthHandler::storeCredsInKeychain()
 
 QString ProxyAuthHandler::keychainUsernameKey() const
 {
-    return QString::fromLatin1("%1/username").arg(_proxy);
+    return QStringLiteral("%1/username").arg(_proxy);
 }
 
 QString ProxyAuthHandler::keychainPasswordKey() const
 {
-    return QString::fromLatin1("%1/password").arg(_proxy);
+    return QStringLiteral("%1/password").arg(_proxy);
 }

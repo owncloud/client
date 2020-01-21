@@ -809,11 +809,11 @@ void ownCloudGui::setupActions()
     connect(_actionLogout, &QAction::triggered, this, &ownCloudGui::slotLogout);
 
     if (_app->debugMode()) {
-        _actionCrash = new QAction("Crash now - Div by zero", this);
+        _actionCrash = new QAction(QStringLiteral("Crash now - Div by zero"), this);
         connect(_actionCrash, &QAction::triggered, _app, &Application::slotCrash);
-        _actionCrashEnforce = new QAction("Crash now - ENFORCE()", this);
+        _actionCrashEnforce = new QAction(QStringLiteral("Crash now - ENFORCE()"), this);
         connect(_actionCrashEnforce, &QAction::triggered, _app, &Application::slotCrashEnforce);
-        _actionCrashFatal = new QAction("Crash now - qFatal", this);
+        _actionCrashFatal = new QAction(QStringLiteral("Crash now - qFatal"), this);
         connect(_actionCrashFatal, &QAction::triggered, _app, &Application::slotCrashFatal);
     } else {
         _actionCrash = nullptr;
@@ -905,7 +905,7 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo &
         }
 
         QString kindStr = Progress::asResultString(progress._lastCompletedItem);
-        QString timeStr = QTime::currentTime().toString("hh:mm");
+        QString timeStr = QTime::currentTime().toString(QStringLiteral("hh:mm"));
         QString actionText = tr("%1 (%2, %3)").arg(progress._lastCompletedItem._file, kindStr, timeStr);
         QAction *action = new QAction(actionText, this);
         Folder *f = FolderMan::instance()->folder(folder);

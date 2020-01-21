@@ -55,7 +55,7 @@ bool FolderWatcherPrivate::findFoldersBelow(const QDir &dir, QStringList &fullLi
         ok = false;
     } else {
         QStringList nameFilter;
-        nameFilter << QLatin1String("*");
+        nameFilter << QStringLiteral("*");
         QDir::Filters filter = QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Hidden;
         const QStringList pathes = dir.entryList(nameFilter, filter);
 

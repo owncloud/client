@@ -173,7 +173,7 @@ int FolderMan::setupFolders()
     // We ignore them here just in case.
     skipSettingsKeys += deleteSettingsKeys;
 
-    auto settings = ConfigFile::settingsWithGroup(QLatin1String("Accounts"));
+    auto settings = ConfigFile::settingsWithGroup(QStringLiteral("Accounts"));
     const auto accountsWithSettings = settings->childGroups();
     if (accountsWithSettings.isEmpty()) {
         int r = setupFoldersMigration();
@@ -246,8 +246,8 @@ void FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account,
             // So if the configured journalPath has a dot-underscore ("._sync_*.db")
             // but the current default doesn't have the underscore, switch to the
             // new default if no db exists yet.
-            if (folderDefinition.journalPath.startsWith("._sync_")
-                && defaultJournalPath.startsWith(".sync_")
+            if (folderDefinition.journalPath.startsWith(QLatin1String("._sync_"))
+                && defaultJournalPath.startsWith(QLatin1String(".sync_"))
                 && !QFile::exists(folderDefinition.absoluteJournalPath())) {
                 folderDefinition.journalPath = defaultJournalPath;
             }
@@ -267,7 +267,7 @@ void FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account,
             if (f) {
                 // Migrate the old "usePlaceholders" setting to the root folder pin state
                 if (settings.value(QLatin1String(versionC), 1).toInt() == 1
-                    && settings.value(QLatin1String("usePlaceholders"), false).toBool()) {
+                    && settings.value(QStringLiteral("usePlaceholders"), false).toBool()) {
                     f->setRootPinState(PinState::OnlineOnly);
                 }
 
@@ -316,7 +316,7 @@ int FolderMan::setupFoldersMigration()
 
 void FolderMan::backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringList *ignoreKeys)
 {
-    auto settings = ConfigFile::settingsWithGroup(QLatin1String("Accounts"));
+    auto settings = ConfigFile::settingsWithGroup(QStringLiteral("Accounts"));
 
     auto processSubgroup = [&](const QString &name) {
         settings->beginGroup(name);
@@ -338,9 +338,9 @@ void FolderMan::backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringLi
 
     for (const auto &accountId : settings->childGroups()) {
         settings->beginGroup(accountId);
-        processSubgroup("Folders");
-        processSubgroup("Multifolders");
-        processSubgroup("FoldersWithPlaceholders");
+        processSubgroup(QStringLiteral("Folders"));
+        processSubgroup(QStringLiteral("Multifolders"));
+        processSubgroup(QStringLiteral("FoldersWithPlaceholders"));
         settings->endGroup();
     }
 }
@@ -457,10 +457,10 @@ Folder *FolderMan::setupFolderFromOldConfigFile(const QString &file, AccountStat
 
     settings.beginGroup(escapedAlias); // read the group with the same name as the file which is the folder alias
 
-    QString path = settings.value(QLatin1String("localPath")).toString();
-    QString backend = settings.value(QLatin1String("backend")).toString();
-    QString targetPath = settings.value(QLatin1String("targetPath")).toString();
-    bool paused = settings.value(QLatin1String("paused"), false).toBool();
+    QString path = settings.value(QStringLiteral("localPath")).toString();
+    QString backend = settings.value(QStringLiteral("backend")).toString();
+    QString targetPath = settings.value(QStringLiteral("targetPath")).toString();
+    bool paused = settings.value(QStringLiteral("paused"), false).toBool();
     // QString connection = settings.value( QLatin1String("connection") ).toString();
     QString alias = unescapeAlias(escapedAlias);
 
@@ -488,11 +488,11 @@ Folder *FolderMan::setupFolderFromOldConfigFile(const QString &file, AccountStat
 
     folder = addFolderInternal(folderDefinition, accountState, std::unique_ptr<Vfs>());
     if (folder) {
-        QStringList blackList = settings.value(QLatin1String("blackList")).toStringList();
+        QStringList blackList = settings.value(QStringLiteral("blackList")).toStringList();
         if (!blackList.empty()) {
             //migrate settings
             folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blackList);
-            settings.remove(QLatin1String("blackList"));
+            settings.remove(QStringLiteral("blackList"));
             // FIXME: If you remove this codepath, you need to provide another way to do
             // this via theme.h or the normal FolderMan::setupFolders
         }
@@ -1129,7 +1129,7 @@ void FolderMan::removeFolder(Folder *f)
 
 QString FolderMan::getBackupName(QString fullPathName) const
 {
-    if (fullPathName.endsWith("/"))
+    if (fullPathName.endsWith(QLatin1String("/")))
         fullPathName.chop(1);
 
     if (fullPathName.isEmpty())

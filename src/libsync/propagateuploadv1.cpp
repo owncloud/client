@@ -62,7 +62,7 @@ void PropagateUploadFileV1::doStartUpload()
         pi._contentChecksum = _item->_checksumHeader;
         pi._size = _item->_size;
         propagator()->_journal->setUploadInfo(_item->_file, pi);
-        propagator()->_journal->commit("Upload info");
+        propagator()->_journal->commit(QStringLiteral("Upload info"));
     }
 
     _currentChunk = 0;
@@ -99,7 +99,7 @@ void PropagateUploadFileV1::startNextChunk()
         // XOR with chunk size to make sure everything goes well if chunk size changes between runs
         uint transid = _transferId ^ uint(chunkSize());
         qCInfo(lcPropagateUpload) << "Upload chunk" << sendingChunk << "of" << _chunkCount << "transferid(remote)=" << transid;
-        path += QString("-chunking-%1-%2-%3").arg(transid).arg(_chunkCount).arg(sendingChunk);
+        path += QStringLiteral("-chunking-%1-%2-%3").arg(transid).arg(_chunkCount).arg(sendingChunk);
 
         headers[QByteArrayLiteral("OC-Chunked")] = QByteArrayLiteral("1");
 
@@ -290,7 +290,7 @@ void PropagateUploadFileV1::slotPutFinished()
         pi._contentChecksum = _item->_checksumHeader;
         pi._size = _item->_size;
         propagator()->_journal->setUploadInfo(_item->_file, pi);
-        propagator()->_journal->commit("Upload info");
+        propagator()->_journal->commit(QStringLiteral("Upload info"));
         startNextChunk();
         return;
     }

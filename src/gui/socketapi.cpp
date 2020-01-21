@@ -251,7 +251,7 @@ SocketApi::SocketApi(QObject *parent)
     SocketApiServer::removeServer(socketPath);
     QFileInfo info(socketPath);
     if (!info.dir().exists()) {
-        bool result = info.dir().mkpath(".");
+        bool result = info.dir().mkpath(QStringLiteral("."));
         qCDebug(lcSocketApi) << "creating" << info.dir().path() << result;
         if (result) {
             QFile::setPermissions(socketPath,
@@ -345,7 +345,7 @@ void SocketApi::slotReadSocket()
         QString line = QString::fromUtf8(socket->readLine()).normalized(QString::NormalizationForm_C);
         line.chop(1); // remove the '\n'
         qCInfo(lcSocketApi) << "Received SocketAPI message <--" << line << "from" << socket;
-        QByteArray command = line.split(":").value(0).toLatin1();
+        QByteArray command = line.split(QStringLiteral(":")).value(0).toLatin1();
 
         QByteArray functionWithArguments = "command_" + command;
         if (command.startsWith("ASYNC_")) {
@@ -361,7 +361,7 @@ void SocketApi::slotReadSocket()
 
             auto arguments = argument.split('|');
             if (arguments.size() != 2) {
-                listener->sendMessage(QLatin1String("argument count is wrong"));
+                listener->sendMessage(QStringLiteral("argument count is wrong"));
                 return;
             }
 
@@ -378,7 +378,7 @@ void SocketApi::slotReadSocket()
             } else {
                 qCWarning(lcSocketApi) << "The command is not supported by this version of the client:" << command
                       << "with argument:" << argument;
-                socketApiJob->reject("command not found");
+                socketApiJob->reject(QStringLiteral("command not found"));
             }
         } else {
             if (indexOfMethod != -1) {
@@ -416,7 +416,7 @@ void SocketApi::slotUnregisterPath(const QString &alias)
 
     Folder *f = FolderMan::instance()->folder(alias);
     if (f)
-        broadcastMessage(buildMessage(QLatin1String("UNREGISTER_PATH"), removeTrailingSlash(f->path()), QString()), true);
+        broadcastMessage(buildMessage(QStringLiteral("UNREGISTER_PATH"), removeTrailingSlash(f->path()), QString()), true);
 
     _registeredAliases.remove(alias);
 }
@@ -436,9 +436,9 @@ void SocketApi::slotUpdateFolderView(Folder *f)
             || f->syncResult().status() == SyncResult::Error
             || f->syncResult().status() == SyncResult::SetupError) {
             QString rootPath = removeTrailingSlash(f->path());
-            broadcastStatusPushMessage(rootPath, f->syncEngine().syncFileStatusTracker().fileStatus(""));
+            broadcastStatusPushMessage(rootPath, f->syncEngine().syncFileStatusTracker().fileStatus(QLatin1String("")));
 
-            broadcastMessage(buildMessage(QLatin1String("UPDATE_VIEW"), rootPath));
+            broadcastMessage(buildMessage(QStringLiteral("UPDATE_VIEW"), rootPath));
         } else {
             qCDebug(lcSocketApi) << "Not sending UPDATE_VIEW for" << f->alias() << "because status() is" << f->syncResult().status();
         }
@@ -480,7 +480,7 @@ void SocketApi::processShareRequest(const QString &localFile, SocketListener *li
         auto &remotePath = fileData.serverRelativePath;
 
         // Can't share root folder
-        if (remotePath == "/") {
+        if (remotePath == QLatin1String("/")) {
             const QString message = QLatin1String("SHARE:CANNOTSHAREROOT:") + QDir::toNativeSeparators(localFile);
             listener->sendMessage(message);
             return;
@@ -495,7 +495,7 @@ void SocketApi::processShareRequest(const QString &localFile, SocketListener *li
 
 void SocketApi::broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus)
 {
-    QString msg = buildMessage(QLatin1String("STATUS"), systemPath, fileStatus.toSocketAPIString());
+    QString msg = buildMessage(QStringLiteral("STATUS"), systemPath, fileStatus.toSocketAPIString());
     Q_ASSERT(!systemPath.endsWith('/'));
     uint directoryHash = qHash(systemPath.left(systemPath.lastIndexOf('/')));
     foreach (auto &listener, _listeners) {
@@ -516,7 +516,7 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
     auto fileData = FileData::get(argument);
     if (!fileData.folder) {
         // this can happen in offline mode e.g.: nothing to worry about
-        statusString = QLatin1String("NOP");
+        statusString = QStringLiteral("NOP");
     } else {
         // The user probably visited this directory in the file shell.
         // Let the listener know that it should now send status pushes for sibblings of this file.
@@ -543,7 +543,7 @@ void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketList
 
 void SocketApi::command_VERSION(const QString &, SocketListener *listener)
 {
-    listener->sendMessage(QLatin1String("VERSION:" MIRALL_VERSION_STRING ":" MIRALL_SOCKET_API_VERSION));
+    listener->sendMessage(QStringLiteral("VERSION:" MIRALL_VERSION_STRING ":" MIRALL_SOCKET_API_VERSION));
 }
 
 void SocketApi::command_SHARE_MENU_TITLE(const QString &, SocketListener *listener)
@@ -856,13 +856,13 @@ void SocketApi::command_GET_STRINGS(const QString &argument, SocketListener *lis
         { "COPY_PRIVATE_LINK_MENU_TITLE", tr("Copy private link to clipboard") },
         { "EMAIL_PRIVATE_LINK_MENU_TITLE", tr("Send private link by email...") },
     } };
-    listener->sendMessage(QString("GET_STRINGS:BEGIN"));
+    listener->sendMessage(QStringLiteral("GET_STRINGS:BEGIN"));
     for (auto key_value : strings) {
         if (argument.isEmpty() || argument == QLatin1String(key_value.first)) {
-            listener->sendMessage(QString("STRING:%1:%2").arg(key_value.first, key_value.second));
+            listener->sendMessage(QStringLiteral("STRING:%1:%2").arg(key_value.first, key_value.second));
         }
     }
-    listener->sendMessage(QString("GET_STRINGS:END"));
+    listener->sendMessage(QStringLiteral("GET_STRINGS:END"));
 }
 
 void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketListener *listener)
@@ -958,7 +958,7 @@ SocketApi::FileData SocketApi::FileData::parentFolder() const
 
 void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListener *listener)
 {
-    listener->sendMessage(QString("GET_MENU_ITEMS:BEGIN"));
+    listener->sendMessage(QStringLiteral("GET_MENU_ITEMS:BEGIN"));
     QStringList files = argument.split(QLatin1Char('\x1e')); // Record Separator
 
     // Find the common sync folder.
@@ -1106,7 +1106,7 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
         }
     }
 
-    listener->sendMessage(QString("GET_MENU_ITEMS:END"));
+    listener->sendMessage(QStringLiteral("GET_MENU_ITEMS:END"));
 }
 
 #if GUI_TESTING
@@ -1287,7 +1287,7 @@ void SocketApi::command_ASYNC_ASSERT_ICON_IS_EQUAL(const QSharedPointer<SocketAp
 QString SocketApi::buildRegisterPathMessage(const QString &path)
 {
     QFileInfo fi(path);
-    QString message = QLatin1String("REGISTER_PATH:");
+    QString message = QStringLiteral("REGISTER_PATH:");
     message.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
     return message;
 }

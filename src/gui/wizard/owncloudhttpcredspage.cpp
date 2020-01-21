@@ -37,8 +37,8 @@ OwncloudHttpCredsPage::OwncloudHttpCredsPage(QWidget *parent)
         _ocWizard = qobject_cast<OwncloudWizard *>(parent);
     }
 
-    registerField(QLatin1String("OCUser*"), _ui.leUsername);
-    registerField(QLatin1String("OCPasswd*"), _ui.lePassword);
+    registerField(QStringLiteral("OCUser*"), _ui.leUsername);
+    registerField(QStringLiteral("OCPasswd*"), _ui.lePassword);
 
     Theme *theme = Theme::instance();
     switch (theme->userIDType()) {
@@ -138,7 +138,7 @@ bool OwncloudHttpCredsPage::validatePage()
         ocWizard->account()->clearCookieJar();
 
         emit completeChanged();
-        emit connectToOCUrl(field("OCUrl").toString().simplified());
+        emit connectToOCUrl(field(QStringLiteral("OCUrl")).toString().simplified());
 
         return false;
     } else {

@@ -25,10 +25,10 @@
 namespace OCC {
 
 namespace {
-    QString defaultKeyword = QLatin1String("default");
-    QString machineKeyword = QLatin1String("machine");
-    QString loginKeyword = QLatin1String("login");
-    QString passwordKeyword = QLatin1String("password");
+    QString defaultKeyword = QStringLiteral("default");
+    QString machineKeyword = QStringLiteral("machine");
+    QString loginKeyword = QStringLiteral("login");
+    QString passwordKeyword = QStringLiteral("password");
 }
 
 NetrcParser::NetrcParser(const QString &file)
@@ -59,8 +59,8 @@ bool NetrcParser::parse()
     }
     QString content = netrc.readAll();
 
-    QStringTokenizer tokenizer(content, " \n\t");
-    tokenizer.setQuoteCharacters("\"'");
+    QStringTokenizer tokenizer(content, QStringLiteral(" \n\t"));
+    tokenizer.setQuoteCharacters(QStringLiteral("\"'"));
 
     LoginPair pair;
     QString machine;

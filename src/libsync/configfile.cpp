@@ -249,14 +249,14 @@ QVariant ConfigFile::getPolicySetting(const QString &setting, const QVariant &de
 {
     if (Utility::isWindows()) {
         // check for policies first and return immediately if a value is found.
-        QSettings userPolicy(QString::fromLatin1("HKEY_CURRENT_USER\\Software\\Policies\\%1\\%2")
+        QSettings userPolicy(QStringLiteral("HKEY_CURRENT_USER\\Software\\Policies\\%1\\%2")
                                  .arg(APPLICATION_VENDOR, Theme::instance()->appNameGUI()),
             QSettings::NativeFormat);
         if (userPolicy.contains(setting)) {
             return userPolicy.value(setting);
         }
 
-        QSettings machinePolicy(QString::fromLatin1("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2")
+        QSettings machinePolicy(QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2")
                                     .arg(APPLICATION_VENDOR, Theme::instance()->appNameGUI()),
             QSettings::NativeFormat);
         if (machinePolicy.contains(setting)) {
@@ -294,7 +294,7 @@ QString ConfigFile::excludeFile(Scope scope) const
         fi.setFile(configPath(), exclFile);
 
         if (!fi.isReadable()) {
-            fi.setFile(configPath(), QLatin1String("exclude.lst"));
+            fi.setFile(configPath(), QStringLiteral("exclude.lst"));
         }
         if (!fi.isReadable()) {
             fi.setFile(configPath(), exclFile);
@@ -328,7 +328,7 @@ QString ConfigFile::excludeFileFromSystem()
             d.cdUp(); // go out of bin
             d.cdUp(); // go out of usr
             if (!d.isRoot()) { // it is really a mountpoint
-                if (d.cd("etc") && d.cd(Theme::instance()->appName())) {
+                if (d.cd(QStringLiteral("etc")) && d.cd(Theme::instance()->appName())) {
                     QFileInfo inMountDir(d, exclFile);
                     if (inMountDir.exists()) {
                         fi = inMountDir;
@@ -354,9 +354,9 @@ QString ConfigFile::backup() const
     if (!versionString.isEmpty())
         versionString.prepend('_');
     QString backupFile =
-        QString("%1.backup_%2%3")
+        QStringLiteral("%1.backup_%2%3")
             .arg(baseFile)
-            .arg(QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss"))
+            .arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd_HHmmss")))
             .arg(versionString);
 
     // If this exact file already exists it's most likely that a backup was
@@ -548,11 +548,11 @@ QString ConfigFile::updateChannel() const
 {
     QString defaultUpdateChannel = QStringLiteral("stable");
     QString suffix = QString::fromLatin1(MIRALL_STRINGIFY(MIRALL_VERSION_SUFFIX));
-    if (suffix.startsWith("daily")
-        || suffix.startsWith("nightly")
-        || suffix.startsWith("alpha")
-        || suffix.startsWith("rc")
-        || suffix.startsWith("beta")) {
+    if (suffix.startsWith(QLatin1String("daily"))
+        || suffix.startsWith(QLatin1String("nightly"))
+        || suffix.startsWith(QLatin1String("alpha"))
+        || suffix.startsWith(QLatin1String("rc"))
+        || suffix.startsWith(QLatin1String("beta"))) {
         defaultUpdateChannel = QStringLiteral("beta");
     }
 
@@ -591,7 +591,7 @@ QVariant ConfigFile::getValue(const QString &param, const QString &group,
 {
     QVariant systemSetting;
     if (Utility::isMac()) {
-        QSettings systemSettings(QLatin1String("/Library/Preferences/" APPLICATION_REV_DOMAIN ".plist"), QSettings::NativeFormat);
+        QSettings systemSettings(QStringLiteral("/Library/Preferences/" APPLICATION_REV_DOMAIN ".plist"), QSettings::NativeFormat);
         if (!group.isEmpty()) {
             systemSettings.beginGroup(group);
         }
@@ -603,7 +603,7 @@ QVariant ConfigFile::getValue(const QString &param, const QString &group,
         }
         systemSetting = systemSettings.value(param, defaultValue);
     } else { // Windows
-        QSettings systemSettings(QString::fromLatin1("HKEY_LOCAL_MACHINE\\Software\\%1\\%2")
+        QSettings systemSettings(QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\%1\\%2")
                                      .arg(APPLICATION_VENDOR, Theme::instance()->appNameGUI()),
             QSettings::NativeFormat);
         if (!group.isEmpty()) {

@@ -130,7 +130,7 @@ HttpCredentials::HttpCredentials(const QString &user, const QString &password, c
 
 QString HttpCredentials::authType() const
 {
-    return QString::fromLatin1("http");
+    return QStringLiteral("http");
 }
 
 QString HttpCredentials::user() const
@@ -412,18 +412,18 @@ bool HttpCredentials::refreshAccessToken()
     if (_refreshToken.isEmpty())
         return false;
 
-    QUrl wellKnownUrl = Utility::concatUrlPath(_account->url().toString(), QLatin1String("/.well-known/openid-configuration"));
+    QUrl wellKnownUrl = Utility::concatUrlPath(_account->url().toString(), QStringLiteral("/.well-known/openid-configuration"));
     QNetworkRequest req;
     auto job = _account->sendRequest("GET", wellKnownUrl);
     job->setTimeout(qMin(30 * 1000ll, job->timeoutMsec()));
     QObject::connect(job, &SimpleNetworkJob::finishedSignal, this, [this](QNetworkReply *reply) {
-        QUrl requestTokenUrl = Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
+        QUrl requestTokenUrl = Utility::concatUrlPath(_account->url(), QStringLiteral("/index.php/apps/oauth2/api/v1/token"));
         if (reply->error() == QNetworkReply::NoError) {
             auto jsonData = reply->readAll();
             QJsonParseError jsonParseError;
             QJsonObject json = QJsonDocument::fromJson(jsonData, &jsonParseError).object();
             if (jsonParseError.error == QJsonParseError::NoError) {
-                QString tokenEp = json["token_endpoint"].toString();
+                QString tokenEp = json[QStringLiteral("token_endpoint")].toString();
                 if (!tokenEp.isEmpty())
                     requestTokenUrl = tokenEp;
             }
@@ -449,7 +449,7 @@ bool HttpCredentials::refreshAccessToken()
             auto jsonData = reply->readAll();
             QJsonParseError jsonParseError;
             QJsonObject json = QJsonDocument::fromJson(jsonData, &jsonParseError).object();
-            QString accessToken = json["access_token"].toString();
+            QString accessToken = json[QStringLiteral("access_token")].toString();
             if (jsonParseError.error != QJsonParseError::NoError || json.isEmpty()) {
                 // Invalid or empty JSON: Network error maybe?
                 qCWarning(lcHttpCredentials) << "Error while refreshing the token" << reply->errorString() << jsonData << jsonParseError.errorString();
@@ -461,7 +461,7 @@ bool HttpCredentials::refreshAccessToken()
             } else {
                 _ready = true;
                 _password = accessToken;
-                _refreshToken = json["refresh_token"].toString();
+                _refreshToken = json[QStringLiteral("refresh_token")].toString();
                 persist();
             }
             _isRenewingOAuthToken = false;
