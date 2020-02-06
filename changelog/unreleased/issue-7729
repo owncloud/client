@@ -1,0 +1,9 @@
+Change: Update to Qt-5.12.7
+
+By changing our dependencies to Qt version 5.12.7 we resolve several known
+issues with older Qt releases:
+
+* plugins were picked up from the current directory.
+
+https://github.com/owncloud/client/issues/7729
+https://github.com/owncloud/client/issues/7567
