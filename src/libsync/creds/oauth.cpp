@@ -326,7 +326,8 @@ void OAuth::fetchWellKnown()
     }
     else
     {
-        QUrl wellKnownUrl = Utility::concatUrlPath(_account->url(), QStringLiteral("/.well-known/openid-configuration"));
+        QUrl wellKnownUrl = _account->url();
+        wellKnownUrl.setPath(QStringLiteral("/.well-known/openid-configuration"));
         QNetworkRequest req;
         auto job = _account->sendRequest("GET", wellKnownUrl);
         job->setTimeout(qMin(30 * 1000ll, job->timeoutMsec()));

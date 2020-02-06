@@ -133,7 +133,7 @@ public:
         account->setCredentials(new FakeCredentials{fakeQnam});
         fakeQnam->setParent(this);
         fakeQnam->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device)  {
-            if (req.url().path().endsWith(".well-known/openid-configuration"))
+            if (req.url().path() == "/.well-known/openid-configuration")
                 return this->wellKnownReply(op, req);
             ASSERT(device);
             ASSERT(device->bytesAvailable()>0); // OAuth2 always sends around POST data.
