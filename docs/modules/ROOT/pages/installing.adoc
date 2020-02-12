@@ -18,7 +18,7 @@ You will also find links to source code archives and older versions on the downl
 
 * Windows 7+
 * Mac OS X 10.10+ (64-bit only)
-* CentOS 6 & 7 (64-bit only) & 8
+* CentOS 6 & 7 & 8
 * Debian 8.0 & 9.0 & 10
 * Fedora 27 & 28 & 29 & 30 & 31
 * Ubuntu 18.04 & 19.04 & 19.10
