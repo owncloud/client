@@ -102,6 +102,8 @@ GeneralSettings::GeneralSettings(QWidget *parent)
         _ui->updateChannelLabel->hide();
         _ui->updateChannel->hide();
 #endif
+	// branded clients are never experimental
+        _ui->experimentalGroupBox->hide();
     }
 
     _ui->versionLabel->setText(QStringLiteral("<a href='%1'>%1</a>").arg(MIRALL_VERSION_STRING));
