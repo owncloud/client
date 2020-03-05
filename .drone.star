@@ -281,6 +281,20 @@ def build_client_docs(ctx):
                     "delete": False,
                 },
             })),
+            whenOnline(whenPush({
+                "name": "downstream",
+                "image": "plugins/downstream",
+                "pull": "always",
+                "settings": {
+                    "server": "https://drone.owncloud.com/",
+                    "token": {
+                        "from_secret": "drone_token",
+                    },
+                    "repositories": [
+                        "owncloud/docs@master",
+                    ],
+                },
+            })),
         ],
         "trigger": {
             "ref": [
