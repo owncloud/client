@@ -31,22 +31,24 @@ class FakePostReply : public QNetworkReply
 {
     Q_OBJECT
 public:
-    std::unique_ptr<QIODevice> payload;
+    QIODevice *payload;
     bool aborted = false;
     bool redirectToPolicy = false;
     bool redirectToToken = false;
 
     FakePostReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request,
-                  std::unique_ptr<QIODevice> payload_, QObject *parent)
-        : QNetworkReply{parent}, payload{std::move(payload_)}
+                  QIODevice* payload_, QObject *parent)
+        : QNetworkReply{parent}, payload{payload_}
     {
         setRequest(request);
         setUrl(request.url());
         setOperation(op);
         open(QIODevice::ReadOnly);
+        payload->setParent(this);
         payload->open(QIODevice::ReadOnly);
-        QMetaObject::invokeMethod(this, "respond", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this, &FakePostReply::respond, Qt::QueuedConnection);
     }
+
 
     Q_INVOKABLE virtual void respond() {
         if (aborted) {
@@ -182,9 +184,9 @@ public:
         ASSERT(op == QNetworkAccessManager::PostOperation);
         ASSERT(req.url().toString().startsWith(sOAuthTestServer.toString()));
         ASSERT(req.url().path() == sOAuthTestServer.path() + "/index.php/apps/oauth2/api/v1/token");
-        std::unique_ptr<QBuffer> payload(new QBuffer());
+        QBuffer *payload = new QBuffer();
         payload->setData(tokenReplyPayload());
-        return new FakePostReply(op, req, std::move(payload), fakeQnam);
+        return new FakePostReply(op, req, payload, fakeQnam);
     }
 
     virtual QByteArray tokenReplyPayload() const {
@@ -233,9 +235,9 @@ private slots:
                 ASSERT(state == BrowserOpened);
                 state = TokenAsked;
 
-                std::unique_ptr<QBuffer> payload(new QBuffer);
+                QBuffer *payload = new QBuffer();
                 payload->setData(tokenReplyPayload());
-                return new SlowFakePostReply(op, req, std::move(payload), fakeQnam);
+                return new SlowFakePostReply(op, req, payload, fakeQnam);
             }
 
             void browserReplyFinished() override
@@ -308,16 +310,16 @@ private slots:
                 ASSERT(browserReply);
                 // Kind of reproduces what we had in https://github.com/owncloud/enterprise/issues/2951 (not 1:1)
                 if (redirectsDone == 0) {
-                    std::unique_ptr<QBuffer> payload(new QBuffer());
+                    QBuffer *payload(new QBuffer());
                     payload->setData("");
-                    SlowFakePostReply *reply = new SlowFakePostReply(op, request, std::move(payload), this);
+                    SlowFakePostReply *reply = new SlowFakePostReply(op, request, payload, this);
                     reply->redirectToPolicy = true;
                     redirectsDone++;
                     return reply;
                 } else if  (redirectsDone == 1) {
-                    std::unique_ptr<QBuffer> payload(new QBuffer());
+                    QBuffer *payload(new QBuffer());
                     payload->setData("");
-                    SlowFakePostReply *reply = new SlowFakePostReply(op, request, std::move(payload), this);
+                    SlowFakePostReply *reply = new SlowFakePostReply(op, request, payload, this);
                     reply->redirectToToken = true;
                     redirectsDone++;
                     return reply;
