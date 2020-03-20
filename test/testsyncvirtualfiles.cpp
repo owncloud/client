@@ -55,6 +55,7 @@ void markForDehydration(FakeFolder &folder, const QByteArray &path)
 QSharedPointer<Vfs> setupVfs(FakeFolder &folder)
 {
     auto suffixVfs = QSharedPointer<Vfs>(createVfsFromPlugin(Vfs::WithSuffix).release());
+    Q_ASSERT(suffixVfs);
     folder.switchToVfs(suffixVfs);
 
     // Using this directly doesn't recursively unpin everything and instead leaves
