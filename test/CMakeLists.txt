@@ -1,3 +1,4 @@
+add_definitions(-DQT_FORCE_ASSERTS)
 find_package(SQLite3 3.8.0 REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/src
                     ${CMAKE_SOURCE_DIR}/src/3rdparty/qtokenizer

@@ -26,6 +26,9 @@
  * TODO: In theory we should use QVERIFY instead of Q_ASSERT for testing, but this
  * only works when directly called from a QTest :-(
  */
+#ifndef QT_FORCE_ASSERTS
+#error We require asserts for our unittests, therefore QT_FORCE_ASSERTS needs to be defined
+#endif
 
 
 static const QUrl sRootUrl("owncloud://somehost/owncloud/remote.php/webdav/");
@@ -88,13 +91,13 @@ public:
     void remove(const QString &relativePath) override {
         QFileInfo fi{_rootDir.filePath(relativePath)};
         if (fi.isFile())
-            QVERIFY(_rootDir.remove(relativePath));
+            Q_ASSERT(_rootDir.remove(relativePath));
         else
-            QVERIFY(QDir{fi.filePath()}.removeRecursively());
+            Q_ASSERT(QDir{fi.filePath()}.removeRecursively());
     }
     void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') override {
         QFile file{_rootDir.filePath(relativePath)};
-        QVERIFY(!file.exists());
+        Q_ASSERT(!file.exists());
         file.open(QFile::WriteOnly);
         QByteArray buf(1024, contentChar);
         for (int x = 0; x < size/buf.size(); ++x) {
@@ -108,7 +111,7 @@ public:
     }
     void setContents(const QString &relativePath, char contentChar) override {
         QFile file{_rootDir.filePath(relativePath)};
-        QVERIFY(file.exists());
+        Q_ASSERT(file.exists());
         qint64 size = file.size();
         file.open(QFile::WriteOnly);
         file.write(QByteArray{}.fill(contentChar, size));
@@ -116,7 +119,7 @@ public:
     void appendByte(const QString &relativePath, char contentChar) override
     {
         QFile file{_rootDir.filePath(relativePath)};
-        QVERIFY(file.exists());
+        Q_ASSERT(file.exists());
         file.open(QFile::ReadWrite);
         QByteArray contents;
         if (contentChar)
@@ -129,7 +132,7 @@ public:
     void modifyByte(const QString &relativePath, quint64 offset, char contentChar) override
     {
         QFile file{ _rootDir.filePath(relativePath) };
-        QVERIFY(file.exists());
+        Q_ASSERT(file.exists());
         file.open(QFile::ReadWrite);
         file.seek(offset);
         file.write(&contentChar, 1);
@@ -140,8 +143,8 @@ public:
         _rootDir.mkpath(relativePath);
     }
     void rename(const QString &from, const QString &to) override {
-        QVERIFY(_rootDir.exists(from));
-        QVERIFY(_rootDir.rename(from, to));
+        Q_ASSERT(_rootDir.exists(from));
+        Q_ASSERT(_rootDir.rename(from, to));
     }
     void setModTime(const QString &relativePath, const QDateTime &modTime) override {
         OCC::FileSystem::setModTime(_rootDir.filePath(relativePath), OCC::Utility::qDateTimeToTime_t(modTime));
@@ -916,7 +919,7 @@ public:
             return;
         }
 
-        QVERIFY(request.hasRawHeader("If")); // The client should put this header
+        Q_ASSERT(request.hasRawHeader("If")); // The client should put this header
         if (request.rawHeader("If") != QByteArray("<" + request.rawHeader("Destination") + "> ([\"" + fileInfo->etag.toLatin1() + "\"])")) {
             QMetaObject::invokeMethod(this, "respondPreconditionFailed", Qt::QueuedConnection);
             return;
@@ -1274,7 +1277,7 @@ public:
 
     void execUntilBeforePropagation() {
         QSignalSpy spy(_syncEngine.get(), SIGNAL(aboutToPropagate(SyncFileItemVector&)));
-        QVERIFY(spy.wait());
+        Q_ASSERT(spy.wait());
     }
 
     void execUntilItemCompleted(const QString &relativePath) {
@@ -1283,14 +1286,14 @@ public:
         t.start();
         while (t.elapsed() < 5000) {
             spy.clear();
-            QVERIFY(spy.wait());
+            Q_ASSERT(spy.wait());
             for(const QList<QVariant> &args : spy) {
                 auto item = args[0].value<OCC::SyncFileItemPtr>();
                 if (item->destination() == relativePath)
                     return;
             }
         }
-        QVERIFY(false);
+        Q_ASSERT(false);
     }
 
     bool execUntilFinished() {
