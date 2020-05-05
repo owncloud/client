@@ -32,6 +32,8 @@
         <false/>
         <key>SUPublicDSAKeyFile</key>
         <string>dsa_pub.pem</string>
+        <key>LSMultipleInstancesProhibited</key>
+        <string>true</string>
 
 <key>UTExportedTypeDeclarations</key>
 <array>
