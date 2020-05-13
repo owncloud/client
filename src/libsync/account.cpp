@@ -59,9 +59,9 @@ Account::~Account()
 
 QString Account::davPath() const
 {
-    if (capabilities().chunkingNg()) {
+    if (serverVersionInt() >= makeServerVersion(10, 0, 0)) {
         // The chunking-ng means the server prefer to use the new webdav URL
-        return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
+        return QStringLiteral("/remote.php/dav/files/%1/").arg(davUser());
     }
 
     // make sure to have a trailing slash
@@ -463,10 +463,7 @@ int Account::serverVersionInt() const
         components.value(2).toInt());
 }
 
-int Account::makeServerVersion(int majorVersion, int minorVersion, int patchVersion)
-{
-    return (majorVersion << 16) + (minorVersion << 8) + patchVersion;
-}
+
 
 bool Account::serverVersionUnsupported() const
 {
