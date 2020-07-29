@@ -982,18 +982,17 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     }
 
     auto folder = addFolderInternal(definition, accountState, std::move(vfs));
-
-    // Migration: The first account that's configured for a local folder shall
-    // be saved in a backwards-compatible way.
-    bool oneAccountOnly = true;
-    foreach (Folder *other, FolderMan::instance()->map()) {
-        if (other != folder && other->cleanPath() == folder->cleanPath()) {
-            oneAccountOnly = false;
-            break;
-        }
-    }
-
     if (folder) {
+        // Migration: The first account that's configured for a local folder shall
+        // be saved in a backwards-compatible way.
+        bool oneAccountOnly = true;
+        for (Folder *other : FolderMan::instance()->map()) {
+            if (other != folder && other->cleanPath() == folder->cleanPath()) {
+                oneAccountOnly = false;
+                break;
+            }
+        }
+
         folder->setSaveBackwardsCompatible(oneAccountOnly);
         folder->saveToSettings();
         emit folderSyncStateChange(folder);

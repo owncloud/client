@@ -30,6 +30,7 @@ public:
 };
 
 static FolderDefinition folderDefinition(const QString &path) {
+    QDir(path).mkpath(QLatin1String("."));
     FolderDefinition d;
     d.localPath = path;
     d.targetPath = path;
