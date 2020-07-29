@@ -15,6 +15,7 @@
  */
 #include "config.h"
 
+#include "application.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
@@ -74,7 +75,9 @@ Folder::Folder(const FolderDefinition &definition,
     _syncResult.setStatus(status);
 
     // check if the local path exists
-    checkLocalPath();
+    if (!checkLocalPath()) {
+        return;
+    }
 
     _syncResult.setFolder(_definition.alias);
 
@@ -149,14 +152,10 @@ Folder::~Folder()
     _engine.reset();
 }
 
-void Folder::checkLocalPath()
+bool Folder::checkLocalPath()
 {
     const QFileInfo fi(_definition.localPath);
     _canonicalLocalPath = fi.canonicalFilePath();
-#ifdef Q_OS_MAC
-    // Workaround QTBUG-55896  (Should be fixed in Qt 5.8)
-    _canonicalLocalPath = _canonicalLocalPath.normalized(QString::NormalizationForm_C);
-#endif
     if (_canonicalLocalPath.isEmpty()) {
         qCWarning(lcFolder) << "Broken symlink:" << _definition.localPath;
         _canonicalLocalPath = _definition.localPath;
@@ -166,11 +165,33 @@ void Folder::checkLocalPath()
 
     if (fi.isDir() && fi.isReadable()) {
         qCDebug(lcFolder) << "Checked local path ok";
+        return true;
     } else {
         // Check directory again
         if (!FileSystem::fileExists(_definition.localPath, fi)) {
-            _syncResult.appendErrorString(tr("Local folder %1 does not exist.").arg(_definition.localPath));
-            _syncResult.setStatus(SyncResult::SetupError);
+            if (FileSystem::fileExists(fi.path() + "/..")) {
+                int button = QMessageBox::question(ocApp()->gui()->settingsDialog(),
+                    tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
+                    tr("The folder %1 does not exist, do you want to create it or quit %2.").arg(_definition.localPath, ocApp()->applicationName()),
+                    tr("Create Folder"), tr("Quit"));
+                if (button == 0) {
+                    if (!QDir(_definition.localPath + "/..").mkdir(fi.dir().dirName())) {
+                        qCWarning(lcFolder) << "Failed to creat sycn root" << _canonicalLocalPath << fi.dir().dirName();
+                    }
+                    // give the system some time, vfs might crash
+                    QThread::sleep(1);
+                    return checkLocalPath();
+                } else {
+                    _syncResult.setStatus(SyncResult::SetupError);
+                    qApp->quit();
+                }
+            } else {
+                QMessageBox::warning(ocApp()->gui()->settingsDialog(),
+                    tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
+                    tr("The folder %1 and its parent folder do not exist. %2 will quit now.").arg(_definition.localPath, ocApp()->applicationName()));
+                _syncResult.setStatus(SyncResult::SetupError);
+                qApp->quit();
+            }
         } else if (!fi.isDir()) {
             _syncResult.appendErrorString(tr("%1 should be a folder but is not.").arg(_definition.localPath));
             _syncResult.setStatus(SyncResult::SetupError);
@@ -178,6 +199,7 @@ void Folder::checkLocalPath()
             _syncResult.appendErrorString(tr("%1 is not readable.").arg(_definition.localPath));
             _syncResult.setStatus(SyncResult::SetupError);
         }
+        return false;
     }
 }
 

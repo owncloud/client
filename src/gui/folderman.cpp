@@ -1021,6 +1021,10 @@ Folder *FolderMan::addFolderInternal(
     }
 
     auto folder = new Folder(folderDefinition, accountState, std::move(vfs), this);
+    if (folder->syncResult().status() == SyncResult::SetupError) {
+        delete folder;
+        return nullptr;
+    }
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->alias();
     _folderMap[folder->alias()] = folder;

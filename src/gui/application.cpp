@@ -323,9 +323,6 @@ Application::Application(int &argc, char **argv)
         _gui->slotShowSettings();
     }
 
-    FolderMan::instance()->setupFolders();
-    _proxy.setupQtProxyFromConfig(); // folders have to be defined first, than we set up the Qt proxy.
-
     // Enable word wrapping of QInputDialog (#4197)
     setStyleSheet("QInputDialog QLabel { qproperty-wordWrap:1; }");
 
@@ -333,9 +330,6 @@ Application::Application(int &argc, char **argv)
         this, &Application::slotAccountStateAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &Application::slotAccountStateRemoved);
-    foreach (auto ai, AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai.data());
-    }
 
     connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived,
         _gui.data(), &ownCloudGui::slotShowShareDialog);
@@ -360,6 +354,14 @@ Application::Application(int &argc, char **argv)
 
     // Cleanup at Quit.
     connect(this, &QCoreApplication::aboutToQuit, this, &Application::slotCleanup);
+
+    QTimer::singleShot(0, this, [this] {
+        FolderMan::instance()->setupFolders();
+        _proxy.setupQtProxyFromConfig(); // folders have to be defined first, than we set up the Qt proxy.
+        for (const auto &ai : AccountManager::instance()->accounts()) {
+            slotAccountStateAdded(ai.data());
+        }
+    });
 }
 
 Application::~Application()

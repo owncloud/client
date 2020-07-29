@@ -428,7 +428,7 @@ private:
 
     void showSyncResultPopup();
 
-    void checkLocalPath();
+    bool checkLocalPath();
 
     void setSyncOptions();
 

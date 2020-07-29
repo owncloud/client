@@ -148,6 +148,11 @@ private:
     QScopedPointer<FolderMan> _folderManager;
 };
 
+inline Application *ocApp()
+{
+    return qobject_cast<Application *>(qApp);
+}
+
 } // namespace OCC
 
 #endif // APPLICATION_H

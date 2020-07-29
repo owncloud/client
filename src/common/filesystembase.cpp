@@ -17,6 +17,7 @@
  */
 
 #include "filesystembase.h"
+#include "asserts.h"
 #include "utility.h"
 
 #include <QDateTime>
@@ -317,15 +318,15 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
         return fileExistsWin(filename);
     }
 #endif
-    bool re = fileInfo.exists();
     // if the filename is different from the filename in fileInfo, the fileInfo is
     // not valid. There needs to be one initialised here. Otherwise the incoming
     // fileInfo is re-used.
     if (fileInfo.filePath() != filename) {
+        OC_ASSERT(fileInfo.filePath().isEmpty());
         QFileInfo myFI(filename);
-        re = myFI.exists();
+        return myFI.exists();
     }
-    return re;
+    return fileInfo.exists();
 }
 
 #ifdef Q_OS_WIN

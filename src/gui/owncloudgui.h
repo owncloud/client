@@ -18,6 +18,7 @@
 #include "systray.h"
 #include "connectionvalidator.h"
 #include "progressdispatcher.h"
+#include "settingsdialog.h"
 
 #include <QObject>
 #include <QPointer>
