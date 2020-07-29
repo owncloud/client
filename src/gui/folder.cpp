@@ -169,28 +169,29 @@ bool Folder::checkLocalPath()
     } else {
         // Check directory again
         if (!FileSystem::fileExists(_definition.localPath, fi)) {
-            if (FileSystem::fileExists(fi.path() + "/..")) {
-                int button = QMessageBox::question(ocApp()->gui()->settingsDialog(),
-                    tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
-                    tr("The folder %1 does not exist, do you want to create it or quit %2.").arg(_definition.localPath, ocApp()->applicationName()),
-                    tr("Create Folder"), tr("Quit"));
-                if (button == 0) {
-                    if (!QDir(_definition.localPath + "/..").mkdir(fi.dir().dirName())) {
-                        qCWarning(lcFolder) << "Failed to creat sycn root" << _canonicalLocalPath << fi.dir().dirName();
+            if (ocApp()) {
+                if (FileSystem::fileExists(fi.path() + "/..")) {
+                    int button = QMessageBox::question(ocApp()->gui()->settingsDialog(),
+                        tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
+                        tr("The folder %1 does not exist, do you want to create it or quit %2.").arg(_definition.localPath, ocApp()->applicationName()),
+                        tr("Create Folder"), tr("Quit"));
+                    if (button == 0) {
+                        if (!QDir(_definition.localPath + "/..").mkdir(fi.dir().dirName())) {
+                            qCWarning(lcFolder) << "Failed to creat sycn root" << _canonicalLocalPath << fi.dir().dirName();
+                        }
+                        // give the system some time, vfs might crash
+                        QThread::sleep(1);
+                        return checkLocalPath();
                     }
-                    // give the system some time, vfs might crash
-                    QThread::sleep(1);
-                    return checkLocalPath();
                 } else {
-                    _syncResult.setStatus(SyncResult::SetupError);
-                    qApp->quit();
+                    QMessageBox::warning(ocApp()->gui()->settingsDialog(),
+                        tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
+                        tr("The folder %1 and its parent folder do not exist. %2 will quit now.").arg(_definition.localPath, ocApp()->applicationName()));
                 }
-            } else {
-                QMessageBox::warning(ocApp()->gui()->settingsDialog(),
-                    tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
-                    tr("The folder %1 and its parent folder do not exist. %2 will quit now.").arg(_definition.localPath, ocApp()->applicationName()));
                 _syncResult.setStatus(SyncResult::SetupError);
                 qApp->quit();
+            } else {
+                _syncResult.setStatus(SyncResult::SetupError);
             }
         } else if (!fi.isDir()) {
             _syncResult.appendErrorString(tr("%1 should be a folder but is not.").arg(_definition.localPath));
