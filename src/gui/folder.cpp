@@ -171,10 +171,11 @@ bool Folder::checkLocalPath()
         if (!FileSystem::fileExists(_definition.localPath, fi)) {
             if (ocApp()) {
                 if (FileSystem::fileExists(fi.path() + "/..")) {
-                    int button = QMessageBox::question(ocApp()->gui()->settingsDialog(),
-                        tr("Your %1 folder %2 does not exist.").arg(ocApp()->applicationName(), _definition.localPath),
-                        tr("The folder %1 does not exist, do you want to create it or quit %2.").arg(_definition.localPath, ocApp()->applicationName()),
-                        tr("Create Folder"), tr("Quit"));
+                    const int button = QMessageBox::question(ocApp()->gui()->settingsDialog(),
+                        tr("Your %1 sync folder %2 does no longer exist").arg(ocApp()->applicationName(), _accountState->account()->displayName()),
+                        tr("The %1 sync folder %2 for the account %3 does not exist.\nDo you want to create it, remove the account %2 or quit.")
+                                                             .arg(ocApp()->applicationName(), _definition.localPath, _accountState->account()->displayName()),
+                        tr("Create folder"), tr("Remove the account (restart required)"), tr("Quit"));
                     if (button == 0) {
                         if (!QDir(_definition.localPath + "/..").mkdir(fi.dir().dirName())) {
                             qCWarning(lcFolder) << "Failed to creat sycn root" << _canonicalLocalPath << fi.dir().dirName();
@@ -182,6 +183,10 @@ bool Folder::checkLocalPath()
                         // give the system some time, vfs might crash
                         QThread::sleep(1);
                         return checkLocalPath();
+                    } else if (button == 1) {
+                        auto manager = AccountManager::instance();
+                        manager->deleteAccount(_accountState.data());
+                        manager->save();
                     }
                 } else {
                     QMessageBox::warning(ocApp()->gui()->settingsDialog(),
