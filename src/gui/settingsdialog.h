@@ -20,7 +20,6 @@
 #include <QStyledItemDelegate>
 
 #include "progressdispatcher.h"
-#include "owncloudgui.h"
 
 class QAction;
 class QActionGroup;
@@ -34,6 +33,7 @@ class AccountState;
 namespace Ui {
     class SettingsDialog;
 }
+class Account;
 class AccountSettings;
 class Application;
 class FolderMan;

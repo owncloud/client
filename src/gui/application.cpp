@@ -310,56 +310,59 @@ Application::Application(int &argc, char **argv)
 
     setQuitOnLastWindowClosed(false);
 
-    _theme->setSystrayUseMonoIcons(cfg.monoIcons());
-    connect(_theme, &Theme::systrayUseMonoIconsChanged, this, &Application::slotUseMonoIconsChanged);
+    QTimer::singleShot(0, this, [this, cfg] {
+        _theme->setSystrayUseMonoIcons(cfg.monoIcons());
+        connect(_theme, &Theme::systrayUseMonoIconsChanged, this, &Application::slotUseMonoIconsChanged);
 
-    // Setting up the gui class will allow tray notifications for the
-    // setup that follows, like folder setup
-    _gui = new ownCloudGui(this);
-    if (_showLogWindow) {
-        _gui->slotToggleLogBrowser(); // _showLogWindow is set in parseOptions.
-    }
-    if (_showSettings) {
-        _gui->slotShowSettings();
-    }
+        // Setting up the gui class will allow tray notifications for the
+        // setup that follows, like folder setup
+        _gui = new ownCloudGui(this);
+        if (_showLogWindow) {
+            _gui->slotToggleLogBrowser(); // _showLogWindow is set in parseOptions.
+        }
+        if (_showSettings) {
+            _gui->slotShowSettings();
+        }
 
-    FolderMan::instance()->setupFolders();
-    _proxy.setupQtProxyFromConfig(); // folders have to be defined first, than we set up the Qt proxy.
+        // Enable word wrapping of QInputDialog (#4197)
+        setStyleSheet("QInputDialog QLabel { qproperty-wordWrap:1; }");
 
-    // Enable word wrapping of QInputDialog (#4197)
-    setStyleSheet("QInputDialog QLabel { qproperty-wordWrap:1; }");
+        connect(AccountManager::instance(), &AccountManager::accountAdded,
+            this, &Application::slotAccountStateAdded);
+        connect(AccountManager::instance(), &AccountManager::accountRemoved,
+            this, &Application::slotAccountStateRemoved);
 
-    connect(AccountManager::instance(), &AccountManager::accountAdded,
-        this, &Application::slotAccountStateAdded);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved,
-        this, &Application::slotAccountStateRemoved);
-    foreach (auto ai, AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai.data());
-    }
+        connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived,
+            _gui.data(), &ownCloudGui::slotShowShareDialog);
 
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived,
-        _gui.data(), &ownCloudGui::slotShowShareDialog);
+        // startup procedure.
+        connect(&_checkConnectionTimer, &QTimer::timeout, this, &Application::slotCheckConnection);
+        _checkConnectionTimer.setInterval(ConnectionValidator::DefaultCallingIntervalMsec); // check for connection every 32 seconds.
+        _checkConnectionTimer.start();
 
-    // startup procedure.
-    connect(&_checkConnectionTimer, &QTimer::timeout, this, &Application::slotCheckConnection);
-    _checkConnectionTimer.setInterval(ConnectionValidator::DefaultCallingIntervalMsec); // check for connection every 32 seconds.
-    _checkConnectionTimer.start();
-    // Also check immediately
-    QTimer::singleShot(0, this, &Application::slotCheckConnection);
+        // Can't use onlineStateChanged because it is always true on modern systems because of many interfaces
+        connect(&_networkConfigurationManager, &QNetworkConfigurationManager::configurationChanged,
+            this, &Application::slotSystemOnlineConfigurationChanged);
 
-    // Can't use onlineStateChanged because it is always true on modern systems because of many interfaces
-    connect(&_networkConfigurationManager, &QNetworkConfigurationManager::configurationChanged,
-        this, &Application::slotSystemOnlineConfigurationChanged);
+        // Update checks
+        UpdaterScheduler *updaterScheduler = new UpdaterScheduler(this);
+        connect(updaterScheduler, &UpdaterScheduler::updaterAnnouncement,
+            _gui.data(), &ownCloudGui::slotShowTrayMessage);
+        connect(updaterScheduler, &UpdaterScheduler::requestRestart,
+            _folderManager.data(), &FolderMan::slotScheduleAppRestart);
 
-    // Update checks
-    UpdaterScheduler *updaterScheduler = new UpdaterScheduler(this);
-    connect(updaterScheduler, &UpdaterScheduler::updaterAnnouncement,
-        _gui.data(), &ownCloudGui::slotShowTrayMessage);
-    connect(updaterScheduler, &UpdaterScheduler::requestRestart,
-        _folderManager.data(), &FolderMan::slotScheduleAppRestart);
+        // Cleanup at Quit.
+        connect(this, &QCoreApplication::aboutToQuit, this, &Application::slotCleanup);
 
-    // Cleanup at Quit.
-    connect(this, &QCoreApplication::aboutToQuit, this, &Application::slotCleanup);
+        FolderMan::instance()->setupFolders();
+        _proxy.setupQtProxyFromConfig(); // folders have to be defined first, than we set up the Qt proxy.
+        for (const auto &ai : AccountManager::instance()->accounts()) {
+            slotAccountStateAdded(ai.data());
+        }
+
+        // Also check immediately
+        QTimer::singleShot(0, this, &Application::slotCheckConnection);
+    });
 }
 
 Application::~Application()
