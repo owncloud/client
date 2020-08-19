@@ -16,6 +16,7 @@
 
 #include <QClipboard>
 #include <QApplication>
+#include <QIcon>
 #include <QDesktopServices>
 #include <QLoggingCategory>
 #include <QMessageBox>
@@ -101,7 +102,12 @@ QString Utility::vfsFreeSpaceActionText()
 QPixmap Utility::createColorAwareIcon(const QString &name, const QPalette &palette)
 {
     const QColor bg(palette.base().color());
-    QImage img(Theme::hidpiFileName(name));
+    QImage img;
+    if (name.endsWith(".svg")) {
+        img = QIcon(name).pixmap({64, 64}).toImage();
+    } else {
+        img = QImage(Theme::hidpiFileName(name));
+    }
     if (img.isGrayscale()) {
         // account for different sensitivity of the human eye to certain colors
         double treshold = 1.0 - (0.299 * bg.red() + 0.587 * bg.green() + 0.114 * bg.blue()) / 255.0;
