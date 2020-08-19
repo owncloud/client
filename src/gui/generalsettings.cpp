@@ -152,6 +152,7 @@ void GeneralSettings::loadMiscSettings()
     _ui->newFolderLimitSpinBox->setValue(newFolderLimit.second);
     _ui->newExternalStorage->setChecked(cfgFile.confirmExternalStorage());
     _ui->monoIconsCheckBox->setChecked(cfgFile.monoIcons());
+    _ui->uploadConflictFilesCheckBox->setChecked(cfgFile.uploadConflictFiles());
 
     // the dropdown has to be populated before we can can pick an entry below based on the stored setting
     loadLanguageNamesIntoDropdown();
@@ -274,6 +275,7 @@ void GeneralSettings::saveMiscSettings()
     cfgFile.setNewBigFolderSizeLimit(_ui->newFolderLimitCheckBox->isChecked(),
         _ui->newFolderLimitSpinBox->value());
     cfgFile.setConfirmExternalStorage(_ui->newExternalStorage->isChecked());
+    cfgFile.setUploadConflictFiles(_ui->uploadConflictFilesCheckBox->isChecked());
 
     const auto pickedLanguageIndex = _ui->languageDropdown->currentIndex();
 
@@ -288,7 +290,7 @@ void GeneralSettings::saveMiscSettings()
         cfgFile.setUiLanguage(pickedLanguageLocale);
     } else {
         // empty string means "use system default"
-        cfgFile.setUiLanguage("");
+        cfgFile.setUiLanguage(QString());
     }
 }
 

@@ -24,8 +24,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>771</width>
-        <height>637</height>
+        <width>765</width>
+        <height>618</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -124,6 +124,13 @@
               </property>
               <property name="text">
                <string>S&amp;how crash reporter</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="uploadConflictFilesCheckBox">
+              <property name="text">
+               <string>Upload conflict files (can be disabled by the server admin)</string>
               </property>
              </widget>
             </item>
@@ -388,9 +395,11 @@
   <tabstop>autostartCheckBox</tabstop>
   <tabstop>desktopNotificationsCheckBox</tabstop>
   <tabstop>monoIconsCheckBox</tabstop>
+  <tabstop>languageDropdown</tabstop>
   <tabstop>showInExplorerNavigationPaneCheckBox</tabstop>
   <tabstop>syncHiddenFilesCheckBox</tabstop>
   <tabstop>crashreporterCheckBox</tabstop>
+  <tabstop>uploadConflictFilesCheckBox</tabstop>
   <tabstop>ignoredFilesButton</tabstop>
   <tabstop>logSettingsButton</tabstop>
   <tabstop>newFolderLimitCheckBox</tabstop>
@@ -398,6 +407,7 @@
   <tabstop>newExternalStorage</tabstop>
   <tabstop>updateChannel</tabstop>
   <tabstop>restartButton</tabstop>
+  <tabstop>about_pushButton</tabstop>
   <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>

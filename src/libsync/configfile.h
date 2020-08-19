@@ -108,6 +108,9 @@ public:
     // Whether experimental UI options should be shown
     bool showExperimentalOptions() const;
 
+    bool uploadConflictFiles() const;
+    void setUploadConflictFiles(bool upload);
+
     // proxy settings
     void setProxyType(int proxyType,
         const QString &host = QString(),

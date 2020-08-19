@@ -4,10 +4,11 @@
  *    any purpose.
  *
  */
+#include "configfile.h"
+#include "syncengine.h"
+#include "testutils/syncenginetestutils.h"
 
 #include <QtTest>
-#include "testutils/syncenginetestutils.h"
-#include <syncengine.h>
 
 using namespace OCC;
 
@@ -66,9 +67,15 @@ class TestSyncConflict : public QObject
     Q_OBJECT
 
 private slots:
+    void init()
+    {
+        OCC::ConfigFile().setUploadConflictFiles(true);
+    }
+
     void testNoUpload()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
+        fakeFolder.syncEngine().account()->setCapabilities({ { "uploadConflictFiles", false } });
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
         fakeFolder.localModifier().setContents("A/a1", 'L');

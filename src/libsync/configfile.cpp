@@ -50,7 +50,6 @@ Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
 const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
-//const QString caCertsKeyC() { return QStringLiteral("CaCertificates"); } only used from account.cpp
 const QString forceSyncIntervalC() { return QStringLiteral("forceSyncInterval"); }
 const QString fullLocalDiscoveryIntervalC() { return QStringLiteral("fullLocalDiscoveryInterval"); }
 const QString notificationRefreshIntervalC() { return QStringLiteral("notificationRefreshInterval"); }
@@ -73,6 +72,7 @@ const QString automaticLogDirC() { return QStringLiteral("logToTemporaryLogDir")
 const QString deleteOldLogsAfterHoursC() { return QStringLiteral("temporaryLogDirDeleteOldLogsAfterHours"); }
 const QString showExperimentalOptionsC() { return QStringLiteral("showExperimentalOptions"); }
 const QString clientVersionC() { return QStringLiteral("clientVersion"); }
+const QString uploadConflictFilesC() { return QStringLiteral("uploadConflictFiles"); }
 
 const QString proxyHostC() { return QStringLiteral("Proxy/host"); }
 const QString proxyTypeC() { return QStringLiteral("Proxy/type"); }
@@ -823,6 +823,18 @@ void ConfigFile::setLogHttp(bool b)
     } else {
         Logger::instance()->removeLogRule(rule);
     }
+}
+
+bool ConfigFile::uploadConflictFiles() const
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    return settings.value(uploadConflictFilesC(), true).toBool();
+}
+
+void ConfigFile::setUploadConflictFiles(bool upload)
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    settings.setValue(uploadConflictFilesC(), upload);
 }
 
 bool ConfigFile::logHttp() const

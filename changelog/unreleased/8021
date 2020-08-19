@@ -1,0 +1,9 @@
+Change: Enable upload of conflict files by default
+
+We made the setting to upload conflict file available in the settings window
+and enabled it by default.
+
+The support for modifying the behaviour with a environment varriable was
+removed.
+
+https://github.com/owncloud/client/issues/8021
