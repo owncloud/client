@@ -137,6 +137,7 @@ void GeneralSettings::loadMiscSettings()
     _ui->newFolderLimitSpinBox->setValue(newFolderLimit.second);
     _ui->newExternalStorage->setChecked(cfgFile.confirmExternalStorage());
     _ui->monoIconsCheckBox->setChecked(cfgFile.monoIcons());
+    _ui->uploadConflicFilesCheckBox->setChecked(cfgFile.uploadConflictFiles());
 }
 
 void GeneralSettings::showEvent(QShowEvent *)
@@ -234,6 +235,7 @@ void GeneralSettings::saveMiscSettings()
     cfgFile.setNewBigFolderSizeLimit(_ui->newFolderLimitCheckBox->isChecked(),
         _ui->newFolderLimitSpinBox->value());
     cfgFile.setConfirmExternalStorage(_ui->newExternalStorage->isChecked());
+    cfgFile.setUploadConflictFiles(_ui->uploadConflicFilesCheckBox->isChecked());
 }
 
 void GeneralSettings::slotToggleLaunchOnStartup(bool enable)

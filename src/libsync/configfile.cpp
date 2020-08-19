@@ -49,6 +49,7 @@ namespace chrono = std::chrono;
 
 Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 
+namespace  {
 //static const char caCertsKeyC[] = "CaCertificates"; only used from account.cpp
 static const char remotePollIntervalC[] = "remotePollInterval";
 static const char forceSyncIntervalC[] = "forceSyncInterval";
@@ -71,6 +72,7 @@ static const char targetChunkUploadDurationC[] = "targetChunkUploadDuration";
 static const char automaticLogDirC[] = "logToTemporaryLogDir";
 static const char deleteOldLogsAfterHoursC[] = "temporaryLogDirDeleteOldLogsAfterHours";
 static const char showExperimentalOptionsC[] = "showExperimentalOptions";
+const QString uploadConflictFilesC() { return QStringLiteral("uploadConflictFiles"); }
 static const char clientVersionC[] = "clientVersion";
 
 static const char proxyHostC[] = "Proxy/host";
@@ -92,6 +94,8 @@ static const char moveToTrashC[] = "moveToTrash";
 
 const char certPath[] = "http_certificatePath";
 const char certPasswd[] = "http_certificatePasswd";
+}
+
 QString ConfigFile::_confDir = QString();
 bool ConfigFile::_askedUser = false;
 
@@ -804,6 +808,18 @@ bool ConfigFile::showExperimentalOptions() const
 {
     QSettings settings(configFile(), QSettings::IniFormat);
     return settings.value(QLatin1String(showExperimentalOptionsC), false).toBool();
+}
+
+bool ConfigFile::uploadConflictFiles() const
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    return settings.value(uploadConflictFilesC(), true).toBool();
+}
+
+void ConfigFile::setUploadConflictFiles(bool upload)
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    settings.setValue(uploadConflictFilesC(), upload);
 }
 
 QString ConfigFile::certificatePath() const

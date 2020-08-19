@@ -147,6 +147,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="uploadConflicFilesCheckBox">
+            <property name="text">
+             <string>Upload conflic files (can be disabled by the server admin)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="QPushButton" name="ignoredFilesButton">
@@ -364,6 +371,8 @@
   <tabstop>crashreporterCheckBox</tabstop>
   <tabstop>syncHiddenFilesCheckBox</tabstop>
   <tabstop>ignoredFilesButton</tabstop>
+  <tabstop>updateChannel</tabstop>
+  <tabstop>restartButton</tabstop>
   <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>

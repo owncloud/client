@@ -126,7 +126,4 @@ Set to -1 to never require full local discovery.
 | Select the file checksumming algorithm.
 "Adler32", "MD5", "SHA1", "SHA256", "SHA3-256" are valid, but not all have server support.
 
-| `OWNCLOUD_UPLOAD_CONFLICT_FILES`
-| unset
-| Set to "1" to enable uploading conflict files to the server.
 |===

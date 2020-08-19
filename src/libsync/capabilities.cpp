@@ -13,6 +13,7 @@
  */
 
 #include "capabilities.h"
+#include "configfile.h"
 
 #include <QVariantMap>
 #include <QDebug>
@@ -202,12 +203,7 @@ QString Capabilities::invalidFilenameRegex() const
 
 bool Capabilities::uploadConflictFiles() const
 {
-    static auto envIsSet = !qEnvironmentVariableIsEmpty("OWNCLOUD_UPLOAD_CONFLICT_FILES");
-    static int envValue = qEnvironmentVariableIntValue("OWNCLOUD_UPLOAD_CONFLICT_FILES");
-    if (envIsSet)
-        return envValue != 0;
-
-    return _capabilities[QStringLiteral("uploadConflictFiles")].toBool();
+    return _capabilities.value(QStringLiteral("uploadConflictFiles"), true).toBool() && ConfigFile().uploadConflictFiles();
 }
 
 bool Capabilities::versioningEnabled() const
