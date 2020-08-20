@@ -418,8 +418,8 @@ ShareUserLine::ShareUserLine(QSharedPointer<Share> share,
     connect(share.data(), &Share::permissionsSet, this, &ShareUserLine::slotPermissionsSet);
     connect(share.data(), &Share::shareDeleted, this, &ShareUserLine::slotShareDeleted);
 
-    _ui->deleteShareButton->setIcon(QIcon::fromTheme(QLatin1String("user-trash"),
-        Utility::createColorAwareIcon(QLatin1String(":/client/resources/delete.png"))));
+    _ui->deleteShareButton->setIcon(QIcon::fromTheme(QStringLiteral("user-trash"),
+        Utility::createColorAwareIcon(QStringLiteral(":/client/resources/delete.svg"))));
 
     if (!share->account()->capabilities().shareResharing()) {
         _ui->permissionShare->hide();
