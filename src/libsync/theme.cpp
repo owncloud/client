@@ -440,7 +440,7 @@ QIcon Theme::wizardHeaderBanner() const
     QColor c = wizardHeaderBackgroundColor();
     if (!c.isValid())
         return QIcon();
-    QPixmap pix(QSize{750, 78} * 3);
+    QPixmap pix(QSize{750, 78});
     pix.fill(c);
     return QIcon(pix);
 }
