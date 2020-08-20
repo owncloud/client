@@ -87,8 +87,6 @@ public:
     virtual QString configFileName() const;
 
 #ifndef TOKEN_AUTH_ONLY
-    static QString hidpiFileName(const QString &fileName, QPaintDevice *dev = nullptr);
-
     /**
       * get an sync state icon
       */

@@ -99,15 +99,11 @@ QString Utility::vfsFreeSpaceActionText()
     return QCoreApplication::translate("utility", "Free up local space");
 }
 
-QPixmap Utility::createColorAwareIcon(const QString &name, const QPalette &palette)
+QPixmap Utility::createColorAwareIcon(const QString &name, const QPalette &palette, const QSize &size)
 {
     const QColor bg(palette.base().color());
-    QImage img;
-    if (name.endsWith(".svg")) {
-        img = QIcon(name).pixmap({64, 64}).toImage();
-    } else {
-        img = QImage(Theme::hidpiFileName(name));
-    }
+    const QIcon icon(name);
+    QImage img = icon.pixmap(size).toImage();
     if (img.isGrayscale()) {
         // account for different sensitivity of the human eye to certain colors
         double treshold = 1.0 - (0.299 * bg.red() + 0.587 * bg.green() + 0.114 * bg.blue()) / 255.0;

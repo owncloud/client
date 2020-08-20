@@ -53,7 +53,7 @@ QColor ownCloudTheme::wizardHeaderTitleColor() const
 
 QPixmap ownCloudTheme::wizardHeaderLogo() const
 {
-    return QPixmap(hidpiFileName(":/client/theme/colored/wizard_logo.png"));
+    return QIcon(QStringLiteral(":/client/theme/colored/wizard_logo.png")).pixmap({132, 63});
 }
 
 #endif
