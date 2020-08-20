@@ -101,13 +101,16 @@ QString Utility::vfsFreeSpaceActionText()
 
 QIcon Utility::createColorAwareIcon(const QString &name, const QPalette &palette)
 {
+    // TODO: just provide precolored icons
     const QIcon icon(name);
     OC_ASSERT(!icon.isNull());
     auto availableSize = icon.availableSizes();
     if (availableSize.empty())
     {
+        // fallback for svgs
         availableSize = {{48, 48}, {64, 64}, {128, 128}, {256, 256}};
     }
+    // select the first image to detect greyscale
     QImage img = icon.pixmap(availableSize.first()).toImage();
     if (!img.isGrayscale()) {
         return icon;
@@ -118,6 +121,7 @@ QIcon Utility::createColorAwareIcon(const QString &name, const QPalette &palette
         if (treshold <= 0.5) {
             return icon;
         } else {
+            // compute inverted pixmap for all sizes
             QIcon out;
             const auto addPix = [&out](QImage &img){
                 img.invertPixels(QImage::InvertRgb);
