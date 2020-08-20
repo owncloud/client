@@ -77,8 +77,8 @@ OwncloudWizard::OwncloudWizard(QWidget *parent)
     Theme *theme = Theme::instance();
     setWindowTitle(tr("%1 Connection Wizard").arg(theme->appNameGUI()));
     setWizardStyle(QWizard::ModernStyle);
-    setPixmap(QWizard::BannerPixmap, theme->wizardHeaderBanner());
-    setPixmap(QWizard::LogoPixmap, theme->wizardHeaderLogo());
+    setPixmap(QWizard::BannerPixmap, theme->wizardHeaderBanner().pixmap(750, 78));
+    setPixmap(QWizard::LogoPixmap, theme->wizardHeaderLogo().pixmap(132, 63));
     setOption(QWizard::NoBackButtonOnStartPage);
     setOption(QWizard::NoBackButtonOnLastPage);
     setOption(QWizard::NoCancelButton, false);
