@@ -1,0 +1,6 @@
+Bugfix: Don't crash if move is undone due to permissions
+
+We fixed a crash when a file in a folder with certain permissions
+was restored.
+
+https://github.com/owncloud/client/issues/7967

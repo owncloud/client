@@ -160,11 +160,7 @@ QPair<bool, QByteArray> DiscoveryPhase::findAndCancelDeletedJob(const QString &o
     auto it = _deletedItem.find(originalPath);
     if (it != _deletedItem.end()) {
         const SyncInstructions instruction = (*it)->_instruction;
-        if (instruction == CSYNC_INSTRUCTION_IGNORE && (*it)->_type == ItemTypeVirtualFile) {
-            // re-creation of virtual files count as a delete
-            // a file might be in an error state and thus gets marked as CSYNC_INSTRUCTION_IGNORE
-            // after it was initially marked as CSYNC_INSTRUCTION_REMOVE
-            // return true, to not trigger any additional actions on that file that could elad to dataloss
+        if (instruction == CSYNC_INSTRUCTION_IGNORE) {
             result = true;
             oldEtag = (*it)->_etag;
         } else {
