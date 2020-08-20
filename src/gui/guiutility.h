@@ -50,7 +50,7 @@ namespace Utility {
     QString vfsFreeSpaceActionText();
 
     /** Create bw icon with matching contrast for the current theme */
-    QPixmap createColorAwareIcon(const QString &name, const QPalette &palette = QPalette(), const QSize &size = {64, 64});
+    QIcon createColorAwareIcon(const QString &name, const QPalette &palette = QPalette());
 
 } // namespace Utility
 } // namespace OCC

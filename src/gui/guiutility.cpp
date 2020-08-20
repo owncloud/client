@@ -99,17 +99,36 @@ QString Utility::vfsFreeSpaceActionText()
     return QCoreApplication::translate("utility", "Free up local space");
 }
 
-QPixmap Utility::createColorAwareIcon(const QString &name, const QPalette &palette, const QSize &size)
+QIcon Utility::createColorAwareIcon(const QString &name, const QPalette &palette)
 {
-    const QColor bg(palette.base().color());
     const QIcon icon(name);
-    QImage img = icon.pixmap(size).toImage();
-    if (img.isGrayscale()) {
+    OC_ASSERT(!icon.isNull());
+    auto availableSize = icon.availableSizes();
+    if (availableSize.empty())
+    {
+        availableSize = {{48, 48}, {64, 64}, {128, 128}, {256, 256}};
+    }
+    QImage img = icon.pixmap(availableSize.first()).toImage();
+    if (!img.isGrayscale()) {
+        return icon;
+    } else {
+        const QColor &bg(palette.base().color());
         // account for different sensitivity of the human eye to certain colors
-        double treshold = 1.0 - (0.299 * bg.red() + 0.587 * bg.green() + 0.114 * bg.blue()) / 255.0;
-        if (treshold > 0.5) {
-            img.invertPixels(QImage::InvertRgb);
+        const double treshold = 1.0 - (0.299 * bg.red() + 0.587 * bg.green() + 0.114 * bg.blue()) / 255.0;
+        if (treshold <= 0.5) {
+            return icon;
+        } else {
+            QIcon out;
+            const auto addPix = [&out](QImage &img){
+                img.invertPixels(QImage::InvertRgb);
+                out.addPixmap(QPixmap::fromImage(img));
+            };
+            addPix(img);
+            for (int i = 1; i < availableSize.size(); ++i) {
+                img = icon.pixmap(availableSize[i]).toImage();
+                addPix(img);
+            }
+            return out;
         }
     }
-    return QPixmap::fromImage(img);
 }
