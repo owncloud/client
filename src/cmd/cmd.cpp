@@ -476,7 +476,7 @@ int main(int argc, char **argv)
     QObject::connect(job, &JsonApiJob::jsonReceived, [&](const QJsonDocument &json) {
         const QJsonObject data = json.object().value(QLatin1String("ocs")).toObject().value(QLatin1String("data")).toObject();
         account->setDavUser(data.value("id").toString());
-        auto displyName = data.value(QLatin1String("display-name"));
+        auto displayName = data.value(QLatin1String("display-name"));
         if (displyName.isNull()) {
             displyName = data.value(QLatin1String("displayname"));
         }
