@@ -371,8 +371,7 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
         return;
     }
 
-    bool isOauth = _account->credentialSetting(isOAuthC()).toBool();
-    if (isOauth) {
+    if (isUsingOAuth()) {
         _refreshToken = job->textData();
     } else {
         _password = job->textData();
@@ -616,8 +615,22 @@ void HttpCredentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *a
 bool HttpCredentials::retryIfNeeded(AbstractNetworkJob *job)
 {
     auto *reply = job->reply();
-    if (!reply || !reply->property(needRetryC).toBool())
+    if (!reply) {
         return false;
+    }
+
+    if (!job->ignoreCredentialFailure() && isUsingOAuth() && reply->error() == QNetworkReply::AuthenticationRequiredError) {
+        // refresh the auth token without aborting the current process
+        qCInfo(lcHttpCredentials) << "Starting token refresh during a running sync job";
+        _retryQueue.append(job);
+        if (refreshAccessToken()) {
+            return true;
+        }
+        _retryQueue.removeAll(job);
+    }
+    if (!reply->property(needRetryC).toBool()) {
+        return false;
+    }
     if (_isRenewingOAuthToken) {
         _retryQueue.append(job);
     } else {
