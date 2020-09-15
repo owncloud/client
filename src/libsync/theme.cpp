@@ -203,7 +203,7 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::helpUrl() const
 {
-    return QString::fromLatin1("https://doc.owncloud.org/desktop/%1.%2/").arg(MIRALL_VERSION_MAJOR).arg(MIRALL_VERSION_MINOR);
+    return QStringLiteral("https://doc.owncloud.org/desktop/");
 }
 
 QString Theme::conflictHelpUrl() const
