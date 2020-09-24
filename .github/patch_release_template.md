@@ -44,7 +44,7 @@
 * [ ] QA: Change the date in `ChangeLog` to the date of creating the tag 
 * [ ] QA: Bump `MIRALL_VERSION_PATCH` in [`VERSION.cmake`](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-PatchRelease)
 * [ ] QA: Adjust [Linux Templates](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-Linuxtemplates) to support the next patch release version (e.g. 2.6.2)
-* [ ] QA: Run [client-trigger](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Finalbuild) 
+* [ ] QA: Trigger the [build job](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Finalbuild) 
 * [ ] QA: Ping marketing to do their [actions](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Marketingtasks)
 * [ ] QA: Create [a (draft) release](https://github.com/owncloud/client/releases) with Download links - save as a draft until smoke tested
 * [ ] QA: Create a new release issue for a branded release if needed
