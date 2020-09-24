@@ -46,11 +46,6 @@
 * [ ] QA: Adjust [Linux Templates](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-Linuxtemplates) to support the next patch release version (e.g. 2.6.2)
 * [ ] QA: Run [client-trigger](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Finalbuild) 
 * [ ] QA: Ping marketing to do their [actions](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Marketingtasks)
-* [ ] QA: [Backup](https://confluence.owncloud.com/display/OG/OBS+and+Mirrors#OBSandMirrors-Backupthepreviousdesktopproject) the desktop project in OBS to _desktop:client-2.6.0_
-* [ ] QA: [Disable publishing](https://confluence.owncloud.com/display/OG/OBS+and+Mirrors#OBSandMirrors-Disablepublishingandonprojectisv:ownCloud:desktop) on project _isv:ownCloud:desktop_ in OBS
-* [ ] QA: Copy from [testing to released](https://confluence.owncloud.com/display/OG/OBS+and+Mirrors#OBSandMirrors-CopyfromtestingtoreleasedinOBS) in OBS
-* [ ] QA: Re-enable [OBS publishing](https://confluence.owncloud.com/display/OG/OBS+and+Mirrors#OBSandMirrors-Re-enableOBSpublishing)
-* [ ] QA: [Copy](https://confluence.owncloud.com/display/OG/OBS+and+Mirrors#OBSandMirrors-CopyfromTestingtoStable) builds from ```testing``` to ```stable```
 * [ ] QA: Create [a (draft) release](https://github.com/owncloud/client/releases) with Download links - save as a draft until smoke tested
 * [ ] QA: Create a new release issue for a branded release if needed
 * [ ] QA: Give [heads-up](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Heads-upbeforethefinalrelease) before the final release 
