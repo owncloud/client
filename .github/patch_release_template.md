@@ -16,7 +16,7 @@
 
 * [ ] QA: Create [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud'
 * [ ] QA: Check the new subfolder of [testing download](https://download.owncloud.com/desktop/ownCloud/testing/) if `*tar.xz.asc` files are there. If not follow the [instructions](https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
-* [ ] QA: Add a link to RC1 to owncloud.com
+* [ ] QA: Add a link to RC1 to https://owncloud.com/beta-testing/#desktop-beta @Marketing
 * [ ] QA: Inform [stakeholders](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-InformStakeholdersAfterSuccessfulSprintBuild)
 
 ### QA
