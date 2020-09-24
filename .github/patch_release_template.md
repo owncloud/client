@@ -27,7 +27,7 @@
 #### BTR QA
 * [ ] QA: Inform subscribers of the beta program about a new version for testing
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
-* [ ] QA: Changelog testing
+* [ ] QA: Changelog testing [Add link to 'Test Results 2.x.x' issue here]
 * [ ] QA: [Regression test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-RegressionTest)
 
 ### After QA Approval
