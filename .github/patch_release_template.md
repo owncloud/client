@@ -33,7 +33,7 @@
 ### After QA Approval
 
 * [ ] DEV: Remove git suffix in `MIRALL_VERSION_SUFFIX` in [`VERSION.cmake`](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-VERSION.cmake)
-* [ ] DEV: On sprint branch create a **signed** [tag](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-clientrepository) v2.6.1
+* [ ] DEV: On release(?) branch create a **signed** [tag](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-clientrepository) v2.x.z
 * [ ] DEV: Delete the sprint branch
 * [ ] DEV: Create the same tag on branch 2.6 of [_client-plugin-vfs-win_](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-client-plugin-vfs-win)
 * [ ] DEV: Create the same tag on branch 2.6 of [_wip-msi_](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-wip-msi)
