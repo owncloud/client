@@ -15,6 +15,7 @@
 
 * [ ] QA: Create [builds](https://handbook.owncloud.com/release_processes/client/build.html#sprint-build) for theme 'ownCloud' and 'testpilotcloud'
 * [ ] QA: Check if `*tar.xz.asc` files are [here](https://download.owncloud.com/desktop/testing). If not follow the [instructions](https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
+* [ ] QA: Add a link to RC1 to owncloud.com
 * [ ] QA: Inform [stakeholders](https://handbook.owncloud.com/release_processes/client/marketing.html#inform-stakeholders-after-successful-sprint-build)
 
 ### QA
