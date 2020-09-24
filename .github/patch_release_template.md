@@ -9,7 +9,8 @@
 * [ ] QA: Update [documentation](https://confluence.owncloud.com/display/OG/Documentation)
 * [ ] QA: Check the translations coming from [Transifex](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-Transifex)
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
-* [ ] DEV: Branch off a sprint branch called e.g. `sprint-1`
+* [ ] DEV: Branch off a release branch called e.g. `release-2.x.y`  (or do the release in a `2.x` version branch? DECISION NEEDED)
+* [ ] DEV: bump VERSION.cmake in master to say 2.(x+1).0 unless already done.
 
 ### Build
 
