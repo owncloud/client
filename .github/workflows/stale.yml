@@ -13,4 +13,5 @@ jobs:
         debug-only: true
         days-before-stale: -1
         exempt-issue-labels: "blue-ticket, p1-urgent, p2-high, p3-medium, p4-low"
+        days-before-close: 7  
         close-issue-message: "The issue was marked as stale for 7 days and closed automatically."
