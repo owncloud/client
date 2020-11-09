@@ -41,6 +41,5 @@ System Volume Information
 
 My Saved Places.
 
-# do not sync Linux core files. They can come in multiple flavours.
-core
-core.*
+# do not sync Linux core files. We only block the more specific naming with two dots (as seen in Ubuntu) to avoid issues with other tools.
+core.*.*
