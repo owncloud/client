@@ -40,3 +40,7 @@ System Volume Information
 .nfs*
 
 My Saved Places.
+
+# do not sync Linux core files. They can come in multiple flavours.
+core
+core.*
