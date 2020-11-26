@@ -78,6 +78,11 @@ QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op,
         newRequest.setAttribute(QNetworkRequest::HTTP2AllowedAttribute, http2EnabledEnv);
     }
 
+    // Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1021499
+    QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+    config.setCaCertificates(QSslConfiguration::systemCaCertificates());
+    newRequest.setSslConfiguration(config);
+
     const auto reply = QNetworkAccessManager::createRequest(op, newRequest, outgoingData);
     HttpLogger::logRequest(reply, op, outgoingData);
     return reply;
