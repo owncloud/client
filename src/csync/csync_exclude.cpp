@@ -200,7 +200,7 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(const QString &path, bool exclu
     }
 #endif
 
-    /* We create a Desktop.ini on Windows for the sidebar icon, make sure we don't sync it. */
+    /* Do not sync desktop.ini files anywhere in the tree. */
     if (blen == 11) {
         if (bname.compare(QStringLiteral("Desktop.ini"), Qt::CaseInsensitive) == 0) {
             return CSYNC_FILE_SILENTLY_EXCLUDED;
