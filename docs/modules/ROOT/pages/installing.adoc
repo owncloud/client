@@ -209,3 +209,6 @@ The client will attempt to connect to your ownCloud server, and when it is succe
 * One to open your local folder.
 
 It will also start synchronizing your files.
+
+
+NOTE: Path to find the autostart settings for the windows desktop client: `Computer\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
