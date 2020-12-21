@@ -1224,6 +1224,7 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction dir, std::functio
         setSyncPaused(oldPaused);
     });
     msgBox->open();
+    ownCloudGui::raiseDialog(msgBox);
 }
 
 void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
