@@ -179,16 +179,21 @@ bool Theme::isUsingDarkTheme(IconType type) const
  * helper to load a icon from either the icon theme the desktop provides or from
  * the apps Qt resources.
  */
-QIcon Theme::themeIcon(const QString &name, bool sysTray, bool sysTrayMenuVisible, IconType iconType) const
+QIcon Theme::themeIcon(const QString &name, bool sysTray, bool sysTrayMenuVisible, IconType iconType, QString flavor) const
 {
     const bool useCoreIcon = (iconType == IconType::VanillaIcon) || isVanilla();
-    QString flavor;
     if (sysTray) {
         flavor = systrayIconFlavor(iconType, _mono, sysTrayMenuVisible);
     } else {
-        if (isUsingDarkTheme(iconType)) {
-            flavor = darkTheme();
-        } else {
+        if (flavor.isNull()) {
+            if (isUsingDarkTheme(iconType)) {
+                // try the dark theme
+                // most icons should be available in both themes, but we also have banners etc which are only available on the colored theme
+                const QIcon icon = themeIcon(name, sysTray, sysTrayMenuVisible, iconType, darkTheme());
+                if (!icon.isNull()) {
+                    return icon;
+                }
+            }
             flavor = coloredTheme();
         }
     }
