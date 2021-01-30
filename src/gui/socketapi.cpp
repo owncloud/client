@@ -1106,7 +1106,10 @@ void SocketApi::command_ASYNC_LIST_WIDGETS(const QSharedPointer<SocketApiJob> &j
     for (auto &widget : allObjects(QApplication::allWidgets())) {
         auto objectName = widget->objectName();
         if (!objectName.isEmpty()) {
-            response += objectName + ":" + widget->property("text").toString() + ", ";
+            // Apply urlencoding with escaped ',' and ':', so that the response can be safely split at these.
+            QString encObjectName   = QUrl::toPercentEncoding(objectName,                          " =<>/&@\"", "|,:");
+            QString encTextProperty = QUrl::toPercentEncoding(widget->property("text").toString(), " =<>/&@\"", "|,:");
+            response += encObjectName + ":" + encTextProperty + ", ";
         }
     }
     job->resolve(response);
