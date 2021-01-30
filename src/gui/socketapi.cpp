@@ -91,11 +91,15 @@ QObject *findWidget(const QString &queryString, const QList<QWidget*> &widgets =
 
     QList<QObject*>::const_iterator foundWidget;
 
+    qCDebug(lcSocketApi) << "findWidget ...";
     if (queryString.contains('>')) {
         qCDebug(lcSocketApi) << "queryString contains >";
 
         auto subQueries = queryString.split('>', QString::SkipEmptyParts);
-        Q_ASSERT(subQueries.count() == 2);
+        if (subQueries.count() != 2) {
+            qCDebug(lcSocketApi) << "Syntax error: split('>') expcted count=2, got " << subQueries.count();
+            return nullptr;
+	}
 
         auto parentQueryString = subQueries[0].trimmed();
         qCDebug(lcSocketApi) << "Find parent: " << parentQueryString;
@@ -117,8 +121,10 @@ QObject *findWidget(const QString &queryString, const QList<QWidget*> &widgets =
             return widget->objectName() == objectName;
         });
     } else {
+        qCDebug(lcSocketApi) << "findWidget else ...";
         QList<QObject*> matches;
         std::copy_if(objects.constBegin(), objects.constEnd(), std::back_inserter(matches), [&](QObject* widget) {
+            qCDebug(lcSocketApi) << "std::copy_if WIDGET: " << widget->objectName() << widget->metaObject()->className();
             return widget->inherits(queryString.toLatin1());
         });
 
@@ -1109,10 +1115,11 @@ void SocketApi::command_ASYNC_LIST_WIDGETS(const QSharedPointer<SocketApiJob> &j
 void SocketApi::command_ASYNC_INVOKE_WIDGET_METHOD(const QSharedPointer<SocketApiJob> &job)
 {
     auto &arguments = job->arguments();
-
-    auto widget = findWidget(arguments["objectName"].toString());
+    QString widgetName = arguments["objectName"].toString();
+    auto widget = findWidget(widgetName);
     if (!widget) {
-        job->reject(QLatin1String("widget not found"));
+        QString message = QString(QLatin1String("Widget not found: 1: %1")).arg(widgetName);
+        job->reject(message);
         return;
     }
 
@@ -1179,7 +1186,7 @@ void SocketApi::command_ASYNC_WAIT_FOR_WIDGET_SIGNAL(const QSharedPointer<Socket
 {
     auto &arguments = job->arguments();
     QString widgetName = arguments["objectName"].toString();
-    auto widget = findWidget(arguments["objectName"].toString());
+    auto widget = findWidget(widgetName);
     if (!widget) {
         QString message = QString(QLatin1String("Widget not found: 5: %1")).arg(widgetName);
         job->reject(message);
