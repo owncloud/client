@@ -1,5 +1,15 @@
 = Removing the Desktop Synchronization Client
 
+== Removing the Configuration File
+
+When you remove the client - the configuration file remains on your system. If you then decide to install the client again, you won't have to enter the connection information.
+ 
+In case you want a clean removal of the client - delete the configuration file located at: 
+
+----
+%appdata%\owncloud\owncloud.cfg
+----
+
 == Windows Navigation Sidebar
 
 If you have removed the windows synchronization client but still have the owncloud shortcut or symbol in the windows navigation side bar, 
