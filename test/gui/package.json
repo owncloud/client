@@ -1,0 +1,47 @@
+{
+  "scripts": {
+    "install": "cd node_modules/cucumber; yarn install --frozen-lockfile",
+    "acceptance-tests": "cucumber-js --require-module @babel/register --require-module @babel/polyfill --require features/support/setup.js  --require features/support --format node_modules/cucumber-pretty "
+  },
+  "dependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-classes": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/register": "^7.6.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.0.2",
+    "babel-jest": "^26.6.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-plugin-transform-es2015-shorthand-properties": "^6.24.1",
+    "chai": "^4.1.2",
+    "child-process-promise": "^2.2.1",
+    "core-js": "3.8.0",
+    "cucumber": ">=6.0.5",
+    "cucumber-pretty": ">=6.0.0",
+    "fs-extra": "^7.0.0",
+    "js-owncloud-client": "https://github.com/owncloud/owncloud-sdk/archive/last-nodejs.tar.gz",
+    "join-path": "^1.1.1",
+    "lodash": "^4.17.20",
+    "mkdirp-promise": "^5.0.1",
+    "node-fetch": "^2.6.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "rsvp": "^4.8.3",
+    "tmp": "^0.0.33"
+  },
+  "toolchain": {
+    "node": "12.20.1"
+  },
+  "devDependencies": {
+    "p-limit": "^3.1.0"
+  }
+}
