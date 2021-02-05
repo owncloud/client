@@ -71,6 +71,23 @@ When('the user adds the first account with', async function (dataTable) {
     await this.socketApi.invokeMethod('#__qt__passive_wizardbutton1', 'click');
 });
 
+When('the user adds an account with', async function (dataTable) {
+    codify.replaceInlineTable(dataTable)
+    const settings = dataTable.rowsHash()
+
+    await this.socketApi.getValue('#settingsdialog_toolbutton_Add account', 'visible')
+    await this.socketApi.invokeMethod('#settingsdialog_toolbutton_Add account', 'click')
+    await this.socketApi.invokeMethod('#leUrl', 'click')
+    await this.socketApi.setValue('#leUrl', 'text', settings.server);
+    await this.socketApi.invokeMethod('#__qt__passive_wizardbutton1', 'click');
+    await this.socketApi.invokeMethod('#leUsername', 'click');
+    await this.socketApi.setValue('#leUsername', 'text', settings.user);
+    await this.socketApi.invokeMethod('#lePassword', 'click');
+    await this.socketApi.setValue('#lePassword', 'text', settings.password);
+    await this.socketApi.invokeMethod('#__qt__passive_wizardbutton1', 'click');
+    await this.socketApi.invokeMethod('#__qt__passive_wizardbutton1', 'click');
+});
+
 Then('an account should be displayed with the displayname {string} and host {code}', async function (displayname, host) {
     let value = await this.socketApi.getValue(
         `#settingsdialog_toolbutton_${displayname}@${host}`, 'text'

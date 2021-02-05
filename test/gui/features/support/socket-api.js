@@ -39,7 +39,7 @@ export class SocketApi {
         // console.log('spawn_client', this.world.parameters.spawn_client);
         if(this.world.parameters.spawn_client !== false) {
             // TODO: do not run owncloud from path
-            this.ownCloudProcess = spawn('owncloud', [ '--logfile', '/tmp/client.log'], {env:this.clientEnv}).then(null, (err)=>{
+            this.ownCloudProcess = spawn('owncloud', [ '--logfile', '/tmp/client.log', '--confdir', "/tmp/owncloud_desktop_client/"], {env:this.clientEnv}).then(null, (err)=>{
                 // console.log('Spawn error:', err);
             }).childProcess;
         }

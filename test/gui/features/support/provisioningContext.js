@@ -1,7 +1,12 @@
+import fs from "fs";
+
 const { Given, After } = require('cucumber')
 const httpHelper = require('./helpers/httpHelper')
 const userSettings = require('./helpers/userSettings')
 const codify = require('./helpers/codify')
+
+const confdir = '/tmp/owncloud_desktop_client/'
+const confFilePath = confdir + 'owncloud.cfg'
 
 function createDefaultUser(userId) {
   const password = userSettings.getPasswordForUser(userId)
@@ -177,6 +182,19 @@ Given('these groups have been created:', function(dataTable) {
 
 Given('user {string} has been added to group {string}', function(userId, groupId) {
   return addToGroup(userId, groupId)
+})
+
+function setupUser(userId, context){
+    context = codify.replaceInlineCode(context)
+    fs.writeFileSync(confFilePath, context)
+    // console.log('completed writing file')
+}
+
+
+Given('user {string} has set up a client with these settings:', function(userId, context) {
+    setupUser(userId, context)
+    return this.socketApi.setup();
+
 })
 
 After(async function() {
