@@ -422,7 +422,7 @@ void NSISUpdater::showNoUrlDialog(const UpdateInfo &info)
     layout->addWidget(bb);
 
     msgBox->open();
-    ownCloudGui::raiseDialog(msgBox);
+    ocApp()->gui()->raiseDialog(msgBox);
 }
 
 void NSISUpdater::showUpdateErrorDialog(const QString &targetVersion)

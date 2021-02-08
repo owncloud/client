@@ -138,7 +138,7 @@ void HttpCredentialsGui::showDialog()
         emit asked();
     });
     dialog->open();
-    ownCloudGui::raiseDialog(dialog);
+    ocApp()->gui()->raiseDialog(dialog);
 }
 
 QString HttpCredentialsGui::requestAppPasswordText(const Account *account)

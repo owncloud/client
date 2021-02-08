@@ -1048,12 +1048,33 @@ void ownCloudGui::raiseDialog(QWidget *raiseWidget)
     if (!window) {
         return;
     }
+    if (auto dialog = qobject_cast<QDialog *>(raiseWidget)) {
+        // we might get multiple modal dialogs
+        // on mac we are getting issues with which of them has focus etc
+        // always only display on
+        if (!_raisedDialogs.contains(dialog)) {
+            _raisedDialogs.append(dialog);
+            auto nextDialog = [dialog, this]{
+                if (_raisedDialogs.contains(dialog)) {
+                    _raisedDialogs.removeAll(dialog);
+                    if (!_raisedDialogs.isEmpty()) {
+                        raiseDialog(_raisedDialogs.constFirst());
+                    }
+                }
+            };
+            connect(dialog, &QDialog::finished, this, nextDialog);
+            connect(dialog, &QDialog::destroyed, this, nextDialog);
+        }
+       raiseWidget = _raisedDialogs.constFirst() ;
+    }
+
     window->showNormal();
     window->raise();
     raiseWidget->showNormal();
     raiseWidget->raise();
     window->activateWindow();
     raiseWidget->activateWindow();
+    qCWarning(lcApplication) << "raise" << raiseWidget << _raisedDialogs;
 
 #if defined(Q_OS_WIN)
     // Windows disallows raising a Window when you're not the active application.

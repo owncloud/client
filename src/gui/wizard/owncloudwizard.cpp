@@ -166,7 +166,7 @@ void OwncloudWizard::successfulStep()
         break;
     }
 
-    ownCloudGui::raiseDialog(this);
+    ocApp()->gui()->raiseDialog(this);
     next();
 }
 

@@ -1,0 +1,6 @@
+Bugfix: Multiple dialogs blocking each other
+
+We fixed an issue where when multiple modal dialogs where displayed,
+the top most dialog might not have focus.
+
+https://github.com/owncloud/client/issues/8421

@@ -508,7 +508,7 @@ void AccountSettings::slotRemoveCurrentFolder()
             }
         });
         messageBox->open();
-        ownCloudGui::raiseDialog(messageBox);
+        ocApp()->gui()->raiseDialog(messageBox);
     }
 }
 

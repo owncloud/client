@@ -56,7 +56,7 @@ public:
 
     bool checkAccountExists(bool openSettings);
 
-    static void raiseDialog(QWidget *raiseWidget);
+    void raiseDialog(QWidget *raiseWidget);
     void setupOverlayIcons();
 
     /// Whether the tray menu is visible
@@ -161,6 +161,7 @@ private:
     Application *_app;
     QPointer<OwncloudSetupWizard> _wizard;
     QPointer<AboutDialog> _aboutDialog;
+    QVector<QDialog*> _raisedDialogs;
 };
 
 } // namespace OCC

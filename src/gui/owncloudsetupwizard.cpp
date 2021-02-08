@@ -32,8 +32,11 @@
 #include "accountmanager.h"
 #include "clientproxy.h"
 #include "filesystem.h"
+#include "application.h"
 #include "owncloudgui.h"
 #include "settingsdialog.h"
+
+#include "owncloudgui.h"
 
 #include "creds/dummycredentials.h"
 
@@ -98,7 +101,7 @@ void OwncloudSetupWizard::startWizard()
     _ocWizard->restart();
 
     _ocWizard->open();
-    ownCloudGui::raiseDialog(_ocWizard);
+    ocApp()->gui()->raiseDialog(_ocWizard);
 }
 
 // also checks if an installation is valid and determines auth type in a second step
