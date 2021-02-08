@@ -98,47 +98,49 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &user,
 
 void HttpCredentialsGui::showDialog()
 {
-    QString msg = tr("Please enter %1 password:<br>"
-                     "<br>"
-                     "User: %2<br>"
-                     "Account: %3<br>")
-                      .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(_user),
-                          Utility::escape(_account->displayName()));
+    if (!_passwortPrompt) {
+        QString msg = tr("Please enter %1 password:<br>"
+                         "<br>"
+                         "User: %2<br>"
+                         "Account: %3<br>")
+                          .arg(Utility::escape(Theme::instance()->appNameGUI()),
+                              Utility::escape(_user),
+                              Utility::escape(_account->displayName()));
 
-    QString reqTxt = requestAppPasswordText(_account);
-    if (!reqTxt.isEmpty()) {
-        msg += QLatin1String("<br>") + reqTxt + QLatin1String("<br>");
-    }
-    if (!_fetchErrorString.isEmpty()) {
-        msg += QLatin1String("<br>")
-            + tr("Reading from keychain failed with error: '%1'")
-                  .arg(Utility::escape(_fetchErrorString))
-            + QLatin1String("<br>");
-    }
-
-    QInputDialog *dialog = new QInputDialog(ocApp()->gui()->settingsDialog());
-    dialog->setAttribute(Qt::WA_DeleteOnClose, true);
-    dialog->setWindowTitle(tr("Enter Password"));
-    dialog->setLabelText(msg);
-    dialog->setTextValue(_previousPassword);
-    dialog->setTextEchoMode(QLineEdit::Password);
-    if (QLabel *dialogLabel = dialog->findChild<QLabel *>()) {
-        dialogLabel->setOpenExternalLinks(true);
-        dialogLabel->setTextFormat(Qt::RichText);
-    }
-
-    connect(dialog, &QDialog::finished, this, [this, dialog](int result) {
-        if (result == QDialog::Accepted) {
-            _password = dialog->textValue();
-            _refreshToken.clear();
-            _ready = true;
-            persist();
+        QString reqTxt = requestAppPasswordText(_account);
+        if (!reqTxt.isEmpty()) {
+            msg += QLatin1String("<br>") + reqTxt + QLatin1String("<br>");
         }
-        emit asked();
-    });
-    dialog->open();
-    ocApp()->gui()->raiseDialog(dialog);
+        if (!_fetchErrorString.isEmpty()) {
+            msg += QLatin1String("<br>")
+                + tr("Reading from keychain failed with error: '%1'")
+                      .arg(Utility::escape(_fetchErrorString))
+                + QLatin1String("<br>");
+        }
+
+        _passwortPrompt = new QInputDialog(ocApp()->gui()->settingsDialog());
+        _passwortPrompt->setAttribute(Qt::WA_DeleteOnClose, true);
+        _passwortPrompt->setWindowTitle(tr("Enter Password"));
+        _passwortPrompt->setLabelText(msg);
+        _passwortPrompt->setTextValue(_previousPassword);
+        _passwortPrompt->setTextEchoMode(QLineEdit::Password);
+        if (QLabel *dialogLabel = _passwortPrompt->findChild<QLabel *>()) {
+            dialogLabel->setOpenExternalLinks(true);
+            dialogLabel->setTextFormat(Qt::RichText);
+        }
+
+        connect(_passwortPrompt, &QDialog::finished, this, [this](int result) {
+            if (result == QDialog::Accepted) {
+                _password = _passwortPrompt->textValue();
+                _refreshToken.clear();
+                _ready = true;
+                persist();
+            }
+            emit asked();
+        });
+        _passwortPrompt->open();
+    }
+    ocApp()->gui()->raiseDialog(_passwortPrompt);
 }
 
 QString HttpCredentialsGui::requestAppPasswordText(const Account *account)

@@ -19,6 +19,8 @@
 #include <QPointer>
 #include <QTcpServer>
 
+class QInputDialog;
+
 namespace OCC {
 
 /**
@@ -71,6 +73,8 @@ signals:
 
 private:
     QScopedPointer<OAuth, QScopedPointerObjectDeleteLater<OAuth>> _asyncAuth;
+    // ensure we only have one
+    QPointer<QInputDialog> _passwortPrompt;
 };
 
 } // namespace OCC
