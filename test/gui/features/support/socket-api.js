@@ -33,13 +33,22 @@ export class SocketApi {
         this.screenshotNo = 0;
 
         this.clientEnv = world.clientEnv;
+        this.folderStatusPromise = '';
+        this.shareStatusPromise = '';
+        this.itemName = '';
     }
 
-    async setup(socketPath) {
+    async setup(configSetupArg = '', socketPath) {
+        let defaultSpawnArg
+        defaultSpawnArg = ['--logfile', '/tmp/client.log']
+
+        if(configSetupArg){
+            defaultSpawnArg = defaultSpawnArg.concat(configSetupArg)
+        }
         // console.log('spawn_client', this.world.parameters.spawn_client);
-        if(this.world.parameters.spawn_client !== false) {
+        if (this.world.parameters.spawn_client !== false) {
             // TODO: do not run owncloud from path
-            this.ownCloudProcess = spawn('owncloud', [ '--logfile', '/tmp/client.log', '--confdir', "/tmp/owncloud_desktop_client/"], {env:this.clientEnv}).then(null, (err)=>{
+            this.ownCloudProcess = spawn('owncloud', defaultSpawnArg, {env: this.clientEnv}).then(null, (err) => {
                 // console.log('Spawn error:', err);
             }).childProcess;
         }
@@ -66,6 +75,7 @@ export class SocketApi {
         this.socket.connect(this.clientEnv.XDG_RUNTIME_DIR + '/ownCloud/socket');
 
     }
+
     _connect() {
         return new Promise((resolve, reject) => {
             this.socket = Socket();
@@ -73,7 +83,19 @@ export class SocketApi {
             this.socket.on('data', (d) => {
                 var data = d.toString();
                 data.split('\n').forEach((line) => {
-                    this._dataLineHandler(line);
+                    if (line.startsWith('RESOLVE') || line.startsWith('REJECT')) {
+                        this._dataLineHandler(line);
+                    } else if (line.startsWith('STATUS:OK') && line.endsWith(this.itemName)) {
+                        this.folderStatusPromise.resolve(line)
+                    } else if (line.startsWith('SHARE:') && line.endsWith(this.itemName)) {
+                        if (line.startsWith('SHARE:OK')) {
+                            this.shareStatusPromise.resolve(line)
+                        } else {
+                            this.shareStatusPromise.reject(line)
+                        }
+                    } else {
+                        // console.log(line)
+                    }
                 })
             });
 
@@ -89,9 +111,9 @@ export class SocketApi {
 
     _dataLineHandler(line) {
         var split = line.split('|');
-        if(split[0]=='RESOLVE') {
+        if (split[0] == 'RESOLVE') {
             this.promises[split[1]].resolve(split[2].trim());
-        } else if(split[0]=='REJECT'){
+        } else if (split[0] == 'REJECT') {
             this.promises[split[1]].reject(split[2].trim());
         }
     }
@@ -110,6 +132,27 @@ export class SocketApi {
 
         this.counter++;
 
+        return promise;
+    }
+
+    checkFolderStatus(command, folderName) {
+        this.itemName = folderName
+        var promise = new rsvp.Promise((resolve, reject) => {
+            this.folderStatusPromise = { resolve: resolve, reject: reject };
+        });
+
+        this.send(command + folderName)
+
+        return promise;
+    }
+
+    checkShareStatus(command, folderName) {
+        this.itemName = folderName
+        var promise = new rsvp.Promise((resolve, reject) => {
+            this.shareStatusPromise = { resolve: resolve, reject: reject };
+        });
+
+        this.send(command + folderName)
         return promise;
     }
 

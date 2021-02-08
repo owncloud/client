@@ -23,6 +23,8 @@ const createParentDirectory = function(filename) {
     return ensureDir(dirname(filename));
 };
 
+const confdir = '/tmp/owncloud-gui-test-home/'
+const confFilePath = confdir + 'owncloud.cfg'
 
 const login = async (url, username, password) => {
     console.log('creds: ', url, username, password);
@@ -252,6 +254,60 @@ Given('server root is empty', {timeout: 15 * 1000}, async function () {
             return oc.files.delete(file.name);
         };
     }))
+});
+
+function setupUser(userId, context){
+    context = codify.replaceInlineCode(context)
+    fs.writeFileSync(confFilePath, context)
+    // console.log('completed writing file')
+}
+
+Given('user {string} has set up a client with these settings:', function(userId, context) {
+    const configSetupArg = ['--confdir', confdir]
+    setupUser(userId, context)
+    return this.socketApi.setup(configSetupArg);
+
+})
+
+async function isShareDialogueVisible(socket, itemName) {
+    return await new Promise(resolve => {
+        const interval = setInterval(() => {
+            socket.checkShareStatus('SHARE:', itemName).then(() => {
+                clearInterval(interval);
+                resolve();
+            })
+        }, 4000);
+    });
+}
+
+function isItemSynced(type, itemName, socket){
+    if(type !== 'FILE' && type !== 'FOLDER'){
+        throw new Error("type must be 'FILE' or 'FOLDER'");
+    }
+    return socket.checkFolderStatus('RETRIEVE_' + type + '_STATUS:', itemName).then(r =>{
+        console.log(r)
+    })
+}
+
+function isFolderSynced(socket, folderName){
+    return isItemSynced('FOLDER', folderName, socket)
+}
+
+function isFileSynced(socket, fileName){
+    return isItemSynced('FILE', fileName, socket)
+}
+
+When('the user adds {string} as collaborator of resource {string} with permissions {string} using the client-UI', async function (shareWithUser, resource, permissions) {
+    resource = (codify.replaceInlineCode(resource)).replace('//', '/')
+    await isFileSynced(this.socketApi, resource)
+    await isShareDialogueVisible(this.socketApi, resource)
+
+    //wait for share dialogue box to open
+    await usleep(2000)
+
+    await this.socketApi.getValue('#shareeLineEdit', 'visible')
+    await this.socketApi.invokeMethod('#shareeLineEdit', 'click')
+    await this.socketApi.setValue('#shareeLineEdit', 'text', shareWithUser);
 });
 
 After(function (testCase) {
