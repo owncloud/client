@@ -7,7 +7,6 @@ When you remove the client - the configuration file remains on your system. If y
 In case you want a clean removal of the client - you manually have to delete the configuration file. The location of the configuration file is operating system dependent and can be found in the
 xref:advanced_usage/configuration_file.adoc[Configuration File] description.
 
-%appdata%\owncloud\owncloud.cfg
 ----
 
 == Windows Navigation Sidebar
