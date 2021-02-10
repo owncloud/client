@@ -2,7 +2,7 @@
 
 == Removing the Configuration File
 
-When you remove the client - the configuration file remains on your system. If you then decide to install the client again, you won't have to enter the connection information.
+When you remove the client - the configuration file remains on your system. If you then decide to install the client again, you won't need to re-enter the connection information.
  
 In case you want a clean removal of the client - delete the configuration file located at: 
 
