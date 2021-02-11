@@ -11,15 +11,15 @@ class CustomWorld {
     // console.log({parameters});
 
     this.clientEnv = Object.assign({}, process.env, {
-	      HOME: '/tmp/owncloud-gui-test-home',
+        HOME: process.env.CLIENT_SYNC_PATH,
         XDG_RUNTIME_DIR: '/tmp/owncloud-gui-test-runtime'
     });
 
     if(this.parameters.spawn_client !== false) {
       // TODO: port to native Node.js
-      execSync('mkdir -p ' + this.clientEnv.HOME);
-      execSync('rm -rvf ' + this.clientEnv.HOME + '/*');
-      execSync('rm -rvf ' + this.clientEnv.HOME + '/.??*');
+      execSync('mkdir -p ' + process.env.CLIENT_SYNC_PATH);
+      execSync('rm -rvf ' + process.env.CLIENT_SYNC_PATH + '/*');
+      execSync('rm -rvf ' + process.env.CLIENT_SYNC_PATH + '/.??*');
       execSync('rm -rvf ' + this.clientEnv.XDG_RUNTIME_DIR + '*');
 
       execSync('mkdir -p ' + this.clientEnv.XDG_RUNTIME_DIR);

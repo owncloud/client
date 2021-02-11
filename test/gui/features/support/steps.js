@@ -168,12 +168,12 @@ When('I log in at {string} as user {string} with password {string}', async funct
 });
 
 Given('folder {string} exists', async function (string) {
-    let cmd = 'mkdir -p ' + this.clientEnv.HOME + '/' + string;
+    let cmd = 'mkdir -p ' + process.env.CLIENT_SYNC_PATH + '/' + string;
     return exec(cmd);
 });
 
 Then('folder {string} should exist', async function (string) {
-    let path = this.clientEnv.HOME + '/' + string;
+    let path = process.env.CLIENT_SYNC_PATH + '/' + string;
     return pathExists(path).then((exists) => {
         if (!exists) {
             throw new Error("Folder " + path + " does not exist.");
@@ -198,14 +198,14 @@ Then('{string} has {string} set to {string}', async function (queryString, prope
 });
 
 When('a file {string} is created locally with content {string}', async function (filename, content) {
-    const final_filename = join(this.clientEnv.HOME, filename);
+    const final_filename = join(process.env.CLIENT_SYNC_PATH, filename);
 
     await createParentDirectory(final_filename);
     return writeFile(final_filename, content);
 });
 
 When('a directory {string} is created locally', async function (directory) {
-    const final_path = join(this.clientEnv.HOME, directory);
+    const final_path = join(process.env.CLIENT_SYNC_PATH, directory);
 
     return ensureDir(final_path);
 });
