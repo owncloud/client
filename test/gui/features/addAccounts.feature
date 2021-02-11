@@ -21,7 +21,7 @@ Feature: adding accounts
             """
             [Accounts]
             0\Folders\1\ignoreHiddenFiles=true
-            0\Folders\1\localPath=%client_sync_path%
+            0\Folders\1\localPath=%client_sync_path%/Alice
             0\Folders\1\paused=false
             0\Folders\1\targetPath=/
             0\Folders\1\version=2
@@ -36,9 +36,9 @@ Feature: adding accounts
             version=2
             """
         When the user adds an account with
-            | server      | %local_server%     |
-            | user        | Brian              |
-            | password    | Brian             |
-            | localfolder | %client_sync_path% |
+          | server      | %local_server%           |
+          | user        | Brian                    |
+          | password    | Brian                    |
+          | localfolder | %client_sync_path%/Brian |
        Then an account should be displayed with the displayname "Alice" and host "%local_server_hostname%"
        And an account should be displayed with the displayname "Brian" and host "%local_server_hostname%"
