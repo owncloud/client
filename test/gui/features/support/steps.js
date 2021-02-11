@@ -15,6 +15,9 @@ import { env } from 'process';
 
 import promiseSequence from './rsvp-party/sequence';
 const codify = require('./helpers/codify')
+const userSettings = require('./helpers/userSettings')
+const webdavHelper = require('./helpers/webdavHelper')
+const httpHelper = require('./helpers/httpHelper')
 const assert = require('assert')
 
 const usleep = promisify(setTimeout);
@@ -204,6 +207,18 @@ When('a file {string} is created locally with content {string}', async function 
     return writeFile(final_filename, content);
 });
 
+When('the user creates a file {string} with following content on the file system', async function (filename, content) {
+    const final_filename = join(process.env.CLIENT_SYNC_PATH, filename);
+
+    await createParentDirectory(final_filename);
+    return writeFile(final_filename, content);
+});
+
+When('the user {string} uploads file {string} with following content on the server', async function (user, filename, content) {
+    await webdavHelper.createFile(user, filename, content)
+});
+
+
 When('a directory {string} is created locally', async function (directory) {
     const final_path = join(process.env.CLIENT_SYNC_PATH, directory);
 
@@ -308,6 +323,40 @@ When('the user adds {string} as collaborator of resource {string} with permissio
     await this.socketApi.getValue('#shareeLineEdit', 'visible')
     await this.socketApi.invokeMethod('#shareeLineEdit', 'click')
     await this.socketApi.setValue('#shareeLineEdit', 'text', shareWithUser);
+});
+
+
+function download(userId, file) {
+    const davPath = webdavHelper.createDavPath(userId, file)
+    return httpHelper
+        .get(davPath, userId)
+        .then(res => httpHelper.checkStatus(res, 'Could not download file.'))
+        .then(res => res.text())
+}
+
+Then('the file {string} should exist on the server for user {string} after syncing with following content', async function (fileName, user, content) {
+    await usleep(3000)
+    const remote = await download(user, fileName)
+    return assert.strictEqual(
+        remote,
+        content,
+        `Failed asserting remote file ${fileName} is same as content local ${fileName} for user${user}`
+    )
+});
+
+Then('the file {string} should exist on the file system after syncing with following content', async function (fileName, content) {
+    const final_filename = join(process.env.CLIENT_SYNC_PATH, fileName);
+    await isFileSynced(this.socketApi, final_filename)
+    await fs.readFile(final_filename, function (err, data) {
+        if (err) {
+            throw err;
+        }
+        return assert.strictEqual(
+            data,
+            content,
+            `Failed asserting remote file ${fileName} is same as content ${content} for user${user}`
+        )
+    })
 });
 
 After(function (testCase) {

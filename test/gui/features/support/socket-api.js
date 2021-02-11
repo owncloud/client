@@ -146,7 +146,11 @@ export class SocketApi {
         return promise;
     }
 
+<<<<<<< Updated upstream
     checkShareStatus(command, folderName) {
+=======
+    openShareResourceDialogue(command, folderName) {
+>>>>>>> Stashed changes
         this.itemName = folderName
         var promise = new rsvp.Promise((resolve, reject) => {
             this.shareStatusPromise = { resolve: resolve, reject: reject };
