@@ -90,7 +90,7 @@ void ProcessDirectoryJob::process()
     if (!_discoveryData->_statedb->listFilesInPath(pathU8, [&](const SyncJournalFileRecord &rec) {
             auto name = pathU8.isEmpty() ? QString::fromUtf8(rec._path) : QString::fromUtf8(rec._path.constData() + (pathU8.size() + 1));
             if (rec.isVirtualFile() && isVfsWithSuffix())
-                chopVirtualFileSuffix(name);
+                chopVirtualFileSuffix(&name);
             auto &dbEntry = entries[name].dbEntry;
             dbEntry = rec;
             setupDbPinStateActions(dbEntry);
@@ -115,7 +115,7 @@ void ProcessDirectoryJob::process()
             bool hasOtherData = suffixedEntry.serverEntry.isValid() || suffixedEntry.dbEntry.isValid();
 
             auto nonvirtualName = e.name;
-            chopVirtualFileSuffix(nonvirtualName);
+            chopVirtualFileSuffix(&nonvirtualName);
             auto &nonvirtualEntry = entries[nonvirtualName];
             // If the non-suffixed entry has no data, move it
             if (!nonvirtualEntry.localEntry.isValid()) {
@@ -157,7 +157,7 @@ void ProcessDirectoryJob::process()
                 path._local = PathTuple::pathAppend(_currentFolder._local, e.localEntry.name);
             } else if (e.dbEntry.isVirtualFile()) {
                 // We don't have a local entry - but it should be at this path
-                addVirtualFileSuffix(path._local);
+                addVirtualFileSuffix(&path._local);
             }
         }
 
@@ -483,8 +483,9 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             && opts._vfs->mode() != Vfs::Off
             && _pinState != PinState::AlwaysLocal) {
             item->_type = ItemTypeVirtualFile;
-            if (isVfsWithSuffix())
-                addVirtualFileSuffix(tmp_path._original);
+            if (isVfsWithSuffix()) {
+                addVirtualFileSuffix(&tmp_path._original);
+            }
         }
         processFileAnalyzeLocalInfo(item, tmp_path, localEntry, serverEntry, dbEntry, _queryServer);
     };
@@ -733,7 +734,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
                     item->_direction = SyncFileItem::Down;
                     item->_instruction = CSYNC_INSTRUCTION_SYNC;
                     item->_type = ItemTypeVirtualFileDehydration;
-                    addVirtualFileSuffix(item->_file);
+                    addVirtualFileSuffix(&item->_file);
                     item->_renameTarget = item->_file;
                 } else {
                     qCInfo(lcDisco) << "Virtual file with non-virtual db entry, ignoring:" << item->_file;
@@ -992,7 +993,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
         _pendingAsyncJobs++;
         QString serverOriginalPath = _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
         if (base.isVirtualFile() && isVfsWithSuffix())
-            chopVirtualFileSuffix(serverOriginalPath);
+            chopVirtualFileSuffix(&serverOriginalPath);
         auto job = new RequestEtagJob(_discoveryData->_account, serverOriginalPath, this);
         connect(job, &RequestEtagJob::finishedWithResult, this, [=](const HttpResult<QString> &etag) {
             auto tmp_path = path;
@@ -1096,17 +1097,17 @@ void ProcessDirectoryJob::processFileFinalize(
     // Adjust target path for virtual-suffix files
     if (isVfsWithSuffix()) {
         if (item->_type == ItemTypeVirtualFile) {
-            addVirtualFileSuffix(path._target);
+            addVirtualFileSuffix(&path._target);
             if (item->_instruction == CSYNC_INSTRUCTION_RENAME)
-                addVirtualFileSuffix(item->_renameTarget);
+                addVirtualFileSuffix(&item->_renameTarget);
             else
-                addVirtualFileSuffix(item->_file);
+                addVirtualFileSuffix(&item->_file);
         }
         if (item->_type == ItemTypeVirtualFileDehydration
             && item->_instruction == CSYNC_INSTRUCTION_SYNC) {
             if (item->_renameTarget.isEmpty()) {
                 item->_renameTarget = item->_file;
-                addVirtualFileSuffix(item->_renameTarget);
+                addVirtualFileSuffix(&item->_renameTarget);
             }
         }
     }
@@ -1363,12 +1364,12 @@ int ProcessDirectoryJob::processSubJobs(int nbJobs)
 
 void ProcessDirectoryJob::dbError()
 {
-    _discoveryData->fatalError(tr("Error while reading the database"));
+    Q_EMIT _discoveryData->fatalError(tr("Error while reading the database"));
 }
 
-void ProcessDirectoryJob::addVirtualFileSuffix(QString &str) const
+void ProcessDirectoryJob::addVirtualFileSuffix(QString *str) const
 {
-    str.append(_discoveryData->_syncOptions._vfs->fileSuffix());
+    str->append(_discoveryData->_syncOptions._vfs->fileSuffix());
 }
 
 bool ProcessDirectoryJob::hasVirtualFileSuffix(const QString &str) const
@@ -1378,14 +1379,15 @@ bool ProcessDirectoryJob::hasVirtualFileSuffix(const QString &str) const
     return str.endsWith(_discoveryData->_syncOptions._vfs->fileSuffix());
 }
 
-void ProcessDirectoryJob::chopVirtualFileSuffix(QString &str) const
+void ProcessDirectoryJob::chopVirtualFileSuffix(QString *str) const
 {
     if (!isVfsWithSuffix())
         return;
-    bool hasSuffix = hasVirtualFileSuffix(str);
+    bool hasSuffix = hasVirtualFileSuffix(*str);
     OC_ASSERT(hasSuffix);
-    if (hasSuffix)
-        str.chop(_discoveryData->_syncOptions._vfs->fileSuffix().size());
+    if (hasSuffix) {
+        str->chop(_discoveryData->_syncOptions._vfs->fileSuffix().size());
+    }
 }
 
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()

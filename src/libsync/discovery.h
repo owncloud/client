@@ -193,9 +193,9 @@ private:
     /** An DB operation failed */
     void dbError();
 
-    void addVirtualFileSuffix(QString &str) const;
+    void addVirtualFileSuffix(QString *str) const;
     bool hasVirtualFileSuffix(const QString &str) const;
-    void chopVirtualFileSuffix(QString &str) const;
+    void chopVirtualFileSuffix(QString *str) const;
 
     /** Convenience to detect suffix-vfs modes */
     bool isVfsWithSuffix() const;
