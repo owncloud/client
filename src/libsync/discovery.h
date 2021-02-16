@@ -150,19 +150,19 @@ private:
      *
      * This main function delegates some work to the processFile* functions.
      */
-    void processFile(PathTuple, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
+    void processFile(PathTuple &&, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
 
     /// processFile helper for when remote information is available, typically flows into AnalyzeLocalInfo when done
-    void processFileAnalyzeRemoteInfo(const SyncFileItemPtr &item, PathTuple, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
+    void processFileAnalyzeRemoteInfo(const SyncFileItemPtr &item, PathTuple &&, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
 
     /// processFile helper for reconciling local changes
-    void processFileAnalyzeLocalInfo(const SyncFileItemPtr &item, PathTuple, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &, QueryMode recurseQueryServer);
+    void processFileAnalyzeLocalInfo(const SyncFileItemPtr &item, PathTuple &&, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &, QueryMode recurseQueryServer);
 
     /// processFile helper for local/remote conflicts
-    void processFileConflict(const SyncFileItemPtr &item, PathTuple, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
+    void processFileConflict(const SyncFileItemPtr &item, PathTuple &&, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
 
     /// processFile helper for common final processing
-    void processFileFinalize(const SyncFileItemPtr &item, PathTuple, bool recurse, QueryMode recurseQueryLocal, QueryMode recurseQueryServer);
+    void processFileFinalize(const SyncFileItemPtr &item, PathTuple &&, bool recurse, QueryMode recurseQueryLocal, QueryMode recurseQueryServer);
 
 
     /** Checks the permission for this item, if needed, change the item to a restoration item.

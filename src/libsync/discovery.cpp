@@ -292,7 +292,7 @@ bool ProcessDirectoryJob::handleExcluded(const QString &path, const QString &loc
     return true;
 }
 
-void ProcessDirectoryJob::processFile(PathTuple path,
+void ProcessDirectoryJob::processFile(PathTuple &&path,
     const LocalInfo &localEntry, const RemoteInfo &serverEntry,
     const SyncJournalFileRecord &dbEntry)
 {
@@ -343,7 +343,7 @@ void ProcessDirectoryJob::processFile(PathTuple path,
     }
 
     if (serverEntry.isValid()) {
-        processFileAnalyzeRemoteInfo(item, path, localEntry, serverEntry, dbEntry);
+        processFileAnalyzeRemoteInfo(item, std::move(path), localEntry, serverEntry, dbEntry);
         return;
     }
 
@@ -362,7 +362,7 @@ void ProcessDirectoryJob::processFile(PathTuple path,
         item->_type = ItemTypeVirtualFileDownload;
     }
 
-    processFileAnalyzeLocalInfo(item, path, localEntry, serverEntry, dbEntry, _queryServer);
+    processFileAnalyzeLocalInfo(item, std::move(path), localEntry, serverEntry, dbEntry, _queryServer);
 }
 
 // Compute the checksum of the given file and assign the result in item->_checksumHeader
@@ -381,8 +381,7 @@ static bool computeLocalChecksum(const QByteArray &header, const QString &path, 
     return false;
 }
 
-void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
-    const SyncFileItemPtr &item, PathTuple path, const LocalInfo &localEntry,
+void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(const SyncFileItemPtr &item, PathTuple &&path, const LocalInfo &localEntry,
     const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry)
 {
     item->_checksumHeader = serverEntry.checksumHeader;
@@ -446,11 +445,11 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             item->_instruction = CSYNC_INSTRUCTION_UPDATE_METADATA;
             item->_direction = SyncFileItem::Down;
         } else {
-            processFileAnalyzeLocalInfo(item, path, localEntry, serverEntry, dbEntry, ParentNotChanged);
+            processFileAnalyzeLocalInfo(item, std::move(path), localEntry, serverEntry, dbEntry, ParentNotChanged);
             return;
         }
 
-        processFileAnalyzeLocalInfo(item, path, localEntry, serverEntry, dbEntry, _queryServer);
+        processFileAnalyzeLocalInfo(item, std::move(path), localEntry, serverEntry, dbEntry, _queryServer);
         return;
     }
 
@@ -463,14 +462,13 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
     item->_size = serverEntry.size;
 
     auto postProcessServerNew = [=] () {
-        auto tmp_path = path;
         if (item->isDirectory()) {
             _pendingAsyncJobs++;
-            _discoveryData->checkSelectiveSyncNewFolder(tmp_path._server, serverEntry.remotePerm,
+            _discoveryData->checkSelectiveSyncNewFolder(path._server, serverEntry.remotePerm,
                 [=](bool result) {
                     --_pendingAsyncJobs;
                     if (!result) {
-                        processFileAnalyzeLocalInfo(item, tmp_path, localEntry, serverEntry, dbEntry, _queryServer);
+                        processFileAnalyzeLocalInfo(item, PathTuple { path }, localEntry, serverEntry, dbEntry, _queryServer);
                     }
                     QTimer::singleShot(0, _discoveryData, &DiscoveryPhase::scheduleMoreJobs);
                 });
@@ -478,6 +476,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
         }
         // Turn new remote files into virtual files if the option is enabled.
         auto &opts = _discoveryData->_syncOptions;
+        auto tmp_path = path;
         if (!localEntry.isValid()
             && item->_type == ItemTypeFile
             && opts._vfs->mode() != Vfs::Off
@@ -487,7 +486,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
                 addVirtualFileSuffix(&tmp_path._original);
             }
         }
-        processFileAnalyzeLocalInfo(item, tmp_path, localEntry, serverEntry, dbEntry, _queryServer);
+        processFileAnalyzeLocalInfo(item, std::move(tmp_path), localEntry, serverEntry, dbEntry, _queryServer);
     };
 
     // Potential NEW/NEW conflict is handled in AnalyzeLocal
@@ -615,7 +614,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
                 _discoveryData->findAndCancelDeletedJob(originalPath);
 
                 postProcessRename(tmp_path);
-                processFileFinalize(item, tmp_path, item->isDirectory(), item->_instruction == CSYNC_INSTRUCTION_RENAME ? NormalQuery : ParentDontExist, _queryServer);
+                processFileFinalize(item, std::move(tmp_path), item->isDirectory(), item->_instruction == CSYNC_INSTRUCTION_RENAME ? NormalQuery : ParentDontExist, _queryServer);
             });
             job->start();
             done = true; // Ideally, if the origin still exist on the server, we should continue searching...  but that'd be difficult
@@ -634,11 +633,11 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
         postProcessServerNew();
         return;
     }
-    processFileAnalyzeLocalInfo(item, path, localEntry, serverEntry, dbEntry, _queryServer);
+    processFileAnalyzeLocalInfo(item, std::move(path), localEntry, serverEntry, dbEntry, _queryServer);
 }
 
 void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
-    const SyncFileItemPtr &item, PathTuple path, const LocalInfo &localEntry,
+    const SyncFileItemPtr &item, PathTuple &&path, const LocalInfo &localEntry,
     const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry, QueryMode recurseQueryServer)
 {
     bool noServerEntry = (_queryServer != ParentNotChanged && !serverEntry.isValid())
@@ -674,7 +673,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
             recurse = false;
 
         auto recurseQueryLocal = _queryLocal == ParentNotChanged ? ParentNotChanged : localEntry.isDirectory || item->_instruction == CSYNC_INSTRUCTION_RENAME ? NormalQuery : ParentDontExist;
-        processFileFinalize(item, path, recurse, recurseQueryLocal, recurseQueryServer);
+        processFileFinalize(item, std::move(path), recurse, recurseQueryLocal, recurseQueryServer);
     };
 
     if (!localEntry.isValid()) {
@@ -779,7 +778,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
             // not locally. These also become conflicts. For in-place placeholders that's
             // not necessary: they could be replaced by real files and should then trigger
             // a regular SYNC upwards when there's no server change.
-            processFileConflict(item, path, localEntry, serverEntry, dbEntry);
+            processFileConflict(item, std::move(path), localEntry, serverEntry, dbEntry);
         } else if (typeChange) {
             item->_instruction = CSYNC_INSTRUCTION_TYPE_CHANGE;
             item->_direction = SyncFileItem::Up;
@@ -827,7 +826,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
         finalize();
         return;
     } else if (serverModified) {
-        processFileConflict(item, path, localEntry, serverEntry, dbEntry);
+        processFileConflict(item, std::move(path), localEntry, serverEntry, dbEntry);
         finalize();
         return;
     }
@@ -1008,7 +1007,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
                 processRename(tmp_path);
                 tmp_recurseQueryServer = etag->toUtf8() == base._etag ? ParentNotChanged : NormalQuery;
             }
-            processFileFinalize(item, tmp_path, item->isDirectory(), NormalQuery, tmp_recurseQueryServer);
+            processFileFinalize(item, std::move(tmp_path), item->isDirectory(), NormalQuery, tmp_recurseQueryServer);
             _pendingAsyncJobs--;
             QTimer::singleShot(0, _discoveryData, &DiscoveryPhase::scheduleMoreJobs);
         });
@@ -1019,7 +1018,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
     finalize();
 }
 
-void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, ProcessDirectoryJob::PathTuple path, const LocalInfo &localEntry, const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry)
+void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, PathTuple &&path, const LocalInfo &localEntry, const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry)
 {
     item->_previousSize = localEntry.size;
     item->_previousModtime = localEntry.modtime;
@@ -1090,8 +1089,7 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, Proce
     item->_direction = SyncFileItem::None;
 }
 
-void ProcessDirectoryJob::processFileFinalize(
-    const SyncFileItemPtr &item, PathTuple path, bool recurse,
+void ProcessDirectoryJob::processFileFinalize(const SyncFileItemPtr &item, PathTuple &&path, bool recurse,
     QueryMode recurseQueryLocal, QueryMode recurseQueryServer)
 {
     // Adjust target path for virtual-suffix files
