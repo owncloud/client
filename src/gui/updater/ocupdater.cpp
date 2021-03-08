@@ -258,9 +258,6 @@ void OCUpdater::slotVersionInfoArrived()
     }
 
     QString xml = QString::fromUtf8(reply->readAll());
-    //xml = QString::fromUtf8("<?xml version=\"1.0\"?>\n    <owncloudclient>\n      <version>2.7.6</version>\n      <versionstring>2.7.6 (build 3261)</versionstring>\n      <web></web>\n      <downloadurl></downloadurl>\n    </owncloudclient>\n    ");
-    //xml = QString::fromUtf8("<?xml version=\"1.0\"?>\n    <owncloudclient>\n      <version>3.0.0</version>\n      <versionstring>3.0.0 (build 3000)</versionstring>\n      <web></web>\n      <downloadurl></downloadurl>\n    </owncloudclient>\n    ");
-    xml = QString::fromUtf8("<?xml version=\"1.0\"?>\n    <owncloudclient>\n      <version>3.1.0.3100</version>\n      <versionstring>3.1.0 (build 3100)</versionstring>\n      <web></web>\n      <downloadurl></downloadurl>\n    </owncloudclient>\n    ");
 
     bool ok;
     _updateInfo = UpdateInfo::parseString(xml, &ok);
