@@ -25,6 +25,7 @@
 #include <QtNetwork>
 #include <QtGui>
 #include <QtWidgets>
+#include <QDateTime>
 
 #include <stdio.h>
 
@@ -34,6 +35,7 @@ static const char updateAvailableC[] = "Updater/updateAvailable";
 static const char updateTargetVersionC[] = "Updater/updateTargetVersion";
 static const char updateTargetVersionStringC[] = "Updater/updateTargetVersionString";
 static const char seenVersionC[] = "Updater/seenVersion";
+static const char seenVersionDateC[] = "Updater/seenVersionDate";
 static const char autoUpdateAttemptedC[] = "Updater/autoUpdateAttempted";
 
 
@@ -256,6 +258,9 @@ void OCUpdater::slotVersionInfoArrived()
     }
 
     QString xml = QString::fromUtf8(reply->readAll());
+    //xml = QString::fromUtf8("<?xml version=\"1.0\"?>\n    <owncloudclient>\n      <version>2.7.6</version>\n      <versionstring>2.7.6 (build 3261)</versionstring>\n      <web></web>\n      <downloadurl></downloadurl>\n    </owncloudclient>\n    ");
+    //xml = QString::fromUtf8("<?xml version=\"1.0\"?>\n    <owncloudclient>\n      <version>3.0.0</version>\n      <versionstring>3.0.0 (build 3000)</versionstring>\n      <web></web>\n      <downloadurl></downloadurl>\n    </owncloudclient>\n    ");
+    xml = QString::fromUtf8("<?xml version=\"1.0\"?>\n    <owncloudclient>\n      <version>3.1.0.3100</version>\n      <versionstring>3.1.0 (build 3100)</versionstring>\n      <web></web>\n      <downloadurl></downloadurl>\n    </owncloudclient>\n    ");
 
     bool ok;
     _updateInfo = UpdateInfo::parseString(xml, &ok);
@@ -336,6 +341,16 @@ void NSISUpdater::versionInfoArrived(const UpdateInfo &info)
     qint64 infoVersion = Helper::stringVersionToInt(info.version());
     auto seenString = settings.value(seenVersionC).toString();
     qint64 seenVersion = Helper::stringVersionToInt(seenString);
+    auto seenVersionDateString = settings.value(seenVersionDateC).toString();
+    QDateTime seenVersionDate(QDateTime::fromString(seenVersionDateString,Qt::ISODate));
+    //remove seenVersion if
+    //  - seenVersionDate was manipulated, or
+    //  - seendVersion was seen more than a week ago
+    QDateTime utc(QDateTime::currentDateTimeUtc());
+    if (seenVersionDate > utc
+        || seenVersionDate.addDays(7) < utc) {
+        seenVersion=0;
+    }
     qint64 currVersion = Helper::currentVersionToInt();
     qCInfo(lcUpdater) << "Version info arrived:"
             << "Your version:" << currVersion
@@ -408,7 +423,7 @@ void NSISUpdater::showNoUrlDialog(const UpdateInfo &info)
     hlayout->addWidget(lbl);
 
     QDialogButtonBox *bb = new QDialogButtonBox;
-    QPushButton *skip = bb->addButton(tr("Skip this version"), QDialogButtonBox::ResetRole);
+    QPushButton *skip = bb->addButton(tr("Don't ask again for one week"), QDialogButtonBox::ResetRole);
     QPushButton *reject = bb->addButton(tr("Skip this time"), QDialogButtonBox::AcceptRole);
     QPushButton *getupdate = bb->addButton(tr("Get update"), QDialogButtonBox::AcceptRole);
 
@@ -459,7 +474,7 @@ void NSISUpdater::showUpdateErrorDialog(const QString &targetVersion)
     hlayout->addWidget(lbl);
 
     QDialogButtonBox *bb = new QDialogButtonBox;
-    QPushButton *skip = bb->addButton(tr("Skip this version"), QDialogButtonBox::ResetRole);
+    QPushButton *skip = bb->addButton(tr("Don't ask again for one week"), QDialogButtonBox::ResetRole);
     QPushButton *askagain = bb->addButton(tr("Ask again later"), QDialogButtonBox::ResetRole);
     QPushButton *retry = bb->addButton(tr("Restart and update"), QDialogButtonBox::AcceptRole);
     QPushButton *getupdate = bb->addButton(tr("Update manually"), QDialogButtonBox::AcceptRole);
@@ -469,8 +484,10 @@ void NSISUpdater::showUpdateErrorDialog(const QString &targetVersion)
     connect(retry, &QAbstractButton::clicked, msgBox, &QDialog::accept);
     connect(getupdate, &QAbstractButton::clicked, msgBox, &QDialog::accept);
 
+    //"skipping" is now asking again after 1 week
     connect(skip, &QAbstractButton::clicked, this, [this]() {
-        wipeUpdateData();
+        //wiping is temporarily removed until version skipping is properly fixed
+        //wipeUpdateData();
         slotSetSeenVersion();
     });
     // askagain: do nothing
@@ -523,6 +540,7 @@ void NSISUpdater::slotSetSeenVersion()
     ConfigFile cfg;
     QSettings settings(cfg.configFile(), QSettings::IniFormat);
     settings.setValue(seenVersionC, updateInfo().version());
+    settings.setValue(seenVersionDateC,QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
 }
 
 ////////////////////////////////////////////////////////////////////////
