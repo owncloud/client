@@ -23,6 +23,8 @@
 #include <QFile>
 #include "ownclouddolphinpluginhelper.h"
 #include "config.h"
+#include <QJsonObject>
+#include <QJsonDocument>
 
 OwncloudDolphinPluginHelper* OwncloudDolphinPluginHelper::instance()
 {
@@ -58,10 +60,20 @@ void OwncloudDolphinPluginHelper::sendCommand(const char* data)
     _socket.flush();
 }
 
+void OwncloudDolphinPluginHelper::sendGetClientIconCommand(int size)
+{
+    QByteArray line_end("\n");
+    QJsonObject args { { "size", size } };
+    QJsonObject obj { { QStringLiteral("id"), "1" }, { QStringLiteral("arguments"), args } };
+    std::string command = "V2/GET_CLIENT_ICON:" + QJsonDocument(obj).toJson(QJsonDocument::Compact).toStdString();
+    sendCommand(QByteArray(command.c_str() + line_end));
+}
+
 void OwncloudDolphinPluginHelper::slotConnected()
 {
     sendCommand("VERSION:\n");
     sendCommand("GET_STRINGS:\n");
+    sendCommand("V2/GET_CLIENT_ICON:\n");
 }
 
 void OwncloudDolphinPluginHelper::tryConnect()
@@ -69,7 +81,7 @@ void OwncloudDolphinPluginHelper::tryConnect()
     if (_socket.state() != QLocalSocket::UnconnectedState) {
         return;
     }
-    
+
     QString socketPath = QStandardPaths::locate(QStandardPaths::RuntimeLocation,
                                                 APPLICATION_SHORTNAME,
                                                 QStandardPaths::LocateDirectory);
@@ -112,7 +124,26 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
                 _socket.disconnectFromServer();
                 return;
             }
+        } else if (line.startsWith("V2/GET_CLIENT_ICON_RESULT:")) {
+            line.remove(0, QString("V2/GET_CLIENT_ICON_RESULT:").size());
+            QJsonParseError error;
+            auto json = QJsonDocument::fromJson(line, &error).object();
+            if (error.error != QJsonParseError::NoError)
+                continue;
+
+            auto jsonArgs = json.value("arguments").toObject();
+            if (jsonArgs.isEmpty())
+                continue;
+
+            QByteArray pngBase64 = jsonArgs.value("png").toString().toLatin1();
+            QByteArray png = QByteArray::fromBase64(pngBase64);
+
+            QPixmap pixmap;
+            bool isLoaded = pixmap.loadFromData(png, "PNG");
+            if (isLoaded)
+                _clientIcon = pixmap;
         }
+
         emit commandRecieved(line);
     }
 }
