@@ -175,11 +175,6 @@ We recommend that when setting the log file level that you set it to a verbose l
 
 You can view the server log file using the web interface or you can open it directly from the file system in the ownCloud server data directory.
 
-Need more information on this.
-How is the log file accessed? Need to explore procedural steps in access and in saving this file, similar to how the log file is managed for the client.
-Perhaps it is detailed in the Admin Guide and a link should be provided from here.
-I will look into that when I begin heavily editing the Admin Guide.
-
 === Webserver Log Files
 
 It can be helpful to view your webserver's error log file to isolate any ownCloud-related problems.
@@ -208,3 +203,18 @@ This command starts the client with core dumping enabled and saves the files in 
 ====
 Core dump files can be fairly large. Before enabling core dumps on your system, ensure that you have enough disk space to accommodate these files. Also, due to their size, we strongly recommend that you properly compress any core dump files prior to sending them to ownCloud Customer Support.
 ====
+
+== Disabling Autostart Feature
+
+If you 
+
+* disabled the **launch on system start** feature
+* disabled the autostart in the windows task manager
+
+and the client still starts on system boot, you might have to edit the registry. 
+
+Here is the location of the registry entry:
+
+----
+Computer\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+----
