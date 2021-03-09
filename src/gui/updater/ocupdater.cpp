@@ -338,12 +338,11 @@ void NSISUpdater::versionInfoArrived(const UpdateInfo &info)
     qint64 infoVersion = Helper::stringVersionToInt(info.version());
     auto seenString = settings.value(seenVersionC).toString();
     qint64 seenVersion = Helper::stringVersionToInt(seenString);
-    auto seenVersionDateString = settings.value(seenVersionDateC).toString();
-    QDateTime seenVersionDate(QDateTime::fromString(seenVersionDateString,Qt::ISODate));
+    const auto seenVersionDate = settings.value(seenVersionDateC).toDateTime();
     //remove seenVersion if
     //  - seenVersionDate was manipulated, or
     //  - seendVersion was seen more than a week ago
-    QDateTime utc(QDateTime::currentDateTimeUtc());
+    const QDateTime utc(QDateTime::currentDateTimeUtc());
     if (seenVersionDate > utc
         || seenVersionDate.addDays(7) < utc) {
         seenVersion=0;
@@ -483,8 +482,6 @@ void NSISUpdater::showUpdateErrorDialog(const QString &targetVersion)
 
     //"skipping" is now asking again after 1 week
     connect(skip, &QAbstractButton::clicked, this, [this]() {
-        //wiping is temporarily removed until version skipping is properly fixed
-        //wipeUpdateData();
         slotSetSeenVersion();
     });
     // askagain: do nothing
@@ -537,7 +534,7 @@ void NSISUpdater::slotSetSeenVersion()
     ConfigFile cfg;
     QSettings settings(cfg.configFile(), QSettings::IniFormat);
     settings.setValue(seenVersionC, updateInfo().version());
-    settings.setValue(seenVersionDateC,QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    settings.setValue(seenVersionDateC,QDateTime::currentDateTimeUtc());
 }
 
 ////////////////////////////////////////////////////////////////////////
