@@ -1,0 +1,5 @@
+Bugfix: Fix issue with initial size of share dialogs
+
+We fixed an issue where the initial size of share dialogs was not restored.
+
+https://github.com/owncloud/client/issues/8366

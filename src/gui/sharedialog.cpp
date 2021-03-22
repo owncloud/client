@@ -140,13 +140,24 @@ ShareDialog::ShareDialog(QPointer<AccountState> accountState,
     connect(job, &PropfindJob::finishedWithError, this, &ShareDialog::slotPropfindError);
     job->start();
 
-    auto size = ocApp()->gui()->settingsDialog()->minimumSizeHint();
-    resize(size.width() - 50, size.height() - 50);
+    ConfigFile cfg;
+    cfg.restoreGeometry(this);
 }
 
 ShareDialog::~ShareDialog()
 {
     delete _ui;
+}
+
+void ShareDialog::setVisible(bool v)
+{
+    if (v) {
+        const auto minSize = ocApp()->gui()->settingsDialog()->minimumSizeHint() - QSize { 50, 50 };
+        if (size().width() < minSize.width() || size().height() < minSize.height()) {
+            resize(minSize);
+        }
+    }
+    QDialog::setVisible(v);
 }
 
 void ShareDialog::done(int r)

@@ -246,10 +246,6 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     customizeStyle();
 
     cfg.restoreGeometry(this);
-    if (size().width() < minimumSizeHint().width() || size().height() < minimumSizeHint().height())
-    {
-        resize(minimumSizeHint());
-    }
 
 #ifdef Q_OS_MAC
     setActivationPolicy(ActivationPolicy::Accessory);
@@ -293,6 +289,11 @@ void SettingsDialog::setVisible(bool visible)
     {
         ConfigFile cfg;
         cfg.saveGeometry(this);
+    } else {
+        // ensure min size
+        if (size().width() < minimumSizeHint().width() || size().height() < minimumSizeHint().height()) {
+            resize(minimumSizeHint());
+        }
     }
 
 #ifdef Q_OS_MAC
