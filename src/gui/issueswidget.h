@@ -56,7 +56,6 @@ public slots:
     void slotOpenFile(QTreeWidgetItem *item, int);
 
 protected:
-    void showEvent(QShowEvent *) override;
     void hideEvent(QHideEvent *) override;
 
 signals:

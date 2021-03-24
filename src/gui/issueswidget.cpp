@@ -125,15 +125,7 @@ IssuesWidget::IssuesWidget(QWidget *parent)
     _ui->_conflictHelp->setText(
         tr("There were conflicts. <a href=\"%1\">Check the documentation on how to resolve them.</a>")
             .arg(Theme::instance()->conflictHelpUrl()));
-}
 
-IssuesWidget::~IssuesWidget()
-{
-    delete _ui;
-}
-
-void IssuesWidget::showEvent(QShowEvent *ev)
-{
     ConfigFile cfg;
     cfg.restoreGeometryHeader(_ui->_treeWidget->header());
 
@@ -145,8 +137,11 @@ void IssuesWidget::showEvent(QShowEvent *ev)
 
     // Switch back to "first important, then by time" ordering
     _ui->_treeWidget->sortByColumn(0, Qt::DescendingOrder);
+}
 
-    QWidget::showEvent(ev);
+IssuesWidget::~IssuesWidget()
+{
+    delete _ui;
 }
 
 void IssuesWidget::hideEvent(QHideEvent *ev)

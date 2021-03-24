@@ -214,15 +214,7 @@ ProtocolWidget::ProtocolWidget(QWidget *parent)
     copyBtn->setToolTip(tr("Copy the activity list to the clipboard."));
     copyBtn->setEnabled(true);
     connect(copyBtn, &QAbstractButton::clicked, this, &ProtocolWidget::copyToClipboard);
-}
 
-ProtocolWidget::~ProtocolWidget()
-{
-    delete _ui;
-}
-
-void ProtocolWidget::showEvent(QShowEvent *ev)
-{
     ConfigFile cfg;
     cfg.restoreGeometryHeader(_ui->_treeWidget->header());
 
@@ -234,8 +226,11 @@ void ProtocolWidget::showEvent(QShowEvent *ev)
 
     // Switch back to "by time" ordering
     _ui->_treeWidget->sortByColumn(0, Qt::DescendingOrder);
+}
 
-    QWidget::showEvent(ev);
+ProtocolWidget::~ProtocolWidget()
+{
+    delete _ui;
 }
 
 void ProtocolWidget::hideEvent(QHideEvent *ev)

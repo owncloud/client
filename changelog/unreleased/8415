@@ -1,0 +1,6 @@
+Bugfix: Fix issue with sorting of tables
+
+We fixed a bug where sorting on the sync protocol and the not synced tables
+was reset every time they where displayed.
+
+https://github.com/owncloud/client/issues/8415
