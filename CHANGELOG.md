@@ -11,6 +11,7 @@ Summary
 * Bugfix - Fix issues with long path: [#4405](https://github.com/owncloud/enterprise/issues/4405)
 * Bugfix - Moves in folder sync connections where executed as a delete and upload: [#7838](https://github.com/owncloud/client/issues/7838)
 * Bugfix - Fix brandings with space in the name: [#8482](https://github.com/owncloud/client/pull/8482)
+* Bugfix - We fixed an issue with the promptDeleteAllFiles setting: [#8484](https://github.com/owncloud/client/issues/8484)
 
 Details
 -------
@@ -37,6 +38,12 @@ Details
    We fix a build system issue with brandings containing spaces.
 
    https://github.com/owncloud/client/pull/8482
+
+* Bugfix - We fixed an issue with the promptDeleteAllFiles setting: [#8484](https://github.com/owncloud/client/issues/8484)
+
+   When promptDeleteAllFiles=false is set the client will now correctly delete all files.
+
+   https://github.com/owncloud/client/issues/8484
 
 Changelog for ownCloud Desktop Client [2.7.6] (2021-02-04)
 =======================================
