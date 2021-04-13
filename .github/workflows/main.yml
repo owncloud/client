@@ -12,6 +12,7 @@ jobs:
     name: Build ownCloud
     runs-on: ${{ matrix.os }}
     strategy:
+        fail-fast: false
         matrix:
             include:
             - target: windows-msvc2017_32-cl
