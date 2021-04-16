@@ -93,5 +93,5 @@ Feature: Sharing
         When the user opens the public links dialog of "%client_sync_path%/simple-folder" using the client-UI
         And the user edits the public link named "Public link" of file "simple-folder" changing following
             | expireDate | 2038-07-21 |
-        Then the fields of the last public link share response of user "Alice" should include on the server
+        Then the fields of the last public link share response of user "Alice" on the server should include
             | expireDate | 2038-07-21 |
