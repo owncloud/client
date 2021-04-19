@@ -95,3 +95,20 @@ Feature: Sharing
             | expireDate | 2038-07-21 |
         Then the fields of the last public link share response of user "Alice" on the server should include
             | expireDate | 2038-07-21 |
+
+
+	Scenario Outline: simple sharing of folder by public link with different roles
+	    Given user "Alice" has been created on the server with default attributes
+        And user "Alice" has set up a client with default settings and password "1234"
+        When the user creates a new public link for folder "%client_sync_path%/simple-folder" using the client-UI with these details:
+	      	| role | <role> |
+	    Then user "Alice" on the server should have a share with these details:
+		 	| field       | value          |
+		  	| share_type  | public_link    |
+		  	| uid_owner   | Alice          |
+		  	| permissions | <permissions>  |
+		 	| path        | /simple-folder |
+		 	| name        | Public link    |
+	    Examples:
+            | role        | permissions                  |
+            | Viewer      | read                         |
