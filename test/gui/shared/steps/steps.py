@@ -522,9 +522,11 @@ def step(context, resource, role):
         radioObjectName = names.oCC_ShareLinkWidget_radio_readOnly_QRadioButton
     elif role == 'Editor':
         radioObjectName = names.oCC_ShareLinkWidget_radio_readWrite_QRadioButton
+    elif role == 'Contributor':
+        radioObjectName = names.oCC_ShareLinkWidget_radio_uploadOnly_QRadioButton
     else:
-        radioObjectName = names.oCC_ShareLinkWidget_radio_uploadOnly_QRadioButton   
-
+        raise Exception("No such role found for resource")
+           
     openPublicLinkDialog(context, resource)
     clickButton(waitForObject(radioObjectName))
     clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))       
