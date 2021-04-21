@@ -512,18 +512,18 @@ def step(context, permissions, resource, password):
     waitFor(lambda: (findObject(names.linkShares_0_0_QModelIndex).displayText == "Public link"))
 
 
-@When('the user creates a new public link for folder "|any|" using the client-UI with these details:')
-def step(context, resource):
+@When('the user creates a new public link for folder "|any|" with "|any|" using the client-UI')
+def step(context, resource, role):
     resource = sanitizePath(substituteInLineCodes(context, resource))
     radioObjectName = ''
-    for row in context.table:
-        if row[0] == 'role':
-            if row[1] == 'Viewer':
-                radioObjectName = names.oCC_ShareLinkWidget_radio_readOnly_QRadioButton
-            elif row[1] == 'Editor':
-                radioObjectName = names.oCC_ShareLinkWidget_radio_readWrite_QRadioButton
-            else:
-                radioObjectName = names.oCC_ShareLinkWidget_radio_uploadOnly_QRadioButton   
+    
+
+    if role == 'Viewer':
+        radioObjectName = names.oCC_ShareLinkWidget_radio_readOnly_QRadioButton
+    elif role == 'Editor':
+        radioObjectName = names.oCC_ShareLinkWidget_radio_readWrite_QRadioButton
+    else:
+        radioObjectName = names.oCC_ShareLinkWidget_radio_uploadOnly_QRadioButton   
 
     openPublicLinkDialog(context, resource)
     clickButton(waitForObject(radioObjectName))

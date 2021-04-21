@@ -97,18 +97,34 @@ Feature: Sharing
             | expireDate | 2038-07-21 |
 
 
-	Scenario Outline: simple sharing of folder by public link with different roles
-	    Given user "Alice" has been created on the server with default attributes
+    Scenario Outline: simple sharing of folder by public link with different roles
+        Given user "Alice" has been created on the server with default attributes
         And user "Alice" has set up a client with default settings and password "1234"
-        When the user creates a new public link for folder "%client_sync_path%/simple-folder" using the client-UI with these details:
-	      	| role | <role> |
-	    Then user "Alice" on the server should have a share with these details:
-		 	| field       | value          |
-		  	| share_type  | public_link    |
-		  	| uid_owner   | Alice          |
-		  	| permissions | <permissions>  |
-		 	| path        | /simple-folder |
-		 	| name        | Public link    |
-	    Examples:
+        When the user creates a new public link for folder "%client_sync_path%/simple-folder" with "<role>" using the client-UI
+        Then user "Alice" on the server should have a share with these details:
+            | field       | value          |
+            | share_type  | public_link    |
+            | uid_owner   | Alice          |
+            | permissions | <permissions>  |
+            | path        | /simple-folder |
+            | name        | Public link    |
+        Examples:
             | role        | permissions                  |
             | Viewer      | read                         |
+            | Editor      | read, update, create, delete |
+            | Contributor | create                       |
+
+
+    Scenario: sharing by public link with "Uploader" role
+        Given user "Alice" has been created on the server with default attributes
+        And user "Alice" on the server has created file "simple-folder/lorem.txt"
+        And user "Alice" has set up a client with default settings and password "1234"
+        When the user creates a new public link for folder "%client_sync_path%/simple-folder" with "Uploader" using the client-UI
+        Then user "Alice" on the server should have a share with these details:
+            | field       | value          |
+            | share_type  | public_link    |
+            | uid_owner   | Alice          |
+            | permissions | create         |
+            | path        | /simple-folder |
+            | name        | Public link    |
+        And the public should not be able to download the file "lorem.txt" from the last created public link by "Alice" on the server
