@@ -154,6 +154,11 @@ bool Application::configVersionMigration()
     return true;
 }
 
+QString Application::displayLanguage() const
+{
+    return _displayLanguage;
+}
+
 ownCloudGui *Application::gui() const
 {
     return _gui;
@@ -717,7 +722,7 @@ void Application::setupTranslations()
     QTranslator *qtTranslator = new QTranslator(this);
     QTranslator *qtkeychainTranslator = new QTranslator(this);
 
-    foreach (QString lang, uiLanguages) {
+    for (QString lang : qAsConst(uiLanguages)) {
         lang.replace(QLatin1Char('-'), QLatin1Char('_')); // work around QTBUG-25973
         lang = substLang(lang);
         const QString trPath = Translations::applicationTrPath();
@@ -729,7 +734,7 @@ void Application::setupTranslations()
             // "en" is an exception as it is the default language and may not
             // have a translation file provided.
             qCInfo(lcApplication) << "Using" << lang << "translation";
-            setProperty("ui_lang", lang);
+            _displayLanguage = lang;
             const QString qtTrPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
             const QString qtTrFile = QLatin1String("qt_") + lang;
             const QString qtBaseTrFile = QLatin1String("qtbase_") + lang;
@@ -756,8 +761,6 @@ void Application::setupTranslations()
 
             break;
         }
-        if (property("ui_lang").isNull())
-            setProperty("ui_lang", "C");
     }
 }
 
