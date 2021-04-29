@@ -515,31 +515,10 @@ def step(context, permissions, resource, password):
     waitFor(lambda: (findObject(names.linkShares_0_0_QModelIndex).displayText == "Public link"))
 
 
-@When('the user creates a new public link for folder "|any|" using the client-UI with these details:')
-def step(context, resource):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
-    radioObjectName = ''
-    for row in context.table:
-        if row[0] == 'role':
-            if row[1] == 'Viewer':
-                radioObjectName = names.oCC_ShareLinkWidget_radio_readOnly_QRadioButton
-            elif row[1] == 'Editor':
-                radioObjectName = names.oCC_ShareLinkWidget_radio_readWrite_QRadioButton
-            elif role[1] == 'Contributor':
-                radioObjectName = names.oCC_ShareLinkWidget_radio_uploadOnly_QRadioButton
-            else:
-                raise Exception("No such role found for resource") 
-
-    openPublicLinkDialog(context, resource)
-    clickButton(waitForObject(radioObjectName))
-    clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))  
-    
-@When('the user creates a new public link for folder "|any|" with "|any|" using the client-UI')
-def step(context, resource, role):
+def createPublicShare(context, resource, role):
     resource = sanitizePath(substituteInLineCodes(context, resource))
     radioObjectName = ''
     
-
     if role == 'Viewer':
         radioObjectName = names.oCC_ShareLinkWidget_radio_readOnly_QRadioButton
     elif role == 'Editor':
@@ -548,8 +527,20 @@ def step(context, resource, role):
         radioObjectName = names.oCC_ShareLinkWidget_radio_uploadOnly_QRadioButton
     else:
         raise Exception("No such role found for resource")
-           
+
     openPublicLinkDialog(context, resource)
     clickButton(waitForObject(radioObjectName))
-    clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))       
+    clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))  
+    
+@When('the user creates a new public link for folder "|any|" using the client-UI with these details:')
+def step(context, resource):
+    for row in context.table:
+        if row[0] == 'role':       
+            createPublicShare(context, resource, row[1])
+    
+    
+@When('the user creates a new public link for folder "|any|" with "|any|" using the client-UI')
+def step(context, resource, role):
+    createPublicShare(context, resource, role)
+    
 
