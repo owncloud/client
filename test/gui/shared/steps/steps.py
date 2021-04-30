@@ -534,9 +534,16 @@ def createPublicShare(context, resource, role):
     
 @When('the user creates a new public link for folder "|any|" using the client-UI with these details:')
 def step(context, resource):
+    role = ''
     for row in context.table:
-        if row[0] == 'role':       
-            createPublicShare(context, resource, row[1])
+        if row[0] == 'role':
+            role=row[1]
+            break
+
+    if role == '':
+        raise Exception("No role has been found")
+    else:
+        createPublicShare(context, resource, role)
     
     
 @When('the user creates a new public link for folder "|any|" with "|any|" using the client-UI')
