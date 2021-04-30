@@ -91,6 +91,7 @@ oCC_ShareLinkWidget_checkBox_password_QCheckBox = {"container": qt_tabwidget_sta
 oCC_ShareLinkWidget_widget_editing_QWidget = {"container": qt_tabwidget_stackedwidget_OCC_ShareLinkWidget_OCC_ShareLinkWidget, "name": "widget_editing", "type": "QWidget", "visible": 1}
 oCC_ShareLinkWidget_checkBox_password_QProgressIndicator = {"aboveWidget": oCC_ShareLinkWidget_widget_editing_QWidget, "container": qt_tabwidget_stackedwidget_OCC_ShareLinkWidget_OCC_ShareLinkWidget, "leftWidget": oCC_ShareLinkWidget_checkBox_password_QCheckBox, "type": "QProgressIndicator", "unnamed": 1, "visible": 1}
 sharingDialog_The_file_can_not_be_shared_because_it_was_shared_without_sharing_permission_QLabel = {"text": "The file can not be shared because it was shared without sharing permission.", "type": "QLabel", "unnamed": 1, "visible": 1, "window": sharingDialog_OCC_ShareDialog}
+sharingDialog_error = {"name": "errorLabel", "type": "QLabel", "visible": 1}
 sharingDialog_label_name_QLabel = {"name": "label_name", "type": "QLabel", "visible": 1, "window": sharingDialog_OCC_ShareDialog}
 oCC_ShareLinkWidget_createShareButton_QPushButton = {"container": qt_tabwidget_stackedwidget_OCC_ShareLinkWidget_OCC_ShareLinkWidget, "name": "createShareButton", "type": "QPushButton", "visible": 1}
 oCC_ShareLinkWidget_linkShares_QTableWidget = {"container": qt_tabwidget_stackedwidget_OCC_ShareLinkWidget_OCC_ShareLinkWidget, "name": "linkShares", "type": "QTableWidget", "visible": 1}

@@ -174,3 +174,10 @@ FakesAssemblies/
 # squish test
 test/suite_oc-desktop/config.ini
 */**/__pycache__/
+
+.idea/
+
+#test config
+test/gui/config.ini
+
+/CMakeFiles/

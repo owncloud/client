@@ -133,3 +133,16 @@ Feature: Sharing
             | path        | /simple-folder |
             | name        | Public link    |
         And the public should not be able to download the file "lorem.txt" from the last created public link by "Alice" on the server
+
+	@issue-7498
+    Scenario: User (non-author) can not remove permission from a group to which the file is already shared
+        Given group "grp1" has been created on the server
+        And user "Brian" has been created on the server with default attributes and without skeleton files
+        And user "Brian" on the server has been added to group "grp1"
+        And user "Alice" has uploaded on the server file with content "ownCloud test text file 0" to "/textfile0.txt"
+        And user "Alice" has shared file "/textfile0.txt" on the server with user "Brian" with "read, share" permission
+        And user "Alice" has shared file "/textfile0.txt" on the server with group "grp1" with "read,share,update" permission
+        And user "Brian" has set up a client with default settings and polling interval "5000"
+        When the user removes permission "edit" from the group "grp1" of resource "%client_sync_path%/textfile0.txt" using the client-UI
+        Then the error "Path already shared with this group" should be displayed
+

@@ -272,6 +272,13 @@ def step(context, stepPart1, stepPart2):
         "Given " + stepPart1 + " " + stepPart2
     )
 
+@Given(r"^(.*) on the server$", regexp=True)
+def step(context, stepPart1):
+    executeStepThroughMiddleware(
+        context,
+        "Given " + stepPart1
+    )
+
 @Then(r"^(.*) on the server (.*)$", regexp=True)
 def step(context, stepPart1, stepPart2):
     executeStepThroughMiddleware(
@@ -530,22 +537,34 @@ def createPublicShare(context, resource, role):
     clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))
     waitFor(lambda: (findObject(names.linkShares_0_0_QModelIndex).displayText == "Public link"))
 
-@When('the user creates a new public link for folder "|any|" using the client-UI with these details:')
-def step(context, resource):
-    role = ''
-    for row in context.table:
-        if row[0] == 'role':
-            role=row[1]
-            break
+@When('the user creates a new public link for folder "|any|" using the client-UI with these details:')    
+def step(context, resource):    
+    role = ''    
+    for row in context.table:    
+        if row[0] == 'role':    
+            role=row[1]    
+            break    
 
-    if role == '':
-        raise Exception("No role has been found")
-    else:
-        createPublicShare(context, resource, role)
-
-
-@When('the user creates a new public link for folder "|any|" with "|any|" using the client-UI')
-def step(context, resource, role):
-    createPublicShare(context, resource, role)
+    if role == '':    
+        raise Exception("No role has been found")    
+    else:    
+        createPublicShare(context, resource, role)    
 
 
+@When('the user creates a new public link for folder "|any|" with "|any|" using the client-UI')    
+def step(context, resource, role):    
+    createPublicShare(context, resource, role)    
+
+
+@When('the user removes permission "|any|" from the group "|any|" of resource "|any|" using the client-UI')
+def step(context, permissions, group, resource):
+    resource = substituteInLineCodes(context, resource)
+    waitFor(lambda: isFileSynced(resource), context.userData['clientSyncTimeout'] * 1000)
+    waitFor(lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000)
+    mouseClick(waitForObject(names.sharingDialogUG_shareeLineEdit_QLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
+    type(waitForObject(names.sharingDialogUG_shareeLineEdit_QLineEdit), "grp1")
+    mouseClick(waitForObjectItem(names.o_QListView, "grp1 (group)"), 0, 0, Qt.NoModifier, Qt.LeftButton)
+    
+@Then('the error "|any|" should be displayed')
+def step(context, errorMessage):
+    test.compare(str(waitForObjectExists(names.sharingDialog_error).text), errorMessage)
