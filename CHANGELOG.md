@@ -1,30 +1,374 @@
-Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+Changelog for ownCloud Desktop Client [2.8.0] (2021-05-06)
 =======================================
-The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+The following sections list the changes in ownCloud Desktop Client 2.8.0 relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v2.6.3...master
+[2.8.0]: https://github.com/owncloud/client/compare/v2.7.6...v2.8.0
 
 Summary
 -------
 
+* Bugfix - Fix issues with long path: [#4405](https://github.com/owncloud/enterprise/issues/4405)
+* Bugfix - Moves in folder sync connections where executed as a delete and upload: [#7838](https://github.com/owncloud/client/issues/7838)
+* Bugfix - Fix brandings with space in the name: [#8482](https://github.com/owncloud/client/pull/8482)
+* Bugfix - We fixed an issue with the promptDeleteAllFiles setting: [#8484](https://github.com/owncloud/client/issues/8484)
+* Enhancement - Added branding option to enforce VFS: [#4144](https://github.com/owncloud/enterprise/issues/4144)
+* Enhancement - Add initial support for backups triggered by an external tool: [#8437](https://github.com/owncloud/client/pull/8437)
+* Enhancement - Add an icon to the Windows system tray notification: [#8539](https://github.com/owncloud/client/pull/8539)
+* Enhancement - Encode the log file as UTF-8: [#8550](https://github.com/owncloud/client/pull/8550)
+
+Details
+-------
+
+* Bugfix - Fix issues with long path: [#4405](https://github.com/owncloud/enterprise/issues/4405)
+
+   We fixed an issue introduced in dd641fae997d71c8396b77def2fa25ad96fdf47f with some
+   functions and files paths > 260 characters.
+
+   https://github.com/owncloud/enterprise/issues/4405
+
+* Bugfix - Moves in folder sync connections where executed as a delete and upload: [#7838](https://github.com/owncloud/client/issues/7838)
+
+   We fixed a bug where moves in folder sync connections where executed as a delete and upload.
+
+   https://github.com/owncloud/client/issues/7838
+   https://github.com/owncloud/enterprise/issues/4428
+   https://github.com/owncloud/client/pull/8453
+   https://github.com/owncloud/client/pull/8456
+   https://github.com/owncloud/client/pull/8459
+
+* Bugfix - Fix brandings with space in the name: [#8482](https://github.com/owncloud/client/pull/8482)
+
+   We fix a build system issue with brandings containing spaces.
+
+   https://github.com/owncloud/client/pull/8482
+
+* Bugfix - We fixed an issue with the promptDeleteAllFiles setting: [#8484](https://github.com/owncloud/client/issues/8484)
+
+   When promptDeleteAllFiles=false is set the client will now correctly delete all files.
+
+   https://github.com/owncloud/client/issues/8484
+
+* Enhancement - Added branding option to enforce VFS: [#4144](https://github.com/owncloud/enterprise/issues/4144)
+
+   We added a branding option that enforces the use of Virtual Files on Windows.
+
+   https://github.com/owncloud/enterprise/issues/4144
+   https://github.com/owncloud/client/pull/8179/
+
+* Enhancement - Add initial support for backups triggered by an external tool: [#8437](https://github.com/owncloud/client/pull/8437)
+
+   We added a socket api function which allows creation of backups.
+
+   https://github.com/owncloud/client/pull/8437
+   https://github.com/owncloud/client/pull/8535
+   https://github.com/owncloud/client/pull/8536
+   https://github.com/owncloud/client/pull/8539
+
+* Enhancement - Add an icon to the Windows system tray notification: [#8539](https://github.com/owncloud/client/pull/8539)
+
+   We now display a branded icon in the system tray notification.
+
+   https://github.com/owncloud/client/pull/8539
+
+* Enhancement - Encode the log file as UTF-8: [#8550](https://github.com/owncloud/client/pull/8550)
+
+   We fixed an issue where the log file might not have been encoded as UTF-8 and thus scrambled file
+   names.
+
+   https://github.com/owncloud/client/pull/8550
+
+Changelog for ownCloud Desktop Client [2.7.6] (2021-02-04)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.6 relevant to
+ownCloud admins and users.
+
+[2.7.6]: https://github.com/owncloud/client/compare/v2.7.5...v2.7.6
+
+Summary
+-------
+
+* Bugfix - Fix missing sidebar icons on Mac with branded builds: [#4387](https://github.com/owncloud/enterprise/issues/4387)
+* Bugfix - Case sensitive comparison of checksum algorithm: [#8371](https://github.com/owncloud/client/pull/8371)
+
+Details
+-------
+
+* Bugfix - Fix missing sidebar icons on Mac with branded builds: [#4387](https://github.com/owncloud/enterprise/issues/4387)
+
+   We fixed an issue where branded client where lacking the sidebar icons.
+
+   https://github.com/owncloud/enterprise/issues/4387
+
+* Bugfix - Case sensitive comparison of checksum algorithm: [#8371](https://github.com/owncloud/client/pull/8371)
+
+   We fixed a bug where the checksum detection was case sensitive and used a different casing than
+   the server.
+
+   https://github.com/owncloud/client/pull/8371
+   https://github.com/owncloud/client/pull/8376
+
+Changelog for ownCloud Desktop Client [2.7.5] (2021-01-28)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.5 relevant to
+ownCloud admins and users.
+
+[2.7.5]: https://github.com/owncloud/client/compare/v2.7.4...v2.7.5
+
+Summary
+-------
+
+* Bugfix - Support dark theme with branded client and vanilla icons: [#4363](https://github.com/owncloud/enterprise/issues/4363)
+* Bugfix - Mac tray icon is scaled wrong: [#8149](https://github.com/owncloud/client/issues/8149)
+* Bugfix - Fix potential crashes with the remove all dialog: [#8314](https://github.com/owncloud/client/pull/8314)
+* Bugfix - Detect file name clash with VirtualFiles enabled: [#8323](https://github.com/owncloud/client/issues/8323)
+* Bugfix - Remove stray placeholders: [#8326](https://github.com/owncloud/client/issues/8326)
+* Bugfix - Fix wrong option provided to OIDC: [#8390](https://github.com/owncloud/client/issues/8390)
+* Change - Third party upgrades in distributed binaries: [#8349](https://github.com/owncloud/client/issues/8349)
+
+Details
+-------
+
+* Bugfix - Support dark theme with branded client and vanilla icons: [#4363](https://github.com/owncloud/enterprise/issues/4363)
+
+   We fixed a bug where the dark vanilla icons where used with a branded client.
+
+   https://github.com/owncloud/enterprise/issues/4363
+
+* Bugfix - Mac tray icon is scaled wrong: [#8149](https://github.com/owncloud/client/issues/8149)
+
+   We backported a change to Qt 5.12.10 which fixed the scaling of the system tray icon on Big Sur.
+
+   https://github.com/owncloud/client/issues/8149
+
+* Bugfix - Fix potential crashes with the remove all dialog: [#8314](https://github.com/owncloud/client/pull/8314)
+
+   We fixed a bug a dialog window belonging to a removed account could still be visible. User action
+   on that dialog would then cause a crash.
+
+   https://github.com/owncloud/client/pull/8314
+
+* Bugfix - Detect file name clash with VirtualFiles enabled: [#8323](https://github.com/owncloud/client/issues/8323)
+
+   We fixed an issue where the file name clash detection was not run with VirtualFiles enabled.
+
+   https://github.com/owncloud/client/issues/8323
+
+* Bugfix - Remove stray placeholders: [#8326](https://github.com/owncloud/client/issues/8326)
+
+   We fixed a bug where Windows Virtual Files where not handled as such and thus not removed.
+
+   https://github.com/owncloud/client/issues/8326
+
+* Bugfix - Fix wrong option provided to OIDC: [#8390](https://github.com/owncloud/client/issues/8390)
+
+   We fixed a bug where we passed a wrong value to the OIDC display parameter
+
+   https://github.com/owncloud/client/issues/8390
+
+* Change - Third party upgrades in distributed binaries: [#8349](https://github.com/owncloud/client/issues/8349)
+
+   We updated Qt from 5.12.9 to 5.12.10. We updated OpenSSL from 1.1.1g to 1.1.1i. Linux
+   dependencies: QtKeychain was updated from 0.10.0 to 0.12.0
+
+   https://github.com/owncloud/client/issues/8349
+
+Changelog for ownCloud Desktop Client [2.7.4] (2020-12-21)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.4 relevant to
+ownCloud admins and users.
+
+[2.7.4]: https://github.com/owncloud/client/compare/v2.7.3...v2.7.4
+
+Summary
+-------
+
+* Bugfix - Fix crash when a download is cancelled: [#4329](https://github.com/owncloud/enterprise/issues/4329)
+* Bugfix - Update Windows launch on start entry: [#7672](https://github.com/owncloud/client/issues/7672)
+* Bugfix - Log the final http request: [#8289](https://github.com/owncloud/client/pull/8289)
+* Bugfix - Properly display parent Window when displaying a dialog: [#8313](https://github.com/owncloud/client/issues/8313)
+
+Details
+-------
+
+* Bugfix - Fix crash when a download is cancelled: [#4329](https://github.com/owncloud/enterprise/issues/4329)
+
+   We fixed a crash, on Windows, when a user cancelled a download of a VirtualFile using the Windows
+   explorer.
+
+   https://github.com/owncloud/enterprise/issues/4329
+
+* Bugfix - Update Windows launch on start entry: [#7672](https://github.com/owncloud/client/issues/7672)
+
+   We fixed a bug where launch on start did not work after a re install to a new location.
+
+   https://github.com/owncloud/client/issues/7672
+
+* Bugfix - Log the final http request: [#8289](https://github.com/owncloud/client/pull/8289)
+
+   We fixed a bug where the http log did not include all headers of a request.
+
+   https://github.com/owncloud/client/pull/8289
+
+* Bugfix - Properly display parent Window when displaying a dialog: [#8313](https://github.com/owncloud/client/issues/8313)
+
+   We fixed a bug where a dialog was shown before the main window was show.
+
+   https://github.com/owncloud/client/issues/8313
+
+Changelog for ownCloud Desktop Client [2.7.3] (2020-12-11)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.3 relevant to
+ownCloud admins and users.
+
+[2.7.3]: https://github.com/owncloud/client/compare/v2.7.2...v2.7.3
+
+Summary
+-------
+
+* Bugfix - Fix handling of errors with the Windows Cloud Filter API: [#8294](https://github.com/owncloud/client/issues/8294)
+
+Details
+-------
+
+* Bugfix - Fix handling of errors with the Windows Cloud Filter API: [#8294](https://github.com/owncloud/client/issues/8294)
+
+   We fixed a bug where errors during the creation of placeholder files where not correctly
+   handled. The missing files where than falsely detected as deleted and thus removed from the
+   server.
+
+   https://github.com/owncloud/client/issues/8294
+
+Changelog for ownCloud Desktop Client [2.7.2] (2020-12-02)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.2 relevant to
+ownCloud admins and users.
+
+[2.7.2]: https://github.com/owncloud/client/compare/v2.7.1...v2.7.2
+
+Summary
+-------
+
+* Bugfix - Correctly detect Windows 10 taskbar theme: [#8244](https://github.com/owncloud/client/issues/8244)
+* Bugfix - Sync small plaintext files with Windows VFS: [#8248](https://github.com/owncloud/client/issues/8248)
+* Bugfix - Update "Sync hidden files" button: [#8258](https://github.com/owncloud/client/issues/8258)
+* Bugfix - Pause sync when displaying remove all dialog: [#8263](https://github.com/owncloud/client/issues/8263)
+
+Details
+-------
+
+* Bugfix - Correctly detect Windows 10 taskbar theme: [#8244](https://github.com/owncloud/client/issues/8244)
+
+   We fixed the detection of a dark system try theme on Windows.
+
+   https://github.com/owncloud/client/issues/8244
+
+* Bugfix - Sync small plaintext files with Windows VFS: [#8248](https://github.com/owncloud/client/issues/8248)
+
+   We fixed a bug where small plaintext files where not synced due to a broken interity check.
+
+   https://github.com/owncloud/client/issues/8248
+
+* Bugfix - Update "Sync hidden files" button: [#8258](https://github.com/owncloud/client/issues/8258)
+
+   We fixed a bug that prevented the "Sync hidden files" from displaying the correct value.
+
+   https://github.com/owncloud/client/issues/8258
+
+* Bugfix - Pause sync when displaying remove all dialog: [#8263](https://github.com/owncloud/client/issues/8263)
+
+   We now pause the syn process when the all files where removed dialog is displayed. This prevents
+   multiple dialogs from being displayed.
+
+   https://github.com/owncloud/client/issues/8263
+
+Changelog for ownCloud Desktop Client [2.7.1] (2020-11-18)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.1 relevant to
+ownCloud admins and users.
+
+[2.7.1]: https://github.com/owncloud/client/compare/v2.7.0...v2.7.1
+
+Summary
+-------
+
+* Bugfix - Fix client forgetting VirtualFiles mode: [#8229](https://github.com/owncloud/client/pull/8229)
+* Bugfix - Don't follow redirects on .well-known/openid-configuration: [#8232](https://github.com/owncloud/client/pull/8232)
+
+Details
+-------
+
+* Bugfix - Fix client forgetting VirtualFiles mode: [#8229](https://github.com/owncloud/client/pull/8229)
+
+   We fixed a migration issue where 2.5 based settings where the client was forgetting the
+   VirtualFiles settings.
+
+   https://github.com/owncloud/client/pull/8229
+
+* Bugfix - Don't follow redirects on .well-known/openid-configuration: [#8232](https://github.com/owncloud/client/pull/8232)
+
+   We fixed a bug where the client followed redirects for .well-known/openid-configuration.
+
+   https://github.com/owncloud/openidconnect/issues/20
+   https://github.com/owncloud/client/pull/8232
+
+Changelog for ownCloud Desktop Client [2.7.0] (2020-11-13)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.7.0 relevant to
+ownCloud admins and users.
+
+[2.7.0]: https://github.com/owncloud/client/compare/v2.6.3...v2.7.0
+
+Summary
+-------
+
+* Bugfix - Legacy config migration reverted files to online only: [#7779](https://github.com/owncloud/client/issues/7779)
 * Bugfix - Some check boxes in the sharing dialog are disabled: [#7877](https://github.com/owncloud/client/issues/7877)
+* Bugfix - Selective sync dialog is displayed when virtual files are enabled: [#7976](https://github.com/owncloud/client/issues/7976)
+* Bugfix - Fix support of adler32 checksums with Windows virtual files support: [#7999](https://github.com/owncloud/client/issues/7999)
+* Bugfix - Use the correct style for the folder wizard: [#8027](https://github.com/owncloud/client/pull/8027)
+* Bugfix - Use the same HDPI for the crash reporter as for the client: [#8042](https://github.com/owncloud/client/issues/8042)
+* Bugfix - The back button on the advanced wizard page no longer gets enabled: [#8051](https://github.com/owncloud/client/issues/8051)
+* Bugfix - Ensure permissions for newly added files are available: [#8066](https://github.com/owncloud/client/issues/8066)
+* Bugfix - Remove notifications when the account they belong to was removed: [#8085](https://github.com/owncloud/client/issues/8085)
+* Bugfix - Check whether the local folder supports the virtual file system: [#8131](https://github.com/owncloud/client/issues/8131)
+* Bugfix - "All Files removed" dialog no longer blocks the application: [#8170](https://github.com/owncloud/client/issues/8170)
+* Bugfix - We fixed the permissions check for local folders on NTFS: [#8187](https://github.com/owncloud/client/issues/8187)
 * Change - Don't hardcode a plugin location: [#3839](https://github.com/owncloud/enterprise/issues/3839)
+* Change - Detect the Windows 10 theme for the system tray: [#7356](https://github.com/owncloud/client/issues/7356)
+* Change - When manually adding a folder sync connection, don't display 404 errors: [#7724](https://github.com/owncloud/client/issues/7724)
 * Change - Enabling native VFS on Windows create two shortcuts in the Explorer: [#7748](https://github.com/owncloud/client/issues/7748)
+* Change - Redesign the About dialog: [#7749](https://github.com/owncloud/client/issues/7749)
 * Change - The password dialog is hidden behind a window: [#7833](https://github.com/owncloud/client/issues/7833)
 * Change - The client uploads chunks even though the server repports lack of support: [#7862](https://github.com/owncloud/client/issues/7862)
 * Change - Mac does not display a dock entry: [#7868](https://github.com/owncloud/client/issues/7868)
 * Change - Option to log HTTP requests and responses: [#7873](https://github.com/owncloud/client/issues/7873)
+* Change - Add button for `Log Settings` to advanced settings: [#7881](https://github.com/owncloud/client/issues/7881)
 * Change - The layout of serveral ui elements is broken: [#7920](https://github.com/owncloud/client/issues/7920)
 * Change - The client hides the window during the authentication process: [#7922](https://github.com/owncloud/client/pull/7922)
 * Change - The settings ui shows a prompt for a few seconds: [#7925](https://github.com/owncloud/client/pull/7925)
 * Change - Reorgenize Settings: [#7962](https://github.com/owncloud/client/pull/7962)
+* Change - Use the checksum type specified by the server by default: [#7989](https://github.com/owncloud/client/pull/7989)
+* Change - Move "Choose what to sync" to sync everything settings: [#8018](https://github.com/owncloud/client/pull/8018)
+* Change - Enable Windows Virtual files by default: [#8019](https://github.com/owncloud/client/pull/8019)
+* Change - Move sync hidden files to advanced settings: [#8020](https://github.com/owncloud/client/issues/8020)
+* Change - Replace the old icons with a unified look: [#8038](https://github.com/owncloud/client/pull/8038)
+* Change - Sharing dialog is now always on top of the settings dialog: [#8050](https://github.com/owncloud/client/pull/8050)
+* Change - Remove the branding option `wizardSelectiveSyncDefaultNothing`: [#8064](https://github.com/owncloud/client/pull/8064)
+* Change - Account display name `servername (username)` to `username@servername`: [#8104](https://github.com/owncloud/client/issues/8104)
+* Change - Remove update channels from the ownCloud client: [#8127](https://github.com/owncloud/client/issues/8127)
+* Change - Display the users avatar in the activity list: [#8169](https://github.com/owncloud/client/issues/8169)
 * Change - Support for OpenID Connect: [#7509](https://github.com/owncloud/client/pull/7509)
-* Change - Allow OpenID Connect authentication without a .well-known configuration: [#7681](https://github.com/owncloud/client/pull/7681)
 * Change - Add support for the TUS resumeable upload protocol: [#19](https://github.com/owncloud/product/issues/19)
 
 Details
 -------
+
+* Bugfix - Legacy config migration reverted files to online only: [#7779](https://github.com/owncloud/client/issues/7779)
+
+   We fixed a legacy config migration which reverted all files to online only on every start.
+
+   https://github.com/owncloud/client/issues/7779
 
 * Bugfix - Some check boxes in the sharing dialog are disabled: [#7877](https://github.com/owncloud/client/issues/7877)
 
@@ -33,6 +377,73 @@ Details
 
    https://github.com/owncloud/client/issues/7877
 
+* Bugfix - Selective sync dialog is displayed when virtual files are enabled: [#7976](https://github.com/owncloud/client/issues/7976)
+
+   We hide that dialog now so that it is no longer possible to remove files from synchronisation
+   when virtual files are enabled.
+
+   https://github.com/owncloud/client/issues/7976
+
+* Bugfix - Fix support of adler32 checksums with Windows virtual files support: [#7999](https://github.com/owncloud/client/issues/7999)
+
+   The validation device reported a size of 0 and thus the computations of the checksums was
+   aborted.
+
+   https://github.com/owncloud/client/issues/7999
+   https://github.com/owncloud/client/pull/8015
+
+* Bugfix - Use the correct style for the folder wizard: [#8027](https://github.com/owncloud/client/pull/8027)
+
+   We now use the same style for the wizard on all platforms
+
+   https://github.com/owncloud/client/pull/8027
+
+* Bugfix - Use the same HDPI for the crash reporter as for the client: [#8042](https://github.com/owncloud/client/issues/8042)
+
+   We fixed the behaviour of the crash reporter on HDPI screens.
+
+   https://github.com/owncloud/client/issues/8042
+
+* Bugfix - The back button on the advanced wizard page no longer gets enabled: [#8051](https://github.com/owncloud/client/issues/8051)
+
+   We fixed a bug where the back button in the advanced wizard page get re enabled.
+
+   https://github.com/owncloud/client/issues/8051
+
+* Bugfix - Ensure permissions for newly added files are available: [#8066](https://github.com/owncloud/client/issues/8066)
+
+   We fixed a bug where newly added files had no server permissions set. Under certain conditions
+   that was leading to an undefined behaviour.
+
+   https://github.com/owncloud/client/issues/8066
+   https://github.com/owncloud/client/issues/7967
+
+* Bugfix - Remove notifications when the account they belong to was removed: [#8085](https://github.com/owncloud/client/issues/8085)
+
+   We fixed a bug where notifications where still displayed after an account was removed.
+
+   https://github.com/owncloud/client/issues/8085
+
+* Bugfix - Check whether the local folder supports the virtual file system: [#8131](https://github.com/owncloud/client/issues/8131)
+
+   The Windows virtual file system requires NTFS, we now ensure that the folder is using NTFS
+   before we continue.
+
+   https://github.com/owncloud/client/issues/8131
+
+* Bugfix - "All Files removed" dialog no longer blocks the application: [#8170](https://github.com/owncloud/client/issues/8170)
+
+   We fixed a bug where a dialog locked the whole application
+
+   https://github.com/owncloud/client/issues/8170
+
+* Bugfix - We fixed the permissions check for local folders on NTFS: [#8187](https://github.com/owncloud/client/issues/8187)
+
+   We fixed a bug where the check whether the local folder is writeable returned a wrong result.
+   This could cause a crash with the virtual file system plugin.
+
+   https://github.com/owncloud/client/issues/8187
+
 * Change - Don't hardcode a plugin location: [#3839](https://github.com/owncloud/enterprise/issues/3839)
 
    We no longer hardcode a plugin location only available on the build system. If a setup uses a non
@@ -40,11 +451,33 @@ Details
 
    https://github.com/owncloud/enterprise/issues/3839
 
+* Change - Detect the Windows 10 theme for the system tray: [#7356](https://github.com/owncloud/client/issues/7356)
+
+   We now display the system tray icon according to the current theme
+
+   https://github.com/owncloud/client/issues/7356
+
+* Change - When manually adding a folder sync connection, don't display 404 errors: [#7724](https://github.com/owncloud/client/issues/7724)
+
+   We no longer display 404 errors when exploring the folders. A user might not have access to the
+   full file tree on the server.
+
+   https://github.com/owncloud/client/issues/7724
+
 * Change - Enabling native VFS on Windows create two shortcuts in the Explorer: [#7748](https://github.com/owncloud/client/issues/7748)
 
    We now remove legacy shortcuts when we enable VFS
 
    https://github.com/owncloud/client/issues/7748
+
+* Change - Redesign the About dialog: [#7749](https://github.com/owncloud/client/issues/7749)
+
+   We redesigned the way the About information is displayed and unified it with the "--version"
+   switch.
+
+   https://github.com/owncloud/client/issues/7749
+   https://github.com/owncloud/enterprise/issues/3787
+   https://github.com/owncloud/client/issues/7704
 
 * Change - The password dialog is hidden behind a window: [#7833](https://github.com/owncloud/client/issues/7833)
 
@@ -69,6 +502,12 @@ Details
    We now allow to log http requests and responses
 
    https://github.com/owncloud/client/issues/7873
+
+* Change - Add button for `Log Settings` to advanced settings: [#7881](https://github.com/owncloud/client/issues/7881)
+
+   We added an easy way, besides pressing F12, to access the log settings.
+
+   https://github.com/owncloud/client/issues/7881
 
 * Change - The layout of serveral ui elements is broken: [#7920](https://github.com/owncloud/client/issues/7920)
 
@@ -96,6 +535,76 @@ Details
 
    https://github.com/owncloud/client/pull/7962
 
+* Change - Use the checksum type specified by the server by default: [#7989](https://github.com/owncloud/client/pull/7989)
+
+   The default type for computation of the checksum was sha1 independent of the type specified by
+   the server. Under certain conditions that caused multiple computations of the checksum.
+
+   https://github.com/owncloud/client/pull/7989
+
+* Change - Move "Choose what to sync" to sync everything settings: [#8018](https://github.com/owncloud/client/pull/8018)
+
+   While selective sync is a feature only available when everything is synced, the the option had
+   its own radio button. We now moved the button to the other sync everything related settings.
+
+   https://github.com/owncloud/client/pull/8018
+
+* Change - Enable Windows Virtual files by default: [#8019](https://github.com/owncloud/client/pull/8019)
+
+   We now enable the Windows Virtual file support by default.
+
+   https://github.com/owncloud/client/issues/8139
+   https://github.com/owncloud/client/pull/8019
+
+* Change - Move sync hidden files to advanced settings: [#8020](https://github.com/owncloud/client/issues/8020)
+
+   We moved the option to sync hidden files from the "Edit ignored Files" dialog into the advanced
+   settings.
+
+   https://github.com/owncloud/client/issues/8020
+
+* Change - Replace the old icons with a unified look: [#8038](https://github.com/owncloud/client/pull/8038)
+
+   We replaced the different styles and colors of the icons with a new unified look.
+
+   https://github.com/owncloud/client/pull/8038
+
+* Change - Sharing dialog is now always on top of the settings dialog: [#8050](https://github.com/owncloud/client/pull/8050)
+
+   The sharing dialog is now a sub dialog, so it will be easier to continue sharing a folder.
+
+   https://github.com/owncloud/client/pull/8050
+
+* Change - Remove the branding option `wizardSelectiveSyncDefaultNothing`: [#8064](https://github.com/owncloud/client/pull/8064)
+
+   The branding option was removed as believe that it did not provide a good user experience. We
+   recommend `newBigFolderSizeLimit` together with `wizardHideFolderSizeLimitCheckbox`
+   as a replacement.
+
+   https://github.com/owncloud/client/pull/8064
+
+* Change - Account display name `servername (username)` to `username@servername`: [#8104](https://github.com/owncloud/client/issues/8104)
+
+   We changed the way the accounts are displayed to improve the syntactical value.
+
+   https://github.com/owncloud/client/issues/8104
+
+* Change - Remove update channels from the ownCloud client: [#8127](https://github.com/owncloud/client/issues/8127)
+
+   To ensure a maximum of stability user should not replace their productive client with a preview
+   build. For that exact reason we offer tespilotcloud clients, they can be installed in parallel
+   and updated via the beta channel.
+
+   If a user is more adventures than the average a manual install of a preview is always possible.
+
+   https://github.com/owncloud/client/issues/8127
+
+* Change - Display the users avatar in the activity list: [#8169](https://github.com/owncloud/client/issues/8169)
+
+   We now display the users avatar if available in the activity log table.
+
+   https://github.com/owncloud/client/issues/8169
+
 * Change - Support for OpenID Connect: [#7509](https://github.com/owncloud/client/pull/7509)
 
    The ownCloud desktop client now supports OpenID Connect. OpenID Connect 1.0 is a simple
@@ -114,14 +623,6 @@ Details
    OpenID Connect.
 
    https://github.com/owncloud/client/pull/7509
-
-* Change - Allow OpenID Connect authentication without a .well-known configuration: [#7681](https://github.com/owncloud/client/pull/7681)
-
-   A user might not want to provide .well-known/openid-configuration. The new changes enable us
-   to authenticate with OpenID Connect without it, by directly compiling the required urls into
-   the client.
-
-   https://github.com/owncloud/client/pull/7681
 
 * Change - Add support for the TUS resumeable upload protocol: [#19](https://github.com/owncloud/product/issues/19)
 
