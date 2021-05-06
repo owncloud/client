@@ -10,6 +10,9 @@ import json
 import datetime
 
 from objectmaphelper import RegularExpression
+from pageObjects.AccountConnectionWizard import AccountConnectionWizard
+from helpers.SetupClientHelper import SetupClientHelper
+
 
 # the script needs to use the system wide python
 # to switch from the built-in interpreter see https://kb.froglogic.com/squish/howto/using-external-python-interpreter-squish-6-6/
@@ -58,12 +61,14 @@ def hook(context):
 
 @When('the user adds the first account with')
 def step(context):
-    addAccount(context)
+    newAccount = AccountConnectionWizard()
+    newAccount.addAccount(context)
 
 @Then('an account should be displayed with the displayname |any| and host |any|')
 def step(context, displayname, host):
-    displayname = substituteInLineCodes(context, displayname)
-    host = substituteInLineCodes(context, host)
+    setupClientHelper = SetupClientHelper()
+    displayname = setupClientHelper.substituteInLineCodes(context, displayname)
+    host = setupClientHelper.substituteInLineCodes(context, host)
     test.compare(
         str(
             waitForObjectExists(
@@ -149,37 +154,9 @@ def step(context):
 def step(context):
     clickButton(waitForObject(names.settings_settingsdialog_toolbutton_Add_account_QToolButton))
 
-    addAccount(context)
-
-def addAccount(context):
-    for row in context.table[0:]:
-        row[1] = substituteInLineCodes(context, row[1])
-        if row[0] == 'server':
-            server = row[1]
-        elif row[0] == 'user':
-            user = row[1]
-        elif row[0] == 'password':
-            password = row[1]
-        elif row[0] == 'localfolder':
-            localfolder = row[1]
-    try:
-        os.makedirs(localfolder, 0o0755)
-    except:
-        pass
-
-    mouseClick(waitForObject(names.leUrl_OCC_PostfixLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
-    type(waitForObject(names.leUrl_OCC_PostfixLineEdit), server)
-    clickButton(waitForObject(names.owncloudWizard_qt_passive_wizardbutton1_QPushButton))
-    mouseClick(waitForObject(names.leUrl_OCC_PostfixLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
-    type(waitForObject(names.leUsername_QLineEdit), user)
-    type(waitForObject(names.leUsername_QLineEdit), "<Tab>")
-    type(waitForObject(names.lePassword_QLineEdit), password)
-    clickButton(waitForObject(names.owncloudWizard_qt_passive_wizardbutton1_QPushButton))
-    clickButton(waitForObject(names.pbSelectLocalFolder_QPushButton))
-    mouseClick(waitForObject(names.fileNameEdit_QLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
-    type(waitForObject(names.fileNameEdit_QLineEdit), localfolder)
-    clickButton(waitForObject(names.qFileDialog_Choose_QPushButton))
-    clickButton(waitForObject(names.owncloudWizard_qt_passive_wizardbutton1_QPushButton))
+    newAccount = AccountConnectionWizard()
+    newAccount.addAccount(context)
+    
 
 def isItemSynced(type, itemName):
     if type != 'FILE' and type != 'FOLDER':
@@ -206,14 +183,6 @@ def waitForFileToBeSynced(context, fileName):
         lambda: isFileSynced(context.userData['clientSyncPath'] + fileName),
         context.userData['clientSyncTimeout'] * 1000
     )
-
-def substituteInLineCodes(context, value):
-    from urllib.parse import urlparse
-    value = value.replace('%local_server%', context.userData['localBackendUrl'])
-    value = value.replace('%client_sync_path%', context.userData['clientSyncPath'])
-    value = value.replace('%local_server_hostname%', urlparse(context.userData['localBackendUrl']).netloc)
-
-    return value
 
 def sanitizePath(path):
     return path.replace('//','/')
@@ -251,7 +220,8 @@ def executeStepThroughMiddleware(context, step):
 
 @When('the user adds "|any|" as collaborator of resource "|any|" with permissions "|any|" using the client-UI')
 def step(context, receiver, resource, permissions):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     waitFor(lambda: isFileSynced(resource), context.userData['clientSyncTimeout'] * 1000)
     waitFor(lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000)
 
@@ -271,7 +241,8 @@ def step(context, receiver, resource, permissions):
 
 @Then('user "|any|" should be listed in the collaborators list for file "|any|" with permissions "|any|" on the client-UI')
 def step(context, receiver, resource, permissions):
-    resource = substituteInLineCodes(context, resource)
+    setupClientHelper = SetupClientHelper()
+    resource = setupClientHelper.substituteInLineCodes(context, resource)
     socketConnect = syncstate.SocketConnect()
     socketConnect.sendCommand("SHARE:" + resource + "\n")
     permissionsList = permissions.split(',')
@@ -424,7 +395,8 @@ def step(context):
 
 
 def openPublicLinkDialog(context, resource):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     waitFor(lambda: isFileSynced(resource), context.userData['clientSyncTimeout'] * 1000)
     waitFor(lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000)
     mouseClick(waitForObject(names.qt_tabwidget_tabbar_Public_Links_TabItem), 0, 0, Qt.NoModifier, Qt.LeftButton)
@@ -453,7 +425,8 @@ def step(context):
 
 @When('user "|any|" opens the sharing dialog of "|any|" using the client-UI')
 def step(context, receiver, resource):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     waitFor(lambda: isFolderSynced(resource), context.userData['clientSyncTimeout'] * 1000)
     waitFor(lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000)
 
@@ -465,7 +438,8 @@ def step(context, fileShareContext):
 
 @When('the user creates a new public link for file "|any|" without password using the client-UI')
 def step(context, resource):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     openPublicLinkDialog(context, resource)
     test.compare(str(waitForObjectExists(names.sharingDialog_label_name_QLabel).text), resource.replace(context.userData['clientSyncPath'], ''))
     clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))
@@ -474,7 +448,8 @@ def step(context, resource):
 
 @When('the user creates a new public link for file "|any|" with password "|any|" using the client-UI')
 def step(context, resource, password):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     openPublicLinkDialog(context, resource)
     test.compare(str(waitForObjectExists(names.sharingDialog_label_name_QLabel).text), resource.replace(context.userData['clientSyncPath'], ''))
     clickButton(waitForObject(names.oCC_ShareLinkWidget_checkBox_password_QCheckBox))
@@ -512,7 +487,8 @@ def step(context, publicLinkName, resource):
 
 @When('the user creates a new public link with permissions "|any|" for folder "|any|" without password using the client-UI')
 def step(context, permissions, resource):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     openPublicLinkDialog(context, resource)
     radioObjectName = ''
     if permissions == 'Download / View':
@@ -530,7 +506,8 @@ def step(context, permissions, resource):
 
 @When('the user creates a new public link with permissions "|any|" for folder "|any|" with password "|any|" using the client-UI')
 def step(context, permissions, resource, password):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     openPublicLinkDialog(context, resource)
     clickButton(waitForObject(names.oCC_ShareLinkWidget_checkBox_password_QCheckBox))
     mouseClick(waitForObject(names.oCC_ShareLinkWidget_lineEdit_password_QLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
@@ -540,7 +517,8 @@ def step(context, permissions, resource, password):
 
 
 def createPublicShare(context, resource, role):
-    resource = sanitizePath(substituteInLineCodes(context, resource))
+    setupClientHelper = SetupClientHelper()
+    resource = sanitizePath(setupClientHelper.substituteInLineCodes(context, resource))
     radioObjectName = ''
 
     if role == 'Viewer':
