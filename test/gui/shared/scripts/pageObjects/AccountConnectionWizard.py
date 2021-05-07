@@ -1,6 +1,6 @@
 import names
 import squish
-from helpers.SetupClientHelper import SetupClientHelper
+from helpers.SetupClientHelper import substituteInLineCodes
 
 
 class AccountConnectionWizard():
@@ -17,11 +17,9 @@ class AccountConnectionWizard():
     def __init__(self):
         pass
 
-    def addAccount(self, context):
-        setupClientHelper = SetupClientHelper()
-        
+    def addAccount(self, context):    
         for row in context.table[0:]:
-            row[1] = setupClientHelper.substituteInLineCodes(context, row[1])
+            row[1] = substituteInLineCodes(context, row[1])
             if row[0] == 'server':
                 server = row[1]
             elif row[0] == 'user':
