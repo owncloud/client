@@ -1,6 +1,6 @@
 import names
 import squish
-from helpers.SetupClientHelper import substituteInLineCodes
+from helpers.SetupClientHelper import getClientDetails
 
 
 class AccountConnectionWizard():
@@ -12,26 +12,13 @@ class AccountConnectionWizard():
     DIRECTORY_NAME_BOX = names.fileNameEdit_QLineEdit
     CHOOSE_BUTTON = names.qFileDialog_Choose_QPushButton
     CONNECT_BUTTON = names.owncloudWizard_qt_passive_wizardbutton1_QPushButton
-    
+
 
     def __init__(self):
         pass
 
-    def addAccount(self, context):    
-        for row in context.table[0:]:
-            row[1] = substituteInLineCodes(context, row[1])
-            if row[0] == 'server':
-                server = row[1]
-            elif row[0] == 'user':
-                user = row[1]
-            elif row[0] == 'password':
-                password = row[1]
-            elif row[0] == 'localfolder':
-                localfolder = row[1]
-            try:
-                os.makedirs(localfolder, 0o0755)
-            except:
-                pass
+    def addAccount(self, context):  
+        server, user, password, localfolder =  getClientDetails(context)
         
         squish.mouseClick(squish.waitForObject(self.SERVER_ADDRESS_BOX))
         squish.type(squish.waitForObject(self.SERVER_ADDRESS_BOX), server)
