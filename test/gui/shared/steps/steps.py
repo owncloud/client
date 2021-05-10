@@ -407,7 +407,6 @@ def step(context, filename):
             "type": "QModelIndex"
     })
     
-# {"column": 1, "container": oCC_IssuesWidget_tableView_QTableView, "row": 0, "type": "QModelIndex"}
 
 @When('the user selects the unsynced files tab')
 def step(context):
