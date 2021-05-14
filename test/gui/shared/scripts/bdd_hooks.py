@@ -17,6 +17,7 @@
 # manual for a complete reference of the available API.
 import shutil
 import urllib.request
+import os
 
 @OnScenarioStart
 def hook(context):
@@ -52,7 +53,7 @@ def hook(context):
         context.userData['clientConfigFile']='-'
         
     req = urllib.request.Request(
-        context.userData['middlewareUrl'] + 'init',
+        os.path.join(context.userData['middlewareUrl'], 'init'),
         headers={"Content-Type": "application/json"}, method='POST'
     )
     try:
