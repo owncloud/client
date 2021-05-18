@@ -219,7 +219,7 @@ def executeStepThroughMiddleware(context, step):
 
 @When('the user adds "|any|" as collaborator of resource "|any|" with permissions "|any|" using the client-UI')
 def step(context, receiver, resource, permissions):
-    openSharingDialog(context, resource, '')
+    openSharingDialog(context, resource)
 
     mouseClick(waitForObject(names.sharingDialogUG_shareeLineEdit_QLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
     type(waitForObject(names.sharingDialogUG_shareeLineEdit_QLineEdit), receiver)
@@ -401,13 +401,13 @@ def openSharingDialog(context, resource, itemType='file'):
             
     waitFor(lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000)
     
-def openPublicLinkDialog(context, resource, fileType):
-    openSharingDialog(context, resource, fileType)
+def openPublicLinkDialog(context, resource, itemType='file'):
+    openSharingDialog(context, resource, itemType)
     mouseClick(waitForObject(names.qt_tabwidget_tabbar_Public_Links_TabItem), 0, 0, Qt.NoModifier, Qt.LeftButton)
 
 @When('the user opens the public links dialog of "|any|" using the client-UI')
 def step(context, resource):
-    openPublicLinkDialog(context,resource,'')
+    openPublicLinkDialog(context,resource)
 
 
 @When("the user toggles the password protection using the client-UI")
@@ -429,7 +429,7 @@ def step(context):
 
 @When('user "|any|" opens the sharing dialog of "|any|" using the client-UI')
 def step(context, receiver, resource):
-    openSharingDialog(context, resource, fileType='folder')
+    openSharingDialog(context, resource, 'folder')
 
 @Then('the error text "|any|" should be displayed in the sharing dialog')
 def step(context, fileShareContext):
@@ -439,7 +439,7 @@ def step(context, fileShareContext):
 @When('the user creates a new public link for file "|any|" without password using the client-UI')
 def step(context, resource):
     resource = sanitizePath(substituteInLineCodes(context, resource))
-    openPublicLinkDialog(context, resource, '')
+    openPublicLinkDialog(context, resource)
     test.compare(str(waitForObjectExists(names.sharingDialog_label_name_QLabel).text), resource.replace(context.userData['clientSyncPath'], ''))
     clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))
     waitFor(lambda: (waitForObject(names.linkShares_0_0_QModelIndex).displayText == "Public link"))
@@ -448,7 +448,7 @@ def step(context, resource):
 @When('the user creates a new public link for file "|any|" with password "|any|" using the client-UI')
 def step(context, resource, password):
     resource = sanitizePath(substituteInLineCodes(context, resource))
-    openPublicLinkDialog(context, resource, '')
+    openPublicLinkDialog(context, resource)
     test.compare(str(waitForObjectExists(names.sharingDialog_label_name_QLabel).text), resource.replace(context.userData['clientSyncPath'], ''))
     clickButton(waitForObject(names.oCC_ShareLinkWidget_checkBox_password_QCheckBox))
     mouseClick(waitForObject(names.oCC_ShareLinkWidget_lineEdit_password_QLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
@@ -486,7 +486,7 @@ def step(context, publicLinkName, resource):
 @When('the user creates a new public link with permissions "|any|" for folder "|any|" without password using the client-UI')
 def step(context, permissions, resource):
     resource = sanitizePath(substituteInLineCodes(context, resource))
-    openPublicLinkDialog(context, resource,'')
+    openPublicLinkDialog(context, resource)
     radioObjectName = ''
     if permissions == 'Download / View':
         radioObjectName = names.oCC_ShareLinkWidget_radio_readOnly_QRadioButton
@@ -504,7 +504,7 @@ def step(context, permissions, resource):
 @When('the user creates a new public link with permissions "|any|" for folder "|any|" with password "|any|" using the client-UI')
 def step(context, permissions, resource, password):
     resource = sanitizePath(substituteInLineCodes(context, resource))
-    openPublicLinkDialog(context, resource,'')
+    openPublicLinkDialog(context, resource)
     clickButton(waitForObject(names.oCC_ShareLinkWidget_checkBox_password_QCheckBox))
     mouseClick(waitForObject(names.oCC_ShareLinkWidget_lineEdit_password_QLineEdit), 0, 0, Qt.NoModifier, Qt.LeftButton)
     type(waitForObject(names.oCC_ShareLinkWidget_lineEdit_password_QLineEdit), password)
@@ -525,7 +525,7 @@ def createPublicShare(context, resource, role):
     else:
         raise Exception("No such role found for resource")
 
-    openPublicLinkDialog(context, resource,'')
+    openPublicLinkDialog(context, resource)
     clickButton(waitForObject(radioObjectName))
     clickButton(waitForObject(names.oCC_ShareLinkWidget_createShareButton_QPushButton))
     waitFor(lambda: (findObject(names.linkShares_0_0_QModelIndex).displayText == "Public link"))
