@@ -389,13 +389,15 @@ def step(context):
     clickTab(waitForObject(names.stack_QTabWidget), "Not Synced")
 
 
-def openSharingDialog(context, resource, fileType='file'):
+def openSharingDialog(context, resource, itemType='file'):
     resource = sanitizePath(substituteInLineCodes(context, resource))
     
-    if fileType == 'folder':
+    if itemType == 'folder':
         waitFor(lambda: isFolderSynced(resource), context.userData['clientSyncTimeout'] * 1000)
-    else:
+    elif itemType == 'file':
         waitFor(lambda: isFileSynced(resource), context.userData['clientSyncTimeout'] * 1000)
+    else:
+        raise Exception("No such item type for resource")    
             
     waitFor(lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000)
     
