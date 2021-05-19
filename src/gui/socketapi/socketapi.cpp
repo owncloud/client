@@ -863,14 +863,12 @@ void SocketApi::command_V2_UPLOAD_FILES_FROM(const QSharedPointer<SocketApiJobV2
 
 void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> &job) const
 {
-    const QString cmd = "V2/GET_CLIENT_ICON";
-
     OC_ASSERT(job);
     const auto &arguments = job->arguments();
 
     auto size = arguments.value("size");
     if (size.isUndefined()) {
-        qCWarning(lcSocketApi) << "Icon size not given in " + cmd;
+        qCWarning(lcSocketApi) << "Icon size not given in " << Q_FUNC_INFO;
         job->failure(QStringLiteral("cannot get client icon"));
         return;
     }
@@ -878,24 +876,24 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
     Theme *theme = Theme::instance();
     OC_ASSERT(theme);
     QIcon appIcon = theme->applicationIcon();
-    qCInfo(lcSocketApi) << cmd << " got icon from theme: " << appIcon;
+    qCInfo(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
 
     // convert to pixmap (might be smaller if size is not available)
-    QPixmap pixmap = appIcon.pixmap(QSize(size.toInt(), size.toInt()));
+    const QPixmap pixmap = appIcon.pixmap(QSize(size.toInt(), size.toInt()));
 
     // Convert pixmap to in-memory PNG
     QByteArray png;
     QBuffer pngBuffer(&png);
     auto success = pngBuffer.open(QIODevice::WriteOnly);
     if (!success) {
-        qCWarning(lcSocketApi) << "Error opening buffer for png in " + cmd;
+        qCWarning(lcSocketApi) << "Error opening buffer for png in " << Q_FUNC_INFO;
         job->failure(QStringLiteral("cannot get client icon"));
         return;
     }
 
     success = pixmap.save(&pngBuffer, "PNG");
     if (!success) {
-        qCWarning(lcSocketApi) << "Error saving client icon as png in " + cmd;
+        qCWarning(lcSocketApi) << "Error saving client icon as png in " << Q_FUNC_INFO;
         job->failure(QStringLiteral("cannot get client icon"));
         return;
     }

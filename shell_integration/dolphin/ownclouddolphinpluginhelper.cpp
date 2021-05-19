@@ -62,18 +62,17 @@ void OwncloudDolphinPluginHelper::sendCommand(const char* data)
 
 void OwncloudDolphinPluginHelper::sendGetClientIconCommand(int size)
 {
-    QByteArray line_end("\n");
-    QJsonObject args { { "size", size } };
-    QJsonObject obj { { QStringLiteral("id"), "1" }, { QStringLiteral("arguments"), args } };
-    std::string command = "V2/GET_CLIENT_ICON:" + QJsonDocument(obj).toJson(QJsonDocument::Compact).toStdString();
-    sendCommand(QByteArray(command.c_str() + line_end));
+    int msgId = 1;
+    QJsonObject args { { QStringLiteral("size"), size } };
+    QJsonObject obj { { QStringLiteral("id"), QString(msgId) }, { QStringLiteral("arguments"), args } };
+    auto json = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    sendCommand(QByteArray("V2/GET_CLIENT_ICON:" + json + "\n"));
 }
 
 void OwncloudDolphinPluginHelper::slotConnected()
 {
     sendCommand("VERSION:\n");
     sendCommand("GET_STRINGS:\n");
-    sendCommand("V2/GET_CLIENT_ICON:\n");
 }
 
 void OwncloudDolphinPluginHelper::tryConnect()
@@ -125,17 +124,19 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
                 return;
             }
         } else if (line.startsWith("V2/GET_CLIENT_ICON_RESULT:")) {
-            line.remove(0, QString("V2/GET_CLIENT_ICON_RESULT:").size());
+            line.remove(0, QStringLiteral("V2/GET_CLIENT_ICON_RESULT:").size());
             QJsonParseError error;
             auto json = QJsonDocument::fromJson(line, &error).object();
-            if (error.error != QJsonParseError::NoError)
+            if (error.error != QJsonParseError::NoError) {
                 continue;
+            }
 
             auto jsonArgs = json.value("arguments").toObject();
-            if (jsonArgs.isEmpty())
+            if (jsonArgs.isEmpty()) {
                 continue;
+            }
 
-            QByteArray pngBase64 = jsonArgs.value("png").toString().toLatin1();
+            const QByteArray pngBase64 = jsonArgs.value("png").toString().toUtf8();
             QByteArray png = QByteArray::fromBase64(pngBase64);
 
             QPixmap pixmap;
