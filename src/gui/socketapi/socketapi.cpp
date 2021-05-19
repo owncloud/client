@@ -876,7 +876,7 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
     Theme *theme = Theme::instance();
     OC_ASSERT(theme);
     QIcon appIcon = theme->applicationIcon();
-    qCInfo(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
+    qCDebug(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
 
     // convert to pixmap (might be smaller if size is not available)
     const QPixmap pixmap = appIcon.pixmap(QSize(size.toInt(), size.toInt()));
@@ -898,8 +898,8 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
         return;
     }
 
-    QByteArray pngAsBase64 = pngBuffer.data().toBase64();
-    job->success({ { QStringLiteral("png"), QString::fromLatin1(pngAsBase64) } });
+    const QByteArray pngAsBase64 = pngBuffer.data().toBase64();
+    job->success({ { QStringLiteral("png"), QString::fromUtf8(pngAsBase64) } });
 }
 
 void SocketApi::emailPrivateLink(const QString &link)

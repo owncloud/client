@@ -73,4 +73,5 @@ private:
     QMap<QString, QString> _strings;
     QByteArray _version;
     QPixmap _clientIcon;
+    int _msgId = 1;
 };

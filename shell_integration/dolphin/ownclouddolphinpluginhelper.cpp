@@ -62,11 +62,12 @@ void OwncloudDolphinPluginHelper::sendCommand(const char* data)
 
 void OwncloudDolphinPluginHelper::sendGetClientIconCommand(int size)
 {
-    int msgId = 1;
-    QJsonObject args { { QStringLiteral("size"), size } };
-    QJsonObject obj { { QStringLiteral("id"), QString(msgId) }, { QStringLiteral("arguments"), args } };
-    auto json = QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    sendCommand(QByteArray("V2/GET_CLIENT_ICON:" + json + "\n"));
+    const QByteArray cmd = QByteArrayLiteral("V2/GET_CLIENT_ICON:");
+    const QByteArray newLine = QByteArrayLiteral("\n");
+    const QJsonObject args { { QStringLiteral("size"), size } };
+    const QJsonObject obj { { QStringLiteral("id"), QString::number(_msgId++) }, { QStringLiteral("arguments"), args } };
+    const auto json = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    sendCommand(QByteArray(cmd + json + newLine));
 }
 
 void OwncloudDolphinPluginHelper::slotConnected()
@@ -141,8 +142,9 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
 
             QPixmap pixmap;
             bool isLoaded = pixmap.loadFromData(png, "PNG");
-            if (isLoaded)
+            if (isLoaded) {
                 _clientIcon = pixmap;
+            }
         }
 
         emit commandRecieved(line);
