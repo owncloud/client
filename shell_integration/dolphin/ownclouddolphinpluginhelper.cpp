@@ -21,10 +21,13 @@
 #include <qcoreevent.h>
 #include <QStandardPaths>
 #include <QFile>
+#include <QLoggingCategory>
 #include "ownclouddolphinpluginhelper.h"
 #include "config.h"
 #include <QJsonObject>
 #include <QJsonDocument>
+
+Q_LOGGING_CATEGORY(lcPluginHelper, "owncloud.dolphin", QtInfoMsg)
 
 OwncloudDolphinPluginHelper* OwncloudDolphinPluginHelper::instance()
 {
@@ -129,11 +132,13 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
             QJsonParseError error;
             auto json = QJsonDocument::fromJson(line, &error).object();
             if (error.error != QJsonParseError::NoError) {
+                qCWarning(lcPluginHelper) << "Error while parsing result: " << error.error;
                 continue;
             }
 
             auto jsonArgs = json.value("arguments").toObject();
             if (jsonArgs.isEmpty()) {
+                qCWarning(lcPluginHelper) << "Error getting client icon: " << json.value("error").toObject();
                 continue;
             }
 

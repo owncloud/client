@@ -866,16 +866,16 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
     OC_ASSERT(job);
     const auto &arguments = job->arguments();
 
-    auto size = arguments.value("size");
+    const auto size = arguments.value("size");
     if (size.isUndefined()) {
         qCWarning(lcSocketApi) << "Icon size not given in " << Q_FUNC_INFO;
         job->failure(QStringLiteral("cannot get client icon"));
         return;
     }
 
-    Theme *theme = Theme::instance();
+    const Theme *theme = Theme::instance();
     OC_ASSERT(theme);
-    QIcon appIcon = theme->applicationIcon();
+    const QIcon appIcon = theme->applicationIcon();
     qCDebug(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
 
     // convert to pixmap (might be smaller if size is not available)
