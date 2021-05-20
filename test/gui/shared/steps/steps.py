@@ -144,14 +144,12 @@ def getPasswordForUser(userId):
         return defaultUsers[userId]['password']
 
 
-@Given(
-    'user "|any|" has set up a client with default settings and polling interval "|any|"'
-)
-def step(context, username, interval):
+@Given('user "|any|" has set up a client with default settings')
+def step(context, username):
     pollingInterval = '''[ownCloud]
     remotePollInterval={pollingInterval}
     '''
-    args = {'pollingInterval': interval}
+    args = {'pollingInterval': 5000}
     pollingInterval = pollingInterval.format(**args)
     password = getPasswordForUser(username)
     setUpClient(context, username, password, pollingInterval)
