@@ -7,21 +7,22 @@
 # configuration for black can be found inside pyproject.toml file under [tools.black] section.
 #
 # Usage:
-# make
+# make test-python-style
 #	-auto format all the python files inside `test/gui`
-# make check
+# make test-python-style-check
 #	-check which files will be reformatted
-# make diff
+# make test-python-style-diff
 #	-see what changes will be done
 #
 
-black:
+.PHONY: test-python-style
+test-python-style:
 	black .
 
-.PHONY: diffFormat
-diffFormat:
+.PHONY: test-python-style-diff
+test-python-style-diff:
 	black --diff .
 
-.PHONY: checkFormat
-checkFormat:
+.PHONY: test-python-style-check
+test-python-style-check:
 	black --check .
