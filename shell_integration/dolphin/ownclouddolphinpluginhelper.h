@@ -25,7 +25,6 @@
 #include <QPixmap>
 #include "ownclouddolphinpluginhelper_export.h"
 
-
 class OWNCLOUDDOLPHINPLUGINHELPER_EXPORT OwncloudDolphinPluginHelper : public QObject {
     Q_OBJECT
 public:

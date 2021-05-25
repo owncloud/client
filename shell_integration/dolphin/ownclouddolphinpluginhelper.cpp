@@ -98,39 +98,48 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
 {
     while (_socket.bytesAvailable()) {
         _line += _socket.readLine();
-        if (!_line.endsWith("\n"))
+        if (!_line.endsWith("\n")) {
             continue;
+        }
         QByteArray line;
         qSwap(line, _line);
         line.chop(1);
         if (line.isEmpty())
             continue;
+        int firstColon = line.indexOf(':');
+        if (firstColon == -1) {
+            continue;
+        }
+        // get the command (at begin of line, before first ':')
+        const QByteArray command = line.left(firstColon);
+        // rest of line contains the information
+        QByteArray info = line.right(line.size() - firstColon - 1);
 
-        if (line.startsWith("REGISTER_PATH:")) {
-            auto col = line.indexOf(':');
-            QString file = QString::fromUtf8(line.constData() + col + 1, line.size() - col - 1);
+        if (command == QByteArrayLiteral("REGISTER_PATH")) {
+            const QString file = QString::fromUtf8(info);
             _paths.append(file);
             continue;
-        } else if (line.startsWith("STRING:")) {
-            auto args = QString::fromUtf8(line).split(QLatin1Char(':'));
-            if (args.size() >= 3) {
-                _strings[args[1]] = args.mid(2).join(QLatin1Char(':'));
+        } else if (command == QByteArrayLiteral("STRING")) {
+            auto args = QString::fromUtf8(info).split(':');
+            if (args.size() >= 2) {
+                _strings[args[0]] = args.mid(1).join(':');
             }
             continue;
-        } else if (line.startsWith("VERSION:")) {
-            auto args = line.split(':');
-            auto version = args.value(2);
-            _version = version;
-            if (!version.startsWith("1.")) {
+        } else if (command == QByteArrayLiteral("VERSION")) {
+            auto args = info.split(':');
+            if (args.size() >= 2) {
+                auto version = args.value(1);
+                _version = version;
+            }
+            if (!_version.startsWith("1.")) {
                 // Incompatible version, disconnect forever
                 _connectTimer.stop();
                 _socket.disconnectFromServer();
                 return;
             }
-        } else if (line.startsWith("V2/GET_CLIENT_ICON_RESULT:")) {
-            line.remove(0, QStringLiteral("V2/GET_CLIENT_ICON_RESULT:").size());
+        } else if (command == QByteArrayLiteral("V2/GET_CLIENT_ICON_RESULT")) {
             QJsonParseError error;
-            auto json = QJsonDocument::fromJson(line, &error).object();
+            auto json = QJsonDocument::fromJson(info, &error).object();
             if (error.error != QJsonParseError::NoError) {
                 qCWarning(lcPluginHelper) << "Error while parsing result: " << error.error;
                 continue;
@@ -138,7 +147,8 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
 
             auto jsonArgs = json.value("arguments").toObject();
             if (jsonArgs.isEmpty()) {
-                qCWarning(lcPluginHelper) << "Error getting client icon: " << json.value("error").toObject();
+                auto jsonErr = json.value("error").toObject();
+                qCWarning(lcPluginHelper) << "Error getting client icon: " << jsonErr;
                 continue;
             }
 
