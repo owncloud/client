@@ -106,14 +106,14 @@ void OwncloudDolphinPluginHelper::slotReadyRead()
         line.chop(1);
         if (line.isEmpty())
             continue;
-        int firstColon = line.indexOf(':');
+        const int firstColon = line.indexOf(':');
         if (firstColon == -1) {
             continue;
         }
         // get the command (at begin of line, before first ':')
         const QByteArray command = line.left(firstColon);
         // rest of line contains the information
-        QByteArray info = line.right(line.size() - firstColon - 1);
+        const QByteArray info = line.mid(firstColon + 1);
 
         if (command == QByteArrayLiteral("REGISTER_PATH")) {
             const QString file = QString::fromUtf8(info);
