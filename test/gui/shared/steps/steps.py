@@ -565,6 +565,9 @@ def step(context, username):
         lambda: isFolderSynced(context.userData['clientSyncPath']),
         context.userData['clientSyncTimeout'] * 1000,
     )
+    # TODO: find some way to dynamically to check if files are synced
+    # It might take some time for all files to sync
+    snooze(5)
     toolbar = Toolbar()
     toolbar.userLogout()
     isUserSignedOut(context, username)
@@ -581,7 +584,7 @@ def step(context, username):
 
 @Then('user "|any|" should be connect to the client-UI')
 def step(context, username):
-    # TODO: find some way to dynamically select the tab name
-    # It takes some time to connect to the server
+    # TODO: find some way to dynamically to check if files are synced
+    # It might take some time for all files to sync and connect to ther server
     snooze(5)
     isUserSignedIn(context, username)
