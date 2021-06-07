@@ -7,6 +7,7 @@ from os.path import isfile, join
 import re
 import urllib.request
 import json
+import requests
 
 from objectmaphelper import RegularExpression
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
@@ -25,34 +26,27 @@ from pageObjects.AccountStatus import AccountStatus
 # if the IDE fails to reference the script, add the folder in Edit->Preferences->PyDev->Interpreters->Libraries
 sys.path.append(os.path.realpath('../../../shell_integration/nautilus/'))
 import syncstate
+import functools
+
 
 confdir = '/tmp/bdd-tests-owncloud-client/'
 confFilePath = confdir + 'owncloud.cfg'
 socketConnect = None
 
-passwords = {
-    'alt1': '1234',
-    'alt2': 'AaBb2Cc3Dd4',
-    'alt3': 'aVeryLongPassword42TheMeaningOfLife',
-}
+usersDataFromMiddleware = None
 
-defaultUsers = {
-    'Alice': {
-        'displayname': 'Alice Hansen',
-        'password': passwords['alt1'],
-        'email': 'alice@example.org',
-    },
-    'Brian': {
-        'displayname': 'Brian Murphy',
-        'password': passwords['alt2'],
-        'email': 'brian@example.org',
-    },
-    'Carol': {
-        'displayname': 'Carol King',
-        'password': passwords['alt3'],
-        'email': 'carol@example.org',
-    },
-}
+
+@functools.lru_cache(maxsize=None)
+def getTestStateFromMiddleware(context):
+    res = requests.get(
+        os.path.join(context.userData['middlewareUrl'], 'state'),
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        global usersDataFromMiddleware
+        usersDataFromMiddleware = res.json()
+    except ValueError:
+        raise Exception("Could not get created users information from middleware")
 
 
 @OnScenarioStart
@@ -65,6 +59,11 @@ def hook(context):
         os.remove(confFilePath)
     except:
         pass
+
+
+@OnScenarioEnd
+def hook(context):
+    getTestStateFromMiddleware.cache_clear()
 
 
 @Given('the user has added an account with')
@@ -100,20 +99,18 @@ def step(context, displayname, host):
     )
 
 
-def getDisplayname(username):
-    if username in defaultUsers.keys():
-        return defaultUsers[username]['displayname']
+def getDisplaynameForUser(context, username):
+    return usersDataFromMiddleware['created_users'][username]['displayname']
 
 
-def getPasswordForUser(username):
-    if username in defaultUsers.keys():
-        return defaultUsers[username]['password']
+def getPasswordForUser(context, username):
+    return usersDataFromMiddleware['created_users'][username]['password']
 
 
 @Given('user "|any|" has set up a client with default settings')
 def step(context, username):
-    password = getPasswordForUser(username)
-    displayName = getDisplayname(username)
+    password = getPasswordForUser(context, username)
+    displayName = getDisplaynameForUser(context, username)
     setUpClient(context, username, displayName, confFilePath)
     enterUserPassword = EnterPassword()
     enterUserPassword.enterPassword(password)
@@ -260,6 +257,7 @@ def step(context, filename):
 @Given(r"^(.*) on the server (.*)$", regexp=True)
 def step(context, stepPart1, stepPart2):
     executeStepThroughMiddleware(context, "Given " + stepPart1 + " " + stepPart2)
+    getTestStateFromMiddleware(context)
 
 
 @Then(r"^(.*) on the server (.*)$", regexp=True)
@@ -529,7 +527,7 @@ def step(context):
 
 
 def isUserSignedOut(context, username):
-    displayname = getDisplayname(username)
+    displayname = getDisplaynameForUser(context, username)
     server = context.userData['localBackendUrl']
     accountStatus = AccountStatus()
     test.compare(
@@ -545,7 +543,7 @@ def isUserSignedOut(context, username):
 
 
 def isUserSignedIn(context, username):
-    displayname = getDisplayname(username)
+    displayname = getDisplaynameForUser(context, username)
     server = context.userData['localBackendUrl']
     accountStatus = AccountStatus()
 
@@ -585,7 +583,7 @@ def step(context, username):
 def step(context, username):
     accountStatus = AccountStatus()
     accountStatus.accountAction("Log in")
-    password = getPasswordForUser(username)
+    password = getPasswordForUser(context, username)
     enterUserPassword = EnterPassword()
     enterUserPassword.enterPassword(password)
 
@@ -600,7 +598,7 @@ def step(context, username):
 
 @When('the user removes the connection for user "|any|" and host |any|')
 def step(context, username, host):
-    displayname = getDisplayname(username)
+    displayname = getDisplaynameForUser(context, username)
     displayname = substituteInLineCodes(context, displayname)
     host = substituteInLineCodes(context, host)
 
