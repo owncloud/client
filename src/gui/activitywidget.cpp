@@ -588,8 +588,8 @@ void ActivitySettings::slotRefresh(AccountState *ptr)
 
 void ActivitySettings::slotRegularNotificationCheck()
 {
-    AccountManager *am = AccountManager::instance();
-    foreach (AccountStatePtr a, am->accounts()) {
+    const auto accounts = AccountManager::instance()->accounts();
+    for (const auto &a : accounts) {
         slotRefresh(a.data());
     }
 }

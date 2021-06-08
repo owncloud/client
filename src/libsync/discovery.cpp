@@ -1339,7 +1339,7 @@ int ProcessDirectoryJob::processSubJobs(int nbJobs)
     }
 
     int started = 0;
-    foreach (auto *rj, _runningJobs) {
+    for (auto *rj : qAsConst(_runningJobs)) {
         started += rj->processSubJobs(nbJobs - started);
         if (started >= nbJobs)
             return started;

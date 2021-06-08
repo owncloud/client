@@ -119,7 +119,8 @@ void IgnoreListEditor::slotUpdateLocalIgnoreList()
     // We need to force a remote discovery after a change of the ignore list.
     // Otherwise we would not download the files/directories that are no longer
     // ignored (because the remote etag did not change)   (issue #3172)
-    foreach (Folder *folder, folderMan->map()) {
+    const auto map = folderMan->map();
+    for (auto *folder : map) {
         folder->journalDb()->forceRemoteDiscoveryNextSync();
         folder->slotNextSyncFullLocalDiscovery();
         folderMan->scheduleFolder(folder);

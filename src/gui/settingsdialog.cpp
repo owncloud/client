@@ -227,7 +227,8 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
         this, &SettingsDialog::accountAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &SettingsDialog::accountRemoved);
-    foreach (auto ai, AccountManager::instance()->accounts()) {
+    const auto accounts = AccountManager::instance()->accounts();
+    for (const auto &ai : accounts) {
         accountAdded(ai.data());
     }
 

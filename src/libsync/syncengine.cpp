@@ -202,7 +202,7 @@ void SyncEngine::deleteStaleDownloadInfos(const SyncFileItemVector &syncItems)
 {
     // Find all downloadinfo paths that we want to preserve.
     QSet<QString> download_file_paths;
-    foreach (const SyncFileItemPtr &it, syncItems) {
+    for (const auto &it : syncItems) {
         if (it->_direction == SyncFileItem::Down
             && it->_type == ItemTypeFile
             && isFileTransferInstruction(it->_instruction)) {
@@ -213,7 +213,7 @@ void SyncEngine::deleteStaleDownloadInfos(const SyncFileItemVector &syncItems)
     // Delete from journal and from filesystem.
     const QVector<SyncJournalDb::DownloadInfo> deleted_infos =
         _journal->getAndDeleteStaleDownloadInfos(download_file_paths);
-    foreach (const SyncJournalDb::DownloadInfo &deleted_info, deleted_infos) {
+    for (const auto &deleted_info : deleted_infos) {
         const QString tmppath = _propagator->fullLocalPath(deleted_info._tmpfile);
         qCInfo(lcEngine) << "Deleting stale temporary file: " << tmppath;
         FileSystem::remove(tmppath);
@@ -224,7 +224,7 @@ void SyncEngine::deleteStaleUploadInfos(const SyncFileItemVector &syncItems)
 {
     // Find all blacklisted paths that we want to preserve.
     QSet<QString> upload_file_paths;
-    foreach (const SyncFileItemPtr &it, syncItems) {
+    for (const auto &it : syncItems) {
         if (it->_direction == SyncFileItem::Up
             && it->_type == ItemTypeFile
             && isFileTransferInstruction(it->_instruction)) {
@@ -233,11 +233,11 @@ void SyncEngine::deleteStaleUploadInfos(const SyncFileItemVector &syncItems)
     }
 
     // Delete from journal.
-    auto ids = _journal->deleteStaleUploadInfos(upload_file_paths);
+    const auto ids = _journal->deleteStaleUploadInfos(upload_file_paths);
 
     // Delete the stales chunk on the server.
     if (account()->capabilities().chunkingNg()) {
-        foreach (uint transferId, ids) {
+        for (auto transferId : ids) {
             if (!transferId)
                 continue; // Was not a chunked upload
             QUrl url = Utility::concatUrlPath(account()->url(), QLatin1String("remote.php/dav/uploads/") + account()->davUser() + QLatin1Char('/') + QString::number(transferId));
@@ -250,7 +250,7 @@ void SyncEngine::deleteStaleErrorBlacklistEntries(const SyncFileItemVector &sync
 {
     // Find all blacklisted paths that we want to preserve.
     QSet<QString> blacklist_file_paths;
-    foreach (const SyncFileItemPtr &it, syncItems) {
+    for (const auto &it : syncItems) {
         if (it->_hasBlacklistEntry)
             blacklist_file_paths.insert(it->_file);
     }
@@ -728,7 +728,7 @@ void SyncEngine::slotDiscoveryFinished()
     if (!_hasNoneFiles && _hasRemoveFile) {
         qCInfo(lcEngine) << "All the files are going to be changed, asking the user";
         int side = 0; // > 0 means more deleted on the server.  < 0 means more deleted on the client
-        foreach (const auto &it, _syncItems) {
+        for (const auto &it : qAsConst(_syncItems)) {
             if (it->_instruction == CSYNC_INSTRUCTION_REMOVE) {
                 side += it->_direction == SyncFileItem::Down ? 1 : -1;
             }

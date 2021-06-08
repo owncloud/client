@@ -996,7 +996,7 @@ void FakeFolder::execUntilItemCompleted(const QString &relativePath)
 
 void FakeFolder::toDisk(QDir &dir, const FileInfo &templateFi)
 {
-    foreach (const FileInfo &child, templateFi.children) {
+    for (const auto &child : templateFi.children) {
         if (child.isDir) {
             QDir subDir(dir);
             dir.mkdir(child.name);
@@ -1014,7 +1014,8 @@ void FakeFolder::toDisk(QDir &dir, const FileInfo &templateFi)
 
 void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
 {
-    foreach (const QFileInfo &diskChild, dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
+    const auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    for (const auto &diskChild : infoList) {
         if (diskChild.isDir()) {
             QDir subDir = dir;
             subDir.cd(diskChild.fileName());
