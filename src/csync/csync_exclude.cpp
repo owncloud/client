@@ -265,7 +265,7 @@ bool ExcludedFiles::reloadExcludeFiles()
 {
     _allExcludes.clear();
     bool success = true;
-    foreach (const QString &file, _excludeFiles) {
+    for (const auto &file : qAsConst(_excludeFiles)) {
         QFile f(file);
         if (!f.open(QIODevice::ReadOnly)) {
             success = false;

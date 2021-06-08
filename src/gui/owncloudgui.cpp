@@ -200,7 +200,8 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         _actionStatus->setText(text);
     };
 
-    foreach (auto a, AccountManager::instance()->accounts()) {
+    const auto accounts = AccountManager::instance()->accounts();
+    for (const auto &a : accounts) {
         if (!a->isSignedOut()) {
             allSignedOut = false;
         }
@@ -210,7 +211,8 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             allDisconnected = false;
         }
     }
-    foreach (Folder *f, FolderMan::instance()->map()) {
+    const auto map = FolderMan::instance()->map();
+    for (auto *f : map) {
         if (!f->syncPaused()) {
             allPaused = false;
         }
@@ -226,14 +228,14 @@ void ownCloudGui::slotComputeOverallSyncStatus()
 #ifdef Q_OS_WIN
         // Windows has a 128-char tray tooltip length limit.
         QStringList accountNames;
-        foreach (AccountStatePtr a, problemAccounts) {
+        for (const auto &a : qAsConst(problemAccounts)) {
             accountNames.append(a->account()->displayName());
         }
         _tray->setToolTip(tr("Disconnected from %1").arg(accountNames.join(QLatin1String(", "))));
 #else
         QStringList messages;
         messages.append(tr("Disconnected from accounts:"));
-        foreach (AccountStatePtr a, problemAccounts) {
+        for (const auto &a : qAsConst(problemAccounts)) {
             QString message = tr("Account %1: %2").arg(a->account()->displayName(), a->stateString(a->state()));
             if (!a->connectionErrors().empty()) {
                 message += QLatin1String("\n");
@@ -260,8 +262,6 @@ void ownCloudGui::slotComputeOverallSyncStatus()
 
     // display the info of the least successful sync (eg. do not just display the result of the latest sync)
     QString trayMessage;
-    FolderMan *folderMan = FolderMan::instance();
-    Folder::Map map = folderMan->map();
 
     auto trayOverallStatusResult = FolderMan::trayOverallStatus(map.values());
 
@@ -287,7 +287,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         trayMessage = folderMan->trayTooltipStatusString(trayOverallStatusResult.overallStatus, trayOverallStatusResult.hasUnresolvedConflicts, false);
 #else
         QStringList allStatusStrings;
-        foreach (Folder *folder, map) {
+        for (auto *folder : map.values()) {
             QString folderMessage = FolderMan::trayTooltipStatusString(
                 folder->syncResult().status(),
                 folder->syncResult().hasUnresolvedConflicts(),
@@ -338,10 +338,11 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
 
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
-    bool singleSyncFolder = folderMan->map().size() == 1 && Theme::instance()->singleSyncFolder();
+    const auto map = folderMan->map();
+    bool singleSyncFolder = map.size() == 1 && Theme::instance()->singleSyncFolder();
     bool onePaused = false;
     bool allPaused = true;
-    foreach (Folder *folder, folderMan->map()) {
+    for (auto *folder : map) {
         if (folder->accountState() != accountState.data()) {
             continue;
         }
@@ -599,13 +600,13 @@ void ownCloudGui::updateContextMenu()
     slotRebuildRecentMenus();
 
     // We must call deleteLater because we might be called from the press in one of the actions.
-    foreach (auto menu, _accountMenus) {
+    for (auto *menu : qAsConst(_accountMenus)) {
         menu->deleteLater();
     }
     _accountMenus.clear();
 
 
-    auto accountList = AccountManager::instance()->accounts();
+    const auto accountList = AccountManager::instance()->accounts();
 
     bool isConfigured = (!accountList.isEmpty());
     bool atLeastOneConnected = false;
@@ -613,7 +614,7 @@ void ownCloudGui::updateContextMenu()
     bool atLeastOneSignedIn = false;
     bool atLeastOnePaused = false;
     bool atLeastOneNotPaused = false;
-    foreach (auto a, accountList) {
+    for (const auto &a : accountList) {
         if (a->isConnected()) {
             atLeastOneConnected = true;
         }
@@ -623,7 +624,8 @@ void ownCloudGui::updateContextMenu()
             atLeastOneSignedIn = true;
         }
     }
-    foreach (auto f, FolderMan::instance()->map()) {
+    const auto map = FolderMan::instance()->map();
+    for (auto *f : map) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
         } else {
@@ -632,7 +634,7 @@ void ownCloudGui::updateContextMenu()
     }
 
     if (accountList.count() > 1) {
-        foreach (AccountStatePtr account, accountList) {
+        for (const auto &account : accountList) {
             QMenu *accountMenu = new QMenu(account->account()->displayName(), _contextMenu.data());
             _accountMenus.append(accountMenu);
             _contextMenu->addMenu(accountMenu);
@@ -818,7 +820,7 @@ void ownCloudGui::slotRebuildRecentMenus()
 {
     _recentActionsMenu->clear();
     if (!_recentItemsActions.isEmpty()) {
-        foreach (QAction *a, _recentItemsActions) {
+        for (auto *a : qAsConst(_recentItemsActions)) {
             _recentActionsMenu->addAction(a);
         }
         _recentActionsMenu->addSeparator();
@@ -927,8 +929,8 @@ void ownCloudGui::slotLogin()
         account->account()->resetRejectedCertificates();
         account->signIn();
     } else {
-        auto list = AccountManager::instance()->accounts();
-        foreach (const auto &a, list) {
+        const auto list = AccountManager::instance()->accounts();
+        for (const auto &a : list) {
             a->signIn();
         }
     }
@@ -942,7 +944,7 @@ void ownCloudGui::slotLogout()
         list.insert(account->account()->uuid(), account);
     }
 
-    foreach (const auto &ai, list) {
+    for (const auto &ai : qAsConst(list)) {
         ai->signOutByUi();
     }
 }
@@ -975,11 +977,13 @@ void ownCloudGui::setPauseOnAllFoldersHelper(bool pause)
     if (auto account = qvariant_cast<AccountStatePtr>(sender()->property(propertyAccountC))) {
         accounts.append(account.data());
     } else {
-        foreach (auto a, AccountManager::instance()->accounts()) {
+        const auto existingAccounts = AccountManager::instance()->accounts();
+        for (const auto &a : existingAccounts) {
             accounts.append(a.data());
         }
     }
-    foreach (Folder *f, FolderMan::instance()->map()) {
+    const auto map = FolderMan::instance()->map();
+    for (auto *f : map) {
         if (accounts.contains(f->accountState())) {
             f->setSyncPaused(pause);
             if (pause) {
