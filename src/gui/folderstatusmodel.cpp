@@ -1108,7 +1108,7 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
 void FolderStatusModel::slotFolderScheduleQueueChanged()
 {
     // Update messages on waiting folders.
-    const auto map = FolderMan::instance()->map();
+    const auto &map = FolderMan::instance()->map();
     for (auto *f : map) {
         slotFolderSyncStateChange(f);
     }
