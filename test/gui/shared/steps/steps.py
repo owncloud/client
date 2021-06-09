@@ -33,20 +33,22 @@ confdir = '/tmp/bdd-tests-owncloud-client/'
 confFilePath = confdir + 'owncloud.cfg'
 socketConnect = None
 
-usersDataFromMiddleware = None
+stateDataFromMiddleware = None
 
 
-@functools.lru_cache(maxsize=None)
 def getTestStateFromMiddleware(context):
-    res = requests.get(
-        os.path.join(context.userData['middlewareUrl'], 'state'),
-        headers={"Content-Type": "application/json"},
-    )
-    try:
-        global usersDataFromMiddleware
-        usersDataFromMiddleware = res.json()
-    except ValueError:
-        raise Exception("Could not get created users information from middleware")
+    global stateDataFromMiddleware
+    if stateDataFromMiddleware is None:
+        res = requests.get(
+            os.path.join(context.userData['middlewareUrl'], 'state'),
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            stateDataFromMiddleware = res.json()
+        except ValueError:
+            raise Exception("Could not get created users information from middleware")
+
+    return stateDataFromMiddleware
 
 
 @OnScenarioStart
@@ -59,11 +61,6 @@ def hook(context):
         os.remove(confFilePath)
     except:
         pass
-
-
-@OnScenarioEnd
-def hook(context):
-    getTestStateFromMiddleware.cache_clear()
 
 
 @Given('the user has added an account with')
@@ -100,10 +97,12 @@ def step(context, displayname, host):
 
 
 def getDisplaynameForUser(context, username):
+    usersDataFromMiddleware = getTestStateFromMiddleware(context)
     return usersDataFromMiddleware['created_users'][username]['displayname']
 
 
 def getPasswordForUser(context, username):
+    usersDataFromMiddleware = getTestStateFromMiddleware(context)
     return usersDataFromMiddleware['created_users'][username]['password']
 
 
@@ -257,7 +256,8 @@ def step(context, filename):
 @Given(r"^(.*) on the server (.*)$", regexp=True)
 def step(context, stepPart1, stepPart2):
     executeStepThroughMiddleware(context, "Given " + stepPart1 + " " + stepPart2)
-    getTestStateFromMiddleware(context)
+    global usersDataFromMiddleware
+    usersDataFromMiddleware = None
 
 
 @Then(r"^(.*) on the server (.*)$", regexp=True)
