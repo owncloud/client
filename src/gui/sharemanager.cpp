@@ -30,7 +30,7 @@ namespace OCC {
  */
 static void updateFolder(const AccountPtr &account, const QString &path)
 {
-    const auto accounts = FolderMan::instance()->map();
+    const auto &accounts = FolderMan::instance()->map();
     for (auto *f : accounts) {
         if (f->accountState()->account() != account)
             continue;

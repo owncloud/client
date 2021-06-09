@@ -200,7 +200,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         _actionStatus->setText(text);
     };
 
-    const auto accounts = AccountManager::instance()->accounts();
+    const auto &accounts = AccountManager::instance()->accounts();
     for (const auto &a : accounts) {
         if (!a->isSignedOut()) {
             allSignedOut = false;
@@ -211,7 +211,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             allDisconnected = false;
         }
     }
-    const auto map = FolderMan::instance()->map();
+    const auto &map = FolderMan::instance()->map();
     for (auto *f : map) {
         if (!f->syncPaused()) {
             allPaused = false;
@@ -338,7 +338,7 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
 
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
-    const auto map = folderMan->map();
+    const auto &map = folderMan->map();
     bool singleSyncFolder = map.size() == 1 && Theme::instance()->singleSyncFolder();
     bool onePaused = false;
     bool allPaused = true;
@@ -606,7 +606,7 @@ void ownCloudGui::updateContextMenu()
     _accountMenus.clear();
 
 
-    const auto accountList = AccountManager::instance()->accounts();
+    const auto &accountList = AccountManager::instance()->accounts();
 
     bool isConfigured = (!accountList.isEmpty());
     bool atLeastOneConnected = false;
@@ -624,7 +624,7 @@ void ownCloudGui::updateContextMenu()
             atLeastOneSignedIn = true;
         }
     }
-    const auto map = FolderMan::instance()->map();
+    const auto &map = FolderMan::instance()->map();
     for (auto *f : map) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
@@ -929,7 +929,7 @@ void ownCloudGui::slotLogin()
         account->account()->resetRejectedCertificates();
         account->signIn();
     } else {
-        const auto list = AccountManager::instance()->accounts();
+        const auto &list = AccountManager::instance()->accounts();
         for (const auto &a : list) {
             a->signIn();
         }
@@ -977,12 +977,12 @@ void ownCloudGui::setPauseOnAllFoldersHelper(bool pause)
     if (auto account = qvariant_cast<AccountStatePtr>(sender()->property(propertyAccountC))) {
         accounts.append(account.data());
     } else {
-        const auto existingAccounts = AccountManager::instance()->accounts();
+        const auto &existingAccounts = AccountManager::instance()->accounts();
         for (const auto &a : existingAccounts) {
             accounts.append(a.data());
         }
     }
-    const auto map = FolderMan::instance()->map();
+    const auto &map = FolderMan::instance()->map();
     for (auto *f : map) {
         if (accounts.contains(f->accountState())) {
             f->setSyncPaused(pause);

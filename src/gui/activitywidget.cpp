@@ -588,7 +588,7 @@ void ActivitySettings::slotRefresh(AccountState *ptr)
 
 void ActivitySettings::slotRegularNotificationCheck()
 {
-    const auto accounts = AccountManager::instance()->accounts();
+    const auto &accounts = AccountManager::instance()->accounts();
     for (const auto &a : accounts) {
         slotRefresh(a.data());
     }

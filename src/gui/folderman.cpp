@@ -187,7 +187,7 @@ int FolderMan::setupFolders()
 
     qCInfo(lcFolderMan) << "Setup folders from settings file";
 
-    const auto accounts = AccountManager::instance()->accounts();
+    const auto &accounts = AccountManager::instance()->accounts();
     for (const auto &account : accounts) {
         const auto id = account->account()->id();
         if (!accountsWithSettings.contains(id)) {
@@ -993,7 +993,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     // Migration: The first account that's configured for a local folder shall
     // be saved in a backwards-compatible way.
     bool oneAccountOnly = true;
-    const auto map = FolderMan::instance()->map();
+    const auto &map = FolderMan::instance()->map();
     for (auto *other : map) {
         if (other != folder && other->cleanPath() == folder->cleanPath()) {
             oneAccountOnly = false;
