@@ -119,7 +119,6 @@ private:
 #endif
 
     // options from command line:
-    bool _showLogWindow;
     bool _showSettings = false;
     bool _quitInstance = false;
     QString _logFile;

@@ -144,7 +144,6 @@ Application::Application(int &argc, char **argv)
     : SharedTools::QtSingleApplication(Theme::instance()->appName(), argc, argv)
     , _gui(nullptr)
     , _theme(Theme::instance())
-    , _showLogWindow(false)
     , _logExpire(0)
     , _logFlush(false)
     , _logDebug(false)
@@ -286,9 +285,6 @@ Application::Application(int &argc, char **argv)
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup
     _gui = new ownCloudGui(this);
-    if (_showLogWindow) {
-        _gui->slotToggleLogBrowser(); // _showLogWindow is set in parseOptions.
-    }
     if (_showSettings) {
         _gui->slotShowSettings();
     }
@@ -505,13 +501,9 @@ void Application::slotParseMessage(const QString &msg, QObject *)
     if (msg.startsWith(QLatin1String("MSG_PARSEOPTIONS:"))) {
         const int lengthOfMsgPrefix = 17;
         QStringList options = msg.mid(lengthOfMsgPrefix).split(QLatin1Char('|'));
-        _showLogWindow = false;
         _showSettings = false;
         parseOptions(options);
         setupLogging();
-        if (_showLogWindow) {
-            _gui->slotToggleLogBrowser(); // _showLogWindow is set in parseOptions.
-        }
         if (_showSettings) {
             _gui->slotShowSettings();
         }
@@ -580,7 +572,6 @@ void Application::parseOptions(const QStringList &arguments)
     auto logExpireOption = addOption({ "logexpire", "Remove logs older than <hours> hours (to be used with --logdir).", "hours" });
     auto logFlushOption = addOption({ "logflush", "Flush the log file after every write." });
     auto logDebugOption = addOption({ "logdebug", "Output debug-level messages in the log." });
-    auto logWindowOption = addOption({ "logwindow", "//TODO//" });
     auto languageOption = addOption({ "language", "Override UI language.", "language" });
     auto listLanguagesOption = addOption({ "list-languages", "Override UI language." });
     auto confDirOption = addOption({ "confdir", "Use the given configuration folder.", "dirname" });
@@ -608,9 +599,6 @@ void Application::parseOptions(const QStringList &arguments)
     }
     if (parser.isSet(quitInstanceOption)) {
         _quitInstance = true;
-    }
-    if (parser.isSet(logWindowOption)) {
-        _showLogWindow = true;
     }
     if (parser.isSet(logFileOption)) {
         _logFile = parser.value(logFileOption);
