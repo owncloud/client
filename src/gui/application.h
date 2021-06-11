@@ -59,7 +59,6 @@ public:
     explicit Application(int &argc, char **argv);
     ~Application() override;
 
-    void showHint(const QString &errorHint);
     bool debugMode();
 
     void showSettingsDialog();

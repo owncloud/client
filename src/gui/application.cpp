@@ -203,6 +203,9 @@ Application::Application(int &argc, char **argv)
         }
     }
 
+    // needed during commandline options parsing
+    setApplicationVersion(_theme->versionSwitchOutput());
+
     parseOptions(arguments());
 
     if (isRunning())
@@ -579,18 +582,7 @@ void Application::parseOptions(const QStringList &arguments)
     // virtual file system parameters (optional)
     parser.addPositionalArgument("vfs file", tr("Virtual file system file to be opened (optional)."), { tr("[<vfs file>]") });
 
-    if (!parser.parse(arguments)) {
-        showHint(parser.errorText());
-    }
-
-    if (parser.isSet(helpOption)) {
-        showHint(parser.helpText());
-    }
-
-    if (parser.isSet(versionOption)) {
-        displayHelpText(_theme->versionSwitchOutput());
-        ::exit(0);
-    }
+    parser.process(*this);
 
     // TODO: rename this option (see #8234 for more information)
     if (parser.isSet(showSettingsOption)) {
@@ -617,7 +609,8 @@ void Application::parseOptions(const QStringList &arguments)
     if (parser.isSet(confDirOption)) {
         const auto confDir = parser.value(confDirOption);
         if (!ConfigFile::setConfDir(confDir)) {
-            showHint(tr("Invalid path passed to --confdir"));
+            displayHelpText(tr("Invalid path passed to --confdir"));
+            std::exit(1);
         }
     }
     if (parser.isSet(debugOption)) {
@@ -629,7 +622,8 @@ void Application::parseOptions(const QStringList &arguments)
 
         // fail if the language is unknown
         if (!Translations::listAvailableTranslations().contains(languageValue)) {
-            showHint(tr("Error: unknown language \"%1\" (use --list-languages to get a complete list of supported translations)").arg(languageValue));
+            displayHelpText(tr("Error: unknown language \"%1\" (use --list-languages to get a complete list of supported translations)").arg(languageValue));
+            std::exit(1);
         } else {
             _userEnforcedLanguage = languageValue;
         }
@@ -637,7 +631,8 @@ void Application::parseOptions(const QStringList &arguments)
     if (parser.isSet(listLanguagesOption)) {
         auto availableTranslations = Translations::listAvailableTranslations().toList();
         availableTranslations.sort(Qt::CaseInsensitive);
-        showHint(tr("Available translations: %1").arg(availableTranslations.join(", ")));
+        displayHelpText(tr("Available translations: %1").arg(availableTranslations.join(", ")));
+        std::exit(1);
     }
 
     auto positionalArguments = parser.positionalArguments();
@@ -646,16 +641,6 @@ void Application::parseOptions(const QStringList &arguments)
     if (!positionalArguments.empty()) {
         QTimer::singleShot(0, this, [this, positionalArguments] { openVirtualFile(positionalArguments.front()); });
     }
-}
-
-void Application::showHint(const QString &errorHint)
-{
-    QString out;
-    QTextStream hint(&out);
-    hint << errorHint << endl
-         << tr("Try \"%1\" --help' for more information").arg(QFileInfo(QCoreApplication::applicationFilePath()).fileName()) << endl;
-    displayHelpText(out, std::cerr);
-    std::exit(1);
 }
 
 bool Application::debugMode()
