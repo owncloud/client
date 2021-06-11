@@ -545,13 +545,12 @@ void Application::parseOptions(const QStringList &arguments)
     QString descriptionText;
     QTextStream descriptionTextStream(&descriptionText);
 
-    descriptionTextStream << _theme->appName() << QStringLiteral(" version ") << _theme->version() << endl;
-    descriptionTextStream << QStringLiteral("File synchronization desktop utility.");
+    descriptionTextStream << tr("%1 version %2\r\nFile synchronization desktop utility.").arg(_theme->appName()).arg(_theme->version()) << endl;
 
     if (_theme->appName() == QLatin1String("ownCloud")) {
         descriptionTextStream << endl
                               << endl
-                              << "For more information, see http://www.owncloud.org";
+                              << tr("For more information, see http://www.owncloud.org");
     }
 
     parser.setApplicationDescription(descriptionText);
@@ -565,20 +564,20 @@ void Application::parseOptions(const QStringList &arguments)
         return option;
     };
 
-    auto showSettingsOption = addOption({ { "s", "showsettings" }, "Show the settings dialog while starting." });
-    auto quitInstanceOption = addOption({ { "q", "quit" }, "Quit the running instance." });
-    auto logFileOption = addOption({ "logfile", "Write log to file (use - to write to stdout).", "filename" });
-    auto logDirOption = addOption({ "logdir", "Write each sync log output in a new file in folder.", "name" });
-    auto logExpireOption = addOption({ "logexpire", "Remove logs older than <hours> hours (to be used with --logdir).", "hours" });
-    auto logFlushOption = addOption({ "logflush", "Flush the log file after every write." });
-    auto logDebugOption = addOption({ "logdebug", "Output debug-level messages in the log." });
-    auto languageOption = addOption({ "language", "Override UI language.", "language" });
-    auto listLanguagesOption = addOption({ "list-languages", "Override UI language." });
-    auto confDirOption = addOption({ "confdir", "Use the given configuration folder.", "dirname" });
-    auto debugOption = addOption({ "debug", "Enable debug mode." });
+    auto showSettingsOption = addOption({ { "s", "showsettings" }, tr("Show the settings dialog while starting.") });
+    auto quitInstanceOption = addOption({ { "q", "quit" }, tr("Quit the running instance.") });
+    auto logFileOption = addOption({ "logfile", tr("Write log to file (use - to write to stdout)."), "filename" });
+    auto logDirOption = addOption({ "logdir", tr("Write each sync log output in a new file in folder."), "name" });
+    auto logExpireOption = addOption({ "logexpire", tr("Remove logs older than <hours> hours (to be used with --logdir)."), "hours" });
+    auto logFlushOption = addOption({ "logflush", tr("Flush the log file after every write.") });
+    auto logDebugOption = addOption({ "logdebug", tr("Output debug-level messages in the log.") });
+    auto languageOption = addOption({ "language", tr("Override UI language."), "language" });
+    auto listLanguagesOption = addOption({ "list-languages", tr("Override UI language.") });
+    auto confDirOption = addOption({ "confdir", tr("Use the given configuration folder."), "dirname" });
+    auto debugOption = addOption({ "debug", tr("Enable debug mode.") });
 
     // virtual file system parameters (optional)
-    parser.addPositionalArgument("vfs file", "Virtual file system file to be opened (optional).", { "[<vfs file>]" });
+    parser.addPositionalArgument("vfs file", tr("Virtual file system file to be opened (optional)."), { tr("[<vfs file>]") });
 
     if (!parser.parse(arguments)) {
         showHint(parser.errorText());
@@ -618,7 +617,7 @@ void Application::parseOptions(const QStringList &arguments)
     if (parser.isSet(confDirOption)) {
         const auto confDir = parser.value(confDirOption);
         if (!ConfigFile::setConfDir(confDir)) {
-            showHint("Invalid path passed to --confdir");
+            showHint(tr("Invalid path passed to --confdir"));
         }
     }
     if (parser.isSet(debugOption)) {
@@ -626,15 +625,11 @@ void Application::parseOptions(const QStringList &arguments)
         _debugMode = true;
     }
     if (parser.isSet(languageOption)) {
-        auto showLanguageHint = [this](const QString &message) {
-            showHint(message + " (use --list-languages to get a complete list of supported translations)");
-        };
-
         const auto languageValue = parser.value(languageOption);
 
         // fail if the language is unknown
         if (!Translations::listAvailableTranslations().contains(languageValue)) {
-            showLanguageHint("Error: unknown language \"" + languageValue + "\"");
+            showHint(tr("Error: unknown language \"%1\" (use --list-languages to get a complete list of supported translations)").arg(languageValue));
         } else {
             _userEnforcedLanguage = languageValue;
         }
@@ -642,8 +637,7 @@ void Application::parseOptions(const QStringList &arguments)
     if (parser.isSet(listLanguagesOption)) {
         auto availableTranslations = Translations::listAvailableTranslations().toList();
         availableTranslations.sort(Qt::CaseInsensitive);
-        displayHelpText("Available translations: " + availableTranslations.join(", "));
-        std::exit(0);
+        showHint(tr("Available translations: %1").arg(availableTranslations.join(", ")));
     }
 
     auto positionalArguments = parser.positionalArguments();
@@ -659,7 +653,7 @@ void Application::showHint(const QString &errorHint)
     QString out;
     QTextStream hint(&out);
     hint << errorHint << endl
-         << "Try '" << QFileInfo(QCoreApplication::applicationFilePath()).fileName() << " --help' for more information" << endl;
+         << tr("Try \"%1\" --help' for more information").arg(QFileInfo(QCoreApplication::applicationFilePath()).fileName()) << endl;
     displayHelpText(out, std::cerr);
     std::exit(1);
 }
