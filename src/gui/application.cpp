@@ -548,7 +548,7 @@ void Application::parseOptions(const QStringList &arguments)
     QString descriptionText;
     QTextStream descriptionTextStream(&descriptionText);
 
-    descriptionTextStream << tr("%1 version %2\r\nFile synchronization desktop utility.").arg(_theme->appName()).arg(_theme->version()) << endl;
+    descriptionTextStream << tr("%1 version %2\r\nFile synchronization desktop utility.").arg(_theme->appName(), _theme->version()) << endl;
 
     if (_theme->appName() == QLatin1String("ownCloud")) {
         descriptionTextStream << endl
