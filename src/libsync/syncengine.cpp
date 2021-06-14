@@ -264,7 +264,7 @@ void SyncEngine::conflictRecordMaintenance()
     // Remove stale conflict entries from the database
     // by checking which files still exist and removing the
     // missing ones.
-    auto conflictRecordPaths = _journal->conflictRecordPaths();
+    const auto conflictRecordPaths = _journal->conflictRecordPaths();
     for (const auto &path : conflictRecordPaths) {
         auto fsPath = _propagator->fullLocalPath(QString::fromUtf8(path));
         if (!QFileInfo(fsPath).exists()) {
@@ -277,7 +277,7 @@ void SyncEngine::conflictRecordMaintenance()
     //
     // This happens when the conflicts table is new or when conflict files
     // are downlaoded but the server doesn't send conflict headers.
-    for (const auto &path : _seenConflictFiles) {
+    for (const auto &path : qAsConst(_seenConflictFiles)) {
         OC_ASSERT(Utility::isConflictFile(path));
 
         auto bapath = path.toUtf8();

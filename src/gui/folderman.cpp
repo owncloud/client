@@ -327,7 +327,7 @@ void FolderMan::backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringLi
         settings->beginGroup(name);
         const int foldersVersion = settings->value(QLatin1String(versionC), 1).toInt();
         if (foldersVersion <= maxFoldersVersion) {
-            const auto childGroups = settings->childGroups();
+            const auto &childGroups = settings->childGroups();
             for (const auto &folderAlias : childGroups) {
                 settings->beginGroup(folderAlias);
                 const int folderVersion = settings->value(QLatin1String(versionC), 1).toInt();
@@ -342,7 +342,8 @@ void FolderMan::backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringLi
         settings->endGroup();
     };
 
-    for (const auto &accountId : settings->childGroups()) {
+    const auto &childGroups = settings->childGroups();
+    for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
         processSubgroup("Folders");
         processSubgroup("Multifolders");
@@ -756,7 +757,7 @@ void FolderMan::startScheduledSyncSoon()
 void FolderMan::slotStartScheduledFolderSync()
 {
     if (isAnySyncRunning()) {
-        for (auto f : _folderMap) {
+        for (auto *f : qAsConst(_folderMap)) {
             if (f->isSyncRunning())
                 qCInfo(lcFolderMan) << "Currently folder " << f->remoteUrl().toString() << " is running, wait for finish!";
         }

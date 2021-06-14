@@ -675,10 +675,12 @@ FileInfo *FakeChunkMoveReply::perform(FileInfo &uploadsFileInfo, FileInfo &remot
     QString fileName = getFilePathFromUrl(QUrl::fromEncoded(request.rawHeader("Destination")));
     Q_ASSERT(!fileName.isEmpty());
 
+    const auto &sourceFolderChildren = sourceFolder->children;
     // Compute the size and content from the chunks if possible
-    for (auto chunkName : sourceFolder->children.keys()) {
-        auto &x = sourceFolder->children[chunkName];
-        if (chunkName.toLongLong() != prev)
+    for (auto it = sourceFolderChildren.cbegin(); it != sourceFolderChildren.cend(); ++it) {
+        const auto &chunkNameLongLong = it.key().toLongLong();
+        const auto &x = it.value();
+        if (chunkNameLongLong != prev)
             break;
         Q_ASSERT(!x.isDir);
         Q_ASSERT(x.size > 0); // There should not be empty chunks
@@ -686,9 +688,9 @@ FileInfo *FakeChunkMoveReply::perform(FileInfo &uploadsFileInfo, FileInfo &remot
         Q_ASSERT(!payload || payload == x.contentChar);
         payload = x.contentChar;
         ++count;
-        prev = chunkName.toLongLong() + x.size;
+        prev = chunkNameLongLong + x.size;
     }
-    Q_ASSERT(sourceFolder->children.count() == count); // There should not be holes or extra files
+    Q_ASSERT(sourceFolderChildren.count() == count); // There should not be holes or extra files
 
     // NOTE: This does not actually assemble the file data from the chunks!
     FileInfo *fileInfo = remoteRootFileInfo.find(fileName);

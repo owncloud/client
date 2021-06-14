@@ -96,7 +96,7 @@ void IgnoreListEditor::slotUpdateLocalIgnoreList()
             if (patternItem->data(isGlobalRole).toBool())
                 continue;
 
-            QStringList skippedLines = patternItem->data(skippedLinesRole).toStringList();
+            const auto skippedLines = patternItem->data(skippedLinesRole).toStringList();
             for (const auto &line : skippedLines)
                 ignores.write(line.toUtf8() + '\n');
 

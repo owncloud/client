@@ -442,7 +442,8 @@ void SettingsDialog::customizeStyle()
     QString background(palette().base().color().name());
     _ui->toolBar->setStyleSheet(TOOLBAR_CSS().arg(background, dark, highlightColor, highlightTextColor));
 
-    for (auto a : findChildren<ToolButtonAction *>()) {
+    const auto &toolButtonActions = findChildren<ToolButtonAction *>();
+    for (auto *a : toolButtonActions) {
         a->updateIcon();
     }
 }

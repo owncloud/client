@@ -341,7 +341,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
 AccountStatePtr AccountManager::account(const QString &name)
 {
-    for (const auto &acc : _accounts) {
+    for (const auto &acc : qAsConst(_accounts)) {
         if (acc->account()->displayName() == name) {
             return acc;
         }

@@ -122,7 +122,7 @@ bool Application::configVersionMigration()
         settings->endGroup();
 
         // Wipe confusing keys from the future, ignore the others
-        for (const auto &badKey : deleteKeys)
+        for (const auto &badKey : qAsConst(deleteKeys))
             settings->remove(badKey);
     }
 
