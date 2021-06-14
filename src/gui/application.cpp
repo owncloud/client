@@ -582,7 +582,7 @@ void Application::parseOptions(const QStringList &arguments)
     // virtual file system parameters (optional)
     parser.addPositionalArgument("vfs file", tr("Virtual file system file to be opened (optional)."), { tr("[<vfs file>]") });
 
-    parser.process(*this);
+    parser.process(arguments);
 
     // TODO: rename this option (see #8234 for more information)
     if (parser.isSet(showSettingsOption)) {
