@@ -63,7 +63,7 @@ static QString findDefaultFileManager()
     QFileInfo fi;
     const auto &dirs = xdgDataDirs();
     for (const auto &dir : dirs) {
-        const QStringList subdirs{QStringLiteral("/applications/"), QStringLiteral("/applications/kde4/")};
+        const QStringList subdirs { QStringLiteral("/applications/"), QStringLiteral("/applications/kde4/") };
         for (const auto &subdir : subdirs) {
             fi.setFile(dir + subdir + fileName);
             if (fi.exists()) {

@@ -399,7 +399,7 @@ void AccountManager::shutdown()
 {
     const auto accountsCopy = _accounts;
     _accounts.clear();
-    for (const auto &acc: accountsCopy) {
+    for (const auto &acc : accountsCopy) {
         emit accountRemoved(acc.data());
     }
 }
