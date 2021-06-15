@@ -164,7 +164,7 @@ void ShareUserGroupWidget::searchForSharees()
     QSharedPointer<Sharee> currentUser(new Sharee(_account->credentials()->user(), "", Sharee::Type::User));
     blacklist << currentUser;
 
-    const auto shareUserLines = _ui->scrollArea->findChildren<ShareUserLine *>();
+    const auto &shareUserLines = _ui->scrollArea->findChildren<ShareUserLine *>();
     for (auto *sw : shareUserLines) {
         blacklist << sw->share()->getShareWith();
     }

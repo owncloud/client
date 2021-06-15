@@ -117,7 +117,7 @@ bool Capabilities::isValid() const
 QList<QByteArray> Capabilities::supportedChecksumTypes() const
 {
     QList<QByteArray> list;
-    const auto supportedTypes = _capabilities.value(QStringLiteral("checksums")).toMap().value(QStringLiteral("supportedTypes")).toList();
+    const auto &supportedTypes = _capabilities.value(QStringLiteral("checksums")).toMap().value(QStringLiteral("supportedTypes")).toList();
     for (const auto &t : supportedTypes) {
         list.push_back(t.toByteArray());
     }
@@ -190,7 +190,7 @@ bool Capabilities::privateLinkDetailsParamAvailable() const
 QList<int> Capabilities::httpErrorCodesThatResetFailingChunkedUploads() const
 {
     QList<int> list;
-    const auto errorCodes = _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("httpErrorCodesThatResetFailingChunkedUploads")).toList();
+    const auto &errorCodes = _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("httpErrorCodesThatResetFailingChunkedUploads")).toList();
     for (const auto &t : errorCodes) {
         list.push_back(t.toInt());
     }

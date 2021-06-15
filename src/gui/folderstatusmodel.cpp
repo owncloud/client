@@ -72,8 +72,7 @@ void FolderStatusModel::setAccountState(const AccountState *accountState)
     connect(FolderMan::instance(), &FolderMan::scheduleQueueChanged,
         this, &FolderStatusModel::slotFolderScheduleQueueChanged, Qt::UniqueConnection);
 
-    auto folders = FolderMan::instance()->map();
-    for (const auto &f : qAsConst(folders)) {
+    for (const auto &f : FolderMan::instance()->map()) {
         if (!accountState)
             break;
         if (f->accountState() != accountState)
@@ -1108,8 +1107,7 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
 void FolderStatusModel::slotFolderScheduleQueueChanged()
 {
     // Update messages on waiting folders.
-    const auto &map = FolderMan::instance()->map();
-    for (auto *f : map) {
+    for (auto *f : FolderMan::instance()->map()) {
         slotFolderSyncStateChange(f);
     }
 }
@@ -1129,7 +1127,7 @@ void FolderStatusModel::slotSyncAllPendingBigFolders()
         auto folder = _folders.at(i)._folder;
 
         bool ok;
-        const auto undecidedList = folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, &ok);
+        const auto &undecidedList = folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, &ok);
         if (!ok) {
             qCWarning(lcFolderStatus) << "Could not read selective sync list from db.";
             return;

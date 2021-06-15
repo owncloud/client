@@ -65,7 +65,7 @@ void ServerNotificationHandler::slotNotificationsReceived(const QJsonDocument &j
         return;
     }
 
-    const auto notifies = json.object().value("ocs").toObject().value("data").toArray();
+    const auto &notifies = json.object().value("ocs").toObject().value("data").toArray();
 
     AccountState *ai = qvariant_cast<AccountState *>(sender()->property("AccountStatePtr"));
 

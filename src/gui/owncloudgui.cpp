@@ -200,8 +200,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         _actionStatus->setText(text);
     };
 
-    const auto &accounts = AccountManager::instance()->accounts();
-    for (const auto &a : accounts) {
+    for (const auto &a : AccountManager::instance()->accounts()) {
         if (!a->isSignedOut()) {
             allSignedOut = false;
         }
@@ -211,6 +210,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             allDisconnected = false;
         }
     }
+
     const auto &map = FolderMan::instance()->map();
     for (auto *f : map) {
         if (!f->syncPaused()) {
@@ -624,8 +624,8 @@ void ownCloudGui::updateContextMenu()
             atLeastOneSignedIn = true;
         }
     }
-    const auto &map = FolderMan::instance()->map();
-    for (auto *f : map) {
+
+    for (auto *f : FolderMan::instance()->map()) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
         } else {
@@ -929,8 +929,7 @@ void ownCloudGui::slotLogin()
         account->account()->resetRejectedCertificates();
         account->signIn();
     } else {
-        const auto &list = AccountManager::instance()->accounts();
-        for (const auto &a : list) {
+        for (const auto &a : AccountManager::instance()->accounts()) {
             a->signIn();
         }
     }
@@ -977,13 +976,11 @@ void ownCloudGui::setPauseOnAllFoldersHelper(bool pause)
     if (auto account = qvariant_cast<AccountStatePtr>(sender()->property(propertyAccountC))) {
         accounts.append(account.data());
     } else {
-        const auto &existingAccounts = AccountManager::instance()->accounts();
-        for (const auto &a : existingAccounts) {
+        for (const auto &a : AccountManager::instance()->accounts()) {
             accounts.append(a.data());
         }
     }
-    const auto &map = FolderMan::instance()->map();
-    for (auto *f : map) {
+    for (auto *f : FolderMan::instance()->map()) {
         if (accounts.contains(f->accountState())) {
             f->setSyncPaused(pause);
             if (pause) {

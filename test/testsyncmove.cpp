@@ -69,8 +69,7 @@ bool expectAndWipeConflict(FileModifier &local, FileInfo state, const QString pa
     auto base = state.find(pathComponents.parentDirComponents());
     if (!base)
         return false;
-    const auto &children = base->children;
-    for (const auto &item : children) {
+    for (const auto &item : qAsConst(base->children)) {
         if (item.name.startsWith(pathComponents.fileName()) && item.name.contains("(conflicted copy")) {
             local.remove(item.path());
             return true;

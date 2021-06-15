@@ -233,7 +233,7 @@ void SyncEngine::deleteStaleUploadInfos(const SyncFileItemVector &syncItems)
     }
 
     // Delete from journal.
-    const auto ids = _journal->deleteStaleUploadInfos(upload_file_paths);
+    const auto &ids = _journal->deleteStaleUploadInfos(upload_file_paths);
 
     // Delete the stales chunk on the server.
     if (account()->capabilities().chunkingNg()) {
@@ -264,7 +264,7 @@ void SyncEngine::conflictRecordMaintenance()
     // Remove stale conflict entries from the database
     // by checking which files still exist and removing the
     // missing ones.
-    const auto conflictRecordPaths = _journal->conflictRecordPaths();
+    const auto &conflictRecordPaths = _journal->conflictRecordPaths();
     for (const auto &path : conflictRecordPaths) {
         auto fsPath = _propagator->fullLocalPath(QString::fromUtf8(path));
         if (!QFileInfo(fsPath).exists()) {

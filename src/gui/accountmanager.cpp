@@ -84,13 +84,13 @@ bool AccountManager::restore()
     }
 
     // If there are no accounts, check the old format.
-    if (settings->childGroups().isEmpty()
+    const auto &childGroups = settings->childGroups();
+    if (childGroups.isEmpty()
         && !settings->contains(QLatin1String(versionC))) {
         restoreFromLegacySettings();
         return true;
     }
 
-    const auto childGroups = settings->childGroups();
     for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
         if (!skipSettingsKeys.contains(settings->group())) {
@@ -119,7 +119,7 @@ void AccountManager::backwardMigrationSettingsKeys(QStringList *deleteKeys, QStr
     auto settings = ConfigFile::settingsWithGroup(QLatin1String(accountsC));
     const int accountsVersion = settings->value(QLatin1String(versionC)).toInt();
     if (accountsVersion <= maxAccountsVersion) {
-        const auto childGroups = settings->childGroups();
+        const auto &childGroups = settings->childGroups();
         for (const auto &accountId : childGroups) {
             settings->beginGroup(accountId);
             const int accountVersion = settings->value(QLatin1String(versionC), 1).toInt();

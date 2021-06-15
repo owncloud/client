@@ -176,7 +176,7 @@ int FolderMan::setupFolders()
     skipSettingsKeys += deleteSettingsKeys;
 
     auto settings = ConfigFile::settingsWithGroup(QLatin1String("Accounts"));
-    const auto accountsWithSettings = settings->childGroups();
+    const auto &accountsWithSettings = settings->childGroups();
     if (accountsWithSettings.isEmpty()) {
         int r = setupFoldersMigration();
         if (r > 0) {
@@ -187,8 +187,7 @@ int FolderMan::setupFolders()
 
     qCInfo(lcFolderMan) << "Setup folders from settings file";
 
-    const auto &accounts = AccountManager::instance()->accounts();
-    for (const auto &account : accounts) {
+    for (const auto &account : AccountManager::instance()->accounts()) {
         const auto id = account->account()->id();
         if (!accountsWithSettings.contains(id)) {
             continue;
@@ -224,7 +223,7 @@ int FolderMan::setupFolders()
 
 void FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account, const QStringList &ignoreKeys, bool backwardsCompatible, bool foldersWithPlaceholders)
 {
-    const auto childGroups = settings.childGroups();
+    const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
         // Skip folders with too-new version
         settings.beginGroup(folderAlias);
@@ -301,7 +300,7 @@ int FolderMan::setupFoldersMigration()
     QDir dir(_folderConfigPath);
     //We need to include hidden files just in case the alias starts with '.'
     dir.setFilter(QDir::Files | QDir::Hidden);
-    const auto list = dir.entryList();
+    const auto &list = dir.entryList();
 
     // Normally there should be only one account when migrating.
     AccountState *accountState = AccountManager::instance()->accounts().value(0).data();
@@ -994,8 +993,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     // Migration: The first account that's configured for a local folder shall
     // be saved in a backwards-compatible way.
     bool oneAccountOnly = true;
-    const auto &map = FolderMan::instance()->map();
-    for (auto *other : map) {
+    for (auto *other : map()) {
         if (other != folder && other->cleanPath() == folder->cleanPath()) {
             oneAccountOnly = false;
             break;
@@ -1057,7 +1055,7 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
 {
     QString absolutePath = QDir::cleanPath(path) + QLatin1Char('/');
 
-    for (auto *folder : this->map().values()) {
+    for (auto *folder : map()) {
         const QString folderPath = folder->cleanPath() + QLatin1Char('/');
 
         if (absolutePath.startsWith(folderPath, (Utility::isWindows() || Utility::isMac()) ? Qt::CaseInsensitive : Qt::CaseSensitive)) {
@@ -1083,7 +1081,7 @@ QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Acco
     if (!serverPath.startsWith('/'))
         serverPath.prepend('/');
 
-    for (auto *folder : this->map().values()) {
+    for (auto *folder : map()) {
         if (acc != nullptr && folder->accountState()->account() != acc) {
             continue;
         }

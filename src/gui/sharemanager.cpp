@@ -30,8 +30,7 @@ namespace OCC {
  */
 static void updateFolder(const AccountPtr &account, const QString &path)
 {
-    const auto &accounts = FolderMan::instance()->map();
-    for (auto *f : accounts) {
+    for (auto *f : FolderMan::instance()->map()) {
         if (f->accountState()->account() != account)
             continue;
         auto folderPath = f->remotePath();
@@ -303,7 +302,7 @@ void ShareManager::createShare(const QString &path,
 
             // Find existing share permissions (if this was shared with us)
             Share::Permissions existingPermissions = SharePermissionDefault;
-            const auto array = reply.object()["ocs"].toObject()["data"].toArray();
+            const auto &array = reply.object()["ocs"].toObject()["data"].toArray();
             for (const auto &element : array) {
                 auto map = element.toObject();
                 if (map["file_target"] == path)
@@ -350,7 +349,7 @@ void ShareManager::fetchShares(const QString &path)
 
 void ShareManager::slotSharesFetched(const QJsonDocument &reply)
 {
-    const auto tmpShares = reply.object().value("ocs").toObject().value("data").toArray();
+    const auto &tmpShares = reply.object().value("ocs").toObject().value("data").toArray();
     const QString versionString = _account->serverVersion();
     qCDebug(lcSharing) << versionString << "Fetched" << tmpShares.count() << "shares";
 

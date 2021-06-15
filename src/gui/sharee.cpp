@@ -88,34 +88,34 @@ void ShareeModel::shareesFetched(const QJsonDocument &reply)
      */
     auto exact = data.value("exact").toObject();
     {
-        const auto users = exact.value("users").toArray();
+        const auto &users = exact.value("users").toArray();
         for (const auto &user : users) {
             newSharees.append(parseSharee(user.toObject()));
         }
-        const auto groups = exact.value("groups").toArray();
+        const auto &groups = exact.value("groups").toArray();
         for (const auto &group : groups) {
             newSharees.append(parseSharee(group.toObject()));
         }
-        const auto remotes = exact.value("remotes").toArray();
+        const auto &remotes = exact.value("remotes").toArray();
         for (const auto &remote : remotes) {
             newSharees.append(parseSharee(remote.toObject()));
         }
     }
 
     {
-        const auto users = data.value("users").toArray();
+        const auto &users = data.value("users").toArray();
         for (const auto &user : users) {
             newSharees.append(parseSharee(user.toObject()));
         }
     }
     {
-        const auto groups = data.value("groups").toArray();
+        const auto &groups = data.value("groups").toArray();
         for (const auto &group : groups) {
             newSharees.append(parseSharee(group.toObject()));
         }
     }
     {
-        const auto remotes = data.value("remotes").toArray();
+        const auto &remotes = data.value("remotes").toArray();
         for (const auto &remote : remotes) {
             newSharees.append(parseSharee(remote.toObject()));
         }

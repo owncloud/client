@@ -302,8 +302,7 @@ Application::Application(int &argc, char **argv)
         this, &Application::slotAccountStateAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &Application::slotAccountStateRemoved);
-    const auto &accounts = AccountManager::instance()->accounts();
-    for (const auto &ai : accounts) {
+    for (const auto &ai : AccountManager::instance()->accounts()) {
         slotAccountStateAdded(ai.data());
     }
 
