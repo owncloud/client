@@ -284,7 +284,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     if (map.count() > 0) {
 #ifdef Q_OS_WIN
         // Windows has a 128-char tray tooltip length limit.
-        trayMessage = folderMan->trayTooltipStatusString(trayOverallStatusResult.overallStatus, trayOverallStatusResult.hasUnresolvedConflicts, false);
+        trayMessage = FolderMan::instance()->trayTooltipStatusString(trayOverallStatusResult.overallStatus, trayOverallStatusResult.hasUnresolvedConflicts, false);
 #else
         QStringList allStatusStrings;
         for (auto *folder : map.values()) {
