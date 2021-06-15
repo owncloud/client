@@ -302,7 +302,7 @@ void ShareManager::createShare(const QString &path,
 
             // Find existing share permissions (if this was shared with us)
             Share::Permissions existingPermissions = SharePermissionDefault;
-            const auto &array = reply.object()["ocs"].toObject()["data"].toArray();
+            const auto &array = reply.object()[QLatin1String("ocs")].toObject()[QLatin1String("data")].toArray();
             for (const auto &element : array) {
                 auto map = element.toObject();
                 if (map["file_target"] == path)
@@ -349,7 +349,7 @@ void ShareManager::fetchShares(const QString &path)
 
 void ShareManager::slotSharesFetched(const QJsonDocument &reply)
 {
-    const auto &tmpShares = reply.object().value("ocs").toObject().value("data").toArray();
+    const auto &tmpShares = reply.object().value(QLatin1String("ocs")).toObject().value(QLatin1String("data")).toArray();
     const QString versionString = _account->serverVersion();
     qCDebug(lcSharing) << versionString << "Fetched" << tmpShares.count() << "shares";
 

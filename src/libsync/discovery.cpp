@@ -242,8 +242,8 @@ bool ProcessDirectoryJob::handleExcluded(const QString &path, const QString &loc
             if (item->_file.endsWith(QLatin1Char('.'))) {
                 item->_errorString = tr("File names ending with a period are not supported on this file system.");
             } else {
-                static const QString unsupportedCharacters = QStringLiteral("\\:?*\"<>|");
-                for (const auto x : unsupportedCharacters) {
+                const auto unsupportedCharacters = QStringLiteral("\\:?*\"<>|");
+                for (const auto &x : unsupportedCharacters) {
                     if (item->_file.contains(x)) {
                         item->_errorString = tr("File names containing the character '%1' are not supported on this file system.")
                                                  .arg(x);
