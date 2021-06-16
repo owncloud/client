@@ -1,6 +1,6 @@
 name: test-clang-format
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build:
@@ -10,4 +10,4 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
-    - uses: yshui/git-clang-format-lint@master
+    - uses: yshui/git-clang-format-lint@v1.3
