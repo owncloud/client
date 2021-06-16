@@ -55,8 +55,8 @@ def main(ctx):
             "Ninja",
             trigger = build_trigger,
         ),
-        gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "10.7.0"),
-        gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "10.7.0"),
+        gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "latest"),
+        gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "latest"),
         notification(
             name = "build",
             trigger = build_trigger,
@@ -87,7 +87,7 @@ def main(ctx):
             trigger = cron_trigger,
         ),
         gui_tests(ctx, trigger = cron_trigger, filterTags = ["@smokeTest"]),
-        gui_tests(ctx, trigger = cron_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest", "~@skip"]),
+        gui_tests(ctx, trigger = cron_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"]),
     ]
 
     if ctx.build.event == "cron":
