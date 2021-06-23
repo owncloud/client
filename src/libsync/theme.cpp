@@ -322,6 +322,15 @@ QString Theme::overrideServerUrl() const
     return QString();
 }
 
+QString Theme::overrideServerUrlV2() const
+{
+    static const auto serverOverride = qEnvironmentVariable("OWNCLOUD_OVERRIDE_SERVER_URL");
+    if (serverOverride.isEmpty()) {
+        return overrideServerUrl();
+    }
+    return serverOverride;
+}
+
 QString Theme::forceConfigAuthType() const
 {
     return QString();
