@@ -40,7 +40,6 @@
 #include <QOperatingSystemVersion>
 #include <QStandardPaths>
 
-#define DEFAULT_REMOTE_POLL_INTERVAL 30000 // default remote poll time in milliseconds
 #define DEFAULT_MAX_LOG_LINES 20000
 
 namespace OCC {
@@ -413,10 +412,10 @@ chrono::milliseconds ConfigFile::remotePollInterval(const QString &connection) c
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.beginGroup(con);
 
-    auto defaultPollInterval = chrono::milliseconds(DEFAULT_REMOTE_POLL_INTERVAL);
+    auto defaultPollInterval = chrono::milliseconds(DefaultRemotePollInterval);
     auto remoteInterval = millisecondsValue(settings, remotePollIntervalC(), defaultPollInterval);
     if (remoteInterval < chrono::seconds(5)) {
-        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << DEFAULT_REMOTE_POLL_INTERVAL;
+        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << DefaultRemotePollInterval;
         remoteInterval = defaultPollInterval;
     }
     return remoteInterval;
