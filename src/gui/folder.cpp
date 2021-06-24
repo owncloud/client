@@ -285,6 +285,39 @@ bool Folder::canSync() const
     return !syncPaused() && accountState()->isConnected();
 }
 
+bool Folder::dueToSync() const
+{
+    // conditions taken from previous folderman implementation
+    if (isSyncRunning() ||
+            etagJob()   ||
+            isBusy()    ||
+            !canSync()) {
+        return false;
+    }
+
+    ConfigFile cfg;
+    // the default poll time of 30 seconds as it had been in the client forever.
+    auto polltime = std::chrono::milliseconds(cfg.DefaultRemotePollInterval);
+
+    // ... and an user configured poll interval that might exist
+    auto polltimeCfg = cfg.remotePollInterval();
+
+    if (polltimeCfg != polltime) {
+        // there is a non default entry in the config. Highest prio
+        polltime = polltimeCfg;
+    } else {
+        // read the account capability - specified in seconds. If there, use it.
+        int pta = accountState()->account()->capabilities().remotePollInterval();
+        if (pta > 5) {
+            polltime = std::chrono::milliseconds(pta * 1000);
+        }
+    }
+    if (msecSinceLastSync() < polltime) {
+        return false;
+    }
+    return true;
+}
+
 void Folder::setSyncPaused(bool paused)
 {
     if (paused == _definition.paused) {

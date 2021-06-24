@@ -183,6 +183,12 @@ public:
      */
     bool canSync() const;
 
+    /**
+     *  Returns true if the folder needs sync poll interval wise, and can
+     *  sync due to its internal state
+     */
+    bool dueToSync() const;
+
     void prepareToSync();
 
     /**
@@ -224,7 +230,7 @@ public:
     SyncEngine &syncEngine() { return *_engine; }
     Vfs &vfs() { return *_vfs; }
 
-    RequestEtagJob *etagJob() { return _requestEtagJob; }
+    RequestEtagJob *etagJob() const { return _requestEtagJob; }
     std::chrono::milliseconds msecSinceLastSync() const { return std::chrono::milliseconds(_timeSinceLastSyncDone.elapsed()); }
     std::chrono::milliseconds msecLastSyncDuration() const { return _lastSyncDuration; }
     int consecutiveFollowUpSyncs() const { return _consecutiveFollowUpSyncs; }
