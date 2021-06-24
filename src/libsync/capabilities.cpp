@@ -103,6 +103,26 @@ int Capabilities::defaultPermissions() const
     return _fileSharingCapabilities.value(QStringLiteral("default_permissions"), 1).toInt();
 }
 
+int Capabilities::remotePollInterval() const
+{
+    // The default capability is 60, but the clients use 30. If we returned 60 here, the clients
+    // would all jump to 60 seconds, which would be an unepected change from their default.
+    // We only return 60 if the capability was set to 60! to indicate that this is really wanted.
+    // Otherwise 60 is treatet as default.
+    int interval {-1};
+    const QString val = _capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("pollinterval")).toString();
+    if (val == QStringLiteral("60!")) {
+        interval = 60;
+    } else {
+        bool ok;
+        int tmpInt = val.toInt(&ok);
+        if (ok && tmpInt != 60)
+            interval = tmpInt;
+    }
+
+    return interval;
+}
+
 bool Capabilities::notificationsAvailable() const
 {
     // We require the OCS style API in 9.x, can't deal with the REST one only found in 8.2
