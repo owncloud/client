@@ -163,6 +163,7 @@ namespace FileSystem {
      *    the windows API functions work with the normal "unixoid" representation too.
      */
     QString OCSYNC_EXPORT pathtoUNC(const QString &str);
+    bool OCSYNC_EXPORT isChildPathOf(QStringView child, QStringView parent);
 }
 
 /** @} */
