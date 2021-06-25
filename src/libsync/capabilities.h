@@ -77,7 +77,7 @@ public:
     bool shareResharing() const;
     /** Remote Poll interval.
      *
-     *  returns the requested poll interval to be used by the client in seconds.
+     *  returns the requested poll interval to be used by the client in milliseconds.
      *  If it returns -1 the client default remains unchanged.
      */
     int remotePollInterval() const;

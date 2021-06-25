@@ -308,8 +308,8 @@ bool Folder::dueToSync() const
     } else {
         // read the account capability - specified in seconds. If there, use it.
         int pta = accountState()->account()->capabilities().remotePollInterval();
-        if (pta > 5) {
-            polltime = std::chrono::milliseconds(pta * 1000);
+        if (pta > 4999) {
+            polltime = std::chrono::milliseconds(pta);
         }
     }
     if (msecSinceLastSync() < polltime) {
