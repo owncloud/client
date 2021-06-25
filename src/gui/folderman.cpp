@@ -844,7 +844,7 @@ void FolderMan::slotEtagPollTimerTimeout()
             continue;
         }
         if (f->dueToSync()) {
-            QMetaObject::invokeMethod(f, "slotRunEtagJob", Qt::QueuedConnection);
+            QMetaObject::invokeMethod(f, &Folder::slotRunEtagJob, Qt::QueuedConnection);
         }
     }
 }

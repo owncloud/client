@@ -313,6 +313,8 @@ signals:
 
 public slots:
 
+    void slotRunEtagJob();
+
     /**
        * terminate the current sync run
        */
@@ -379,7 +381,6 @@ private slots:
     void slotTransmissionProgress(const ProgressInfo &pi);
     void slotItemCompleted(const SyncFileItemPtr &);
 
-    void slotRunEtagJob();
     void etagRetreived(const QByteArray &, const QDateTime &tp);
     void etagRetrievedFromSyncEngine(const QByteArray &, const QDateTime &time);
 
