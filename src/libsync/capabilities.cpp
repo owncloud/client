@@ -107,7 +107,7 @@ int Capabilities::remotePollInterval() const
 {
     // The default of the capability is 60, but the clients use 30.
     // Values below 5000 are not allowed and fall back to the default.
-    int interval {-1};
+    int interval { -1 };
     const QString val = _capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("pollinterval")).toString();
     bool ok;
     int tmpInt = val.toInt(&ok);
