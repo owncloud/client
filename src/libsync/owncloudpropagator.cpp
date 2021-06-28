@@ -750,19 +750,21 @@ QString OwncloudPropagator::adjustRenamedPath(const QString &original) const
     return OCC::adjustRenamedPath(_renamedDirectories, original);
 }
 
-bool OwncloudPropagator::updateMetadata(const SyncFileItem &item, const QString &localFolderPath, SyncJournalDb &journal, Vfs &vfs)
+Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updateMetadata(const SyncFileItem &item)
 {
-    QString fsPath = localFolderPath + item.destination();
-    if (!vfs.convertToPlaceholder(fsPath, item)) {
-        return false;
+    const QString fsPath = _localDir + item.destination();
+    const auto result = syncOptions()._vfs->convertToPlaceholder(fsPath, item);
+    if (!result) {
+        return result.error();
+    } else if (*result == Vfs::ConvertToPlaceholderResult::Locked) {
+        return Vfs::ConvertToPlaceholderResult::Locked;
     }
     auto record = item.toSyncJournalFileRecordWithInode(fsPath);
-    return journal.setFileRecord(record);
-}
-
-bool OwncloudPropagator::updateMetadata(const SyncFileItem &item)
-{
-    return updateMetadata(item, _localDir, *_journal, *syncOptions()._vfs);
+    const auto dBresult = _journal->setFileRecord(record);
+    if (!dBresult) {
+        return dBresult.error();
+    }
+    return Vfs::ConvertToPlaceholderResult::Ok;
 }
 
 // ================================================================================
@@ -1005,10 +1007,14 @@ void PropagateDirectory::slotSubJobsFinished(SyncFileItem::Status status)
         if (_item->_instruction == CSYNC_INSTRUCTION_RENAME
             || _item->_instruction == CSYNC_INSTRUCTION_NEW
             || _item->_instruction == CSYNC_INSTRUCTION_UPDATE_METADATA) {
-            if (!propagator()->updateMetadata(*_item)) {
+            const auto result = propagator()->updateMetadata(*_item);
+            if (!result) {
                 status = _item->_status = SyncFileItem::FatalError;
-                _item->_errorString = tr("Error writing metadata to the database");
-                qCWarning(lcDirectory) << "Error writing to the database for file" << _item->_file;
+                _item->_errorString = tr("Error updating metadata: %1").arg(result.error());
+                qCWarning(lcDirectory) << "Error writing to the database for file" << _item->_file << "with" << result.error();
+            } else if (*result == Vfs::ConvertToPlaceholderResult::Locked) {
+                _item->_status = SyncFileItem::SoftError;
+                _item->_errorString = tr("File is currently in use");
             }
         }
     }
@@ -1129,27 +1135,7 @@ void CleanupPollsJob::start()
 
 void CleanupPollsJob::slotPollFinished()
 {
-    PollJob *job = qobject_cast<PollJob *>(sender());
-    OC_ASSERT(job);
-    if (job->_item->_status == SyncFileItem::FatalError) {
-        emit aborted(job->_item->_errorString);
-        deleteLater();
-        return;
-    } else if (job->_item->_status != SyncFileItem::Success) {
-        qCWarning(lcCleanupPolls) << "There was an error with file " << job->_item->_file << job->_item->_errorString;
-    } else {
-        if (!OwncloudPropagator::updateMetadata(*job->_item, _localPath, *_journal, *_vfs)) {
-            qCWarning(lcCleanupPolls) << "database error";
-            job->_item->_status = SyncFileItem::FatalError;
-            job->_item->_errorString = tr("Error writing metadata to the database");
-            emit aborted(job->_item->_errorString);
-            deleteLater();
-            return;
-        }
-        _journal->setUploadInfo(job->_item->_file, SyncJournalDb::UploadInfo());
-    }
-    // Continue with the next entry, or finish
-    start();
+    OC_ENFORCE_X(false, "Support of CleanupPollsJob is removed in this build");
 }
 
 QString OwncloudPropagator::fullRemotePath(const QString &tmp_file_name) const
