@@ -11,14 +11,14 @@ Feature: Sharing
     @smokeTest
     Scenario: simple sharing
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file on the server with content "ownCloud test text file 0" to "/textfile0.txt"
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
         And user "Alice" has set up a client with default settings
         When the user adds "Brian Murphy" as collaborator of resource "%client_sync_path%/textfile0.txt" with permissions "edit,share" using the client-UI
         Then user "Brian Murphy" should be listed in the collaborators list for file "%client_sync_path%/textfile0.txt" with permissions "edit,share" on the client-UI
 
     @issue-7459
     Scenario: Progress indicator should not be visible after unselecting the password protection checkbox while sharing through public link
-        Given user "Alice" has uploaded file on the server with content "ownCloud test text file 0" to "/textfile0.txt"
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
         And user "Alice" has set up a client with default settings
         When the user opens the public links dialog of "%client_sync_path%/textfile0.txt" using the client-UI
         And the user toggles the password protection using the client-UI
@@ -42,7 +42,7 @@ Feature: Sharing
 
     @smokeTest
     Scenario: simple sharing of a file by public link without password
-        Given user "Alice" has uploaded file on the server with content "ownCloud test text file 0" to "/textfile0.txt"
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for file "%client_sync_path%/textfile0.txt" without password using the client-UI
         Then as user "Alice" the file "textfile0.txt" should have a public link on the server
@@ -51,14 +51,14 @@ Feature: Sharing
 
     Scenario: simple sharing of a file by public link with password
         Given user "Alice" has set up a client with default settings
-        And user "Alice" has uploaded file on the server with content "ownCloud test text file 0" to "/textfile0.txt"
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
         When the user creates a new public link for file "%client_sync_path%/textfile0.txt" with password "pass123" using the client-UI
         Then as user "Alice" the file "textfile0.txt" should have a public link on the server
         And the public should be able to download the file "textfile0.txt" with password "pass123" from the last created public link by "Alice" on the server
 
     @issue-8733
     Scenario: user changes the expiration date of an already existing public link using webUI
-        Given user "Alice" has uploaded file on the server with content "ownCloud test text file 0" to "/textfile0.txt"
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
         And user "Alice" has set up a client with default settings
         And user "Alice" has created a public link on the server with following settings
             | path       | textfile0.txt |
