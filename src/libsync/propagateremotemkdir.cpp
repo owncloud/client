@@ -175,11 +175,18 @@ void PropagateRemoteMkdir::success()
         connect(watcher, &QFutureWatcherBase::finished, this, [watcher, this] {
             const auto *result = watcher->result().get();
             if (*result) {
-                Q_ASSERT(**result == Vfs::ConvertToPlaceholderResult::Ok);
-                done(SyncFileItem::Success);
-            } else {
-                done(SyncFileItem::FatalError, result->error());
+                switch (**result) {
+                case Vfs::ConvertToPlaceholderResult::Ok:
+                    done(SyncFileItem::Success);
+                    return;
+                case Vfs::ConvertToPlaceholderResult::Locked:
+                    done(SyncFileItem::SoftError, tr("Setting file status failed due to file lock"));
+                    return;
+                case Vfs::ConvertToPlaceholderResult::Error:
+                    Q_UNREACHABLE();
+                }
             }
+            done(SyncFileItem::FatalError, result->error());
         });
 
         watcher->setFuture(QtConcurrent::run([p = propagator(), itemCopy] {
@@ -198,7 +205,7 @@ void PropagateRemoteMkdir::success()
                     return result;
                 }
             }
-            return std::make_shared<resultType>(tr("UpdateMetadata Timed out"));
+            return std::make_shared<resultType>(Vfs::ConvertToPlaceholderResult::Locked);
         }));
         return;
     }
