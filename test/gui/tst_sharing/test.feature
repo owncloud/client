@@ -54,6 +54,18 @@ Feature: Sharing
         When the user tires to share resource "%client_sync_path%/textfile0.txt" with the group "grp1" using the client-UI
         Then the error "Path already shared with this group" should be displayed
 
+
+    Scenario: sharee edits content of a file shared by sharer
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
+        And user "Brian" has been created on the server with default attributes and without skeleton files
+        And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
+        And user "Brian" has set up a client with default settings
+        When the user overwrites the file "textfile.txt" with content "overwrite ownCloud test text file"
+        And the user waits for the files to sync
+        Then as "Brian" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
+        And as "Alice" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
+
+
     @issue-7423
     Scenario: unshare a reshared file
         Given the setting "shareapi_auto_accept_share" on the server of app "core" has been set to "no"

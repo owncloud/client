@@ -254,6 +254,7 @@ def step(context):
         lambda: isFolderSynced(context.userData['clientSyncPath']),
         context.userData['clientSyncTimeout'] * 1000,
     )
+    snooze(20)
 
 
 @When('the user waits for file "|any|" to be synced')
@@ -724,3 +725,11 @@ def step(context, resource, group):
 
     sharingDialog = SharingDialog()
     sharingDialog.selectCollaborator(group, True)
+
+    
+@When('the user overwrites the file "|any|" with content "|any|"')
+def step(context, resource, content):
+    waitForFileToBeSynced(context, resource)
+    resource = context.userData['clientSyncPath'] + resource
+    with open(resource, 'wt') as file:
+        file.write(content)
