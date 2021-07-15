@@ -14,6 +14,7 @@
 
 #include "discoveryphase.h"
 #include "discovery.h"
+#include "syncengine.h"
 
 #include "account.h"
 #include "common/asserts.h"
