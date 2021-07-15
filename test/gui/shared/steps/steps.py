@@ -276,16 +276,16 @@ def step(context, filename):
 
 @Given(r"^(.*) on the server (.*)$", regexp=True)
 def step(context, stepPart1, stepPart2):
-    executeStepThroughMiddleware(context, "Given " + stepPart1 + " " + stepPart2)
     global usersDataFromMiddleware
     usersDataFromMiddleware = None
+    executeStepThroughMiddleware(context, "Given " + stepPart1 + " " + stepPart2)
 
 
 @Given(r"^(.*) on the server$", regexp=True)
 def step(context, stepPart1):
-    executeStepThroughMiddleware(context, "Given " + stepPart1)
     global usersDataFromMiddleware
     usersDataFromMiddleware = None
+    executeStepThroughMiddleware(context, "Given " + stepPart1)
 
 
 @Then(r"^(.*) on the server (.*)$", regexp=True)
