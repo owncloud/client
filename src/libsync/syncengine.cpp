@@ -99,7 +99,8 @@ SyncEngine::SyncEngine(AccountPtr account, const QString &localPath,
     qRegisterMetaType<SyncFileItem::Direction>("SyncFileItem::Direction");
 
     // Everything in the SyncEngine expects a trailing slash for the localPath.
-    OC_ASSERT(localPath.endsWith(QLatin1Char('/')));
+    Q_ASSERT(localPath.endsWith(QLatin1Char('/')));
+    Q_ASSERT(remotePath.endsWith(QLatin1Char('/')));
 
     _excludedFiles.reset(new ExcludedFiles);
 
@@ -516,8 +517,6 @@ void SyncEngine::startSync()
     _discoveryPhase->_excludes = _excludedFiles.data();
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
-    if (!_discoveryPhase->_localDir.endsWith(QLatin1Char('/')))
-        _discoveryPhase->_localDir+=QLatin1Char('/');
     _discoveryPhase->_remoteFolder = _remotePath;
     if (!_discoveryPhase->_remoteFolder.endsWith(QLatin1Char('/')))
         _discoveryPhase->_remoteFolder+=QLatin1Char('/');

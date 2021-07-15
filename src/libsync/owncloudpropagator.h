@@ -405,7 +405,7 @@ public:
         , _anotherSyncNeeded(false)
         , _chunkSize(10 * 1000 * 1000) // 10 MB, overridden in setSyncOptions
         , _account(account)
-        , _localDir((localDir.endsWith(QLatin1Char('/'))) ? localDir : localDir + QLatin1Char('/'))
+        , _localDir(localDir)
         , _remoteFolder((remoteFolder.endsWith(QLatin1Char('/'))) ? remoteFolder : remoteFolder + QLatin1Char('/'))
     {
         qRegisterMetaType<PropagatorJob::AbortType>("PropagatorJob::AbortType");
