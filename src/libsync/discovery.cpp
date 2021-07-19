@@ -13,20 +13,23 @@
  */
 
 #include "discovery.h"
+#include "common/checksums.h"
 #include "common/syncjournaldb.h"
+#include "csync.h"
+#include "csync_exclude.h"
+#include "owncloudpropagator.h"
+#include "syncengine.h"
 #include "syncfileitem.h"
-#include <QDebug>
+#include "vio/csync_vio_local.h"
+
 #include <algorithm>
 #include <set>
-#include <QTextCodec>
-#include "vio/csync_vio_local.h"
-#include <QFileInfo>
-#include <QFile>
-#include <QThreadPool>
-#include "common/checksums.h"
-#include "csync_exclude.h"
-#include "csync.h"
 
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextCodec>
+#include <QThreadPool>
 
 namespace OCC {
 
@@ -1055,24 +1058,17 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, Proce
     if (up._valid && up._contentChecksum == serverEntry.checksumHeader) {
         // Solve the conflict into an upload, or nothing
         item->_instruction = up._modtime == localEntry.modtime && up._size == localEntry.size
-            ? CSYNC_INSTRUCTION_NONE : CSYNC_INSTRUCTION_SYNC;
+            ? CSYNC_INSTRUCTION_NONE
+            : CSYNC_INSTRUCTION_UPDATE_METADATA;
         item->_direction = SyncFileItem::Up;
 
         // Update the etag and other server metadata in the journal already
-        // (We can't use a typical CSYNC_INSTRUCTION_UPDATE_METADATA because
-        // we must not store the size/modtime from the file system)
-        OCC::SyncJournalFileRecord rec;
-        if (_discoveryData->_statedb->getFileRecord(path._original, &rec)) {
-            rec._path = path._original.toUtf8();
-            rec._etag = serverEntry.etag;
-            rec._fileId = serverEntry.fileId;
-            rec._modtime = serverEntry.modtime;
-            rec._type = item->_type;
-            rec._fileSize = serverEntry.size;
-            rec._remotePerm = serverEntry.remotePerm;
-            rec._checksumHeader = serverEntry.checksumHeader;
-            _discoveryData->_statedb->setFileRecord(rec);
-        }
+        item->_etag = serverEntry.etag;
+        item->_fileId = serverEntry.fileId;
+        item->_modtime = serverEntry.modtime;
+        item->_size = serverEntry.size;
+        item->_remotePerm = serverEntry.remotePerm;
+        item->_checksumHeader = serverEntry.checksumHeader;
         return;
     }
 
