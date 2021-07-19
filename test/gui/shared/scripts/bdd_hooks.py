@@ -99,3 +99,15 @@ def hook(context):
                 shutil.rmtree(file_path)
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+    req = urllib.request.Request(
+        os.path.join(context.userData['middlewareUrl'], 'cleanup'),
+        headers={"Content-Type": "application/json"},
+        method='POST',
+    )
+    try:
+        urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        raise Exception(
+            "Step execution through test middleware failed. Error: " + e.read().decode()
+        )
