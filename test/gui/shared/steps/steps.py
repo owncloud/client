@@ -114,6 +114,7 @@ def step(context, username):
     enterUserPassword = EnterPassword()
     enterUserPassword.enterPassword(password)
 
+
 @Given('the user has started the client')
 def step(context):
     startClient(context)
@@ -153,16 +154,22 @@ def isFileSynced(fileName):
 
 def waitForFileToBeSynced(context, fileName):
     waitFor(
-        lambda: isFileSynced(sanitizePath(context.userData['clientSyncPath'] + fileName)),
+        lambda: isFileSynced(
+            sanitizePath(context.userData['clientSyncPath'] + fileName)
+        ),
         context.userData['clientSyncTimeout'] * 1000,
     )
 
+
 def waitForFolderToBeSynced(context, folderName):
     waitFor(
-        lambda: isFolderSynced(sanitizePath(context.userData['clientSyncPath'] + folderName)),
+        lambda: isFolderSynced(
+            sanitizePath(context.userData['clientSyncPath'] + folderName)
+        ),
         context.userData['clientSyncTimeout'] * 1000,
     )
-    
+
+
 def sanitizePath(path):
     return path.replace('//', '/')
 
@@ -729,19 +736,18 @@ def step(context, resource, group):
     sharingDialog = SharingDialog()
     sharingDialog.selectCollaborator(group, True)
 
-    
+
 @When('the user overwrites the file "|any|" with content "|any|"')
 def step(context, resource, content):
     print("before overwrite")
     waitForFileToBeSynced(context, resource)
     waitForFolderToBeSynced(context, '/')
-    
-    snooze(3)    
-    
+
+    snooze(3)
+
     f = open(context.userData['clientSyncPath'] + resource, "w")
     f.write(content)
     f.close()
-    
+
     print("after overwrite")
     waitForFileToBeSynced(context, resource)
-                
