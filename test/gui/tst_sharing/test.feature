@@ -56,14 +56,14 @@ Feature: Sharing
 
 
     Scenario: sharee edits content of a file shared by sharer
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
+        Given user "Alice" has created folder "simple-folder" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "simple-folder/textfile.txt" on the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
+        And user "Alice" has shared folder "simple-folder" on the server with user "Brian" with "all" permissions
         And user "Brian" has set up a client with default settings
-        When the user overwrites the file "textfile.txt" with content "overwrite ownCloud test text file"
-        And the user waits for the files to sync
-        Then as "Brian" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-        And as "Alice" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
+        When the user overwrites the file "simple-folder/textfile.txt" with content "overwrite ownCloud test text file"
+        Then as "Brian" the file "simple-folder/textfile.txt" on the server should have the content "overwrite ownCloud test text file"
+        And as "Alice" the file "simple-folder/textfile.txt" on the server should have the content "overwrite ownCloud test text file"
 
 
     @issue-7423

@@ -8,6 +8,7 @@ import re
 import urllib.request
 import json
 import requests
+import time
 
 from objectmaphelper import RegularExpression
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
@@ -114,7 +115,6 @@ def step(context, username):
     enterUserPassword = EnterPassword()
     enterUserPassword.enterPassword(password)
 
-
 @Given('the user has started the client')
 def step(context):
     startClient(context)
@@ -138,6 +138,7 @@ def isItemSynced(type, itemName):
     if not socketConnect.read_socket_data_with_timeout(0.1):
         return False
     for line in socketConnect.get_available_responses():
+        print(itemName, line)
         if line.startswith('STATUS:OK') and line.endswith(itemName):
             return True
         elif line.endswith(itemName):
@@ -154,11 +155,16 @@ def isFileSynced(fileName):
 
 def waitForFileToBeSynced(context, fileName):
     waitFor(
-        lambda: isFileSynced(context.userData['clientSyncPath'] + fileName),
+        lambda: isFileSynced(sanitizePath(context.userData['clientSyncPath'] + fileName)),
         context.userData['clientSyncTimeout'] * 1000,
     )
 
-
+def waitForFolderToBeSynced(context, folderName):
+    waitFor(
+        lambda: isFolderSynced(sanitizePath(context.userData['clientSyncPath'] + folderName)),
+        context.userData['clientSyncTimeout'] * 1000,
+    )
+    
 def sanitizePath(path):
     return path.replace('//', '/')
 
@@ -254,7 +260,6 @@ def step(context):
         lambda: isFolderSynced(context.userData['clientSyncPath']),
         context.userData['clientSyncTimeout'] * 1000,
     )
-    snooze(20)
 
 
 @When('the user waits for file "|any|" to be synced')
@@ -729,7 +734,16 @@ def step(context, resource, group):
     
 @When('the user overwrites the file "|any|" with content "|any|"')
 def step(context, resource, content):
+    print("before overwrite")
     waitForFileToBeSynced(context, resource)
-    resource = context.userData['clientSyncPath'] + resource
-    with open(resource, 'wt') as file:
-        file.write(content)
+    waitForFolderToBeSynced(context, '/')
+    
+    snooze(5)    
+    
+    f = open(context.userData['clientSyncPath'] + resource, "w")
+    f.write(content)
+    f.close()
+    
+    print("after overwrite")
+    waitForFileToBeSynced(context, resource)
+                
