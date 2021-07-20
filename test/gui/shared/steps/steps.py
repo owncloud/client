@@ -8,7 +8,6 @@ import re
 import urllib.request
 import json
 import requests
-import time
 
 from objectmaphelper import RegularExpression
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
@@ -138,7 +137,6 @@ def isItemSynced(type, itemName):
     if not socketConnect.read_socket_data_with_timeout(0.1):
         return False
     for line in socketConnect.get_available_responses():
-        print(itemName, line)
         if line.startswith('STATUS:OK') and line.endswith(itemName):
             return True
         elif line.endswith(itemName):
@@ -738,7 +736,7 @@ def step(context, resource, content):
     waitForFileToBeSynced(context, resource)
     waitForFolderToBeSynced(context, '/')
     
-    snooze(5)    
+    snooze(3)    
     
     f = open(context.userData['clientSyncPath'] + resource, "w")
     f.write(content)
