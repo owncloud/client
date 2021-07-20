@@ -743,6 +743,10 @@ def step(context, resource, content):
     waitForFileToBeSynced(context, resource)
     waitForFolderToBeSynced(context, '/')
 
+    # overwriting the file immediately after it has been synced from the server seems to have some problem.
+    # The client does not see the change although the changes have already been made thus we are having a race condition
+    # So for now we add 3sec static wait
+
     snooze(3)
 
     f = open(context.userData['clientSyncPath'] + resource, "w")
