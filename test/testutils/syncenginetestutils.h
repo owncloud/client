@@ -553,7 +553,8 @@ struct ItemCompletedSpy : QSignalSpy
     {
     }
 
-    OCC::SyncFileItemPtr findItem(const QString &path) const;
+    QList<OCC::SyncFileItemPtr> findItem(const QString &path) const;
+    OCC::SyncFileItemPtr findOneItem(const QString &path) const;
 };
 
 // QTest::toString overloads

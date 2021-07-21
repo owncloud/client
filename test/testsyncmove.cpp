@@ -37,13 +37,13 @@ struct OperationCounter {
 
 bool itemSuccessful(const ItemCompletedSpy &spy, const QString &path, const SyncInstructions instr)
 {
-    auto item = spy.findItem(path);
+    const auto item = spy.findOneItem(path);
     return item->_status == SyncFileItem::Success && item->_instruction == instr;
 }
 
 bool itemConflict(const ItemCompletedSpy &spy, const QString &path)
 {
-    auto item = spy.findItem(path);
+    const auto item = spy.findOneItem(path);
     return item->_status == SyncFileItem::Conflict && item->_instruction == CSYNC_INSTRUCTION_CONFLICT;
 }
 
@@ -352,10 +352,10 @@ private slots:
             QCOMPARE(counter.nDELETE, 0);
             QVERIFY(itemSuccessfulMove(completeSpy, "A/a1m"));
             QVERIFY(itemSuccessfulMove(completeSpy, "B/b1m"));
-            QCOMPARE(completeSpy.findItem("A/a1m")->_file, QStringLiteral("A/a1"));
-            QCOMPARE(completeSpy.findItem("A/a1m")->_renameTarget, QStringLiteral("A/a1m"));
-            QCOMPARE(completeSpy.findItem("B/b1m")->_file, QStringLiteral("B/b1"));
-            QCOMPARE(completeSpy.findItem("B/b1m")->_renameTarget, QStringLiteral("B/b1m"));
+            QCOMPARE(completeSpy.findOneItem("A/a1m")->_file, QStringLiteral("A/a1"));
+            QCOMPARE(completeSpy.findOneItem("A/a1m")->_renameTarget, QStringLiteral("A/a1m"));
+            QCOMPARE(completeSpy.findOneItem("B/b1m")->_file, QStringLiteral("B/b1"));
+            QCOMPARE(completeSpy.findOneItem("B/b1m")->_renameTarget, QStringLiteral("B/b1m"));
         }
 
         // Touch+Move on same side
@@ -485,10 +485,10 @@ private slots:
             QCOMPARE(counter.nDELETE, 0);
             QVERIFY(itemSuccessfulMove(completeSpy, "AM"));
             QVERIFY(itemSuccessfulMove(completeSpy, "BM"));
-            QCOMPARE(completeSpy.findItem("AM")->_file, QStringLiteral("A"));
-            QCOMPARE(completeSpy.findItem("AM")->_renameTarget, QStringLiteral("AM"));
-            QCOMPARE(completeSpy.findItem("BM")->_file, QStringLiteral("B"));
-            QCOMPARE(completeSpy.findItem("BM")->_renameTarget, QStringLiteral("BM"));
+            QCOMPARE(completeSpy.findOneItem("AM")->_file, QStringLiteral("A"));
+            QCOMPARE(completeSpy.findOneItem("AM")->_renameTarget, QStringLiteral("AM"));
+            QCOMPARE(completeSpy.findOneItem("BM")->_file, QStringLiteral("B"));
+            QCOMPARE(completeSpy.findOneItem("BM")->_renameTarget, QStringLiteral("BM"));
         }
 
         // Folder move with contents touched on the same side

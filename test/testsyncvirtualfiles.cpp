@@ -15,10 +15,22 @@ using namespace OCC;
 
 #define DVSUFFIX APPLICATION_DOTVIRTUALFILE_SUFFIX
 
+bool itemInstruction(const ItemCompletedSpy &spy, const QString &path, const QSet<SyncInstructions> &instr)
+{
+    const auto items = spy.findItem(path);
+    QSet<SyncInstructions> actual;
+    for (const auto &i : items) {
+        actual.insert(i->_instruction);
+    }
+    if (instr != actual) {
+        qWarning() << "Unexpected instruction" << actual << "Expected:" << instr;
+    }
+    return true;
+}
+
 bool itemInstruction(const ItemCompletedSpy &spy, const QString &path, const SyncInstructions instr)
 {
-    auto item = spy.findItem(path);
-    return item->_instruction == instr;
+    return itemInstruction(spy, path, QSet<SyncInstructions> { instr });
 }
 
 SyncJournalFileRecord dbRecord(FakeFolder &folder, const QString &path)
@@ -374,10 +386,10 @@ private slots:
 
         QVERIFY(fakeFolder.syncOnce());
         QVERIFY(itemInstruction(completeSpy, "A/a1", CSYNC_INSTRUCTION_SYNC));
-        QCOMPARE(completeSpy.findItem("A/a1")->_type, ItemTypeVirtualFileDownload);
+        QCOMPARE(completeSpy.findOneItem("A/a1")->_type, ItemTypeVirtualFileDownload);
         QVERIFY(itemInstruction(completeSpy, "A/a1" DVSUFFIX, CSYNC_INSTRUCTION_NONE));
         QVERIFY(itemInstruction(completeSpy, "A/a2", CSYNC_INSTRUCTION_SYNC));
-        QCOMPARE(completeSpy.findItem("A/a2")->_type, ItemTypeVirtualFileDownload);
+        QCOMPARE(completeSpy.findOneItem("A/a2")->_type, ItemTypeVirtualFileDownload);
         QVERIFY(itemInstruction(completeSpy, "A/a2" DVSUFFIX, CSYNC_INSTRUCTION_NONE));
         QVERIFY(itemInstruction(completeSpy, "A/a3" DVSUFFIX, CSYNC_INSTRUCTION_REMOVE));
         QVERIFY(itemInstruction(completeSpy, "A/a4m", CSYNC_INSTRUCTION_NEW));
@@ -823,13 +835,13 @@ private slots:
         QVERIFY(isDehydrated("A/a1"));
         QVERIFY(hasDehydratedDbEntries("A/a1"));
         QVERIFY(itemInstruction(completeSpy, "A/a1" DVSUFFIX, CSYNC_INSTRUCTION_SYNC));
-        QCOMPARE(completeSpy.findItem("A/a1" DVSUFFIX)->_type, ItemTypeVirtualFileDehydration);
-        QCOMPARE(completeSpy.findItem("A/a1" DVSUFFIX)->_file, QStringLiteral("A/a1"));
-        QCOMPARE(completeSpy.findItem("A/a1" DVSUFFIX)->_renameTarget, QStringLiteral("A/a1" DVSUFFIX));
+        QCOMPARE(completeSpy.findOneItem("A/a1" DVSUFFIX)->_type, ItemTypeVirtualFileDehydration);
+        QCOMPARE(completeSpy.findOneItem("A/a1" DVSUFFIX)->_file, QStringLiteral("A/a1"));
+        QCOMPARE(completeSpy.findOneItem("A/a1" DVSUFFIX)->_renameTarget, QStringLiteral("A/a1" DVSUFFIX));
         QVERIFY(isDehydrated("A/a2"));
         QVERIFY(hasDehydratedDbEntries("A/a2"));
         QVERIFY(itemInstruction(completeSpy, "A/a2" DVSUFFIX, CSYNC_INSTRUCTION_SYNC));
-        QCOMPARE(completeSpy.findItem("A/a2" DVSUFFIX)->_type, ItemTypeVirtualFileDehydration);
+        QCOMPARE(completeSpy.findOneItem("A/a2" DVSUFFIX)->_type, ItemTypeVirtualFileDehydration);
 
         QVERIFY(!fakeFolder.currentLocalState().find("B/b1"));
         QVERIFY(!fakeFolder.currentRemoteState().find("B/b1"));
@@ -1029,7 +1041,7 @@ private slots:
         // this isn't fully good since some code requires size == 1 for placeholders
         // (when renaming placeholder to real file). But the alternative would mean
         // special casing this to allow CONFLICT at virtual file creation level. Ew.
-        QVERIFY(itemInstruction(completeSpy, "A/test2" DVSUFFIX, CSYNC_INSTRUCTION_UPDATE_METADATA));
+        QVERIFY(itemInstruction(completeSpy, "A/test2" DVSUFFIX, { CSYNC_INSTRUCTION_UPDATE_METADATA, CSYNC_INSTRUCTION_IGNORE }));
         cleanup();
 
         // Local changes of suffixed file do nothing
@@ -1062,10 +1074,10 @@ private slots:
         fakeFolder.localModifier().remove("A/file3" DVSUFFIX);
         fakeFolder.localModifier().remove("A/file3" DVSUFFIX DVSUFFIX);
         QVERIFY(fakeFolder.syncOnce());
-        QVERIFY(completeSpy.findItem("A/file1" DVSUFFIX)->isEmpty());
-        QVERIFY(completeSpy.findItem("A/file2" DVSUFFIX)->isEmpty());
-        QVERIFY(completeSpy.findItem("A/file3" DVSUFFIX)->isEmpty());
-        QVERIFY(completeSpy.findItem("A/file3" DVSUFFIX DVSUFFIX)->isEmpty());
+        QVERIFY(completeSpy.findItem("A/file1" DVSUFFIX).empty());
+        QVERIFY(completeSpy.findItem("A/file2" DVSUFFIX).empty());
+        QVERIFY(completeSpy.findItem("A/file3" DVSUFFIX).empty());
+        QVERIFY(completeSpy.findItem("A/file3" DVSUFFIX DVSUFFIX).empty());
         cleanup();
 
         // Local removal: when querying server
@@ -1136,7 +1148,7 @@ private slots:
         QVERIFY(!fakeFolder.currentLocalState().find("A/file4" DVSUFFIX DVSUFFIX));
         QVERIFY(itemInstruction(completeSpy, "A/file1" DVSUFFIX, CSYNC_INSTRUCTION_NEW));
         QVERIFY(itemInstruction(completeSpy, "A/file2" DVSUFFIX, CSYNC_INSTRUCTION_NEW));
-        QVERIFY(itemInstruction(completeSpy, "A/file3" DVSUFFIX, CSYNC_INSTRUCTION_IGNORE));
+        QVERIFY(itemInstruction(completeSpy, "A/file3" DVSUFFIX, { CSYNC_INSTRUCTION_IGNORE, CSYNC_INSTRUCTION_NEW }));
         QVERIFY(itemInstruction(completeSpy, "A/file4" DVSUFFIX, CSYNC_INSTRUCTION_IGNORE));
         QVERIFY(itemInstruction(completeSpy, "A/file4" DVSUFFIX DVSUFFIX, CSYNC_INSTRUCTION_IGNORE));
         cleanup();

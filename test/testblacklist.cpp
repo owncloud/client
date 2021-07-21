@@ -66,7 +66,7 @@ private slots:
         fakeFolder.serverErrorPaths().append(testFileName, 500); // will be blacklisted
         QVERIFY(!fakeFolder.syncOnce());
         {
-            auto it = completeSpy.findItem(testFileName);
+            auto it = completeSpy.findOneItem(testFileName);
             QVERIFY(it);
             QCOMPARE(it->_status, SyncFileItem::NormalError); // initial error visible
             QCOMPARE(it->_instruction, CSYNC_INSTRUCTION_NEW);
@@ -87,7 +87,7 @@ private slots:
         // Ignored during the second run - but soft errors are also errors
         QVERIFY(!fakeFolder.syncOnce());
         {
-            auto it = completeSpy.findItem(testFileName);
+            auto it = completeSpy.findOneItem(testFileName);
             QVERIFY(it);
             QCOMPARE(it->_status, SyncFileItem::BlacklistedError);
             QCOMPARE(it->_instruction, CSYNC_INSTRUCTION_IGNORE); // no retry happened!
@@ -114,7 +114,7 @@ private slots:
         }
         QVERIFY(!fakeFolder.syncOnce());
         {
-            auto it = completeSpy.findItem(testFileName);
+            auto it = completeSpy.findOneItem(testFileName);
             QVERIFY(it);
             QCOMPARE(it->_status, SyncFileItem::BlacklistedError); // blacklisted as it's just a retry
             QCOMPARE(it->_instruction, CSYNC_INSTRUCTION_NEW); // retry!
@@ -136,7 +136,7 @@ private slots:
         modifier.appendByte(testFileName);
         QVERIFY(!fakeFolder.syncOnce());
         {
-            auto it = completeSpy.findItem(testFileName);
+            auto it = completeSpy.findOneItem(testFileName);
             QVERIFY(it);
             QCOMPARE(it->_status, SyncFileItem::BlacklistedError);
             QCOMPARE(it->_instruction, CSYNC_INSTRUCTION_NEW); // retry!
@@ -164,7 +164,7 @@ private slots:
         }
         QVERIFY(fakeFolder.syncOnce());
         {
-            auto it = completeSpy.findItem(testFileName);
+            auto it = completeSpy.findOneItem(testFileName);
             QVERIFY(it);
             QCOMPARE(it->_status, SyncFileItem::Success);
             QCOMPARE(it->_instruction, CSYNC_INSTRUCTION_NEW);

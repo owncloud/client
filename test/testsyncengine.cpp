@@ -13,21 +13,23 @@ using namespace OCC;
 
 bool itemDidComplete(const ItemCompletedSpy &spy, const QString &path)
 {
-    if (auto item = spy.findItem(path)) {
-        return item->_instruction != CSYNC_INSTRUCTION_NONE && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA;
+    auto items = spy.findItem(path);
+    if (items.empty()) {
+        return false;
     }
-    return false;
+    Q_ASSERT(items.size() == 1);
+    return items.first()->_instruction != CSYNC_INSTRUCTION_NONE && items.first()->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA;
 }
 
 bool itemInstruction(const ItemCompletedSpy &spy, const QString &path, const SyncInstructions instr)
 {
-    auto item = spy.findItem(path);
+    auto item = spy.findOneItem(path);
     return item->_instruction == instr;
 }
 
 bool itemDidCompleteSuccessfully(const ItemCompletedSpy &spy, const QString &path)
 {
-    if (auto item = spy.findItem(path)) {
+    if (auto item = spy.findOneItem(path)) {
         return item->_status == SyncFileItem::Success;
     }
     return false;

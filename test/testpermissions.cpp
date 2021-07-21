@@ -52,7 +52,7 @@ SyncFileItemPtr findDiscoveryItem(const SyncFileItemVector &spy, const QString &
 
 bool itemInstruction(const ItemCompletedSpy &spy, const QString &path, const SyncInstructions instr)
 {
-    auto item = spy.findItem(path);
+    auto item = spy.findOneItem(path);
     return item->_instruction == instr;
 }
 
@@ -413,7 +413,7 @@ private slots:
 
         // if renaming doesn't work, just delete+create
         QVERIFY(itemInstruction(completeSpy, "norename/file", CSYNC_INSTRUCTION_REMOVE));
-        QVERIFY(itemInstruction(completeSpy, "norename/sub", CSYNC_INSTRUCTION_NONE));
+        QVERIFY(completeSpy.findItem("norename/sub").empty());
         QVERIFY(discoveryInstruction(discovery, "norename/sub", CSYNC_INSTRUCTION_REMOVE));
         QVERIFY(itemInstruction(completeSpy, "norename/file_renamed", CSYNC_INSTRUCTION_NEW));
         QVERIFY(itemInstruction(completeSpy, "norename/sub_renamed", CSYNC_INSTRUCTION_NEW));
@@ -422,7 +422,7 @@ private slots:
 
         // simiilarly forbidding moves becomes delete+create
         QVERIFY(itemInstruction(completeSpy, "nomove/file", CSYNC_INSTRUCTION_REMOVE));
-        QVERIFY(itemInstruction(completeSpy, "nomove/sub", CSYNC_INSTRUCTION_NONE));
+        QVERIFY(completeSpy.findItem("nomove/sub").empty());
         QVERIFY(discoveryInstruction(discovery, "nomove/sub", CSYNC_INSTRUCTION_REMOVE));
         // nomove/sub/file is removed as part of the dir
         QVERIFY(itemInstruction(completeSpy, "allowed/file_moved", CSYNC_INSTRUCTION_NEW));
@@ -438,8 +438,8 @@ private slots:
 
         // and the sources of the invalid moves should be restored, not deleted
         // (depending on the order of discovery a follow-up sync is needed)
-        QVERIFY(itemInstruction(completeSpy, "allowed/file", CSYNC_INSTRUCTION_NONE));
-        QVERIFY(itemInstruction(completeSpy, "allowed/sub2", CSYNC_INSTRUCTION_NONE));
+        QVERIFY(completeSpy.findItem("allowed/file").empty());
+        QVERIFY(completeSpy.findItem("allowed/sub2").empty());
         QVERIFY(itemInstruction(completeSpy, "zallowed/file", CSYNC_INSTRUCTION_NEW));
         QVERIFY(itemInstruction(completeSpy, "zallowed/sub2", CSYNC_INSTRUCTION_NEW));
         QVERIFY(itemInstruction(completeSpy, "zallowed/sub2/file", CSYNC_INSTRUCTION_NEW));

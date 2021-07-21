@@ -1079,14 +1079,22 @@ FileInfo FakeFolder::dbState() const
     return result;
 }
 
-OCC::SyncFileItemPtr ItemCompletedSpy::findItem(const QString &path) const
+QList<OCC::SyncFileItemPtr> ItemCompletedSpy::findItem(const QString &path) const
 {
+    QList<OCC::SyncFileItemPtr> out;
     for (const QList<QVariant> &args : *this) {
         auto item = args[0].value<OCC::SyncFileItemPtr>();
         if (item->destination() == path)
-            return item;
+            out.append(item);
     }
-    return OCC::SyncFileItemPtr::create();
+    return out;
+}
+
+OCC::SyncFileItemPtr ItemCompletedSpy::findOneItem(const QString &path) const
+{
+    const auto items = findItem(path);
+    Q_ASSERT(items.size() == 1);
+    return std::move(items[0]);
 }
 
 FakeReply::FakeReply(QObject *parent)
