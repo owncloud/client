@@ -748,11 +748,64 @@ def step(context, resource, content):
     
 @When("the user enables virtual file support")
 def step(context):
-    mouseClick(waitForObjectItem(names.stack_folderList_QTreeView, "_1"), 718, 27, Qt.NoModifier, Qt.LeftButton)
-    activateItem(waitForObjectItem(names.settings_QMenu, "Enable virtual file support (experimental)..."))
-    clickButton(waitForObject(names.stack_Enable_experimental_placeholder_mode_QPushButton))
+    mouseClick(
+        waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
+        718,
+        27,
+        Qt.NoModifier,
+        Qt.LeftButton,
+    )
+    activateItem(
+        waitForObjectItem(
+            names.settings_QMenu, "Enable virtual file support (experimental)..."
+        )
+    )
+    clickButton(
+        waitForObject(names.stack_Enable_experimental_placeholder_mode_QPushButton)
+    )
 
 
 @Then("the virtual file support should be enabled")
+def step(context):
+    pass
+
+
+@Given("the user has enabled virtual file support")
+def step(context):
+    mouseClick(
+        waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
+        715,
+        31,
+        Qt.NoModifier,
+        Qt.LeftButton,
+    )
+    activateItem(
+        waitForObjectItem(
+            names.settings_QMenu, "Enable virtual file support (experimental)..."
+        )
+    )
+    clickButton(
+        waitForObject(names.stack_Enable_experimental_placeholder_mode_QPushButton)
+    )
+
+
+@When("the user diables virtual file support")
+def step(context):
+    mouseClick(
+        waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
+        720,
+        33,
+        Qt.NoModifier,
+        Qt.LeftButton,
+    )
+    activateItem(
+        waitForObjectItem(names.settings_QMenu, "Disable virtual file support...")
+    )
+    clickButton(
+        waitForObject(names.disable_virtual_file_support_Disable_support_QPushButton)
+    )
+
+
+@Then("the virtual file support should be disbaleds")
 def step(context):
     pass

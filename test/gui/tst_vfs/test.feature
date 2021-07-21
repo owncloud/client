@@ -10,3 +10,11 @@ Feature: Enable/disable virtual file support
         And user "Alice" has set up a client with default settings
         When the user enables virtual file support
         Then the virtual file support should be enabled
+
+
+    Scenario: Disable VFS
+        Given user "Alice" has been created on the server with default attributes and without skeleton files
+        And user "Alice" has set up a client with default settings
+        And the user has enabled virtual file support
+        When the user diables virtual file support
+        Then the virtual file support should be disbaleds
