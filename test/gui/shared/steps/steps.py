@@ -744,3 +744,15 @@ def step(context, resource, content):
 
     print("file has been overwritten")
     waitForFileToBeSynced(context, resource)
+
+    
+@When("the user enables virtual file support")
+def step(context):
+    mouseClick(waitForObjectItem(names.stack_folderList_QTreeView, "_1"), 718, 27, Qt.NoModifier, Qt.LeftButton)
+    activateItem(waitForObjectItem(names.settings_QMenu, "Enable virtual file support (experimental)..."))
+    clickButton(waitForObject(names.stack_Enable_experimental_placeholder_mode_QPushButton))
+
+
+@Then("the virtual file support should be enabled")
+def step(context):
+    pass
