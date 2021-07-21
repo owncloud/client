@@ -223,7 +223,7 @@ private:
     void finalize(bool success);
 
     // Must only be acessed during update and reconcile
-    QVector<SyncFileItemPtr> _syncItems;
+    SyncFileItemVector _syncItems;
 
     AccountPtr _account;
     bool _needsUpdate;

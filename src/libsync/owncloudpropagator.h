@@ -234,7 +234,7 @@ public:
     void appendJob(PropagatorJob *job);
     void appendTask(const SyncFileItemPtr &item)
     {
-        _tasksToDo.append(item);
+        _tasksToDo.insert(item);
     }
 
     bool scheduleSelfOrChild() override;

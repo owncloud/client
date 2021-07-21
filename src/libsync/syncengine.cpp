@@ -396,9 +396,16 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
     checkErrorBlacklisting(*item);
     _needsUpdate = true;
 
-    // Insert sorted
-    auto it = std::lower_bound( _syncItems.begin(), _syncItems.end(), item ); // the _syncItems is sorted
-    _syncItems.insert( it, item );
+    Q_ASSERT([&] {
+        const auto it = _syncItems.find(item);
+        if (it != _syncItems.cend()) {
+            const auto &item2 = it->get();
+            qCWarning(lcEngine) << "We already have an item for " << item2->_file << ":" << item2->_instruction << item2->_direction << "|" << item->_instruction << item->_direction;
+            return false;
+        }
+        return true;
+    }());
+    _syncItems.insert(item);
 
     slotNewItem(item);
 
@@ -657,10 +664,22 @@ void SyncEngine::slotDiscoveryFinished()
                     } while (index > 0);
                 }
             }
-            _syncItems.erase(std::remove_if(_syncItems.begin(), _syncItems.end(), [&names](auto i) {
+            //std::erase_if c++20
+            // https://en.cppreference.com/w/cpp/container/set/erase_if
+            const auto erase_if = [](auto &c, const auto &pred) {
+                auto old_size = c.size();
+                for (auto i = c.begin(), last = c.end(); i != last;) {
+                    if (pred(*i)) {
+                        i = c.erase(i);
+                    } else {
+                        ++i;
+                    }
+                }
+                return old_size - c.size();
+            };
+            erase_if(_syncItems, [&names](const SyncFileItemPtr &i) {
                 return !names.contains(QStringRef { &i->_file });
-            }),
-                _syncItems.end());
+            });
         }
 
         qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) #################################################### " << _stopWatch.addLapTime(QStringLiteral("Reconcile (aboutToPropagate)")) << "ms";
