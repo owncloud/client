@@ -739,7 +739,7 @@ def step(context, resource, group):
 
 @When('the user overwrites the file "|any|" with content "|any|"')
 def step(context, resource, content):
-    print("before overwrite")
+    print("starting file overwrite")
     waitForFileToBeSynced(context, resource)
     waitForFolderToBeSynced(context, '/')
 
@@ -753,5 +753,5 @@ def step(context, resource, content):
     f.write(content)
     f.close()
 
-    print("after overwrite")
+    print("file has been overwritten")
     waitForFileToBeSynced(context, resource)
