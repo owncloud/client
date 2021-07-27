@@ -273,6 +273,12 @@ void HttpCredentials::fetchFromKeychainHelper()
 
 bool HttpCredentials::stillValid(QNetworkReply *reply)
 {
+    // The function is called in order to determine whether we need to ask the user for a password
+    // if we are using oaut we already started a refresh in slotAuthentication.
+    // If the refresh fails we will emit authenticationFailed ourself.
+    if (isUsingOAuth()) {
+        return true;
+    }
     return ((reply->error() != QNetworkReply::AuthenticationRequiredError)
         // returned if user or password is incorrect
         && (reply->error() != QNetworkReply::OperationCanceledError
@@ -283,6 +289,7 @@ bool HttpCredentials::refreshAccessToken()
 {
     if (_refreshToken.isEmpty())
         return false;
+    _ready = false;
 
     OAuth *oauth = new OAuth(_account, this);
     connect(oauth, &OAuth::refreshFinished, this, [this, oauth](const QString &accessToken, const QString &refreshToken){
