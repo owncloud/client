@@ -62,6 +62,7 @@ signals:
     void showIssuesList(const QString &folderAlias);
 
 public slots:
+    void requestContextMenu();
     void slotOpenOC();
     void slotUpdateQuota(qint64, qint64);
     void slotAccountStateChanged();

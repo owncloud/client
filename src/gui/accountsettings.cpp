@@ -210,6 +210,11 @@ void AccountSettings::createAccountToolbox()
     ui->_accountToolbox->setPopupMode(QToolButton::InstantPopup);
 }
 
+void AccountSettings::requestContextMenu()
+{
+    ui->_accountToolbox->menu()->popup(QCursor::pos());
+}
+
 QString AccountSettings::selectedFolderAlias() const
 {
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();

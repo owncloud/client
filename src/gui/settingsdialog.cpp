@@ -105,6 +105,12 @@ public:
         setCheckable(true);
     }
 
+    QToolButton *button()
+    {
+        const auto widgets = createdWidgets();
+        Q_ASSERT(widgets.size() == 1);
+        return qobject_cast<QToolButton *>(widgets.first());
+    }
 
     QWidget *createWidget(QWidget *parent) override
     {
@@ -115,9 +121,7 @@ public:
         }
 
         QToolButton *btn = new QToolButton(toolbar);
-        QString objectName = QLatin1String("settingsdialog_toolbutton_");
-        objectName += text();
-        btn->setObjectName(objectName);
+        btn->setObjectName(QStringLiteral("settingsdialog_toolbutton_") + text());
 
         btn->setDefaultAction(this);
         btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -173,7 +177,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
 
     if (Theme::instance()->multiAccount()) {
-        _addAccountAction = createActionWithIcon(QStringLiteral("plus-solid"), tr("Add account"));
+        _addAccountAction = new ToolButtonAction(QStringLiteral("plus-solid"), tr("Add account"), this);
         _addAccountAction->setCheckable(false);
         connect(_addAccountAction, &QAction::triggered, this, []{
             // don't directly connect here, ocApp might not be defined yet
@@ -184,7 +188,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     // Note: all the actions have a '\n' because the account name is in two lines and
     // all buttons must have the same size in order to keep a good layout
-    _activityAction = createActionWithIcon(QStringLiteral("activity"), tr("Activity"));
+    _activityAction = new ToolButtonAction(QStringLiteral("activity"), tr("Activity"), this);
     _actionGroup->addAction(_activityAction);
     _ui->toolBar->addAction(_activityAction);
     _activitySettings = new ActivitySettings;
@@ -195,7 +199,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
         });
     _activitySettings->setNotificationRefreshInterval(cfg.notificationRefreshInterval());
 
-    QAction *generalAction = createActionWithIcon(QStringLiteral("settings"), tr("Settings"));
+    QAction *generalAction = new ToolButtonAction(QStringLiteral("settings"), tr("Settings"), this);
     _actionGroup->addAction(generalAction);
     _ui->toolBar->addAction(generalAction);
     GeneralSettings *generalSettings = new GeneralSettings;
@@ -206,7 +210,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     spacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     _ui->toolBar->addWidget(spacer);
 
-    QAction *quitAction = createActionWithIcon(QStringLiteral("quit"), tr("Quit %1").arg(qApp->applicationName()));
+    QAction *quitAction = new ToolButtonAction(QStringLiteral("quit"), tr("Quit %1").arg(qApp->applicationName()), this);
     quitAction->setCheckable(false);
     connect(quitAction, &QAction::triggered, this, [this] {
         const auto reply = QMessageBox::question(this, tr("Quit %1").arg(qApp->applicationName()),
@@ -339,12 +343,11 @@ void SettingsDialog::accountAdded(AccountState *s)
 {
     bool brandingSingleAccount = !Theme::instance()->multiAccount();
 
-    QAction *accountAction;
+    ToolButtonAction *accountAction;
     const QPixmap avatar = s->account()->avatar();
     const QString actionText = brandingSingleAccount ? tr("Account") : s->account()->displayName();
     if (avatar.isNull()) {
-        accountAction = createActionWithIcon(QStringLiteral("account"),
-            actionText);
+        accountAction = new ToolButtonAction(QStringLiteral("account"), actionText, this);
     } else {
         const QIcon icon(AvatarJob::makeCircularAvatar(avatar));
         accountAction = new ToolButtonAction(icon, actionText, this);
@@ -356,9 +359,11 @@ void SettingsDialog::accountAdded(AccountState *s)
     }
     _ui->toolBar->insertAction(_addAccountAction ? _ui->toolBar->actions().at(1) : _ui->toolBar->actions().at(0), accountAction);
     auto accountSettings = new AccountSettings(s, this);
-    QString objectName = QLatin1String("accountSettings_");
-    objectName += s->account()->displayName();
-    accountSettings->setObjectName(objectName);
+
+    accountAction->button()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(accountAction->button(), &QToolButton::customContextMenuRequested, accountSettings, &AccountSettings::requestContextMenu);
+
+    accountSettings->setObjectName(QStringLiteral("accountSettings_") + s->account()->displayName());
     _ui->stack->insertWidget(0 , accountSettings);
 
     _actionGroup->addAction(accountAction);
@@ -445,13 +450,6 @@ void SettingsDialog::customizeStyle()
     for (auto *a : toolButtonActions) {
         a->updateIcon();
     }
-}
-
-
-QAction *SettingsDialog::createActionWithIcon(const QString &icon, const QString &text)
-{
-    QAction *action = new ToolButtonAction(icon, text, this);
-    return action;
 }
 
 void SettingsDialog::slotRefreshActivityAccountStateSender()
