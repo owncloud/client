@@ -767,7 +767,9 @@ def step(context):
 
 @Then("the virtual file support should be enabled")
 def step(context):
-    pass
+    waitForObjectExists(
+        names.stack_vfs_QTreeView,
+        )
 
 
 @Given("the user has enabled virtual file support")
