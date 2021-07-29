@@ -452,6 +452,7 @@ private:
     QScopedPointer<SyncEngine> _engine;
     QPointer<RequestEtagJob> _requestEtagJob;
     QByteArray _lastEtag;
+    QElapsedTimer _timeSinceLastEtagCheckDone;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;
     QElapsedTimer _timeSinceLastFullLocalDiscovery;

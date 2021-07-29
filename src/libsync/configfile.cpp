@@ -412,10 +412,10 @@ chrono::milliseconds ConfigFile::remotePollInterval(const QString &connection) c
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.beginGroup(con);
 
-    auto defaultPollInterval = chrono::milliseconds(DefaultRemotePollInterval);
+    auto defaultPollInterval = DefaultRemotePollInterval;
     auto remoteInterval = millisecondsValue(settings, remotePollIntervalC(), defaultPollInterval);
     if (remoteInterval < chrono::seconds(5)) {
-        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << DefaultRemotePollInterval;
+        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << DefaultRemotePollInterval.count();
         remoteInterval = defaultPollInterval;
     }
     return remoteInterval;

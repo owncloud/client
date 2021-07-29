@@ -41,9 +41,8 @@ class OWNCLOUDSYNC_EXPORT ConfigFile
 public:
     static QString configPath();
     static QString configFile();
-    static bool exists();
-    const int DefaultRemotePollInterval { 30000 }; // default remote poll time in milliseconds
-
+    static bool exists(); 
+    const std::chrono::milliseconds DefaultRemotePollInterval{30000}; // default remote poll time in milliseconds
     ConfigFile();
 
     enum Scope { UserScope,

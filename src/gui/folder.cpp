@@ -68,6 +68,7 @@ Folder::Folder(const FolderDefinition &definition,
 {
     _timeSinceLastSyncStart.start();
     _timeSinceLastSyncDone.start();
+    _timeSinceLastEtagCheckDone.start();
 
     SyncResult::Status status = SyncResult::NotYetStarted;
     if (definition.paused) {
@@ -294,7 +295,7 @@ bool Folder::dueToSync() const
 
     ConfigFile cfg;
     // the default poll time of 30 seconds as it had been in the client forever.
-    auto polltime = std::chrono::milliseconds(cfg.DefaultRemotePollInterval);
+    auto polltime = cfg.DefaultRemotePollInterval;
 
     // ... and an user configured poll interval that might exist
     auto polltimeCfg = cfg.remotePollInterval();
@@ -309,10 +310,14 @@ bool Folder::dueToSync() const
             polltime = std::chrono::milliseconds(pta);
         }
     }
-    if (msecSinceLastSync() < polltime) {
-        return false;
+    // we add half a second here as estimated duration of the last etag job. That way the wished duration
+    // is met more accurate - which appears to look better in the access log.
+    auto timeSinceLastSync = std::chrono::milliseconds(500+_timeSinceLastEtagCheckDone.elapsed());
+    qCInfo(lcFolder) << "dueToSync:" << alias() << timeSinceLastSync.count() << " < " << polltime.count();
+    if (timeSinceLastSync >= polltime) {
+        return true;
     }
-    return true;
+    return false;
 }
 
 void Folder::setSyncPaused(bool paused)
@@ -373,6 +378,8 @@ void Folder::slotRunEtagJob()
     _requestEtagJob->setTimeout(60 * 1000);
     // check if the etag is different when retrieved
     QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetreived, this, &Folder::etagRetreived);
+    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::finishedWithResult,  this, [=](const HttpResult<QByteArray>)
+    { _timeSinceLastEtagCheckDone.start(); });
     FolderMan::instance()->slotScheduleETagJob(alias(), _requestEtagJob);
     // The _requestEtagJob is auto deleting itself on finish. Our guard pointer _requestEtagJob will then be null.
 }
