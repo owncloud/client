@@ -295,24 +295,13 @@ bool Folder::dueToSync() const
 
     ConfigFile cfg;
     // the default poll time of 30 seconds as it had been in the client forever.
-    auto polltime = cfg.DefaultRemotePollInterval;
+    // Now with https://github.com/owncloud/client/pull/8777 also the server capabilities are considered.
+    const auto pta = std::chrono::milliseconds(accountState()->account()->capabilities().remotePollInterval());
+    const auto polltime = cfg.remotePollInterval(pta);
 
-    // ... and an user configured poll interval that might exist
-    auto polltimeCfg = cfg.remotePollInterval();
-
-    if (polltimeCfg != polltime) {
-        // there is a non default entry in the config. Highest prio
-        polltime = polltimeCfg;
-    } else {
-        // read the account capability - specified in seconds. If there, use it.
-        int pta = accountState()->account()->capabilities().remotePollInterval();
-        if (pta > 4999) {
-            polltime = std::chrono::milliseconds(pta);
-        }
-    }
     // we add half a second here as estimated duration of the last etag job. That way the wished duration
     // is met more accurate - which appears to look better in the access log.
-    auto timeSinceLastSync = std::chrono::milliseconds(500+_timeSinceLastEtagCheckDone.elapsed());
+    const auto timeSinceLastSync = std::chrono::milliseconds(500+_timeSinceLastEtagCheckDone.elapsed());
     qCInfo(lcFolder) << "dueToSync:" << alias() << timeSinceLastSync.count() << " < " << polltime.count();
     if (timeSinceLastSync >= polltime) {
         return true;

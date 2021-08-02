@@ -906,7 +906,8 @@ void FolderMan::slotScheduleFolderByTime()
         auto msecsSinceSync = f->msecSinceLastSync();
 
         // Possibly it's just time for a new sync run
-        bool forceSyncIntervalExpired = msecsSinceSync > ConfigFile().forceSyncInterval();
+        const auto pta = std::chrono::milliseconds(f->accountState()->account()->capabilities().remotePollInterval());
+        bool forceSyncIntervalExpired = msecsSinceSync > ConfigFile().forceSyncInterval(pta);
         if (forceSyncIntervalExpired) {
             qCInfo(lcFolderMan) << "Scheduling folder" << f->alias()
                                 << "because it has been" << msecsSinceSync.count() << "ms "
