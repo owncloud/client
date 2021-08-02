@@ -301,7 +301,7 @@ bool Folder::dueToSync() const
 
     // we add half a second here as estimated duration of the last etag job. That way the wished duration
     // is met more accurate - which appears to look better in the access log.
-    const auto timeSinceLastSync = std::chrono::milliseconds(500+_timeSinceLastEtagCheckDone.elapsed());
+    const auto timeSinceLastSync = std::chrono::milliseconds(500 + _timeSinceLastEtagCheckDone.elapsed());
     qCInfo(lcFolder) << "dueToSync:" << alias() << timeSinceLastSync.count() << " < " << polltime.count();
     if (timeSinceLastSync >= polltime) {
         return true;
@@ -367,8 +367,7 @@ void Folder::slotRunEtagJob()
     _requestEtagJob->setTimeout(60 * 1000);
     // check if the etag is different when retrieved
     QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetreived, this, &Folder::etagRetreived);
-    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::finishedWithResult,  this, [=](const HttpResult<QByteArray>)
-    { _timeSinceLastEtagCheckDone.start(); });
+    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::finishedWithResult, this, [=](const HttpResult<QByteArray>) { _timeSinceLastEtagCheckDone.start(); });
     FolderMan::instance()->slotScheduleETagJob(alias(), _requestEtagJob);
     // The _requestEtagJob is auto deleting itself on finish. Our guard pointer _requestEtagJob will then be null.
 }
