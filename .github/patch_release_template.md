@@ -23,6 +23,10 @@
 
 * [ ] QA: Create [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud'
 * [ ] QA: Check the new subfolder of [testing download](https://download.owncloud.com/desktop/ownCloud/testing/) if `*tar.xz.asc` files are there. If not follow the [instructions](https://github.com/owncloud/enterprise/wiki/Desktop-Signing-Knowledge)
+* [ ] Beta/RC Communication (https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
+   * [ ] Website links for beta (needed for the following posts)
+   * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
+   * [ ] All other stakeholders
 
 
 ### QA
@@ -64,9 +68,12 @@
 
 ### Communicate the Availability
 
-* [ ] QA: Announce on [central](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Central) listed in [Category News, desktop tag](https://central.owncloud.org/tags/c/news/desktop)
-* [ ] QA: Inform [stakeholders](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-InformStakeholdersaboutFinal)
-* [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
+* [ ] Beta/RC Communication https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Central
+   * [ ] Website links for beta (needed for the following posts)
+   * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
+   * [ ] Inform other [stakeholders](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-InformStakeholdersaboutFinal)
+   * [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
+
 
 ### Final Infrastructure Check
 
