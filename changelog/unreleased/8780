@@ -1,4 +1,4 @@
-Enhancement: Consider a remote poll interval coming with the server capabilities.
+Enhancement: Consider a remote poll interval coming with the server capabilities
 
 This way, admins can configure the remote sync poll interval of clients through
 the capabilities settings of the server. Note that the setting in the server
