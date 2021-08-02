@@ -68,7 +68,7 @@
 
 ### Communicate the Availability
 
-* [ ] Beta/RC Communication https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Central
+* [ ] Final Communication https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Central
    * [ ] Website links for beta (needed for the following posts)
    * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] Inform other [stakeholders](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-InformStakeholdersaboutFinal)
