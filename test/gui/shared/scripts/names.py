@@ -32,7 +32,6 @@ lePassword_QLineEdit = {"buddy": owncloudWizard_passwordLabel_QLabel, "name": "l
 fileNameEdit_QLineEdit = {"buddy": qFileDialog_fileNameLabel_QLabel, "name": "fileNameEdit", "type": "QLineEdit", "visible": 1}
 settings_settingsdialog_toolbutton_artur_jankaritech_ocloud_de_QToolButton = {"name": "settingsdialog_toolbutton_artur@jankaritech.ocloud.de", "type": "QToolButton", "visible": 1, "window": settings_OCC_SettingsDialog}
 stack_folderList_QTreeView = {"container": settings_stack_QStackedWidget, "name": "_folderList", "type": "QTreeView", "visible": 1}
-stack_vfs_QTreeView = {"container": stack_folderList_QTreeView, "type": "QStringLists", "visible": 1, "text":"Virtual file support is enabled."}
 sharingDialog_OCC_ShareDialog = {"name": "SharingDialog", "type": "OCC::ShareDialog", "visible": 1}
 sharingDialog_qt_tabwidget_stackedwidget_QStackedWidget = {"name": "qt_tabwidget_stackedwidget", "type": "QStackedWidget", "visible": 1, "window": sharingDialog_OCC_ShareDialog}
 qt_tabwidget_stackedwidget_SharingDialogUG_OCC_ShareUserGroupWidget = {"container": sharingDialog_qt_tabwidget_stackedwidget_QStackedWidget, "name": "SharingDialogUG", "type": "OCC::ShareUserGroupWidget", "visible": 1}

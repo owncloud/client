@@ -745,9 +745,8 @@ def step(context, resource, content):
     print("file has been overwritten")
     waitForFileToBeSynced(context, resource)
 
-    
-@When("the user enables virtual file support")
-def step(context):
+
+def enableVFSSupport(vfsBtnText):
     mouseClick(
         waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
         718,
@@ -755,48 +754,40 @@ def step(context):
         Qt.NoModifier,
         Qt.LeftButton,
     )
-    activateItem(
-        waitForObjectItem(
-            names.settings_QMenu, "Enable virtual file support (experimental)..."
-        )
-    )
+    activateItem(waitForObjectItem(names.settings_QMenu, vfsBtnText))
     clickButton(
         waitForObject(names.stack_Enable_experimental_placeholder_mode_QPushButton)
     )
 
 
-@Then("the virtual file support should be enabled")
+@When("the user enables virtual file support")
 def step(context):
-    waitForObjectExists(
-        names.stack_vfs_QTreeView,
-        )
+    enableVFSSupport("Enable virtual file support (experimental)...")
+
+
+@Then('the "|any|" button should be available')
+def step(context, btnText):
+    mouseClick(
+        waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
+        718,
+        35,
+        Qt.NoModifier,
+        Qt.LeftButton,
+    )
+    waitForObjectItem(names.settings_QMenu, btnText)
 
 
 @Given("the user has enabled virtual file support")
 def step(context):
-    mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
-        715,
-        31,
-        Qt.NoModifier,
-        Qt.LeftButton,
-    )
-    activateItem(
-        waitForObjectItem(
-            names.settings_QMenu, "Enable virtual file support (experimental)..."
-        )
-    )
-    clickButton(
-        waitForObject(names.stack_Enable_experimental_placeholder_mode_QPushButton)
-    )
+    enableVFSSupport("Enable virtual file support (experimental)...")
 
 
-@When("the user diables virtual file support")
+@When("the user disables virtual file support")
 def step(context):
     mouseClick(
         waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
-        720,
-        33,
+        733,
+        34,
         Qt.NoModifier,
         Qt.LeftButton,
     )
@@ -806,8 +797,3 @@ def step(context):
     clickButton(
         waitForObject(names.disable_virtual_file_support_Disable_support_QPushButton)
     )
-
-
-@Then("the virtual file support should be disbaleds")
-def step(context):
-    pass
