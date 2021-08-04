@@ -747,6 +747,9 @@ def step(context, resource, content):
 
 
 def enableVFSSupport(vfsBtnText):
+    # The enabling/disabling VFS button do not have it's own object
+    # But it is inside the "stack_folderList_QTreeView" object.
+    # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
     mouseClick(
         waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
         718,
@@ -767,10 +770,13 @@ def step(context):
 
 @Then('the "|any|" button should be available')
 def step(context, btnText):
+    # The enabling/disabling VFS button do not have it's own object
+    # But it is inside the "stack_folderList_QTreeView" object.
+    # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
     mouseClick(
         waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
         718,
-        35,
+        27,
         Qt.NoModifier,
         Qt.LeftButton,
     )
@@ -784,10 +790,13 @@ def step(context):
 
 @When("the user disables virtual file support")
 def step(context):
+    # The enabling/disabling VFS button do not have it's own object
+    # But it is inside the "stack_folderList_QTreeView" object.
+    # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
     mouseClick(
         waitForObjectItem(names.stack_folderList_QTreeView, "_1"),
         733,
-        34,
+        27,
         Qt.NoModifier,
         Qt.LeftButton,
     )
