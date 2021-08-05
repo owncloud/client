@@ -42,7 +42,7 @@ public:
     static QString configPath();
     static QString configFile();
     static bool exists();
-    const std::chrono::milliseconds DefaultRemotePollInterval { 30000 }; // default remote poll time in milliseconds
+
     ConfigFile();
 
     enum Scope { UserScope,
@@ -64,7 +64,7 @@ public:
     bool passwordStorageAllowed(const QString &connection = QString());
 
     /* Server poll interval in milliseconds */
-    std::chrono::milliseconds remotePollInterval(std::chrono::milliseconds defaultVal, const QString &connection = QString()) const;
+    std::chrono::milliseconds remotePollInterval(std::chrono::seconds defaultVal, const QString &connection = QString()) const;
     /* Set poll interval. Value in milliseconds has to be larger than 5000 */
     void setRemotePollInterval(std::chrono::milliseconds interval, const QString &connection = QString());
 
@@ -72,7 +72,7 @@ public:
     std::chrono::milliseconds notificationRefreshInterval(const QString &connection = QString()) const;
 
     /* Force sync interval, in milliseconds */
-    std::chrono::milliseconds forceSyncInterval(std::chrono::milliseconds remoteFromCapabilities, const QString &connection = QString()) const;
+    std::chrono::milliseconds forceSyncInterval(std::chrono::seconds remoteFromCapabilities, const QString &connection = QString()) const;
 
     /**
      * Interval in milliseconds within which full local discovery is required
@@ -199,6 +199,7 @@ private:
 
 private:
     typedef QSharedPointer<AbstractCredentials> SharedCreds;
+    const std::chrono::seconds DefaultRemotePollInterval { 30 }; // default remote poll time in milliseconds
 
     static QString _oCVersion;
     static QString _confDir;

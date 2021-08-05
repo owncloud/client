@@ -80,7 +80,7 @@ public:
      *  returns the requested poll interval to be used by the client in milliseconds.
      *  If it returns -1 the client default remains unchanged.
      */
-    int remotePollInterval() const;
+    std::chrono::seconds remotePollInterval() const;
 
     // TODO: return SharePermission
     int defaultPermissions() const;

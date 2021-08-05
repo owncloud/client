@@ -103,16 +103,15 @@ int Capabilities::defaultPermissions() const
     return _fileSharingCapabilities.value(QStringLiteral("default_permissions"), 1).toInt();
 }
 
-int Capabilities::remotePollInterval() const
+std::chrono::seconds Capabilities::remotePollInterval() const
 {
     // The default of the capability is 60, but the clients use 30.
     // Values below 5000 are not allowed and fall back to the default.
-    int interval { -1 };
-    const QString val = _capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("pollinterval")).toString();
+    std::chrono::seconds interval(0);
     bool ok;
-    int tmpInt = val.toInt(&ok);
+    int tmpInt = _capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("pollinterval")).toInt(&ok);
     if (ok && tmpInt > 4999) { // The minimum is 5 seconds
-        interval = tmpInt;
+        interval = std::chrono::seconds(tmpInt / 1000);
     }
 
     return interval;

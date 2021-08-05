@@ -403,7 +403,7 @@ bool ConfigFile::dataExists(const QString &group, const QString &key) const
     return settings.contains(key);
 }
 
-chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::milliseconds capabilitiesVal, const QString &connection) const
+chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds defaultVal, const QString &connection) const
 {
     QString con(connection);
     if (connection.isEmpty())
@@ -412,13 +412,13 @@ chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::milliseconds ca
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.beginGroup(con);
 
-    auto defaultPollInterval = DefaultRemotePollInterval;
+    auto defaultPollInterval { DefaultRemotePollInterval };
 
     // The server default-capabilities is set to 60, which is, if interpreted in milliseconds,
     // pretty small. If the value is above 5 seconds, it was set intentionally.
     // Server admins have to set the value in Milliseconds!
-    if (capabilitiesVal > chrono::seconds(5)) {
-        defaultPollInterval = capabilitiesVal;
+    if (defaultVal > chrono::seconds(5)) {
+        defaultPollInterval = defaultVal;
     }
     auto remoteInterval = millisecondsValue(settings, remotePollIntervalC(), defaultPollInterval);
     if (remoteInterval < chrono::seconds(5)) {
@@ -444,7 +444,7 @@ void ConfigFile::setRemotePollInterval(chrono::milliseconds interval, const QStr
     settings.sync();
 }
 
-chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::milliseconds remoteFromCapabilities, const QString &connection) const
+chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::seconds remoteFromCapabilities, const QString &connection) const
 {
     auto pollInterval = remotePollInterval(remoteFromCapabilities, connection);
 

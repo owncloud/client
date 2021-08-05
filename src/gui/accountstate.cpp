@@ -266,7 +266,7 @@ void AccountState::checkConnectivity(bool blockJobs)
 
     // IF the account is connected the connection check can be skipped
     // if the last successful etag check job is not so long ago.
-    const auto pta = std::chrono::milliseconds(account()->capabilities().remotePollInterval());
+    const auto pta = account()->capabilities().remotePollInterval();
     const auto polltime = std::chrono::duration_cast<std::chrono::seconds>(ConfigFile().remotePollInterval(pta));
     const auto elapsed = _timeOfLastETagCheck.secsTo(QDateTime::currentDateTimeUtc());
     if (!blockJobs && isConnected() && _timeOfLastETagCheck.isValid()

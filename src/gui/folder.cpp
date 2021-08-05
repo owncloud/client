@@ -296,7 +296,7 @@ bool Folder::dueToSync() const
     ConfigFile cfg;
     // the default poll time of 30 seconds as it had been in the client forever.
     // Now with https://github.com/owncloud/client/pull/8777 also the server capabilities are considered.
-    const auto pta = std::chrono::milliseconds(accountState()->account()->capabilities().remotePollInterval());
+    const auto pta = accountState()->account()->capabilities().remotePollInterval();
     const auto polltime = cfg.remotePollInterval(pta);
 
     const auto timeSinceLastSync = std::chrono::milliseconds(_timeSinceLastEtagCheckDone.elapsed());
