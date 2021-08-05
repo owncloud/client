@@ -299,9 +299,7 @@ bool Folder::dueToSync() const
     const auto pta = std::chrono::milliseconds(accountState()->account()->capabilities().remotePollInterval());
     const auto polltime = cfg.remotePollInterval(pta);
 
-    // we add half a second here as estimated duration of the last etag job. That way the wished duration
-    // is met more accurate - which appears to look better in the access log.
-    const auto timeSinceLastSync = std::chrono::milliseconds(500 + _timeSinceLastEtagCheckDone.elapsed());
+    const auto timeSinceLastSync = std::chrono::milliseconds(_timeSinceLastEtagCheckDone.elapsed());
     qCInfo(lcFolder) << "dueToSync:" << alias() << timeSinceLastSync.count() << " < " << polltime.count();
     if (timeSinceLastSync >= polltime) {
         return true;
