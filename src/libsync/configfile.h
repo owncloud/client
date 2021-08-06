@@ -199,7 +199,6 @@ private:
 
 private:
     typedef QSharedPointer<AbstractCredentials> SharedCreds;
-    const std::chrono::seconds DefaultRemotePollInterval { 30 }; // default remote poll time in milliseconds
 
     static QString _oCVersion;
     static QString _confDir;

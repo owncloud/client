@@ -93,6 +93,7 @@ const QString moveToTrashC() { return QStringLiteral("moveToTrash"); }
 }
 
 QString ConfigFile::_confDir = QString();
+const std::chrono::seconds DefaultRemotePollInterval { 30 }; // default remote poll time in milliseconds
 
 static chrono::milliseconds millisecondsValue(const QSettings &setting, const QString &key,
     chrono::milliseconds defaultValue)
@@ -422,8 +423,8 @@ chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds default
     }
     auto remoteInterval = millisecondsValue(settings, remotePollIntervalC(), defaultPollInterval);
     if (remoteInterval < chrono::seconds(5)) {
-        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << DefaultRemotePollInterval.count();
         remoteInterval = defaultPollInterval;
+        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << remoteInterval.count();
     }
     return remoteInterval;
 }

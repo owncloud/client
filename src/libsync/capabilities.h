@@ -77,8 +77,8 @@ public:
     bool shareResharing() const;
     /** Remote Poll interval.
      *
-     *  returns the requested poll interval to be used by the client in milliseconds.
-     *  If it returns -1 the client default remains unchanged.
+     *  returns the requested poll interval in seconds to be used by the client.
+     *  @returns 0 if no capability is set.
      */
     std::chrono::seconds remotePollInterval() const;
 
