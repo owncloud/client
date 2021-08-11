@@ -176,6 +176,9 @@ void OwncloudAdvancedSetupPage::initializePage()
     _ui.confCheckBoxSize->setChecked(newFolderLimit.first);
     _ui.confSpinBox->setValue(newFolderLimit.second);
     _ui.confCheckBoxExternal->setChecked(cfgFile.confirmExternalStorage());
+
+    setCommitPage(true);
+    validatePage();
 }
 
 // Called if the user changes the user- or url field. Adjust the texts and
