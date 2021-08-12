@@ -274,7 +274,7 @@ bool HttpCredentials::refreshAccessToken()
         default:
             // something is broken
             // start fresh
-            qCWarning(lcHttpCredentials) << "Token refresh encountedred an unsupported netweork error" << errorString << "-> log out";
+            qCWarning(lcHttpCredentials) << "Token refresh encountered an unsupported network error" << errorString << "-> log out";
             forgetSensitiveData();
             Q_EMIT _account->invalidCredentials();
         }
