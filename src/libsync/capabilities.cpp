@@ -105,16 +105,7 @@ int Capabilities::defaultPermissions() const
 
 std::chrono::seconds Capabilities::remotePollInterval() const
 {
-    // The default of the capability is 60, but the clients use 30.
-    // Values below 5000 are not allowed and fall back to the default.
-    std::chrono::seconds interval(0);
-    bool ok;
-    int tmpInt = _capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("pollinterval")).toInt(&ok);
-    if (ok && tmpInt > 4999) { // The minimum is 5 seconds
-        interval = std::chrono::seconds(tmpInt / 1000);
-    }
-
-    return interval;
+    return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::milliseconds(_capabilities.value(QStringLiteral("core")).toMap().value(QStringLiteral("pollinterval")).toInt()));
 }
 
 bool Capabilities::notificationsAvailable() const
