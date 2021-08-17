@@ -55,16 +55,17 @@ QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op,
     // Some firewalls reject requests that have a "User-Agent" but no "Accept" header
     newRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("*/*"));
 
-    QByteArray verb = newRequest.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
-    // For PROPFIND (assumed to be a WebDAV op), set xml/utf8 as content type/encoding
-    // This needs extension
-    if (verb == QByteArrayLiteral("PROPFIND")) {
-        newRequest.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("text/xml; charset=utf-8"));
-    }
+    Q_ASSERT([&]{
+        // For PROPFIND (assumed to be a WebDAV op), set xml/utf8 as content type/encoding
+        // This needs extension
+        if (newRequest.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray() == QByteArrayLiteral("PROPFIND")) {
+            return newRequest.header(QNetworkRequest::ContentTypeHeader) == QByteArrayLiteral("text/xml; charset=utf-8");
+        }
+        return true;
+    }());
 
     // Generate a new request id
     const QByteArray requestId = generateRequestId();
-    qInfo(lcAccessManager) << op << verb << newRequest.url().toString() << "has X-Request-ID" << requestId;
     newRequest.setRawHeader(QByteArrayLiteral("X-Request-ID"), requestId);
     const auto originalIdKey = QByteArrayLiteral("Original-Request-ID");
     if (!newRequest.hasRawHeader(originalIdKey)) {

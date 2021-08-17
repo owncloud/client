@@ -73,61 +73,21 @@ QByteArray parseEtag(const QByteArray &header)
 }
 
 RequestEtagJob::RequestEtagJob(AccountPtr account, const QString &path, QObject *parent)
-    : AbstractNetworkJob(account, path, parent)
+    : LsColJob(account, path, parent)
 {
 }
 
 void RequestEtagJob::start()
 {
-    QNetworkRequest req;
-    req.setRawHeader("Depth", "0");
-
-    QByteArray xml("<?xml version=\"1.0\" ?>\n"
-                   "<d:propfind xmlns:d=\"DAV:\">\n"
-                   "  <d:prop>\n"
-                   "    <d:getetag/>\n"
-                   "  </d:prop>\n"
-                   "</d:propfind>\n");
-    QBuffer *buf = new QBuffer(this);
-    buf->setData(xml);
-    buf->open(QIODevice::ReadOnly);
-    // assumes ownership
-    sendRequest("PROPFIND", makeDavUrl(path()), req, buf);
-    AbstractNetworkJob::start();
-}
-
-bool RequestEtagJob::finished()
-{
-    qCInfo(lcEtagJob) << "Request Etag of" << reply()->request().url() << "FINISHED WITH STATUS"
-                      <<  replyStatusString();
-
-    auto httpCode = reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    if (httpCode == 207) {
-        // Parse DAV response
-        QXmlStreamReader reader(reply());
-        reader.addExtraNamespaceDeclaration(QXmlStreamNamespaceDeclaration(QStringLiteral("d"), QStringLiteral("DAV:")));
-        QByteArray etag;
-        while (!reader.atEnd()) {
-            QXmlStreamReader::TokenType type = reader.readNext();
-            if (type == QXmlStreamReader::StartElement && reader.namespaceUri() == QLatin1String("DAV:")) {
-                QString name = reader.name().toString();
-                if (name == QLatin1String("getetag")) {
-                    auto etagText = reader.readElementText();
-                    auto parsedTag = parseEtag(etagText.toUtf8());
-                    if (!parsedTag.isEmpty()) {
-                        etag += parsedTag;
-                    } else {
-                        etag += etagText.toUtf8();
-                    }
-                }
-            }
-        }
+    connect(this, &LsColJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &values) {
+        const auto etag = values.value(QLatin1String("getetag")).toUtf8();
         emit etagRetreived(etag, QDateTime::fromString(QString::fromUtf8(_responseTimestamp), Qt::RFC2822Date));
         emit finishedWithResult(etag);
-    } else {
-        emit finishedWithResult(HttpError{ httpCode, errorString() });
-    }
-    return true;
+    });
+    connect(this, &LsColJob::finishedWithError, this, [this](QNetworkReply *reply){
+        emit finishedWithResult(HttpError{ reply->error(), errorString() });
+    });
+    startImpl(QNetworkRequest{}, 0);
 }
 
 /*********************************************************************************************/
@@ -332,9 +292,7 @@ QList<QByteArray> LsColJob::properties() const
 
 void LsColJob::start()
 {
-    QNetworkRequest req;
-    req.setRawHeader(QByteArrayLiteral("Depth"), QByteArrayLiteral("1"));
-    startImpl(req);
+    startImpl(QNetworkRequest{}, 1);
 }
 
 // TODO: Instead of doing all in this slot, we should iteratively parse in readyRead(). This
@@ -374,8 +332,11 @@ bool LsColJob::finished()
     return true;
 }
 
-void LsColJob::startImpl(const QNetworkRequest &req)
+void LsColJob::startImpl(QNetworkRequest &&req, int depth)
 {
+    req.setRawHeader(QByteArrayLiteral("Depth"), QByteArray::number(depth));
+    req.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("text/xml; charset=utf-8"));
+
     if (_properties.isEmpty()) {
         qCWarning(lcLsColJob) << "Propfind with no properties!";
     }
@@ -572,8 +533,7 @@ void PropfindJob::start()
     // and really want this to be done first (no matter what internal scheduling QNAM uses).
     // Also possibly useful for avoiding false timeouts.
     req.setPriority(QNetworkRequest::HighPriority);
-    req.setRawHeader(QByteArrayLiteral("Depth"), QByteArrayLiteral("0"));
-    startImpl(req);
+    startImpl(std::move(req), 0);
 }
 
 
@@ -799,7 +759,7 @@ bool JsonApiJob::finished()
 }
 
 DetermineAuthTypeJob::DetermineAuthTypeJob(AccountPtr account, QObject *parent)
-    : AbstractNetworkJob(account, QString(), parent)
+    : LsColJob(account, QStringLiteral("/"), parent)
 {
     setAuthenticationJob(true);
     setIgnoreCredentialFailure(true);
@@ -808,28 +768,26 @@ DetermineAuthTypeJob::DetermineAuthTypeJob(AccountPtr account, QObject *parent)
 void DetermineAuthTypeJob::start()
 {
     qCInfo(lcDetermineAuthTypeJob) << "Determining auth type for" << _account->davUrl();
+    const auto determine = [this] {
+        auto authChallenge = reply()->rawHeader("WWW-Authenticate").toLower();
+        auto result = AuthType::Basic;
+        if (authChallenge.contains("bearer ")) {
+            result = AuthType::OAuth;
+        } else if (authChallenge.isEmpty()) {
+            qCWarning(lcDetermineAuthTypeJob) << "Did not receive WWW-Authenticate reply to auth-test PROPFIND";
+        }
+        qCInfo(lcDetermineAuthTypeJob) << "Auth type for" << _account->davUrl() << "is" << result;
+        emit this->authType(result);
+    };
+    connect(this, &LsColJob::finishedWithoutError, this, determine);
+    connect(this, &LsColJob::finishedWithError, this, determine);
 
     QNetworkRequest req;
     // Prevent HttpCredentialsAccessManager from setting an Authorization header.
     req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
     // Don't reuse previous auth credentials
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
-    sendRequest("PROPFIND", _account->davUrl(), req);
-    AbstractNetworkJob::start();
-}
-
-bool DetermineAuthTypeJob::finished()
-{
-    auto authChallenge = reply()->rawHeader("WWW-Authenticate").toLower();
-    auto result = AuthType::Basic;
-    if (authChallenge.contains("bearer ")) {
-        result = AuthType::OAuth;
-    } else if (authChallenge.isEmpty()) {
-        qCWarning(lcDetermineAuthTypeJob) << "Did not receive WWW-Authenticate reply to auth-test PROPFIND";
-    }
-    qCInfo(lcDetermineAuthTypeJob) << "Auth type for" << _account->davUrl() << "is" << result;
-    emit this->authType(result);
-    return true;
+    startImpl(std::move(req), 0);
 }
 
 SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, QObject *parent)

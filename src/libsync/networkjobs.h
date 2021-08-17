@@ -103,10 +103,10 @@ signals:
     void finishedWithoutError();
 
 private slots:
-    bool finished() override;
+    bool finished() final;
 
 protected:
-    void startImpl(const QNetworkRequest &req);
+    void startImpl(QNetworkRequest &&req, int depth);
 
 private:
     QList<QByteArray> _properties;
@@ -307,7 +307,7 @@ private:
 /**
  * @brief The RequestEtagJob class
  */
-class OWNCLOUDSYNC_EXPORT RequestEtagJob : public AbstractNetworkJob
+class OWNCLOUDSYNC_EXPORT RequestEtagJob : public LsColJob
 {
     Q_OBJECT
 public:
@@ -317,9 +317,6 @@ public:
 signals:
     void etagRetreived(const QByteArray &etag, const QDateTime &time);
     void finishedWithResult(const HttpResult<QByteArray> &etag);
-
-private slots:
-    bool finished() override;
 };
 
 /**
@@ -381,7 +378,7 @@ private:
  * @brief Checks with auth type to use for a server
  * @ingroup libsync
  */
-class OWNCLOUDSYNC_EXPORT DetermineAuthTypeJob : public AbstractNetworkJob
+class OWNCLOUDSYNC_EXPORT DetermineAuthTypeJob : public LsColJob
 {
     Q_OBJECT
 public:
@@ -396,9 +393,6 @@ public:
     void start() override;
 signals:
     void authType(AuthType);
-
-protected Q_SLOTS:
-    bool finished() override;
 };
 
 /**
