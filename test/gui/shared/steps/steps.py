@@ -288,6 +288,11 @@ def step(context):
     waitForFolderToBeSynced(context, '/')
 
 
+@When('the user waits for the folder "|any|" to sync')
+def step(context, foldername):
+    waitForFolderToBeSynced(context, foldername)
+
+
 @When('the user waits for file "|any|" to be synced')
 def step(context, fileName):
     waitForFileToBeSynced(context, fileName)
@@ -303,12 +308,46 @@ def step(context, fileName):
     waitForFileToBeSynced(context, fileName)
 
 
+@Given(
+    'the user has created a file "|any|" with the following content on the file system'
+)
+def step(context, filename):
+    fileContent = "\n".join(context.multiLineText)
+    f = open(context.userData['clientSyncPathUser1'] + filename, "w")
+    f.write(fileContent)
+    f.close()
+
+
 @When('the user creates a file "|any|" with the following content on the file system')
 def step(context, filename):
     fileContent = "\n".join(context.multiLineText)
     f = open(context.userData['clientSyncPathUser1'] + filename, "w")
     f.write(fileContent)
     f.close()
+
+
+@When('the user creates a folder "|any|"')
+def step(context, foldername):
+    createFolder(context, foldername)
+
+
+@Given('the user has created a folder "|any|"')
+def step(context, foldername):
+    createFolder(context, foldername)
+
+
+def createFolder(context, foldername):
+    path = os.path.join(context.userData['clientSyncPathUser1'], foldername)
+    os.makedirs(path)
+
+
+@When('the user copies the folder "|any|" to "|any|"')
+def step(context, sourceFolder, destinationFolder):
+    source_dir = os.path.join(context.userData['clientSyncPathUser1'], sourceFolder)
+    destination_dir = os.path.join(
+        context.userData['clientSyncPathUser1'], destinationFolder
+    )
+    shutil.copytree(source_dir, destination_dir)
 
 
 @Given(r"^(.*) on the server (.*)$", regexp=True)
