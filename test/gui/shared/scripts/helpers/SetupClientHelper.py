@@ -9,6 +9,9 @@ confFilePath = confdir + 'owncloud.cfg'
 def substituteInLineCodes(context, value):
     value = value.replace('%local_server%', context.userData['localBackendUrl'])
     value = value.replace(
+        '%secure_local_server%', context.userData['secureLocalBackendUrl']
+    )
+    value = value.replace(
         '%client_sync_path_user1%', context.userData['clientSyncPathUser1']
     )
     value = value.replace(

@@ -25,6 +25,12 @@ class AccountConnectionWizard:
         "visible": 1,
         "window": names.error_QMessageBox,
     }
+    URL_LOCKED = {
+        "name": "urlLabel",
+        "type": "QLabel",
+        "visible": 1,
+        "window": owncloudWizard_OCC_OwncloudWizard,
+    }
 
     def __init__(self):
         pass
@@ -56,3 +62,11 @@ class AccountConnectionWizard:
             self.sanitizeFolderPath(localfolder),
         )
         squish.clickButton(squish.waitForObject(self.FINISH_BUTTON))
+
+    def addSecureServer(self, secureServerAddress):
+        squish.mouseClick(squish.waitForObject(self.SERVER_ADDRESS_BOX))
+        squish.type(squish.waitForObject(self.SERVER_ADDRESS_BOX), secureServerAddress)
+        squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
+
+    def isUrlLocker(self):
+        squish.waitForObject(self.URL_LOCKED)
