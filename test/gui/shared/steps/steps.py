@@ -66,6 +66,7 @@ def hook(context):
 def addAccount(context):
     newAccount = AccountConnectionWizard()
     newAccount.addAccount(context)
+    newAccount.selectSyncFolder(context)
 
 
 @Given('the user has added an account with')
@@ -83,7 +84,8 @@ def step(context):
 
 @When('the user adds the account with wrong credentials')
 def step(context):
-    addAccount(context)
+    newAccount = AccountConnectionWizard()
+    newAccount.addAccount(context)
 
 
 @Then('an account should be displayed with the displayname |any| and host |any|')
@@ -136,16 +138,15 @@ def step(context):
     addAccount(context)
 
 
-@When(' the user adds the following secure server address')
+@When('the user adds an account with the following secure server address')
 def step(context):
-
     for row in context.table[0:]:
         row[1] = substituteInLineCodes(context, row[1])
         if row[0] == 'server':
             server = row[1]
 
     newAccount = AccountConnectionWizard()
-    newAccount.addSecureServer(server)
+    newAccount.addServer(server)
 
 
 def isItemSynced(type, itemName):
@@ -837,3 +838,9 @@ def step(context):
 def step(context):
     newAccount = AccountConnectionWizard()
     newAccount.isUrlLocked()
+
+
+@Then('error "|any|" should be displayed')
+def step(context, errorMsg):
+    newAccount = AccountConnectionWizard()
+    test.compare(str(waitForObjectExists(newAccount.ERROR_LABEL).text), errorMsg)

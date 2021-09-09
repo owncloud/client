@@ -106,4 +106,3 @@ error_QMessageBox = {"type": "QMessageBox", "unnamed": 1, "visible": 1, "windowT
 oCC_SslErrorDialog_OCC_SslErrorDialog = {"name": "OCC__SslErrorDialog", "type": "OCC::SslErrorDialog", "visible": 1}
 oCC_SslErrorDialog_cbTrustConnect_QCheckBox = {"name": "_cbTrustConnect", "type": "QCheckBox", "visible": 1, "window": oCC_SslErrorDialog_OCC_SslErrorDialog}
 oCC_SslErrorDialog_OK_QPushButton = {"text": "OK", "type": "QPushButton", "unnamed": 1, "visible": 1, "window": oCC_SslErrorDialog_OCC_SslErrorDialog}
-owncloudWizard_urlLabel_QLabel = {"name": "urlLabel", "type": "QLabel", "visible": 1, "window": owncloudWizard_OCC_OwncloudWizard}

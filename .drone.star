@@ -47,7 +47,8 @@ def main(ctx):
         ),
         # gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "latest"),
         # gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "latest"),
-        gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl"]),
+        # gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl"]),
+        gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl2"], ssl = True),
         # notification(
         #     name = "build",
         #     trigger = build_trigger,
@@ -187,7 +188,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
         "depends_on": depends_on,
     }
 
-def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "daily-master-qa"):
+def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], ssl = False, version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
     squish_parameters = "--retry 1 --reportgen stdout --reportgen json,/drone/src/test/guiTestReport"
@@ -235,8 +236,8 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
                      },
                  ] +
                  showGuiTestResult(),
-        "services": testMiddleware() +
-                    owncloudService() +
+        "services": testMiddleware(ssl) +
+                    owncloudService(ssl) +
                     databaseService(),
         "trigger": trigger,
         "depends_on": depends_on,
@@ -468,19 +469,25 @@ def setupServerAndApp(logLevel):
         ],
     }]
 
-def owncloudService():
-    return [{
-        "name": "owncloud",
-        "image": "owncloudci/php:7.4",
-        "pull": "always",
-        "environment": {
+def owncloudService(ssl = False):
+    if ssl:
+        environment = {
             "APACHE_WEBROOT": "/drone/src/server/",
             "APACHE_CONFIG_TEMPLATE": "ssl",
             "APACHE_SSL_CERT_CN": "server",
             "APACHE_SSL_CERT": "%s/%s.crt" % (dir["base"], "server"),
             "APACHE_SSL_KEY": "%s/%s.key" % (dir["base"], "server"),
             "APACHE_LOGGING_PATH": "/dev/null",
-        },
+        }
+    else:
+        environment = {
+            "APACHE_WEBROOT": "/drone/src/server/",
+        }
+    return [{
+        "name": "owncloud",
+        "image": "owncloudci/php:7.4",
+        "pull": "always",
+        "environment": environment,
         "command": [
             "/usr/local/bin/apachectl",
             "-e",
@@ -490,14 +497,15 @@ def owncloudService():
         ],
     }]
 
-def testMiddleware():
+def testMiddleware(ssl = False):
     return [{
         "name": "testmiddleware",
         "image": "owncloudci/nodejs:14",
         "pull": "always",
         "environment": {
             "MIDDLEWARE_HOST": "testmiddleware",
-            "BACKEND_HOST": "http://owncloud",
+            "BACKEND_HOST": "https://owncloud" if ssl else "http://owncloud",
+            'NODE_TLS_REJECT_UNAUTHORIZED': 0,
         },
         "commands": [
             ". ./.drone.env",
