@@ -22,6 +22,7 @@ def substituteInLineCodes(context, value):
 
 
 def getClientDetails(context):
+    server = user = password = localfolder = None
     for row in context.table[0:]:
         row[1] = substituteInLineCodes(context, row[1])
         if row[0] == 'server':

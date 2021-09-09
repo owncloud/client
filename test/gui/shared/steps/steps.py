@@ -3,7 +3,7 @@ import names
 import os
 import sys
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, isdir
 import re
 import urllib.request
 import json
@@ -170,6 +170,20 @@ def waitForFolderToBeSynced(context, folderName):
     )
 
 
+def doFolderExist(context, folderPath):
+    return waitFor(
+        lambda: isdir(sanitizePath(folderPath)),
+        context.userData['clientSyncTimeout'] * 1000,
+    )
+
+
+def doFileExist(context, filePath):
+    return waitFor(
+        lambda: isfile(sanitizePath(filePath)),
+        context.userData['clientSyncTimeout'] * 1000,
+    )
+
+
 def sanitizePath(path):
     return path.replace('//', '/')
 
@@ -319,6 +333,38 @@ def step(context, filePath):
         + expected
         + " but does not have the expected content",
     )
+
+
+@Then('the file "|any|" should exist on the file system')
+def step(context, file):
+    filePath = join(context.userData['clientSyncPathUser1'], file)
+    fileExists = doFileExist(context, filePath)
+
+    test.compare(True, fileExists)
+
+
+@Then('the file "|any|" should not exist on the file system')
+def step(context, file):
+    filePath = join(context.userData['clientSyncPathUser1'], file)
+    fileExists = isfile(filePath)
+
+    test.compare(False, fileExists)
+
+
+@Then('the folder "|any|" should exist on the file system')
+def step(context, folder):
+    folderPath = join(context.userData['clientSyncPathUser1'], folder)
+    folderExists = doFolderExist(context, folderPath)
+
+    test.compare(True, folderExists)
+
+
+@Then('the folder "|any|" should not exist on the file system')
+def step(context, folder):
+    folderPath = join(context.userData['clientSyncPathUser1'], folder)
+    folderExists = isdir(folderPath)
+
+    test.compare(False, folderExists)
 
 
 @Given('the user has paused the file sync')
@@ -806,3 +852,82 @@ def step(context):
     clickButton(
         waitForObject(names.disable_virtual_file_support_Disable_support_QPushButton)
     )
+
+
+@Given('the user has added the following server address:')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.addServer(context)
+
+    test.compare(
+        waitForObjectExists(
+            names.owncloudWizard_OwncloudHttpCredsPage_OCC_OwncloudHttpCredsPage
+        ).visible,
+        True,
+    )
+
+
+@Given('the user has added the following account credentials:')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.addUserCredentails(context)
+
+    test.compare(
+        waitForObjectExists(
+            names.owncloudWizard_OwncloudAdvancedSetupPage_OCC_OwncloudAdvancedSetupPage
+        ).visible,
+        True,
+    )
+
+
+@Given('the user has changed the sync directory')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.changeSyncDirectory(context)
+
+
+@When('the user opens chose_what_to_sync dialog')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.openSyncDialog()
+
+
+@When('the user selects the following folders to sync:')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.selectFoldersForSync(context)
+
+
+@When('the user selects manual sync folder option')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.selectManualSyncFolder()
+
+
+@When('the user connects the account')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.connectAccount()
+
+
+@Then('the dialog chose_what_to_sync should be visible')
+def step(context):
+    test.compare(
+        waitForObjectExists(names.choose_What_to_Sync_OCC_SelectiveSyncDialog).visible,
+        True,
+    )
+
+
+@Then('the sync all checkbox should be checked')
+def step(context):
+    test.compare(
+        waitForObjectExists(
+            names.deselect_remote_folders_you_do_not_wish_to_synchronize_QModelIndex
+        ).checkState,
+        "checked",
+    )
+
+
+@Then("folder should not visible")
+def step(context):
+    pass
