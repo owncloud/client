@@ -18,14 +18,23 @@
 import shutil
 import urllib.request
 import os
+import builtins
 
 
-@OnScenarioStart
+@OnFeatureStart
 def hook(context):
     from configparser import ConfigParser
 
     cfg = ConfigParser()
-    cfg.read('../config.ini')
+
+    if os.environ.get('CI') in ['True', 'true']:
+        cfg.read('../drone/config.ini')
+    else:
+        cfg.read('../config.ini')
+
+    if len(cfg['DEFAULT']) == 0:
+        raise Exception("Error: config.ini is empty or doesn't exist.")
+
     context.userData = {
         'localBackendUrl': os.environ.get(
             'BACKEND_HOST', cfg.get('DEFAULT', 'BACKEND_HOST')
@@ -64,7 +73,7 @@ def hook(context):
     if context.userData['clientSyncTimeout'] == '':
         context.userData['clientSyncTimeout'] = 60
     else:
-        context.userData['clientSyncTimeout'] = int(
+        context.userData['clientSyncTimeout'] = builtins.int(
             context.userData['clientSyncTimeout']
         )
 

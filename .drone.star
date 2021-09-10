@@ -226,6 +226,7 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
                              "BACKEND_HOST": "http://owncloud/",
                              "SERVER_INI": "/drone/src/test/gui/drone/server.ini",
                              "SQUISH_PARAMETERS": squish_parameters,
+                             "CI": True,
                          },
                      },
                  ] +
