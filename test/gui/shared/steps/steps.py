@@ -886,6 +886,17 @@ def step(context):
     newAccount.changeSyncDirectory(context)
 
 
+@Given('the user has opened chose_what_to_sync dialog')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.openSyncDialog()
+
+    test.compare(
+        waitForObjectExists(names.choose_What_to_Sync_OCC_SelectiveSyncDialog).visible,
+        True,
+    )
+
+
 @When('the user opens chose_what_to_sync dialog')
 def step(context):
     newAccount = AccountConnectionWizard()
@@ -928,6 +939,25 @@ def step(context):
     )
 
 
-@Then("folder should not visible")
+@Then("the folders should be in the following order:")
 def step(context):
-    pass
+    rowIndex = 0
+    for row in context.table[1:]:
+        FOLDER_TREE_ROW = {
+            "row": rowIndex,
+            "container": names.deselect_remote_folders_you_do_not_wish_to_synchronize_QModelIndex,
+            "type": "QModelIndex",
+        }
+        test.compare(waitForObjectExists(FOLDER_TREE_ROW).displayText, row[0])
+
+        rowIndex += 1
+
+
+@When("the user sorts the folder list by name")
+def step(context):
+    mouseClick(waitForObject(names.name_HeaderViewItem))
+
+
+@When("the user sorts the folder list by size")
+def step(context):
+    mouseClick(waitForObject(names.size_HeaderViewItem))
