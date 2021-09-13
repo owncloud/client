@@ -61,7 +61,7 @@ class AccountConnectionWizard:
         squish.type(squish.waitForObject(self.PASSWORD_BOX), password)
         squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
 
-    def selectFoldersForSync(self, context):
+    def selectFoldersToSync(self, context):
         self.openSyncDialog()
 
         squish.mouseClick(

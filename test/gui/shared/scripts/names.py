@@ -109,7 +109,9 @@ choose_What_to_Sync_Deselect_remote_folders_you_do_not_wish_to_synchronize_QLabe
 choose_What_To_Synchronize_QTreeWidget = {"aboveWidget": choose_What_to_Sync_Deselect_remote_folders_you_do_not_wish_to_synchronize_QLabel, "type": "QTreeWidget", "unnamed": 1, "visible": 1, "window": choose_What_to_Sync_OCC_SelectiveSyncDialog}
 choose_What_To_Sync_OK_QPushButton = {"text": "OK", "type": "QPushButton", "unnamed": 1, "visible": 1, "window": choose_What_to_Sync_OCC_SelectiveSyncDialog}
 deselect_remote_folders_you_do_not_wish_to_synchronize_QModelIndex = {"column": 0, "container": choose_What_To_Synchronize_QTreeWidget, "text": "/", "type": "QModelIndex"}
-owncloudWizard_qt_passive_wizardbutton0_QPushButton = {"name": "__qt__passive_wizardbutton0", "type": "QPushButton", "visible": 1, "window": owncloudWizard_OCC_OwncloudWizard}
 owncloudWizard_OwncloudHttpCredsPage_OCC_OwncloudHttpCredsPage = {"name": "OwncloudHttpCredsPage", "type": "OCC::OwncloudHttpCredsPage", "visible": 1, "window": owncloudWizard_OCC_OwncloudWizard}
 owncloudWizard_OwncloudAdvancedSetupPage_OCC_OwncloudAdvancedSetupPage = {"name": "OwncloudAdvancedSetupPage", "type": "OCC::OwncloudAdvancedSetupPage", "visible": 1, "window": owncloudWizard_OCC_OwncloudWizard}
 owncloudWizard_rManualFolder_QRadioButton = {"name": "rManualFolder", "type": "QRadioButton", "visible": 1, "window": owncloudWizard_OCC_OwncloudWizard}
+deselect_remote_folders_you_do_not_wish_to_synchronize_QHeaderView = {"container": choose_What_To_Synchronize_QTreeWidget, "orientation": 1, "type": "QHeaderView", "unnamed": 1, "visible": 1}
+name_HeaderViewItem = {"container": deselect_remote_folders_you_do_not_wish_to_synchronize_QHeaderView, "text": "Name", "type": "HeaderViewItem", "visible": True}
+size_HeaderViewItem = {"container": deselect_remote_folders_you_do_not_wish_to_synchronize_QHeaderView, "text": "Size", "type": "HeaderViewItem", "visible": True}

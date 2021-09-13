@@ -111,3 +111,46 @@ Feature: Syncing files
         Then the folder "simple-folder" should not exist on the file system
         But the folder "large-folder" should not exist on the file system
         And the file "lorem.txt" should not exist on the file system
+
+    Scenario: sort folders list by name and size
+        Given user "Alice" has created folder "123Folder" on the server
+        And user "Alice" has uploaded file on the server with content "small" to "123Folder/lorem.txt"
+        And user "Alice" has created folder "aFolder" on the server
+        And user "Alice" has uploaded file on the server with content "more contents" to "aFolder/lorem.txt"
+        And user "Alice" has created folder "bFolder" on the server
+        And the user has started the client
+        And the user has added the following server address:
+            | server | %local_server% |
+        And the user has added the following account credentials:
+            | user     | Alice |
+            | password | 1234  |
+        And the user has changed the sync directory
+            | localfolder | %client_sync_path_user1% |
+        When the user opens chose_what_to_sync dialog
+        # folders are sorted by name in ascending order by default
+        Then the folders should be in the following order:
+            | folder    |
+            | 123Folder |
+            | aFolder   |
+            | bFolder   |
+        # sort folder by name in descending order
+        When the user sorts the folder list by name
+        Then the folders should be in the following order:
+            | folder    |
+            | bFolder   |
+            | aFolder   |
+            | 123Folder |
+        # sort folder by size in ascending order
+        When the user sorts the folder list by size
+        Then the folders should be in the following order:
+            | folder    |
+            | bFolder   |
+            | 123Folder |
+            | aFolder   |
+        # sort folder by size in descending order
+        When the user sorts the folder list by size
+        Then the folders should be in the following order:
+            | folder    |
+            | aFolder   |
+            | 123Folder |
+            | bFolder   |
