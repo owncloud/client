@@ -221,6 +221,10 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
                          "name": "GUItests",
                          "image": "owncloudci/squish:latest",
                          "pull": "always",
+                         "commands": [
+                             "chmod ugo+rwx ./test/gui",
+                             "cp ./test/gui/config.sample.ini ./test/gui/config.ini",
+                         ],
                          "environment": {
                              "LICENSEKEY": from_secret("squish_license_server"),
                              "CLIENT_REPO": "/drone/src/",

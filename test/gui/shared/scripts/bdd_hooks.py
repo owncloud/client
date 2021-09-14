@@ -18,6 +18,7 @@
 import shutil
 import urllib.request
 import os
+import builtins
 
 
 @OnScenarioStart
@@ -69,7 +70,7 @@ def hook(context):
     if context.userData['clientSyncTimeout'] == '':
         context.userData['clientSyncTimeout'] = 60
     else:
-        context.userData['clientSyncTimeout'] = int(
+        context.userData['clientSyncTimeout'] = builtins.int(
             context.userData['clientSyncTimeout']
         )
 
