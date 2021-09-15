@@ -185,7 +185,7 @@ int csync_vio_local_stat(const QString &uri, csync_file_stat_t *buf)
 {
     /* Almost nothing to do since csync_vio_local_readdir already filled up most of the information
        But we still need to fetch the file ID.
-       Possible optimisation: only fetch the file id when we need it (for new files)
+       Possible optimization: only fetch the file id when we need it (for new files)
       */
 
     HANDLE h;
