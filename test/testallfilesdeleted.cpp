@@ -253,7 +253,7 @@ private slots:
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fingerprintRequests, 2);
         auto currentState = fakeFolder.currentLocalState();
-        // Altough the local file is kept as a conflict, the server file is downloaded
+        // Although the local file is kept as a conflict, the server file is downloaded
         QCOMPARE(currentState.find("A/a1")->contentChar, 'O');
         auto conflict = findConflict(currentState, "A/a1");
         QVERIFY(conflict);
