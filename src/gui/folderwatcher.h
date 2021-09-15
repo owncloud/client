@@ -77,7 +77,7 @@ public:
      * If no notification is seen, the folderwatcher marks itself as unreliable.
      * The path must be ignored by the watcher.
      */
-    void startNotificatonTest(const QString &path);
+    void startNotificationTest(const QString &path);
 
     /// For testing linux behavior only
     int testLinuxWatchCount() const;

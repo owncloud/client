@@ -1295,7 +1295,7 @@ void Folder::registerFolderWatcher()
     connect(_folderWatcher.data(), &FolderWatcher::becameUnreliable,
         this, &Folder::slotWatcherUnreliable);
     _folderWatcher->init(path());
-    _folderWatcher->startNotificatonTest(path() + QLatin1String(".owncloudsync.log"));
+    _folderWatcher->startNotificationTest(path() + QLatin1String(".owncloudsync.log"));
 }
 
 bool Folder::virtualFilesEnabled() const

@@ -75,7 +75,7 @@ bool FolderWatcher::isReliable() const
     return _isReliable;
 }
 
-void FolderWatcher::startNotificatonTest(const QString &path)
+void FolderWatcher::startNotificationTest(const QString &path)
 {
 #ifdef Q_OS_MAC
     // Testing the folder watcher on OSX is harder because the watcher
