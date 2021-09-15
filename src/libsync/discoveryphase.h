@@ -255,7 +255,7 @@ public:
     QRegExp _invalidFilenameRx; // FIXME: maybe move in ExcludedFiles
     QStringList _serverBlacklistedFiles; // The blacklist from the capabilities
     bool _ignoreHiddenFiles = false;
-    std::function<bool(const QString &)> _shouldDiscoverLocaly;
+    std::function<bool(const QString &)> _shouldDiscoverLocally;
 
     void startJob(ProcessDirectoryJob *);
 

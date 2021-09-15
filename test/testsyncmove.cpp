@@ -319,7 +319,7 @@ private slots:
         QCOMPARE(counter.nGET, 1);
         counter.reset();
 
-        // remove localy, and remote move at the same time
+        // remove locally, and remote move at the same time
         fakeFolder.localModifier().remove("A/Q/W/a1m");
         remote.rename("A/Q/W/a1m", "A/Q/W/a1p");
         remote.rename(prefix + "/A/Q/W/a1m", prefix + "/A/Q/W/a1p");

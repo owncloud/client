@@ -47,8 +47,8 @@ void ProcessDirectoryJob::start()
 
     // Check whether a normal local query is even necessary
     if (_queryLocal == NormalQuery) {
-        if (!_discoveryData->_shouldDiscoverLocaly(_currentFolder._local)
-            && (_currentFolder._local == _currentFolder._original || !_discoveryData->_shouldDiscoverLocaly(_currentFolder._original))) {
+        if (!_discoveryData->_shouldDiscoverLocally(_currentFolder._local)
+            && (_currentFolder._local == _currentFolder._original || !_discoveryData->_shouldDiscoverLocally(_currentFolder._original))) {
             _queryLocal = ParentNotChanged;
         }
     }

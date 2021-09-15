@@ -474,7 +474,7 @@ void SyncEngine::startSync()
     _discoveryPhase->_remoteFolder = _remotePath;
     if (!_discoveryPhase->_remoteFolder.endsWith(QLatin1Char('/')))
         _discoveryPhase->_remoteFolder+=QLatin1Char('/');
-    _discoveryPhase->_shouldDiscoverLocaly = [this](const QString &s) { return shouldDiscoverLocally(s); };
+    _discoveryPhase->_shouldDiscoverLocally = [this](const QString &s) { return shouldDiscoverLocally(s); };
     _discoveryPhase->setSelectiveSyncBlackList(selectiveSyncBlackList);
     _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, &ok));
     if (!ok) {
