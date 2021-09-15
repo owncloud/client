@@ -27,7 +27,7 @@ private slots:
         jar.setAllCookies(cookies);
         QCOMPARE(cookies, jar.allCookies());
         QVERIFY(jar.save(tmp.filePath("test.db")));
-        // ensure we are able to create a cookie jar in a non exisitning folder (mkdir)
+        // ensure we are able to create a cookie jar in a non existing folder (mkdir)
         QVERIFY(jar.save(nonexistingPath));
 
         CookieJar jar2;
