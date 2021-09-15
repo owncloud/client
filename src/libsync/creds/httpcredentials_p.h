@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/depreaction.h"
+#include "common/deprecation.h"
 #include "httpcredentials.h"
 
 #include "account.h"
