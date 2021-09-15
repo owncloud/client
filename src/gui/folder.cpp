@@ -442,13 +442,13 @@ void Folder::etagRetrieved(const QByteArray &etag, const QDateTime &tp)
         slotScheduleThisFolder();
     }
 
-    _accountState->tagLastSuccessfullETagRequest(tp);
+    _accountState->tagLastSuccessfulETagRequest(tp);
 }
 
 void Folder::etagRetrievedFromSyncEngine(const QByteArray &etag, const QDateTime &time)
 {
     qCInfo(lcFolder) << "Root etag from during sync:" << etag;
-    accountState()->tagLastSuccessfullETagRequest(time);
+    accountState()->tagLastSuccessfulETagRequest(time);
     _lastEtag = etag;
 }
 

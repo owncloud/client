@@ -251,7 +251,7 @@ bool AccountState::isConnected() const
     return _state == Connected;
 }
 
-void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)
+void AccountState::tagLastSuccessfulETagRequest(const QDateTime &tp)
 {
     _timeOfLastETagCheck = tp;
 }

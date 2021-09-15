@@ -404,12 +404,12 @@ void OAuth::finalize(const QPointer<QTcpSocket> &socket, const QString &accessTo
         // We are still listening on the socket so we will get the new connection
         return;
     }
-    const auto loginSuccessfullHtml = QByteArrayLiteral("<h1>Login Successful</h1><p>You can close this window.</p>");
+    const auto loginSuccessfulHtml = QByteArrayLiteral("<h1>Login Successful</h1><p>You can close this window.</p>");
     if (messageUrl.isValid()) {
-        httpReplyAndClose(socket, QByteArrayLiteral("303 See Other"), loginSuccessfullHtml,
+        httpReplyAndClose(socket, QByteArrayLiteral("303 See Other"), loginSuccessfulHtml,
             QByteArrayLiteral("Location: ") + messageUrl.toEncoded());
     } else {
-        httpReplyAndClose(socket, QByteArrayLiteral("200 OK"), loginSuccessfullHtml);
+        httpReplyAndClose(socket, QByteArrayLiteral("200 OK"), loginSuccessfulHtml);
     }
     emit result(LoggedIn, user, accessToken, refreshToken);
 }
