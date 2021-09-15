@@ -267,7 +267,7 @@ void ShareUserGroupWidget::slotCompleterActivated(const QModelIndex &index)
 {
     if (_disableCompleterActivated)
         return;
-    // The index is an index from the QCompletion model which is itelf a proxy
+    // The index is an index from the QCompletion model which is itself a proxy
     // model proxying the _completerModel
     auto sharee = qvariant_cast<QSharedPointer<Sharee>>(index.data(Qt::UserRole));
     if (sharee.isNull()) {
