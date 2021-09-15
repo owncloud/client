@@ -215,7 +215,7 @@ void PropagateUploadFileCommon::slotComputeTransmissionChecksum(const QByteArray
 
 void PropagateUploadFileCommon::slotStartUpload(const QByteArray &transmissionChecksumType, const QByteArray &transmissionChecksum)
 {
-    // Remove ourselfs from the list of active job, before any posible call to done()
+    // Remove ourselfs from the list of active job, before any possible call to done()
     // When we start chunks, we will add it again, once for every chunks.
     propagator()->_activeJobList.removeOne(this);
 
