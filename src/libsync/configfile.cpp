@@ -470,7 +470,7 @@ chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::seconds remoteFr
     auto defaultInterval = chrono::hours(2);
     auto interval = millisecondsValue(settings, forceSyncIntervalC(), defaultInterval);
     if (interval < pollInterval) {
-        qCWarning(lcConfigFile) << "Force sync interval is less than the remote poll inteval, reverting to" << pollInterval.count();
+        qCWarning(lcConfigFile) << "Force sync interval is less than the remote poll interval, reverting to" << pollInterval.count();
         interval = pollInterval;
     }
     return interval;
