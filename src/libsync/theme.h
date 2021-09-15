@@ -388,7 +388,7 @@ public:
     virtual QString openIdConnectScopes() const;
 
     /**
-     * Returns the openidconnect promt type
+     * Returns the openidconnect prompt type
      * It is supposed to be "consent select_account".
      * For Konnect it currently needs to be select_account,
      * which is the current default.
