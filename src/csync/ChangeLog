@@ -257,7 +257,7 @@ version 0.50.0 (released 2013-08-01)
   * Added get() and put() functions for modules.
   * Improved database: more performance, more integrity checks
   * Improved error reporting: status codes, custom errnos
-  * Fixed serveral bugs.
+  * Fixed several bugs.
   * Relicensed libcsync to LGPLv2.1+.
 
 version 0.44.0 (released 2010-02-15)
@@ -323,7 +323,7 @@ version 0.42.0 alpha4 (released 2008-07-02)
   * Improved the exclude list handling in the file tree walker. This
     increased the speed of the update detection.
   * Fixed csync on PPC
-  * Fixed serveral small bugs
+  * Fixed several small bugs
 
   csync:
   * Added command-line option to run csync completely without a journal
