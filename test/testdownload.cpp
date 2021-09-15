@@ -127,7 +127,7 @@ private slots:
         QVERIFY(getItem(completeSpy, "A/broken")->_errorString.contains(serverMessage));
     }
 
-    void serverMaintenence()
+    void serverMaintenance()
     {
         // Server in maintenance must abort the sync.
 
