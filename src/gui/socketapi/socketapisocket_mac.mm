@@ -259,7 +259,7 @@ SocketApiSocket *SocketApiServer::nextPendingConnection()
 
 SocketApiServerPrivate::SocketApiServerPrivate()
 {
-    // Create the connection and server object to vend over Disributed Objects
+    // Create the connection and server object to vend over Distributed Objects
     connection = [[NSConnection alloc] init];
     server = [[Server alloc] initWithWrapper:this];
     [connection setRootObject:server];
