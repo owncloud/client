@@ -122,7 +122,7 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
     // that the status of CSYNC_FILE_EXCLUDE_LIST excludes will change if the user
     // update the exclude list at runtime and doing it statically here removes
     // our ability to notify changes through the fileStatusChanged signal,
-    // it's an acceptable compromize to treat all exclude types the same.
+    // it's an acceptable compromise to treat all exclude types the same.
     // Update: This extra check shouldn't hurt even though silently excluded files
     // are now available via slotAddSilentlyExcluded().
     if (_syncEngine->excludedFiles().isExcluded(_syncEngine->syncOptions()._vfs->underlyingFileName(absolutePath),
