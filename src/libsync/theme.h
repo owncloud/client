@@ -383,7 +383,7 @@ public:
     virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
-     * Returns the required opeidconnect scopes
+     * Returns the required openidconnect scopes
      */
     virtual QString openIdConnectScopes() const;
 
