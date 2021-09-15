@@ -464,7 +464,7 @@ void SyncEngine::startSync()
     emit transmissionProgress(*_progressInfo);
 
     // TODO: add a constructor to DiscoveryPhase
-    // pass a syncEngine object rather than copying everyhting to another object
+    // pass a syncEngine object rather than copying everything to another object
     _discoveryPhase.reset(new DiscoveryPhase(_account, _syncOptions, _baseUrl));
     _discoveryPhase->_excludes = _excludedFiles.data();
     _discoveryPhase->_statedb = _journal;
