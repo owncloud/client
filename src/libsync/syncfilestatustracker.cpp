@@ -274,7 +274,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
         && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA
         && item->_instruction != CSYNC_INSTRUCTION_IGNORE
         && item->_instruction != CSYNC_INSTRUCTION_ERROR) {
-        // decSyncCount calls *must* be symetric with incSyncCount calls in slotAboutToPropagate
+        // decSyncCount calls *must* be symmetric with incSyncCount calls in slotAboutToPropagate
         decSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
     } else {
         emit fileStatusChanged(getSystemDestination(item->destination()), resolveSyncAndErrorStatus(item->destination(), sharedFlag));
@@ -283,7 +283,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
 
 void SyncFileStatusTracker::slotSyncFinished()
 {
-    // Clear the sync counts to reduce the impact of unsymetrical inc/dec calls (e.g. when directory job abort)
+    // Clear the sync counts to reduce the impact of unsymmetrical inc/dec calls (e.g. when directory job abort)
     QHash<QString, int> oldSyncCount;
     std::swap(_syncCount, oldSyncCount);
     for (auto it = oldSyncCount.begin(); it != oldSyncCount.end(); ++it)
