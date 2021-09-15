@@ -783,7 +783,7 @@ private slots:
 
         // Test that renaming a file within a directory that was renamed on the other side actually do a rename.
 
-        // 1) move the folder alphabeticaly before
+        // 1) move the folder alphabetically before
         fakeFolder.remoteModifier().rename("A/a1", "A/a1m");
         fakeFolder.localModifier().rename("A", "_A");
         fakeFolder.localModifier().rename("B/b1", "B/b1m");
