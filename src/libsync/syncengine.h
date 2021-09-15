@@ -228,7 +228,7 @@ private:
     // cleanup and emit the finished signal
     void finalize(bool success);
 
-    // Must only be acessed during update and reconcile
+    // Must only be accessed during update and reconcile
     SyncFileItemSet _syncItems;
 
     AccountPtr _account;
