@@ -172,7 +172,7 @@ public:
     QString overrideServerUrlV2() const;
 
     /**
-     * This is only usefull when previous version had a different overrideServerUrl
+     * This is only useful when previous version had a different overrideServerUrl
      * with a different auth type in that case You should then specify "http" or "shibboleth".
      * Normally this should be left empty.
      */
