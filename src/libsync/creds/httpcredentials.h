@@ -32,7 +32,7 @@ namespace OCC {
 /*
    The authentication system is this way because of Shibboleth.
    There used to be two different ways to authenticate: Shibboleth and HTTP Basic Auth.
-   AbstractCredentials can be inherited from both ShibbolethCrendentials and HttpCredentials.
+   AbstractCredentials can be inherited from both ShibbolethCredentials and HttpCredentials.
 
    HttpCredentials is then split in HttpCredentials and HttpCredentialsGui.
 
