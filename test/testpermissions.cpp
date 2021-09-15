@@ -27,7 +27,7 @@ static void applyPermissionsFromName(FileInfo &info) {
 // https://github.com/owncloud/client/issues/2038
 static void assertCsyncJournalOk(SyncJournalDb &journal)
 {
-    // The DB is openend in locked mode: close to allow us to access.
+    // The DB is opened in locked mode: close to allow us to access.
     journal.close();
 
     SqlDatabase db;
