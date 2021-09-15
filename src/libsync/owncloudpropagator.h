@@ -210,7 +210,7 @@ public:
 
     /*
      * Abort synchronously or asynchronously - some jobs
-     * require to be finished without immediete abort (abort on job might
+     * require to be finished without immediate abort (abort on job might
      * cause conflicts/duplicated files - owncloud/client/issues/5949)
      */
     void abort(PropagatorJob::AbortType abortType) override
