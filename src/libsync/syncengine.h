@@ -266,7 +266,7 @@ private:
     // true if there is at least one file which was not changed on the server
     bool _hasNoneFiles;
 
-    // true if there is at leasr one file with instruction REMOVE
+    // true if there is at least one file with instruction REMOVE
     bool _hasRemoveFile;
 
     // If ignored files should be ignored
