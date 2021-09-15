@@ -422,7 +422,7 @@ public:
 
     /**
      * Whether to clear cookies before checking status.php
-     * This is used with F5 BIG-IP seups.
+     * This is used with F5 BIG-IP setups.
      */
     virtual bool connectionValidatorClearCookies() const;
 
