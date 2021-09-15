@@ -241,8 +241,8 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     painter->setFont(aliasFont);
     painter->drawText(QStyle::visualRect(option.direction, option.rect, aliasRect), textAlign, elidedAlias);
 
-    const bool showProgess = !overallString.isEmpty() || !itemString.isEmpty();
-    if (!showProgess) {
+    const bool showProgress = !overallString.isEmpty() || !itemString.isEmpty();
+    if (!showProgress) {
         painter->setFont(subFont);
         const QString elidedRemotePathText = subFm.elidedText(
             syncText,
@@ -291,7 +291,7 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         drawTextBox(infoTexts, QColor(0x4d, 0x4d, 0xba));
 
     // Sync File Progress Bar: Show it if syncFile is not empty.
-    if (showProgess) {
+    if (showProgress) {
         int fileNameTextHeight = subFm.boundingRect(tr("File")).height();
         int barHeight = 7; // same height as quota bar
         int overallWidth = option.rect.right() - aliasMargin - optionsButtonVisualRect.width() - nextToIcon;
