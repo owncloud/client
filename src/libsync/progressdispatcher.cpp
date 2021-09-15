@@ -288,8 +288,8 @@ ProgressInfo::Estimates ProgressInfo::totalProgress() const
     // on the upload speed. That's particularly relevant for large file
     // up/downloads, where files per second will be close to 0.
     //
-    // However, when many *small* files are transfered, the estimate
-    // can become very pessimistic as the transfered amount per second
+    // However, when many *small* files are transferred, the estimate
+    // can become very pessimistic as the transferred amount per second
     // drops significantly.
     //
     // So, if we detect a high rate of files per second or a very low
