@@ -97,7 +97,7 @@ protected:
 
 private:
     bool refreshAccessTokenInternal(int tokenRefreshRetriesCount);
-    // HttpLegacyCredentials is incompelte
+    // HttpLegacyCredentials is incomplete
     QPointer<QObject> _credentialMigration;
 };
 
