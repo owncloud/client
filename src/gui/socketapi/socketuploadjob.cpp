@@ -60,7 +60,7 @@ void SocketUploadJob::prepareTag(const AccountPtr &account)
 
         connect(propfindJob, &LsColJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &data) {
             if (data[QStringLiteral("display-name")] == backupTagNameC()) {
-                _finisedTagId = data[QStringLiteral("id")].toInt();
+                _finishedTagId = data[QStringLiteral("id")].toInt();
             }
         });
         connect(propfindJob, &LsColJob::finishedWithError, this, [this] {
@@ -139,7 +139,7 @@ void SocketUploadJob::start()
     connect(engine, &OCC::SyncEngine::finished, this, [engine, this](bool ok) {
         if (ok) {
             auto tagJob = new OCC::SimpleNetworkJob(engine->account(), engine->account()->url(),
-                QStringLiteral("remote.php/dav/systemtags-relations/files/%1/%2").arg(_backupFileId, QString::number(_finisedTagId)),
+                QStringLiteral("remote.php/dav/systemtags-relations/files/%1/%2").arg(_backupFileId, QString::number(_finishedTagId)),
                 "PUT", {}, {}, this);
             connect(tagJob, &OCC::SimpleNetworkJob::finishedSignal, this, [tagJob, this] {
                 if (tagJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 201) {
@@ -149,7 +149,7 @@ void SocketUploadJob::start()
                     fail(tr("Failed to set success tag"));
                 }
             });
-            OC_ASSERT(_finisedTagId > 0);
+            OC_ASSERT(_finishedTagId > 0);
             tagJob->start();
         } else {
             fail(tr("Failed to create backup: %1").arg(_errorFiles.join(", ")));
