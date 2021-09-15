@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         if (!QSystemTrayIcon::isSystemTrayAvailable()) {
             // If the systemtray is not there, we will wait one second for it to maybe start
             // (eg boot time) then we show the settings dialog if there is still no systemtray.
-            // On XFCE however, we show a message box with explainaition how to install a systemtray.
+            // On XFCE however, we show a message box with explanation how to install a systemtray.
             qCInfo(lcApplication) << "System tray is not available, waiting...";
             Utility::sleep(1);
 
