@@ -364,13 +364,13 @@ class OWNCLOUDSYNC_EXPORT OwncloudPropagator : public QObject
     Q_OBJECT
 public:
     SyncJournalDb *const _journal;
-    bool _finishedEmited; // used to ensure that finished is only emitted once
+    bool _finishedEmitted; // used to ensure that finished is only emitted once
 
 public:
     OwncloudPropagator(AccountPtr account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir,
         const QString &remoteFolder, SyncJournalDb *progressDb)
         : _journal(progressDb)
-        , _finishedEmited(false)
+        , _finishedEmitted(false)
         , _bandwidthManager(this)
         , _anotherSyncNeeded(false)
         , _chunkSize(10 * 1000 * 1000) // 10 MB, overridden in setSyncOptions
@@ -533,9 +533,9 @@ private slots:
     /** Emit the finished signal and make sure it is only emitted once */
     void emitFinished(SyncFileItem::Status status)
     {
-        if (!_finishedEmited)
+        if (!_finishedEmitted)
             emit finished(status == SyncFileItem::Success);
-        _finishedEmited = true;
+        _finishedEmitted = true;
     }
 
     void scheduleNextJobImpl();

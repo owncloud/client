@@ -161,7 +161,7 @@ signals:
     void started();
 
     /**
-     * Emited when the sync engine detects that all the files have been removed or change.
+     * Emitted when the sync engine detects that all the files have been removed or change.
      * This usually happen when the server was reset or something.
      * Call abort(true) slot connected from this signal to abort the sync.
      */
