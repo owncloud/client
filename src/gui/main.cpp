@@ -84,7 +84,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    // We can't call isSystemTrayAvailable with appmenu-qt5 begause it hides the systemtray
+    // We can't call isSystemTrayAvailable with appmenu-qt5 because it hides the systemtray
     // (issue #4693)
     if (qgetenv("QT_QPA_PLATFORMTHEME") != "appmenu-qt5")
     {
