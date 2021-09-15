@@ -346,7 +346,7 @@ version 0.42.0 alpha3 (released 2008-06-25)
 version 0.42.0 alpha2 (released 2008-06-16)
 
   libcsync:
-  * Peformance improvements
+  * Performance improvements
   * Add more directories to the standard exclude file
   * Bugfixes
 
