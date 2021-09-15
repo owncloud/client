@@ -406,7 +406,7 @@ ShareUserLine::ShareUserLine(QSharedPointer<Share> share,
     connect(_ui->permissionsEdit, &QAbstractButton::clicked, this, &ShareUserLine::slotEditPermissionsChanged);
 
     /*
-     * We don't show permssion share for federated shares with server <9.1
+     * We don't show permission share for federated shares with server <9.1
      * https://github.com/owncloud/core/issues/22122#issuecomment-185637344
      * https://github.com/owncloud/client/issues/4996
      */
