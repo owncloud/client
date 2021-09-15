@@ -18,7 +18,7 @@ struct FakeBrokenXmlPropfindReply : FakePropfindReply {
                                const QNetworkRequest &request, QObject *parent)
         : FakePropfindReply(remoteRootFileInfo, op, request, parent) {
         QVERIFY(payload.size() > 50);
-        // turncate the XML
+        // truncate the XML
         payload.chop(20);
     }
 };
