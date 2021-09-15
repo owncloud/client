@@ -90,7 +90,7 @@ public:
 
 #ifndef TOKEN_AUTH_ONLY
     /**
-     * Wehther we allow a fallback to a vanilla icon
+     * Whether we allow a fallback to a vanilla icon
      */
     enum class IconType {
         BrandedIcon,
@@ -239,7 +239,7 @@ public:
     void setSystrayUseMonoIcons(bool mono);
 
     /**
-     * Retrieve wether to use mono icons for systray
+     * Retrieve whether to use mono icons for systray
      */
     bool systrayUseMonoIcons() const;
 
