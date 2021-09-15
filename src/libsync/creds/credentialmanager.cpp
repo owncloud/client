@@ -147,7 +147,7 @@ QStringList CredentialManager::knownKeys(const QString &group) const
  */
 QSettings &CredentialManager::credentialsList() const
 {
-    // delayed init as scope requires a fully inizialised acc
+    // delayed init as scope requires a fully initialised acc
     if (!_credentialsList) {
         _credentialsList = ConfigFile::settingsWithGroup(QStringLiteral("Credentials/") + scope(this));
     }
