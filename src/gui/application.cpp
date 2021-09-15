@@ -244,7 +244,7 @@ Application::Application(int &argc, char **argv)
     // migrate old configuration files if necessary
     migrateConfigFile(this);
 
-    // needed during commandline options parsing
+    // needed during command-line options parsing
     setApplicationVersion(_theme->versionSwitchOutput());
 
     parseOptions(arguments());
@@ -713,7 +713,7 @@ void Application::setupTranslations()
     // the user can also set a locale in the settings, so we need to load the config file
     ConfigFile cfg;
 
-    // allow user and theme to enforce a language via a commandline parameter
+    // allow user and theme to enforce a language via a command-line parameter
     const auto themeEnforcedLocale = Theme::instance()->enforcedLocale();
     qCDebug(lcApplication) << "Theme-enforced locale:" << themeEnforcedLocale;
 

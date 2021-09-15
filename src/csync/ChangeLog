@@ -326,7 +326,7 @@ version 0.42.0 alpha4 (released 2008-07-02)
   * Fixed serveral small bugs
 
   csync:
-  * Added commandline option to run csync completely without a journal
+  * Added command-line option to run csync completely without a journal
   * Added a manpage
 
 version 0.42.0 alpha3 (released 2008-06-25)
