@@ -116,7 +116,7 @@ enum SyncInstruction {
     CSYNC_INSTRUCTION_TYPE_CHANGE = 1 << 9, /* Like NEW, but deletes the old entity first (RECONCILE)
                                                     Used when the type of something changes from directory to file
                                                     or back. */
-    CSYNC_INSTRUCTION_UPDATE_METADATA = 1 << 10, /* If the etag has been updated and need to be writen to the db,
+    CSYNC_INSTRUCTION_UPDATE_METADATA = 1 << 10, /* If the etag has been updated and need to be written to the db,
                                                     but without any propagation (UPDATE|RECONCILE) */
 
     // TODO:
