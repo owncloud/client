@@ -92,7 +92,7 @@ private slots:
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + "/link4").isNull());
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + "/link3/folder").isNull());
 
-        // test some non existing sub path (error)
+        // test some nonexistent sub path (error)
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + "/sub/ownCloud1/some/sub/path").isNull());
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + "/ownCloud2/blublu").isNull());
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + "/sub/ownCloud1/folder/g/h").isNull());

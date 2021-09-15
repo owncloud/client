@@ -1,4 +1,4 @@
-Bugfix: Client warns about non exisitng files
+Bugfix: Client warns about nonexistent files
 
 We fixed a bug where the client warns about ignored files that where added to the DB in previous versions of the client and do no longer exist.
 

@@ -174,7 +174,7 @@ void ProcessDirectoryJob::process()
                 e.localEntry.isSymLink)) {
             // the file only exists in the db
             if (!e.localEntry.isValid() && e.dbEntry.isValid()) {
-                qCWarning(lcDisco) << "Removing db entry for non exisitng ignored file:" << path._original;
+                qCWarning(lcDisco) << "Removing db entry for nonexistent ignored file:" << path._original;
                 _discoveryData->_statedb->deleteFileRecord(path._original, true);
             }
             continue;

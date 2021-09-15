@@ -1,4 +1,4 @@
-Bugfix: Possible crash when removing non exisitng folder
+Bugfix: Possible crash when removing nonexistent folder
 
 
 https://github.com/owncloud/client/issues/9533

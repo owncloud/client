@@ -46,7 +46,7 @@ FolderWatcherPrivate::FolderWatcherPrivate(FolderWatcher *p, const QString &path
 bool FolderWatcherPrivate::findFoldersBelow(const QDir &dir, QStringList &fullList)
 {
     if (!dir.exists()) {
-        qCDebug(lcFolderWatcher) << "      - non existing path coming in: " << dir.absolutePath();
+        qCDebug(lcFolderWatcher) << "      - nonexistent path coming in: " << dir.absolutePath();
         return false;
     } else if (!dir.isReadable()) {
         qCDebug(lcFolderWatcher) << "      - path without read permissions coming in: " << dir.absolutePath();
