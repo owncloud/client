@@ -450,7 +450,7 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
 QString Theme::about() const
 {
     // Ideally, the vendor should be "ownCloud GmbH", but it cannot be changed without
-    // changing the location of the settings and other registery keys.
+    // changing the location of the settings and other registry keys.
     const QString vendor = isVanilla() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
