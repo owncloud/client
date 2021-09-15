@@ -1075,7 +1075,7 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
     }
 
     // don't call done, we only propagate the state of the child items
-    // and we don't want error handling for this folder for an error that happend on a child
+    // and we don't want error handling for this folder for an error that happened on a child
     Q_ASSERT(_state != Finished);
     _state = Finished;
     emit finished(status);

@@ -145,7 +145,7 @@ private:
         const auto data = job->textData();
         if (error != QKeychain::NoError || data.isEmpty()) {
             // we come here if the password is empty or any other keychain
-            // error happend.
+            // error happened.
             qCWarning(lcHttpLegacyCredentials) << "Migrating old keychain entries failed" << job->errorString();
             _parent->_fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
 

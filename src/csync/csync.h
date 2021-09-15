@@ -67,7 +67,7 @@ OCSYNC_EXPORT Q_NAMESPACE
 
         CSYNC_STATUS_ERROR = 1024, /* don't use this code,
                                      */
-        CSYNC_STATUS_UNSUCCESSFUL, /* Unspecific problem happend */
+        CSYNC_STATUS_UNSUCCESSFUL, /* Unspecific problem happened */
         CSYNC_STATUS_STATEDB_LOAD_ERROR, /* Statedb can not be loaded. */
         CSYNC_STATUS_UPDATE_ERROR, /* general update or discovery error */
         CSYNC_STATUS_TIMEOUT, /* UNUSED */

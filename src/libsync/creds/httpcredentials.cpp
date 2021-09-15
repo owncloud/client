@@ -208,7 +208,7 @@ void HttpCredentials::fetchFromKeychainHelper()
             qCWarning(lcHttpCredentials) << "Could not retrieve client password from keychain" << job->errorString();
 
             // we come here if the password is empty or any other keychain
-            // error happend.
+            // error happened.
 
             _fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
 
