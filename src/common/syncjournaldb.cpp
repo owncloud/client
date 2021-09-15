@@ -1866,8 +1866,8 @@ int SyncJournalDb::mapChecksumType(const QByteArray &checksumType)
         return 0;
     }
 
-    auto it = _checksymTypeCache.find(checksumType);
-    if (it != _checksymTypeCache.end())
+    auto it = _checksumTypeCache.find(checksumType);
+    if (it != _checksumTypeCache.end())
         return *it;
 
     // Ensure the checksum type is in the db
@@ -1898,7 +1898,7 @@ int SyncJournalDb::mapChecksumType(const QByteArray &checksumType)
             return 0;
         }
         auto value = query->intValue(0);
-        _checksymTypeCache[checksumType] = value;
+        _checksumTypeCache[checksumType] = value;
         return value;
     }
 }

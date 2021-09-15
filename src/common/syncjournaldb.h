@@ -386,7 +386,7 @@ private:
     SqlDatabase _db;
     QString _dbFile;
     QMutex _mutex; // Public functions are protected with the mutex.
-    QMap<QByteArray, int> _checksymTypeCache;
+    QMap<QByteArray, int> _checksumTypeCache;
     int _transaction;
     bool _metadataTableIsEmpty;
 
