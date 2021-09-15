@@ -113,7 +113,7 @@ public:
 public slots:
     /*
      * Asynchronous abort requires emit of abortFinished() signal,
-     * while synchronous is expected to abort immedietaly.
+     * while synchronous is expected to abort immediately.
     */
     virtual void abort(PropagatorJob::AbortType abortType) {
         if (abortType == AbortType::Asynchronous)
