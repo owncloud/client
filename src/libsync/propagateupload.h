@@ -357,7 +357,7 @@ private:
      * Finds the range starting at 'start' in _rangesToUpload and removes the first
      * 'size' bytes from it. If it becomes empty, remove the range.
      *
-     * Retuns false if no matching range was found.
+     * Returns false if no matching range was found.
      */
     bool markRangeAsDone(qint64 start, qint64 size);
 
