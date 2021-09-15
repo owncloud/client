@@ -80,7 +80,7 @@ UploadDevice *PropagateUploadFileTUS::prepareDevice(const quint64 &chunkSize)
 SimpleNetworkJob *PropagateUploadFileTUS::makeCreationWithUploadJob(QNetworkRequest *request, UploadDevice *device)
 {
     Q_ASSERT(propagator()->account()->capabilities().tusSupport().extensions.contains(QStringLiteral("creation-with-upload")));
-    // in difference to the old protocol the algorithm and the value are space seperated
+    // in difference to the old protocol the algorithm and the value are space separated
     const auto checkSum = _transmissionChecksumHeader.replace(':', ' ').toBase64();
     qCDebug(lcPropagateUploadTUS) << "FullPath:" << propagator()->fullRemotePath(_item->_file);
     request->setRawHeader(QByteArrayLiteral("Upload-Metadata"), "filename " + propagator()->fullRemotePath(_item->_file).toUtf8().toBase64() + ",checksum " + checkSum);
