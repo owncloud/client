@@ -3,7 +3,7 @@ Bugfix: A upgrade to 2.9 causes the usage of a new journal file
 We fixed a bug where the name of the sync journal was not properly saved to the settings.
 This caused a bug when migration to 2.9 to start with a new sync journal.
 
-This not only caused the loss of some selective sync settings, but also caused the display of the 
+This not only caused the loss of some selective sync settings, but also caused the display of the following warning message:
 
 ```
 Multiple accounts are sharing the folder.
