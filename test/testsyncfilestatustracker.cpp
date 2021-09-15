@@ -388,7 +388,8 @@ private slots:
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 
-    void parentsGetWarningStatusForError_SibblingStartsWithPath() {
+    void parentsGetWarningStatusForError_SiblingStartsWithPath()
+    {
         // A is a parent of A/a1, but A/a is not even if it's a substring of A/a1
         FakeFolder fakeFolder{{QString{},{
             {QStringLiteral("A"), {
