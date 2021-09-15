@@ -421,7 +421,7 @@ private slots:
         // the contents can _move_
         QVERIFY(itemInstruction(completeSpy, "norename/sub_renamed/file", CSYNC_INSTRUCTION_RENAME));
 
-        // simiilarly forbidding moves becomes delete+create
+        // similarly forbidding moves becomes delete+create
         QVERIFY(itemInstruction(completeSpy, "nomove/file", CSYNC_INSTRUCTION_REMOVE));
         QVERIFY(completeSpy.findItem("norename/sub").isNull());
         QVERIFY(discoveryInstruction(discovery, "nomove/sub", CSYNC_INSTRUCTION_REMOVE));
