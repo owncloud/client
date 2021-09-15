@@ -26,7 +26,7 @@ public:
     QKeychain::Job *set(const QString &key, const QVariant &data);
     QKeychain::Job *remove(const QString &key);
     /**
-     * Delete all credentials asigned with an account
+     * Delete all credentials assigned with an account
      */
     QVector<QPointer<QKeychain::Job>> clear(const QString &group = {});
 
