@@ -73,7 +73,7 @@ public:
      *
      * By default, the name is derived from the APPLICATION_SHORTNAME
      * cmake variable, and should be the same. This method is only
-     * reimplementable for legacy reasons.
+     * overridable for legacy reasons.
      *
      * Warning: Do not modify this value, as many things, e.g. settings
      * depend on it! You most likely want to modify \ref appNameGUI().
