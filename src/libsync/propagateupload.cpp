@@ -486,7 +486,7 @@ void PropagateUploadFileCommon::slotJobDestroyed(QObject *job)
     _jobs.erase(std::remove(_jobs.begin(), _jobs.end(), job), _jobs.end());
 }
 
-// This function is used whenever there is an error occuring and jobs might be in progress
+// This function is used whenever there is an error occurring and jobs might be in progress
 void PropagateUploadFileCommon::abortWithError(SyncFileItem::Status status, const QString &error)
 {
     qCWarning(lcPropagateUpload) << Q_FUNC_INFO << _item->_file << error;
