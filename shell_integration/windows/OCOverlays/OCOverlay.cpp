@@ -102,7 +102,7 @@ IFACEMETHODIMP_(ULONG) OCOverlay::Release()
 IFACEMETHODIMP OCOverlay::GetPriority(int *pPriority)
 {
     // this defines which handler has prededence, so
-    // we order this in terms of likelyhood
+    // we order this in terms of likelihood
     switch (_state) {
     case State_OK:
         *pPriority = 0; break;
