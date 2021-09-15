@@ -1,5 +1,5 @@
 
-# Check if varialbe MAC_INSTALLER_BACKGROUND_FILE is defined. That might come
+# Check if variable MAC_INSTALLER_BACKGROUND_FILE is defined. That might come
 # from the OEM.cmake for branded clients or from OWNCLOUD.cmake for the non
 # branded client.
 # Make sure that the MAC_INSTALLER_BACKGROUND_FILE contains the full path, ie.

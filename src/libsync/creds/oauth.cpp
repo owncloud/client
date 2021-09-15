@@ -435,7 +435,7 @@ QNetworkReply *OAuth::postTokenRequest(const QList<QPair<QString, QString>> &que
 
 QByteArray OAuth::generateRandomString(size_t size) const
 {
-    // TODO: do we need a varaible size?
+    // TODO: do we need a variable size?
     std::vector<quint32> buffer(size, 0);
     QRandomGenerator::global()->fillRange(buffer.data(), static_cast<qsizetype>(size));
     return QByteArray(reinterpret_cast<char *>(buffer.data()), static_cast<int>(size * sizeof(quint32))).toBase64(QByteArray::Base64UrlEncoding);
