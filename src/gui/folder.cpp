@@ -425,13 +425,13 @@ void Folder::slotRunEtagJob()
     _requestEtagJob = new RequestEtagJob(account, webDavUrl(), remotePath(), this);
     _requestEtagJob->setTimeout(60s);
     // check if the etag is different when retrieved
-    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetreived, this, &Folder::etagRetreived);
+    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetrieved, this, &Folder::etagRetrieved);
     QObject::connect(_requestEtagJob.data(), &RequestEtagJob::finishedWithResult, this, [=](const HttpResult<QByteArray>) { _timeSinceLastEtagCheckDone.start(); });
     FolderMan::instance()->slotScheduleETagJob(_requestEtagJob);
     // The _requestEtagJob is auto deleting itself on finish. Our guard pointer _requestEtagJob will then be null.
 }
 
-void Folder::etagRetreived(const QByteArray &etag, const QDateTime &tp)
+void Folder::etagRetrieved(const QByteArray &etag, const QDateTime &tp)
 {
     // re-enable sync if it was disabled because network was down
     FolderMan::instance()->setSyncEnabled(true);

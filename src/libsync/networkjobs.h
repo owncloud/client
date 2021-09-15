@@ -277,7 +277,7 @@ public:
     void start() override;
 
 signals:
-    void etagRetreived(const QByteArray &etag, const QDateTime &time);
+    void etagRetrieved(const QByteArray &etag, const QDateTime &time);
     void finishedWithResult(const HttpResult<QByteArray> &etag);
 
 private slots:

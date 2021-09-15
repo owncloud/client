@@ -436,7 +436,7 @@ private slots:
     void slotTransmissionProgress(const ProgressInfo &pi);
     void slotItemCompleted(const SyncFileItemPtr &);
 
-    void etagRetreived(const QByteArray &, const QDateTime &tp);
+    void etagRetrieved(const QByteArray &, const QDateTime &tp);
     void etagRetrievedFromSyncEngine(const QByteArray &, const QDateTime &time);
 
     void slotEmitFinishedDelayed();
