@@ -635,7 +635,7 @@ void PropagateUploadFileCommon::abortNetworkJobs(
 
         // Abort the job
         if (abortType == AbortType::Asynchronous) {
-            // Connect to finished signal of job reply to asynchonously finish the abort
+            // Connect to finished signal of job reply to asynchronously finish the abort
             connect(reply, &QNetworkReply::finished, this, oneAbortFinished);
         }
         reply->abort();
