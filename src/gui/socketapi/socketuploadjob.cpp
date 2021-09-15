@@ -64,7 +64,7 @@ void SocketUploadJob::prepareTag(const AccountPtr &account)
             }
         });
         connect(propfindJob, &LsColJob::finishedWithError, this, [this] {
-            fail(tr("Failed to rerieve tags"));
+            fail(tr("Failed to retrieve tags"));
         });
         propfindJob->start();
     });

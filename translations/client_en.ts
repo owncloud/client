@@ -3749,7 +3749,7 @@ This is a new, experimental mode. If you decide to use it, please report any iss
     <name>OCC::SocketUploadJob</name>
     <message>
         <location filename="../src/gui/socketapi/socketuploadjob.cpp" line="65"/>
-        <source>Failed to rerieve tags</source>
+        <source>Failed to retrieve tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
