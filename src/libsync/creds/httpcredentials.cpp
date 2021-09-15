@@ -299,7 +299,7 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
         oAuth->deleteLater();
         _isRenewingOAuthToken = false;
         if (refreshToken.isEmpty()) {
-            // an error occured, log out
+            // an error occurred, log out
             forgetSensitiveData();
             Q_EMIT _account->invalidCredentials();
             Q_EMIT authenticationFailed();
