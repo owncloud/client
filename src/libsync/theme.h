@@ -406,7 +406,7 @@ public:
     /**
      * @brief Whether to show the option to create folders using "virtual files".
      *
-     * By default, this is the same as enableExperimentalFreatures()
+     * By default, this is the same as enableExperimentalFeatures()
      */
     virtual bool showVirtualFilesOption() const;
 
