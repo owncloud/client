@@ -197,7 +197,7 @@ QIcon Theme::themeIcon(const QString &name, Theme::IconType iconType) const
  */
 QIcon Theme::loadIcon(const QString &flavor, const QString &name, IconType iconType) const
 {
-    // prevent recusion
+    // prevent recursion
     const bool useCoreIcon = (iconType == IconType::VanillaIcon) || isVanilla();
     const QString path = useCoreIcon ? vanillaThemePath() : brandThemePath();
     const QString key = name + QLatin1Char(',') + flavor;
