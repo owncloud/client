@@ -249,7 +249,7 @@ version 0.50.0 (released 2013-08-01)
   * Added cmocka tests.
   * Added a way to export file_tree_walk functions.
   * Added capabilities for modules.
-  * Added possiblity to push information to the modules.
+  * Added possibility to push information to the modules.
   * Added iconv support to support various char sets.
   * Added csync_commit() to rerun on the same context.
   * Added content checking in conflict case.
