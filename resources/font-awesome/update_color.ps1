@@ -6,7 +6,7 @@ $COLOR=$Args[0]
 Write-Host "Color:" $COLOR
 if (-not $COLOR) {
     Write-Host "Please specify color"
-    Write-Host "update_corlor.ps1 `"#B5B6BB`""
+    Write-Host "update_color.ps1 `"#B5B6BB`""
     exit(1)
 }
 Get-ChildItem "*.svg" | % {
