@@ -208,8 +208,8 @@ void ActivityListModel::startFetchJob(AccountStatePtr ast)
 
             ActivityList list;
             list.reserve(activities.size());
-            for (const auto &activ : activities) {
-                const auto json = activ.toObject();
+            for (const auto &activity : activities) {
+                const auto json = activity.toObject();
                 list.append(Activity { Activity::ActivityType,
                     json.value(QStringLiteral("id")).toVariant().value<Activity::Identifier>(),
                     ast->account(),
