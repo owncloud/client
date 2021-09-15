@@ -523,7 +523,7 @@ void ShareUserLine::slotEditPermissionsChanged()
             permissions |= SharePermissionUpdate;
 
         /*
-         * Files can't have create or delete permisisons
+         * Files can't have create or delete permissions
          */
         if (!_isFile) {
             if (_permissionCreate->isEnabled())
