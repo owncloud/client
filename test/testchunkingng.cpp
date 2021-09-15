@@ -519,13 +519,13 @@ private slots:
 
     // Check what happens when the connection is dropped on the PUT (non-chunking) or MOVE (chunking)
     // for on the issue #5106
-    void connectionDroppedBeforeEtagRecieved_data()
+    void connectionDroppedBeforeEtagReceived_data()
     {
         QTest::addColumn<bool>("chunking");
         QTest::newRow("big file") << true;
         QTest::newRow("small file") << false;
     }
-    void connectionDroppedBeforeEtagRecieved()
+    void connectionDroppedBeforeEtagReceived()
     {
         QFETCH(bool, chunking);
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };

@@ -81,7 +81,7 @@ private:
     qint64 _lastQuotaTotalBytes;
     qint64 _lastQuotaUsedBytes;
     QTimer _jobRestartTimer;
-    QDateTime _lastQuotaRecieved; // the time at which the quota was received last
+    QDateTime _lastQuotaReceived; // the time at which the quota was received last
     bool _active; // if we should check at regular interval (when the UI is visible)
     QPointer<PropfindJob> _job; // the currently running job
 };

@@ -55,7 +55,7 @@ public:
     QByteArray version() { return _version; }
 
 signals:
-    void commandRecieved(const QByteArray &cmd);
+    void commandReceived(const QByteArray &cmd);
 
 protected:
     void timerEvent(QTimerEvent*) override;

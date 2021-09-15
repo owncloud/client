@@ -1064,7 +1064,7 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, Proce
 
     // Do we have an UploadInfo for this?
     // Maybe the Upload was completed, but the connection was broken just before
-    // we recieved the etag (Issue #5106)
+    // we received the etag (Issue #5106)
     auto up = _discoveryData->_statedb->getUploadInfo(path._original);
     if (up._valid && up._contentChecksum == serverEntry.checksumHeader) {
         // Solve the conflict into an upload, or update meta data

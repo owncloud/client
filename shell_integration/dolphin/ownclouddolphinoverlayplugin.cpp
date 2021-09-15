@@ -37,8 +37,8 @@ public:
 
     OwncloudDolphinPlugin() {
         auto helper = OwncloudDolphinPluginHelper::instance();
-        QObject::connect(helper, &OwncloudDolphinPluginHelper::commandRecieved,
-                         this, &OwncloudDolphinPlugin::slotCommandRecieved);
+        QObject::connect(helper, &OwncloudDolphinPluginHelper::commandReceived,
+            this, &OwncloudDolphinPlugin::slotCommandReceived);
     }
 
     QStringList getOverlays(const QUrl& url) override {
@@ -80,8 +80,8 @@ private:
         return r;
     }
 
-    void slotCommandRecieved(const QByteArray &line) {
-
+    void slotCommandReceived(const QByteArray &line)
+    {
         QList<QByteArray> tokens = line.split(':');
         if (tokens.count() != 3)
             return;

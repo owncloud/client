@@ -100,7 +100,7 @@ ShareUserGroupWidget::ShareUserGroupWidget(AccountPtr account,
     connect(_completer, qOverload<const QModelIndex &>(&QCompleter::highlighted), this, &ShareUserGroupWidget::slotCompleterHighlighted,
         Qt::QueuedConnection);
 
-    // Queued connection so this signal is recieved after textChanged
+    // Queued connection so this signal is received after textChanged
     connect(_ui->shareeLineEdit, &QLineEdit::textEdited,
         this, &ShareUserGroupWidget::slotLineEditTextEdited, Qt::QueuedConnection);
     connect(&_completionTimer, &QTimer::timeout, this, &ShareUserGroupWidget::searchForSharees);

@@ -61,7 +61,7 @@ namespace OCC {
   +---------------------------+
   |
   +-> checkServerCapabilities
-        JsonApiJob (cloud/capabilities) -> slotCapabilitiesRecieved -+
+        JsonApiJob (cloud/capabilities) -> slotCapabilitiesReceived -+
                                                                      |
   +------------------------------------------------------------------+
   |
