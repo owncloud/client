@@ -20,12 +20,14 @@ class Activity:
     }
 
     def clickTab(self, tabName):
-        # TODO: find some way to dynamically select the tab name
         # It might take some time for all files to sync except the expected number of unsynced files
         squish.snooze(10)
 
         tabFound = False
 
+        # Selecting tab by name fails for "Not Synced" when there are no unsynced files
+        # Because files count will be appended like "Not Synced (2)"
+        # So to overcome this the following approach has been implemented
         tabCount = squish.waitForObjectExists(self.SUBTAB_CONTAINER).count
         for index in range(tabCount):
             tabText = squish.waitForObjectExists(
