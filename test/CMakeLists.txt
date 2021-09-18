@@ -3,7 +3,6 @@ include(owncloud_add_test.cmake)
 add_subdirectory(testutils)
 
 owncloud_add_test(OwncloudPropagator)
-owncloud_add_test(Updater)
 
 owncloud_add_test(OwnSql)
 owncloud_add_test(SyncJournalDB)
@@ -38,22 +37,21 @@ owncloud_add_test(RemoteDiscovery)
 owncloud_add_test(Permissions)
 owncloud_add_test(SelectiveSync)
 owncloud_add_test(DatabaseError)
-owncloud_add_test(LockedFiles)
-
-owncloud_add_test(FolderWatcher)
-
-if( UNIX AND NOT APPLE )
-    owncloud_add_test(InotifyWatcher)
-endif(UNIX AND NOT APPLE)
-
 
 owncloud_add_test(LongPath)
 owncloud_add_benchmark(LargeSync)
 
-owncloud_add_test(FolderMan)
+# The following tests need the libcloudprovider linked if it is
+# available in the build. If not the test is added anyway.
+owncloud_add_test_with_libcloudproviders(FolderMan)
+owncloud_add_test_with_libcloudproviders(FolderWatcher)
+owncloud_add_test_with_libcloudproviders(Updater)
+owncloud_add_test_with_libcloudproviders(LockedFiles)
+if( UNIX AND NOT APPLE )
+owncloud_add_test_with_libcloudproviders(InotifyWatcher)
+endif( UNIX AND NOT APPLE )
 
 owncloud_add_test(OAuth)
-
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 
 

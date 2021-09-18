@@ -2,6 +2,17 @@ find_package(Qt5 COMPONENTS Core Test Xml Network REQUIRED)
 
 include(ECMAddTests)
 
+# Link with libcloudproviders if it is avialable.
+function(owncloud_add_test_with_libcloudproviders test_class)
+    if( WITH_LIBCLOUDPROVIDERS )
+        owncloud_add_test(${test_class} ${CMAKE_SOURCE_DIR}/src/gui/libcloudproviders/libcloudproviders.cpp)
+        target_include_directories(${test_class}Test SYSTEM PRIVATE ${GIO_INCLUDE_DIRS})
+        target_link_libraries(${test_class}Test cloudproviders ${GIO_LDFLAGS})
+    else()
+        owncloud_add_test(${test_class})
+    endif()
+endfunction()
+
 function(owncloud_add_test test_class)
     set(OWNCLOUD_TEST_CLASS ${test_class})
     string(TOLOWER "${OWNCLOUD_TEST_CLASS}" OWNCLOUD_TEST_CLASS_LOWERCASE)

@@ -1,2 +1,2 @@
-owncloud_add_test(ActivityModel)
-owncloud_add_test(ProtocolModel)
+owncloud_add_test_with_libcloudproviders(ActivityModel)
+owncloud_add_test_with_libcloudproviders(ProtocolModel)
