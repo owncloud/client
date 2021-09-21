@@ -5,6 +5,10 @@
 # with a specific compiler.
 #
 
+dir = {
+    "base": "/drone",
+}
+
 def main(ctx):
     build_trigger = {
         "ref": [
@@ -21,18 +25,18 @@ def main(ctx):
     }
     pipelines = [
         # check the format of gui test code
-        gui_tests_format(build_trigger),
+        # gui_tests_format(build_trigger),
         # Check starlark
-        check_starlark(
-            ctx,
-            build_trigger,
-        ),
+        # check_starlark(
+        #     ctx,
+        #     build_trigger,
+        # ),
         # Build changelog
-        changelog(
-            ctx,
-            trigger = build_trigger,
-            depends_on = [],
-        ),
+        # changelog(
+        #     ctx,
+        #     trigger = build_trigger,
+        #     depends_on = [],
+        # ),
         build_and_test_client(
             ctx,
             "clang",
@@ -41,17 +45,18 @@ def main(ctx):
             "Ninja",
             trigger = build_trigger,
         ),
-        gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "latest"),
-        gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "latest"),
-        notification(
-            name = "build",
-            trigger = build_trigger,
-            depends_on = [
-                "check-starlark",
-                "changelog",
-                "clang-debug-ninja",
-            ],
-        ),
+        # gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "latest"),
+        # gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "latest"),
+        gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl"]),
+        # notification(
+        #     name = "build",
+        #     trigger = build_trigger,
+        #     depends_on = [
+        #         "check-starlark",
+        #         "changelog",
+        #         "clang-debug-ninja",
+        #     ],
+        # ),
     ]
     cron_pipelines = [
         # Build client
@@ -470,6 +475,11 @@ def owncloudService():
         "pull": "always",
         "environment": {
             "APACHE_WEBROOT": "/drone/src/server/",
+            "APACHE_CONFIG_TEMPLATE": "ssl",
+            "APACHE_SSL_CERT_CN": "server",
+            "APACHE_SSL_CERT": "%s/%s.crt" % (dir["base"], "server"),
+            "APACHE_SSL_KEY": "%s/%s.key" % (dir["base"], "server"),
+            "APACHE_LOGGING_PATH": "/dev/null",
         },
         "command": [
             "/usr/local/bin/apachectl",
