@@ -48,7 +48,7 @@ def main(ctx):
         # gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "latest"),
         # gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "latest"),
         # gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl"]),
-        gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl2"], ssl = True),
+        gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl"]),
         # notification(
         #     name = "build",
         #     trigger = build_trigger,
@@ -469,26 +469,22 @@ def setupServerAndApp(logLevel):
         ],
     }]
 
-def owncloudService(ssl = False):
-    if ssl:
-        environment = {
+def owncloudService():
+    return [{
+        "name": "owncloud",
+        "image": "owncloudci/php:7.4",
+        "pull": "always",
+        "environment": {
             "APACHE_WEBROOT": "/drone/src/server/",
             "APACHE_CONFIG_TEMPLATE": "ssl",
             "APACHE_SSL_CERT_CN": "server",
             "APACHE_SSL_CERT": "%s/%s.crt" % (dir["base"], "server"),
             "APACHE_SSL_KEY": "%s/%s.key" % (dir["base"], "server"),
             "APACHE_LOGGING_PATH": "/dev/null",
-        }
-    else:
-        environment = {
-            "APACHE_WEBROOT": "/drone/src/server/",
-        }
-    return [{
-        "name": "owncloud",
-        "image": "owncloudci/php:7.4",
-        "pull": "always",
-        "environment": environment,
+        },
         "command": [
+            "cp ./test/gui/drone/ssl /etc/apache2/templates",
+            "cat /etc/apache2/templates/ssl"
             "/usr/local/bin/apachectl",
             "-e",
             "debug",
@@ -497,15 +493,14 @@ def owncloudService(ssl = False):
         ],
     }]
 
-def testMiddleware(ssl = False):
+def testMiddleware():
     return [{
         "name": "testmiddleware",
         "image": "owncloudci/nodejs:14",
         "pull": "always",
         "environment": {
             "MIDDLEWARE_HOST": "testmiddleware",
-            "BACKEND_HOST": "https://owncloud" if ssl else "http://owncloud",
-            'NODE_TLS_REJECT_UNAUTHORIZED': 0,
+            "BACKEND_HOST": "http://owncloud",
         },
         "commands": [
             ". ./.drone.env",

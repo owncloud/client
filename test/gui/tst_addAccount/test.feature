@@ -38,7 +38,7 @@ Feature: adding accounts
             | password | 12345          |
         Then error "The provided credentials are not correct" should be displayed
 
-    @ssl2
+    @ssl
     Scenario: Adding account with self signed certificate for the first time
         Given the user has started the client
         When the user adds an account with the following secure server address
