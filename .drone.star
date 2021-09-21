@@ -37,14 +37,14 @@ def main(ctx):
         #     trigger = build_trigger,
         #     depends_on = [],
         # ),
-        build_and_test_client(
-            ctx,
-            "clang",
-            "clang++",
-            "Debug",
-            "Ninja",
-            trigger = build_trigger,
-        ),
+        # build_and_test_client(
+        #     ctx,
+        #     "clang",
+        #     "clang++",
+        #     "Debug",
+        #     "Ninja",
+        #     trigger = build_trigger,
+        # ),
         # gui_tests(ctx, trigger = build_trigger, filterTags = ["@smokeTest"], version = "latest"),
         # gui_tests(ctx, trigger = build_trigger, depends_on = ["GUI-tests-@smokeTest"], filterTags = ["~@smokeTest"], version = "latest"),
         # gui_tests(ctx, trigger = build_trigger, filterTags = ["@ssl"]),
@@ -188,7 +188,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
         "depends_on": depends_on,
     }
 
-def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], ssl = False, version = "daily-master-qa"):
+def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
     squish_parameters = "--retry 1 --reportgen stdout --reportgen json,/drone/src/test/guiTestReport"
@@ -230,14 +230,15 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], ssl = False, 
                              "CLIENT_REPO": "/drone/src/",
                              "MIDDLEWARE_URL": "http://testmiddleware:3000/",
                              "BACKEND_HOST": "http://owncloud/",
+                             "SECURE_BACKEND_HOST": "https://owncloud/",
                              "SERVER_INI": "/drone/src/test/gui/drone/server.ini",
                              "SQUISH_PARAMETERS": squish_parameters,
                          },
                      },
                  ] +
                  showGuiTestResult(),
-        "services": testMiddleware(ssl) +
-                    owncloudService(ssl) +
+        "services": testMiddleware() +
+                    owncloudService() +
                     databaseService(),
         "trigger": trigger,
         "depends_on": depends_on,
@@ -482,14 +483,9 @@ def owncloudService():
             "APACHE_SSL_KEY": "%s/%s.key" % (dir["base"], "server"),
             "APACHE_LOGGING_PATH": "/dev/null",
         },
-        "command": [
+        "commands": [
             "cp ./test/gui/drone/ssl /etc/apache2/templates",
-            "cat /etc/apache2/templates/ssl"
-            "/usr/local/bin/apachectl",
-            "-e",
-            "debug",
-            "-D",
-            "FOREGROUND",
+            "/usr/local/bin/apachectl -e debug -D FOREGROUND",
         ],
     }]
 

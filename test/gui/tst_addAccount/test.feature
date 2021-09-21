@@ -43,7 +43,5 @@ Feature: adding accounts
         Given the user has started the client
         When the user adds an account with the following secure server address
             | server | %secure_local_server% |
+        # Then the lock shown should be closed
         And the user accepts the certificate
-        Then the lock shown should be closed
-
-

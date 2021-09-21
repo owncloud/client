@@ -1,33 +1,33 @@
 <VirtualHost *:80>
-	ServerAdmin webmaster@localhost
-	DocumentRoot ${APACHE_WEBROOT}
+        ServerAdmin webmaster@localhost
+        DocumentRoot ${APACHE_WEBROOT}
 
-	ErrorLog /dev/stdout
-	CustomLog ${APACHE_LOGGING_PATH} combined
+        ErrorLog /dev/stdout
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
 
-	<Directory ${APACHE_WEBROOT}>
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride All
-		Require all granted
-	</Directory>
+        <Directory ${APACHE_WEBROOT}>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Require all granted
+        </Directory>
 </VirtualHost>
 
 <IfModule mod_ssl.c>
-	<VirtualHost *:443>
-		ServerAdmin webmaster@localhost
-		DocumentRoot ${APACHE_WEBROOT} 
+        <VirtualHost *:443>
+                ServerAdmin webmaster@localhost
+                DocumentRoot ${APACHE_WEBROOT}
 
-		ErrorLog /dev/stdout
-		CustomLog ${APACHE_LOGGING_PATH} combined
+                ErrorLog /dev/stdout
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
 
-		<Directory ${APACHE_WEBROOT}>
-			Options Indexes FollowSymLinks MultiViews
-			AllowOverride All
-			Require all granted
-		</Directory>
+                <Directory ${APACHE_WEBROOT}>
+                        Options Indexes FollowSymLinks MultiViews
+                        AllowOverride All
+                        Require all granted
+                </Directory>
 
-		SSLEngine on
-		SSLCertificateFile	${APACHE_SSL_CERT}
-		SSLCertificateKeyFile	${APACHE_SSL_KEY} 
-	</VirtualHost>
+                SSLEngine on
+				SSLCertificateFile	${APACHE_SSL_CERT}
+				SSLCertificateKeyFile	${APACHE_SSL_KEY} 
+        </VirtualHost>
 </IfModule>
