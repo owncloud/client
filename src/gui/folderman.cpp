@@ -1171,8 +1171,7 @@ QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Acco
 
 void FolderMan::removeFolder(Folder *f)
 {
-    if (!f) {
-        qCCritical(lcFolderMan) << "Can not remove null folder";
+    if (!OC_ENSURE(f)) {
         return;
     }
 
