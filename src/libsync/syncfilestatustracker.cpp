@@ -223,15 +223,7 @@ void SyncFileStatusTracker::slotAboutToPropagate(SyncFileItemSet &items)
         }
 
         SharedFlag sharedFlag = item->_remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared;
-        if (item->_instruction != CSYNC_INSTRUCTION_NONE
-            && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA
-            && item->_instruction != CSYNC_INSTRUCTION_IGNORE
-            && item->_instruction != CSYNC_INSTRUCTION_ERROR) {
-            // Mark this path as syncing for instructions that will result in propagation.
-            incSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
-        } else {
-            emit fileStatusChanged(getSystemDestination(item->destination()), resolveSyncAndErrorStatus(item->destination(), sharedFlag));
-        }
+        incSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
     }
 
     // Some metadata status won't trigger files to be synced, make sure that we
@@ -269,15 +261,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
     }
 
     SharedFlag sharedFlag = item->_remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared;
-    if (item->_instruction != CSYNC_INSTRUCTION_NONE
-        && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA
-        && item->_instruction != CSYNC_INSTRUCTION_IGNORE
-        && item->_instruction != CSYNC_INSTRUCTION_ERROR) {
-        // decSyncCount calls *must* be symetric with incSyncCount calls in slotAboutToPropagate
-        decSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
-    } else {
-        emit fileStatusChanged(getSystemDestination(item->destination()), resolveSyncAndErrorStatus(item->destination(), sharedFlag));
-    }
+    decSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
 }
 
 void SyncFileStatusTracker::slotSyncFinished()
