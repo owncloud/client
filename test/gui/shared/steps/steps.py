@@ -8,6 +8,7 @@ import re
 import urllib.request
 import json
 import requests
+import shutil
 
 from objectmaphelper import RegularExpression
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
@@ -287,6 +288,11 @@ def step(context):
 @When('the user waits for file "|any|" to be synced')
 def step(context, fileName):
     waitForFileToBeSynced(context, fileName)
+
+
+@When('the user waits for folder "|any|" to be synced')
+def step(context, folderName):
+    waitForFolderToBeSynced(context, folderName)
 
 
 @Given('the user has waited for file "|any|" to be synced')
@@ -843,3 +849,13 @@ def step(context):
 def step(context, errorMsg):
     newAccount = AccountConnectionWizard()
     test.compare(str(waitForObjectExists(newAccount.ERROR_LABEL).text), errorMsg)
+
+
+@When('the user deletes the file "|any|"')
+def step(context, fileName):
+    os.remove(context.userData['clientSyncPathUser1'] + fileName)
+
+
+@When('the user deletes the folder "|any|"')
+def step(context, folderName):
+    shutil.rmtree(context.userData['clientSyncPathUser1'] + folderName)
