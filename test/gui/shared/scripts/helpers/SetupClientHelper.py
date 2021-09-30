@@ -44,6 +44,8 @@ def startClient(context):
         "owncloud -s"
         + " --logfile "
         + context.userData['clientConfigFile']
+        + " --logdebug"
+        + " --logflush"
         + " --confdir "
         + confdir
     )
