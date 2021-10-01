@@ -851,11 +851,12 @@ def step(context, errorMsg):
     test.compare(str(waitForObjectExists(newAccount.ERROR_LABEL).text), errorMsg)
 
 
-@When('the user deletes the file "|any|"')
-def step(context, fileName):
-    os.remove(context.userData['clientSyncPathUser1'] + fileName)
-
-
-@When('the user deletes the folder "|any|"')
-def step(context, folderName):
-    shutil.rmtree(context.userData['clientSyncPathUser1'] + folderName)
+@When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
+def step(context, itemType, resource):
+    resourcePath = sanitizePath(context.userData['clientSyncPathUser1'] + resource)
+    if itemType == 'file':
+        os.remove(resourcePath)
+    elif itemType == 'folder':
+        shutil.rmtree(resourcePath)
+    else:
+        raise Exception("No such item type for resource")
