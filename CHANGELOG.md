@@ -1,9 +1,163 @@
-Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+Changelog for ownCloud Desktop Client [2.9.1] (2021-10-13)
 =======================================
-The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+The following sections list the changes in ownCloud Desktop Client 2.9.1 relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v2.8.2...master
+[2.9.1]: https://github.com/owncloud/client/compare/v2.9.0...v2.9.1
+
+Summary
+-------
+
+* Bugfix - Mac multiple dialogs block all input: [#8421](https://github.com/owncloud/client/issues/8421)
+* Bugfix - Enforce rtl layout with rtl languages: [#8806](https://github.com/owncloud/client/issues/8806)
+* Bugfix - Broken url in branded builds: [#8920](https://github.com/owncloud/client/issues/8920)
+* Bugfix - Handle use of directory of another Windows VFS sync client: [#8994](https://github.com/owncloud/client/issues/8994)
+* Bugfix - Building libcloudprovider support fails: [#8996](https://github.com/owncloud/client/issues/8996)
+* Bugfix - Tables now display local time: [#9006](https://github.com/owncloud/client/issues/9006)
+* Bugfix - We fixed a crash when using the retry action on an issue: [#9013](https://github.com/owncloud/client/issues/9013)
+* Bugfix - Fix crash when closing the client: [#9014](https://github.com/owncloud/client/issues/9014)
+* Bugfix - Crash on missing or unreadable sync root: [#9016](https://github.com/owncloud/client/issues/9016)
+* Bugfix - A upgrade to 2.9 causes the usage of a new journal file: [#9019](https://github.com/owncloud/client/issues/9019)
+* Bugfix - Properly deployment of Qt translations Mac and Window: [#9022](https://github.com/owncloud/client/issues/9022)
+* Bugfix - The file status of suffix placeholders was displayed incorrectly: [#9026](https://github.com/owncloud/client/issues/9026)
+* Bugfix - When a folder is removed we leave a database behind: [#9057](https://github.com/owncloud/client/issues/9057)
+* Bugfix - Dehydrating placeholders failed if the file is read only: [#9093](https://github.com/owncloud/client/issues/9093)
+* Bugfix - Downgrades could trigger deletion of virtual files: [#9114](https://github.com/owncloud/client/issues/9114)
+* Enhancement - Display the error type in the issue protocol to allow sorting: [#9010](https://github.com/owncloud/client/pull/9010)
+
+Details
+-------
+
+* Bugfix - Mac multiple dialogs block all input: [#8421](https://github.com/owncloud/client/issues/8421)
+
+   We back ported a fix to a Qt bug which causes multiple dialogs on Mac to block all input.
+
+   https://github.com/owncloud/client/issues/8421
+   https://bugreports.qt.io/browse/QTBUG-91059
+   https://invent.kde.org/packaging/craft-blueprints-kde/-/commit/feca22a30f8d3a2122fd9b2097351fcb2da28543
+
+* Bugfix - Enforce rtl layout with rtl languages: [#8806](https://github.com/owncloud/client/issues/8806)
+
+   We fixed a bug where setting the language to a right to left language on mac did not change the
+   layout of the application.
+
+   https://github.com/owncloud/client/issues/8806
+   https://github.com/owncloud/client/pull/8981
+
+* Bugfix - Broken url in branded builds: [#8920](https://github.com/owncloud/client/issues/8920)
+
+   We fixed a string issue with branded builds resulting in invalid urls.
+
+   https://github.com/owncloud/client/issues/8920
+
+* Bugfix - Handle use of directory of another Windows VFS sync client: [#8994](https://github.com/owncloud/client/issues/8994)
+
+   We now better handle setup issues during the initialisation of virtual files support.
+   Especially the case that a user tries to use a directory managed by a competitor which until now
+   caused a crash.
+
+   https://github.com/owncloud/client/issues/8994
+
+* Bugfix - Building libcloudprovider support fails: [#8996](https://github.com/owncloud/client/issues/8996)
+
+   We fixed the libcloudprovider integration.
+
+   https://github.com/owncloud/client/issues/8996
+
+* Bugfix - Tables now display local time: [#9006](https://github.com/owncloud/client/issues/9006)
+
+   We fixed a bug where the sync tables where displaying utc time for some items.
+
+   https://github.com/owncloud/client/issues/9006
+
+* Bugfix - We fixed a crash when using the retry action on an issue: [#9013](https://github.com/owncloud/client/issues/9013)
+
+   Using the context menu action on a sync issue could cause a crash.
+
+   https://github.com/owncloud/client/issues/9013
+   https://github.com/owncloud/client/pull/9012
+
+* Bugfix - Fix crash when closing the client: [#9014](https://github.com/owncloud/client/issues/9014)
+
+   We fixed a crash where we crash when we closed the client during a sync.
+
+   https://github.com/owncloud/client/issues/9014
+
+* Bugfix - Crash on missing or unreadable sync root: [#9016](https://github.com/owncloud/client/issues/9016)
+
+   We fixed an issue where the client crashed after a user deleted the sync root or lost access to the
+   directory.
+
+   https://github.com/owncloud/client/issues/9016
+   https://github.com/owncloud/client/pull/9017
+   https://github.com/owncloud/client/pull/9065
+
+* Bugfix - A upgrade to 2.9 causes the usage of a new journal file: [#9019](https://github.com/owncloud/client/issues/9019)
+
+   We fixed a bug where the name of the sync journal was not properly saved to the settings. This
+   caused a bug when migration to 2.9, so a new a new sync journal was created.
+
+   This not only caused the loss of some selective sync settings, but also caused the display of the
+   following warning message:
+
+   ``` Multiple accounts are sharing the folder. This configuration is know to lead to dataloss
+   and is no longer supported. Please consider removing this folder from the account and adding it
+   again. ```
+
+   We also removed the account info infix from the sync db used with the cmd client.
+
+   https://github.com/owncloud/client/issues/9019
+   https://github.com/owncloud/client/pull/9028
+   https://github.com/owncloud/client/pull/9046
+   https://github.com/owncloud/client/pull/9054
+
+* Bugfix - Properly deployment of Qt translations Mac and Window: [#9022](https://github.com/owncloud/client/issues/9022)
+
+   We fixed a deployment bug which prevented the translation of some components to be loaded.
+
+   https://github.com/owncloud/client/issues/9022
+   https://invent.kde.org/packaging/craft/-/commit/77c114917826480f294d0432f147c9e9f7d19e21
+
+* Bugfix - The file status of suffix placeholders was displayed incorrectly: [#9026](https://github.com/owncloud/client/issues/9026)
+
+   We incorrectly reported that suffix files where ignored.
+
+   https://github.com/owncloud/client/issues/9026
+
+* Bugfix - When a folder is removed we leave a database behind: [#9057](https://github.com/owncloud/client/issues/9057)
+
+   We fixed a bug where we left an empty `sync_journal.db` behind, when we removed a
+   folder/account. As we use the presence of `sync_journal.db` to determine whether the folder
+   is used by a sync client this prevented using an old folder in a new setup.
+
+   https://github.com/owncloud/client/issues/9057
+
+* Bugfix - Dehydrating placeholders failed if the file is read only: [#9093](https://github.com/owncloud/client/issues/9093)
+
+   We fixed a bug where dehydrating a read only file failed without any apparent reason.
+
+   https://github.com/owncloud/client/issues/9093
+   https://gitea.owncloud.services/client/client-plugin-vfs-win/pulls/33
+
+* Bugfix - Downgrades could trigger deletion of virtual files: [#9114](https://github.com/owncloud/client/issues/9114)
+
+   We now prevent the downgrade of Windows VFS folders.
+
+   https://github.com/owncloud/client/issues/9114
+
+* Enhancement - Display the error type in the issue protocol to allow sorting: [#9010](https://github.com/owncloud/client/pull/9010)
+
+   We now display the error type in the not synced protocol and allow to sort by the error type.
+
+   https://github.com/owncloud/client/issues/9000
+   https://github.com/owncloud/client/pull/9010
+
+Changelog for ownCloud Desktop Client [2.9.0] (2021-09-08)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 2.9.0 relevant to
+ownCloud admins and users.
+
+[2.9.0]: https://github.com/owncloud/client/compare/v2.8.2...v2.9.0
 
 Summary
 -------
@@ -14,15 +168,23 @@ Summary
 * Bugfix - SQLite wal file grows to several gigabyte: [#7646](https://github.com/owncloud/client/issues/7646)
 * Bugfix - Fix missing permission for newly created folder: [#8076](https://github.com/owncloud/client/pull/8076)
 * Bugfix - Don't recommend non default sync option: [#8317](https://github.com/owncloud/client/issues/8317)
+* Bugfix - Limit min window size to 2/3 available: [#8366](https://github.com/owncloud/client/issues/8366)
 * Bugfix - Set up default locale correctly: [#8367](https://github.com/owncloud/client/issues/8367)
+* Bugfix - Only show the settings if they are explicitly requested on start: [#8590](https://github.com/owncloud/client/issues/8590)
 * Bugfix - Ignore consecutive errors for a pereiode of time: [#8672](https://github.com/owncloud/client/issues/8672)
 * Bugfix - Properly print the sync events in .owncloudsync.log: [#8729](https://github.com/owncloud/client/issues/8729)
 * Bugfix - Correctly handle file path comparison on Windows: [#8732](https://github.com/owncloud/client/issues/8732)
 * Bugfix - Locked files are not correctly synced: [#8761](https://github.com/owncloud/client/issues/8761)
 * Bugfix - Prompt the user of the cmd client what to do if all files where removed: [#8804](https://github.com/owncloud/client/issues/8804)
 * Bugfix - Relaunching the client on macOS will show the settings dialog: [#8377](https://github.com/owncloud/client/issues/8377)
+* Bugfix - Fix config migrations from versions 2.8 to 2.9: [#8824](https://github.com/owncloud/client/issues/8824)
 * Bugfix - Always exclude .owncloud files: [#8836](https://github.com/owncloud/client/pull/8836)
 * Bugfix - Don't crash if a certain move is undone: [#8837](https://github.com/owncloud/client/issues/8837)
+* Bugfix - Prevent sync root sharing: [#8849](https://github.com/owncloud/client/issues/8849)
+* Bugfix - Removed support for client side certificates: [#8864](https://github.com/owncloud/client/pull/8864)
+* Bugfix - The `Re-open Browser` now always does what it says: [#8866](https://github.com/owncloud/client/pull/8866)
+* Bugfix - Start oauth/password prompt if password is wrong during start up: [#8901](https://github.com/owncloud/client/issues/8901)
+* Bugfix - Handle timeouts occurring during oauth: [#8940](https://github.com/owncloud/client/pull/8940)
 * Change - Don't ask the user to switch to http: [#8231](https://github.com/owncloud/client/issues/8231)
 * Change - Remove support for http redirects: [#8293](https://github.com/owncloud/client/pull/8293)
 * Change - We no longer try to locate an ownCloud install at /owncloud: [#8273](https://github.com/owncloud/client/issues/8273)
@@ -30,15 +192,18 @@ Summary
 * Change - Add support for dynamic client registration with OIDC: [#8350](https://github.com/owncloud/client/pull/8350/)
 * Change - Include full os version in the about dialog: [#8374](https://github.com/owncloud/client/pull/8374)
 * Change - We removed the support for async jobs using OC-JobStatus-Location: [#8398](https://github.com/owncloud/client/pull/8398)
+* Change - Add a branding option to skip the advanced setup page: [#8665](https://github.com/owncloud/client/issues/8665)
 * Enhancement - Prefer 127.0.0.1 as oauth redirect url: [#4542](https://github.com/owncloud/enterprise/issues/4542)
 * Enhancement - Display an icon in the Windows explorer context menu: [#4627](https://github.com/owncloud/client/issues/4627)
 * Enhancement - Show last sync date in tray menu: [#5644](https://github.com/owncloud/client/issues/5644)
+* Enhancement - Display the information state in case we encountered ignored errors: [#8858](https://github.com/owncloud/client/pull/8858)
 * Enhancement - Make crash report IDs easy to copy: [#25](https://github.com/dschmidt/libcrashreporter-qt/pull/25)
 * Enhancement - We reworked the tables: [#8158](https://github.com/owncloud/client/issues/8158)
 * Enhancement - Provide a socket api call to get the client icon and: [#8464](https://github.com/owncloud/client/issues/8464)
 * Enhancement - Add language picker to general settings: [#8466](https://github.com/owncloud/client/issues/8466)
 * Enhancement - Attach the last 20 log lines to a crash report: [#8467](https://github.com/owncloud/client/issues/8467)
 * Enhancement - Mention the local file name when a file name clash occurs: [#8609](https://github.com/owncloud/client/issues/8609)
+* Enhancement - Consider a remote poll interval coming with the server capabilities: [#5947](https://github.com/owncloud/client/issues/5947)
 * Enhancement - Improved handling of errors during local file updates: [#8787](https://github.com/owncloud/client/pull/8787)
 * Enhancement - Retry sync on `502 Bad Gateway`: [#8811](https://github.com/owncloud/client/issues/8811)
 
@@ -84,6 +249,13 @@ Details
 
    https://github.com/owncloud/client/issues/8317
 
+* Bugfix - Limit min window size to 2/3 available: [#8366](https://github.com/owncloud/client/issues/8366)
+
+   When scaling was used the window could become bigger than the screen. The size is now limited to
+   2/3 of the screen.
+
+   https://github.com/owncloud/client/issues/8366
+
 * Bugfix - Set up default locale correctly: [#8367](https://github.com/owncloud/client/issues/8367)
 
    Fixes the formatting in locale-dependent widgets, e.g., date pickers, like the one in the
@@ -92,6 +264,13 @@ Details
    https://github.com/owncloud/client/issues/8367
    https://github.com/owncloud/client/pull/8541
    https://github.com/owncloud/client/pull/8617
+
+* Bugfix - Only show the settings if they are explicitly requested on start: [#8590](https://github.com/owncloud/client/issues/8590)
+
+   We now only display the settings when the user requested it on start and not every time the
+   application is started a second time.
+
+   https://github.com/owncloud/client/issues/8590
 
 * Bugfix - Ignore consecutive errors for a pereiode of time: [#8672](https://github.com/owncloud/client/issues/8672)
 
@@ -138,6 +317,17 @@ Details
    https://github.com/owncloud/client/issues/8377
    https://github.com/owncloud/client/pull/8812
 
+* Bugfix - Fix config migrations from versions 2.8 to 2.9: [#8824](https://github.com/owncloud/client/issues/8824)
+
+   Due to a value change of an internal Qt configuration variable, the configuration data could
+   not be migrated on many systems. We fixed this by implementing an additional migration path.
+
+   Furthermore, we removed the dependency on said value within the GUI, and use the values
+   explicitly from the theme to display the correct values on UI elements such as buttons.
+
+   https://github.com/owncloud/client/issues/8824
+   https://github.com/owncloud/client/pull/8860
+
 * Bugfix - Always exclude .owncloud files: [#8836](https://github.com/owncloud/client/pull/8836)
 
    Our Linux virtual files implementation is using the file name extension .owncloud those files
@@ -149,6 +339,43 @@ Details
 * Bugfix - Don't crash if a certain move is undone: [#8837](https://github.com/owncloud/client/issues/8837)
 
    https://github.com/owncloud/client/issues/8837
+   https://github.com/owncloud/client/pull/8863
+   https://github.com/owncloud/client/pull/8958
+
+* Bugfix - Prevent sync root sharing: [#8849](https://github.com/owncloud/client/issues/8849)
+
+   Due to legacy reasons it is possible to let two sync connections use the same directory. In
+   combination with virtual files this was leading to dataloss however.
+
+   https://github.com/owncloud/client/issues/8849
+   https://github.com/owncloud/client/issues/8512
+
+* Bugfix - Removed support for client side certificates: [#8864](https://github.com/owncloud/client/pull/8864)
+
+   Client side certificates where never officially supported and where untested in many
+   scenarios.
+
+   https://github.com/owncloud/client/pull/8864
+
+* Bugfix - The `Re-open Browser` now always does what it says: [#8866](https://github.com/owncloud/client/pull/8866)
+
+   Under certain conditions the previous authentication run might have failed and the button
+   became unresponsive, we now start a new authentication in that case.
+
+   https://github.com/owncloud/client/pull/8866
+
+* Bugfix - Start oauth/password prompt if password is wrong during start up: [#8901](https://github.com/owncloud/client/issues/8901)
+
+   If the oauth token was invalid during start up we didn't start the oauth process and the user
+   needed to manually log out in order to log in again.
+
+   https://github.com/owncloud/client/issues/8901
+
+* Bugfix - Handle timeouts occurring during oauth: [#8940](https://github.com/owncloud/client/pull/8940)
+
+   We now handle timeouts occurring during oauth.
+
+   https://github.com/owncloud/client/pull/8940
 
 * Change - Don't ask the user to switch to http: [#8231](https://github.com/owncloud/client/issues/8231)
 
@@ -198,6 +425,12 @@ Details
 
    https://github.com/owncloud/client/pull/8398
 
+* Change - Add a branding option to skip the advanced setup page: [#8665](https://github.com/owncloud/client/issues/8665)
+
+   If the option is enabled we will create a sync with the default values.
+
+   https://github.com/owncloud/client/issues/8665
+
 * Enhancement - Prefer 127.0.0.1 as oauth redirect url: [#4542](https://github.com/owncloud/enterprise/issues/4542)
 
    When using OpenID Connect we now always use http://127.0.0.1 as redirect url instead of
@@ -219,6 +452,21 @@ Details
 
    https://github.com/owncloud/client/issues/5644
    https://github.com/owncloud/client/pull/8547
+
+* Enhancement - Display the information state in case we encountered ignored errors: [#8858](https://github.com/owncloud/client/pull/8858)
+
+   If syncing a file fails multiple times we mark it as ignored to skip it for a certain amount of
+   time. If we have ignored files we are not in sync, we now don't display the green icon.
+
+   Additionally this change aligns the icon displayed in the system tray with the icon displayed
+   in the app.
+
+   Https://github.com/owncloud/client/issues/7715
+   https://github.com/owncloud/client/issues/7365
+   https://github.com/owncloud/client/issues/7200
+   https://github.com/owncloud/client/issues/5860
+
+   https://github.com/owncloud/client/pull/8858
 
 * Enhancement - Make crash report IDs easy to copy: [#25](https://github.com/dschmidt/libcrashreporter-qt/pull/25)
 
@@ -273,6 +521,16 @@ Details
 
    https://github.com/owncloud/client/issues/8609
    https://github.com/owncloud/client/pull/8630
+
+* Enhancement - Consider a remote poll interval coming with the server capabilities: [#5947](https://github.com/owncloud/client/issues/5947)
+
+   This way, admins can configure the remote sync poll interval of clients through the
+   capabilities settings of the server. Note that the setting in the server capabilities needs to
+   be done in milliseconds. Default is 30 seconds.
+
+   https://github.com/owncloud/client/issues/5947
+   https://github.com/owncloud/client/issues/8780
+   https://github.com/owncloud/client/pull/8777
 
 * Enhancement - Improved handling of errors during local file updates: [#8787](https://github.com/owncloud/client/pull/8787)
 
