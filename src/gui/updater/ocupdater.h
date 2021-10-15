@@ -97,6 +97,8 @@ public:
         DownloadFailed,
         DownloadTimedOut,
         UpdateOnlyAvailableThroughSystem };
+    Q_ENUM(DownloadState);
+
     explicit OCUpdater(const QUrl &url);
 
     void setUpdateUrl(const QUrl &url);
@@ -106,7 +108,7 @@ public:
     void checkForUpdate() override;
 
     QString statusString() const;
-    int downloadState() const;
+    DownloadState downloadState() const;
     void setDownloadState(DownloadState state);
 
 signals:
@@ -134,7 +136,7 @@ protected:
 
 private:
     QUrl _updateUrl;
-    int _state;
+    DownloadState _state;
     QNetworkAccessManager *_accessManager;
     QTimer *_timeoutWatchdog; /** Timer to guard the timeout of an individual network request */
     UpdateInfo _updateInfo;
@@ -162,6 +164,8 @@ private:
     void versionInfoArrived(const UpdateInfo &info) override;
     QScopedPointer<QTemporaryFile> _file;
     QString _targetFile;
+
+    friend class TestUpdater;
 };
 
 /**
