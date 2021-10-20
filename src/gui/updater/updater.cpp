@@ -43,9 +43,9 @@ Updater *Updater::instance()
 
 QUrl Updater::updateUrl()
 {
-    QUrl updateBaseUrl(QString::fromLocal8Bit(qgetenv("OCC_UPDATE_URL")));
+    QUrl updateBaseUrl(qEnvironmentVariable("OCC_UPDATE_URL"));
     if (updateBaseUrl.isEmpty()) {
-        updateBaseUrl = QUrl(QLatin1String(APPLICATION_UPDATE_URL));
+        updateBaseUrl = QUrl::fromUserInput(Theme::instance()->updateCheckUrl());
     }
     if (!updateBaseUrl.isValid() || updateBaseUrl.host() == ".") {
         return QUrl();
@@ -119,7 +119,6 @@ QString Updater::getSystemInfo()
 #endif
 }
 
-// To test, cmake with -DAPPLICATION_UPDATE_URL="http://127.0.0.1:8080/test.rss"
 Updater *Updater::create()
 {
     auto url = updateUrl();

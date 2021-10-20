@@ -28,22 +28,11 @@
 #endif
 #include <QSslSocket>
 
-#include "owncloudtheme.h"
-
 #ifdef THEME_INCLUDE
 #include THEME_INCLUDE
 #endif
 
 namespace {
-QString vanillaThemePath()
-{
-    return QStringLiteral(":/client/ownCloud/theme");
-}
-
-QString brandThemePath()
-{
-    return QStringLiteral(":/client/" APPLICATION_SHORTNAME "/theme");
-}
 
 QString darkTheme()
 {
@@ -90,6 +79,16 @@ Theme *Theme::instance()
 
 Theme::~Theme()
 {
+}
+
+QString Theme::vanillaThemePath() const
+{
+    return QStringLiteral(":/client/ownCloud/theme");
+}
+
+QString Theme::brandThemePath() const
+{
+    return QStringLiteral(":/client/" APPLICATION_SHORTNAME "/theme");
 }
 
 QString Theme::statusHeaderText(SyncResult::Status status) const
