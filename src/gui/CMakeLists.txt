@@ -213,22 +213,21 @@ endif()
 
 #TODO Move resources files
 target_sources(owncloud PRIVATE
-    ${PROJECT_SOURCE_DIR}/client.qrc
-    ${PROJECT_SOURCE_DIR}/core_theme.qrc)
+    ${PROJECT_SOURCE_DIR}/client.qrc)
 
-generate_theme(owncloud OWNCLOUD_SIDEBAR_ICONS)
-MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")
+generate_theme(owncloud)
+
+get_filename_component(appIconExtension "${APPLICATION_ICON_FILENAME}" EXT)
+configure_file("${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}" "${CMAKE_BINARY_DIR}/1024-app-icon${appIconExtension}" COPYONLY)
+list(APPEND OWNCLOUD_ICONS "${CMAKE_BINARY_DIR}/1024-app-icon${appIconExtension}")
 
 
-if (EXISTS "${OEM_THEME_DIR}/config_with_defaults.json")
-    install(FILES "${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}"
-            RENAME "${APPLICATION_ICON_NAME}.png"
-            DESTINATION "${DATA_INSTALL_DIR}/icons/hicolor/1024x1024/apps/"
-    )
-else()
-    ecm_add_app_icon(appIcons ICONS "${OWNCLOUD_ICONS}" SIDEBAR_ICONS "${OWNCLOUD_SIDEBAR_ICONS}" OUTFILE_BASENAME "${APPLICATION_ICON_NAME}")
-    target_sources(owncloud PRIVATE ${appIcons})
-endif()
+install(FILES "${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}"
+        RENAME "${APPLICATION_ICON_NAME}.${appIconExtension}"
+        DESTINATION "${DATA_INSTALL_DIR}/icons/hicolor/1024x1024/apps/"
+)
+ecm_add_app_icon(appIcons ICONS "${OWNCLOUD_ICONS}" SIDEBAR_ICONS "${OWNCLOUD_SIDEBAR_ICONS}" OUTFILE_BASENAME "${APPLICATION_ICON_NAME}")
+target_sources(owncloud PRIVATE ${appIcons})
 
 if(NOT APPLE)
     if(WIN32)
