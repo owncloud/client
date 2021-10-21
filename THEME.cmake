@@ -1,4 +1,26 @@
-if (EXISTS "${OEM_THEME_DIR}/OEM.cmake")
+
+if (EXISTS "${OEM_THEME_DIR}/config_with_defaults.json")
+    file(READ "${OEM_THEME_DIR}/config_with_defaults.json" JSON)
+
+    string(JSON APPLICATION_NAME GET "${JSON}" "desktop_application_name_text")
+    string(JSON APPLICATION_SHORTNAME GET "${JSON}" "desktop_application_short_name_text")
+    string(JSON APPLICATION_EXECUTABLE GET "${JSON}" "desktop_application_executable_text")
+    string(JSON APPLICATION_DOMAIN GET "${JSON}" "desktop_application_domain_text")
+    string(JSON APPLICATION_VENDOR GET "${JSON}" "desktop_application_vendor_text")
+    string(JSON APPLICATION_UPDATE_URL GET "${JSON}" "desktop_update_url_text")
+    string(JSON APPLICATION_REV_DOMAIN GET "${JSON}" "desktop_application_rev_domain_text")
+
+    set(APPLICATION_ICON_NAME "${APPLICATION_SHORTNAME}")
+    string(TOLOWER "${APPLICATION_SHORTNAME}"  LINUX_PACKAGE_SHORTNAME)
+
+    # TODO?!
+    set(APPLICATION_VIRTUALFILE_SUFFIX "owncloud" CACHE STRING "Virtual file suffix (not including the .)")
+    set(THEME_CLASS            "ownCloudTheme" )
+    set(WIN_SETUP_BITMAP_PATH  "${CMAKE_SOURCE_DIR}/admin/win/nsi" )
+    set(MAC_INSTALLER_BACKGROUND_FILE "${CMAKE_SOURCE_DIR}/admin/osx/installer-background.png" CACHE STRING "The MacOSX installer background image")
+    # option( WITH_CRASHREPORTER "Build crashreporter" OFF )
+    # set( CRASHREPORTER_SUBMIT_URL "https://crash-reports.owncloud.com/submit" CACHE STRING "URL for crash reporter" )
+elseif (EXISTS "${OEM_THEME_DIR}/OEM.cmake")
     include("${OEM_THEME_DIR}/OEM.cmake")
 else()
     include ("${CMAKE_CURRENT_LIST_DIR}/OWNCLOUD.cmake")
