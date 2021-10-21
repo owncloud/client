@@ -9,14 +9,8 @@ Feature: edit files
         Given user "Alice" has been created on the server with default attributes and without skeleton files
 
 
-    Scenario Outline: Modify orignal content of a file
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "<filename>" on the server
+    Scenario: Modify orignal content of a file with special character
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "S@mpleFile!With,$pecial?Characters.txt" on the server
         And user "Alice" has set up a client with default settings
-        When the user overwrites the file "<filename>" with content "overwrite ownCloud test text file"
-        Then as "Alice" the file "<filename>" on the server should have the content "overwrite ownCloud test text file"
-        Examples:
-            | filename     |
-            | textfile.txt |
-            | textfile.doc |
-            | textfile.xls |
-            | textfile.pdf |
+        When the user overwrites the file "S@mpleFile!With,$pecial?Characters.txt" with content "overwrite ownCloud test text file"
+        Then as "Alice" the file "S@mpleFile!With,$pecial?Characters.txt" on the server should have the content "overwrite ownCloud test text file"
