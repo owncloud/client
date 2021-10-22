@@ -219,8 +219,16 @@ target_sources(owncloud PRIVATE
 generate_theme(owncloud OWNCLOUD_SIDEBAR_ICONS)
 MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")
 
-# ecm_add_app_icon(appIcons ICONS "${OWNCLOUD_ICONS}" SIDEBAR_ICONS "${OWNCLOUD_SIDEBAR_ICONS}" OUTFILE_BASENAME "${APPLICATION_ICON_NAME}")
-# target_sources(owncloud PRIVATE ${appIcons})
+
+if (EXISTS "${OEM_THEME_DIR}/config_with_defaults.json")
+    install(FILES "${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}"
+            RENAME "${APPLICATION_ICON_NAME}.png"
+            DESTINATION "${DATA_INSTALL_DIR}/icons/hicolor/1024x1024/apps/"
+    )
+else()
+    ecm_add_app_icon(appIcons ICONS "${OWNCLOUD_ICONS}" SIDEBAR_ICONS "${OWNCLOUD_SIDEBAR_ICONS}" OUTFILE_BASENAME "${APPLICATION_ICON_NAME}")
+    target_sources(owncloud PRIVATE ${appIcons})
+endif()
 
 if(NOT APPLE)
     if(WIN32)
