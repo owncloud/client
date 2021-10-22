@@ -17,7 +17,6 @@ if (EXISTS "${OEM_THEME_DIR}/config_with_defaults.json")
     # TODO?!
     set(APPLICATION_VIRTUALFILE_SUFFIX "owncloud" CACHE STRING "Virtual file suffix (not including the .)")
     set(THEME_CLASS            "ownCloudTheme" )
-    set(WIN_SETUP_BITMAP_PATH  "${CMAKE_SOURCE_DIR}/admin/win/nsi" )
     set(MAC_INSTALLER_BACKGROUND_FILE "${CMAKE_SOURCE_DIR}/admin/osx/installer-background.png" CACHE STRING "The MacOSX installer background image")
     # option( WITH_CRASHREPORTER "Build crashreporter" OFF )
     # set( CRASHREPORTER_SUBMIT_URL "https://crash-reports.owncloud.com/submit" CACHE STRING "URL for crash reporter" )
