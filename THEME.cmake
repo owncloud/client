@@ -11,6 +11,7 @@ if (EXISTS "${OEM_THEME_DIR}/config_with_defaults.json")
     string(JSON APPLICATION_REV_DOMAIN GET "${JSON}" "desktop_application_rev_domain_text")
 
     set(APPLICATION_ICON_NAME "${APPLICATION_SHORTNAME}")
+    string(JSON APPLICATION_ICON_FILENAME GET "${JSON}" "desktop_appshortname_icon_image")
     string(TOLOWER "${APPLICATION_SHORTNAME}"  LINUX_PACKAGE_SHORTNAME)
 
     # TODO?!
