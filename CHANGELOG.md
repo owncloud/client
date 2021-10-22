@@ -1,3 +1,25 @@
+Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+=======================================
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v2.9.1...master
+
+Summary
+-------
+
+* Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
+
+Details
+-------
+
+* Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
+
+   We fixed a branding issue where vfs was used even when the parameter was set to disabled.
+
+   https://github.com/owncloud/client/issues/9159
+   https://github.com/owncloud/enterprise/issues/4820
+
 Changelog for ownCloud Desktop Client [2.9.1] (2021-10-13)
 =======================================
 The following sections list the changes in ownCloud Desktop Client 2.9.1 relevant to
