@@ -91,14 +91,6 @@ public:
     virtual QString configFileName() const;
 
 #ifndef TOKEN_AUTH_ONLY
-    /**
-     * Wehther we allow a fallback to a vanilla icon
-     */
-    enum class IconType {
-        BrandedIcon,
-        BrandedIconWithFallbackToVanillaIcon,
-        VanillaIcon
-    };
 
     /**
       * get an sync state icon
@@ -438,13 +430,12 @@ public:
 
 
 protected:
-    QString vanillaThemePath() const;
-    QString brandThemePath() const;
+    QString themePath() const;
 
 #ifndef TOKEN_AUTH_ONLY
-    QIcon themeUniversalIcon(const QString &name, IconType iconType = IconType::BrandedIcon) const;
-    QIcon themeTrayIcon(const QString &name, bool sysTrayMenuVisible = false, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;
-    QIcon themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;
+    QIcon themeUniversalIcon(const QString &name) const;
+    QIcon themeTrayIcon(const QString &name, bool sysTrayMenuVisible = false) const;
+    QIcon themeIcon(const QString &name) const;
 #endif
     Theme();
 
@@ -455,18 +446,17 @@ private:
     Theme(Theme const &);
     Theme &operator=(Theme const &);
 
-    QIcon loadIcon(const QString &flavor, const QString &name, IconType iconType) const;
+    QIcon loadIcon(const QString &flavor, const QString &name) const;
     // whether or not a theme is available
-    bool hasTheme(IconType type, const QString &theme) const;
+    bool hasTheme(const QString &theme) const;
 
     bool _mono = false;
 #ifndef TOKEN_AUTH_ONLY
     mutable QMap<QString, QIcon> _iconCache;
-    // <<is vanilla, theme name>, bool
     // caches the availability of themes for branded and unbranded themes
-    mutable QMap<QPair<bool, QString>, bool> _themeCache;
-    const bool _hasBrandedColored = hasTheme(IconType::BrandedIcon, QStringLiteral("colored"));
-    const bool _hasBrandedDark = hasTheme(IconType::BrandedIcon, QStringLiteral("dark"));
+    mutable QMap<QString, bool> _themeCache;
+    const bool _hasBrandedColored = hasTheme(QStringLiteral("colored"));
+    const bool _hasBrandedDark = hasTheme(QStringLiteral("dark"));
 #endif
 };
 }

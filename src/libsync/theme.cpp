@@ -66,14 +66,9 @@ Theme::~Theme()
 {
 }
 
-QString Theme::vanillaThemePath() const
+QString Theme::themePath() const
 {
-    return QStringLiteral(":/client/ownCloud/theme");
-}
-
-QString Theme::brandThemePath() const
-{
-    return QStringLiteral(":/client/" APPLICATION_SHORTNAME "/theme");
+    return QStringLiteral(":/client/theme");
 }
 
 QString Theme::statusHeaderText(SyncResult::Status status) const
@@ -155,14 +150,14 @@ bool Theme::allowDarkTheme() const
 }
 
 
-QIcon Theme::themeUniversalIcon(const QString &name, Theme::IconType iconType) const
+QIcon Theme::themeUniversalIcon(const QString &name) const
 {
-    return loadIcon(QStringLiteral("universal"), name, iconType);
+    return loadIcon(QStringLiteral("universal"), name);
 }
 
-QIcon Theme::themeTrayIcon(const QString &name, bool sysTrayMenuVisible, IconType iconType) const
+QIcon Theme::themeTrayIcon(const QString &name, bool sysTrayMenuVisible) const
 {
-    auto icon = loadIcon(systrayIconFlavor(_mono, sysTrayMenuVisible), name, iconType);
+    auto icon = loadIcon(systrayIconFlavor(_mono, sysTrayMenuVisible), name);
 #ifdef Q_OS_MAC
     // This defines the icon as a template and enables automatic macOS color handling
     // See https://bugreports.qt.io/browse/QTBUG-42109
@@ -171,19 +166,18 @@ QIcon Theme::themeTrayIcon(const QString &name, bool sysTrayMenuVisible, IconTyp
     return icon;
 }
 
-QIcon Theme::themeIcon(const QString &name, Theme::IconType iconType) const
+QIcon Theme::themeIcon(const QString &name) const
 {
-    return loadIcon((isUsingDarkTheme() && allowDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
+    return loadIcon((isUsingDarkTheme() && allowDarkTheme()) ? darkTheme() : coloredTheme(), name);
 }
 /*
  * helper to load a icon from either the icon theme the desktop provides or from
  * the apps Qt resources.
  */
-QIcon Theme::loadIcon(const QString &flavor, const QString &name, IconType iconType) const
+QIcon Theme::loadIcon(const QString &flavor, const QString &name) const
 {
     // prevent recusion
-    const bool useCoreIcon = (iconType == IconType::VanillaIcon) || isVanilla();
-    const QString path = useCoreIcon ? vanillaThemePath() : brandThemePath();
+    const QString path = themePath();
     const QString key = name + QLatin1Char(',') + flavor;
     QIcon &cached = _iconCache[key]; // Take reference, this will also "set" the cache entry
     if (cached.isNull()) {
@@ -216,21 +210,15 @@ QIcon Theme::loadIcon(const QString &flavor, const QString &name, IconType iconT
             }
         }
     }
-    if (cached.isNull()) {
-        if (!useCoreIcon && iconType == IconType::BrandedIconWithFallbackToVanillaIcon) {
-            return loadIcon(flavor, name, IconType::VanillaIcon);
-        }
-        qWarning() << "Failed to locate the icon" << name;
-    }
+    OC_ENFORCE(!cached.isNull());
     return cached;
 }
 
-bool Theme::hasTheme(IconType type, const QString &theme) const
+bool Theme::hasTheme(const QString &theme) const
 {
-    const auto key = qMakePair(type != IconType::VanillaIcon, theme);
-    auto it = _themeCache.constFind(key);
+    auto it = _themeCache.constFind(theme);
     if (it == _themeCache.cend()) {
-        return _themeCache[key] = QFileInfo(QStringLiteral("%1/%2/").arg(type == IconType::VanillaIcon ? vanillaThemePath() : brandThemePath(), theme)).isDir();
+        return _themeCache[theme] = QFileInfo(theme).isDir();
     }
     return it.value();
 }
@@ -335,7 +323,7 @@ bool Theme::monoIconsAvailable() const
 {
     // mono icons are only supported in vanilla and if a customer provides them
     // no fallback to vanilla
-    return hasTheme(IconType::BrandedIcon, systrayIconFlavor(true));
+    return hasTheme(systrayIconFlavor(true));
 }
 
 QString Theme::updateCheckUrl() const

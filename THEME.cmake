@@ -24,7 +24,6 @@ set(MAC_INSTALLER_BACKGROUND_FILE "${CMAKE_SOURCE_DIR}/admin/osx/installer-backg
 # option( WITH_CRASHREPORTER "Build crashreporter" OFF )
 # set( CRASHREPORTER_SUBMIT_URL "https://crash-reports.owncloud.com/submit" CACHE STRING "URL for crash reporter" )
 
-set(BRANDED_THEME_ROOT "${APPLICATION_SHORTNAME}/theme")
 set(OWNCLOUD_SIDEBAR_ICONS "${OEM_THEME_DIR}/${OWNCLOUD_SIDEBAR_ICONS}")
 
 
