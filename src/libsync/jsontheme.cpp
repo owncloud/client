@@ -21,6 +21,7 @@ OCC::JsonTheme::JsonTheme()
     // cache some
     _appNameGUI = get(QLatin1String("desktop_application_name_text")).toString();
     _appName = get(QLatin1String("desktop_application_short_name_text")).toString();
+    _isVanilla = _appName == QLatin1String("ownCloud");
 }
 
 QString OCC::JsonTheme::defaultServerFolder() const
