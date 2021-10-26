@@ -171,7 +171,7 @@ bool Application::configVersionMigration()
 
         QMessageBox box(
             QMessageBox::Warning,
-            APPLICATION_SHORTNAME,
+            Theme::instance()->appNameGUI(),
             tr("Some settings were configured in newer versions of this client and "
                "use features that are not available in this version.<br>"
                "<br>"

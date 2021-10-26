@@ -110,14 +110,9 @@ QString Theme::statusHeaderText(SyncResult::Status status) const
     return resultStr;
 }
 
-QString Theme::appNameGUI() const
+QString Theme::version() const
 {
-    return QStringLiteral(APPLICATION_NAME);
-}
-
-QString Theme::appName() const
-{
-    return QStringLiteral(APPLICATION_SHORTNAME);
+    return QStringLiteral(MIRALL_VERSION_STRING);
 }
 
 QString Theme::configFileName() const
