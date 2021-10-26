@@ -148,7 +148,7 @@ Feature: Syncing files
             | 123Folder |
             | bFolder   |
 
-            
+
     Scenario Outline: Syncing a folder to the server
         Given user "Alice" has set up a client with default settings
         When the user creates a folder "<foldername>"
