@@ -4,9 +4,6 @@ else()
     set(OEM_THEME_DIR "${PROJECT_SOURCE_DIR}/theme")
 endif()
 
-set(THEME_CLASS "JsonTheme" )
-set(THEME_INCLUDE "jsontheme.h" )
-
 file(READ "${OEM_THEME_DIR}/config_with_defaults.json" JSON)
 
 string(JSON APPLICATION_NAME GET "${JSON}" "desktop_application_name_text")

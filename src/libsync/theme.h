@@ -457,7 +457,6 @@ private:
     // whether or not a theme is available
     bool hasTheme(IconType type, const QString &theme) const;
 
-    static Theme *_instance;
     bool _mono = false;
 #ifndef TOKEN_AUTH_ONLY
     mutable QMap<QString, QIcon> _iconCache;

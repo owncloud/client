@@ -19,6 +19,7 @@
 #include "common/vfs.h"
 #include "config.h"
 #include "configfile.h"
+#include "jsontheme.h"
 
 #include <QtCore>
 #ifndef TOKEN_AUTH_ONLY
@@ -28,9 +29,6 @@
 #endif
 #include <QSslSocket>
 
-#ifdef THEME_INCLUDE
-#include THEME_INCLUDE
-#endif
 
 namespace {
 
@@ -67,14 +65,11 @@ constexpr bool isVanilla()
 }
 namespace OCC {
 
-Theme *Theme::_instance = nullptr;
 
 Theme *Theme::instance()
 {
-    if (!_instance) {
-        _instance = new THEME_CLASS;
-    }
-    return _instance;
+    static Theme *instance = new JsonTheme;
+    return instance;
 }
 
 Theme::~Theme()
