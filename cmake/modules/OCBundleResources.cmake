@@ -31,7 +31,7 @@ function(__addIconFromJson JSON QRC_PATH THEME ICON_KEY)
         get_filename_component(_ICON_ICON_NAME ${ICON_NAME} NAME)
     endif()
 
-    set(iconAlias "${BRANDED_THEME_ROOT}/${THEME}/${_ICON_ICON_NAME}${ICON_NAME_EXT}")
+    set(iconAlias "theme/${THEME}/${_ICON_ICON_NAME}${ICON_NAME_EXT}")
     if (NOT EXISTS "${OEM_THEME_DIR}/${ICON_NAME}")
         message(FATAL_ERROR "Icon ${OEM_THEME_DIR}/${ICON_NAME} does not exist")
     endif()
@@ -58,7 +58,7 @@ function(generate_theme TARGET)
     __add_file_to_qrc_file(
         QRC_PATH ${QRC_PATH}
         FILE_PATH "${OEM_THEME_DIR}/config_with_defaults.json"
-        ALIAS "${BRANDED_THEME_ROOT}/config_with_defaults.json"
+        ALIAS "theme/config_with_defaults.json"
     )
     file(READ "${OEM_THEME_DIR}/config_with_defaults.json" JSON)
     __addIconFromJson(${JSON} ${QRC_PATH} "universal" desktop_appshortname_icon_image ICON_NAME "${APPLICATION_ICON_NAME}-icon")
