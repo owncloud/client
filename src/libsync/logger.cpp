@@ -14,7 +14,7 @@
 
 #include "logger.h"
 
-#include "config.h"
+#include "theme.h"
 
 #include <QDir>
 #include <QStringList>

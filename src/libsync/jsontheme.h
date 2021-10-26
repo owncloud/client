@@ -17,6 +17,11 @@ class JsonTheme : public Theme
 public:
     JsonTheme();
 
+    bool isVanilla() const override
+    {
+        return _isVanilla;
+    }
+
     QString defaultServerFolder() const override;
 
     QString quotaBaseFolder() const override;
@@ -66,6 +71,7 @@ private:
     QJsonObject _data;
     QString _appNameGUI;
     QString _appName;
+    bool _isVanilla;
 
     QJsonValue get(const QLatin1String &key) const;
 

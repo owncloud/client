@@ -49,6 +49,8 @@ public:
     /* returns a singleton instance. */
     static Theme *instance();
 
+    virtual bool isVanilla() const = 0;
+
     ~Theme() override;
 
     /**
