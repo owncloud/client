@@ -306,7 +306,7 @@ void help()
 {
     const char *binaryName = APPLICATION_EXECUTABLE "cmd";
 
-    std::cout << binaryName << " - command line " APPLICATION_NAME " client tool" << std::endl;
+    std::cout << binaryName << " - command line " << qUtf8Printable(Theme::instance()->appNameGUI()) << " client tool" << std::endl;
     std::cout << "" << std::endl;
     std::cout << "Usage: " << binaryName << " [OPTION] <source_dir> <server_url>" << std::endl;
     std::cout << "" << std::endl;

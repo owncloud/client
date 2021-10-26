@@ -180,7 +180,7 @@ void Logger::setLogDebug(bool debug)
 
 QString Logger::temporaryFolderLogDirPath() const
 {
-    return QDir::temp().filePath(QStringLiteral(APPLICATION_SHORTNAME "-logdir"));
+    return QDir::temp().filePath(Theme::instance()->appName() + QStringLiteral("-logdir"));
 }
 
 void Logger::setupTemporaryFolderLogDir()
@@ -221,7 +221,7 @@ void Logger::setLogRules(const QSet<QString> &rules)
 
 void Logger::dumpCrashLog()
 {
-    QFile logFile(QDir::tempPath() + QStringLiteral("/" APPLICATION_NAME "-crash.log"));
+    QFile logFile(QStringLiteral("%1/%2-crash.log").arg(QDir::tempPath(), Theme::instance()->appName()));
     if (logFile.open(QFile::WriteOnly)) {
         QTextStream out(&logFile);
         out.setCodec("UTF-8");

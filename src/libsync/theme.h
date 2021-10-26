@@ -64,7 +64,7 @@ public:
      *
      * @return QString with human readable app name.
      */
-    virtual QString appNameGUI() const;
+    virtual QString appNameGUI() const = 0;
 
     /**
      * @brief appName - Application name (short)
@@ -82,7 +82,7 @@ public:
      *
      * @return QString with app name.
      */
-    virtual QString appName() const;
+    virtual QString appName() const = 0;
 
     /**
      * @brief configFileName
