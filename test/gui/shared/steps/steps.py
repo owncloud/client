@@ -291,7 +291,6 @@ def step(context):
 @When('the user waits for the folder "|any|" to sync')
 def step(context, foldername):
     waitForFolderToBeSynced(context, foldername)
-    snooze(5)
 
 
 @When('the user waits for file "|any|" to be synced')

@@ -227,7 +227,9 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for the folder "Folder1" to sync
+        #And the user waits for the folder "Folder1" to sync
+        And the user waits for the folder "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" to sync
+        #And the user waits for the files to sync
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
         And the file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" should exist on the file system with the following content
