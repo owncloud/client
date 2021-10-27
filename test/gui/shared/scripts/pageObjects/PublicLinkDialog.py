@@ -69,44 +69,6 @@ class PublicLinkDialog:
             squish.Qt.LeftButton,
         )
 
-    def createPublicLink(self, context, resource, password='', permissions=''):
-        radioObjectName = ''
-        if permissions:
-            radioObjectName = self.getRadioObjectForPermssion(permissions)
-
-        test.compare(
-            str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
-            resource.replace(context.userData['clientSyncPathUser1'], ''),
-        )
-
-        if radioObjectName:
-            test.compare(
-                str(squish.waitForObjectExists(radioObjectName).text), permissions
-            )
-            squish.clickButton(squish.waitForObject(radioObjectName))
-
-        if password:
-            squish.clickButton(squish.waitForObject(self.PASSWORD_CHECKBOX))
-            squish.mouseClick(
-                squish.waitForObject(self.PASSWORD_CHECKBOX),
-                0,
-                0,
-                squish.Qt.NoModifier,
-                squish.Qt.LeftButton,
-            )
-            squish.type(
-                squish.waitForObject(self.PASSWORD_CHECKBOX),
-                password,
-            )
-
-        squish.clickButton(squish.waitForObject(self.CREATE_SHARE_BUTTON))
-        squish.waitFor(
-            lambda: (
-                squish.waitForObject(names.linkShares_0_0_QModelIndex).displayText
-                == "Public link"
-            )
-        )
-
     def togglesPassword(self):
         squish.clickButton(squish.waitForObject(self.PASSWORD_CHECKBOX))
 
@@ -146,6 +108,64 @@ class PublicLinkDialog:
         test.compare(
             str(squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText),
             str(expDate.month) + "/" + str(expDate.day) + "/" + str(expYear),
+        )
+
+    def createPublicLink(
+        self, context, resource, password='', permissions='', publicLinkName=''
+    ):
+        radioObjectName = ''
+        if permissions:
+            radioObjectName = self.getRadioObjectForPermssion(permissions)
+
+        test.compare(
+            str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
+            resource.replace(context.userData['clientSyncPathUser1'], ''),
+        )
+
+        if radioObjectName:
+            test.compare(
+                str(squish.waitForObjectExists(radioObjectName).text), permissions
+            )
+            squish.clickButton(squish.waitForObject(radioObjectName))
+
+        if password:
+            squish.clickButton(squish.waitForObject(self.PASSWORD_CHECKBOX))
+            squish.mouseClick(
+                squish.waitForObject(self.PASSWORD_CHECKBOX),
+                0,
+                0,
+                squish.Qt.NoModifier,
+                squish.Qt.LeftButton,
+            )
+            squish.type(
+                squish.waitForObject(self.PASSWORD_CHECKBOX),
+                password,
+            )
+
+        if publicLinkName:
+            squish.waitForObjectExists(self.PUBLIC_LINK_NAME)
+            squish.mouseClick(
+                squish.waitForObject(self.PUBLIC_LINK_NAME),
+                0,
+                0,
+                squish.Qt.NoModifier,
+                squish.Qt.LeftButton,
+            )
+            squish.type(
+                squish.waitForObject(self.PUBLIC_LINK_NAME),
+                publicLinkName,
+            )
+
+        for row in context.table:
+            if row[0] == 'expireDate':
+                setExpirationDate(self, context, publicLinkName, resource)
+
+        squish.clickButton(squish.waitForObject(self.CREATE_SHARE_BUTTON))
+        squish.waitFor(
+            lambda: (
+                squish.waitForObject(names.linkShares_0_0_QModelIndex).displayText
+                == "Public link"
+            )
         )
 
     def getRadioObjectForPermssion(self, permissions):

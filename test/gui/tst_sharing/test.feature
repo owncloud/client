@@ -152,6 +152,15 @@ Feature: Sharing
         Then the fields of the last public link share response of user "Alice" should include on the server
             | expireDate | 2038-07-21 |
 
+
+    Scenario: user shares a folder with expiration date using webUI
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        And user "Alice" has set up a client with default settings
+        When the user creates a new public for folder "%client_sync_path_user1%/simple-folder" with the following expiration date using the client-UI
+            | expireDate | 2038-07-21 |
+        Then the fields of the last public link share response of user "Alice" should include on the server
+            | expireDate | 2038-07-21 |
+
     @smokeTest
     Scenario: simple sharing of a folder by public link without password
         Given user "Alice" has created folder "simple-folder" on the server

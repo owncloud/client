@@ -563,12 +563,16 @@ def step(context, fileShareContext):
     )
 
 
-def createPublicLinkShare(context, resource, password='', permissions=''):
+def createPublicLinkShare(
+    context, resource, password='', permissions='', publicLinkName=''
+):
     resource = sanitizePath(substituteInLineCodes(context, resource))
     openSharingDialog(context, resource)
     publicLinkDialog = PublicLinkDialog()
     publicLinkDialog.openPublicLinkDialog()
-    publicLinkDialog.createPublicLink(context, resource, password, permissions)
+    publicLinkDialog.createPublicLink(
+        context, resource, password, permissions, publicLinkName
+    )
 
 
 @When(
@@ -603,6 +607,15 @@ def step(context, permissions, resource):
 )
 def step(context, permissions, resource, password):
     createPublicLinkShare(context, resource, password, permissions)
+
+
+@When(
+    'the user creates a new public for folder "|any|" with the following expiration date using the client-UI'
+)
+def step(context, resource):
+    createPublicLinkShare(context, resource)
+    publicLinkDialog = PublicLinkDialog()
+    publicLinkDialog.setExpirationDate(context, resource)
 
 
 def createPublicShareWithRole(context, resource, role):
