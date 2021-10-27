@@ -14,18 +14,14 @@ string(JSON APPLICATION_VENDOR GET "${JSON}" "desktop_application_vendor_text")
 string(JSON APPLICATION_REV_DOMAIN GET "${JSON}" "desktop_application_rev_domain_text")
 string(JSON OWNCLOUD_SIDEBAR_ICONS GET "${JSON}" "desktop_appshortname_sidebar_icon_image")
 
-set(APPLICATION_ICON_NAME "${APPLICATION_SHORTNAME}")
 string(JSON APPLICATION_ICON_FILENAME GET "${JSON}" "desktop_appshortname_icon_image")
-string(TOLOWER "${APPLICATION_SHORTNAME}"  LINUX_PACKAGE_SHORTNAME)
+string(TOLOWER "${APPLICATION_SHORTNAME}"  APPLICATION_ICON_NAME)
 
 # TODO?!
 set(APPLICATION_VIRTUALFILE_SUFFIX "owncloud" CACHE STRING "Virtual file suffix (not including the .)")
 set(MAC_INSTALLER_BACKGROUND_FILE "${CMAKE_SOURCE_DIR}/admin/osx/installer-background.png" CACHE STRING "The MacOSX installer background image")
 # option( WITH_CRASHREPORTER "Build crashreporter" OFF )
 # set( CRASHREPORTER_SUBMIT_URL "https://crash-reports.owncloud.com/submit" CACHE STRING "URL for crash reporter" )
-
-set(OWNCLOUD_SIDEBAR_ICONS "${OEM_THEME_DIR}/${OWNCLOUD_SIDEBAR_ICONS}")
-
 
 message(STATUS "Branding: ${APPLICATION_NAME}")
 
@@ -54,14 +50,6 @@ endif()
 string(REPLACE "&" "&amp;" APPLICATION_NAME_XML_ESCAPED "${APPLICATION_NAME}")
 string(REPLACE "<" "&lt;" APPLICATION_NAME_XML_ESCAPED "${APPLICATION_NAME_XML_ESCAPED}")
 string(REPLACE ">" "&gt;" APPLICATION_NAME_XML_ESCAPED "${APPLICATION_NAME_XML_ESCAPED}")
-
-if (NOT DEFINED LINUX_PACKAGE_SHORTNAME)
-    set(LINUX_PACKAGE_SHORTNAME "${APPLICATION_SHORTNAME}")
-endif()
-
-if (NOT DEFINED PACKAGE)
-    set(PACKAGE "${LINUX_PACKAGE_SHORTNAME}-client")
-endif()
 
 if(NOT CRASHREPORTER_EXECUTABLE)
     set(CRASHREPORTER_EXECUTABLE "${APPLICATION_EXECUTABLE}_crash_reporter")
