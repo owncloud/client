@@ -189,33 +189,14 @@ if(WITH_CRASHREPORTER)
     endif()
 endif()
 
+
 add_executable(owncloud main.cpp)
 set_target_properties(owncloud PROPERTIES
     OUTPUT_NAME "${APPLICATION_EXECUTABLE}"
     AUTOUIC ON
     AUTORCC ON
 )
-target_link_libraries(owncloud owncloudCore)
-
-
-find_package(Qt5LinguistTools)
-if(Qt5LinguistTools_FOUND)
-    # Handle Translations, pick all client_* files from trans directory.
-    file(GLOB client_translations ${CMAKE_SOURCE_DIR}/translations/client_*.ts)
-    qt5_add_translation(client_compiled_translations ${client_translations})
-    target_sources(owncloud PRIVATE ${client_compiled_translations})
-    add_resources_to_target(
-        TARGET owncloud
-        PREFIX translations
-        FILES "${client_compiled_translations}"
-    )
-endif()
-
-#TODO Move resources files
-target_sources(owncloud PRIVATE
-    ${PROJECT_SOURCE_DIR}/client.qrc)
-
-generate_theme(owncloud)
+target_link_libraries(owncloud owncloudCore owncloudResources)
 
 get_filename_component(appIconExtension "${APPLICATION_ICON_FILENAME}" EXT)
 configure_file("${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}" "${CMAKE_BINARY_DIR}/1024-app-icon${appIconExtension}" COPYONLY)

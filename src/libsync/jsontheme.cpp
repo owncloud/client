@@ -10,7 +10,6 @@
 OCC::JsonTheme::JsonTheme()
 {
     QFile file(themePath() + QStringLiteral("/config_with_defaults.json"));
-    qDebug() << file.fileName();
     OC_ENFORCE_X(file.open(QFile::ReadOnly), qUtf8Printable(file.errorString()));
     QJsonParseError error;
     const auto doc = QJsonDocument::fromJson(file.readAll(), &error);

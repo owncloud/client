@@ -7,7 +7,7 @@ if(NOT BUILD_LIBRARIES_ONLY)
     set_target_properties(cmd PROPERTIES OUTPUT_NAME "${APPLICATION_EXECUTABLE}cmd")
     ecm_mark_nongui_executable(cmd)
 
-    target_link_libraries(cmd csync libsync Qt5::Core Qt5::Network)
+    target_link_libraries(cmd csync libsync owncloudResources Qt5::Core Qt5::Network)
 
     # Need tokenizer for netrc parser
     target_include_directories(cmd PRIVATE ${CMAKE_SOURCE_DIR}/src/3rdparty/qtokenizer)

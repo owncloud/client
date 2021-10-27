@@ -39,6 +39,7 @@ endif()
 
 add_subdirectory(csync)
 add_subdirectory(libsync)
+add_subdirectory(resources)
 if (NOT BUILD_LIBRARIES_ONLY)
     if (BUILD_GUI)
         add_subdirectory(gui)
