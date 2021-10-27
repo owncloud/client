@@ -121,7 +121,7 @@ function(add_resources_to_target)
         endif()
     endforeach()
 
-    set(qrc_path ${CMAKE_CURRENT_BINARY_DIR}/${ADD_RESOURCES_TO_TARGET_TARGET}-${ADD_RESOURCES_TO_TARGET_PREFIX}.qrc)
+    set(qrc_path ${CMAKE_CURRENT_BINARY_DIR}/${ADD_RESOURCES_TO_TARGET_TARGET}_${ADD_RESOURCES_TO_TARGET_PREFIX}.qrc)
     generate_qrc_file(
         QRC_PATH ${qrc_path}
         PREFIX ${ADD_RESOURCES_TO_TARGET_PREFIX}

@@ -33,11 +33,13 @@
 #else
 # include "creds/httpcredentials.h"
 #endif
-#include "simplesslerrorhandler.h"
-#include "syncengine.h"
 #include "common/syncjournaldb.h"
 #include "config.h"
 #include "csync_exclude.h"
+#include "resources/resourceloader.h"
+#include "simplesslerrorhandler.h"
+#include "syncengine.h"
+
 
 #include "theme.h"
 #include "netrcparser.h"
@@ -428,6 +430,7 @@ CmdOptions parseOptions(const QStringList &app_args)
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    OCC::Resources::init();
 
 #ifdef Q_OS_WIN
     // Ensure OpenSSL config file is only loaded from app directory

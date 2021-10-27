@@ -5,7 +5,7 @@ target_link_libraries(syncenginetestutils PUBLIC owncloudCore Qt5::Test)
 # therefore we compile it in the tests
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0")
     add_library(testutilsloader OBJECT testutilsloader.cpp)
-    target_link_libraries(testutilsloader PUBLIC owncloudCore)
+    target_link_libraries(testutilsloader PUBLIC owncloudCore owncloudResources)
 else()
     add_library(testutilsloader INTERFACE)
     target_sources(testutilsloader INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/testutilsloader.cpp)

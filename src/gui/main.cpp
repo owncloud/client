@@ -22,9 +22,10 @@
 #endif
 
 #include "application.h"
-#include "theme.h"
-#include "common/utility.h"
 #include "cocoainitializer.h"
+#include "common/utility.h"
+#include "resourceloader.h"
+#include "theme.h"
 
 #include "updater/updater.h"
 
@@ -45,8 +46,6 @@ void warnSystray()
 
 int main(int argc, char **argv)
 {
-    Q_INIT_RESOURCE(client);
-
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
 #ifdef Q_OS_WIN
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
@@ -56,6 +55,7 @@ int main(int argc, char **argv)
     Mac::CocoaInitializer cocoaInit; // RIIA
 #endif
     OCC::Application app(argc, argv);
+    OCC::Resources::init();
 
 #ifdef Q_OS_WIN
     // The Windows style still has pixelated elements with Qt 5.6,
