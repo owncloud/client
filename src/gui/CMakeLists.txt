@@ -200,14 +200,14 @@ target_link_libraries(owncloud owncloudCore owncloudResources)
 
 get_filename_component(appIconExtension "${APPLICATION_ICON_FILENAME}" EXT)
 configure_file("${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}" "${CMAKE_BINARY_DIR}/1024-app-icon${appIconExtension}" COPYONLY)
-list(APPEND OWNCLOUD_ICONS "${CMAKE_BINARY_DIR}/1024-app-icon${appIconExtension}")
+get_filename_component(appSidebarIconExtension "${OWNCLOUD_SIDEBAR_ICONS}" EXT)
+configure_file("${OEM_THEME_DIR}/${OWNCLOUD_SIDEBAR_ICONS}" "${CMAKE_BINARY_DIR}/64-app-icon-sidebar${appSidebarIconExtension}" COPYONLY)
 
+ecm_add_app_icon(appIcons
+    ICONS "${CMAKE_BINARY_DIR}/1024-app-icon${appIconExtension}"
+    SIDEBAR_ICONS "${CMAKE_BINARY_DIR}/64-app-icon-sidebar${appSidebarIconExtension}"
+    OUTFILE_BASENAME "${APPLICATION_ICON_NAME}")
 
-install(FILES "${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}"
-        RENAME "${APPLICATION_ICON_NAME}.${appIconExtension}"
-        DESTINATION "${DATA_INSTALL_DIR}/icons/hicolor/1024x1024/apps/"
-)
-ecm_add_app_icon(appIcons ICONS "${OWNCLOUD_ICONS}" SIDEBAR_ICONS "${OWNCLOUD_SIDEBAR_ICONS}" OUTFILE_BASENAME "${APPLICATION_ICON_NAME}")
 target_sources(owncloud PRIVATE ${appIcons})
 
 if(NOT APPLE)
@@ -221,15 +221,11 @@ if(NOT APPLE)
             target_sources(owncloud PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/manifest-mingw.rc)
         endif()
     else()
-        file(GLOB _icons "${OEM_THEME_DIR}/theme/colored/*-${APPLICATION_ICON_NAME}-icon.png")
-        foreach(_file ${_icons})
-            string(REPLACE "${OEM_THEME_DIR}/theme/colored/" "" _res ${_file})
-            string(REPLACE "-${APPLICATION_ICON_NAME}-icon.png" "" _res ${_res})
-            install(FILES ${_file} RENAME ${APPLICATION_ICON_NAME}.png DESTINATION ${DATA_INSTALL_DIR}/icons/hicolor/${_res}x${_res}/apps)
-        endforeach(_file)
+        install(FILES "${OEM_THEME_DIR}/${APPLICATION_ICON_FILENAME}"
+                RENAME "${APPLICATION_ICON_NAME}${appIconExtension}"
+                DESTINATION "${DATA_INSTALL_DIR}/icons/hicolor/1024x1024/apps/"
+        )
     endif()
-
-    # we may not add MACOSX_BUNDLE here, if not building one
 else()
     target_sources(owncloud PRIVATE ${OWNCLOUD_BUNDLED_RESOURCES})
 
