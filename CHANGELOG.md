@@ -9,6 +9,7 @@ Summary
 -------
 
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
+* Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
 
 Details
 -------
@@ -19,6 +20,13 @@ Details
 
    https://github.com/owncloud/client/issues/9159
    https://github.com/owncloud/enterprise/issues/4820
+
+* Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
+
+   We implemented a branding parameter to disable the display of icons in the file explorer
+   context menu, this only affects Windows and Linux.
+
+   https://github.com/owncloud/client/issues/9167
 
 Changelog for ownCloud Desktop Client [2.9.1] (2021-10-13)
 =======================================
