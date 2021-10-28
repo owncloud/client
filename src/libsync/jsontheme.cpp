@@ -107,7 +107,7 @@ QString OCC::JsonTheme::customUserID() const
 QJsonValue OCC::JsonTheme::get(const QLatin1String &key) const
 {
     const auto data = _data.value(key);
-    Q_ASSERT_X(!data.isUndefined(), Q_FUNC_INFO, qUtf8Printable(QStringLiteral("Key %1 not found").arg(key)));
+    Q_ASSERT_X(!data.isUndefined(), Q_FUNC_INFO, qUtf8Printable(QStringLiteral("Key '%1' not found").arg(key)));
     return data;
 }
 
@@ -153,8 +153,7 @@ QString OCC::JsonTheme::webDavPath() const
 
 qint64 OCC::JsonTheme::newBigFolderSizeLimit() const
 {
-    // TODO: does that work?
-    return get(QLatin1String("desktop_sync_folder_limit_text")).toVariant().value<quint64>();
+    return get(QLatin1String("desktop_sync_folder_limit_text")).toVariant().value<qint64>();
 }
 
 bool OCC::JsonTheme::wizardHideExternalStorageConfirmationCheckbox() const
