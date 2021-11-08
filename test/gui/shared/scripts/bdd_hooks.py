@@ -25,6 +25,8 @@ import builtins
 def hook(context):
     from configparser import ConfigParser
 
+    # debugging
+
     CONFIG_ENV_MAP = {
         'localBackendUrl': 'BACKEND_HOST',
         'secureLocalBackendUrl': 'SECURE_BACKEND_HOST',
