@@ -37,7 +37,7 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
        * [ ] manually deploy a linux download repo, or use a download repo from https://download.owncloud.com/desktop/ownCloud/testing/
        * [ ] in defs.sh edit `repo=` and update `platform_docker_images=`
        * [ ] RUN.sh -> paste the log/test_YYYYMMDD_hhmm.log file into the client release ticket.
-       * [X] DONE: "xvfb-run" and AppImage install are added (05-xvfb-run.sh, 08-appimage.sh)
+       * [ ] TO DO: extend 08-appimage.sh ("xvfb-run")
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
 * [ ] QA: Create testplan according to release type (patch release: add tests in a comment, for minor release: create a separate ticket), for testplan templates see https://confluence.owncloud.com/display/OG/Desktop+Client+Release+Process and link here
 * [ ] QA: Add changelog testing as a comment (to above testplan ticket or here), changeLog issues see https://github.com/owncloud/client/releases/ and link here
