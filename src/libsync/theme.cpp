@@ -110,11 +110,6 @@ QString Theme::statusHeaderText(SyncResult::Status status) const
     return resultStr;
 }
 
-QString Theme::version() const
-{
-    return QStringLiteral(MIRALL_VERSION_STRING);
-}
-
 QString Theme::configFileName() const
 {
     return QStringLiteral(APPLICATION_EXECUTABLE ".cfg");
@@ -419,21 +414,7 @@ QString Theme::about() const
     // Ideally, the vendor should be "ownCloud GmbH", but it cannot be changed without
     // changing the location of the settings and other registery keys.
     const QString vendor = isVanilla() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
-    return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
-              "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
-              "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
-              " Jan-Christoph Borchardt, Thomas Müller, Dominik Schmidt, Michael Stingl, Hannah von Reth, and others.</small></p>"
-              "<p>Copyright ownCloud GmbH</p>"
-              "<p>Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.<br/>"
-              "%5 and the %5 logo are registered trademarks of %4 in the "
-              "United States, other countries, or both.</p>"
-              "<p><small>%6</small></p>")
-        .arg(Utility::escape(Version::displayString()),
-            Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
-            Utility::escape(QStringLiteral(APPLICATION_DOMAIN)),
-            Utility::escape(vendor),
-            Utility::escape(appNameGUI()),
-            aboutVersions(Theme::VersionFormat::RichText));
+    return QStringLiteral("fixme");
 }
 
 bool Theme::aboutShowCopyright() const
