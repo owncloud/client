@@ -183,16 +183,7 @@ QString OCC::JsonTheme::openIdConnectScopes() const
 
 QString OCC::JsonTheme::about() const
 {
-    // TODO: Get rid of code?
-    QString devString = tr("<p>Version %1. For more information visit <a href=\"https://%2\">https://%2</a></p>").arg(Utility::escape(QStringLiteral(MIRALL_VERSION_STRING)), Utility::escape(QStringLiteral(APPLICATION_DOMAIN)));
-
-    if (!get(QLatin1String("desktop_about_text_check")).toBool()) {
-        devString += tr("<p>Copyright ownCloud GmbH</p>");
-        devString += tr("<p>Distributed by %1 and licensed under the GNU General Public License (GPL) Version 2.0.<br/>")
-                         .arg(Utility::escape(QStringLiteral(APPLICATION_VENDOR)));
-        devString += gitSHA1();
-    }
-    return devString;
+    return QStringLiteral("FIXME");
 }
 
 bool OCC::JsonTheme::aboutShowCopyright() const

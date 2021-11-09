@@ -1,7 +1,7 @@
 #pragma once
 
+#include "common/version.h"
 #include "theme.h"
-#include "version.h"
 
 #include <QApplication>
 #include <QDebug>
