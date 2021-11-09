@@ -63,7 +63,7 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
 * [ ] Final [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    * [ ] Website links for final release (needed for the following posts)
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
-   * [ ] QA: Inform on ``#updates`` channel,
+   * [ ] QA: Inform on ``#updates`` channel, so that marketing knows about the new release
    * [ ] DEV: Inform on ``#marketing`` channel about the release 
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
 
