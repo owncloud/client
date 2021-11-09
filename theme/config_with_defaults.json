@@ -5,7 +5,7 @@
     "desktop_webdav_url_text": "remote.php/webdav/",
     "desktop_sync_folder_target_text": "/",
     "desktop_settings_multiaccount_check": false,
-    "desktop_msi_upgrade_code_text": "",
+    "desktop_msi_upgrade_code_text": "EB15081D-1892-4DB5-872C-9424BFFFF22F",
     "desktop_application_short_name_text": "ownCloud",
     "desktop_settings_server_user_check": false,
     "desktop_change_url_auth_select": "fromconfig",
