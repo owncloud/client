@@ -31,6 +31,7 @@ void AbstractCredentialsWizardPage::cleanupPage()
     if (creds && !qobject_cast<DummyCredentials *>(creds)) {
         account->setCredentials(new DummyCredentials);
     }
+    owncloudWizard()->setAuthType(DetermineAuthTypeJob::AuthType::Unknown);
 }
 
 OwncloudWizard *AbstractWizardPage::owncloudWizard() const

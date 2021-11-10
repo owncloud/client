@@ -21,11 +21,12 @@
 #include "application.h"
 #include "settingsdialog.h"
 
-#include "wizard/owncloudwizard.h"
-#include "wizard/owncloudsetuppage.h"
+#include "wizard/owncloudadvancedsetuppage.h"
 #include "wizard/owncloudhttpcredspage.h"
 #include "wizard/owncloudoauthcredspage.h"
-#include "wizard/owncloudadvancedsetuppage.h"
+#include "wizard/owncloudsetuppage.h"
+#include "wizard/owncloudusernamepage.h"
+#include "wizard/owncloudwizard.h"
 
 #include "common/vfs.h"
 
@@ -60,16 +61,16 @@ OwncloudWizard::OwncloudWizard(QWidget *parent)
     , _remoteFolder(Theme::instance()->defaultServerFolder())
     , _localFolder(initLocalFolder())
     , _useVirtualFileSync(bestAvailableVfsMode() == Vfs::WindowsCfApi)
-    , _account(nullptr)
     , _setupPage(new OwncloudSetupPage(this))
+    , _usernamePage(new OwncloudUserNamePage(this))
     , _httpCredsPage(new OwncloudHttpCredsPage(this))
-    , _oauthCredsPage(new OwncloudOAuthCredsPage)
-    , _advancedSetupPage(new OwncloudAdvancedSetupPage)
-    , _credentialsPage(nullptr)
+    , _oauthCredsPage(new OwncloudOAuthCredsPage(this))
+    , _advancedSetupPage(new OwncloudAdvancedSetupPage(this))
 {
     setObjectName("owncloudWizard");
 
     setPage(WizardCommon::Page_ServerSetup, _setupPage);
+    setPage(WizardCommon::Page_Username, _usernamePage);
     setPage(WizardCommon::Page_HttpCreds, _httpCredsPage);
     setPage(WizardCommon::Page_OAuthCreds, _oauthCredsPage);
     setPage(WizardCommon::Page_AdvancedSetup, _advancedSetupPage);
@@ -81,7 +82,6 @@ OwncloudWizard::OwncloudWizard(QWidget *parent)
     setWizardStyle(QWizard::ModernStyle);
 
     connect(this, &QWizard::currentIdChanged, this, &OwncloudWizard::slotCurrentPageChanged);
-    connect(_setupPage, &OwncloudSetupPage::determineAuthType, this, &OwncloudWizard::determineAuthType);
     connect(_httpCredsPage, &OwncloudHttpCredsPage::connectToOCUrl, this, &OwncloudWizard::connectToOCUrl);
     connect(_oauthCredsPage, &OwncloudOAuthCredsPage::connectToOCUrl, this, &OwncloudWizard::connectToOCUrl);
 
@@ -183,6 +183,16 @@ void OwncloudWizard::successfulStep()
     }
 }
 
+const QString &OwncloudWizard::user() const
+{
+    return _user;
+}
+
+void OwncloudWizard::setUser(const QString &newUser)
+{
+    _user = newUser;
+}
+
 void OwncloudWizard::setUseVirtualFileSync(bool newUseVirtualFileSync)
 {
     _useVirtualFileSync = newUseVirtualFileSync;
@@ -206,12 +216,12 @@ DetermineAuthTypeJob::AuthType OwncloudWizard::authType() const
 void OwncloudWizard::setAuthType(DetermineAuthTypeJob::AuthType type)
 {
     _authType = type;
-    _setupPage->setAuthType();
     if (type == DetermineAuthTypeJob::AuthType::OAuth) {
         _credentialsPage = _oauthCredsPage;
     } else { // try Basic auth even for "Unknown"
         _credentialsPage = _httpCredsPage;
     }
+    Q_EMIT authTypeChanged(type);
     next();
 }
 
@@ -240,11 +250,6 @@ void OwncloudWizard::displayError(const QString &msg)
         _advancedSetupPage->setErrorString(msg);
         break;
     }
-}
-
-void OwncloudWizard::setOCUrl(const QString &url)
-{
-    _setupPage->setServerUrl(url);
 }
 
 AbstractCredentials *OwncloudWizard::getCredentials() const

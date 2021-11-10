@@ -27,34 +27,10 @@ namespace OCC {
 
 OwncloudHttpCredsPage::OwncloudHttpCredsPage(QWidget *parent)
     : AbstractCredentialsWizardPage()
-    , _ui()
-    , _connected(false)
     , _progressIndi(new QProgressIndicator(this))
 {
     _ui.setupUi(this);
 
-    if (parent) {
-        _ocWizard = qobject_cast<OwncloudWizard *>(parent);
-    }
-
-    registerField(QLatin1String("OCUser*"), _ui.leUsername);
-    registerField(QLatin1String("OCPasswd*"), _ui.lePassword);
-
-    Theme *theme = Theme::instance();
-    switch (theme->userIDType()) {
-    case Theme::UserIDUserName:
-        // default, handled in ui file
-        break;
-    case Theme::UserIDEmail:
-        _ui.usernameLabel->setText(tr("&Email"));
-        break;
-    case Theme::UserIDCustom:
-        _ui.usernameLabel->setText(theme->customUserID());
-        break;
-    default:
-        break;
-    }
-    _ui.leUsername->setPlaceholderText(theme->userIDHint());
 
     setTitle(WizardCommon::titleTemplate().arg(tr("Connect to %1").arg(Theme::instance()->appNameGUI())));
     setSubTitle(WizardCommon::subTitleTemplate().arg(tr("Enter user credentials")));
@@ -67,48 +43,25 @@ void OwncloudHttpCredsPage::initializePage()
 {
     WizardCommon::initErrorLabel(_ui.errorLabel);
 
-    OwncloudWizard *ocWizard = qobject_cast<OwncloudWizard *>(wizard());
-    AbstractCredentials *cred = ocWizard->account()->credentials();
-    HttpCredentials *httpCreds = qobject_cast<HttpCredentials *>(cred);
-    if (httpCreds) {
-        const QString user = httpCreds->fetchUser();
-        if (!user.isEmpty()) {
-            _ui.leUsername->setText(user);
-        }
-    } else {
-        QUrl url = ocWizard->account()->url();
+    Theme *theme = Theme::instance();
+    _ui.usernameLabel->setText(theme->enumToDisplayName(theme->userIDType()));
+    _ui.leUsername->setPlaceholderText(theme->userIDHint());
 
-        // If the final url does not have a username, check the
-        // user specified url too. Sometimes redirects can lose
-        // the user:pw information.
-        if (url.userName().isEmpty()) {
-            url = ocWizard->ocUrl();
-        }
+    _ui.leUsername->setText(owncloudWizard()->account()->davUser());
 
-        const QString user = url.userName();
-        const QString password = url.password();
-
-        if (!user.isEmpty()) {
-            _ui.leUsername->setText(user);
-        }
-        if (!password.isEmpty()) {
-            _ui.lePassword->setText(password);
-        }
-    }
-    _ui.tokenLabel->setText(HttpCredentialsGui::requestAppPasswordText(ocWizard->account().data()));
+    _ui.tokenLabel->setText(HttpCredentialsGui::requestAppPasswordText(owncloudWizard()->account().data()));
     _ui.tokenLabel->setVisible(!_ui.tokenLabel->text().isEmpty());
     _ui.leUsername->setFocus();
 }
 
 void OwncloudHttpCredsPage::cleanupPage()
 {
-    _ui.leUsername->clear();
     _ui.lePassword->clear();
 }
 
 bool OwncloudHttpCredsPage::validatePage()
 {
-    if (_ui.leUsername->text().isEmpty() || _ui.lePassword->text().isEmpty()) {
+    if (_ui.lePassword->text().isEmpty()) {
         return false;
     }
 
@@ -117,8 +70,7 @@ bool OwncloudHttpCredsPage::validatePage()
         startSpinner();
 
         // Reset cookies to ensure the username / password is actually used
-        OwncloudWizard *ocWizard = qobject_cast<OwncloudWizard *>(wizard());
-        ocWizard->account()->clearCookieJar();
+        owncloudWizard()->account()->clearCookieJar();
 
         emit completeChanged();
         emit connectToOCUrl(field("OCUrl").toString().simplified());

@@ -28,10 +28,13 @@
 
 namespace OCC {
 
-OwncloudOAuthCredsPage::OwncloudOAuthCredsPage()
-    : AbstractCredentialsWizardPage()
+OwncloudOAuthCredsPage::OwncloudOAuthCredsPage(QWidget *parent)
+    : AbstractCredentialsWizardPage(parent)
 {
     _ui.setupUi(this);
+
+    // don't allow to go back
+    setCommitPage(true);
 
     _ui.topLabel->hide();
     _ui.bottomLabel->hide();
@@ -41,13 +44,13 @@ OwncloudOAuthCredsPage::OwncloudOAuthCredsPage()
     setTitle(WizardCommon::titleTemplate().arg(tr("Connect to %1").arg(Theme::instance()->appNameGUI())));
     setSubTitle(WizardCommon::subTitleTemplate().arg(tr("Login in your browser")));
 
-    connect(_ui.openLinkButton, &QCommandLinkButton::clicked, [this] {
+    connect(_ui.openLinkButton, &QCommandLinkButton::clicked, this, [this] {
         _ui.errorLabel->hide();
         if (_asyncAuth)
             _asyncAuth->openBrowser();
     });
     _ui.openLinkButton->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(_ui.openLinkButton, &QWidget::customContextMenuRequested, [this](const QPoint &pos) {
+    connect(_ui.openLinkButton, &QWidget::customContextMenuRequested, this, [this](const QPoint &pos) {
         auto menu = new QMenu(_ui.openLinkButton);
         menu->addAction(tr("Copy link to clipboard"), this, [this] {
             if (_asyncAuth) {

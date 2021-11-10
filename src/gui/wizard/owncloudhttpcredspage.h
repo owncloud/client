@@ -50,9 +50,8 @@ private:
     void startSpinner();
     void stopSpinner();
     Ui_OwncloudHttpCredsPage _ui;
-    bool _connected;
+    bool _connected = false;
     QProgressIndicator *_progressIndi;
-    OwncloudWizard *_ocWizard;
 };
 
 } // namespace OCC

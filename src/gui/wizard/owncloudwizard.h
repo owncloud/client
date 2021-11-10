@@ -31,6 +31,7 @@ Q_DECLARE_LOGGING_CATEGORY(lcWizard)
 
 class OwncloudSetupPage;
 class OwncloudHttpCredsPage;
+class OwncloudUserNamePage;
 class OwncloudOAuthCredsPage;
 class OwncloudAdvancedSetupPage;
 class AbstractCredentials;
@@ -48,7 +49,6 @@ public:
 
     void setAccount(AccountPtr account);
     AccountPtr account() const;
-    void setOCUrl(const QString &);
 
     QString ocUrl() const;
     QStringList selectiveSyncBlacklist() const;
@@ -77,12 +77,16 @@ public:
     void setUseVirtualFileSync(bool newUseVirtualFileSync);
     bool useVirtualFileSync() const;
 
+    const QString &user() const;
+    void setUser(const QString &newUser);
+
 public slots:
     void setAuthType(DetermineAuthTypeJob::AuthType type);
     void slotCurrentPageChanged(int);
     void successfulStep();
 
 signals:
+    void authTypeChanged(DetermineAuthTypeJob::AuthType type);
     void createLocalAndRemoteFolders();
     void clearPendingRequests();
     void determineAuthType(const QString &);
@@ -92,16 +96,18 @@ signals:
     void needCertificate();
 
 private:
+    QString _user;
     QString _remoteFolder;
     QString _localFolder;
     bool _useVirtualFileSync;
     AccountPtr _account;
     OwncloudSetupPage *_setupPage;
+    OwncloudUserNamePage *_usernamePage;
     OwncloudHttpCredsPage *_httpCredsPage;
     OwncloudOAuthCredsPage *_oauthCredsPage;
     OwncloudAdvancedSetupPage *_advancedSetupPage;
-    AbstractCredentialsWizardPage *_credentialsPage;
-    DetermineAuthTypeJob::AuthType _authType;
+    AbstractCredentialsWizardPage *_credentialsPage = nullptr;
+    DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
 
     friend class OwncloudSetupWizard;
 };

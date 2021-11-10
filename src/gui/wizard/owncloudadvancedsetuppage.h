@@ -34,7 +34,7 @@ class OwncloudAdvancedSetupPage : public AbstractWizardPage
 {
     Q_OBJECT
 public:
-    OwncloudAdvancedSetupPage();
+    OwncloudAdvancedSetupPage(QWidget *parent);
 
     bool isComplete() const override;
     void initializePage() override;
@@ -44,7 +44,6 @@ public:
     bool manualFolderConfig() const;
     bool isConfirmBigFolderChecked() const;
     void setRemoteFolder(const QString &remoteFolder);
-    void setMultipleFoldersExist(bool exist);
     void directoriesCreated();
 
 public slots:
@@ -62,9 +61,9 @@ private:
     void updateStatus();
 
     Ui_OwncloudAdvancedSetupPage _ui;
-    bool _checking;
-    bool _created;
-    bool _localFolderValid;
+    bool _checking = false;
+    bool _created = false;
+    bool _localFolderValid = false;
     QStringList _selectiveSyncBlacklist;
 };
 
