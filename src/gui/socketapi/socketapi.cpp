@@ -37,37 +37,30 @@
 #include "syncfileitem.h"
 #include "theme.h"
 
-#include <array>
-#include <QBitArray>
-#include <QUrl>
-#include <QMetaMethod>
-#include <QMetaObject>
-#include <QStringList>
-#include <QScopedPointer>
-#include <QFile>
-#include <QDir>
-#include <QApplication>
-#include <QLocalSocket>
-#include <QStringBuilder>
-#include <QMessageBox>
-#include <QFileDialog>
-
-
 #include <QAction>
+#include <QApplication>
+#include <QBitArray>
+#include <QBuffer>
+#include <QClipboard>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QWidget>
-#include <QBuffer>
-
-#include <QClipboard>
-
+#include <QLocalSocket>
+#include <QMessageBox>
+#include <QMetaMethod>
+#include <QMetaObject>
 #include <QProcess>
+#include <QScopedPointer>
 #include <QStandardPaths>
+#include <QStringBuilder>
+#include <QStringList>
+#include <QUrl>
+#include <QWidget>
 
-#ifdef Q_OS_MAC
-#include <CoreFoundation/CoreFoundation.h>
-#endif
+#include <array>
 
 
 // This is the version that is returned when the client asks for the VERSION.

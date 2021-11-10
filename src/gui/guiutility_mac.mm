@@ -19,6 +19,7 @@
 #include <QProcess>
 
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSFileManager.h>
 
 namespace OCC {
 
@@ -54,9 +55,12 @@ void Utility::startShellIntegration()
 QString Utility::socketApiSocketPath()
 {
     // This must match the code signing Team setting of the extension
-    // Example for developer builds (with ad-hoc signing identity): "" "com.owncloud.desktopclient" ".socketApi"
-    // Example for official signed packages: "9B5WD74GWJ." "com.owncloud.desktopclient" ".socketApi"
-    return QLatin1String(SOCKETAPI_TEAM_IDENTIFIER_PREFIX "." APPLICATION_REV_DOMAIN ".socketApi");
+    // Example for all builds: "9B5WD74GWJ" "." "com.owncloud.desktopclient"
+    NSString *appGroupId = @SOCKETAPI_TEAM_IDENTIFIER_PREFIX "." APPLICATION_REV_DOMAIN;
+
+    NSURL *container = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:appGroupId];
+    NSURL *socketPath = [container URLByAppendingPathComponent:@"GUI.socket" isDirectory:false];
+    return QString::fromNSString(socketPath.path);
 }
 
 } // namespace OCC

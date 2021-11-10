@@ -12,22 +12,16 @@
  * for more details.
  */
 
+#import <Foundation/Foundation.h>
 
-#import <Cocoa/Cocoa.h>
-#import <FinderSync/FinderSync.h>
-
-#import "FinderSyncExt-Swift.h"
-#import "SyncClient.h"
-
-@interface FinderSync : FIFinderSync <SyncClientDelegate> {
-    NSMutableSet *_registeredDirectories;
-    NSString *_shareMenuTitle;
-    NSMutableDictionary *_strings;
-    NSMutableArray *_menuItems;
-    NSCondition *_menuIsComplete;
-}
-
-@property LineProcessorV1 *v1LineProcessor;
-@property LocalSocketClient *localSocketClient;
-
+@protocol SyncClientDelegate <NSObject>
+- (void)setResultForPath:(NSString *)path result:(NSString *)result;
+- (void)reFetchFileNameCacheForPath:(NSString *)path;
+- (void)registerPath:(NSString *)path;
+- (void)unregisterPath:(NSString *)path;
+- (void)setString:(NSString *)key value:(NSString *)value;
+- (void)resetMenuItems;
+- (void)addMenuItem:(NSDictionary *)item;
+- (void)menuHasCompleted;
+- (void)connectionDidDie;
 @end
