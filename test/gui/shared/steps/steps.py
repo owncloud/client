@@ -826,6 +826,7 @@ def step(context, permissions, user, resource):
     permissionsList = permissions.split(',')
 
     shareItem = SharingDialog()
+    shareItem.verifyResource(resource)
     editChecked, shareChecked = shareItem.getAvailablePermission()
 
     if 'edit' in permissionsList:
