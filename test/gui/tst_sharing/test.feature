@@ -207,7 +207,8 @@ Feature: Sharing
         Given user "Alice" has created folder "simple-folder" on the server
         And user "Alice" has created file "simple-folder/lorem.txt" on the server
         And user "Alice" has set up a client with default settings
-        When the user creates a new public link for folder "simple-folder" with "Contributor" using the client-UI
+        When the user creates a new public link for folder "%client_sync_path_user1%/simple-folder" using the client-UI with these details:
+            | role | Contributor |
         Then user "Alice" on the server should have a share with these details:
             | field       | value          |
             | share_type  | public_link    |
