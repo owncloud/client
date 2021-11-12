@@ -9,6 +9,7 @@ Summary
 -------
 
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
+* Bugfix - The client no longer idles after a minor url change: [#9202](https://github.com/owncloud/client/pull/9202)
 * Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
 
 Details
@@ -20,6 +21,15 @@ Details
 
    https://github.com/owncloud/client/issues/9159
    https://github.com/owncloud/enterprise/issues/4820
+
+* Bugfix - The client no longer idles after a minor url change: [#9202](https://github.com/owncloud/client/pull/9202)
+
+   When the client detects a change of the url we ask the user to accept the change or if it was only
+   representational change (demo.com vs demo.com/) we directly accept the change. Due to a bug
+   the we aborted the sync only after we updated the url. This caused the client to idle for one
+   minute.
+
+   https://github.com/owncloud/client/pull/9202
 
 * Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
 
