@@ -56,7 +56,7 @@ QString Utility::socketApiSocketPath()
     // This must match the code signing Team setting of the extension
     // Example for developer builds (with ad-hoc signing identity): "" "com.owncloud.desktopclient" ".socketApi"
     // Example for official signed packages: "9B5WD74GWJ." "com.owncloud.desktopclient" ".socketApi"
-    return QLatin1String(SOCKETAPI_TEAM_IDENTIFIER_PREFIX APPLICATION_REV_DOMAIN ".socketApi");
+    return QLatin1String(SOCKETAPI_TEAM_IDENTIFIER_PREFIX "." APPLICATION_REV_DOMAIN ".socketApi");
 }
 
 } // namespace OCC
