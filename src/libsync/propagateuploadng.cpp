@@ -222,14 +222,12 @@ void PropagateUploadFileNG::slotPropfindFinished()
 void PropagateUploadFileNG::slotPropfindFinishedWithError()
 {
     auto job = qobject_cast<LsColJob *>(sender());
-    auto httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    _item->_httpErrorCode = httpErrorCode;
+    auto httpErrorCode = _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     _item->_responseTimeStamp = job->responseTimestamp();
     _item->_requestId = job->requestId();
     slotJobDestroyed(job); // remove it from the _jobs list
 
     QNetworkReply::NetworkError err = job->reply()->error();
-    job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     auto status = classifyError(err, httpErrorCode, &propagator()->_anotherSyncNeeded);
     if (status == SyncFileItem::FatalError) {
         propagator()->_activeJobList.removeOne(this);
