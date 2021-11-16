@@ -275,6 +275,10 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     setMinimumSize(::minimumSizeHint(this));
 #ifdef Q_OS_MAC
     setActivationPolicy(ActivationPolicy::Accessory);
+#elif defined(Q_OS_WIN) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // ensure we create a native window in order to receive nativeEvents
+    // by default this is only called on show
+    create();
 #endif
 }
 
@@ -328,7 +332,7 @@ void SettingsDialog::setVisible(bool visible)
 
 #if defined(Q_OS_WIN) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 
-bool SettingsDialog::nativeEvent(const QByteArray &eventType, void *message, long *result)
+bool SettingsDialog::nativeEvent(const QByteArray &, void *message, long *)
 {
     auto msg = reinterpret_cast<MSG *>(message);
     // https://github.com/owncloud/client/issues/8979
