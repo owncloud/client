@@ -8,12 +8,22 @@ ownCloud admins and users.
 Summary
 -------
 
+* Bugfix - Properly handle Windows log off: [#8979](https://github.com/owncloud/client/issues/8979)
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
 * Bugfix - The client no longer idles after a minor url change: [#9202](https://github.com/owncloud/client/pull/9202)
 * Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
+* Enhancement - Branding option to disable warning for multiple sync_journal.db's: [#9216](https://github.com/owncloud/client/pull/9216)
 
 Details
 -------
+
+* Bugfix - Properly handle Windows log off: [#8979](https://github.com/owncloud/client/issues/8979)
+
+   We now ensure that we receive the window messages dispatched by the system.
+
+   https://github.com/owncloud/client/issues/8979
+   https://github.com/owncloud/client/pull/9142
+   https://github.com/owncloud/client/pull/9220
 
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
 
@@ -37,6 +47,15 @@ Details
    context menu, this only affects Windows and Linux.
 
    https://github.com/owncloud/client/issues/9167
+
+* Enhancement - Branding option to disable warning for multiple sync_journal.db's: [#9216](https://github.com/owncloud/client/pull/9216)
+
+   We added a branding option that disables the `Multiple accounts are sharing the folder`
+   warning. In previous client versions a bug caused the creation of new sync journals, causing
+   false positives in the detection. While this can be handled by the individual user, companies
+   with multiple hundreds of users may opt to disable the warning.
+
+   https://github.com/owncloud/client/pull/9216
 
 Changelog for ownCloud Desktop Client [2.9.1] (2021-10-13)
 =======================================
