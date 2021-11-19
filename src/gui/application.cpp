@@ -130,11 +130,14 @@ void migrateConfigFile(const QCoreApplication *app)
                         for (const auto &fileInfo : filesList) {
                             if (!QFile::rename(fileInfo.canonicalFilePath(), confDir + "/" + fileInfo.fileName())) {
                                 qCWarning(lcApplication) << logPrefix << "Fallback move of " << fileInfo.fileName() << "also failed";
+                            } else {
+                                // fallback migration worked!
+                                success = true;
                             }
                         }
                     }
                 } else {
-                    // migration worked!
+                    // regular migration worked!
                     success = true;
 
 #ifndef Q_OS_WIN
