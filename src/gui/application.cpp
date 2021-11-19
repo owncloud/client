@@ -72,6 +72,8 @@ void migrateConfigFile(const QCoreApplication *app)
 {
     using namespace OCC;
 
+    static const auto logPrefix = QStringLiteral("Settings migration: ");
+
     if (!ConfigFile::exists()) {
         // check whether an old config location must be migrated
         // we support multiple locations from old versions
@@ -110,20 +112,24 @@ void migrateConfigFile(const QCoreApplication *app)
 
             if (QFileInfo(oldDir).isDir()) {
                 auto confDir = ConfigFile::configPath();
-                if (confDir.endsWith('/'))
-                    confDir.chop(1); // macOS 10.11.x does not like trailing slash for rename/move.
-                qCInfo(lcApplication) << "Migrating old config from" << oldDir << "to" << confDir;
+
+                if (confDir.endsWith('/')) {
+                    // macOS 10.11.x does not like trailing slash for rename/move.
+                    confDir.chop(1);
+                }
+
+                qCInfo(lcApplication) << logPrefix << "Migrating old config from" << oldDir << "to" << confDir;
 
                 if (!QFile::rename(oldDir, confDir)) {
-                    qCWarning(lcApplication) << "Failed to move the old config directory to its new location (" << oldDir << "to" << confDir << ")";
+                    qCWarning(lcApplication) << logPrefix << "Failed to move the old config directory to its new location (" << oldDir << "to" << confDir << ")";
 
                     // Try to move the files one by one
                     if (QFileInfo(confDir).isDir() || QDir().mkpath(confDir)) {
                         const auto filesList = QDir(oldDir).entryInfoList(QDir::Files);
-                        qCInfo(lcApplication) << "Will move the individual files" << filesList;
+                        qCInfo(lcApplication) << logPrefix << "Will move the individual files" << filesList;
                         for (const auto &fileInfo : filesList) {
                             if (!QFile::rename(fileInfo.canonicalFilePath(), confDir + "/" + fileInfo.fileName())) {
-                                qCWarning(lcApplication) << "Fallback move of " << fileInfo.fileName() << "also failed";
+                                qCWarning(lcApplication) << logPrefix << "Fallback move of " << fileInfo.fileName() << "also failed";
                             }
                         }
                     }
