@@ -11,6 +11,7 @@ Summary
 * Bugfix - Properly handle Windows log off: [#8979](https://github.com/owncloud/client/issues/8979)
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
 * Bugfix - The client no longer idles after a minor url change: [#9202](https://github.com/owncloud/client/pull/9202)
+* Bugfix - Config migration on systems with a 2.4 and a 2.8 config: [#9224](https://github.com/owncloud/client/issues/9224)
 * Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
 * Enhancement - Branding option to disable warning for multiple sync_journal.db's: [#9216](https://github.com/owncloud/client/pull/9216)
 
@@ -24,6 +25,7 @@ Details
    https://github.com/owncloud/client/issues/8979
    https://github.com/owncloud/client/pull/9142
    https://github.com/owncloud/client/pull/9220
+   https://github.com/owncloud/client/pull/9227
 
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
 
@@ -40,6 +42,14 @@ Details
    minute.
 
    https://github.com/owncloud/client/pull/9202
+
+* Bugfix - Config migration on systems with a 2.4 and a 2.8 config: [#9224](https://github.com/owncloud/client/issues/9224)
+
+   We fixed a bug where the client migrated the old settings from 2.4 to 2.9 instead of the 2.8
+   settings. Only branded clients where affected by the issue.
+
+   https://github.com/owncloud/client/issues/9224
+   https://github.com/owncloud/client/pull/9226
 
 * Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
 
