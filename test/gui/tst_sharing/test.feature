@@ -148,8 +148,9 @@ Feature: Sharing
         Then as user "Alice" the file "textfile0.txt" should have a public link on the server
         And the public should be able to download the file "textfile0.txt" with password "<password>" from the last created public link by "Alice" on the server
         Examples:
-            | password |
-            | p@$s!23  |
+            | password   |
+            |password1234|
+            | p@$s!23    |
 
 
     Scenario: sharing of a file by public link with password and changing the password
