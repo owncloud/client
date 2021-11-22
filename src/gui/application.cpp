@@ -78,9 +78,8 @@ void migrateConfigFile(const QCoreApplication *app)
         // the algorithm is the same for all these locations, thus we can use a loop
         // note that we try to migrate in descending order, i.e., we try to migrate from the last release, then from the release before, ...
         // this is done in order to avoid porting old configu
-        QStringList configLocationsToMigrate;
-
-        {
+        const auto configLocationsToMigrate = [&app] {
+            QStringList out;
             // note: this change is temporary to allow using QDesktopServices etc. to determine the paths
             // the application name was changed to
             auto scopeGuard = qScopeGuard([&app, oldApplicationName = app->applicationName()] {
@@ -88,10 +87,10 @@ void migrateConfigFile(const QCoreApplication *app)
                 app->setApplicationName(oldApplicationName);
             });
 
-            auto addLegacyLocation = [&configLocationsToMigrate](const QString &path) {
+            auto addLegacyLocation = [&out](const QString &path) {
                 if (QFileInfo(path).isDir()) {
                     // macOS 10.11.x does not like trailing slash for rename/move.
-                    configLocationsToMigrate.append(Utility::stripTrailingSlash(path));
+                    out.append(Utility::stripTrailingSlash(path));
                 }
             };
 
@@ -103,12 +102,12 @@ void migrateConfigFile(const QCoreApplication *app)
             // location used in versions <= 2.4
             // We need to use the deprecated QDesktopServices::storageLocation because of its Qt4 behavior of adding "data" to the path
             addLegacyLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-        }
-
+            return out;
+        }();
 
         // macOS 10.11.x does not like trailing slash for rename/move.
         const auto confDir = Utility::stripTrailingSlash(ConfigFile::configPath());
-        for (auto oldDir : configLocationsToMigrate) {
+        for (auto &oldDir : configLocationsToMigrate) {
             qCInfo(lcApplication) << Q_FUNC_INFO << "Migrating old config from" << oldDir << "to" << confDir;
 
             if (!QFile::rename(oldDir, confDir)) {
