@@ -57,14 +57,22 @@ namespace {
  * 1\Folders\4\version=2
  * 1\FoldersWithPlaceholders\3\version=3
  */
-auto versionC()
-{
-    return QStringLiteral("version");
-}
+const QLatin1String versionC("version");
 
-constexpr int WinVfsSettingsVersion = 4;
-constexpr int SettingsVersion = 2;
-}
+constexpr int SettingsVersion = 5;
+
+// Settings keys:
+const QLatin1String localPathC("localPath");
+const QLatin1String journalPathC("journalPath");
+const QLatin1String targetPathC("targetPath");
+const QLatin1String pausedC("paused");
+const QLatin1String ignoreHiddenFilesC("ignoreHiddenFiles");
+const QLatin1String virtualFilesModeC("virtualFilesMode");
+const QLatin1String navigationPaneClsidC("navigationPaneClsid");
+const QLatin1String uuidC("uuid");
+const QLatin1String isInNavigationPaneC("isInNavigationPane");
+const QLatin1String usePlaceholdersC("usePlaceholders");
+} // anonymous namespace
 
 namespace OCC {
 
@@ -1306,39 +1314,56 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction dir, std::functio
 
 void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
 {
-    settings.setValue(QLatin1String("localPath"), folder.localPath);
-    settings.setValue(QLatin1String("journalPath"), folder.journalPath);
-    settings.setValue(QLatin1String("targetPath"), folder.targetPath);
-    settings.setValue(QLatin1String("paused"), folder.paused);
-    settings.setValue(QLatin1String("ignoreHiddenFiles"), folder.ignoreHiddenFiles);
+    settings.setValue(localPathC, folder.localPath);
+    settings.setValue(journalPathC, folder.journalPath);
+    settings.setValue(targetPathC, folder.targetPath);
+    settings.setValue(pausedC, folder.paused);
+    settings.setValue(ignoreHiddenFilesC, folder.ignoreHiddenFiles);
+    settings.setValue(uuidC, folder.uuid);
+    settings.setValue(virtualFilesModeC, Vfs::modeToString(folder.virtualFilesMode));
 
-    settings.setValue(QStringLiteral("virtualFilesMode"), Vfs::modeToString(folder.virtualFilesMode));
+    Q_ASSERT(SettingsVersion <= maxSettingsVersion());
+    settings.setValue(versionC, SettingsVersion);
 
-    // Ensure new vfs modes won't be attempted by older clients
-    const int version = folder.virtualFilesMode == Vfs::WindowsCfApi ? WinVfsSettingsVersion : SettingsVersion;
-    Q_ASSERT(version <= maxSettingsVersion());
-    settings.setValue(versionC(), version);
+    if (settings.contains(navigationPaneClsidC)) {
+        // Migrate old navigationPaneClsid to new uuid
+        settings.remove(navigationPaneClsidC);
+    }
 
-    // Happens only on Windows when the explorer integration is enabled.
-    if (!folder.navigationPaneClsid.isNull())
-        settings.setValue(QLatin1String("navigationPaneClsid"), folder.navigationPaneClsid);
-    else
-        settings.remove(QLatin1String("navigationPaneClsid"));
+    if (folder.isInNavigationPane) {
+        settings.setValue(isInNavigationPaneC, true);
+    } else {
+        settings.remove(isInNavigationPaneC);
+    }
 }
 
-bool FolderDefinition::load(QSettings &settings, const QString &alias,
-    FolderDefinition *folder)
+bool FolderDefinition::load(const QSettings &settings, const QString &alias, FolderDefinition *folder)
 {
     folder->alias = FolderMan::unescapeAlias(alias);
-    folder->localPath = settings.value(QLatin1String("localPath")).toString();
-    folder->journalPath = settings.value(QLatin1String("journalPath")).toString();
-    folder->targetPath = settings.value(QLatin1String("targetPath")).toString();
-    folder->paused = settings.value(QLatin1String("paused")).toBool();
-    folder->ignoreHiddenFiles = settings.value(QLatin1String("ignoreHiddenFiles"), QVariant(true)).toBool();
-    folder->navigationPaneClsid = settings.value(QLatin1String("navigationPaneClsid")).toUuid();
+    folder->localPath = settings.value(localPathC).toString();
+    folder->journalPath = settings.value(journalPathC).toString();
+    folder->targetPath = settings.value(targetPathC).toString();
+    folder->paused = settings.value(pausedC).toBool();
+    folder->ignoreHiddenFiles = settings.value(ignoreHiddenFilesC, QVariant(true)).toBool();
+    folder->isInNavigationPane = settings.value(isInNavigationPaneC, QVariant(true)).toBool();
+
+    if (settings.contains(uuidC)) {
+        folder->uuid = settings.value(uuidC).toUuid();
+    } else if (settings.contains(navigationPaneClsidC)) {
+        // For backwards compatibility, will be changed when saved:
+        folder->uuid = settings.value(navigationPaneClsidC).toUuid();
+        if (!folder->isInNavigationPane) {
+            folder->isInNavigationPane = true;
+        }
+    }
+
+    // Sanity check:
+    if (folder->uuid.isNull()) {
+        folder->uuid = QUuid::createUuid();
+    }
 
     folder->virtualFilesMode = Vfs::Off;
-    QString vfsModeString = settings.value(QStringLiteral("virtualFilesMode")).toString();
+    QString vfsModeString = settings.value(virtualFilesModeC).toString();
     if (!vfsModeString.isEmpty()) {
         if (auto mode = Vfs::modeFromString(vfsModeString)) {
             folder->virtualFilesMode = *mode;
@@ -1346,7 +1371,7 @@ bool FolderDefinition::load(QSettings &settings, const QString &alias,
             qCWarning(lcFolder) << "Unknown virtualFilesMode:" << vfsModeString << "assuming 'off'";
         }
     } else {
-        if (settings.value(QLatin1String("usePlaceholders")).toBool()) {
+        if (settings.value(usePlaceholdersC).toBool()) {
             folder->virtualFilesMode = Vfs::WithSuffix;
             folder->upgradeVfsMode = true; // maybe winvfs is available?
         }

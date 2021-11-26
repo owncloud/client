@@ -71,8 +71,12 @@ public:
     bool ignoreHiddenFiles;
     /// Which virtual files setting the folder uses
     Vfs::Mode virtualFilesMode = Vfs::Off;
-    /// The CLSID where this folder appears in registry for the Explorer navigation pane entry.
-    QUuid navigationPaneClsid;
+
+    /// The (always valid) UUID for the folder. This can be overwritten when read from the settings.
+    QUuid uuid = QUuid::createUuid();
+
+    /// Is shown in Windows Explorer navigation pane
+    bool isInNavigationPane = false;
 
     /// Whether the vfs mode shall silently be updated if possible
     bool upgradeVfsMode = false;
@@ -81,7 +85,7 @@ public:
     static void save(QSettings &settings, const FolderDefinition &folder);
 
     /// Reads a folder definition from the current settings group.
-    static bool load(QSettings &settings, const QString &alias,
+    static bool load(const QSettings &settings, const QString &alias,
         FolderDefinition *folder);
 
     /** The highest version in the settings that load() can read
@@ -91,8 +95,9 @@ public:
      *            (version remains readable by 2.5.1)
      * Version 3: introduction of new windows vfs mode in 2.6.0
      * Version 4: until 2.9.1 windows vfs tried to unregister folders with a different id from windows.
+     * Version 5: renamed navigationPaneClsid to uuid in the settings for FolderDefinition
      */
-    static int maxSettingsVersion() { return 4; }
+    static int maxSettingsVersion() { return 5; }
 
     /// Ensure / as separator and trailing /.
     static QString prepareLocalPath(const QString &path);
@@ -163,8 +168,24 @@ public:
      */
     QString remotePathTrailingSlash() const;
 
-    void setNavigationPaneClsid(const QUuid &clsid) { _definition.navigationPaneClsid = clsid; }
-    QUuid navigationPaneClsid() const { return _definition.navigationPaneClsid; }
+    /**
+     * UUID for the folder
+     */
+    QUuid uuid() const { return _definition.uuid; }
+
+    /**
+     * Currently only used on Windows.
+     *
+     * @return true is the folder is shown in the Windows Explorer navigation pane, false otherwise
+     */
+    bool isInNavigationPane() const { return _definition.isInNavigationPane; }
+
+    /**
+     * Currently only used on Windows.
+     *
+     * @param yesno true is the folder shold be shown in the Windows Explorer navigation pane, false otherwise
+     */
+    void setIsInNavigationPane(bool yesno) { _definition.isInNavigationPane = yesno; }
 
     /**
      * remote folder path with server url

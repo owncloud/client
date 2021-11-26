@@ -458,7 +458,7 @@ void AccountSettings::slotFolderWizardAccepted()
 
 #ifdef Q_OS_WIN
     if (folderMan->navigationPaneHelper().showInExplorerNavigationPane())
-        definition.navigationPaneClsid = QUuid::createUuid();
+        definition.isInNavigationPane = true;
 #endif
 
     auto selectiveSyncBlackList = folderWizard->property("selectiveSyncBlackList").toStringList();
