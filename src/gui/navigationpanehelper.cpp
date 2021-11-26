@@ -36,14 +36,16 @@ NavigationPaneHelper::NavigationPaneHelper(FolderMan *folderMan)
 
 void NavigationPaneHelper::setShowInExplorerNavigationPane(bool show)
 {
-    if (_showInExplorerNavigationPane == show)
+    if (_showInExplorerNavigationPane == show) {
         return;
+    }
 
     _showInExplorerNavigationPane = show;
-    // Re-generate a new CLSID when enabling, possibly throwing away the old one.
-    // updateCloudStorageRegistry will take care of removing any unknown CLSID our application owns from the registry.
-    for (auto *folder : _folderMan->map())
-        folder->setNavigationPaneClsid(show ? QUuid::createUuid() : QUuid());
+    // When we remove it from the side-bar, updateCloudStorageRegistry will take care of removing any
+    // unknown CLSID our application owns from the registry.
+    for (auto *folder : _folderMan->map()) {
+        folder->setIsInNavigationPane(show);
+    }
 
     scheduleUpdateCloudStorageRegistry();
 }
@@ -51,8 +53,9 @@ void NavigationPaneHelper::setShowInExplorerNavigationPane(bool show)
 void NavigationPaneHelper::scheduleUpdateCloudStorageRegistry()
 {
     // Schedule the update to happen a bit later to avoid doing the update multiple times in a row.
-    if (!_updateCloudStorageRegistryTimer.isActive())
+    if (!_updateCloudStorageRegistryTimer.isActive()) {
         _updateCloudStorageRegistryTimer.start(500);
+    }
 }
 
 void NavigationPaneHelper::updateCloudStorageRegistry()
@@ -76,15 +79,11 @@ void NavigationPaneHelper::updateCloudStorageRegistry()
     // We currently don't distinguish between new and existing CLSIDs, if it's there we just
     // save over it. We at least need to update the tile in case we are suddently using multiple accounts.
     for (auto *folder : _folderMan->map()) {
-        if (folder->vfs().mode() == Vfs::WindowsCfApi)
-        {
-            continue;
-        }
-        if (!folder->navigationPaneClsid().isNull()) {
+        if (folder->vfs().mode() != Vfs::WindowsCfApi && folder->isInNavigationPane()) {
             // If it already exists, unmark it for removal, this is a valid sync root.
-            entriesToRemove.removeOne(folder->navigationPaneClsid());
+            entriesToRemove.removeOne(folder->uuid());
 
-            QString clsidStr = folder->navigationPaneClsid().toString();
+            QString clsidStr = folder->uuid().toString();
             QString clsidPath = QString() % "Software\\Classes\\CLSID\\" % clsidStr;
             QString clsidPathWow64 = QString() % "Software\\Classes\\Wow6432Node\\CLSID\\" % clsidStr;
             QString namespacePath = QString() % "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\" % clsidStr;
