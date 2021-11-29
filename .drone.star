@@ -190,7 +190,7 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
                  [
                      {
                          "name": "GUItests",
-                         "image": "owncloudci/squish:latest",
+                         "image": "arturneumann/squish:latest",
                          "pull": "always",
                          "environment": {
                              "LICENSEKEY": from_secret("squish_license_server"),
