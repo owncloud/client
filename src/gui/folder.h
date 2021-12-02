@@ -85,8 +85,7 @@ public:
     static void save(QSettings &settings, const FolderDefinition &folder);
 
     /// Reads a folder definition from the current settings group.
-    static bool load(const QSettings &settings, const QString &alias,
-        FolderDefinition *folder);
+    static FolderDefinition load(const QSettings &settings, const QString &alias);
 
     /** The highest version in the settings that load() can read
      *

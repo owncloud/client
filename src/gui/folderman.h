@@ -329,7 +329,9 @@ private slots:
 private:
     /** Adds a new folder, does not add it to the account settings and
      *  does not set an account on the new folder.
-      */
+     *
+     *  \returns the newly created Folder, which can never be a nullptr.
+     */
     Folder *addFolderInternal(FolderDefinition folderDefinition,
         AccountStatePtr accountState, std::unique_ptr<Vfs> vfs);
 

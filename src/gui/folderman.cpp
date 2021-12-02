@@ -306,77 +306,79 @@ void FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account,
         }
         settings.endGroup();
 
-        FolderDefinition folderDefinition;
         settings.beginGroup(folderAlias);
-        if (FolderDefinition::load(settings, folderAlias, &folderDefinition)) {
-            const auto defaultJournalPath = [&account, folderDefinition] {
-                // if we would have booth the 2.9.0 file name and the lagacy file
-                // with the md5 infix we prefer the 2.9.0 version
-                const QDir info(folderDefinition.localPath);
-                const QString defaultPath = SyncJournalDb::makeDbName(folderDefinition.localPath);
-                if (info.exists(defaultPath)) {
-                    return defaultPath;
-                }
-                // 2.6
-                QString legacyPath = makeLegacyDbName(folderDefinition, account->account());
-                if (info.exists(legacyPath)) {
-                    return legacyPath;
-                }
-                // pre 2.6
-                legacyPath.replace(QLatin1String(".sync_"), QLatin1String("._sync_"));
-                if (info.exists(legacyPath)) {
-                    return legacyPath;
-                }
+        FolderDefinition folderDefinition = FolderDefinition::load(settings, folderAlias);
+        const auto defaultJournalPath = [&account, folderDefinition] {
+            // if we would have both the 2.9.0 file name and the lagacy file
+            // with the md5 infix we prefer the 2.9.0 version
+            const QDir info(folderDefinition.localPath);
+            const QString defaultPath = SyncJournalDb::makeDbName(folderDefinition.localPath);
+            if (info.exists(defaultPath)) {
                 return defaultPath;
-            }();
-
-            // Migration: Old settings don't have journalPath
-            if (folderDefinition.journalPath.isEmpty()) {
-                folderDefinition.journalPath = defaultJournalPath;
             }
-
-            // Migration: ._ files sometimes can't be created.
-            // So if the configured journalPath has a dot-underscore ("._sync_*.db")
-            // but the current default doesn't have the underscore, switch to the
-            // new default if no db exists yet.
-            if (folderDefinition.journalPath.startsWith("._sync_")
-                && defaultJournalPath.startsWith(".sync_")
-                && !QFile::exists(folderDefinition.absoluteJournalPath())) {
-                folderDefinition.journalPath = defaultJournalPath;
+            // 2.6
+            QString legacyPath = makeLegacyDbName(folderDefinition, account->account());
+            if (info.exists(legacyPath)) {
+                return legacyPath;
             }
-
-            // Migration: If an old .csync_journal.db is found, move it to the new name.
-            if (backwardsCompatible) {
-                SyncJournalDb::maybeMigrateDb(folderDefinition.localPath, folderDefinition.absoluteJournalPath());
+            // pre 2.6
+            legacyPath.replace(QLatin1String(".sync_"), QLatin1String("._sync_"));
+            if (info.exists(legacyPath)) {
+                return legacyPath;
             }
+            return defaultPath;
+        }();
 
-            auto vfs = createVfsFromPlugin(folderDefinition.virtualFilesMode);
-            if (!vfs) {
-                // TODO: Must do better error handling
-                qFatal("Could not load plugin");
-            }
-
-            if (Folder *f = addFolderInternal(std::move(folderDefinition), account, std::move(vfs))) {
-                // Migrate the old "usePlaceholders" setting to the root folder pin state
-                if (settings.value(versionC, 1).toInt() == 1
-                    && settings.value(QLatin1String("usePlaceholders"), false).toBool()) {
-                    qCInfo(lcFolderMan) << "Migrate: From usePlaceholders to PinState::OnlineOnly";
-                    f->setRootPinState(PinState::OnlineOnly);
-                }
-
-                // Migration: Mark folders that shall be saved in a backwards-compatible way
-                if (backwardsCompatible)
-                    f->setSaveBackwardsCompatible(true);
-                if (foldersWithPlaceholders)
-                    f->setSaveInFoldersWithPlaceholders();
-
-                // save possible changes from the migration
-                f->saveToSettings();
-
-                scheduleFolder(f);
-                emit folderSyncStateChange(f);
-            }
+        // Migration: Old settings don't have journalPath
+        if (folderDefinition.journalPath.isEmpty()) {
+            folderDefinition.journalPath = defaultJournalPath;
         }
+
+        // Migration: ._ files sometimes can't be created.
+        // So if the configured journalPath has a dot-underscore ("._sync_*.db")
+        // but the current default doesn't have the underscore, switch to the
+        // new default if no db exists yet.
+        if (folderDefinition.journalPath.startsWith("._sync_")
+            && defaultJournalPath.startsWith(".sync_")
+            && !QFile::exists(folderDefinition.absoluteJournalPath())) {
+            folderDefinition.journalPath = defaultJournalPath;
+        }
+
+        // Migration: If an old .csync_journal.db is found, move it to the new name.
+        if (backwardsCompatible) {
+            SyncJournalDb::maybeMigrateDb(folderDefinition.localPath, folderDefinition.absoluteJournalPath());
+        }
+
+        auto vfs = createVfsFromPlugin(folderDefinition.virtualFilesMode);
+        if (!vfs) {
+            // TODO: Must do better error handling
+            qFatal("Could not load plugin");
+        }
+
+        Folder *f = addFolderInternal(std::move(folderDefinition), account, std::move(vfs));
+        Q_ASSERT(f);
+
+        // Migrate the old "usePlaceholders" setting to the root folder pin state
+        if (settings.value(versionC, 1).toInt() == 1
+            && settings.value(QLatin1String("usePlaceholders"), false).toBool()) {
+            qCInfo(lcFolderMan) << "Migrate: From usePlaceholders to PinState::OnlineOnly";
+            f->setRootPinState(PinState::OnlineOnly);
+        }
+
+        // Migration: Mark folders that shall be saved in a backwards-compatible way
+        if (backwardsCompatible) {
+            f->setSaveBackwardsCompatible(true);
+        }
+        if (foldersWithPlaceholders) {
+            f->setSaveInFoldersWithPlaceholders();
+        }
+
+        // save possible changes from the migration
+        f->saveToSettings();
+
+        scheduleFolder(f);
+        emit folderSyncStateChange(f);
+
         settings.endGroup();
     }
 }
