@@ -146,11 +146,11 @@ public:
      */
     void start(const VfsSetupParams &params);
 
-    /// Stop interaction with VFS provider. Like when the client application quits.
-    virtual void stop() = 0;
+    /// Stop interaction with VFS provider, because the client is going to quit.
+    virtual void stopForExit() = 0;
 
-    /// Deregister the folder with the sync provider, like when a folder is removed.
-    virtual void unregisterFolder() = 0;
+    /// Stop and deregister the folder with the sync provider, like when a folder is removed.
+    virtual void stopAndUnregisterFolder() = 0;
 
 
     /** Whether the socket api should show pin state options
@@ -289,8 +289,8 @@ public:
 
     QString fileSuffix() const override { return QString(); }
 
-    void stop() override {}
-    void unregisterFolder() override {}
+    void stopForExit() override { }
+    void stopAndUnregisterFolder() override { }
 
     bool socketApiPinStateActionsShown() const override { return false; }
     bool isHydrating() const override { return false; }

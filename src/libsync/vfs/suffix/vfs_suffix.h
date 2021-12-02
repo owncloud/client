@@ -34,8 +34,8 @@ public:
     QString underlyingFileName(const QString &fileName) const override;
 
 
-    void stop() override;
-    void unregisterFolder() override;
+    void stopForExit() override;
+    void stopAndUnregisterFolder() override;
 
     bool socketApiPinStateActionsShown() const override { return true; }
     bool isHydrating() const override;

@@ -57,11 +57,11 @@ void VfsSuffix::startImpl(const VfsSetupParams &params)
     Q_EMIT started();
 }
 
-void VfsSuffix::stop()
+void VfsSuffix::stopForExit()
 {
 }
 
-void VfsSuffix::unregisterFolder()
+void VfsSuffix::stopAndUnregisterFolder()
 {
 }
 

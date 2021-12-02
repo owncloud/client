@@ -925,7 +925,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
 {
     auto opts = _syncEngine->syncOptions();
 
-    opts._vfs->stop();
+    opts._vfs->stopForExit();
     QObject::disconnect(_syncEngine.get(), nullptr, opts._vfs.data(), nullptr);
 
     opts._vfs = vfs;
@@ -940,8 +940,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
     vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
     vfsParams.providerVersion = QVersionNumber(0, 1);
     QObject::connect(_syncEngine.get(), &QObject::destroyed, vfs.data(), [vfs]() {
-        vfs->stop();
-        vfs->unregisterFolder();
+        vfs->stopAndUnregisterFolder();
     });
 
     QObject::connect(vfs.get(), &OCC::Vfs::error, vfs.get(), [](const QString &error) {
