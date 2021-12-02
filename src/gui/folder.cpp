@@ -1337,54 +1337,55 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
     }
 }
 
-bool FolderDefinition::load(const QSettings &settings, const QString &alias, FolderDefinition *folder)
+FolderDefinition FolderDefinition::load(const QSettings &settings, const QString &alias)
 {
-    folder->alias = FolderMan::unescapeAlias(alias);
-    folder->localPath = settings.value(localPathC).toString();
-    folder->journalPath = settings.value(journalPathC).toString();
-    folder->targetPath = settings.value(targetPathC).toString();
-    folder->paused = settings.value(pausedC).toBool();
-    folder->ignoreHiddenFiles = settings.value(ignoreHiddenFilesC, QVariant(true)).toBool();
-    folder->isInNavigationPane = settings.value(isInNavigationPaneC, QVariant(true)).toBool();
+    FolderDefinition folder;
+    folder.alias = FolderMan::unescapeAlias(alias);
+    folder.localPath = settings.value(localPathC).toString();
+    folder.journalPath = settings.value(journalPathC).toString();
+    folder.targetPath = settings.value(targetPathC).toString();
+    folder.paused = settings.value(pausedC).toBool();
+    folder.ignoreHiddenFiles = settings.value(ignoreHiddenFilesC, QVariant(true)).toBool();
+    folder.isInNavigationPane = settings.value(isInNavigationPaneC, QVariant(true)).toBool();
 
     if (settings.contains(uuidC)) {
-        folder->uuid = settings.value(uuidC).toUuid();
+        folder.uuid = settings.value(uuidC).toUuid();
     } else if (settings.contains(navigationPaneClsidC)) {
         // For backwards compatibility, will be changed when saved:
-        folder->uuid = settings.value(navigationPaneClsidC).toUuid();
-        if (!folder->isInNavigationPane) {
-            folder->isInNavigationPane = true;
+        folder.uuid = settings.value(navigationPaneClsidC).toUuid();
+        if (!folder.isInNavigationPane) {
+            folder.isInNavigationPane = true;
         }
     }
 
     // Sanity check:
-    if (folder->uuid.isNull()) {
-        folder->uuid = QUuid::createUuid();
+    if (folder.uuid.isNull()) {
+        folder.uuid = QUuid::createUuid();
     }
 
-    folder->virtualFilesMode = Vfs::Off;
+    folder.virtualFilesMode = Vfs::Off;
     QString vfsModeString = settings.value(virtualFilesModeC).toString();
     if (!vfsModeString.isEmpty()) {
         if (auto mode = Vfs::modeFromString(vfsModeString)) {
-            folder->virtualFilesMode = *mode;
+            folder.virtualFilesMode = *mode;
         } else {
             qCWarning(lcFolder) << "Unknown virtualFilesMode:" << vfsModeString << "assuming 'off'";
         }
     } else {
         if (settings.value(usePlaceholdersC).toBool()) {
-            folder->virtualFilesMode = Vfs::WithSuffix;
-            folder->upgradeVfsMode = true; // maybe winvfs is available?
+            folder.virtualFilesMode = Vfs::WithSuffix;
+            folder.upgradeVfsMode = true; // maybe winvfs is available?
         }
     }
 
     // Old settings can contain paths with native separators. In the rest of the
     // code we assume /, so clean it up now.
-    folder->localPath = prepareLocalPath(folder->localPath);
+    folder.localPath = prepareLocalPath(folder.localPath);
 
     // Target paths also have a convention
-    folder->targetPath = prepareTargetPath(folder->targetPath);
+    folder.targetPath = prepareTargetPath(folder.targetPath);
 
-    return true;
+    return folder;
 }
 
 QString FolderDefinition::prepareLocalPath(const QString &path)
