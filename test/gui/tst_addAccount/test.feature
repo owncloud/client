@@ -8,6 +8,7 @@ Feature: adding accounts
     Background:
         Given user "Alice" has been created on the server with default attributes and without skeleton files
 
+    @run
     Scenario: Adding normal Account
         Given the user has started the client
         When the user adds the first account with
@@ -16,7 +17,7 @@ Feature: adding accounts
             | password | 1234           |
         Then an account should be displayed with the displayname Alice Hansen and host %local_server_hostname%
 
-
+    @run
     Scenario: Adding multiple accounts
         Given user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has set up a client with default settings
@@ -27,7 +28,7 @@ Feature: adding accounts
         Then an account should be displayed with the displayname Alice Hansen and host %local_server_hostname%
         And an account should be displayed with the displayname Brian Murphy and host %local_server_hostname%
 
-
+    @run
     Scenario: Adding account with wrong credentials
         Given the user has started the client
         And the user has added the following server address:
@@ -37,7 +38,7 @@ Feature: adding accounts
             | password | 12345 |
         Then error "The provided credentials are not correct" should be displayed
 
-
+    @run
     Scenario: Adding account with self signed certificate for the first time
         Given the user has started the client
         When the user adds the following server address:
