@@ -16,6 +16,7 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <QSharedPointer>
+#include <QUuid>
 #include <QVersionNumber>
 
 #include <memory>
@@ -39,6 +40,9 @@ class SyncFileItem;
 /** Collection of parameters for initializing a Vfs instance. */
 struct OCSYNC_EXPORT VfsSetupParams
 {
+    /// The UUID for the VFS location.
+    QUuid uuid;
+
     /** The full path to the folder on the local filesystem
      *
      * Always ends with /.

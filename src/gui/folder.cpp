@@ -537,7 +537,8 @@ void Folder::startVfs()
     }
 
     VfsSetupParams vfsParams;
-    vfsParams.filesystemPath = path();
+    vfsParams.uuid = uuid();
+    vfsParams.filesystemPath = path(); // This is ignored by the macOS VFS plug-in
     vfsParams.remotePath = remotePathTrailingSlash();
     vfsParams.account = _accountState->account();
     vfsParams.journal = &_journal;
