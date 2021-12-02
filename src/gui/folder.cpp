@@ -175,8 +175,9 @@ Folder::Folder(const FolderDefinition &definition,
 Folder::~Folder()
 {
     // If wipeForRemoval() was called the vfs has already shut down.
-    if (_vfs)
-        _vfs->stop();
+    if (_vfs) {
+        _vfs->stopForExit();
+    }
 
     // Reset then engine first as it will abort and try to access members of the Folder
     _engine.reset();
@@ -709,8 +710,7 @@ void Folder::setVirtualFilesEnabled(bool enabled)
         // TODO: Must wait for current sync to finish!
         SyncEngine::wipeVirtualFiles(path(), _journal, *_vfs);
 
-        _vfs->stop();
-        _vfs->unregisterFolder();
+        _vfs->stopAndUnregisterFolder();
 
         disconnect(_vfs.data(), nullptr, this, nullptr);
         disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.data(), nullptr);
@@ -852,8 +852,7 @@ void Folder::wipeForRemoval()
     QFile::remove(stateDbFile + "-wal");
     QFile::remove(stateDbFile + "-journal");
 
-    _vfs->stop();
-    _vfs->unregisterFolder();
+    _vfs->stopAndUnregisterFolder();
     _vfs.reset(nullptr); // warning: folder now in an invalid state
 }
 
