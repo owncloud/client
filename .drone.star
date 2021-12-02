@@ -138,7 +138,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
                  [
                      {
                          "name": "ctest",
-                         "image": "owncloudci/client",
+                         "image": "arturneumann/client:21.04",
                          "pull": "always",
                          "environment": {
                              "LC_ALL": "C.UTF-8",
@@ -190,7 +190,7 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
                  [
                      {
                          "name": "GUItests",
-                         "image": "arturneumann/squish:latest",
+                         "image": "arturneumann/squish:21.04",
                          "pull": "always",
                          "environment": {
                              "LICENSEKEY": from_secret("squish_license_server"),
@@ -215,7 +215,7 @@ def build_client(ctx, c_compiler, cxx_compiler, build_type, generator, build_com
     return [
         {
             "name": "cmake",
-            "image": "owncloudci/client",
+            "image": "arturneumann/client:21.04",
             "pull": "always",
             "environment": {
                 "LC_ALL": "C.UTF-8",
@@ -228,7 +228,7 @@ def build_client(ctx, c_compiler, cxx_compiler, build_type, generator, build_com
         },
         {
             "name": build_command,
-            "image": "owncloudci/client",
+            "image": "arturneumann/client:21.04",
             "pull": "always",
             "environment": {
                 "LC_ALL": "C.UTF-8",
