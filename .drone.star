@@ -40,7 +40,7 @@ def main(ctx):
             "Ninja",
             trigger = build_trigger,
         ),
-        gui_tests(ctx, trigger = build_trigger, version = "latest"),
+        gui_tests(ctx, trigger = build_trigger, version = "latest", filterTags = ["@smokeTest"]),
         notification(
             name = "build",
             trigger = build_trigger,
