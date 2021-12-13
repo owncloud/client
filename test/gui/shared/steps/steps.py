@@ -372,7 +372,6 @@ def createFile(context, filename, username=None):
     f.close()
 
 
-
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
     createFolder(context, foldername, username)
