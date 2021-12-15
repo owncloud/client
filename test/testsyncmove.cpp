@@ -11,7 +11,6 @@
 
 using namespace OCC;
 
-
 struct OperationCounter {
     int nGET = 0;
     int nPUT = 0;
@@ -32,6 +31,11 @@ struct OperationCounter {
                 ++nMOVE;
             return nullptr;
         };
+    }
+
+    friend inline QDebug operator<<(QDebug dbg, const OperationCounter &oc)
+    {
+        return dbg << "nGET:" << oc.nGET << " nPUT:" << oc.nPUT << " nMOVE:" << oc.nMOVE << " nDELETE:" << oc.nDELETE;
     }
 };
 
@@ -83,10 +87,30 @@ class TestSyncMove : public QObject
     Q_OBJECT
 
 private slots:
+    void initTestCase_data()
+    {
+        QTest::addColumn<Vfs::Mode>("vfsMode");
+        QTest::addColumn<bool>("filesAreDehydrated");
+
+        QTest::newRow("Vfs::Off") << Vfs::Off << false;
+
+        if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
+            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
+
+            // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
+            // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
+        } else if (Utility::isWindows()) {
+            QWARN("Skipping Vfs::WindowsCfApi");
+        }
+    }
+
     void testRemoteChangeInMovedFolder()
     {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
         // issue #5192
-        FakeFolder fakeFolder{ FileInfo{ QString(), { FileInfo{ QStringLiteral("folder"), { FileInfo{ QStringLiteral("folderA"), { { QStringLiteral("file.txt"), 400 } } }, QStringLiteral("folderB") } } } } };
+        FakeFolder fakeFolder(FileInfo { QString(), { FileInfo { QStringLiteral("folder"), { FileInfo { QStringLiteral("folderA"), { { QStringLiteral("file.txt"), 400 } } }, QStringLiteral("folderB") } } } }, vfsMode, filesAreDehydrated);
 
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
@@ -107,8 +131,11 @@ private slots:
 
     void testSelectiveSyncMovedFolder()
     {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
         // issue #5224
-        FakeFolder fakeFolder{ FileInfo{ QString(), { FileInfo{ QStringLiteral("parentFolder"), { FileInfo{ QStringLiteral("subFolderA"), { { QStringLiteral("fileA.txt"), 400 } } }, FileInfo{ QStringLiteral("subFolderB"), { { QStringLiteral("fileB.txt"), 400 } } } } } } } };
+        FakeFolder fakeFolder(FileInfo { QString(), { FileInfo { QStringLiteral("parentFolder"), { FileInfo { QStringLiteral("subFolderA"), { { QStringLiteral("fileA.txt"), 400 } } }, FileInfo { QStringLiteral("subFolderB"), { { QStringLiteral("fileB.txt"), 400 } } } } } } }, vfsMode, filesAreDehydrated);
 
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         auto expectedServerState = fakeFolder.currentRemoteState();
@@ -168,17 +195,12 @@ private slots:
 
     void testLocalMoveDetection()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
 
-        int nPUT = 0;
-        int nDELETE = 0;
-        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &, QIODevice *) {
-            if (op == QNetworkAccessManager::PutOperation)
-                ++nPUT;
-            if (op == QNetworkAccessManager::DeleteOperation)
-                ++nDELETE;
-            return nullptr;
-        });
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
+        OperationCounter counter;
+        fakeFolder.setServerOverride(counter.functor());
 
         // For directly editing the remote checksum
         FileInfo &remoteInfo = fakeFolder.remoteModifier();
@@ -188,16 +210,25 @@ private slots:
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), remoteInfo);
         QCOMPARE(printDbData(fakeFolder.dbState()), printDbData(remoteInfo));
-        QCOMPARE(nPUT, 0);
+        QCOMPARE(counter.nGET, 0);
+        QCOMPARE(counter.nPUT, 0);
+        QCOMPARE(counter.nMOVE, 1);
+        QCOMPARE(counter.nDELETE, 0);
+        counter.reset();
 
-        // Move-and-change, causing a upload and delete
+        // Move-and-change, mtime+size, causing a upload and delete
+        QVERIFY(fakeFolder.currentLocalState().find("A/a2")->isDehydratedPlaceholder == filesAreDehydrated); // no-one touched it, so the hydration state should be the same as the initial state
         fakeFolder.localModifier().rename("A/a2", "A/a2m");
-        fakeFolder.localModifier().appendByte("A/a2m");
+        fakeFolder.localModifier().setContents("A/a2m", 'x', fakeFolder.remoteModifier().contentSize + 1);
         QVERIFY(fakeFolder.syncOnce());
+        QVERIFY(!fakeFolder.currentLocalState().find("A/a2m")->isDehydratedPlaceholder); // We overwrote all data in the file, so whatever the state was before, it is no longer dehydrated
         QCOMPARE(fakeFolder.currentLocalState(), remoteInfo);
         QCOMPARE(printDbData(fakeFolder.dbState()), printDbData(remoteInfo));
-        QCOMPARE(nPUT, 1);
-        QCOMPARE(nDELETE, 1);
+        QCOMPARE(counter.nGET, 0); // we never *read* the file (i.e. we didn't *append* data to it), so even in the dehydrated case the data should never be downloaded
+        QCOMPARE(counter.nMOVE, 0); // we cannot detect moves (and we didn't implement it yet in winvfs)...
+        QCOMPARE(counter.nDELETE, 1); // ... so the file just disappears ...
+        QCOMPARE(counter.nPUT, 1); // ... and another file (with just 1 byte difference) appears somewhere else. Coincidence.
+        counter.reset();
 
         // Move-and-change, mtime+content only
         fakeFolder.localModifier().rename("B/b1", "B/b1m");
@@ -205,8 +236,9 @@ private slots:
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), remoteInfo);
         QCOMPARE(printDbData(fakeFolder.dbState()), printDbData(remoteInfo));
-        QCOMPARE(nPUT, 2);
-        QCOMPARE(nDELETE, 2);
+        QCOMPARE(counter.nPUT, 1);
+        QCOMPARE(counter.nDELETE, 1);
+        counter.reset();
 
         // Move-and-change, size+content only
         auto mtime = fakeFolder.remoteModifier().find("B/b2")->lastModified();
@@ -216,8 +248,9 @@ private slots:
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), remoteInfo);
         QCOMPARE(printDbData(fakeFolder.dbState()), printDbData(remoteInfo));
-        QCOMPARE(nPUT, 3);
-        QCOMPARE(nDELETE, 3);
+        QCOMPARE(counter.nPUT, 1);
+        QCOMPARE(counter.nDELETE, 1);
+        counter.reset();
 
         // Move-and-change, content only -- c1 has no checksum, so we fail to detect this!
         // NOTE: This is an expected failure.
@@ -226,9 +259,10 @@ private slots:
         fakeFolder.localModifier().setContents("C/c1m", 'C');
         fakeFolder.localModifier().setModTime("C/c1m", mtime);
         QVERIFY(fakeFolder.syncOnce());
-        QCOMPARE(nPUT, 3);
-        QCOMPARE(nDELETE, 3);
+        QCOMPARE(counter.nPUT, 0);
+        QCOMPARE(counter.nDELETE, 0);
         QVERIFY(!(fakeFolder.currentLocalState() == remoteInfo));
+        counter.reset();
 
         // cleanup, and upload a file that will have a checksum in the db
         fakeFolder.localModifier().remove("C/c1m");
@@ -236,8 +270,9 @@ private slots:
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), remoteInfo);
         QCOMPARE(printDbData(fakeFolder.dbState()), printDbData(remoteInfo));
-        QCOMPARE(nPUT, 4);
-        QCOMPARE(nDELETE, 4);
+        QCOMPARE(counter.nPUT, 1);
+        QCOMPARE(counter.nDELETE, 1);
+        counter.reset();
 
         // Move-and-change, content only, this time while having a checksum
         mtime = fakeFolder.remoteModifier().find("C/c3")->lastModified();
@@ -245,10 +280,11 @@ private slots:
         fakeFolder.localModifier().setContents("C/c3m", 'C');
         fakeFolder.localModifier().setModTime("C/c3m", mtime);
         QVERIFY(fakeFolder.syncOnce());
-        QCOMPARE(nPUT, 5);
-        QCOMPARE(nDELETE, 5);
+        QCOMPARE(counter.nPUT, 1);
+        QCOMPARE(counter.nDELETE, 1);
         QCOMPARE(fakeFolder.currentLocalState(), remoteInfo);
         QCOMPARE(printDbData(fakeFolder.dbState()), printDbData(remoteInfo));
+        counter.reset();
     }
 
     void testDuplicateFileId_data()
@@ -268,9 +304,15 @@ private slots:
     // case.
     void testDuplicateFileId()
     {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
         QFETCH(QString, prefix);
 
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        if (filesAreDehydrated) {
+            QSKIP("This test expects to be able to modify local files on disk, which does not work with dehydrated files.");
+        }
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         auto &remote = fakeFolder.remoteModifier();
 
         remote.mkdir("A/W");
@@ -331,12 +373,21 @@ private slots:
 
     void testMovePropagation()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        if (filesAreDehydrated) {
+            QSKIP("This test expects to be able to modify local files on disk, which does not work with dehydrated files.");
+        }
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         auto &local = fakeFolder.localModifier();
         auto &remote = fakeFolder.remoteModifier();
 
         OperationCounter counter;
         fakeFolder.setServerOverride(counter.functor());
+
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
         // Move
         {
@@ -592,7 +643,10 @@ private slots:
     // These renames can be troublesome on windows
     void testRenameCaseOnly()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         auto &local = fakeFolder.localModifier();
         auto &remote = fakeFolder.remoteModifier();
 
@@ -614,7 +668,10 @@ private slots:
     // Check interaction of moves with file type changes
     void testMoveAndTypeChange()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         auto &local = fakeFolder.localModifier();
         auto &remote = fakeFolder.remoteModifier();
 
@@ -637,7 +694,10 @@ private slots:
     // When a file is moved and the server mtime was not in sync, the local mtime should be kept
     void testMoveAndMTimeChange()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         OperationCounter counter;
         fakeFolder.setServerOverride(counter.functor());
 
@@ -669,7 +729,10 @@ private slots:
     // Test for https://github.com/owncloud/client/issues/6694
     void testInvertFolderHierarchy()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         fakeFolder.remoteModifier().mkdir("A/Empty");
         fakeFolder.remoteModifier().mkdir("A/Empty/Foo");
         fakeFolder.remoteModifier().mkdir("C/AllEmpty");
@@ -735,8 +798,11 @@ private slots:
 
     void testDeepHierarchy()
     {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
         QFETCH(bool, local);
-        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         auto &modifier = local ? fakeFolder.localModifier() : fakeFolder.remoteModifier();
 
         modifier.mkdir("FolA");
@@ -771,13 +837,16 @@ private slots:
         QCOMPARE(fakeFolder.currentRemoteState(), expected);
         QCOMPARE(counter.nDELETE, local ? 1 : 0); // FolC was is renamed to an existing name, so it is not considered as renamed
         // There was 5 inserts
-        QCOMPARE(counter.nGET, local ? 0 : 5);
+        QCOMPARE(counter.nGET, local || filesAreDehydrated ? 0 : 5);
         QCOMPARE(counter.nPUT, local ? 5 : 0);
     }
 
     void renameOnBothSides()
     {
-        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         OperationCounter counter;
         fakeFolder.setServerOverride(counter.functor());
 
@@ -816,9 +885,15 @@ private slots:
 
     void moveFileToDifferentFolderOnBothSides()
     {
-        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         OperationCounter counter;
         fakeFolder.setServerOverride(counter.functor());
+
+        QCOMPARE(fakeFolder.currentLocalState().find("B/b1")->isDehydratedPlaceholder, filesAreDehydrated);
+        QCOMPARE(fakeFolder.currentLocalState().find("B/b2")->isDehydratedPlaceholder, filesAreDehydrated);
 
         // Test that moving a file within to different folder on both side does the right thing.
 
@@ -830,53 +905,29 @@ private slots:
 
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentRemoteState(), fakeFolder.currentRemoteState());
+        // The easy checks: the server always has the data, so it can successfully move the files:
         QVERIFY(fakeFolder.currentRemoteState().find("A/b1"));
-        QVERIFY(fakeFolder.currentRemoteState().find("C/b1"));
-        QVERIFY(fakeFolder.currentRemoteState().find("A/b2"));
         QVERIFY(fakeFolder.currentRemoteState().find("C/b2"));
+        // Either the client has hydrated files, in which case it will upload the data to the target locations;
+        // or the files were dehydrated, so it has to remove the files. (No data-loss in the latter case: the
+        // files were dehydrated, so there was no data anyway.)
+        QVERIFY(fakeFolder.currentRemoteState().find("C/b1") || filesAreDehydrated);
+        QVERIFY(fakeFolder.currentRemoteState().find("A/b2") || filesAreDehydrated);
+
         QCOMPARE(counter.nMOVE, 0); // Unfortunately, we can't really make a move in this case
-        QCOMPARE(counter.nGET, 2);
-        QCOMPARE(counter.nPUT, 2);
+        QCOMPARE(counter.nGET, filesAreDehydrated ? 0 : 2);
+        QCOMPARE(counter.nPUT, filesAreDehydrated ? 0 : 2);
         QCOMPARE(counter.nDELETE, 0);
         counter.reset();
-
-    }
-
-    void testRenameParallelism_data()
-    {
-        QTest::addColumn<Vfs::Mode>("vfsMode");
-        QTest::addColumn<bool>("filesAreDehydrated");
-
-        QTest::newRow("Vfs::Off") << Vfs::Off << true;
-
-        if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
-
-            // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
-            // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
-        } else if (Utility::isWindows()) {
-            QWARN("Skipping Vfs::WindowsCfApi");
-        }
     }
 
     // Test that deletes don't run before renames
     void testRenameParallelism()
     {
-        QFETCH(Vfs::Mode, vfsMode);
-        QFETCH(bool, filesAreDehydrated);
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
 
-        FakeFolder fakeFolder({ FileInfo {} }, vfsMode);
-
-        if (vfsMode != Vfs::Off) {
-            auto vfs = QSharedPointer<Vfs>(createVfsFromPlugin(vfsMode).release());
-            QVERIFY(vfs);
-            fakeFolder.switchToVfs(vfs);
-            fakeFolder.syncJournal().internalPinStates().setForPath("", filesAreDehydrated ? PinState::OnlineOnly : PinState::AlwaysLocal);
-
-            // make files virtual
-            fakeFolder.syncOnce();
-        }
-
+        FakeFolder fakeFolder({ FileInfo {} }, vfsMode, filesAreDehydrated);
         fakeFolder.remoteModifier().mkdir("A");
         fakeFolder.remoteModifier().insert("A/file");
         QVERIFY(fakeFolder.syncOnce());

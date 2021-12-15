@@ -61,13 +61,16 @@ void DiskFileModifier::insert(const QString &relativePath, qint64 size, char con
     QCOMPARE(file.size(), size);
 }
 
-void DiskFileModifier::setContents(const QString &relativePath, char contentChar)
+void DiskFileModifier::setContents(const QString &relativePath, char contentChar, int newSize)
 {
     QFile file { _rootDir.filePath(relativePath) };
     QVERIFY(file.exists());
     qint64 size = file.size();
-    file.open(QFile::WriteOnly);
-    file.write(QByteArray {}.fill(contentChar, size));
+    if (newSize != -1) {
+        size = newSize;
+    }
+    QVERIFY(file.open(QFile::WriteOnly));
+    QCOMPARE(file.write(QByteArray {}.fill(contentChar, size)), size);
 }
 
 void DiskFileModifier::appendByte(const QString &relativePath, char contentChar)
@@ -108,6 +111,13 @@ void DiskFileModifier::rename(const QString &from, const QString &to)
 void DiskFileModifier::setModTime(const QString &relativePath, const QDateTime &modTime)
 {
     OCC::FileSystem::setModTime(_rootDir.filePath(relativePath), OCC::Utility::qDateTimeToTime_t(modTime));
+}
+
+void DiskFileModifier::incModTime(const QString &relativePath, int secondsToAdd)
+{
+    time_t mtime = OCC::FileSystem::getModTime(_rootDir.filePath(relativePath));
+    auto newMTime = OCC::Utility::qDateTimeFromTime_t(mtime).addSecs(secondsToAdd);
+    setModTime(relativePath, newMTime);
 }
 
 FileInfo FileInfo::A12_B12_C12_S12()
@@ -154,11 +164,17 @@ void FileInfo::insert(const QString &relativePath, qint64 size, char contentChar
     create(relativePath, size, contentChar);
 }
 
-void FileInfo::setContents(const QString &relativePath, char contentChar)
+void FileInfo::setContents(const QString &relativePath, char contentChar, int newSize)
 {
     FileInfo *file = findInvalidatingEtags(relativePath);
     Q_ASSERT(file);
     file->contentChar = contentChar;
+    if (newSize != -1) {
+        file->contentSize = newSize;
+        if (!file->isDehydratedPlaceholder) {
+            file->fileSize = newSize;
+        }
+    }
 }
 
 void FileInfo::appendByte(const QString &relativePath, char contentChar)
@@ -207,6 +223,14 @@ void FileInfo::setModTime(const QString &relativePath, const QDateTime &modTime)
     FileInfo *file = findInvalidatingEtags(relativePath);
     Q_ASSERT(file);
     file->setLastModified(modTime);
+}
+
+void FileInfo::incModTime(const QString &relativePath, int secondsToAdd)
+{
+    FileInfo *file = findInvalidatingEtags(relativePath);
+    Q_ASSERT(file);
+    auto newMTime = file->lastModified().addSecs(secondsToAdd);
+    file->setLastModified(newMTime);
 }
 
 FileInfo *FileInfo::find(PathComponents pathComponents, const bool invalidateEtags)
@@ -920,16 +944,15 @@ QNetworkReply *FakeQNAM::createRequest(QNetworkAccessManager::Operation op, cons
     return reply;
 }
 
-FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode)
+FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, bool filesAreDehydrated)
     : _localModifier(_tempDir.path())
-    , _vfsMode(vfsMode)
 {
     // Needs to be done once
     OCC::SyncEngine::minimumFileAgeForUpload = std::chrono::milliseconds(0);
 
     QDir rootDir { _tempDir.path() };
     qDebug() << "FakeFolder operating on" << rootDir;
-    toDisk(rootDir, fileTemplate);
+    toDisk(rootDir, filesAreDehydrated ? FileInfo() : fileTemplate);
 
     _fakeQnam = new FakeQNAM(fileTemplate);
     _account = OCC::Account::create();
@@ -950,8 +973,18 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode)
         });
     });
 
-    // Ensure we have a valid VfsOff instance "running"
-    switchToVfs(_syncEngine->syncOptions()._vfs);
+    auto vfs = _syncEngine->syncOptions()._vfs;
+    if (vfsMode != vfs->mode()) {
+        vfs.reset(createVfsFromPlugin(vfsMode).release());
+        Q_ASSERT(vfs);
+    }
+
+    // Ensure we have a valid Vfs instance "running"
+    switchToVfs(vfs);
+
+    if (vfsMode != OCC::Vfs::Off) {
+        syncJournal().internalPinStates().setForPath("", filesAreDehydrated ? OCC::PinState::OnlineOnly : OCC::PinState::AlwaysLocal);
+    }
 
     // A new folder will update the local file state database on first sync.
     // To have a state matching what users will encounter, we have to a sync
@@ -1081,6 +1114,7 @@ void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
             fi.setLastModified(diskChild.lastModified());
             if (fi.isDehydratedPlaceholder) {
                 fi.contentChar = '\0';
+                fi.contentSize = 0;
             } else {
                 QFile f { diskChild.filePath() };
                 f.open(QFile::ReadOnly);

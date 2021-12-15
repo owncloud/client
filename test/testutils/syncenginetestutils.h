@@ -81,12 +81,13 @@ public:
     virtual ~FileModifier() { }
     virtual void remove(const QString &relativePath) = 0;
     virtual void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') = 0;
-    virtual void setContents(const QString &relativePath, char contentChar) = 0;
+    virtual void setContents(const QString &relativePath, char contentChar, int newSize = -1) = 0;
     virtual void appendByte(const QString &relativePath, char contentChar = 0) = 0;
     virtual void modifyByte(const QString &relativePath, quint64 offset, char contentChar) = 0;
     virtual void mkdir(const QString &relativePath) = 0;
     virtual void rename(const QString &relativePath, const QString &relativeDestinationDirectory) = 0;
     virtual void setModTime(const QString &relativePath, const QDateTime &modTime) = 0;
+    virtual void incModTime(const QString &relativePath, int secondsToAdd) = 0;
 };
 
 class DiskFileModifier : public FileModifier
@@ -100,13 +101,14 @@ public:
     }
     void remove(const QString &relativePath) override;
     void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') override;
-    void setContents(const QString &relativePath, char contentChar) override;
+    void setContents(const QString &relativePath, char contentChar, int newSize = -1) override;
     void appendByte(const QString &relativePath, char contentChar) override;
     void modifyByte(const QString &relativePath, quint64 offset, char contentChar) override;
 
     void mkdir(const QString &relativePath) override;
     void rename(const QString &from, const QString &to) override;
     void setModTime(const QString &relativePath, const QDateTime &modTime) override;
+    void incModTime(const QString &relativePath, int secondsToAdd) override;
 };
 
 static inline qint64 defaultLastModified()
@@ -150,7 +152,7 @@ public:
 
     void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') override;
 
-    void setContents(const QString &relativePath, char contentChar) override;
+    void setContents(const QString &relativePath, char contentChar, int newSize = -1) override;
 
     void appendByte(const QString &relativePath, char contentChar = 0) override;
 
@@ -161,6 +163,7 @@ public:
     void rename(const QString &oldPath, const QString &newPath) override;
 
     void setModTime(const QString &relativePath, const QDateTime &modTime) override;
+    void incModTime(const QString &relativePath, int secondsToAdd) override;
 
     /// Return a pointer to the FileInfo, or a nullptr if it doesn't exist
     FileInfo *find(PathComponents pathComponents, const bool invalidateEtags = false);
@@ -525,10 +528,9 @@ class FakeFolder
     OCC::AccountPtr _account;
     std::unique_ptr<OCC::SyncJournalDb> _journalDb;
     std::unique_ptr<OCC::SyncEngine> _syncEngine;
-    OCC::Vfs::Mode _vfsMode;
 
 public:
-    FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode = OCC::Vfs::Off);
+    FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode = OCC::Vfs::Off, bool filesAreDehydrated = false);
 
     void switchToVfs(QSharedPointer<OCC::Vfs> vfs);
 
