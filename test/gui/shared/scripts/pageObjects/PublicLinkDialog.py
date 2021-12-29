@@ -1,7 +1,7 @@
 import names
 import squish
 import test
-import datetime
+from datetime import datetime
 
 
 class PublicLinkDialog:
@@ -72,6 +72,9 @@ class PublicLinkDialog:
         "visible": 1,
     }
 
+    # to store current default public link expiry date
+    defaultExpiryDate = ''
+
     def openPublicLinkDialog(self):
         squish.mouseClick(
             squish.waitForObject(self.PUBLIC_LINKS_TAB),
@@ -139,40 +142,57 @@ class PublicLinkDialog:
     def toggleExpirationDate(self):
         squish.clickButton(squish.waitForObject(self.EXPIRYDATE_CHECKBOX))
 
+    @staticmethod
+    def setDefaultExpiryDate(defaultDate):
+        defaultDate = datetime.strptime(defaultDate, '%m/%d/%y')
+        PublicLinkDialog.defaultExpiryDate = (
+            f"{defaultDate.year}-{defaultDate.month}-{defaultDate.day}"
+        )
+
+    @staticmethod
+    def getDefaultExpiryDate():
+        return PublicLinkDialog.defaultExpiryDate
+
     def setExpirationDate(self, expireDate):
         enabled = squish.waitForObjectExists(self.EXPIRYDATE_CHECKBOX).checked
         if not enabled:
             self.toggleExpirationDate()
 
-        expDate = datetime.datetime.strptime(expireDate, '%Y-%m-%d')
-        expYear = expDate.year - 2000
-        squish.mouseClick(
-            squish.waitForObject(self.EXPIRATION_DATE_FIELD),
-            0,
-            0,
-            squish.Qt.NoModifier,
-            squish.Qt.LeftButton,
-        )
-        squish.nativeType("<Delete>")
-        squish.nativeType("<Delete>")
-        squish.nativeType(expDate.month)
-        squish.nativeType(expDate.day)
-        squish.nativeType(expYear)
-        squish.nativeType("<Return>")
+        if not expireDate == "default":
+            expDate = datetime.strptime(expireDate, '%Y-%m-%d')
+            expYear = expDate.year - 2000
+            squish.mouseClick(
+                squish.waitForObject(self.EXPIRATION_DATE_FIELD),
+                0,
+                0,
+                squish.Qt.NoModifier,
+                squish.Qt.LeftButton,
+            )
+            squish.nativeType("<Delete>")
+            squish.nativeType("<Delete>")
+            squish.nativeType(expDate.month)
+            squish.nativeType(expDate.day)
+            squish.nativeType(expYear)
+            squish.nativeType("<Return>")
 
-        actualDate = squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText
-        expectedDate = f"{expDate.month}/{expDate.day}/{expYear}"
-        if not actualDate == expectedDate:
-            # retry with workaround
-            self.setExpirationDateWithWorkaround(expYear, expDate.month, expDate.day)
+            actualDate = str(
+                squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText
+            )
+            expectedDate = f"{expDate.month}/{expDate.day}/{expYear}"
+            if not actualDate == expectedDate:
+                # retry with workaround
+                self.setExpirationDateWithWorkaround(
+                    expYear, expDate.month, expDate.day
+                )
 
-        squish.waitFor(
-            lambda: (test.vp("publicLinkExpirationProgressIndicatorInvisible"))
-        )
-        test.compare(
-            str(squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText),
-            str(expectedDate),
-        )
+            squish.waitFor(
+                lambda: (test.vp("publicLinkExpirationProgressIndicatorInvisible"))
+            )
+        else:
+            defaultDate = str(
+                squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText
+            )
+            PublicLinkDialog.setDefaultExpiryDate(defaultDate)
 
     # This workaround is needed because the above function 'setExpirationDate'
     # will not work while creating new public link
@@ -245,4 +265,15 @@ class PublicLinkDialog:
         test.compare(
             str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
             resource,
+        )
+
+    def verifyExpirationDate(self, expectedDate):
+        expectedDate = datetime.strptime(expectedDate, '%Y-%m-%d')
+        # date format in client UI is 'mm/dd/yy' e.g. '01/15/22'
+        expYear = expectedDate.year - 2000
+        expectedDate = f"{expectedDate.month}/{expectedDate.day}/{expYear}"
+
+        test.compare(
+            str(squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText),
+            str(expectedDate),
         )
