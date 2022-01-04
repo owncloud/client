@@ -14,8 +14,9 @@
 
 #include "capabilities.h"
 
-#include <QVariantMap>
 #include <QDebug>
+#include <QString>
+#include <QVariantMap>
 
 using namespace std::chrono;
 
@@ -244,7 +245,7 @@ TusSupport::TusSupport(const QVariantMap &tus_support)
     version = QVersionNumber::fromString(tus_support.value(QStringLiteral("version")).toString());
     resumable = QVersionNumber::fromString(tus_support.value(QStringLiteral("resumable")).toString());
 
-    extensions = tus_support.value(QStringLiteral("extension")).toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    extensions = tus_support.value(QStringLiteral("extension")).toString().split(QLatin1Char(','), QString::SkipEmptyParts);
     max_chunk_size = tus_support.value(QStringLiteral("max_chunk_size")).value<quint64>();
     http_method_override = tus_support.value(QStringLiteral("http_method_override")).toString();
 }
