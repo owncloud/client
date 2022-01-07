@@ -91,6 +91,8 @@ const QString newBigFolderSizeLimitC() { return QStringLiteral("newBigFolderSize
 const QString useNewBigFolderSizeLimitC() { return QStringLiteral("useNewBigFolderSizeLimit"); }
 const QString confirmExternalStorageC() { return QStringLiteral("confirmExternalStorage"); }
 const QString moveToTrashC() { return QStringLiteral("moveToTrash"); }
+const QString oauthPromptC() { return QStringLiteral("oauthPrompt"); }
+const QString oauthBasicAuthC() { return QStringLiteral("oauthBasicAuth"); }
 }
 
 QString ConfigFile::_confDir = QString();
@@ -751,6 +753,31 @@ void ConfigFile::setPromptDeleteFiles(bool promptDeleteFiles)
     QSettings settings(configFile(), QSettings::IniFormat);
     settings.setValue(promptDeleteC(), promptDeleteFiles);
 }
+
+bool ConfigFile::oauthPrompt() const
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    return settings.value(oauthPromptC(), true).toBool();
+}
+
+void ConfigFile::setOauthPrompt(bool oauthPrompt)
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    settings.setValue(oauthPromptC(), oauthPrompt);
+}
+
+bool ConfigFile::oauthBasicAuth() const
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    return settings.value(oauthBasicAuthC(), true).toBool();
+}
+
+void ConfigFile::setOauthBasicAuth(bool oauthBasicAuth)
+{
+    QSettings settings(configFile(), QSettings::IniFormat);
+    settings.setValue(oauthBasicAuthC(), oauthBasicAuth);
+}
+
 
 bool ConfigFile::monoIcons() const
 {
