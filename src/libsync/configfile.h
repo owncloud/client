@@ -138,6 +138,14 @@ public:
     bool confirmExternalStorage() const;
     void setConfirmExternalStorage(bool);
 
+    //disable sending of the prompt parameter for the oauth2 authorization_endpoint
+    bool oauthPrompt() const;
+    void setOauthPrompt(bool);
+
+    //disable sending of basic auth header for the oauth2 token endpoint
+    bool oauthBasicAuth() const;
+    void setOauthBasicAuth(bool);
+
     /** If we should move the files deleted on the server in the trash  */
     bool moveToTrash() const;
     void setMoveToTrash(bool);

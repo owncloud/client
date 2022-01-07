@@ -14,6 +14,7 @@
 
 #include "creds/oauth.h"
 
+#include "configfile.h"
 #include "account.h"
 #include "common/version.h"
 #include "credentialmanager.h"
@@ -227,9 +228,6 @@ void OAuth::startAuthentication()
                     httpReplyAndClose(socket, QByteArrayLiteral("400 Bad Request"), QByteArrayLiteral("<html><head><title>400 Bad Request</title></head><body><center><h1>400 Bad Request</h1></center></body></html>"));
                     return;
                 }
-                // we only allow one response
-                qCDebug(lcOauth) << "Recieved the first valid request, stoping to listen";
-                _server.close();
 
                 auto job = postTokenRequest({
                     { QStringLiteral("grant_type"), QStringLiteral("authorization_code") },
@@ -237,6 +235,11 @@ void OAuth::startAuthentication()
                     { QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_server.serverPort())) },
                     { QStringLiteral("code_verifier"), QString::fromUtf8(_pkceCodeVerifier) },
                 });
+                
+                // we only allow one response
+                qCDebug(lcOauth) << "Recieved the first valid request, stoping to listen";
+                _server.close();
+
                 QObject::connect(job, &SimpleNetworkJob::finishedSignal, this, [this, socket](QNetworkReply *reply) {
                     const auto jsonData = reply->readAll();
                     QJsonParseError jsonParseError;
@@ -403,11 +406,14 @@ void OAuth::finalize(const QPointer<QTcpSocket> &socket, const QString &accessTo
 
 SimpleNetworkJob *OAuth::postTokenRequest(const QList<QPair<QString, QString>> &queryItems)
 {
+    ConfigFile cfg;
     const QUrl requestTokenUrl = _tokenEndpoint.isEmpty() ? Utility::concatUrlPath(_account->url(), QStringLiteral("/index.php/apps/oauth2/api/v1/token")) : _tokenEndpoint;
     QNetworkRequest req;
-    const QByteArray basicAuth = QStringLiteral("%1:%2").arg(_clientId, _clientSecret).toUtf8().toBase64();
-    req.setRawHeader("Authorization", "Basic " + basicAuth);
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    if (cfg.oauthBasicAuth()){
+        const QByteArray basicAuth = QStringLiteral("%1:%2").arg(_clientId, _clientSecret).toUtf8().toBase64();
+        req.setRawHeader("Authorization", "Basic " + basicAuth);
+        req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    }
 
     QUrlQuery arguments;
     arguments.setQueryItems(QList<QPair<QString, QString>> { { QStringLiteral("client_id"), _clientId },
@@ -431,6 +437,7 @@ QByteArray OAuth::generateRandomString(size_t size) const
 
 QUrl OAuth::authorisationLink() const
 {
+    ConfigFile cfg;
     Q_ASSERT(_server.isListening());
     QUrlQuery query;
     const QByteArray code_challenge = QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256)
@@ -441,8 +448,11 @@ QUrl OAuth::authorisationLink() const
         { QStringLiteral("code_challenge"), QString::fromLatin1(code_challenge) },
         { QStringLiteral("code_challenge_method"), QStringLiteral("S256") },
         { QStringLiteral("scope"), Theme::instance()->openIdConnectScopes() },
-        { QStringLiteral("prompt"), Theme::instance()->openIdConnectPrompt() },
         { QStringLiteral("state"), QString::fromUtf8(_state) } });
+
+    if (cfg.oauthPrompt()){
+        query.addQueryItem(QStringLiteral("prompt"), Theme::instance()->openIdConnectPrompt());
+    }
 
     if (!_account->davUser().isNull()) {
         const QString davUser = _account->davUser().replace(QLatin1Char('+'), QStringLiteral("%2B")); // Issue #7762;
