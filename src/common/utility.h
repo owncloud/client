@@ -121,11 +121,11 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
 #endif
 
     // convenience OS detection methods
-    inline bool isWindows();
-    inline bool isMac();
-    inline bool isUnix();
-    inline bool isLinux(); // use with care
-    inline bool isBSD(); // use with care, does not match OS X
+    constexpr inline bool isWindows();
+    constexpr inline bool isMac();
+    constexpr inline bool isUnix();
+    constexpr inline bool isLinux(); // use with care
+    constexpr inline bool isBSD(); // use with care, does not match OS X
 
     OCSYNC_EXPORT QString platformName();
     // crash helper for --debug
@@ -301,7 +301,7 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
 }
 /** @} */ // \addtogroup
 
-inline bool Utility::isWindows()
+constexpr inline bool Utility::isWindows()
 {
 #ifdef Q_OS_WIN
     return true;
@@ -310,7 +310,7 @@ inline bool Utility::isWindows()
 #endif
 }
 
-inline bool Utility::isMac()
+constexpr inline bool Utility::isMac()
 {
 #ifdef Q_OS_MAC
     return true;
@@ -319,7 +319,7 @@ inline bool Utility::isMac()
 #endif
 }
 
-inline bool Utility::isUnix()
+constexpr inline bool Utility::isUnix()
 {
 #ifdef Q_OS_UNIX
     return true;
@@ -328,7 +328,7 @@ inline bool Utility::isUnix()
 #endif
 }
 
-inline bool Utility::isLinux()
+constexpr inline bool Utility::isLinux()
 {
 #if defined(Q_OS_LINUX)
     return true;
@@ -337,7 +337,7 @@ inline bool Utility::isLinux()
 #endif
 }
 
-inline bool Utility::isBSD()
+constexpr inline bool Utility::isBSD()
 {
 #if defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD) || defined(Q_OS_OPENBSD)
     return true;
