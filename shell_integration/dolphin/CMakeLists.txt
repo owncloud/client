@@ -2,10 +2,9 @@ project(dolphin-owncloud)
 
 cmake_minimum_required(VERSION 2.8.12)
 include(FeatureSummary)
-set(QT_MIN_VERSION "5.3.0")
 set(KF5_MIN_VERSION "5.16.0")
 
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core Network)
+find_package(Qt5 ${OC_QT_VERSION} CONFIG REQUIRED COMPONENTS Core Network)
 
 find_package(ECM 1.2.0 REQUIRED CONFIG)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")

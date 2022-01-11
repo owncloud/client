@@ -47,7 +47,7 @@ if(NOT BUILD_LIBRARIES_ONLY)
         MACOSX_BUNDLE FALSE
     )
 
-    find_package(Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt5 ${OC_QT_VERSION} REQUIRED COMPONENTS Widgets)
 
     target_include_directories(${CRASHREPORTER_EXECUTABLE} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(${CRASHREPORTER_EXECUTABLE}

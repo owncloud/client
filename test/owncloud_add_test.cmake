@@ -1,4 +1,4 @@
-find_package(Qt5 COMPONENTS Core Test Xml Network REQUIRED)
+find_package(Qt5 ${OC_QT_VERSION} COMPONENTS Core Test Xml Network REQUIRED)
 
 include(ECMAddTests)
 

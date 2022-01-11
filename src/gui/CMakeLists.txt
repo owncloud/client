@@ -1,9 +1,9 @@
 include(ECMAddAppIcon)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 ${OC_QT_VERSION} REQUIRED COMPONENTS Widgets)
 
 if (WIN32)
-    find_package(Qt5 REQUIRED COMPONENTS WinExtras)
+    find_package(Qt5 ${OC_QT_VERSION} REQUIRED COMPONENTS WinExtras)
 endif()
 
 add_subdirectory(updater)
@@ -152,7 +152,7 @@ target_sources(owncloudCore PRIVATE
 )
 
 IF( APPLE )
-    find_package(Qt5 COMPONENTS MacExtras)
+    find_package(Qt5 ${OC_QT_VERSION} COMPONENTS MacExtras)
     target_link_libraries(owncloudCore PUBLIC Qt5::MacExtras)
 
     target_sources(owncloudCore PRIVATE
@@ -179,7 +179,7 @@ elseif( WIN32 )
     target_link_libraries(owncloudCore PUBLIC Qt5::WinExtras)
 elseif(UNIX AND NOT APPLE )
     ## handle DBUS for Fdo notifications
-    find_package(Qt5 COMPONENTS DBus)
+    find_package(Qt5 ${OC_QT_VERSION} COMPONENTS DBus)
     if (TARGET Qt5::DBus)
         target_link_libraries(owncloudCore PUBLIC Qt5::DBus)
         target_compile_definitions(owncloudCore PUBLIC "USE_FDO_NOTIFICATIONS")

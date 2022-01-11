@@ -23,7 +23,10 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
+# global Qt version, used in all find_package calls
+set(OC_QT_VERSION 5.15)
+
+find_package(Qt5 ${OC_QT_VERSION} REQUIRED COMPONENTS Core)
 
 if(UNIT_TESTING)
     message(DEPRECATION "Setting UNIT_TESTING is deprecated please use BUILD_TESTING")

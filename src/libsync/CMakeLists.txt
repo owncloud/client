@@ -92,7 +92,7 @@ if ( APPLE )
 endif()
 
 if (NOT TOKEN_AUTH_ONLY)
-    find_package(Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt5 ${OC_QT_VERSION} REQUIRED COMPONENTS Widgets)
     target_link_libraries(libsync PUBLIC Qt5::Widgets qt5keychain)
 endif()
 
