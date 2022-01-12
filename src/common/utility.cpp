@@ -341,8 +341,8 @@ QString Utility::platformName()
 
 void Utility::crash()
 {
-    volatile int *a = (int *)nullptr;
-    *a = 1;
+    volatile int *💩 = (int *)nullptr;
+    *💩 = 1;
 }
 
 // read the output of the owncloud --version command from the owncloud
