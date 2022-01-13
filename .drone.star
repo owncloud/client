@@ -79,7 +79,6 @@ def main(ctx):
             name = "build",
             trigger = cron_trigger,
             depends_on = [
-                "clang-debug-ninja",
                 "GUI-tests",
             ],
         ),
