@@ -82,7 +82,7 @@ public:
     virtual void remove(const QString &relativePath) = 0;
     virtual void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') = 0;
     virtual void setContents(const QString &relativePath, char contentChar, int newSize = -1) = 0;
-    virtual void appendByte(const QString &relativePath, char contentChar = 0) = 0;
+    virtual void appendByte(const QString &relativePath, char contentChar = 'X') = 0;
     virtual void modifyByte(const QString &relativePath, quint64 offset, char contentChar) = 0;
     virtual void mkdir(const QString &relativePath) = 0;
     virtual void rename(const QString &relativePath, const QString &relativeDestinationDirectory) = 0;
@@ -90,9 +90,12 @@ public:
     virtual void incModTime(const QString &relativePath, int secondsToAdd) = 0;
 };
 
+class FakeFolder;
+
 class DiskFileModifier : public FileModifier
 {
     QDir _rootDir;
+    QStringList _processArguments;
 
 public:
     DiskFileModifier(const QString &rootDirPath)
@@ -102,13 +105,15 @@ public:
     void remove(const QString &relativePath) override;
     void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') override;
     void setContents(const QString &relativePath, char contentChar, int newSize = -1) override;
-    void appendByte(const QString &relativePath, char contentChar) override;
+    void appendByte(const QString &relativePath, char contentChar = 'X') override;
     void modifyByte(const QString &relativePath, quint64 offset, char contentChar) override;
 
     void mkdir(const QString &relativePath) override;
     void rename(const QString &from, const QString &to) override;
     void setModTime(const QString &relativePath, const QDateTime &modTime) override;
     void incModTime(const QString &relativePath, int secondsToAdd) override;
+
+    bool applyModifications(FakeFolder &ff, OCC::Vfs::Mode mode) Q_REQUIRED_RESULT;
 };
 
 static inline qint64 defaultLastModified()
@@ -154,7 +159,7 @@ public:
 
     void setContents(const QString &relativePath, char contentChar, int newSize = -1) override;
 
-    void appendByte(const QString &relativePath, char contentChar = 0) override;
+    void appendByte(const QString &relativePath, char contentChar = 'X') override;
 
     void modifyByte(const QString &relativePath, quint64 offset, char contentChar) override;
 
@@ -580,7 +585,14 @@ public:
         return execUntilFinished();
     }
 
+    bool applyLocalModifications() Q_REQUIRED_RESULT
+    {
+        auto mode = _syncEngine->syncOptions()._vfs->mode();
+        return _localModifier.applyModifications(*this, mode);
+    }
+
     bool isDehydratedPlaceholder(const QString &filePath);
+    QSharedPointer<OCC::Vfs> vfs() const;
 
 private:
     static void toDisk(QDir &dir, const FileInfo &templateFi);

@@ -719,7 +719,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
 
     if (dbEntry.isValid()) {
         bool typeChange = localEntry.isDirectory != dbEntry.isDirectory();
-        if (!typeChange && localEntry.isVirtualFile) {
+        if (!typeChange && localEntry.isVirtualFile && dbEntry._modtime == localEntry.modtime && dbEntry._fileSize == localEntry.size) {
             if (noServerEntry) {
                 item->_instruction = CSYNC_INSTRUCTION_REMOVE;
                 item->_direction = SyncFileItem::Down;
