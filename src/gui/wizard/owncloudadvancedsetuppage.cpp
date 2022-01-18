@@ -36,9 +36,8 @@
 
 namespace OCC {
 
-OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
-    : AbstractWizardPage()
-    , _ui()
+OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage(OwncloudWizard *parent)
+    : AbstractWizardPage(parent)
     , _checking(false)
     , _created(false)
     , _localFolderValid(false)
@@ -82,17 +81,6 @@ OwncloudAdvancedSetupPage::OwncloudAdvancedSetupPage()
     _ui.lLocalIcon->setPixmap(Utility::getCoreIcon(QStringLiteral("folder-sync")).pixmap(_ui.lLocalIcon->size()));
 
     _ui.rVirtualFileSync->setText(tr("Use &virtual files instead of downloading content immediately%1").arg(bestAvailableVfsMode() == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
-
-    connect(this, &OwncloudAdvancedSetupPage::completeChanged, this, [this] {
-        if (wizard() && owncloudWizard()->authType() == OCC::DetermineAuthTypeJob::AuthType::OAuth) {
-            // For OAuth, disable the back button in the Page_AdvancedSetup because we don't want
-            // to re-open the browser.
-            // HACK: the wizard will reenable the buttons on completeChanged, so delay it
-            QTimer::singleShot(0, this, [this]{
-                wizard()->button(QWizard::BackButton)->setEnabled(false);
-            });
-        }
-    });
 }
 
 bool OwncloudAdvancedSetupPage::isComplete() const
@@ -173,12 +161,6 @@ void OwncloudAdvancedSetupPage::updateStatus()
 
     setErrorString(errorStr);
     emit completeChanged();
-}
-
-int OwncloudAdvancedSetupPage::nextId() const
-{
-    // tells the caller that this is the last dialog page
-    return -1;
 }
 
 QStringList OwncloudAdvancedSetupPage::selectiveSyncBlacklist() const

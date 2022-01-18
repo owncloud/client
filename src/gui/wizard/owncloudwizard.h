@@ -30,6 +30,7 @@ namespace OCC {
 Q_DECLARE_LOGGING_CATEGORY(lcWizard)
 
 class OwncloudSetupPage;
+class OwncloudUserNamePage;
 class OwncloudHttpCredsPage;
 class OwncloudOAuthCredsPage;
 class OwncloudAdvancedSetupPage;
@@ -43,6 +44,7 @@ class AbstractCredentialsWizardPage;
 class OwncloudWizard : public QWizard
 {
     Q_OBJECT
+    Q_PROPERTY(QString user READ user WRITE setUser NOTIFY userChanged)
 public:
     OwncloudWizard(QWidget *parent = nullptr);
 
@@ -77,6 +79,10 @@ public:
     void setUseVirtualFileSync(bool newUseVirtualFileSync);
     bool useVirtualFileSync() const;
 
+    const QString &user() const;
+    void setUser(const QString &newUser);
+
+    int nextId() const override;
 public slots:
     void setAuthType(DetermineAuthTypeJob::AuthType type);
     void successfulStep();
@@ -89,17 +95,22 @@ signals:
     void basicSetupFinished(int);
     void needCertificate();
 
+    void userChanged();
+    void authTypeChanged();
+
 private:
     QString _remoteFolder;
     QString _localFolder;
+    QString _user;
     bool _useVirtualFileSync;
     AccountPtr _account;
     OwncloudSetupPage *_setupPage;
+    OwncloudUserNamePage *_userPage;
     OwncloudHttpCredsPage *_httpCredsPage;
     OwncloudOAuthCredsPage *_oauthCredsPage;
     OwncloudAdvancedSetupPage *_advancedSetupPage;
     AbstractCredentialsWizardPage *_credentialsPage;
-    DetermineAuthTypeJob::AuthType _authType;
+    DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
 
     friend class OwncloudSetupWizard;
 };

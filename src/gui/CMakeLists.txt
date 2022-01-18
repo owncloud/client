@@ -32,6 +32,7 @@ set(client_UI_SRCS
     wizard/owncloudhttpcredspage.ui
     wizard/owncloudoauthcredspage.ui
     wizard/owncloudsetuppage.ui
+    wizard/owncloudusernamepage.ui
 )
 
 set(client_SRCS
@@ -103,6 +104,7 @@ set(client_SRCS
     wizard/owncloudsetuppage.cpp
     wizard/owncloudwizardcommon.cpp
     wizard/owncloudwizard.cpp
+    wizard/owncloudusernamepage.cpp
 )
 
 set(3rdparty_SRC

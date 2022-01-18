@@ -35,13 +35,12 @@ class OwncloudOAuthCredsPage : public AbstractCredentialsWizardPage
 {
     Q_OBJECT
 public:
-    OwncloudOAuthCredsPage();
+    OwncloudOAuthCredsPage(OwncloudWizard *parent);
 
     AbstractCredentials *getCredentials() const override;
 
     void initializePage() override;
     void cleanupPage() override;
-    int nextId() const override;
     void setConnected();
     bool isComplete() const override;
 

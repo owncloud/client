@@ -592,6 +592,22 @@ bool Theme::forceSystemNetworkProxy() const
     return false;
 }
 
+QString Theme::enumToDisplayName(UserIDType id)
+{
+#ifndef MIRALL_VERSION_MINOR
+#error Use the templated version in 2.11 (MIRALL_VERSION_MINOR is no longer defined in 2.11)
+#endif
+    switch (id) {
+    case Theme::UserIDUserName:
+        return tr("Username");
+    case Theme::UserIDEmail:
+        return tr("Email");
+    case Theme::UserIDCustom:
+        return customUserID();
+    }
+    Q_UNREACHABLE();
+}
+
 Theme::UserIDType Theme::userIDType() const
 {
     return UserIDType::UserIDUserName;

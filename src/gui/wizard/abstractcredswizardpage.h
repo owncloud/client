@@ -29,12 +29,17 @@ class AbstractCredentials;
 class AbstractWizardPage : public QWizardPage
 {
 public:
+    AbstractWizardPage(OwncloudWizard *parent);
     OwncloudWizard *owncloudWizard() const;
+
+private:
+    OwncloudWizard *_parent;
 };
 
 class AbstractCredentialsWizardPage : public AbstractWizardPage
 {
 public:
+    using AbstractWizardPage::AbstractWizardPage;
     void cleanupPage() override;
     virtual AbstractCredentials *getCredentials() const = 0;
 };

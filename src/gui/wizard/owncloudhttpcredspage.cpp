@@ -25,35 +25,19 @@
 
 namespace OCC {
 
-OwncloudHttpCredsPage::OwncloudHttpCredsPage(QWidget *parent)
-    : AbstractCredentialsWizardPage()
+OwncloudHttpCredsPage::OwncloudHttpCredsPage(OwncloudWizard *parent)
+    : AbstractCredentialsWizardPage(parent)
     , _ui()
     , _connected(false)
     , _progressIndi(new QProgressIndicator(this))
 {
     _ui.setupUi(this);
 
-    if (parent) {
-        _ocWizard = qobject_cast<OwncloudWizard *>(parent);
-    }
-
-    registerField(QLatin1String("OCUser*"), _ui.leUsername);
     registerField(QLatin1String("OCPasswd*"), _ui.lePassword);
 
     Theme *theme = Theme::instance();
-    switch (theme->userIDType()) {
-    case Theme::UserIDUserName:
-        // default, handled in ui file
-        break;
-    case Theme::UserIDEmail:
-        _ui.usernameLabel->setText(tr("&Email"));
-        break;
-    case Theme::UserIDCustom:
-        _ui.usernameLabel->setText(theme->customUserID());
-        break;
-    default:
-        break;
-    }
+    _ui.usernameLabel->setText(theme->enumToDisplayName(theme->userIDType()));
+
     _ui.leUsername->setPlaceholderText(theme->userIDHint());
 
     setTitle(WizardCommon::titleTemplate().arg(tr("Connect to %1").arg(Theme::instance()->appNameGUI())));
@@ -94,6 +78,10 @@ void OwncloudHttpCredsPage::initializePage()
         if (!password.isEmpty()) {
             _ui.lePassword->setText(password);
         }
+    }
+    const QString user = owncloudWizard()->user();
+    if (!user.isEmpty()) {
+        _ui.leUsername->setText(user);
     }
     _ui.tokenLabel->setText(HttpCredentialsGui::requestAppPasswordText(ocWizard->account().data()));
     _ui.tokenLabel->setVisible(!_ui.tokenLabel->text().isEmpty());
@@ -137,14 +125,6 @@ bool OwncloudHttpCredsPage::validatePage()
         return true;
     }
     return true;
-}
-
-int OwncloudHttpCredsPage::nextId() const
-{
-    if (Theme::instance()->wizardSkipAdvancedPage()) {
-        return -1;
-    }
-    return WizardCommon::Page_AdvancedSetup;
 }
 
 void OwncloudHttpCredsPage::setConnected()

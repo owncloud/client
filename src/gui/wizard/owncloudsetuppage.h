@@ -19,8 +19,9 @@
 #include <QScopedPointer>
 #include <QWizard>
 
-#include "wizard/owncloudwizardcommon.h"
+#include "wizard/abstractcredswizardpage.h"
 #include "wizard/owncloudwizard.h"
+#include "wizard/owncloudwizardcommon.h"
 
 class QLabel;
 class QVariant;
@@ -34,16 +35,15 @@ namespace OCC {
  * @brief The OwncloudSetupPage class
  * @ingroup gui
  */
-class OwncloudSetupPage : public QWizardPage
+class OwncloudSetupPage : public AbstractWizardPage
 {
     Q_OBJECT
 public:
-    OwncloudSetupPage(QWidget *parent = nullptr);
+    OwncloudSetupPage(OwncloudWizard *parent);
     ~OwncloudSetupPage() override;
 
     bool isComplete() const override;
     void initializePage() override;
-    int nextId() const override;
     void setServerUrl(const QString &);
     void setAllowPasswordStorage(bool);
     bool validatePage() override;
@@ -55,29 +55,16 @@ public:
 
 public slots:
     void setErrorString(const QString &);
-    void startSpinner();
-    void stopSpinner();
 
 protected slots:
     void slotUrlChanged(const QString &);
     void slotUrlEditFinished();
 
-signals:
-    void determineAuthType(const QString &);
-
 private:
     QScopedPointer<Ui_OwncloudSetupPage> _ui;
 
     QString _oCUrl;
-    QString _ocUser;
-    bool _authTypeKnown;
-    bool _checking;
-    bool _multipleFoldersExist;
-
-    QProgressIndicator *_progressIndi;
     QButtonGroup *_selectiveSyncButtons;
-    QString _remoteFolder;
-    OwncloudWizard *_ocWizard;
 };
 
 } // namespace OCC

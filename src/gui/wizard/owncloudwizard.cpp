@@ -21,11 +21,12 @@
 #include "application.h"
 #include "settingsdialog.h"
 
-#include "wizard/owncloudwizard.h"
-#include "wizard/owncloudsetuppage.h"
+#include "wizard/owncloudadvancedsetuppage.h"
 #include "wizard/owncloudhttpcredspage.h"
 #include "wizard/owncloudoauthcredspage.h"
-#include "wizard/owncloudadvancedsetuppage.h"
+#include "wizard/owncloudsetuppage.h"
+#include "wizard/owncloudusernamepage.h"
+#include "wizard/owncloudwizard.h"
 
 #include "common/vfs.h"
 
@@ -62,25 +63,24 @@ OwncloudWizard::OwncloudWizard(QWidget *parent)
     , _useVirtualFileSync(bestAvailableVfsMode() == Vfs::WindowsCfApi)
     , _account(nullptr)
     , _setupPage(new OwncloudSetupPage(this))
+    , _userPage(new OwncloudUserNamePage(this))
     , _httpCredsPage(new OwncloudHttpCredsPage(this))
-    , _oauthCredsPage(new OwncloudOAuthCredsPage)
-    , _advancedSetupPage(new OwncloudAdvancedSetupPage)
+    , _oauthCredsPage(new OwncloudOAuthCredsPage(this))
+    , _advancedSetupPage(new OwncloudAdvancedSetupPage(this))
     , _credentialsPage(nullptr)
 {
     setObjectName("owncloudWizard");
 
     setPage(WizardCommon::Page_ServerSetup, _setupPage);
+    setPage(WizardCommon::Page_Username, _userPage);
     setPage(WizardCommon::Page_HttpCreds, _httpCredsPage);
     setPage(WizardCommon::Page_OAuthCreds, _oauthCredsPage);
     setPage(WizardCommon::Page_AdvancedSetup, _advancedSetupPage);
 
     connect(this, &QDialog::finished, this, &OwncloudWizard::basicSetupFinished);
 
-    // note: start Id is set by the calling class depending on if the
-    // welcome text is to be shown or not.
     setWizardStyle(QWizard::ModernStyle);
 
-    connect(_setupPage, &OwncloudSetupPage::determineAuthType, this, &OwncloudWizard::determineAuthType);
     connect(_httpCredsPage, &OwncloudHttpCredsPage::connectToOCUrl, this, &OwncloudWizard::connectToOCUrl);
     connect(_oauthCredsPage, &OwncloudOAuthCredsPage::connectToOCUrl, this, &OwncloudWizard::connectToOCUrl);
 
@@ -182,6 +182,19 @@ void OwncloudWizard::successfulStep()
     }
 }
 
+const QString &OwncloudWizard::user() const
+{
+    return _user;
+}
+
+void OwncloudWizard::setUser(const QString &newUser)
+{
+    if (_user == newUser)
+        return;
+    _user = newUser;
+    emit userChanged();
+}
+
 void OwncloudWizard::setUseVirtualFileSync(bool newUseVirtualFileSync)
 {
     _useVirtualFileSync = newUseVirtualFileSync;
@@ -205,13 +218,49 @@ DetermineAuthTypeJob::AuthType OwncloudWizard::authType() const
 void OwncloudWizard::setAuthType(DetermineAuthTypeJob::AuthType type)
 {
     _authType = type;
-    _setupPage->setAuthType();
-    if (type == DetermineAuthTypeJob::AuthType::OAuth) {
+    if (type == DetermineAuthTypeJob::AuthType::Unknown) {
+        _credentialsPage = nullptr;
+    } else if (type == DetermineAuthTypeJob::AuthType::OAuth) {
         _credentialsPage = _oauthCredsPage;
-    } else { // try Basic auth even for "Unknown"
+    } else {
         _credentialsPage = _httpCredsPage;
     }
-    next();
+    Q_EMIT authTypeChanged();
+}
+
+
+int OwncloudWizard::nextId() const
+{
+    auto authPageId = [this] {
+        switch (authType()) {
+        case DetermineAuthTypeJob::AuthType::Basic:
+            return WizardCommon::Page_HttpCreds;
+        case DetermineAuthTypeJob::AuthType::OAuth:
+            return WizardCommon::Page_OAuthCreds;
+        case DetermineAuthTypeJob::AuthType::Unknown:
+            // next id is already requested when we enter the page and don't know yet
+            // return something to make Qt happy
+            return WizardCommon::Page_HttpCreds;
+        };
+        Q_UNREACHABLE();
+    };
+
+    switch (currentId()) {
+    case WizardCommon::Page_ServerSetup:
+        return WizardCommon::Page_Username;
+    case WizardCommon::Page_Username:
+        return authPageId();
+    case WizardCommon::Page_HttpCreds:
+        Q_FALLTHROUGH();
+    case WizardCommon::Page_OAuthCreds:
+        if (Theme::instance()->wizardSkipAdvancedPage()) {
+            return -1;
+        }
+        return WizardCommon::Page_AdvancedSetup;
+    case WizardCommon::Page_AdvancedSetup:
+        return -1;
+    }
+    Q_UNREACHABLE();
 }
 
 

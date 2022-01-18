@@ -37,17 +37,11 @@
 
 namespace OCC {
 
-OwncloudSetupPage::OwncloudSetupPage(QWidget *parent)
-    : QWizardPage()
+OwncloudSetupPage::OwncloudSetupPage(OwncloudWizard *parent)
+    : AbstractWizardPage(parent)
     , _ui(new Ui_OwncloudSetupPage)
-    , _oCUrl()
-    , _ocUser()
-    , _authTypeKnown(false)
-    , _checking(false)
-    , _progressIndi(new QProgressIndicator(this))
 {
     _ui->setupUi(this);
-    _ocWizard = qobject_cast<OwncloudWizard *>(parent);
 
     Theme *theme = Theme::instance();
     setTitle(WizardCommon::titleTemplate().arg(tr("Connect to %1").arg(theme->appNameGUI())));
@@ -62,9 +56,6 @@ OwncloudSetupPage::OwncloudSetupPage(QWidget *parent)
 
 
     registerField(QLatin1String("OCUrl*"), _ui->leUrl);
-
-    _ui->resultLayout->addWidget(_progressIndi);
-    stopSpinner();
 
     slotUrlChanged(QString()); // don't jitter UI
     connect(_ui->leUrl, &QLineEdit::textChanged, this, &OwncloudSetupPage::slotUrlChanged);
@@ -85,14 +76,12 @@ void OwncloudSetupPage::setServerUrl(const QString &newUrl)
 // slot hit from textChanged of the url entry field.
 void OwncloudSetupPage::slotUrlChanged(const QString &url)
 {
-    _authTypeKnown = false;
-
     QString newUrl = url;
     if (url.endsWith("index.php")) {
         newUrl.chop(9);
     }
-    if (_ocWizard && _ocWizard->account()) {
-        QString webDavPath = _ocWizard->account()->davPath();
+    if (owncloudWizard()->account()) {
+        QString webDavPath = owncloudWizard()->account()->davPath();
         if (url.endsWith(webDavPath)) {
             newUrl.chop(webDavPath.length());
         }
@@ -129,15 +118,12 @@ void OwncloudSetupPage::slotUrlEditFinished()
 
 bool OwncloudSetupPage::isComplete() const
 {
-    return !_ui->leUrl->text().isEmpty() && !_checking;
+    return !_ui->leUrl->text().isEmpty();
 }
 
 void OwncloudSetupPage::initializePage()
 {
     WizardCommon::initErrorLabel(_ui->errorLabel);
-
-    _authTypeKnown = false;
-    _checking = false;
 
     QAbstractButton *nextButton = wizard()->button(QWizard::NextButton);
     QPushButton *pushButton = qobject_cast<QPushButton *>(nextButton);
@@ -153,21 +139,10 @@ void OwncloudSetupPage::initializePage()
         setCommitPage(true);
         // Hack: setCommitPage() changes caption, but after an error this page could still be visible
         setButtonText(QWizard::CommitButton, tr("&Next >"));
-        validatePage();
+        if (validatePage()) {
+            QTimer::singleShot(0, owncloudWizard(), &OwncloudWizard::next);
+        }
     }
-}
-
-int OwncloudSetupPage::nextId() const
-{
-    switch (_ocWizard->authType()) {
-    case DetermineAuthTypeJob::AuthType::Basic:
-        return WizardCommon::Page_HttpCreds;
-    case DetermineAuthTypeJob::AuthType::OAuth:
-        return WizardCommon::Page_OAuthCreds;
-    case DetermineAuthTypeJob::AuthType::Unknown:
-        Q_UNREACHABLE();
-    }
-    return WizardCommon::Page_HttpCreds;
 }
 
 QString OwncloudSetupPage::url() const
@@ -178,35 +153,16 @@ QString OwncloudSetupPage::url() const
 
 bool OwncloudSetupPage::validatePage()
 {
-    if (!_authTypeKnown) {
-        slotUrlEditFinished();
-        QString u = url();
-        QUrl qurl(u);
-        if (!qurl.isValid() || qurl.host().isEmpty()) {
-            setErrorString(tr("Invalid URL"));
-            return false;
-        }
-
-        setErrorString(QString());
-        _checking = true;
-        startSpinner();
-        emit completeChanged();
-
-        emit determineAuthType(u);
+    slotUrlEditFinished();
+    QString u = url();
+    QUrl qurl(u);
+    if (!qurl.isValid() || qurl.host().isEmpty()) {
+        setErrorString(tr("Invalid URL"));
         return false;
-    } else {
-        // connecting is running
-        stopSpinner();
-        _checking = false;
-        emit completeChanged();
-        return true;
     }
-}
-
-void OwncloudSetupPage::setAuthType()
-{
-    _authTypeKnown = true;
-    stopSpinner();
+    owncloudWizard()->account()->setUrl(qurl);
+    setErrorString(QString());
+    return true;
 }
 
 void OwncloudSetupPage::setErrorString(const QString &err)
@@ -217,23 +173,7 @@ void OwncloudSetupPage::setErrorString(const QString &err)
         _ui->errorLabel->setVisible(true);
         _ui->errorLabel->setText(err);
     }
-    _checking = false;
     emit completeChanged();
-    stopSpinner();
-}
-
-void OwncloudSetupPage::startSpinner()
-{
-    _ui->resultLayout->setEnabled(true);
-    _progressIndi->setVisible(true);
-    _progressIndi->startAnimation();
-}
-
-void OwncloudSetupPage::stopSpinner()
-{
-    _ui->resultLayout->setEnabled(false);
-    _progressIndi->setVisible(false);
-    _progressIndi->stopAnimation();
 }
 
 OwncloudSetupPage::~OwncloudSetupPage()

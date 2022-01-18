@@ -33,8 +33,14 @@ void AbstractCredentialsWizardPage::cleanupPage()
     }
 }
 
+AbstractWizardPage::AbstractWizardPage(OwncloudWizard *parent)
+    : QWizardPage(parent)
+    , _parent(parent)
+{
+}
+
 OwncloudWizard *AbstractWizardPage::owncloudWizard() const
 {
-    return qobject_cast<OwncloudWizard *>(wizard());
+    return _parent;
 }
 }

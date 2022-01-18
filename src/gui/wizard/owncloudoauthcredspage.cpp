@@ -28,8 +28,8 @@
 
 namespace OCC {
 
-OwncloudOAuthCredsPage::OwncloudOAuthCredsPage()
-    : AbstractCredentialsWizardPage()
+OwncloudOAuthCredsPage::OwncloudOAuthCredsPage(OwncloudWizard *parent)
+    : AbstractCredentialsWizardPage(parent)
 {
     _ui.setupUi(this);
 
@@ -40,13 +40,17 @@ OwncloudOAuthCredsPage::OwncloudOAuthCredsPage()
 
     setTitle(WizardCommon::titleTemplate().arg(tr("Connect to %1").arg(Theme::instance()->appNameGUI())));
     setSubTitle(WizardCommon::subTitleTemplate().arg(tr("Login in your browser")));
+    // don't allow to go back once accepted
+    setCommitPage(true);
+    // Hack: setCommitPage() changes caption, but after an error this page could still be visible
+    setButtonText(QWizard::CommitButton, tr("&Next >"));
 
-    connect(_ui.openLinkButton, &QCommandLinkButton::clicked, [this] {
+    connect(_ui.openLinkButton, &QCommandLinkButton::clicked, this, [this] {
         _ui.errorLabel->hide();
         oauth()->openBrowser();
     });
     _ui.openLinkButton->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(_ui.openLinkButton, &QWidget::customContextMenuRequested, [this](const QPoint &pos) {
+    QObject::connect(_ui.openLinkButton, &QWidget::customContextMenuRequested, this, [this](const QPoint &pos) {
         auto menu = new QMenu(_ui.openLinkButton);
         menu->addAction(tr("Copy link to clipboard"), this, [this] {
             oauth()->authorisationLinkAsync([](const QUrl &link) {
@@ -112,14 +116,6 @@ OAuth *OwncloudOAuthCredsPage::oauth()
         _asyncAuth->startAuthentication();
     }
     return _asyncAuth.get();
-}
-
-int OwncloudOAuthCredsPage::nextId() const
-{
-    if (Theme::instance()->wizardSkipAdvancedPage()) {
-        return -1;
-    }
-    return WizardCommon::Page_AdvancedSetup;
 }
 
 void OwncloudOAuthCredsPage::setConnected()

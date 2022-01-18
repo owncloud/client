@@ -34,11 +34,10 @@ class OwncloudAdvancedSetupPage : public AbstractWizardPage
 {
     Q_OBJECT
 public:
-    OwncloudAdvancedSetupPage();
+    OwncloudAdvancedSetupPage(OCC::OwncloudWizard *parent);
 
     bool isComplete() const override;
     void initializePage() override;
-    int nextId() const override;
     bool validatePage() override;
     QStringList selectiveSyncBlacklist() const;
     bool manualFolderConfig() const;

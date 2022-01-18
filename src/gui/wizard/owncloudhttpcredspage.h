@@ -32,14 +32,13 @@ class OwncloudHttpCredsPage : public AbstractCredentialsWizardPage
 {
     Q_OBJECT
 public:
-    OwncloudHttpCredsPage(QWidget *parent);
+    OwncloudHttpCredsPage(OwncloudWizard *parent);
 
     AbstractCredentials *getCredentials() const override;
 
     void initializePage() override;
     void cleanupPage() override;
     bool validatePage() override;
-    int nextId() const override;
     void setConnected();
     void setErrorString(const QString &err);
 
@@ -52,7 +51,6 @@ private:
     Ui_OwncloudHttpCredsPage _ui;
     bool _connected;
     QProgressIndicator *_progressIndi;
-    OwncloudWizard *_ocWizard;
 };
 
 } // namespace OCC

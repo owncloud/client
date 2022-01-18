@@ -311,6 +311,8 @@ public:
         UserIDEmail,
         UserIDCustom };
 
+    QString enumToDisplayName(UserIDType id);
+
     /** @brief What to display as the userID (e.g. in the wizards)
      *
      *  @return UserIDType::UserIDUserName, unless reimplemented
