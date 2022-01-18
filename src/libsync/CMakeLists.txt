@@ -42,6 +42,7 @@ set(libsync_SRCS
     creds/abstractcredentials.cpp
     creds/credentialscommon.cpp
     creds/oauth.cpp
+    creds/webfinger.cpp
 )
 
 if(TOKEN_AUTH_ONLY)
