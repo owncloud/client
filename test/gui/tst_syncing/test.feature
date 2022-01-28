@@ -330,3 +330,25 @@ Feature: Syncing files
         And as "Alice" file "testaudio.mp3" should exist on the server
         And as "Alice" file "test_video.mp4" should exist on the server
         And as "Alice" file "simple.txt" should exist on the server
+    Scenario: File with long name can be synced
+        Given user "Alice" has set up a client with default settings
+        # the length of file name is 224
+        When user "Alice" creates a file "sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" with the following content inside the sync folder
+            """
+            test content
+            """
+        And the user waits for file "sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" to be synced
+        Then as "Alice" file "sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" should exist on the server
+
+
+	Scenario: Filename with long name(>233 character) raise an error
+	    Given user "Alice" has set up a client with default settings
+        # the length of file name is 233
+        When user "Alice" creates a file "qqqqqqqqqsdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" with the following content inside the sync folder
+            """
+            test contents
+            """
+        When the user clicks on the activity tab
+        And the user selects "Not Synced" tab in the activity
+        Then the file "qqqqqqqqqsdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" should be blacklisted
+
