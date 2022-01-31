@@ -12,7 +12,7 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
 * [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
 * [ ] QA: Inform the docu team on rocketchat ``#documentation-internal`` about an upcoming major or minor release
 * [ ] QA: Check the translations coming from https://github.com/owncloud/client/actions/workflows/translate.yml
-* [ ] QA: Make sure squish tests are running successfully on X.x branch: go to https://github.com/owncloud/client, click on 'commits' above the source tree, click on green checkmark of latest commit, click 'Details' on 'continious-integration/drone/push' and check GUI-tests-@smokeTest
+* [ ] QA: Make sure squish tests are running successfully on X.x branch: go to https://github.com/owncloud/client, click on 'commits' above the source tree, click on green checkmark of latest commit, click 'Details' on 'continious-integration/drone/push' and check GUI-tests-@smokeTest. Also check daily (nightly) builds for the current release on drone. __TODO__: put details on a confluence page
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch) 
@@ -22,13 +22,13 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
 
 * [ ] DEV: Tag and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
 * [ ] QA: Upload linux gpg keys to key server [key_server_upload](https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/key_server_upload.sh)
-* [ ] QA: Ping ``#documentation-internal``: Changelog is ready. (open doc issues for already known doc-relevant items)
+* [ ] QA: Ping ``#documentation-internal``: Changelog is ready. (open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary)
 * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
 * [ ] Beta/RC [Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    * [ ] Website links for beta (needed for the following posts)
    * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] All other stakeholders
-* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal') 
+* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
 
 ### QA
 
@@ -40,14 +40,15 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
        * [ ] RUN.sh -> paste the log/test_YYYYMMDD_hhmm.log file into the client release ticket.
        * [ ] TO DO: extend 08-appimage.sh ("xvfb-run")
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
-* [ ] QA: Create testplan according to release type (patch release: add tests in a comment, for minor release: create a separate ticket), for testplan templates see https://confluence.owncloud.com/display/OG/Desktop+Client+Release+Process and link here
-* [ ] QA: Add changelog testing as a comment (to above testplan ticket or here), changeLog issues see https://github.com/owncloud/client/releases/ and link here
+* [ ] QA: Create testplan according to release type (patch release: add tests in a comment, for major/minor release: create a separate ticket), for testplan templates see https://confluence.owncloud.com/display/OG/Desktop+Client+Release+Process and link here
+* [ ] QA: Add changelog testing as a comment (to the testplan ticket or here), changeLog issues see https://github.com/owncloud/client/releases/ and link here
+* [ ] QA: If required: create a separate test plan ticket for Windows VFS testing from [Template](https://github.com/owncloud/QA/blob/master/Desktop/Test_Plan_VFS.md) and link here
 
 ### Final Rebuild after QA Approval
 
 * [ ] QA: Inform on ``#documentation-internal`` that the tag for the final release will be set a day or at least some hours before (only for a major/minor release)
 * [ ] DEV: Tag and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' for final build 
-     * [ ] TODO: create confluence page with info about final DEV release steps [WIP: Final release steps](https://confluence.owncloud.com/display/OG/WIP%3A+Final+release+steps+-+check+outdated+pages+first)
+     * [ ] __TODO__: create confluence page with info about final DEV release steps [WIP: Final release steps](https://confluence.owncloud.com/display/OG/WIP%3A+Final+release+steps+-+check+outdated+pages+first)
 * [ ] DEV: Adjust [Linux Templates](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-Linuxtemplates) to support the next patch release version (e.g. 2.9.1) @dschmidt @fmoc
 * [ ] DEV: Ping ``#release-coordination`` so that marketing can do their [actions](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Marketingtasks)
 * [ ] DEV: Create [a (draft) release](https://github.com/owncloud/client/releases) with Download links - save as a draft until smoke tested
@@ -61,7 +62,10 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
 * [ ] QA: Check [documentation](https://confluence.owncloud.com/display/OG/Documentation)
 
 ### Communicate the Availability
-
+* [ ] Inform ``#marketing`` (Markus Feilner) and remind to update Wikipedia + Wikidata
+  * [ ] https://de.wikipedia.org/wiki/OwnCloud
+  * [ ] https://en.wikipedia.org/wiki/OwnCloud
+  * [ ] https://www.wikidata.org/wiki/Q20763576
 * [ ] Final [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    * [ ] Website links for final release (needed for the following posts)
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
