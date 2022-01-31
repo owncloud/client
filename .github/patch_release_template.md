@@ -12,7 +12,7 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
 * [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
 * [ ] QA: Inform the docu team on rocketchat ``#documentation-internal`` about an upcoming major or minor release
 * [ ] QA: Check the translations coming from https://github.com/owncloud/client/actions/workflows/translate.yml
-* [ ] QA: Make sure squish tests are running successfully on X.x branch: go to https://github.com/owncloud/client, click on 'commits' above the source tree, click on green checkmark of latest commit, click 'Details' on 'continious-integration/drone/push' and check GUI-tests-@smokeTest. Also check daily (nightly) builds for the current release on drone. __TODO__: put details on a confluence page
+* [ ] QA: Make sure squish tests are running successfully on X.x branch: go to https://github.com/owncloud/client, click on 'commits' above the source tree, click on green checkmark of latest commit, click 'Details' on 'continious-integration/drone/push' and check GUI-tests-@smokeTest. Also check daily builds for the current release, e.g. ``nightly-2-10`` on [drone](https://drone.owncloud.com/owncloud/client). __TODO__: put details on a confluence page
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch) 
