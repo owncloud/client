@@ -503,7 +503,6 @@ void CheckServerJob::metaDataChangedSlot()
 
 bool CheckServerJob::finished()
 {
-    // TODO: base on jsonJob
     const QUrl targetUrl = reply()->url().adjusted(QUrl::RemoveFilename);
     if (targetUrl.scheme() == QLatin1String("https")
         && reply()->sslConfiguration().sessionTicket().isEmpty()
