@@ -3,9 +3,10 @@
 * Needed for branded client X.x.x release (link to branded release ticket)
 
 ### Template
-[Patch Release Template](https://github.com/owncloud/client/blob/master/.github/patch_release_template.md)
+[Release Template](https://github.com/owncloud/client/blob/master/.github/release_template.md)
 
-__TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/master/.github/patch_release_template.md) is used for this ticket because it's the newest, updated version for a release ticket template. Check if anything is missing from [release_template.md](https://github.com/owncloud/client/blob/master/.github/release_template.md) and merge here. So we can use the same template for a patch, minor or major release in future.
+__TODO__:
+* Check if anything is missing from [release_template_outdated_2020.md](https://github.com/owncloud/client/blob/master/.github/release_template_outdated_2020.md) and merge here. We use the same template for a patch, minor or major release now.
 
 ### Prerequisites
 
@@ -15,7 +16,10 @@ __TODO__: [patch_release_template.md](https://github.com/owncloud/client/blob/ma
 * [ ] QA: Make sure squish tests are running successfully on X.x branch: go to https://github.com/owncloud/client, click on 'commits' above the source tree, click on green checkmark of latest commit, click 'Details' on 'continious-integration/drone/push' and check GUI-tests-@smokeTest. Also check daily builds for the current release, e.g. ``nightly-2-10`` on [drone](https://drone.owncloud.com/owncloud/client). __TODO__: put details on a confluence page
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
-* [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch) 
+* [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)
+   <br/>If this *is* a minor release:
+   * [ ] DEV: Create new `X.x` version branch.
+   * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
 * [ ] DEV: bump VERSION.cmake in master to say 2.(x+1).x unless already done.
 
 ### Build
