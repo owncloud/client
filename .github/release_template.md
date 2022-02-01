@@ -13,13 +13,13 @@ __TODO__:
 * [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
 * [ ] QA: Inform the docu team on rocketchat ``#documentation-internal`` about an upcoming major or minor release
 * [ ] QA: Check the translations coming from https://github.com/owncloud/client/actions/workflows/translate.yml
-* [ ] QA: Make sure squish tests are running successfully on X.x branch and check daily builds for the current release, e.g. ``nightly-2-10`` on [drone](https://drone.owncloud.com/owncloud/client) https://confluence.owncloud.com/display/OG/Squish+testing
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)
    <br/>If this *is* a minor release:
    * [ ] DEV: Create new `X.x` version branch.
    * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
+* [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+testing) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
 * [ ] DEV: bump VERSION.cmake in master to say 2.(x+1).x unless already done.
 
 ### Build
@@ -53,7 +53,6 @@ __TODO__:
 * [ ] QA: Inform on ``#documentation-internal`` that the tag for the final release will be set a day or at least some hours __before__ (only for a major/minor release)
 * [ ] DEV: Tag and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Tags) for theme 'ownCloud' and 'testpilotcloud' for final build
 * [ ] QA: Check squish tests running successful on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v2.X.x
-     __TODO__: add the info to "Squish testing" confluence page
 * [ ] DEV: Adjust [Linux Templates](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-Linuxtemplates) to support the next patch release version (e.g. 2.9.1) @dschmidt @fmoc
 * [ ] DEV: Ping ``#release-coordination`` so that marketing can do their [actions](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Marketingtasks)
 * [ ] DEV: Create [a (draft) release](https://github.com/owncloud/client/releases) with Download links - save as a draft until smoke tested
