@@ -294,25 +294,31 @@ Feature: Syncing files
         And as "Alice" file "/foo%" should exist on the server
 
 
-    Scenario: File with long name can be synced
+    Scenario Outline: File with long name can be synced
         Given user "Alice" has set up a client with default settings
         # the length of file name is 224
-        When user "Alice" creates a file "sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" with the following content inside the sync folder
+        When user "Alice" creates a file "<filename>" with the following content inside the sync folder
             """
             test content
             """
-        And the user waits for file "sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" to be synced
-        Then as "Alice" file "sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" should exist on the server
+        And the user waits for file "<filename>" to be synced
+        Then as "Alice" file "<filename>" should exist on the server
+		Examples:
+		|filename|
+		|sdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt|
 
 
-	Scenario: Filename with long name(>233 character) raise an error
+	Scenario Outline: Filename with long name(>233 character) raise an error
 	    Given user "Alice" has set up a client with default settings
         # the length of file name is 233
-        When user "Alice" creates a file "qqqqqqqqqsdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" with the following content inside the sync folder
+        When user "Alice" creates a file "<filename>" with the following content inside the sync folder
             """
             test contents
             """
         When the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
-        Then the file "qqqqqqqqqsdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt" should be blacklisted
+        Then the file "<filename>" should be blacklisted
+        Examples:
+	        |filename|
+	        |qqqqqqqqqsdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt|
 
