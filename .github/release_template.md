@@ -15,10 +15,10 @@ __TODO__:
 * [ ] QA: Check the translations coming from https://github.com/owncloud/client/actions/workflows/translate.yml
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
-* [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)
-   <br/>If this *is* a minor release:
-   * [ ] DEV: Create new `X.x` version branch.
-   * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
+* [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
+  If this *is* a minor release:
+  * [ ] DEV: Create new `X.x` version branch.
+  * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
 * [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+testing) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
 * [ ] DEV: bump VERSION.cmake in master to say 2.(x+1).x unless already done.
 
