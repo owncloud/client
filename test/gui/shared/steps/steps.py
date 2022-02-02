@@ -584,6 +584,12 @@ def step(context, filename):
     activity.checkBlackListedFileExist(filename)
 
 
+@When('the user waits until at least a file is blacklisted')
+def step(context):
+    activity = Activity()
+    activity.checkAtLeastABlacklistedFile()
+
+
 @When('the user selects "|any|" tab in the activity')
 def step(context, tabName):
     activity = Activity()

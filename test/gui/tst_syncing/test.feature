@@ -244,7 +244,7 @@ Feature: Syncing files
         And as "Alice" folder "Folder1/subFolder1" should exist on the server
         And as "Alice" folder "Folder1/subFolder1/subFolder2" should exist on the server
 
-    @skip @issue-9281
+    @issue-9281
     Scenario: Filenames that are rejected by the server are reported
         Given user "Alice" has set up a client with default settings
         And user "Alice" has created a folder "Folder1" inside the sync folder
@@ -256,6 +256,7 @@ Feature: Syncing files
         Then as "Alice" folder "Folder1" should exist on the server
         When the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
+        And the user waits until at least a file is blacklisted
         Then the file "Folder1/a\\a.txt" should be blacklisted
 
 
@@ -315,8 +316,9 @@ Feature: Syncing files
             """
             test contents
             """
-        When the user clicks on the activity tab
+        And the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
+        And the user waits until at least a file is blacklisted
         Then the file "<filename>" should be blacklisted
         Examples:
 	        |filename|
