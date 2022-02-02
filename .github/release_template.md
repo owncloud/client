@@ -71,7 +71,7 @@ __TODO__:
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] QA: Inform on ``#updates`` channel, so that marketing knows about the new release
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
-* [ ] Inform ``#marketing`` (Markus Feilner) and remind to update Wikipedia + Wikidata
+* [ ] Inform ``#marketing`` (@bwalter, Markus Feilner) and remind to update Wikipedia + Wikidata
   * [ ] https://de.wikipedia.org/wiki/OwnCloud
   * [ ] https://en.wikipedia.org/wiki/OwnCloud
   * [ ] https://www.wikidata.org/wiki/Q20763576
