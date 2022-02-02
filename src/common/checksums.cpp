@@ -360,8 +360,16 @@ void ValidateChecksumHeader::slotChecksumCalculated(const QByteArray &checksumTy
         emit validationFailed(tr("The checksum header contained an unknown checksum type '%1'").arg(QString::fromLatin1(_expectedChecksumType)));
         return;
     }
-    if (checksum != _expectedChecksum) {
-        emit validationFailed(tr("The downloaded file does not match the checksum, it will be resumed. '%1' != '%2'").arg(QString::fromUtf8(_expectedChecksum), QString::fromUtf8(checksum)));
+
+    QString checksumStr = QString::fromUtf8(checksum), expectedStr = QString::fromUtf8(_expectedChecksum);
+    // The checksum returned by the server might be zero-padded, whereas the locally computed one is not
+    if (expectedStr.length() - checksumStr.length() > 0) {
+        QString zeroes(expectedStr.length() - checksumStr.length(), QChar::fromLatin1('0'));
+        checksumStr.prepend(zeroes);
+    }
+
+    if (checksumStr != expectedStr) {
+        emit validationFailed(tr("The downloaded file does not match the checksum, it will be resumed. '%1' != '%2'").arg(expectedStr, checksumStr));
         return;
     }
     emit validated(checksumType, checksum);
