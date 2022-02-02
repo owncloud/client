@@ -239,7 +239,12 @@ Application::Application(int &argc, char **argv)
     //    setOrganizationName(QLatin1String(APPLICATION_VENDOR));
     setOrganizationDomain(QLatin1String(APPLICATION_REV_DOMAIN));
     setApplicationName(_theme->appName());
-    setWindowIcon(_theme->applicationIcon());
+    QIcon appIcon = _theme->applicationIcon();
+    if (appIcon.isNull()) {
+        qCWarning(lcApplication) << "Application icon cannot be loaded!";
+    } else {
+        setWindowIcon(appIcon);
+    }
 
     // migrate old configuration files if necessary
     migrateConfigFile(this);

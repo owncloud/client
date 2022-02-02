@@ -196,7 +196,11 @@ QIcon Utility::getCoreIcon(const QString &icon_name)
         return {};
     }
     const QString path = Theme::instance()->isUsingDarkTheme() ? QStringLiteral("dark") : QStringLiteral("light");
-    const QIcon icon(QStringLiteral(":/client/resources/%1/%2").arg(path, icon_name));
+    auto iconName = QStringLiteral(":/client/resources/%1/%2").arg(path, icon_name);
+    const QIcon icon(iconName);
+    if (icon.isNull()) {
+        qCWarning(lcUtility) << "Cannot find icon" << iconName;
+    }
     Q_ASSERT(!icon.isNull());
     return icon;
 }

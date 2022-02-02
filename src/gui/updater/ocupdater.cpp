@@ -384,7 +384,11 @@ void NSISUpdater::showNoUrlDialog(const UpdateInfo &info)
     QIcon infoIcon = msgBox->style()->standardIcon(QStyle::SP_MessageBoxInformation);
     int iconSize = msgBox->style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
 
-    msgBox->setWindowIcon(infoIcon);
+    if (infoIcon.isNull()) {
+        qCWarning(lcUpdater) << "SP_MessageBoxInformation cannot be loaded!";
+    } else {
+        msgBox->setWindowIcon(infoIcon);
+    }
 
     QVBoxLayout *layout = new QVBoxLayout(msgBox);
     QHBoxLayout *hlayout = new QHBoxLayout;
@@ -435,7 +439,11 @@ void NSISUpdater::showUpdateErrorDialog(const QString &targetVersion)
     QIcon infoIcon = msgBox->style()->standardIcon(QStyle::SP_MessageBoxInformation);
     int iconSize = msgBox->style()->pixelMetric(QStyle::PM_MessageBoxIconSize);
 
-    msgBox->setWindowIcon(infoIcon);
+    if (infoIcon.isNull()) {
+        qCWarning(lcUpdater) << "SP_MessageBoxInformation cannot be loaded!";
+    } else {
+        msgBox->setWindowIcon(infoIcon);
+    }
 
     QVBoxLayout *layout = new QVBoxLayout(msgBox);
     QHBoxLayout *hlayout = new QHBoxLayout;

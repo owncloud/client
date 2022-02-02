@@ -165,7 +165,12 @@ public:
     void updateIcon()
     {
         if (!_iconName.isEmpty()) {
-            setIcon(Utility::getCoreIcon(_iconName));
+            QIcon icon = Utility::getCoreIcon(_iconName);
+            if (icon.isNull()) {
+                qWarning() << "Cannot load icon" << _iconName;
+            } else {
+                setIcon(icon);
+            }
         }
     }
 
