@@ -378,6 +378,28 @@ Feature: Syncing files
 	    Then as "Alice" file "file1.odt" should exist on the server
 
 
+	Scenario: File of 1 GB size sync succefully
+	    Given user "Alice" has set up a client with default settings
+	    When user "Alice" creates a file "newfile.txt" with size "1GB" inside the sync folder
+	    And the user waits for file "newfile.txt" to be synced
+	    Then as "Alice" file "newfile.txt" should exist on the server
 
 
+    Scenario: File with spaces in the name can sync
+	    Given user "Alice" has set up a client with default settings
+	    When user "Alice" creates a file "file with space.txt" with the following content inside the sync folder
+		    """
+		    test contents
+		    """
+		And user move the file "file with space.txt" to the root sync folder
+		And pause
+		Then as "Alice" file "file with space.txt" should exist on the server
+
+
+	Scenario: Folders with 500 files can sync successfully
+	    Given user "Alice" has set up a client with default settings
+	    When user "Alice" creates a folder "Folder1" containing 500 files inside the sync folder
+	    And user "Alice" creates a folder "Folder2" containing 500 files inside the sync folder
+	    Then as "Alice" folder "Folder1" should exist on the server
+	    And as "Alice" folder "Folder2" should exist on the server
 

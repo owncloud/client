@@ -328,7 +328,7 @@ def collaboratorShouldBeListed(
 @When('the user waits for the files to sync')
 def step(context):
     waitForFolderToBeSynced(context, '/')
-
+    snooze(30)
 
 def waitForResourceToSync(context, resource, resourceType):
     resource = join(context.userData['currentUserSyncPath'], resource)
@@ -399,6 +399,17 @@ def createFolder(context, foldername, username=None):
     os.makedirs(path)
 
 
+@When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
+def step(context, username, filename, filesize):
+    uploadFile(context, username, filename, filesize)
+
+
+def uploadFile(context, username, filename, filesize):
+    file = join(context.userData['currentUserSyncPath'], filename)
+    cmd = "truncate -s {filesize} {file}".format(filesize=filesize, file=file)
+    os.system(cmd)
+    
+    
 @When('the user copies the folder "|any|" to "|any|"')
 def step(context, sourceFolder, destinationFolder):
     source_dir = join(context.userData['currentUserSyncPath'], sourceFolder)
@@ -406,6 +417,22 @@ def step(context, sourceFolder, destinationFolder):
     shutil.copytree(source_dir, destination_dir)
 
 
+@ When('user move the file "|any|" to the root sync folder')
+def step(context, file):
+    source_dir = join(context.userData['currentUserSyncPath'], file)
+    destination_dir = join(context.userData['clientRootSyncPath'], file)
+    shutil.move(source_dir, destination_dir)
+    
+
+# @When('user "|any|" creates a folder "|any|" containing 500 files inside the sync folder')
+# def step(context, folder):
+#     
+
+
+@When('pause')
+def step(context):
+    snooze(50)
+    
 @Given(r"^(.*) on the server (.*)$", regexp=True)
 def step(context, stepPart1, stepPart2):
     executeStepThroughMiddleware(context, "Given " + stepPart1 + " " + stepPart2)
