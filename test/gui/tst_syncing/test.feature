@@ -324,3 +324,23 @@ Feature: Syncing files
 	        |filename|
 	        |qqqqqqqqqsdkdfjsdfuidjfkdsjfksdjfksdjfksdjfksdjfksdjfkdsjfksdjfkdsjfkdsfjlsdkfjsdkjflksdjfklsdjfksdjfkdsjfkldsjfkldsjfkdsjfksdjfksdjfklsdjfklsdjflksdjflksdjfklsdjfklsdjfksdjfksdjfksdjfksdjfksdfjskdfjksdjfksdjfksdjfksdjfksdwwwwww.txt|
 
+
+	Scenario: Files with same name but different extension sync correctly
+	    Given user "Alice" has set up a client with default settings
+	    When user "Alice" creates a file "file1.txt" with the following content inside the sync folder
+	    """
+	    test contents
+	    """
+	    When user "Alice" creates a file "file1.odt" with the following content inside the sync folder
+	    """
+	    test contents
+	    """
+	    And the user waits for file "file1.txt" to be synced
+	    And the user waits for file "file1.odt" to be synced
+	    Then as "Alice" file "file1.txt" should exist on the server
+	    Then as "Alice" file "file1.odt" should exist on the server
+
+
+
+
+
