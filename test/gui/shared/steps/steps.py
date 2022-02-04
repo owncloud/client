@@ -377,8 +377,7 @@ def createFile(context, filename, username=None):
     f = open(join(syncPath, filename), "w")
     f.write(fileContent)
     f.close()
-
-
+    
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
     createFolder(context, foldername, username)
@@ -397,6 +396,13 @@ def createFolder(context, foldername, username=None):
         syncPath = context.userData['currentUserSyncPath']
     path = join(syncPath, foldername)
     os.makedirs(path)
+
+ 
+@When('user "|any|" creates "|any|" files inside the folder "|any|"')
+def step(context, username, filenumber, foldername):
+    folder = join(context.userData['currentUserSyncPath'], foldername)
+    cmd = "cd {folder} && touch randomfile{1..{filenumber}}.txt".format(folder,filenumber)
+    os.system(cmd)
 
 
 @When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
@@ -417,17 +423,12 @@ def step(context, sourceFolder, destinationFolder):
     shutil.copytree(source_dir, destination_dir)
 
 
-@ When('user move the file "|any|" to the root sync folder')
-def step(context, file):
+@ When('user move the file "|any|" to folder "|any|"')
+def step(context, file, destinationFolder):
     source_dir = join(context.userData['currentUserSyncPath'], file)
-    destination_dir = join(context.userData['clientRootSyncPath'], file)
+    destination_dir = join(context.userData['currentUserSyncPath'], destinationFolder, file)
     shutil.move(source_dir, destination_dir)
     
-
-# @When('user "|any|" creates a folder "|any|" containing 500 files inside the sync folder')
-# def step(context, folder):
-#     
-
 
 @When('pause')
 def step(context):
