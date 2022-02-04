@@ -44,7 +44,7 @@ set(libsync_SRCS
 if(TOKEN_AUTH_ONLY)
     set (libsync_SRCS ${libsync_SRCS} creds/tokencredentials.cpp)
 else()
-    set (libsync_SRCS ${libsync_SRCS} creds/httpcredentials.cpp)
+    set(libsync_SRCS ${libsync_SRCS} creds/httpcredentials.cpp determineauthtypejob2.cpp abstractcorejob.cpp)
 endif()
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
