@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Hannah von Reth <hannah.vonreth@owncloud.com>
  * Copyright (C) Fabian Müller <fmueller@owncloud.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,22 +16,22 @@
 
 #include "abstractcorejob.h"
 
-#include "networkjobs.h"
-#include "owncloudlib.h"
-
 namespace OCC {
 
-
-class OWNCLOUDSYNC_EXPORT DetermineAuthTypeJobFactory : public AbstractCoreJobFactory
+/**
+ * Fetches the user name. For use during OAuth2 login process.
+ */
+class DetermineUserJobFactory : public OCC::AbstractCoreJobFactory
 {
     Q_OBJECT
-public:
-    using AuthType = DetermineAuthTypeJob::AuthType;
 
-    DetermineAuthTypeJobFactory(QNetworkAccessManager *nam, QObject *parent = nullptr);
-    ~DetermineAuthTypeJobFactory() override;
+public:
+    explicit DetermineUserJobFactory(QNetworkAccessManager *networkAccessManager, const QString &accessToken, QObject *parent = nullptr);
 
     Job *startJob(const QUrl &url) override;
+
+private:
+    QString _accessToken;
 };
 
 }

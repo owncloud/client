@@ -39,6 +39,10 @@ set(libsync_SRCS
     creds/oauth.cpp
 
     networkjobs/jsonjob.cpp
+
+    abstractcorejob.cpp
+    determineauthtypejob2.cpp
+    determineuserjobfactory.cpp
 )
 
 if(TOKEN_AUTH_ONLY)

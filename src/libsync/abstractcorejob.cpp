@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) Hannah von Reth <hannah.vonreth@owncloud.com>
+ * Copyright (C) Fabian Müller <fmueller@owncloud.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ */
+
 #include "abstractcorejob.h"
 
 using namespace OCC;
@@ -22,9 +37,14 @@ const QVariant &Job::result() const
     return _result;
 }
 
-const QString &Job::error() const
+const QString &Job::errorMessage() const
 {
-    return _error;
+    return _errorMessage;
+}
+
+QNetworkReply::NetworkError Job::networkError() const
+{
+    return _networkError;
 }
 
 bool Job::success() const
@@ -39,9 +59,10 @@ void Job::finishWithResult(const QVariant &result)
     Q_EMIT finished();
 }
 
-void Job::finishWithError(const QString &error)
+void Job::finishWithError(const QString &errorMessage, const QNetworkReply::NetworkError networkError)
 {
-    _error = error;
+    _errorMessage = errorMessage;
+    _networkError = networkError;
     Q_EMIT finished();
 }
 
