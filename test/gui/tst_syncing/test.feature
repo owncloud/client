@@ -354,15 +354,18 @@ Feature: Syncing files
 		    """
 		    test contents
 		    """
-		And user move the file "file with space.txt" to the root sync folder
-		And pause
-		Then as "Alice" file "file with space.txt" should exist on the server
+		And user "Alice" creates a folder "testfolder" inside the sync folder
+		And user move the file "file with space.txt" to folder "testfolder"
+		And the user waits for folder "testfolder" to be synced
+		Then as "Alice" file "testfolder/file with space.txt" should exist on the server
 
-
+	@skip
 	Scenario: Folders with 500 files can sync successfully
 	    Given user "Alice" has set up a client with default settings
-	    When user "Alice" creates a folder "Folder1" containing 500 files inside the sync folder
-	    And user "Alice" creates a folder "Folder2" containing 500 files inside the sync folder
-	    Then as "Alice" folder "Folder1" should exist on the server
-	    And as "Alice" folder "Folder2" should exist on the server
+	    When user "Alice" creates a folder "folder1" inside the sync folder
+	    And user "Alice" creates a folder "folder2" inside the sync folder
+	    And user "Alice" creates "500" files inside the folder "folder1"
+	    And user "Alice" creates "500" files inside the folder "folder2"
+	    Then as "Alice" folder "folder1" should exist on the server
+	    And as "Alice" folder "folder2" should exist on the server
 
