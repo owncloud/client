@@ -230,25 +230,20 @@ Feature: Sharing
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared folder "FOLDER" on the server with user "Brian" with "all" permissions
         And user "Brian" has set up a client with default settings
-        When the user overwrites the file "textfile.txt" with content "overwrite ownCloud test text file"
-        And the user overwrites the file "FOLDER/simple.txt" with content "overwrite some content"
-        Then as "Brian" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-        And as "Alice" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-        And as "Brian" the file "FOLDER/simple.txt" on the server should have the content "overwrite some content"
-        And as "Alice" the file "FOLDER/simple.txt" on the server should have the content "overwrite some content"
-        When the user adds another account with
+        When the user waits for the files to sync
+        And the user adds another account with
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
         And the user removes permissions "edit" for user "Brian Murphy" of resource "textfile.txt" using the client-UI
         And the user closes the sharing dialog
         And the user removes permissions "edit" for user "Brian Murphy" of resource "FOLDER" using the client-UI
-        And user "Brian" tries to overwrite the file "textfile.txt" with content "again overwrite ownCloud test text file"
-        And user "Brian" tries to overwrite the file "FOLDER/simple.txt" with content "again overwrite some content"
-        Then as "Brian" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-        And as "Brian" the file "FOLDER/simple.txt" on the server should have the content "overwrite some content"
-        And as "Alice" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-        And as "Alice" the file "FOLDER/simple.txt" on the server should have the content "overwrite some content"
+        And user "Brian" tries to overwrite the file "textfile.txt" with content "overwrite ownCloud test text file"
+        And user "Brian" tries to overwrite the file "FOLDER/simple.txt" with content "overwrite some content"
+        Then as "Brian" the file "textfile.txt" on the server should have the content "ownCloud test text file"
+        And as "Brian" the file "FOLDER/simple.txt" on the server should have the content "some content"
+        And as "Alice" the file "textfile.txt" on the server should have the content "ownCloud test text file"
+        And as "Alice" the file "FOLDER/simple.txt" on the server should have the content "some content"
 
 
     Scenario: sharee creates a file and a folder inside a shared folder
