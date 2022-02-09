@@ -8,6 +8,7 @@ import re
 import urllib.request
 import json
 import requests
+import builtins
 import shutil
 
 from objectmaphelper import RegularExpression
@@ -327,6 +328,7 @@ def collaboratorShouldBeListed(
 
 @When('the user waits for the files to sync')
 def step(context):
+    snooze(20)
     waitForFolderToBeSynced(context, '/')
     snooze(30)
 
@@ -400,15 +402,29 @@ def createFolder(context, foldername, username=None):
  
 @When('user "|any|" creates "|any|" files inside the folder "|any|"')
 def step(context, username, filenumber, foldername):
-    folder = join(context.userData['currentUserSyncPath'], foldername)
-    cmd = "cd {folder} && touch randomfile{1..{filenumber}}.txt".format(folder,filenumber)
-    os.system(cmd)
+    syncPath = context.userData['currentUserSyncPath']
+    path = join(syncPath, foldername)
+    snooze(5)
+    for i in range(0, builtins.int(filenumber)):
+        file_name = f"file{i}.txt"
+        file = open(f'{path}/file{i}', "wb")
+        file.seek(1048576)
+        file.write(b"\0")
+        file.close()
 
+
+@When('user "|any|" creates a "|any|" subfolders inside the folder "|any|"')
+def step(context, username, folder_count, folder ):
+    syncPath = context.userData['currentUserSyncPath']
+    for i in range(builtins.int(folder_count)):
+        sub_folder ='sub{i}'.format(i=i)
+        path = join(syncPath, folder, sub_folder)
+        os.mkdir(path)
+    
 
 @When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
 def step(context, username, filename, filesize):
     uploadFile(context, username, filename, filesize)
-
 
 def uploadFile(context, username, filename, filesize):
     file = join(context.userData['currentUserSyncPath'], filename)
@@ -430,9 +446,15 @@ def step(context, file, destinationFolder):
     shutil.move(source_dir, destination_dir)
     
 
+@Then('pause')
+def step(context):
+    snooze(60)
+    
+    
 @When('pause')
 def step(context):
-    snooze(50)
+    snooze(60)
+    
     
 @Given(r"^(.*) on the server (.*)$", regexp=True)
 def step(context, stepPart1, stepPart2):
