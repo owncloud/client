@@ -170,7 +170,7 @@ class PublicLinkDialog:
             lambda: (test.vp("publicLinkExpirationProgressIndicatorInvisible"))
         )
         test.compare(
-            str(actualDate),
+            str(squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText),
             str(expectedDate),
         )
 

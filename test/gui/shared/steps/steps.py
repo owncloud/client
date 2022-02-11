@@ -517,16 +517,6 @@ def step(context):
     )
     activateItem(waitForObjectItem(names.settings_QMenu, "Force sync now"))
 
-    # It is not guranteed that the object showing warning message will appear during the force sync.
-    # If the message appears, we need to click on the "Remove all files" button. Else, we should carry on with rest of the steps in test without any action.
-    # It takes upto 2000 ms for the object to appear. So, I put the timeout to be 2000 ms.
-    try:
-        clickButton(
-            waitForObject(names.remove_All_Files_Remove_all_files_QPushButton, 2000)
-        )
-    except LookupError:
-        pass
-
 
 @Then(
     'a conflict file for "|any|" should exist on the file system with the following content'
