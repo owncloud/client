@@ -157,18 +157,26 @@ def isFileSynced(fileName):
     return isItemSynced('FILE', fileName)
 
 
-def waitForFileToBeSynced(context, filePath):
-    waitFor(
-        lambda: isFileSynced(sanitizePath(filePath)),
+def waitForFileToBeSynced(context, fileName):
+    result = waitFor(
+        lambda: isFileSynced(
+            sanitizePath(context.userData['currentUserSyncPath'] + fileName)
+        ),
         context.userData['clientSyncTimeout'] * 1000,
     )
+    if not result:
+        raise Exception("Expected file '" + fileName + "' to be synced, but not.")
 
 
-def waitForFolderToBeSynced(context, folderPath):
-    waitFor(
-        lambda: isFolderSynced(sanitizePath(folderPath)),
+def waitForFolderToBeSynced(context, folderName):
+    result = waitFor(
+        lambda: isFolderSynced(
+            sanitizePath(context.userData['currentUserSyncPath'] + folderName)
+        ),
         context.userData['clientSyncTimeout'] * 1000,
     )
+    if not result:
+        raise Exception("Expected folder '" + folderName + "' to be synced, but not.")
 
 
 def folderExists(folderPath, timeout=1000):
