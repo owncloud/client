@@ -224,8 +224,6 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for folder "Folder1" to be synced
-        And the user waits for folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" to be synced
         And the user waits for file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" to be synced
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
@@ -244,8 +242,6 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for folder "Folder1" to be synced
-        And the user waits for folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" to be synced
         And the user waits for file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" to be synced
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
@@ -264,8 +260,6 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for folder "Folder1" to be synced
-        And the user waits for folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" to be synced
         And the user waits for file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" to be synced
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
@@ -284,8 +278,6 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for folder "Folder1" to be synced
-        And the user waits for folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" to be synced
         And the user waits for file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" to be synced
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
@@ -304,8 +296,6 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for folder "Folder1" to be synced
-        And the user waits for folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" to be synced
         And the user waits for file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" to be synced
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
