@@ -277,7 +277,7 @@ Feature: Syncing files
             | foldername                                                      |
             | An empty folder which name is obviously more than 59 characters |
 
-    
+
     Scenario: Invalid system names are synced in linux
         Given user "Alice" has set up a client with default settings
         And user "Alice" has created folder "CON" on the server
@@ -401,8 +401,8 @@ Feature: Syncing files
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a folder "folder1" inside the sync folder
         And user "Alice" creates a folder "folder2" inside the sync folder
-        And user "Alice" creates "500" files inside the folder "folder1"
-        And user "Alice" creates "500" files inside the folder "folder2"
+        And user "Alice" creates "500" files each of size "1048576" bytes inside the folder "folder1"
+        And user "Alice" creates "500" files each of size "1048576" bytes inside the folder "folder2"
         When the user waits for the files to sync
         Then as "Alice" folder "folder1" should exist on the server
         And as user "Alice" folder "folder1" should contain "500" items on the server
@@ -411,13 +411,12 @@ Feature: Syncing files
         And as user "Alice" folder "folder2" should contain "500" items on the server
 
 
-    
     Scenario: Folders with 15 subfolders can sync successfully
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a folder "folder1" inside the sync folder
         And user "Alice" creates a folder "folder2" inside the sync folder
-        And user "Alice" creates a "100" subfolders inside the folder "folder1"
-        And user "Alice" creates a "100" subfolders inside the folder "folder2"
+        And user "Alice" creates "100" subfolders inside the folder "folder1"
+        And user "Alice" creates "100" subfolders inside the folder "folder2"
         And the user waits for folder "folder1" to be synced
         Then as "Alice" folder "folder1" should exist on the server
         And as user "Alice" folder "folder1" should contain "100" items on the server

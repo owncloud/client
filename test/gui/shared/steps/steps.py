@@ -330,7 +330,7 @@ def collaboratorShouldBeListed(
 def step(context):
     snooze(20)
     waitForFolderToBeSynced(context, '/')
-    snooze(30)
+    
 
 def waitForResourceToSync(context, resource, resourceType):
     resource = join(context.userData['currentUserSyncPath'], resource)
@@ -371,14 +371,13 @@ def createFile(context, filename, username=None):
         syncPath = getUserSyncPath(context, username)
     else:
         syncPath = context.userData['currentUserSyncPath']
-
     # A file is scheduled to be synced but is marked as ignored for 5 seconds. And if we try to sync it, it will fail. So we need to wait for 5 seconds.
     # https://github.com/owncloud/client/issues/9325
     snooze(5)
-
     f = open(join(syncPath, filename), "w")
     f.write(fileContent)
     f.close()
+    
     
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
@@ -400,20 +399,24 @@ def createFolder(context, foldername, username=None):
     os.makedirs(path)
 
  
-@When('user "|any|" creates "|any|" files inside the folder "|any|"')
-def step(context, username, filenumber, foldername):
+@When('user "|any|" creates "|any|" files each of size "|any|" bytes inside the folder "|any|"')
+def step(context, username, filenumber, filesize, foldername):
     syncPath = context.userData['currentUserSyncPath']
     path = join(syncPath, foldername)
+    filesize = builtins.int(filesize)
+    # Syncing all the created files at once seems to have some problem on syncing
+    # So once a file is synced the process have to wait unless the next file is created
+    # So we added Snooze of 5 sec
     snooze(5)
     for i in range(0, builtins.int(filenumber)):
         file_name = f"file{i}.txt"
         file = open(f'{path}/file{i}', "wb")
-        file.seek(1048576)
+        file.seek(filesize)
         file.write(b"\0")
         file.close()
 
 
-@When('user "|any|" creates a "|any|" subfolders inside the folder "|any|"')
+@When('user "|any|" creates "|any|" subfolders inside the folder "|any|"')
 def step(context, username, folder_count, folder ):
     syncPath = context.userData['currentUserSyncPath']
     for i in range(builtins.int(folder_count)):
@@ -444,16 +447,6 @@ def step(context, file, destinationFolder):
     source_dir = join(context.userData['currentUserSyncPath'], file)
     destination_dir = join(context.userData['currentUserSyncPath'], destinationFolder, file)
     shutil.move(source_dir, destination_dir)
-    
-
-@Then('pause')
-def step(context):
-    snooze(60)
-    
-    
-@When('pause')
-def step(context):
-    snooze(60)
     
     
 @Given(r"^(.*) on the server (.*)$", regexp=True)
