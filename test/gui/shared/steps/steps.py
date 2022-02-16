@@ -404,9 +404,6 @@ def step(context, username, filenumber, filesize, foldername):
     syncPath = context.userData['currentUserSyncPath']
     path = join(syncPath, foldername)
     filesize = builtins.int(filesize)
-    # Syncing all the created files at once seems to have some problem on syncing
-    # So once a file is synced the process have to wait unless the next file is created
-    # So we added Snooze of 5 sec
     snooze(5)
     for i in range(0, builtins.int(filenumber)):
         file_name = f"file{i}.txt"
@@ -428,6 +425,7 @@ def step(context, username, folder_count, folder ):
 @When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
 def step(context, username, filename, filesize):
     uploadFile(context, username, filename, filesize)
+
 
 def uploadFile(context, username, filename, filesize):
     file = join(context.userData['currentUserSyncPath'], filename)
@@ -1349,3 +1347,4 @@ def step(context, username):
         filename = syncPath + row[0]
         f = open(join(syncPath, filename), "w")
         f.close()
+    test.xvp("VP_VFS_enabled")

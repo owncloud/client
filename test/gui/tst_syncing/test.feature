@@ -331,7 +331,8 @@ Feature: Syncing files
         And as "Alice" file "testaudio.mp3" should exist on the server
         And as "Alice" file "test_video.mp4" should exist on the server
         And as "Alice" file "simple.txt" should exist on the server
-    Scenario: File with long name can be synced
+  
+
     Scenario Outline: File with long name can be synced
         Given user "Alice" has set up a client with default settings
         # the length of file name is 224
@@ -423,6 +424,3 @@ Feature: Syncing files
         When the user waits for folder "folder2" to be synced
         Then as "Alice" folder "folder2" should exist on the server
         And as user "Alice" folder "folder2" should contain "100" items on the server
-
-
-
