@@ -32,6 +32,16 @@ QNetworkAccessManager *AbstractCoreJobFactory::nam() const
     return _nam;
 }
 
+void AbstractCoreJobFactory::setJobResult(Job *job, const QVariant &result)
+{
+    job->setResult(result);
+}
+
+void AbstractCoreJobFactory::setJobError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError)
+{
+    job->setError(errorMessage, networkError);
+}
+
 const QVariant &Job::result() const
 {
     return _result;

@@ -70,15 +70,9 @@ public:
 protected:
     [[nodiscard]] QNetworkAccessManager *nam() const;
 
-    static void setJobResult(Job *job, const QVariant &result)
-    {
-        job->setResult(result);
-    }
+    static void setJobResult(Job *job, const QVariant &result);
 
-    static void setJobError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError)
-    {
-        job->setError(errorMessage, networkError);
-    }
+    static void setJobError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError);
 
 private:
     QNetworkAccessManager *_nam;
