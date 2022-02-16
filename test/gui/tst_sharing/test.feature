@@ -276,8 +276,7 @@ Feature: Sharing
             test content
             """
         And user "Brian" creates a folder "Parent/localFolder" inside the sync folder
-        And the user waits for file "Parent/localFile.txt" to be synced
-        And the user waits for folder "Parent/localFolder" to be synced
+        And the user waits for the files to sync
         Then as "Brian" file "Parent/localFile.txt" should not exist on the server
         And as "Brian" folder "Parent/localFolder" should not exist on the server
         And as "Alice" file "Parent/localFile.txt" should not exist on the server
@@ -307,7 +306,7 @@ Feature: Sharing
         And as "Alice" folder "PARENT" should not exist on the server
         And as "Alice" file "lorem.txt" should not exist on the server
 
-
+    @skip @issue-9439
     Scenario: sharee deletes a file and folder shared by sharer
         Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
         And user "Alice" has created folder "Folder" on the server
@@ -342,26 +341,6 @@ Feature: Sharing
         And as "Brian" folder "Folder" on the server should exist
         And as "Alice" file "textfile.txt" on the server should exist
         And as "Alice" folder "Folder" on the server should exist
-
-
-    Scenario: sharee edits content of a file shared by sharer
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
-        And user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
-        And user "Brian" has set up a client with default settings
-        When the user overwrites the file "textfile.txt" with content "overwrite ownCloud test text file"
-        Then as "Brian" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-        And as "Alice" the file "textfile.txt" on the server should have the content "overwrite ownCloud test text file"
-
-
-    Scenario: sharee tries to edit a file shared without write permission
-        Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
-        And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "read" permissions
-        And user "Brian" has set up a client with default settings
-        When the user tries to overwrite the file "textfile.txt" with content "overwrite ownCloud test text file"
-        Then as "Brian" the file "textfile.txt" on the server should have the content "ownCloud test text file"
-        And as "Alice" the file "textfile.txt" on the server should have the content "ownCloud test text file"
 
 
     Scenario: reshare a file/folder
