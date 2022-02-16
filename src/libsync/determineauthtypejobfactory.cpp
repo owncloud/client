@@ -13,7 +13,7 @@
  * for more details.
  */
 
-#include "determineauthtypejob2.h"
+#include "determineauthtypejobfactory.h"
 
 #include "common/utility.h"
 #include "creds/httpcredentials.h"
