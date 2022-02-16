@@ -18,9 +18,8 @@
 #include "common/version.h"
 #include "credentialmanager.h"
 #include "creds/httpcredentials.h"
-#include "determineuserjobfactory.h"
+#include "creds/jobs/determineuserjobfactory.h"
 #include "networkjobs.h"
-#include "networkjobs/jsonjob.h"
 #include "theme.h"
 
 #include <QApplication>

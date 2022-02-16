@@ -32,6 +32,7 @@ set(libsync_SRCS
     syncresult.cpp
     syncoptions.cpp
     theme.cpp
+    creds/jobs/determineuserjobfactory.cpp
     creds/credentialmanager.cpp
     creds/dummycredentials.cpp
     creds/abstractcredentials.cpp
@@ -42,7 +43,6 @@ set(libsync_SRCS
 
     abstractcorejob.cpp
     determineauthtypejob2.cpp
-    determineuserjobfactory.cpp
 )
 
 if(TOKEN_AUTH_ONLY)
