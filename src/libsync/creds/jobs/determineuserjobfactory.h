@@ -19,7 +19,7 @@
 namespace OCC {
 
 /**
- * Fetches the user name. For use during OAuth2 login process.
+ * Fetches the user name. For use during OAuth2 login process *only*.
  */
 class DetermineUserJobFactory : public OCC::AbstractCoreJobFactory
 {
