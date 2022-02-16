@@ -52,21 +52,33 @@ bool Job::success() const
     return _success;
 }
 
-void Job::finishWithResult(const QVariant &result)
+void Job::setResult(const QVariant &result)
 {
+    assertNotFinished();
+
     _success = true;
     _result = result;
+
     Q_EMIT finished();
 }
 
-void Job::finishWithError(const QString &errorMessage, const QNetworkReply::NetworkError networkError)
+void Job::setError(const QString &errorMessage, QNetworkReply::NetworkError networkError)
 {
+    assertNotFinished();
+
     _errorMessage = errorMessage;
     _networkError = networkError;
+
     Q_EMIT finished();
 }
 
 Job::Job(QObject *parent)
     : QObject(parent)
 {
+}
+
+void Job::assertNotFinished()
+{
+    Q_ASSERT(_result.isNull());
+    Q_ASSERT(_errorMessage.isEmpty());
 }

@@ -39,14 +39,17 @@ public:
     [[nodiscard]] bool success() const;
 
 protected:
-    void finishWithResult(const QVariant &result);
+    void setResult(const QVariant &result);
 
-    void finishWithError(const QString &errorMessage, QNetworkReply::NetworkError networkError);
+    void setError(const QString &errorMessage, QNetworkReply::NetworkError networkError);
 
 Q_SIGNALS:
     void finished();
 
 private:
+    // job result/error should be set only once, because that emits the "finished" signal
+    void assertNotFinished();
+
     bool _success = false;
     QVariant _result;
 
@@ -67,14 +70,14 @@ public:
 protected:
     [[nodiscard]] QNetworkAccessManager *nam() const;
 
-    static void finishJobWithSuccess(Job *job, const QVariant &result)
+    static void setJobResult(Job *job, const QVariant &result)
     {
-        job->finishWithResult(result);
+        job->setResult(result);
     }
 
-    static void finishJobWithError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError)
+    static void setJobError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError)
     {
-        job->finishWithError(errorMessage, networkError);
+        job->setError(errorMessage, networkError);
     }
 
 private:
