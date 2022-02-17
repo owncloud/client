@@ -295,7 +295,7 @@ void OAuth::startAuthentication()
 
                     auto *job = DetermineUserJobFactory(_networkAccessManager, accessToken, this).startJob(_serverUrl);
 
-                    connect(job, &Job::finished, this, [=]() {
+                    connect(job, &CoreJob::finished, this, [=]() {
                         if (!job->success()) {
                             httpReplyAndClose(socket, QByteArrayLiteral("500 Internal Server Error"),
                                 tr("<h1>Login Error</h1><p>%1</p>").arg(job->errorMessage()).toUtf8());

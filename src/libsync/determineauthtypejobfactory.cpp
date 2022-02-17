@@ -31,9 +31,9 @@ DetermineAuthTypeJobFactory::DetermineAuthTypeJobFactory(QNetworkAccessManager *
 
 DetermineAuthTypeJobFactory::~DetermineAuthTypeJobFactory() = default;
 
-Job *DetermineAuthTypeJobFactory::startJob(const QUrl &url)
+CoreJob *DetermineAuthTypeJobFactory::startJob(const QUrl &url)
 {
-    auto job = new Job;
+    auto job = new CoreJob;
 
     QNetworkRequest req(Utility::concatUrlPath(url, QStringLiteral("remote.php/dav/files/")));
     req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);

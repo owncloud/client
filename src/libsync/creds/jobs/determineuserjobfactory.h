@@ -28,7 +28,7 @@ class DetermineUserJobFactory : public OCC::AbstractCoreJobFactory
 public:
     explicit DetermineUserJobFactory(QNetworkAccessManager *networkAccessManager, const QString &accessToken, QObject *parent = nullptr);
 
-    Job *startJob(const QUrl &url) override;
+    CoreJob *startJob(const QUrl &url) override;
 
 private:
     QString _accessToken;

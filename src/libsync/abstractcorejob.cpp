@@ -32,37 +32,37 @@ QNetworkAccessManager *AbstractCoreJobFactory::nam() const
     return _nam;
 }
 
-void AbstractCoreJobFactory::setJobResult(Job *job, const QVariant &result)
+void AbstractCoreJobFactory::setJobResult(CoreJob *job, const QVariant &result)
 {
     job->setResult(result);
 }
 
-void AbstractCoreJobFactory::setJobError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError)
+void AbstractCoreJobFactory::setJobError(CoreJob *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError)
 {
     job->setError(errorMessage, networkError);
 }
 
-const QVariant &Job::result() const
+const QVariant &CoreJob::result() const
 {
     return _result;
 }
 
-const QString &Job::errorMessage() const
+const QString &CoreJob::errorMessage() const
 {
     return _errorMessage;
 }
 
-QNetworkReply::NetworkError Job::networkError() const
+QNetworkReply::NetworkError CoreJob::networkError() const
 {
     return _networkError;
 }
 
-bool Job::success() const
+bool CoreJob::success() const
 {
     return _success;
 }
 
-void Job::setResult(const QVariant &result)
+void CoreJob::setResult(const QVariant &result)
 {
     assertNotFinished();
 
@@ -72,7 +72,7 @@ void Job::setResult(const QVariant &result)
     Q_EMIT finished();
 }
 
-void Job::setError(const QString &errorMessage, QNetworkReply::NetworkError networkError)
+void CoreJob::setError(const QString &errorMessage, QNetworkReply::NetworkError networkError)
 {
     assertNotFinished();
 
@@ -82,12 +82,12 @@ void Job::setError(const QString &errorMessage, QNetworkReply::NetworkError netw
     Q_EMIT finished();
 }
 
-Job::Job(QObject *parent)
+CoreJob::CoreJob(QObject *parent)
     : QObject(parent)
 {
 }
 
-void Job::assertNotFinished()
+void CoreJob::assertNotFinished()
 {
     Q_ASSERT(_result.isNull());
     Q_ASSERT(_errorMessage.isEmpty());

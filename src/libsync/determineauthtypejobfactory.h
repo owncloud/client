@@ -32,7 +32,7 @@ public:
     DetermineAuthTypeJobFactory(QNetworkAccessManager *nam, QObject *parent = nullptr);
     ~DetermineAuthTypeJobFactory() override;
 
-    Job *startJob(const QUrl &url) override;
+    CoreJob *startJob(const QUrl &url) override;
 };
 
 }

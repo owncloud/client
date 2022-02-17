@@ -27,14 +27,14 @@ namespace OCC {
  * The class is universally usable for all kinds of network requests, there is no difference in handling the responses.
  * Instead, instances are created that start a suitable request and wire up the signals accordingly.
  */
-class OWNCLOUDSYNC_EXPORT Job : public QObject
+class OWNCLOUDSYNC_EXPORT CoreJob : public QObject
 {
     Q_OBJECT
 
     friend class AbstractCoreJobFactory;
 
 public:
-    explicit Job(QObject *parent = nullptr);
+    explicit CoreJob(QObject *parent = nullptr);
 
     [[nodiscard]] const QVariant &result() const;
 
@@ -101,7 +101,7 @@ public:
      * @param url URL to send request to
      * @return job
      */
-    virtual Job *startJob(const QUrl &url) = 0;
+    virtual CoreJob *startJob(const QUrl &url) = 0;
 
 protected:
     [[nodiscard]] QNetworkAccessManager *nam() const;
@@ -111,14 +111,14 @@ protected:
      * The job result or error can be set only once.
      * @param result job result
      */
-    static void setJobResult(Job *job, const QVariant &result);
+    static void setJobResult(CoreJob *job, const QVariant &result);
 
     /**
      * Set job error details. Needed because the jobs' methods are protected, and this class is a friend of Job.
      * @param errorMessage network error or other suitable error message
      * @param networkError network error instance or NoError if the error is not caused by a network issue
      */
-    static void setJobError(Job *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError);
+    static void setJobError(CoreJob *job, const QString &errorMessage, const QNetworkReply::NetworkError networkError);
 
 private:
     QNetworkAccessManager *_nam;

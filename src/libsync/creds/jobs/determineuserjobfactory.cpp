@@ -28,9 +28,9 @@ DetermineUserJobFactory::DetermineUserJobFactory(QNetworkAccessManager *networkA
 {
 }
 
-Job *DetermineUserJobFactory::startJob(const QUrl &url)
+CoreJob *DetermineUserJobFactory::startJob(const QUrl &url)
 {
-    auto job = new Job;
+    auto job = new CoreJob;
 
     QUrlQuery urlQuery({ { QStringLiteral("format"), QStringLiteral("json") } });
 
