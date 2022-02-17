@@ -26,6 +26,8 @@ namespace OCC {
  * This class manages an (HTTP) network job's result. It holds a result on success and error details on failures.
  * The class is universally usable for all kinds of network requests, there is no difference in handling the responses.
  * Instead, instances are created that start a suitable request and wire up the signals accordingly.
+ * In contrast to the traditional network jobs (e.g., SimpleNetworkJob), core jobs are not bound to an account. Therefore,
+ * they can be used with ease in situations where an account object is not available (e.g., the new wizard).
  */
 class OWNCLOUDSYNC_EXPORT CoreJob : public QObject
 {
