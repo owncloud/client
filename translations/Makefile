@@ -1,7 +1,7 @@
 #
 # Translation
 #--------------------------------------
-# pull all changes push none
+# pull all changes push none, intended for local testing
 .PHONY: dry
 dry:  l10n-remove-old l10n-read l10n-pull
 
