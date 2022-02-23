@@ -83,7 +83,34 @@ Logger::~Logger()
 
 QString Logger::loggerPattern()
 {
-    return QStringLiteral("%{time MM-dd hh:mm:ss:zzz} [ %{type} %{category} ]%{if-debug}\t[ %{function} ]%{endif}:\t%{message}");
+    QString format = QStringLiteral("[%{time yyyy/MM/dd hh:mm:ss,zzz}]");
+
+    // all messages should use a category, but some may not
+    // in that case, we hide the category part
+    format += QStringLiteral("%{if-category} <%{category}>%{endif}");
+
+    format += QStringLiteral(" ");
+
+    // qSetMessageFormat is a bit limiting: there is no way to format the categories in upper case other than do it oneself
+    // printing them in upper-case aids greatly in terms of readability
+    const auto categories = QStringList() << QStringLiteral("debug") << QStringLiteral("info") << QStringLiteral("warning") << QStringLiteral("critical");
+    for (const auto &category : categories) {
+        format += QStringLiteral("%{if-") + category + QStringLiteral("}") + category.toUpper() + QStringLiteral("%{endif}");
+    }
+
+    // not entirely sure why the function may be shown only for debug messages
+    format += QStringLiteral("%{if-debug} (%{function})%{endif}");
+
+    format += QStringLiteral(": %{message}");
+
+    // speeds up code navigation IDEs which support paths and line numbers
+    if (qEnvironmentVariableIsSet("LOG_FILE_AND_LINENO")) {
+        format += QStringLiteral(" (in %{file}:%{line})");
+    }
+
+    qDebug() << format;
+
+    return format;
 }
 
 bool Logger::isLoggingToFile() const
