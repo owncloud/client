@@ -85,10 +85,6 @@ QString Logger::loggerPattern()
 {
     QString format = QStringLiteral("[%{time yyyy/MM/dd hh:mm:ss,zzz}]");
 
-    // all messages should use a category, but some may not
-    // in that case, we hide the category part
-    format += QStringLiteral("%{if-category} <%{category}>%{endif}");
-
     format += QStringLiteral(" ");
 
     // qSetMessageFormat is a bit limiting: there is no way to format the categories in upper case other than do it oneself
@@ -98,8 +94,9 @@ QString Logger::loggerPattern()
         format += QStringLiteral("%{if-") + category + QStringLiteral("}") + category.toUpper() + QStringLiteral("%{endif}");
     }
 
-    // not entirely sure why the function may be shown only for debug messages
-    format += QStringLiteral("%{if-debug} (%{function})%{endif}");
+    // all messages should use a category, but some may not
+    // in that case, we hide the category part
+    format += QStringLiteral("%{if-category} <%{category}>%{endif}");
 
     format += QStringLiteral(": %{message}");
 
