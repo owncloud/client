@@ -100,10 +100,31 @@ QString Logger::loggerPattern()
 
     format += QStringLiteral(": %{message}");
 
-    // speeds up code navigation IDEs which support paths and line numbers
-    if (qEnvironmentVariableIsSet("LOG_FILE_AND_LINENO")) {
-        format += QStringLiteral(" (in %{file}:%{line})");
+#if !defined(QT_NO_DEBUG) || defined(QT_MESSAGELOGCONTEXT)
+    static const auto log_file_and_lineno = qEnvironmentVariableIsSet("LOG_FILE_AND_LINENO");
+    static const auto log_function_name = qEnvironmentVariableIsSet("LOG_FUNCTION_NAME");
+
+    if (log_file_and_lineno || log_function_name) {
+        format += QStringLiteral(" (in ");
+
+        if (log_function_name) {
+            format += QStringLiteral("%{function}");
+        }
+
+        if (log_file_and_lineno && log_function_name) {
+            format += QStringLiteral(", ");
+        }
+
+        // speeds up code navigation IDEs which support paths and line numbers
+        if (log_file_and_lineno) {
+            format += QStringLiteral("%{file}:%{line}");
+        }
+
+        format += QStringLiteral(")");
     }
+#else
+#warning "QT_MESSAGELOGCONTEXT not set and not a debug build, cannot show context of log messages"
+#endif
 
     qDebug() << format;
 
