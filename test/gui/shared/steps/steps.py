@@ -171,7 +171,7 @@ def waitForFileOrFolderToHaveSyncStatus(
     context, resource, resourceType, status=SYNC_STATUS['OK'], timeout=None
 ):
     if not timeout:
-        timeout = context.userData['clientSyncTimeout'] * 1000
+        timeout = context.userData['maxSyncTimeout'] * 1000
 
     resource = join(context.userData['currentUserSyncPath'], resource)
     if resourceType.lower() == "file":
@@ -184,11 +184,6 @@ def waitForFileOrFolderToHaveSyncStatus(
             lambda: folderHasSyncStatus(sanitizePath(resource), status),
             timeout,
         )
-
-    # Sometimes it is possible that a file will undergo from 'STATUS:SYNC' to 'STATUS:OK' too early
-    # So, when checking for 'SYNC' status, we will not throw any error
-    if status == SYNC_STATUS['SYNC']:
-        return result
 
     if not result:
         if status == SYNC_STATUS['ERROR']:
@@ -209,7 +204,6 @@ def waitForFileOrFolderToHaveSyncStatus(
 
 
 def waitForSyncToStart(context, resource, resourceType):
-    syncWaitTimeout = 6 * 1000
     resource = join(context.userData['currentUserSyncPath'], resource)
 
     hasStatusNOP = hasSyncStatus(resourceType.upper(), resource, SYNC_STATUS['NOP'])
@@ -218,14 +212,29 @@ def waitForSyncToStart(context, resource, resourceType):
     if hasStatusSYNC:
         return
 
-    if hasStatusNOP:
-        waitForFileOrFolderToHaveSyncStatus(
-            context, resource, resourceType, SYNC_STATUS['SYNC']
-        )
-    else:
-        waitForFileOrFolderToHaveSyncStatus(
-            context, resource, resourceType, SYNC_STATUS['SYNC'], syncWaitTimeout
-        )
+    try:
+        if hasStatusNOP:
+            waitForFileOrFolderToHaveSyncStatus(
+                context, resource, resourceType, SYNC_STATUS['SYNC']
+            )
+        else:
+            waitForFileOrFolderToHaveSyncStatus(
+                context,
+                resource,
+                resourceType,
+                SYNC_STATUS['SYNC'],
+                context.userData['minSyncTimeout'] * 1000,
+            )
+    except:
+        hasStatusNOP = hasSyncStatus(resourceType.upper(), resource, SYNC_STATUS['NOP'])
+        if hasStatusNOP:
+            raise Exception(
+                "Expected "
+                + resourceType
+                + " '"
+                + resource
+                + "' to have sync started but not."
+            )
 
 
 def waitForFileOrFolderToSync(context, resource, resourceType):
@@ -548,11 +557,11 @@ def step(context, resourceType, resource):
     resourceExists = False
     if resourceType == 'file':
         resourceExists = fileExists(
-            resourcePath, context.userData['clientSyncTimeout'] * 1000
+            resourcePath, context.userData['maxSyncTimeout'] * 1000
         )
     elif resourceType == 'folder':
         resourceExists = folderExists(
-            resourcePath, context.userData['clientSyncTimeout'] * 1000
+            resourcePath, context.userData['maxSyncTimeout'] * 1000
         )
     else:
         raise Exception("Unsupported resource type '" + resourceType + "'")
@@ -687,9 +696,7 @@ def step(context, tabName):
 
 def openSharingDialog(context, resource, itemType='file'):
     resource = getResourcePath(context, resource)
-    waitFor(
-        lambda: shareResource(resource), context.userData['clientSyncTimeout'] * 1000
-    )
+    waitFor(lambda: shareResource(resource), context.userData['maxSyncTimeout'] * 1000)
 
 
 @When('the user opens the public links dialog of "|any|" using the client-UI')
