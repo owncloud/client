@@ -153,6 +153,7 @@ def hasSyncStatus(type, itemName, status):
     if not socketConnect.read_socket_data_with_timeout(0.1):
         return False
     for line in socketConnect.get_available_responses():
+        # print(line)
         if line.startswith(status) and line.endswith(itemName):
             return True
         elif line.endswith(itemName):
@@ -1157,6 +1158,20 @@ def step(context, itemType, resource):
         shutil.rmtree(resourcePath)
     else:
         raise Exception("No such item type for resource")
+
+    isSyncFolderEmpty = True
+    for item in listdir(context.userData['currentUserSyncPath']):
+        if not item.startswith("."):
+            isSyncFolderEmpty = False
+            break
+
+    # if the sync folder is empty after deleting file,
+    # a dialog will popup asking to confirm "Remove all files"
+    if isSyncFolderEmpty:
+        try:
+            AccountStatus.confirmRemoveAllFiles()
+        except:
+            pass
 
 
 @When(
