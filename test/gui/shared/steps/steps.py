@@ -153,7 +153,6 @@ def hasSyncStatus(type, itemName, status):
     if not socketConnect.read_socket_data_with_timeout(0.1):
         return False
     for line in socketConnect.get_available_responses():
-        # print(line)
         if line.startswith(status) and line.endswith(itemName):
             return True
         elif line.endswith(itemName):
@@ -1151,6 +1150,7 @@ def step(context, errorMsg):
 
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
 def step(context, itemType, resource):
+    snooze(5)
     resourcePath = sanitizePath(context.userData['currentUserSyncPath'] + resource)
     if itemType == 'file':
         os.remove(resourcePath)
