@@ -1150,7 +1150,12 @@ def step(context, errorMsg):
 
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
 def step(context, itemType, resource):
-    snooze(5)
+    # deleting the file immediately after it has been synced from the server seems to have some problem.
+    # The client does not see the change although the changes have already been made thus we are having a race condition
+    # an issue https://github.com/owncloud/client/issues/8832 has been created for it
+    if itemType == "file":
+        snooze(5)
+
     resourcePath = sanitizePath(context.userData['currentUserSyncPath'] + resource)
     if itemType == 'file':
         os.remove(resourcePath)

@@ -337,8 +337,9 @@ Feature: Sharing
         And the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
         And the user waits for the files to sync
-        Then as "Brian" file "textfile.txt" on the server should exist
-        And as "Brian" folder "Folder" on the server should exist
+        # Sharee can delete (means unshare) the file shared with read permission
+        Then as "Brian" file "textfile.txt" on the server should not exist
+        And as "Brian" folder "Folder" on the server should not exist
         And as "Alice" file "textfile.txt" on the server should exist
         And as "Alice" folder "Folder" on the server should exist
 
