@@ -467,7 +467,7 @@ def createFile(context, filename, username=None):
 
     # A file is scheduled to be synced but is marked as ignored for 5 seconds. And if we try to sync it, it will fail. So we need to wait for 5 seconds.
     # https://github.com/owncloud/client/issues/9325
-    snooze(5)
+    snooze(context.userData['minSyncTimeout'])
 
     f = open(join(syncPath, filename), "w")
     f.write(fileContent)
@@ -934,7 +934,7 @@ def step(context, username):
 def step(context, username):
     # TODO: find some way to dynamically to check if files are synced
     # It might take some time for all files to sync and connect to ther server
-    snooze(5)
+    snooze(context.userData['minSyncTimeout'])
     isUserSignedIn(context, username)
 
 
@@ -1049,8 +1049,7 @@ def step(context, resource, content):
     # The client does not see the change although the changes have already been made thus we are having a race condition
     # So for now we add 5sec static wait
     # an issue https://github.com/owncloud/client/issues/8832 has been created for it
-
-    snooze(5)
+    snooze(context.userData['minSyncTimeout'])
 
     overwriteFile(resource, content)
 
@@ -1151,10 +1150,9 @@ def step(context, errorMsg):
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
 def step(context, itemType, resource):
     # deleting the file immediately after it has been synced from the server seems to have some problem.
-    # The client does not see the change although the changes have already been made thus we are having a race condition
-    # an issue https://github.com/owncloud/client/issues/8832 has been created for it
+    # issue: https://github.com/owncloud/client/issues/8832
     if itemType == "file":
-        snooze(5)
+        snooze(context.userData['minSyncTimeout'])
 
     resourcePath = sanitizePath(context.userData['currentUserSyncPath'] + resource)
     if itemType == 'file':
@@ -1166,6 +1164,7 @@ def step(context, itemType, resource):
 
     isSyncFolderEmpty = True
     for item in listdir(context.userData['currentUserSyncPath']):
+        # do not count the hidden files as they are ignored by the client
         if not item.startswith("."):
             isSyncFolderEmpty = False
             break
@@ -1414,7 +1413,7 @@ def step(context, username):
 
     # A file is scheduled to be synced but is marked as ignored for 5 seconds. And if we try to sync it, it will fail. So we need to wait for 5 seconds.
     # https://github.com/owncloud/client/issues/9325
-    snooze(5)
+    snooze(context.userData['minSyncTimeout'])
 
     for row in context.table[1:]:
         filename = syncPath + row[0]
