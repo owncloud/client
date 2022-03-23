@@ -28,27 +28,34 @@ def main(ctx):
     }
     pipelines = [
         # check the format of gui test code
-        gui_tests_format(build_trigger),
+        # gui_tests_format(build_trigger),
         # Check starlark
         check_starlark(
             ctx,
             build_trigger,
         ),
         # Build changelog
-        changelog(
-            ctx,
-            trigger = build_trigger,
-            depends_on = [],
-        ),
-        build_and_test_client(
-            ctx,
-            "clang",
-            "clang++",
-            "Debug",
-            "Ninja",
-            trigger = build_trigger,
-        ),
+        # changelog(
+        #     ctx,
+        #     trigger = build_trigger,
+        #     depends_on = [],
+        # ),
+        # build_and_test_client(
+        #     ctx,
+        #     "clang",
+        #     "clang++",
+        #     "Debug",
+        #     "Ninja",
+        #     trigger = build_trigger,
+        # ),
         gui_tests(ctx, trigger = build_trigger, version = "latest"),
+        notification(
+            name = "build",
+            trigger = build_trigger,
+            depends_on = [
+                "GUI-tests",
+            ],
+        ),
     ]
     cron_pipelines = [
         # Build client
@@ -189,7 +196,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
 def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--retry 1 --reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = "--retry 1 --reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @test" % GUI_TEST_REPORT_DIR
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -424,7 +431,13 @@ def notification(name, depends_on = [], trigger = {}):
                 "pull": "always",
                 "settings": {
                     "webhook": from_secret("private_rocketchat"),
-                    "channel": "desktop-internal",
+                    "channel": "desktop-client-builds",
+                    "template": ">\
+                                {{#success build.status}} \
+                                    build {{build.number}} succeeded. Good job. \
+                                {{else}} \
+                                    build {{build.number}} failed. Fix me please. \
+                                {{/success}}",
                 },
             },
         ],
