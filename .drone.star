@@ -5,10 +5,12 @@
 # with a specific compiler.
 #
 
-OC_TESTING_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.4.0"
-GUI_TEST_REPORT_DIR = "/drone/src/test/guiReportUpload"
 GUI_TEST_DIR = "/drone/src/test/gui"
+GUI_TEST_REPORT_DIR = "/drone/src/test/guiReportUpload"
 NOTIFICATION_TEMPLATE_DIR = "/drone/src"
+
+OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
+OC_TESTING_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.4.0"
 
 dir = {
     "base": "/drone",
@@ -158,7 +160,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
             "os": "linux",
             "arch": "amd64",
         },
-        "steps": [
+        "steps": skipIfUnchanged(ctx, "unit_tests") + [
                      {
                          "name": "submodules",
                          "image": "docker:git",
@@ -205,7 +207,7 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
             "os": "linux",
             "arch": "amd64",
         },
-        "steps": [
+        "steps": skipIfUnchanged(ctx, "gui_tests") + [
                      {
                          "name": "submodules",
                          "image": "docker:git",
@@ -669,3 +671,43 @@ def githubComment(alternateSuiteName):
             ],
         },
     }]
+
+def skipIfUnchanged(ctx, type):
+    if ("full-ci" in ctx.build.title.lower()):
+        return []
+
+    skip_step = {
+        "name": "skip-if-unchanged",
+        "image": OC_CI_DRONE_SKIP_PIPELINE,
+        "when": {
+            "event": [
+                "pull_request",
+            ],
+        },
+    }
+
+    base_skip_steps = [
+        "^.github/.*",
+        "^changelog/.*",
+        "README.md",
+    ]
+
+    if type == "gui-tests":
+        gui_files = [
+            "^src/.*",
+        ]
+        skip_step["settings"] = {
+            "DISALLOW_SKIP_CHANGED": gui_files,
+        }
+        return [skip_step]
+
+    if type == "unit-tests":
+        unit_files = [
+            "^src/.*",
+        ]
+        skip_step["settings"] = {
+            "DISALLOW_SKIP_CHANGED": unit_files,
+        }
+        return [skip_step]
+
+    return []
