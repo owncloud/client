@@ -110,6 +110,11 @@ void DiskFileModifier::setModTime(const QString &relativePath, const QDateTime &
     OCC::FileSystem::setModTime(_rootDir.filePath(relativePath), OCC::Utility::qDateTimeToTime_t(modTime));
 }
 
+QString DiskFileModifier::fullPath(const QString &relativePath)
+{
+    return _rootDir.filePath(relativePath);
+}
+
 FileInfo FileInfo::A12_B12_C12_S12()
 {
     FileInfo fi { QString {}, {
@@ -884,8 +889,8 @@ QNetworkReply *FakeQNAM::createRequest(QNetworkAccessManager::Operation op, cons
             reply = _reply;
         }
     }
+    const QString fileName = getFilePathFromUrl(newRequest.url());
     if (!reply) {
-        const QString fileName = getFilePathFromUrl(newRequest.url());
         Q_ASSERT(!fileName.isNull());
         if (_errorPaths.contains(fileName)) {
             reply = new FakeErrorReply { op, newRequest, this, _errorPaths[fileName] };
@@ -896,22 +901,29 @@ QNetworkReply *FakeQNAM::createRequest(QNetworkAccessManager::Operation op, cons
         FileInfo &info = isUpload ? _uploadFileInfo : _remoteRootFileInfo;
 
         auto verb = newRequest.attribute(QNetworkRequest::CustomVerbAttribute);
-        if (verb == QLatin1String("PROPFIND"))
+        if (verb == QLatin1String("PROPFIND")) {
+            emit receivedPropfind(fileName);
             // Ignore outgoingData always returning somethign good enough, works for now.
             reply = new FakePropfindReply { info, op, newRequest, this };
-        else if (verb == QLatin1String("GET") || op == QNetworkAccessManager::GetOperation)
+        } else if (verb == QLatin1String("GET") || op == QNetworkAccessManager::GetOperation) {
+            emit receivedGet(fileName);
             reply = new FakeGetReply { info, op, newRequest, this };
-        else if (verb == QLatin1String("PUT") || op == QNetworkAccessManager::PutOperation)
+        } else if (verb == QLatin1String("PUT") || op == QNetworkAccessManager::PutOperation) {
+            emit receivedPut(fileName);
             reply = new FakePutReply { info, op, newRequest, outgoingData->readAll(), this };
-        else if (verb == QLatin1String("MKCOL"))
+        } else if (verb == QLatin1String("MKCOL")) {
+            emit receivedMkcol(fileName);
             reply = new FakeMkcolReply { info, op, newRequest, this };
-        else if (verb == QLatin1String("DELETE") || op == QNetworkAccessManager::DeleteOperation)
+        } else if (verb == QLatin1String("DELETE") || op == QNetworkAccessManager::DeleteOperation) {
+            emit receivedDelete(fileName);
             reply = new FakeDeleteReply { info, op, newRequest, this };
-        else if (verb == QLatin1String("MOVE") && !isUpload)
+        } else if (verb == QLatin1String("MOVE") && !isUpload) {
+            emit receivedMove(fileName);
             reply = new FakeMoveReply { info, op, newRequest, this };
-        else if (verb == QLatin1String("MOVE") && isUpload)
+        } else if (verb == QLatin1String("MOVE") && isUpload) {
+            emit receivedChunkMove(fileName);
             reply = new FakeChunkMoveReply { info, _remoteRootFileInfo, op, newRequest, this };
-        else {
+        } else {
             qDebug() << verb << outgoingData;
             Q_UNREACHABLE();
         }
@@ -932,6 +944,8 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode)
     toDisk(rootDir, fileTemplate);
 
     _fakeQnam = new FakeQNAM(fileTemplate);
+    connect(_fakeQnam, &FakeQNAM::receivedPut, this, &FakeFolder::uploadingFile);
+
     _account = OCC::Account::create();
     _account->setUrl(QUrl(QStringLiteral("http://admin:admin@localhost/owncloud")));
     _account->setCredentials(new FakeCredentials { _fakeQnam });

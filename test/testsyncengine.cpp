@@ -768,6 +768,19 @@ private slots:
 
         QCOMPARE(QFileInfo(fakeFolder.localPath() + "foo").lastModified(), datetime);
     }
+
+    void testLockingDuringUpload()
+    {
+        FakeFolder fakeFolder { FileInfo {} };
+         fakeFolder.localModifier().insert("a");
+        QFile aFile(fakeFolder.localModifier().fullPath("a"));
+        connect(&fakeFolder, &FakeFolder::uploadingFile, [&aFile](const QString &filename) {
+            OC_ENSURE(aFile.open(QFile::ReadOnly));
+        });
+
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+    }
 };
 
 QTEST_GUILESS_MAIN(TestSyncEngine)

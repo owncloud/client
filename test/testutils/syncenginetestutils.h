@@ -101,12 +101,14 @@ public:
     void remove(const QString &relativePath) override;
     void insert(const QString &relativePath, qint64 size = 64, char contentChar = 'W') override;
     void setContents(const QString &relativePath, char contentChar) override;
-    void appendByte(const QString &relativePath, char contentChar) override;
+    void appendByte(const QString &relativePath, char contentChar = 0) override;
     void modifyByte(const QString &relativePath, quint64 offset, char contentChar) override;
 
     void mkdir(const QString &relativePath) override;
     void rename(const QString &from, const QString &to) override;
     void setModTime(const QString &relativePath, const QDateTime &modTime) override;
+
+    QString fullPath(const QString &relativePath);
 };
 
 static inline qint64 defaultLastModified()
@@ -470,6 +472,8 @@ public:
 
 class FakeQNAM : public QNetworkAccessManager
 {
+    Q_OBJECT
+
 public:
     using Override = std::function<QNetworkReply *(Operation, const QNetworkRequest &, QIODevice *)>;
 
@@ -489,6 +493,15 @@ public:
     QHash<QString, int> &errorPaths() { return _errorPaths; }
 
     void setOverride(const Override &override) { _override = override; }
+
+signals:
+    void receivedPropfind(const QString &filename);
+    void receivedGet(const QString &filename);
+    void receivedPut(const QString &filename);
+    void receivedMkcol(const QString &filename);
+    void receivedDelete(const QString &filename);
+    void receivedMove(const QString &filename);
+    void receivedChunkMove(const QString &filename);
 
 protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request,
@@ -516,8 +529,10 @@ public:
     void forgetSensitiveData() override { }
 };
 
-class FakeFolder
+class FakeFolder : public QObject
 {
+    Q_OBJECT
+
     QTemporaryDir _tempDir;
     DiskFileModifier _localModifier;
     // FIXME: Clarify ownership, double delete
@@ -536,7 +551,7 @@ public:
     OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
     OCC::SyncJournalDb &syncJournal() const { return *_journalDb; }
 
-    FileModifier &localModifier() { return _localModifier; }
+    DiskFileModifier &localModifier() { return _localModifier; }
     FileInfo &remoteModifier() { return _fakeQnam->currentRemoteState(); }
     FileInfo currentLocalState();
 
@@ -579,6 +594,9 @@ public:
     }
 
     bool isDehydratedPlaceholder(const QString &filePath);
+
+signals:
+    void uploadingFile(const QString &filename);
 
 private:
     static void toDisk(QDir &dir, const FileInfo &templateFi);
