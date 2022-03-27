@@ -187,14 +187,14 @@ private slots:
         QCOMPARE(aboutToRemoveAllFilesCalled, 1);
     }
 
-    void testDataFingetPrint_data()
+    void testDataFingerPrint_data()
     {
         QTest::addColumn<bool>("hasInitialFingerPrint");
         QTest::newRow("initial finger print") << true;
         QTest::newRow("no initial finger print") << false;
     }
 
-    void testDataFingetPrint()
+    void testDataFingerPrint()
     {
         QFETCH(bool, hasInitialFingerPrint);
         FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
