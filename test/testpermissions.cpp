@@ -484,22 +484,22 @@ private slots:
         rm.mkdir("changeonly");
         rm.mkdir("changeonly/sub1");
         rm.insert("changeonly/sub1/file1");
-        rm.insert("changeonly/sub1/filetorname1a");
-        rm.insert("changeonly/sub1/filetorname1z");
+        rm.insert("changeonly/sub1/filetorename1a");
+        rm.insert("changeonly/sub1/filetorename1z");
         rm.mkdir("changeonly/sub2");
         rm.insert("changeonly/sub2/file2");
-        rm.insert("changeonly/sub2/filetorname2a");
-        rm.insert("changeonly/sub2/filetorname2z");
+        rm.insert("changeonly/sub2/filetorename2a");
+        rm.insert("changeonly/sub2/filetorename2z");
 
         setAllPerm(rm.find("changeonly"), RemotePermissions::fromServerString("NSV"));
 
         QVERIFY(fakeFolder.syncOnce());
 
-        lm.rename("changeonly/sub1/filetorname1a", "changeonly/sub1/aaa1_renamed");
-        lm.rename("changeonly/sub1/filetorname1z", "changeonly/sub1/zzz1_renamed");
+        lm.rename("changeonly/sub1/filetorename1a", "changeonly/sub1/aaa1_renamed");
+        lm.rename("changeonly/sub1/filetorename1z", "changeonly/sub1/zzz1_renamed");
 
-        lm.rename("changeonly/sub2/filetorname2a", "changeonly/sub2/aaa2_renamed");
-        lm.rename("changeonly/sub2/filetorname2z", "changeonly/sub2/zzz2_renamed");
+        lm.rename("changeonly/sub2/filetorename2a", "changeonly/sub2/aaa2_renamed");
+        lm.rename("changeonly/sub2/filetorename2z", "changeonly/sub2/zzz2_renamed");
 
         lm.rename("changeonly/sub1", "changeonly/aaa");
         lm.rename("changeonly/sub2", "changeonly/zzz");
