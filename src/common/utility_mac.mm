@@ -209,7 +209,7 @@ void Utility::setLaunchOnStartup(const QString &appName, const QString &guiName,
                                      "so let's not touch the file.";
             }
         } else {
-            // plist doens't exist, write a new one.
+            // plist doesn't exist, write a new one.
             auto result = writeNewPlistFile(plistFile, fullPath, enable);
             if (!result) {
                 qCWarning(lcUtility) << result.error();
