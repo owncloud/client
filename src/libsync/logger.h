@@ -40,7 +40,7 @@ public:
 
     bool isLoggingToFile() const;
 
-    void attacheToConsole();
+    void attachToConsole();
 
     void doLog(QtMsgType type, const QMessageLogContext &ctx, const QString &message);
 

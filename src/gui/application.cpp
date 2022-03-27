@@ -569,7 +569,7 @@ void Application::slotParseMessage(const QString &msg, QObject *)
 // Helpers for displaying messages. Note that there is probably no console on Windows.
 static void displayHelpText(const QString &t, std::ostream &stream = std::cout)
 {
-    Logger::instance()->attacheToConsole();
+    Logger::instance()->attachToConsole();
     stream << qUtf8Printable(t) << std::endl;
 #ifdef Q_OS_WIN
     // No console on Windows.
