@@ -1027,7 +1027,7 @@ void PropagateDirectory::slotFirstJobFinished(SyncFileItem::Status status)
 void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
 {
     if (OC_ENSURE(!_item->isEmpty())) {
-        // report an error if the acutal action on the folder failed
+        // report an error if the actual action on the folder failed
         if (_item->_relevantDirectoyInstruction && _item->_status != SyncFileItem::Success) {
             Q_ASSERT(_item->_status != SyncFileItem::NoStatus);
             qCWarning(lcDirectory) << "PropagateDirectory completed with" << status << "the dirctory job itself is marked as" << _item->_status;
