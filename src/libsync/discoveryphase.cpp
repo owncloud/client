@@ -165,7 +165,7 @@ QPair<bool, QByteArray> DiscoveryPhase::findAndCancelDeletedJob(const QString &o
             // restoration after a prohibited move
             // a file might be in an error state and thus gets marked as CSYNC_INSTRUCTION_IGNORE
             // after it was initially marked as CSYNC_INSTRUCTION_REMOVE
-            // return true, to not trigger any additional actions on that file that could elad to dataloss
+            // return true, to not trigger any additional actions on that file that could lead to dataloss
             result = true;
             oldEtag = item->_etag;
         } else {
