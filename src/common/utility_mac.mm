@@ -204,7 +204,7 @@ void Utility::setLaunchOnStartup(const QString &appName, const QString &guiName,
                     qCWarning(lcUtility) << result.error();
                 }
             } else {
-                qCInfo(lcUtility) << "We're not an installed application, there is anoter executable "
+                qCInfo(lcUtility) << "We're not an installed application, there is another executable "
                                      "mentioned in the plist file, and that executable seems to exist, "
                                      "so let's not touch the file.";
             }
