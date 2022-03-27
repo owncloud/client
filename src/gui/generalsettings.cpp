@@ -151,7 +151,7 @@ void GeneralSettings::loadMiscSettings()
     _ui->newExternalStorage->setChecked(cfgFile.confirmExternalStorage());
     _ui->monoIconsCheckBox->setChecked(cfgFile.monoIcons());
 
-    // the dropdown has to be populated before we can can pick an entry below based on the stored setting
+    // the dropdown has to be populated before we can pick an entry below based on the stored setting
     loadLanguageNamesIntoDropdown();
 
     const auto &locale = cfgFile.uiLanguage();
