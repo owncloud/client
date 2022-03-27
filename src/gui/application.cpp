@@ -76,7 +76,7 @@ void migrateConfigFile(const QCoreApplication *app)
         // these are worked on in-order to upgrade from version to version
         // the algorithm is the same for all these locations, thus we can use a loop
         // note that we try to migrate in descending order, i.e., we try to migrate from the last release, then from the release before, ...
-        // this is done in order to avoid porting old configu
+        // this is done in order to avoid porting old config
         const auto configLocationsToMigrate = [&app] {
             QStringList out;
             // note: this change is temporary to allow using QDesktopServices etc. to determine the paths
