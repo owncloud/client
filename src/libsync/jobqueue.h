@@ -29,7 +29,7 @@ public:
     JobQueue(Account *account);
 
     /**
-     * whether jobs need to be enqued
+     * whether jobs need to be enqueued
      */
     bool isBlocked() const;
 
