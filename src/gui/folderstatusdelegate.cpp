@@ -56,8 +56,8 @@ QSize FolderStatusDelegate::sizeHint(const QStyleOptionViewItem &option,
     QFontMetrics fm(font);
     QFontMetrics aliasFm(aliasFont);
 
-    auto classif = static_cast<const FolderStatusModel *>(index.model())->classify(index);
-    if (classif == FolderStatusModel::AddButton) {
+    auto classification = static_cast<const FolderStatusModel *>(index.model())->classify(index);
+    if (classification == FolderStatusModel::AddButton) {
         const int margins = aliasFm.height(); // same as 2*aliasMargin of paint
         QFontMetrics fm(qApp->font("QPushButton"));
         QStyleOptionButton opt;
@@ -69,7 +69,7 @@ QSize FolderStatusDelegate::sizeHint(const QStyleOptionViewItem &option,
             + QSize(0, margins);
     }
 
-    if (classif != FolderStatusModel::RootFolder) {
+    if (classification != FolderStatusModel::RootFolder) {
         return QStyledItemDelegate::sizeHint(option, index);
     }
 
