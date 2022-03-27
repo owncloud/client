@@ -142,7 +142,7 @@ private slots:
         QCOMPARE(dbRecord(fakeFolder, "A/a1" DVSUFFIX)._fileSize, 65);
         cleanup();
 
-        // If the local virtual file file is removed, it'll just be recreated
+        // If the local virtual file is removed, it'll just be recreated
         if (!doLocalDiscovery)
             fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, { "A" });
         fakeFolder.localModifier().remove("A/a1" DVSUFFIX);
