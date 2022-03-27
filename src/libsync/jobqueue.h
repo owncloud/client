@@ -40,7 +40,7 @@ public:
      */
     bool retry(AbstractNetworkJob *job);
     /**
-     * Enque if blocked
+     * Enqueue if blocked
      * Returns whether the job was enqueued
      */
     bool enqueue(AbstractNetworkJob *job);
