@@ -516,7 +516,7 @@ public:
     Result<Vfs::ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &item);
 
 
-    /** Update the the placeholder and takes over some metadata from replacesFile
+    /** Update the placeholder and takes over some metadata from replacesFile
      *
      * Will also trigger a Vfs::updateMetadata.
      */
