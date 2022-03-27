@@ -60,7 +60,7 @@ QSharedPointer<Vfs> setupVfs(FakeFolder &folder)
     folder.switchToVfs(suffixVfs);
 
     // Using this directly doesn't recursively unpin everything and instead leaves
-    // the files in the hydration that that they start with
+    // the files in the hydration that they start with
     folder.syncJournal().internalPinStates().setForPath("", PinState::Unspecified);
 
     return suffixVfs;
