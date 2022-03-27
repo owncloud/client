@@ -240,7 +240,7 @@ private:
     QVector<LocalInfo> _localNormalQueryEntries;
 
     // Whether the local/remote directory item queries are done. Will be set
-    // even even for do-nothing (!= NormalQuery) queries.
+    // even for do-nothing (!= NormalQuery) queries.
     bool _serverQueryDone = false;
     bool _localQueryDone = false;
 
