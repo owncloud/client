@@ -130,7 +130,7 @@ public:
         , _inode(0)
         , _previousSize(0)
         , _previousModtime(0)
-        , _relevantDirectoyInstruction(false)
+        , _relevantDirectoryInstruction(false)
     {
     }
 
@@ -285,7 +285,7 @@ public:
     QString _directDownloadUrl;
     QString _directDownloadCookies;
 
-    bool _relevantDirectoyInstruction = false;
+    bool _relevantDirectoryInstruction = false;
     bool _finished = false;
 };
 
