@@ -99,6 +99,16 @@ def hook(context):
 
 @OnScenarioEnd
 def hook(context):
+    # Make any test flaky
+    # create a file and store value 1 in it
+    if os.path.exists('/tmp/test_flaky'):
+        with open('/tmp/test_flaky', 'w') as f:
+            f.write('1')
+    else:
+        with open('/tmp/test_flaky', 'w') as f:
+            # write (int data in file -1)* -1
+            f.write((builtins.int(f.read()) - 1) * -1)
+    
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing
     coredumps = getCoredumps()
@@ -112,7 +122,9 @@ def hook(context):
         print("No coredump found!")
 
     # capture screenshot if there is error in the scenario execution, and if the test is being run in CI
+    # also, add the entry of failing test to a file called "failed_tests.csv", which is used to determiine if a test has passed in retry
     if test.resultCount("errors") > 0 and os.getenv('CI'):
+        # Capture screenshot
         import gi
 
         gi.require_version('Gtk', '3.0')
@@ -128,6 +140,11 @@ def hook(context):
             os.makedirs(directory)
 
         pb.savev(os.path.join(directory, filename), "png", [], [])
+
+        # Add entry to failed_tests.txt
+        with open(os.environ["GUI_TEST_REPORT_DIR"] + "/failed_tests.txt", "a") as f:
+            f.write(context._data["title"] + "\n")
+            f.close()
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in applicationContextList():
