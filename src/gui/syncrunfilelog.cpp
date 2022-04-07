@@ -55,7 +55,7 @@ void SyncRunFileLog::start(const QString &folderPath)
 
 
     // we use a text stream to ensure the encoding is ok
-    // when outputiing info we use QDebug to ensure we can use the debug operatos
+    // when outputting info, we use QDebug to ensure we can use the debug operators
     _out.reset(new QTextStream(_file.data()));
     _out->setCodec("UTF-8");
 
