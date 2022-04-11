@@ -10,7 +10,7 @@ BasicCredentialsSetupWizardPage::BasicCredentialsSetupWizardPage(const QUrl &ser
 {
     _ui->setupUi(this);
 
-    _ui->urlLabel->setText(serverUrl.toString());
+    _ui->urlLabel->setText(tr("Connecting to <a href='%1'>%1</a>").arg(serverUrl.toString()));
 
     connect(this, &AbstractSetupWizardPage::pageDisplayed, this, [this]() {
         _ui->usernameLineEdit->setFocus();

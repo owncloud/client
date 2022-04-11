@@ -10,7 +10,7 @@ OAuthCredentialsSetupWizardPage::OAuthCredentialsSetupWizardPage(const QUrl &ser
 {
     _ui->setupUi(this);
 
-    _ui->urlLabel->setText(serverUrl.toString());
+    _ui->urlLabel->setText(tr("Connecting to <a href='%1'>%1</a>").arg(serverUrl.toString()));
 
     connect(_ui->reopenBrowserButton, &QPushButton::pressed, this, [this]() {
         Q_EMIT reopenBrowserButtonPushed();
