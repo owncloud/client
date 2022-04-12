@@ -270,7 +270,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         }
     }
 
-    const auto &map = FolderMan::instance()->map();
+    const auto &map = FolderMan::instance()->folders();
     for (auto *f : map) {
         if (!f->syncPaused()) {
             allPaused = false;
@@ -322,7 +322,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     // display the info of the least successful sync (eg. do not just display the result of the latest sync)
     QString trayMessage;
 
-    auto trayOverallStatusResult = FolderMan::trayOverallStatus(map.values());
+    auto trayOverallStatusResult = FolderMan::trayOverallStatus(map);
 
     const QIcon statusIcon = Theme::instance()->syncStateIcon(trayOverallStatusResult.overallStatus(), true, contextMenuVisible());
     _tray->setIcon(statusIcon);
@@ -383,7 +383,7 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
 
     FolderMan *folderMan = FolderMan::instance();
     bool firstFolder = true;
-    const auto &map = folderMan->map();
+    const auto &map = folderMan->folders();
     bool singleSyncFolder = map.size() == 1 && Theme::instance()->singleSyncFolder();
     bool onePaused = false;
     bool allPaused = true;
@@ -405,8 +405,7 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
         }
 
         QAction *action = menu->addAction(tr("Open folder '%1'").arg(folder->shortGuiLocalPath()));
-        auto alias = folder->alias();
-        connect(action, &QAction::triggered, this, [this, alias] { this->slotFolderOpenAction(alias); });
+        connect(action, &QAction::triggered, this, [this, folder] { this->slotFolderOpenAction(folder); });
     }
 
     menu->addSeparator();
@@ -670,7 +669,7 @@ void ownCloudGui::updateContextMenu()
         }
     }
 
-    for (auto *f : FolderMan::instance()->map()) {
+    for (auto *f : FolderMan::instance()->folders()) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
         } else {
@@ -803,9 +802,8 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
 /*
  * open the folder with the given Alias
  */
-void ownCloudGui::slotFolderOpenAction(const QString &alias)
+void ownCloudGui::slotFolderOpenAction(Folder *f)
 {
-    Folder *f = FolderMan::instance()->folder(alias);
     if (f) {
         qCInfo(lcApplication) << "opening local url " << f->path();
         QUrl url = QUrl::fromLocalFile(f->path());
@@ -885,11 +883,8 @@ static bool shouldShowInRecentsMenu(const SyncFileItem &item)
         && item._instruction != CSYNC_INSTRUCTION_NONE;
 }
 
-
-void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo &progress)
+void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progress)
 {
-    Q_UNUSED(folder);
-
     if (progress.status() == ProgressInfo::Discovery) {
         if (!progress._currentDiscoveredRemoteFolder.isEmpty()) {
             _actionStatus->setText(tr("Checking for changes in remote '%1'")
@@ -946,14 +941,11 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo &
         QString timeStr = QTime::currentTime().toString("hh:mm");
         QString actionText = tr("%1 (%2, %3)").arg(progress._lastCompletedItem._file, kindStr, timeStr);
         QAction *action = new QAction(actionText, this);
-        Folder *f = FolderMan::instance()->folder(folder);
-        if (f) {
-            QString fullPath = f->path() + '/' + progress._lastCompletedItem._file;
-            if (QFile(fullPath).exists()) {
-                connect(action, &QAction::triggered, this, [this, fullPath] { this->slotOpenPath(fullPath); });
-            } else {
-                action->setEnabled(false);
-            }
+        QString fullPath = folder->path() + '/' + progress._lastCompletedItem._file;
+        if (QFile(fullPath).exists()) {
+            connect(action, &QAction::triggered, this, [this, fullPath] { this->slotOpenPath(fullPath); });
+        } else {
+            action->setEnabled(false);
         }
         if (_recentItemsActions.length() > 5) {
             _recentItemsActions.takeFirst()->deleteLater();
@@ -1049,7 +1041,7 @@ void ownCloudGui::setPauseOnAllFoldersHelper(bool pause)
             accounts.append(a);
         }
     }
-    for (auto *f : FolderMan::instance()->map()) {
+    for (auto *f : FolderMan::instance()->folders()) {
         if (accounts.contains(f->accountState())) {
             f->setSyncPaused(pause);
             if (pause) {

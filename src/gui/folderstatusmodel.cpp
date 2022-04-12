@@ -74,14 +74,15 @@ void FolderStatusModel::setAccountState(AccountStatePtr accountState)
     connect(FolderMan::instance(), &FolderMan::scheduleQueueChanged,
         this, &FolderStatusModel::slotFolderScheduleQueueChanged, Qt::UniqueConnection);
 
-    for (const auto &f : FolderMan::instance()->map()) {
+    for (const auto &f : FolderMan::instance()->folders()) {
         if (!accountState)
             break;
         if (f->accountState() != accountState)
             continue;
         SubFolderInfo info;
-        info._name = f->alias();
-        info._path = "/";
+        // the name is not actually used with the root element
+        info._name = QLatin1Char('/');
+        info._path = QLatin1Char('/');
         info._folder = f;
         info._checked = Qt::PartiallyChecked;
         _folders << info;
@@ -233,7 +234,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     case FolderStatusDelegate::HeaderRole:
         return f->shortGuiRemotePathOrAppName();
     case FolderStatusDelegate::FolderAliasRole:
-        return f->alias();
+        return f->legacyId();
     case FolderStatusDelegate::FolderSyncPaused:
         return f->syncPaused();
     case FolderStatusDelegate::FolderAccountConnected:
@@ -276,6 +277,13 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
         return f->isReady();
     }
     return QVariant();
+}
+
+Folder *FolderStatusModel::folder(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return nullptr;
+    return _folders.at(index.row())._folder;
 }
 
 bool FolderStatusModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -1065,7 +1073,7 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
     } else if (state == SyncResult::NotYetStarted) {
         FolderMan *folderMan = FolderMan::instance();
         int pos = folderMan->scheduleQueue().indexOf(f);
-        for (auto other : folderMan->map()) {
+        for (auto other : folderMan->folders()) {
             if (other != f && other->isSyncRunning())
                 pos += 1;
         }
@@ -1096,7 +1104,7 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
 void FolderStatusModel::slotFolderScheduleQueueChanged()
 {
     // Update messages on waiting folders.
-    for (auto *f : FolderMan::instance()->map()) {
+    for (auto *f : FolderMan::instance()->folders()) {
         slotFolderSyncStateChange(f);
     }
 }
