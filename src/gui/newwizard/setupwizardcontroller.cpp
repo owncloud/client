@@ -7,9 +7,11 @@
 #include "pages/oauthcredentialssetupwizardpage.h"
 #include "pages/serverurlsetupwizardpage.h"
 
+#include "gui/application.h"
 #include "gui/folderman.h"
 #include "theme.h"
 
+#include <QClipboard>
 #include <QDir>
 #include <QTimer>
 
@@ -233,7 +235,7 @@ void SetupWizardController::nextStep(std::optional<PageIndex> currentPage, std::
 
                         connect(oAuth, &OAuth::result, this, [this, newPage](OAuth::Result result, const QString &user, const QString &token, const QString &refreshToken) {
                             // the button may not be clicked any more, since the server has been shut down right before this signal was emitted by the OAuth instance
-                            newPage->disableReopenBrowserButton();
+                            newPage->disableButtons();
 
                             _wizardWindow->slotStartTransition();
 
@@ -260,8 +262,15 @@ void SetupWizardController::nextStep(std::optional<PageIndex> currentPage, std::
                             }
                         });
 
-                        connect(newPage, &OAuthCredentialsSetupWizardPage::reopenBrowserButtonPushed, this, [oAuth]() {
+                        connect(newPage, &OAuthCredentialsSetupWizardPage::openBrowserButtonPushed, this, [oAuth]() {
                             oAuth->openBrowser();
+                        });
+
+                        connect(newPage, &OAuthCredentialsSetupWizardPage::copyUrlToClipboardButtonPushed, this, [oAuth]() {
+                            // TODO: use authorisationLinkAsync
+                            auto link = oAuth->authorisationLink().toString();
+                            qDebug() << "copying authorization link to clipboard:" << link;
+                            ocApp()->clipboard()->setText(link);
                         });
 
                         _currentPage = newPage;

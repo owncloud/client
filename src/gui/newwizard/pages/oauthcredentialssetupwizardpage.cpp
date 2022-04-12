@@ -12,18 +12,27 @@ OAuthCredentialsSetupWizardPage::OAuthCredentialsSetupWizardPage(const QUrl &ser
 
     _ui->urlLabel->setText(tr("Connecting to <a href='%1'>%1</a>").arg(serverUrl.toString()));
 
-    connect(_ui->reopenBrowserButton, &QPushButton::pressed, this, [this]() {
-        Q_EMIT reopenBrowserButtonPushed();
+    // we want to give the user a chance to preserve their privacy when using a private proxy for instance
+    // therefore, we need to make sure the user can manually
+    // using clicked allows a user to "abort the click" (unlike pressed and released)
+    connect(_ui->openBrowserButton, &QPushButton::clicked, this, [this]() {
+        Q_EMIT openBrowserButtonPushed();
+    });
+    connect(_ui->copyUrlToClipboardButton, &QToolButton::clicked, this, [this]() {
+        Q_EMIT copyUrlToClipboardButtonPushed();
     });
 
     connect(this, &AbstractSetupWizardPage::pageDisplayed, this, [this]() {
-        _ui->reopenBrowserButton->setFocus();
+        _ui->openBrowserButton->setFocus();
     });
+
+    _ui->pleaseLogIntoLabel->setText(tr("Please use your browser to log into %1").arg(Theme::instance()->appNameGUI()));
 }
 
-void OAuthCredentialsSetupWizardPage::disableReopenBrowserButton()
+void OAuthCredentialsSetupWizardPage::disableButtons()
 {
-    _ui->reopenBrowserButton->setEnabled(false);
+    _ui->openBrowserButton->setEnabled(false);
+    _ui->copyUrlToClipboardButton->setEnabled(false);
 }
 
 OAuthCredentialsSetupWizardPage::~OAuthCredentialsSetupWizardPage()

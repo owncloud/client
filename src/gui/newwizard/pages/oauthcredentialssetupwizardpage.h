@@ -13,11 +13,12 @@ class OAuthCredentialsSetupWizardPage : public AbstractSetupWizardPage
 
 public:
     explicit OAuthCredentialsSetupWizardPage(const QUrl &serverUrl);
-    void disableReopenBrowserButton();
+    void disableButtons();
     ~OAuthCredentialsSetupWizardPage() noexcept override;
 
 Q_SIGNALS:
-    void reopenBrowserButtonPushed();
+    void openBrowserButtonPushed();
+    void copyUrlToClipboardButtonPushed();
 
 private:
     ::Ui::OAuthCredentialsSetupWizardPage *_ui;
