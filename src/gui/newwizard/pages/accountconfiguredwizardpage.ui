@@ -80,15 +80,15 @@
      <property name="checked">
       <bool>false</bool>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
        <number>60</number>
       </property>
       <item>
        <widget class="QWidget" name="advancedConfigGroupBoxContentWidget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <property name="spacing">
-          <number>50</number>
+          <number>18</number>
          </property>
          <property name="leftMargin">
           <number>0</number>
@@ -104,20 +104,14 @@
          </property>
          <item>
           <widget class="QGroupBox" name="syncModeGroupBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
            <property name="styleSheet">
-            <string notr="true">QGroupBox {border:0;}</string>
-           </property>
-           <property name="title">
             <string notr="true"/>
            </property>
+           <property name="title">
+            <string>Configure files download</string>
+           </property>
            <property name="flat">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <layout class="QVBoxLayout" name="syncModeGroupBoxLayout">
             <property name="spacing">
@@ -215,19 +209,6 @@
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>1</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
