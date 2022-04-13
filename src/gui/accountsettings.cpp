@@ -758,10 +758,10 @@ void AccountSettings::slotForceSyncCurrentFolder()
 {
     if (auto selectedFolder = this->selectedFolder()) {
         // Terminate and reschedule any running sync
-        for (auto f : FolderMan::instance()->folders()) {
-            if (f->isSyncRunning()) {
-                f->slotTerminateSync();
-                FolderMan::instance()->scheduleFolder(f);
+        for (auto *folder : FolderMan::instance()->folders()) {
+            if (folder->isSyncRunning()) {
+                folder->slotTerminateSync();
+                FolderMan::instance()->scheduleFolder(folder);
             }
         }
 
@@ -817,7 +817,7 @@ void AccountSettings::slotAccountStateChanged()
         QUrl safeUrl(account->url());
         safeUrl.setPassword(QString()); // Remove the password from the URL to avoid showing it in the UI
         FolderMan *folderMan = FolderMan::instance();
-        for (Folder *folder : folderMan->folders()) {
+        for (auto *folder : folderMan->folders()) {
             _model->slotUpdateFolderState(folder);
         }
 
