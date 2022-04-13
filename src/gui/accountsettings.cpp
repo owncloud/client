@@ -395,7 +395,7 @@ void AccountSettings::slotFolderListClicked(const QModelIndex &indx)
             return;
         }
         if (FolderStatusDelegate::errorsListRect(tv->visualRect(indx), indx).contains(pos)) {
-            emit showIssuesList(_model->data(indx, FolderStatusDelegate::FolderAliasRole).toString());
+            emit showIssuesList();
             return;
         }
 
