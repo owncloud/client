@@ -608,6 +608,11 @@ def uploadGuiTestLogs():
                 "from_secret": "cache_public_s3_secret_key",
             },
         },
+        "when": {
+            "status": [
+                "failure",
+            ],
+        },
     }]
 
 def buildGithubComment(suite):
@@ -721,10 +726,10 @@ def skipIfUnchanged(ctx, type):
     }]
     
 def findFlakyTests():
-    return {
+    return [{
         "name": "find-flaky-tests",
         "image": OC_UBUNTU,
         "commands": [
-            "bash /drone/src/test/gui/drone/find_flaky.sh %s/failed_tests.txt" % GUI_TEST_REPORT_DIR,
+            "if [ -f /drone/src/test/gui/failed_tests.txt ]; then /drone/src/test/gui/findFlakyTests.sh %s/failed_tests.txt; fi" % GUI_TEST_REPORT_DIR,
         ],
-    }
+    }]

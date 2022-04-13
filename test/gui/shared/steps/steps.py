@@ -10,7 +10,6 @@ import json
 import requests
 import builtins
 import shutil
-import builtins
 
 from objectmaphelper import RegularExpression
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
@@ -120,11 +119,6 @@ def step(context, username):
     setUpClient(context, username, displayName, confFilePath)
     enterUserPassword = EnterPassword()
     enterUserPassword.enterPassword(password)
-    
-    # if the int value in file is 0, then exit with error code 0
-    if builtins.int(open('/tmp/test_flaky', 'r').read()) == 1:
-        exit(0)
-
 
 
 @Given('the user has started the client')

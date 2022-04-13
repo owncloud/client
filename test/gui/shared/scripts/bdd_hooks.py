@@ -99,16 +99,6 @@ def hook(context):
 
 @OnScenarioEnd
 def hook(context):
-    # Make any test flaky
-    # create a file and store value 1 in it
-    if os.path.exists('/tmp/test_flaky'):
-        with open('/tmp/test_flaky', 'w') as f:
-            f.write('1')
-    else:
-        with open('/tmp/test_flaky', 'w') as f:
-            # write (int data in file -1)* -1
-            f.write((builtins.int(f.read()) - 1) * -1)
-    
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing
     coredumps = getCoredumps()
