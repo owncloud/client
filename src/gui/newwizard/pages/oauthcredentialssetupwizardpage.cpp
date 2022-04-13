@@ -17,6 +17,9 @@ OAuthCredentialsSetupWizardPage::OAuthCredentialsSetupWizardPage(const QUrl &ser
     // using clicked allows a user to "abort the click" (unlike pressed and released)
     connect(_ui->openBrowserButton, &QPushButton::clicked, this, [this]() {
         Q_EMIT openBrowserButtonPushed();
+
+        // change button title after first click
+        _ui->openBrowserButton->setText(tr("Reopen Browser"));
     });
     connect(_ui->copyUrlToClipboardButton, &QToolButton::clicked, this, [this]() {
         Q_EMIT copyUrlToClipboardButtonPushed();
