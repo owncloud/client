@@ -977,7 +977,7 @@ void AccountSettings::refreshSelectiveSyncStatus()
             QModelIndex theIndx = _model->indexForPath(folder, myFolder);
             if (theIndx.isValid()) {
                 msg += QString::fromLatin1("<a href=\"%1?folder=%2\">%1</a>")
-                           .arg(Utility::escape(myFolder), QUrl::toPercentEncoding(folder->legacyId()));
+                           .arg(Utility::escape(myFolder), QUrl::toPercentEncoding(folder->id()));
             } else {
                 msg += myFolder; // no link because we do not know the index yet.
             }

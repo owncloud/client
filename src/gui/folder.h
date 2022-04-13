@@ -162,11 +162,6 @@ public:
      */
     AccountStatePtr accountState() const { return _accountState; }
 
-    /// deprecated porting helper, should be replaced with a direct use of uuid
-    [[deprecated]] QByteArray legacyId() const
-    {
-        return id();
-    }
     QByteArray id() const;
     QString shortGuiRemotePathOrAppName() const;
 
