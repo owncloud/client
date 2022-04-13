@@ -328,3 +328,16 @@ Feature: Syncing files
         And as "Alice" file "testaudio.mp3" should exist on the server
         And as "Alice" file "test_video.mp4" should exist on the server
         And as "Alice" file "simple.txt" should exist on the server
+
+    Scenario: Folders with 500 files can sync successfully
+        Given user "Alice" has set up a client with default settings
+        When user "Alice" creates a folder "folder1" inside the sync folder
+        And user "Alice" creates "500" files each of size "1048576" bytes inside the folder "folder1"
+        And user "Alice" creates a folder "folder2" inside the sync folder
+        And user "Alice" creates "500" files each of size "1048576" bytes inside the folder "folder2"
+        When the user waits for folder "folder1" to be synced
+        When the user waits for folder "folder2" to be synced
+        Then as "Alice" folder "folder1" should exist on the server
+        And as user "Alice" folder "folder1" should contain "500" items on the server
+        Then as "Alice" folder "folder2" should exist on the server
+        And as user "Alice" folder "folder2" should contain "NaN" items on the server
