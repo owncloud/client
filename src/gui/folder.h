@@ -51,13 +51,6 @@ class LocalDiscoveryTracker;
 class FolderDefinition
 {
 public:
-    FolderDefinition(const QByteArray &id, const QUrl &davUrl)
-        : _webDavUrl(davUrl)
-        , _id(id)
-    {
-    }
-
-
     static auto createNewFolderDefinition(const QUrl &davUrl)
     {
         return FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl);
@@ -121,6 +114,8 @@ public:
 
 
 private:
+    FolderDefinition(const QByteArray &id, const QUrl &davUrl);
+
     /// path on local machine (always trailing /)
     QString _localPath;
     /// path on remote (usually no trailing /, exception "/")

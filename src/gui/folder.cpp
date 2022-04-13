@@ -1341,6 +1341,12 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction dir, std::functio
     ownCloudGui::raiseDialog(msgBox);
 }
 
+FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl)
+    : _webDavUrl(davUrl)
+    , _id(id)
+{
+}
+
 void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
 {
     settings.setValue(QLatin1String("localPath"), folder.localPath());
