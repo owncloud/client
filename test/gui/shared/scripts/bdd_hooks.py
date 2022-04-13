@@ -39,7 +39,7 @@ def hook(context):
     DEFAULT_CONFIG = {
         'localBackendUrl': 'https://localhost:9200/',
         'secureLocalBackendUrl': 'https://localhost:9200/',
-        'maxSyncTimeout': 10,
+        'maxSyncTimeout': 60,
         'minSyncTimeout': 5,
         'middlewareUrl': 'http://localhost:3000/',
         'clientConfigFile': '-',

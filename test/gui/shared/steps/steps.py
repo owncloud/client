@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from turtle import clear
 import names
 import os
 import sys
@@ -420,6 +421,7 @@ def collaboratorShouldBeListed(
 
 @When('the user waits for the files to sync')
 def step(context):
+    snooze(20)
     waitForRootFolderToSync(context)
 
 
@@ -1419,3 +1421,17 @@ def step(context, username):
         filename = syncPath + row[0]
         f = open(join(syncPath, filename), "w")
         f.close()
+
+@When('user "|any|" creates "|any|" files each of size "|any|" bytes inside the folder "|any|"')
+def step(context, username, filenumber, filesize, foldername):
+    snooze(5)
+    for i in range(0, builtins.int(filenumber)):
+            filename = f"file{i}.txt"
+            createFileWithSize(context, join(foldername, filename), filesize)
+
+
+def createFileWithSize(context, filename, filesize):
+    path = context.userData['currentUserSyncPath']
+    file = join(path, filename)
+    cmd = "truncate -s {filesize} {file}".format(filesize=filesize, file=file)
+    os.system(cmd)
