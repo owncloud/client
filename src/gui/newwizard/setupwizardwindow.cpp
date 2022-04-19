@@ -76,6 +76,8 @@ void SetupWizardWindow::displayPage(AbstractSetupWizardPage *page, PageIndex ind
 
 void SetupWizardWindow::slotStartTransition()
 {
+    _transitioning = true;
+
     _ui->transitionProgressIndicator->startAnimation();
     _ui->contentWidget->setCurrentWidget(_ui->transitionProgressIndicator);
 
