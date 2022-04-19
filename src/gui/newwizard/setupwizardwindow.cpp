@@ -3,6 +3,8 @@
 #include <QLabel>
 
 #include "gui/owncloudgui.h"
+#include "gui/application.h"
+#include "gui/settingsdialog.h"
 #include "ui_setupwizardwindow.h"
 
 namespace OCC::Wizard {
@@ -31,6 +33,8 @@ SetupWizardWindow::SetupWizardWindow(QWidget *parent)
         slotStartTransition();
         emit paginationEntryClicked(_ui->pagination->activePageIndex(), clickedPageIndex);
     });
+
+    resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
 
     _ui->transitionProgressIndicator->setFixedSize(32, 32);
 
