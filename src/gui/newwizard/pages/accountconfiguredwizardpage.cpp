@@ -43,12 +43,19 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
         enableVfsByDefault = false;
     }
 
+    auto setRecommendedOption = [](QRadioButton *radioButton) {
+        radioButton->setText(tr("%1 (recommended)").arg(radioButton->text()));
+        radioButton->setChecked(true);
+    };
+
     if (enableVfsByDefault) {
-        _ui->useVfsRadioButton->setChecked(true);
+        setRecommendedOption(_ui->useVfsRadioButton);
 
         // move up top
         _ui->syncModeGroupBoxLayout->removeWidget(_ui->useVfsRadioButton);
         _ui->syncModeGroupBoxLayout->insertWidget(0, _ui->useVfsRadioButton);
+    } else {
+        setRecommendedOption(_ui->syncEverythingRadioButton);
     }
 
     if (!vfsIsAvailable) {
