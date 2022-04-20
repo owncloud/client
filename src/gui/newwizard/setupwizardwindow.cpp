@@ -63,6 +63,9 @@ void SetupWizardWindow::displayPage(AbstractSetupWizardPage *page, PageIndex ind
     _currentPage = page;
     slotReplaceContent(_currentPage);
 
+    // initial check whether to enable the next button right away
+    slotUpdateNextButton();
+
     _ui->pagination->setActivePageIndex(index);
     _ui->pagination->setEnabled(true);
 
@@ -120,21 +123,38 @@ void SetupWizardWindow::setPaginationEntries(const QStringList &paginationEntrie
     _ui->pagination->setEntries(paginationEntries);
 }
 
+void SetupWizardWindow::slotUpdateNextButton()
+{
+    _ui->nextButton->setEnabled(_currentPage->inputValidated());
+}
+
 bool SetupWizardWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (!_transitioning && (obj == _currentPage.data() || obj == this)) {
-        if (event->type() == QEvent::KeyPress) {
-            auto keyEvent = dynamic_cast<QKeyEvent *>(event);
+    if (!_transitioning) {
+        // whenever the user types another character somewhere inside the page, we can re-evaluate whether to enable the next button
+        switch (event->type()) {
+        case QEvent::KeyPress:
+        case QEvent::KeyRelease:
+            slotUpdateNextButton();
+            break;
+        default:
+            break;
+        }
 
-            switch (keyEvent->key()) {
-            case Qt::Key_Enter:
-                Q_FALLTHROUGH();
-            case Qt::Key_Return:
-                slotMoveToNextPage();
-                return true;
-            default:
-                // no action required, give other handlers a chance
-                break;
+        if (obj == _currentPage.data() || obj == this) {
+            if (event->type() == QEvent::KeyPress) {
+                auto keyEvent = dynamic_cast<QKeyEvent *>(event);
+
+                switch (keyEvent->key()) {
+                case Qt::Key_Enter:
+                    Q_FALLTHROUGH();
+                case Qt::Key_Return:
+                    slotMoveToNextPage();
+                    return true;
+                default:
+                    // no action required, give other handlers a chance
+                    break;
+                }
             }
         }
     }

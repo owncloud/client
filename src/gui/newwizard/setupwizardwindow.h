@@ -64,6 +64,7 @@ private Q_SLOTS:
     void slotReplaceContent(QWidget *newWidget);
     void slotHideErrorMessageWidget();
     void slotMoveToNextPage();
+    void slotUpdateNextButton();
 
 private:
     ::Ui::SetupWizardWindow *_ui;

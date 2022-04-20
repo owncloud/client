@@ -32,4 +32,9 @@ ServerUrlSetupWizardPage::~ServerUrlSetupWizardPage()
 {
     delete _ui;
 }
+
+bool ServerUrlSetupWizardPage::inputValidated()
+{
+    return !_ui->urlLineEdit->text().isEmpty();
+}
 }

@@ -169,4 +169,10 @@ SyncMode AccountConfiguredWizardPage::syncMode() const
 
     Q_UNREACHABLE();
 }
+
+bool AccountConfiguredWizardPage::inputValidated()
+{
+    // nothing to validate here
+    return true;
+}
 }

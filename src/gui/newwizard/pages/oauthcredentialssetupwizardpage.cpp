@@ -43,4 +43,11 @@ OAuthCredentialsSetupWizardPage::~OAuthCredentialsSetupWizardPage()
     delete _ui;
 }
 
+bool OAuthCredentialsSetupWizardPage::inputValidated()
+{
+    // in this special case, the input may never be validated, i.e., the next button also never needs to be enabled
+    // an external system set up by the controller will move to the next page in the background
+    return false;
+}
+
 } // namespace OCC::Wizard
