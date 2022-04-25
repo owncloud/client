@@ -12,6 +12,6 @@
  * for more details.
  */
 #pragma once
-#pragma message("Warning: Legacy version.h was included, this is only meant as workaround for the legacy branding mechanism")
+#pragma message("Warning: Legacy version.h was included, this is only meant as a workaround for the legacy branding mechanism. Please directly include 'common/version.h'")
 
 #include "common/version.h"
