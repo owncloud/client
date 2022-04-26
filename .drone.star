@@ -632,6 +632,32 @@ def buildGithubComment(suite):
             },
         },
         "when": {
+            "status": [
+                "failure",
+            ],
+            "event": [
+                "pull_request",
+            ],
+        },
+    }]
+
+def buildFlakyTestsGithubComment(suite):
+    return [{
+        "name": "build-flaky-tests-comment",
+        "image": OC_UBUNTU,
+        "commands": [
+            "bash /drone/src/test/gui/drone/flakyComment.sh %s" % GUI_TEST_REPORT_DIR,
+        ],
+        "environment": {
+            "TEST_CONTEXT": suite,
+            "CACHE_ENDPOINT": {
+                "from_secret": "cache_public_s3_server",
+            },
+            "CACHE_BUCKET": {
+                "from_secret": "cache_public_s3_bucket",
+            },
+        },
+        "when": {
             "event": [
                 "pull_request",
             ],
@@ -653,8 +679,12 @@ def githubComment(alternateSuiteName):
         },
         "commands": [
             "if [ -s %s/comments.file ]; then echo '%s' | cat - %s/comments.file > temp && mv temp %s/comments.file && /bin/drone-github-comment; fi" % (GUI_TEST_REPORT_DIR, prefix, GUI_TEST_REPORT_DIR, GUI_TEST_REPORT_DIR),
+            "if [ -s %s/flaky.file ]; then echo '%s' | cat - %s/flaky.file > temp && mv temp %s/flaky.file && /bin/drone-github-comment; fi" % (GUI_TEST_REPORT_DIR, prefix, GUI_TEST_REPORT_DIR, GUI_TEST_REPORT_DIR),
         ],
         "when": {
+            "status": [
+                "failure",
+            ],
             "event": [
                 "pull_request",
             ],
@@ -724,7 +754,7 @@ def skipIfUnchanged(ctx, type):
             ],
         },
     }]
-    
+
 def findFlakyTests():
     return [{
         "name": "find-flaky-tests",
