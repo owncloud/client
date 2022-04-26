@@ -2,10 +2,29 @@
 
 #include <QLabel>
 
-#include "gui/owncloudgui.h"
 #include "gui/application.h"
+#include "gui/owncloudgui.h"
 #include "gui/settingsdialog.h"
+#include "theme.h"
 #include "ui_setupwizardwindow.h"
+
+using namespace std::chrono_literals;
+
+namespace {
+
+using namespace OCC;
+
+QString replaceCssColors(QString stylesheet)
+{
+    QString rv = stylesheet;
+
+    rv = stylesheet.replace(QStringLiteral("wizard.backgroundColor"), Theme::instance()->wizardHeaderBackgroundColor().name());
+    rv = stylesheet.replace(QStringLiteral("wizard.fontColor"), Theme::instance()->wizardHeaderTitleColor().name());
+
+    return rv;
+}
+
+}
 
 namespace OCC::Wizard {
 
@@ -36,10 +55,25 @@ SetupWizardWindow::SetupWizardWindow(QWidget *parent)
 
     resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
 
+    loadStylesheet();
+
     _ui->transitionProgressIndicator->setFixedSize(32, 32);
+    _ui->transitionProgressIndicator->setColor(Theme::instance()->wizardHeaderTitleColor());
 
     // handle user pressing enter/return key
     installEventFilter(this);
+}
+
+void SetupWizardWindow::loadStylesheet()
+{
+    QString path = QStringLiteral(":/client/resources/wizard/style.qss");
+
+    QFile file(path);
+    Q_ASSERT(file.exists());
+    Q_ASSERT(file.open(QIODevice::ReadOnly));
+
+    QString stylesheet = replaceCssColors(QString::fromUtf8(file.readAll()));
+    _ui->contentWidget->setStyleSheet(stylesheet);
 }
 
 void SetupWizardWindow::displayPage(AbstractSetupWizardPage *page, PageIndex index)
@@ -104,6 +138,9 @@ void SetupWizardWindow::slotReplaceContent(QWidget *newWidget)
     _ui->contentWidget->setCurrentWidget(newWidget);
 
     _currentContentWidget = newWidget;
+
+    // inheriting the style sheet from content widget doesn't work in all cases
+    _currentContentWidget->setStyleSheet(_ui->contentWidget->styleSheet());
 }
 
 void SetupWizardWindow::slotHideErrorMessageWidget()

@@ -30,7 +30,6 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
 
     // just adjusting the visibility should be sufficient for these branding options
     if (Theme::instance()->wizardSkipAdvancedPage()) {
-        _ui->advancedConfigSeparatorLine->setVisible(false);
         _ui->advancedConfigGroupBox->setVisible(false);
     }
 
@@ -96,9 +95,6 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
     connect(_ui->advancedConfigGroupBox, &QGroupBox::toggled, this, [this](bool enabled) {
         // layouts cannot be hidden, therefore we use a plain widget within the group box to "house" the contained widgets
         _ui->advancedConfigGroupBoxContentWidget->setVisible(enabled);
-
-        // could not find a better way to hide the frame on demand, which is needed to hide the widget completely
-        _ui->advancedConfigGroupBox->setStyleSheet(enabled ? QString() : QStringLiteral("QGroupBox#advancedConfigGroupBox{border: 0}"));
     });
 
     if (vfsModeIsExperimental) {

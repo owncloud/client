@@ -10,7 +10,7 @@ OAuthCredentialsSetupWizardPage::OAuthCredentialsSetupWizardPage(const QUrl &ser
 {
     _ui->setupUi(this);
 
-    _ui->urlLabel->setText(tr("Connecting to <a href='%1'>%1</a>").arg(serverUrl.toString()));
+    _ui->urlLabel->setText(tr("Connecting to <a href='%1' style='color: %2;'>%1</a>").arg(serverUrl.toString(), Theme::instance()->wizardHeaderTitleColor().name()));
 
     // we want to give the user a chance to preserve their privacy when using a private proxy for instance
     // therefore, we need to make sure the user can manually
