@@ -190,6 +190,8 @@ void SetupWizardController::nextStep(std::optional<PageIndex> currentPage, std::
             QMessageBox::NoButton,
             _wizardWindow);
 
+        messageBox->setAttribute(Qt::WA_DeleteOnClose);
+
         messageBox->addButton(QMessageBox::Cancel);
         messageBox->addButton(tr("Confirm"), QMessageBox::YesRole);
 
