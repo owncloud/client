@@ -261,6 +261,7 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
                  # Disabled untill the feature to generate json result is implemented in squish, or some other method to reuse the log parser is implemented.
                  #  showGuiTestResult() +
                  findFlakyTests() +
+                 buildFlakyTestsGithubComment(pipeline_name) +
                  uploadGuiTestLogs() +
                  buildGithubComment(pipeline_name) +
                  githubComment(pipeline_name),

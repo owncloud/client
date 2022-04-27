@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 # $1 - GUI_TEST_REPORT_DIR
-# $2 - DRONE_REPO
-# $3 - DRONE_BUILD_NUMBER
-
 
 
 # If there are flaky tests file in $1/failed_tests.txt then create a comment listing each lines in the file
