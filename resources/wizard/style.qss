@@ -18,7 +18,7 @@
  */
 #contentWidget
 {
-    background-color: wizard.backgroundColor;
+    background-color: @WIZARD_BACKGROUND_COLOR@;
 }
 
 /* selectively set the font color for most labels and one group box title */
@@ -31,7 +31,7 @@
 #contentWidget #welcomeTextLabel,
 #contentWidget #advancedConfigGroupBox::title
 {
-    color: wizard.fontColor;
+    color: @WIZARD_FONT_COLOR@;
 }
 
 /*

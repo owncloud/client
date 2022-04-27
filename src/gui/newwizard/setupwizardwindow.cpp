@@ -18,8 +18,8 @@ QString replaceCssColors(QString stylesheet)
 {
     QString rv = stylesheet;
 
-    rv = stylesheet.replace(QStringLiteral("wizard.backgroundColor"), Theme::instance()->wizardHeaderBackgroundColor().name());
-    rv = stylesheet.replace(QStringLiteral("wizard.fontColor"), Theme::instance()->wizardHeaderTitleColor().name());
+    rv = stylesheet.replace(QStringLiteral("@WIZARD_BACKGROUND_COLOR@"), Theme::instance()->wizardHeaderBackgroundColor().name());
+    rv = stylesheet.replace(QStringLiteral("@WIZARD_FONT_COLOR@"), Theme::instance()->wizardHeaderTitleColor().name());
 
     return rv;
 }
