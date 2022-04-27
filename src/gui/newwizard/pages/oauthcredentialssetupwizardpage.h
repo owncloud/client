@@ -16,7 +16,7 @@ public:
     void disableButtons();
     ~OAuthCredentialsSetupWizardPage() noexcept override;
 
-    bool inputValidated() override;
+    bool validateInput() override;
 
 Q_SIGNALS:
     void openBrowserButtonPushed();

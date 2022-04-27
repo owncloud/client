@@ -166,7 +166,7 @@ SyncMode AccountConfiguredWizardPage::syncMode() const
     Q_UNREACHABLE();
 }
 
-bool AccountConfiguredWizardPage::inputValidated()
+bool AccountConfiguredWizardPage::validateInput()
 {
     // nothing to validate here
     return true;

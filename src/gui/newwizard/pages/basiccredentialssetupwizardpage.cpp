@@ -33,7 +33,7 @@ BasicCredentialsSetupWizardPage::~BasicCredentialsSetupWizardPage()
     delete _ui;
 }
 
-bool BasicCredentialsSetupWizardPage::inputValidated()
+bool BasicCredentialsSetupWizardPage::validateInput()
 {
     return !(username().isEmpty() || password().isEmpty());
 }

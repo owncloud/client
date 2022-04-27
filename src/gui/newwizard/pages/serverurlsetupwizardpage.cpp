@@ -37,7 +37,7 @@ ServerUrlSetupWizardPage::~ServerUrlSetupWizardPage()
     delete _ui;
 }
 
-bool ServerUrlSetupWizardPage::inputValidated()
+bool ServerUrlSetupWizardPage::validateInput()
 {
     return !_ui->urlLineEdit->text().isEmpty();
 }

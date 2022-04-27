@@ -16,7 +16,7 @@ public:
      * A minimal check for instance is to check whether all required line edits have got data.
      * In case a page does not have user input to be validated, this function may always return true.
      */
-    virtual bool inputValidated() = 0;
+    virtual bool validateInput() = 0;
 
 Q_SIGNALS:
     /**

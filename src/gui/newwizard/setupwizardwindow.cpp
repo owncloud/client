@@ -164,7 +164,7 @@ void SetupWizardWindow::setPaginationEntries(const QStringList &paginationEntrie
 
 void SetupWizardWindow::slotUpdateNextButton()
 {
-    _ui->nextButton->setEnabled(_currentPage->inputValidated());
+    _ui->nextButton->setEnabled(_currentPage->validateInput());
 }
 
 bool SetupWizardWindow::eventFilter(QObject *obj, QEvent *event)
