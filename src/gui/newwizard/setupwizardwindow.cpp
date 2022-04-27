@@ -70,7 +70,9 @@ void SetupWizardWindow::loadStylesheet()
 
     QFile file(path);
     Q_ASSERT(file.exists());
-    Q_ASSERT(file.open(QIODevice::ReadOnly));
+    if (!OC_ENSURE(file.open(QIODevice::ReadOnly))) {
+        qCritical() << "failed to load stylesheet";
+    }
 
     QString stylesheet = replaceCssColors(QString::fromUtf8(file.readAll()));
     _ui->contentWidget->setStyleSheet(stylesheet);
