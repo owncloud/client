@@ -8,7 +8,7 @@
     the navigation/pagination part is located outside the content widget, so it won't be affected by this stylesheet
     especially since we prefix all rules with #contentWidget
 
-    note that wizard.* are variables replaced by our own code when loading the stylesheet
+    note that @...@ are variables replaced by our own code when loading the stylesheet
     they represent theme-specific colors
  */
 
