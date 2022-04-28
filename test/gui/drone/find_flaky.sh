@@ -10,6 +10,7 @@ echo "Creating a list of flaky tests..."
 sort $1 | uniq --count | while read line; do
     if [[ $line == *"1"* ]]; then
         echo ${line:1} >> $1.temp
+        echo ${line:1}
     fi
 done
 
