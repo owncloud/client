@@ -448,7 +448,7 @@ def notification(name, depends_on = [], trigger = {}):
                 "image": PLUGINS_SLACK,
                 "settings": {
                     "webhook": from_secret("private_rocketchat"),
-                    "channel": "desktop-client-builds",
+                    "channel": "desktop-internal",
                     "template": "file:%s/template.md" % NOTIFICATION_TEMPLATE_DIR,
                 },
                 "depends_on": ["create-template"],
