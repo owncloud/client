@@ -116,3 +116,5 @@ linkShares_QToolButton_2 = {"container": oCC_ShareLinkWidget_linkShares_QTableWi
 oCC_ShareLinkWidget_Delete_QPushButton = {"container": qt_tabwidget_stackedwidget_OCC_ShareLinkWidget_OCC_ShareLinkWidget, "text": "Delete", "type": "QPushButton", "unnamed": 1, "visible": 1}
 oCC_ShareLinkWidget_pushButton_setPassword_QPushButton = {"container": qt_tabwidget_stackedwidget_OCC_ShareLinkWidget_OCC_ShareLinkWidget, "name": "pushButton_setPassword", "type": "QPushButton", "visible": 1}
 remove_All_Files_QMessageBox = {"type": "QMessageBox", "unnamed": 1, "visible": 1, "windowTitle": "Remove All Files?"}
+stack_QTabWidget = {"container": settings_stack_QStackedWidget, "type": "QTabWidget", "unnamed": 1, "visible": 1}
+oCC_ProtocolWidget_tableView_QTableView = {"container": qt_tabwidget_stackedwidget_OCC_ProtocolWidget_OCC_ProtocolWidget, "name": "_tableView", "type": "QTableView", "visible": 1}

@@ -90,3 +90,38 @@ class Activity:
             return True
         except:
             return False
+
+    def checkDeletedRecordExist(self, context, filename):
+        result = squish.waitFor(
+            lambda: self.isResourceDeleted(context, filename),
+            context.userData['maxSyncTimeout'] * 1000,
+        )
+
+        return result
+
+    def isResourceDeleted(self, context, filename):
+        try:
+            # The blacklisted file does not have text like (conflicted copy) appended to it in the not synced table.
+            fileRow = squish.waitForObject(
+                {
+                    "column": 1,
+                    "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                    "displayText": filename,
+                    "type": "QModelIndex",
+                },
+                context.userData['lowestSyncTimeout'] * 1000,
+            )["row"]
+            squish.waitForObjectExists(
+                {
+                    "column": 0,
+                    "row": fileRow,
+                    "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                    "displayText": "Deleted",
+                    "type": "QModelIndex",
+                },
+                context.userData['lowestSyncTimeout'] * 1000,
+            )
+
+            return True
+        except:
+            return False

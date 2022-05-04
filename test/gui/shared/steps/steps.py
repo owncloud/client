@@ -424,6 +424,11 @@ def step(context):
     waitForRootFolderToSync(context)
 
 
+@When('the user waits for sync')
+def step(context):
+    snooze(context.userData['minSyncTimeout'])
+
+
 @When(r'the user waits for (file|folder) "([^"]*)" to be synced', regexp=True)
 def step(context, type, resource):
     waitForFileOrFolderToSync(context, resource, type)
@@ -1466,3 +1471,18 @@ def step(context, username, foldername):
     source_dir = join(context.userData['tempFolderPath'], foldername)
     destination_dir = getUserSyncPath(context, username)
     shutil.move(source_dir, destination_dir)
+
+
+@When('the user looks for file "|any|" and its corresponding action')
+def step(context):
+    pass
+
+
+@Then('the file "|any|" should be deleted')
+def step(context, filename):
+    activity = Activity()
+    test.compare(
+        True,
+        activity.checkDeletedRecordExist(context, filename),
+        "File is deleted",
+    )
