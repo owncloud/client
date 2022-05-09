@@ -188,6 +188,8 @@ set_target_properties(owncloud PROPERTIES
     AUTORCC ON
 )
 target_link_libraries(owncloud owncloudCore)
+# at least one VFS library must be available
+add_dependencies(owncloud owncloud_vfs_off)
 
 
 find_package(Qt5LinguistTools)
