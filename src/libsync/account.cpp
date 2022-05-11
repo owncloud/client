@@ -305,11 +305,6 @@ void Account::addApprovedCerts(const QList<QSslCertificate> &certs)
     _am->setCustomTrustedCaCertificates(_approvedCerts);
 }
 
-void Account::resetRejectedCertificates()
-{
-    _rejectedCertificates.clear();
-}
-
 void Account::setSslErrorHandler(AbstractSslErrorHandler *handler)
 {
     _sslErrorHandler.reset(handler);
