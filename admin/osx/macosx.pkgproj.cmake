@@ -590,7 +590,7 @@
 			<dict>
 				<key>ALIGNMENT</key>
 				<integer>6</integer>
-				<key>APPAREANCES</key>
+				<key>APPEARANCES</key>
 				<dict>
 					<key>DARK_AQUA</key>
 					<dict>
@@ -642,7 +642,7 @@
 				<integer>0</integer>
 				<key>SCALING</key>
 				<integer>0</integer>
-				<key>SHARED_SETTINGS_FOR_ALL_APPAREANCES</key>
+				<key>SHARED_SETTINGS_FOR_ALL_APPEARANCES</key>
 				<true/>
 			</dict>
 			<key>INSTALLATION TYPE</key>

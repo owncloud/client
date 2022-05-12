@@ -22,7 +22,7 @@
 namespace OCC {
 
 /**
- * A Fixed sized ring buffer optimized on continouous insertion
+ * A Fixed sized ring buffer optimized on continuous insertion
  */
 template <typename TYPE>
 class FixedSizeRingBuffer

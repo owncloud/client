@@ -113,7 +113,7 @@ public:
 public slots:
     /*
      * Asynchronous abort requires emit of abortFinished() signal,
-     * while synchronous is expected to abort immedietaly.
+     * while synchronous is expected to abort immediately.
     */
     virtual void abort(PropagatorJob::AbortType abortType) {
         if (abortType == AbortType::Asynchronous)
@@ -210,7 +210,7 @@ public:
 
     /*
      * Abort synchronously or asynchronously - some jobs
-     * require to be finished without immediete abort (abort on job might
+     * require to be finished without immediate abort (abort on job might
      * cause conflicts/duplicated files - owncloud/client/issues/5949)
      */
     void abort(PropagatorJob::AbortType abortType) override
@@ -364,13 +364,13 @@ class OWNCLOUDSYNC_EXPORT OwncloudPropagator : public QObject
     Q_OBJECT
 public:
     SyncJournalDb *const _journal;
-    bool _finishedEmited; // used to ensure that finished is only emitted once
+    bool _finishedEmitted; // used to ensure that finished is only emitted once
 
 public:
     OwncloudPropagator(AccountPtr account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir,
         const QString &remoteFolder, SyncJournalDb *progressDb)
         : _journal(progressDb)
-        , _finishedEmited(false)
+        , _finishedEmitted(false)
         , _bandwidthManager(this)
         , _anotherSyncNeeded(false)
         , _chunkSize(10 * 1000 * 1000) // 10 MB, overridden in setSyncOptions
@@ -399,7 +399,7 @@ public:
     /** The list of currently active jobs.
         This list contains the jobs that are currently using ressources and is used purely to
         know how many jobs there is currently running for the scheduler.
-        Jobs add themself to the list when they do an assynchronous operation.
+        Jobs add themself to the list when they do an asynchronous operation.
         Jobs can be several time on the list (example, when several chunks are uploaded in parallel)
      */
     QList<PropagateItemJob *> _activeJobList;
@@ -516,7 +516,7 @@ public:
     Result<Vfs::ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &item);
 
 
-    /** Update the the placeholder and takes over some metadata from replacesFile
+    /** Update the placeholder and takes over some metadata from replacesFile
      *
      * Will also trigger a Vfs::updateMetadata.
      */
@@ -533,9 +533,9 @@ private slots:
     /** Emit the finished signal and make sure it is only emitted once */
     void emitFinished(SyncFileItem::Status status)
     {
-        if (!_finishedEmited)
+        if (!_finishedEmitted)
             emit finished(status == SyncFileItem::Success);
-        _finishedEmited = true;
+        _finishedEmitted = true;
     }
 
     void scheduleNextJobImpl();

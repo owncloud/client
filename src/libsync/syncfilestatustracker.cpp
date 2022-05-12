@@ -122,7 +122,7 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
     // that the status of CSYNC_FILE_EXCLUDE_LIST excludes will change if the user
     // update the exclude list at runtime and doing it statically here removes
     // our ability to notify changes through the fileStatusChanged signal,
-    // it's an acceptable compromize to treat all exclude types the same.
+    // it's an acceptable compromise to treat all exclude types the same.
     // Update: This extra check shouldn't hurt even though silently excluded files
     // are now available via slotAddSilentlyExcluded().
     if (_syncEngine->excludedFiles().isExcluded(_syncEngine->syncOptions()._vfs->underlyingFileName(absolutePath),
@@ -274,7 +274,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
         && item->_instruction != CSYNC_INSTRUCTION_UPDATE_METADATA
         && item->_instruction != CSYNC_INSTRUCTION_IGNORE
         && item->_instruction != CSYNC_INSTRUCTION_ERROR) {
-        // decSyncCount calls *must* be symetric with incSyncCount calls in slotAboutToPropagate
+        // decSyncCount calls *must* be symmetric with incSyncCount calls in slotAboutToPropagate
         decSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
     } else {
         emit fileStatusChanged(getSystemDestination(item->destination()), resolveSyncAndErrorStatus(item->destination(), sharedFlag));
@@ -283,7 +283,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
 
 void SyncFileStatusTracker::slotSyncFinished()
 {
-    // Clear the sync counts to reduce the impact of unsymetrical inc/dec calls (e.g. when directory job abort)
+    // Clear the sync counts to reduce the impact of unsymmetrical inc/dec calls (e.g. when directory job abort)
     QHash<QString, int> oldSyncCount;
     std::swap(_syncCount, oldSyncCount);
     for (auto it = oldSyncCount.begin(); it != oldSyncCount.end(); ++it)

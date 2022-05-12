@@ -208,7 +208,7 @@ void Utility::usleep(int usec)
     QThread::usleep(usec);
 }
 
-// This can be overriden from the tests
+// This can be overridden from the tests
 OCSYNC_EXPORT bool fsCasePreserving_override = []() -> bool {
     static bool ok = false;
     static int env = qEnvironmentVariableIntValue("OWNCLOUD_TEST_CASE_PRESERVING", &ok);

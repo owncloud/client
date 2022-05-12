@@ -26,7 +26,7 @@ namespace OCC {
  *
  * Usually tooltips are not updated as they change. Since we want to
  * use tooltips to show rapidly updating progress information, we
- * need to make sure that that information is displayed to the user
+ * need to make sure that information is displayed to the user
  * as it changes.
  *
  * To accomplish that, the eventFilter() stores the tooltip's position

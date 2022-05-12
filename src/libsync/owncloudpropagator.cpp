@@ -292,15 +292,15 @@ void PropagateItemJob::done(SyncFileItem::Status statusArg, const QString &error
         qCInfo(lcPropagator) << "Completed propagation of" << _item->destination() << "by" << this << "with status" << _item->_status;
 
     // Will be handled in PropagateDirectory::slotSubJobsFinished at the end
-    if (!_item->isDirectory() || _item->_relevantDirectoyInstruction) {
+    if (!_item->isDirectory() || _item->_relevantDirectoryInstruction) {
         // we are either not a directory or we are a PropagateDirectory job
         // and an actual instruction was performed for this directory.
-        Q_ASSERT(!_item->_relevantDirectoyInstruction || qobject_cast<PropagateDirectory *>(this));
+        Q_ASSERT(!_item->_relevantDirectoryInstruction || qobject_cast<PropagateDirectory *>(this));
         emit propagator()->itemCompleted(_item);
     } else {
-        // the directoy needs to call done() in PropagateDirectory::slotSubJobsFinished
+        // the directory needs to call done() in PropagateDirectory::slotSubJobsFinished
         // we don't notify itemCompleted yet as the directory is only complete once its child items are complete.
-        _item->_relevantDirectoyInstruction = true;
+        _item->_relevantDirectoryInstruction = true;
     }
     emit finished(_item->_status);
     if (_item->_status == SyncFileItem::FatalError) {
@@ -781,7 +781,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlace
     Q_ASSERT([&] {
         if (item._type == ItemTypeVirtualFileDehydration) {
             // when dehydrating the file must not be pinned
-            // don't use destinatio() with suffix placeholder
+            // don't use destination() with suffix placeholder
             const auto pin = syncOptions()._vfs->pinState(item._file);
             if (pin && pin.get() == PinState::AlwaysLocal) {
                 qDebug() << fileName << item.destination() << item._file;
@@ -1027,10 +1027,10 @@ void PropagateDirectory::slotFirstJobFinished(SyncFileItem::Status status)
 void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
 {
     if (OC_ENSURE(!_item->isEmpty())) {
-        // report an error if the acutal action on the folder failed
-        if (_item->_relevantDirectoyInstruction && _item->_status != SyncFileItem::Success) {
+        // report an error if the actual action on the folder failed
+        if (_item->_relevantDirectoryInstruction && _item->_status != SyncFileItem::Success) {
             Q_ASSERT(_item->_status != SyncFileItem::NoStatus);
-            qCWarning(lcDirectory) << "PropagateDirectory completed with" << status << "the dirctory job itself is marked as" << _item->_status;
+            qCWarning(lcDirectory) << "PropagateDirectory completed with" << status << "the directory job itself is marked as" << _item->_status;
             done(_item->_status);
             return;
         }
@@ -1055,7 +1055,7 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
             // Additionally we need to convert those folders to placeholders with cfapi vfs.
             if (_item->_instruction & (CSYNC_INSTRUCTION_RENAME | CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_UPDATE_METADATA)) {
                 // metatdata changes are relevant
-                _item->_relevantDirectoyInstruction = true;
+                _item->_relevantDirectoryInstruction = true;
                 _item->_status = SyncFileItem::Success;
                 const auto result = propagator()->updateMetadata(*_item);
                 if (!result) {
@@ -1067,7 +1067,7 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
                     return;
                 }
             }
-            if (_item->_relevantDirectoyInstruction) {
+            if (_item->_relevantDirectoryInstruction) {
                 done(_item->_status);
                 return;
             }
@@ -1075,11 +1075,11 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
     }
 
     // don't call done, we only propagate the state of the child items
-    // and we don't want error handling for this folder for an error that happend on a child
+    // and we don't want error handling for this folder for an error that happened on a child
     Q_ASSERT(_state != Finished);
     _state = Finished;
     emit finished(status);
-    if (_item->_relevantDirectoyInstruction) {
+    if (_item->_relevantDirectoryInstruction) {
         emit propagator()->itemCompleted(_item);
     }
 }

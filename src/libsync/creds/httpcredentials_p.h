@@ -1,7 +1,7 @@
 #pragma once
 
+#include "common/deprecation.h"
 #include "httpcredentials.h"
-#include "common/depreaction.h"
 
 #include "account.h"
 #include "configfile.h"
@@ -145,7 +145,7 @@ private:
         const auto data = job->textData();
         if (error != QKeychain::NoError || data.isEmpty()) {
             // we come here if the password is empty or any other keychain
-            // error happend.
+            // error happened.
             qCWarning(lcHttpLegacyCredentials) << "Migrating old keychain entries failed" << job->errorString();
             _parent->_fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
 

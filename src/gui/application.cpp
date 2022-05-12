@@ -76,7 +76,7 @@ void migrateConfigFile(const QCoreApplication *app)
         // these are worked on in-order to upgrade from version to version
         // the algorithm is the same for all these locations, thus we can use a loop
         // note that we try to migrate in descending order, i.e., we try to migrate from the last release, then from the release before, ...
-        // this is done in order to avoid porting old configu
+        // this is done in order to avoid porting old config
         const auto configLocationsToMigrate = [&app] {
             QStringList out;
             // note: this change is temporary to allow using QDesktopServices etc. to determine the paths
@@ -244,7 +244,7 @@ Application::Application(int &argc, char **argv)
     // migrate old configuration files if necessary
     migrateConfigFile(this);
 
-    // needed during commandline options parsing
+    // needed during command-line options parsing
     setApplicationVersion(_theme->versionSwitchOutput());
 
     parseOptions(arguments());
@@ -569,7 +569,7 @@ void Application::slotParseMessage(const QString &msg, QObject *)
 // Helpers for displaying messages. Note that there is probably no console on Windows.
 static void displayHelpText(const QString &t, std::ostream &stream = std::cout)
 {
-    Logger::instance()->attacheToConsole();
+    Logger::instance()->attachToConsole();
     stream << qUtf8Printable(t) << std::endl;
 #ifdef Q_OS_WIN
     // No console on Windows.
@@ -713,7 +713,7 @@ void Application::setupTranslations()
     // the user can also set a locale in the settings, so we need to load the config file
     ConfigFile cfg;
 
-    // allow user and theme to enforce a language via a commandline parameter
+    // allow user and theme to enforce a language via a command-line parameter
     const auto themeEnforcedLocale = Theme::instance()->enforcedLocale();
     qCDebug(lcApplication) << "Theme-enforced locale:" << themeEnforcedLocale;
 

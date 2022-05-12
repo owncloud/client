@@ -100,7 +100,7 @@ ShareUserGroupWidget::ShareUserGroupWidget(AccountPtr account,
     connect(_completer, qOverload<const QModelIndex &>(&QCompleter::highlighted), this, &ShareUserGroupWidget::slotCompleterHighlighted,
         Qt::QueuedConnection);
 
-    // Queued connection so this signal is recieved after textChanged
+    // Queued connection so this signal is received after textChanged
     connect(_ui->shareeLineEdit, &QLineEdit::textEdited,
         this, &ShareUserGroupWidget::slotLineEditTextEdited, Qt::QueuedConnection);
     connect(&_completionTimer, &QTimer::timeout, this, &ShareUserGroupWidget::searchForSharees);
@@ -267,7 +267,7 @@ void ShareUserGroupWidget::slotCompleterActivated(const QModelIndex &index)
 {
     if (_disableCompleterActivated)
         return;
-    // The index is an index from the QCompletion model which is itelf a proxy
+    // The index is an index from the QCompletion model which is itself a proxy
     // model proxying the _completerModel
     auto sharee = qvariant_cast<QSharedPointer<Sharee>>(index.data(Qt::UserRole));
     if (sharee.isNull()) {
@@ -406,7 +406,7 @@ ShareUserLine::ShareUserLine(QSharedPointer<Share> share,
     connect(_ui->permissionsEdit, &QAbstractButton::clicked, this, &ShareUserLine::slotEditPermissionsChanged);
 
     /*
-     * We don't show permssion share for federated shares with server <9.1
+     * We don't show permission share for federated shares with server <9.1
      * https://github.com/owncloud/core/issues/22122#issuecomment-185637344
      * https://github.com/owncloud/client/issues/4996
      */
@@ -523,7 +523,7 @@ void ShareUserLine::slotEditPermissionsChanged()
             permissions |= SharePermissionUpdate;
 
         /*
-         * Files can't have create or delete permisisons
+         * Files can't have create or delete permissions
          */
         if (!_isFile) {
             if (_permissionCreate->isEnabled())

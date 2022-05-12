@@ -13,7 +13,7 @@
  */
 
 #include "theme.h"
-#include "common/depreaction.h"
+#include "common/deprecation.h"
 #include "common/utility.h"
 #include "common/version.h"
 #include "common/vfs.h"
@@ -22,9 +22,9 @@
 
 #include <QtCore>
 #ifndef TOKEN_AUTH_ONLY
-#include <QtGui>
-#include <QStyle>
 #include <QApplication>
+#include <QStyle>
+#include <QtGui>
 #endif
 #include <QSslSocket>
 
@@ -197,7 +197,7 @@ QIcon Theme::themeIcon(const QString &name, Theme::IconType iconType) const
  */
 QIcon Theme::loadIcon(const QString &flavor, const QString &name, IconType iconType) const
 {
-    // prevent recusion
+    // prevent recursion
     const bool useCoreIcon = (iconType == IconType::VanillaIcon) || isVanilla();
     const QString path = useCoreIcon ? vanillaThemePath() : brandThemePath();
     const QString key = name + QLatin1Char(',') + flavor;
@@ -217,7 +217,7 @@ QIcon Theme::loadIcon(const QString &flavor, const QString &name, IconType iconT
             return cached = QIcon(png);
         }
 
-        const QList<int> sizes {16, 22, 32, 48, 64, 128, 256, 512, 1024};
+        const QList<int> sizes { 16, 22, 32, 48, 64, 128, 256, 512, 1024 };
         QString previousIcon;
         for (int size : sizes) {
             QString pixmapName = QStringLiteral("%1/%2/%3-%4.png").arg(path, flavor, name, QString::number(size));
@@ -226,7 +226,7 @@ QIcon Theme::loadIcon(const QString &flavor, const QString &name, IconType iconT
                 cached.addFile(pixmapName, { size, size });
             } else if (size >= 128) {
                 if (!previousIcon.isEmpty()) {
-                    qWarning() << "Upsacling:" << previousIcon << "to" << size;
+                    qWarning() << "Upscaling:" << previousIcon << "to" << size;
                     cached.addPixmap(QPixmap(previousIcon).scaled({ size, size }, Qt::KeepAspectRatio, Qt::SmoothTransformation));
                 }
             }
@@ -450,7 +450,7 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
 QString Theme::about() const
 {
     // Ideally, the vendor should be "ownCloud GmbH", but it cannot be changed without
-    // changing the location of the settings and other registery keys.
+    // changing the location of the settings and other registry keys.
     const QString vendor = isVanilla() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
@@ -512,7 +512,7 @@ QIcon Theme::syncStateIcon(const SyncResult &result, bool sysTray, bool sysTrayM
     case SyncResult::Error:
         Q_FALLTHROUGH();
     case SyncResult::SetupError:
-    // FIXME: Use state-problem once we have an icon.
+        // FIXME: Use state-problem once we have an icon.
         statusIcon = QStringLiteral("state-error");
     }
     if (sysTray) {

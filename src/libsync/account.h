@@ -89,7 +89,7 @@ public:
     /**
      * The user that can be used in dav url.
      *
-     * This can very well be different frome the login user that's
+     * This can very well be different from the login user that's
      * stored in credentials()->user().
      */
     QString davUser() const;

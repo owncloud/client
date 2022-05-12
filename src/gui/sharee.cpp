@@ -184,27 +184,27 @@ void ShareeModel::setNewSharees(const QVector<QSharedPointer<Sharee>> &newSharee
 {
     layoutAboutToBeChanged();
     const auto persistent = persistentIndexList();
-    QVector<QSharedPointer<Sharee>> oldPersistantSharee;
-    oldPersistantSharee.reserve(persistent.size());
+    QVector<QSharedPointer<Sharee>> oldPersistentSharee;
+    oldPersistentSharee.reserve(persistent.size());
 
-    std::transform(persistent.begin(), persistent.end(), std::back_inserter(oldPersistantSharee),
+    std::transform(persistent.begin(), persistent.end(), std::back_inserter(oldPersistentSharee),
         shareeFromModelIndex);
 
     _sharees = newSharees;
 
-    QModelIndexList newPersistant;
-    newPersistant.reserve(persistent.size());
-    for (const auto &sharee : qAsConst(oldPersistantSharee)) {
+    QModelIndexList newPersistent;
+    newPersistent.reserve(persistent.size());
+    for (const auto &sharee : qAsConst(oldPersistentSharee)) {
         FindShareeHelper helper = { sharee };
         auto it = std::find_if(_sharees.constBegin(), _sharees.constEnd(), helper);
         if (it == _sharees.constEnd()) {
-            newPersistant << QModelIndex();
+            newPersistent << QModelIndex();
         } else {
-            newPersistant << index(it - _sharees.constBegin());
+            newPersistent << index(it - _sharees.constBegin());
         }
     }
 
-    changePersistentIndexList(persistent, newPersistant);
+    changePersistentIndexList(persistent, newPersistent);
     layoutChanged();
 }
 

@@ -107,7 +107,7 @@ public:
     QString _file;
     QString _renameTarget;
 
-    /// The last X-Request-ID of the request that failled
+    /// The last X-Request-ID of the request that failed
     QByteArray _requestId;
 
     bool isValid() const;

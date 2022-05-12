@@ -368,7 +368,7 @@ void PropagateUploadFileNG::doFinalMove()
     const QString source = chunkPath() + QStringLiteral("/.file");
 
 #ifdef Q_OS_WIN
-    // Try to accuire a lock on the file and keep it until we done.
+    // Try to acquire a lock on the file and keep it until we done.
     // If the file is locked, abort before we perform the move on the server
     const QString fileName = propagator()->fullLocalPath(_item->_file);
     const auto lockMode = propagator()->syncOptions().requiredLockMode();

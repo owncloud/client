@@ -240,7 +240,7 @@ private:
     QVector<LocalInfo> _localNormalQueryEntries;
 
     // Whether the local/remote directory item queries are done. Will be set
-    // even even for do-nothing (!= NormalQuery) queries.
+    // even for do-nothing (!= NormalQuery) queries.
     bool _serverQueryDone = false;
     bool _localQueryDone = false;
 
@@ -261,7 +261,7 @@ private:
 
     /** The queued and running jobs for subdirectories.
      *
-     * The jobs are enqueued while processind directory entries and
+     * The jobs are enqueued while processing directory entries and
      * then gradually run via calls to processSubJobs().
      */
     std::deque<ProcessDirectoryJob *> _queuedJobs;

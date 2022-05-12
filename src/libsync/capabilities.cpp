@@ -161,10 +161,10 @@ bool Capabilities::chunkingNg() const
     {
         return false;
     }
-    static const auto chunkng = qgetenv("OWNCLOUD_CHUNKING_NG");
-    if (chunkng == "0")
+    static const auto chunking = qgetenv("OWNCLOUD_CHUNKING_NG");
+    if (chunking == "0")
         return false;
-    if (chunkng == "1")
+    if (chunking == "1")
         return true;
     return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunking")).toByteArray() >= "1.0";
 }

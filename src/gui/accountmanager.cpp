@@ -39,7 +39,7 @@ const QString davUserC()
     return QStringLiteral("dav_user");
 }
 
-const QString davUserDisplyNameC()
+const QString davUserDisplayNameC()
 {
     return QStringLiteral("display-name");
 }
@@ -54,7 +54,7 @@ static const char accountsC[] = "Accounts";
 static const char versionC[] = "version";
 static const char serverVersionC[] = "serverVersion";
 
-auto capabilitesC()
+auto capabilitiesC()
 {
     return QStringLiteral("capabilities");
 }
@@ -251,10 +251,10 @@ void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool s
     settings.setValue(QLatin1String(versionC), maxAccountVersion);
     settings.setValue(QLatin1String(urlC), acc->_url.toString());
     settings.setValue(davUserC(), acc->_davUser);
-    settings.setValue(davUserDisplyNameC(), acc->_displayName);
+    settings.setValue(davUserDisplayNameC(), acc->_displayName);
     settings.setValue(userUUIDC(), acc->uuid());
     settings.setValue(QLatin1String(serverVersionC), acc->_serverVersion);
-    settings.setValue(capabilitesC(), acc->capabilities().raw());
+    settings.setValue(capabilitiesC(), acc->capabilities().raw());
     if (acc->hasDefaultSyncRoot()) {
         settings.setValue(defaultSyncRootC(), acc->defaultSyncRoot());
     }
@@ -325,9 +325,9 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
     acc->_serverVersion = settings.value(QLatin1String(serverVersionC)).toString();
     acc->_davUser = settings.value(davUserC()).toString();
-    acc->_displayName = settings.value(davUserDisplyNameC()).toString();
+    acc->_displayName = settings.value(davUserDisplayNameC()).toString();
     acc->_uuid = settings.value(userUUIDC(), acc->_uuid).toUuid();
-    acc->setCapabilities(settings.value(capabilitesC()).value<QVariantMap>());
+    acc->setCapabilities(settings.value(capabilitiesC()).value<QVariantMap>());
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
     // We want to only restore settings for that auth type and the user value

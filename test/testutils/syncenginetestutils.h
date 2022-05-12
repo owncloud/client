@@ -118,7 +118,7 @@ static inline qint64 defaultLastModified()
     return timeInSeconds;
 }
 
-/// FIXME: we should make it explicit in the construtor if we're talking about a hydrated or a dehydrated file!
+/// FIXME: we should make it explicit in the constructor if we're talking about a hydrated or a dehydrated file!
 class FileInfo : public FileModifier
 {
 public:

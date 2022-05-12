@@ -47,8 +47,8 @@ void ProcessDirectoryJob::start()
 
     // Check whether a normal local query is even necessary
     if (_queryLocal == NormalQuery) {
-        if (!_discoveryData->_shouldDiscoverLocaly(_currentFolder._local)
-            && (_currentFolder._local == _currentFolder._original || !_discoveryData->_shouldDiscoverLocaly(_currentFolder._original))) {
+        if (!_discoveryData->_shouldDiscoverLocally(_currentFolder._local)
+            && (_currentFolder._local == _currentFolder._original || !_discoveryData->_shouldDiscoverLocally(_currentFolder._original))) {
             _queryLocal = ParentNotChanged;
         }
     }
@@ -174,7 +174,7 @@ void ProcessDirectoryJob::process()
                 e.localEntry.isSymLink)) {
             // the file only exists in the db
             if (!e.localEntry.isValid() && e.dbEntry.isValid()) {
-                qCWarning(lcDisco) << "Removing db entry for non exisitng ignored file:" << path._original;
+                qCWarning(lcDisco) << "Removing db entry for nonexistent ignored file:" << path._original;
                 _discoveryData->_statedb->deleteFileRecord(path._original, true);
             }
             continue;
@@ -1064,7 +1064,7 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, Proce
 
     // Do we have an UploadInfo for this?
     // Maybe the Upload was completed, but the connection was broken just before
-    // we recieved the etag (Issue #5106)
+    // we received the etag (Issue #5106)
     auto up = _discoveryData->_statedb->getUploadInfo(path._original);
     if (up._valid && up._contentChecksum == serverEntry.checksumHeader) {
         // Solve the conflict into an upload, or update meta data

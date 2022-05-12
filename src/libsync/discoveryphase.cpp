@@ -121,7 +121,7 @@ void DiscoveryPhase::checkSelectiveSyncNewFolder(const QString &path, RemotePerm
             return callback(true);
         } else {
             // it is not too big, put it in the white list (so we will not do more query for the children)
-            // and and do not block.
+            // and do not block.
             auto p = path;
             if (!p.endsWith(QLatin1Char('/')))
                 p += QLatin1Char('/');
@@ -165,7 +165,7 @@ QPair<bool, QByteArray> DiscoveryPhase::findAndCancelDeletedJob(const QString &o
             // restoration after a prohibited move
             // a file might be in an error state and thus gets marked as CSYNC_INSTRUCTION_IGNORE
             // after it was initially marked as CSYNC_INSTRUCTION_REMOVE
-            // return true, to not trigger any additional actions on that file that could elad to dataloss
+            // return true, to not trigger any additional actions on that file that could lead to dataloss
             result = true;
             oldEtag = item->_etag;
         } else {
@@ -426,7 +426,7 @@ static void propertyMapToRemoteInfo(const QMap<QString, QString> &map, RemoteInf
                 // S means shared with me.
                 // But for our purpose, we want to know if the file is shared. It does not matter
                 // if we are the owner or not.
-                // Piggy back on the persmission field
+                // Piggy back on the permission field
                 result.remotePerm.setPermission(RemotePermissions::IsShared);
             }
         }

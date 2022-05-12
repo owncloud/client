@@ -131,7 +131,7 @@ public:
     {
         auto toolbar = qobject_cast<QToolBar *>(parent);
         if (!toolbar) {
-            // this means we are in the extention menu, no special action here
+            // this means we are in the extension menu, no special action here
             return nullptr;
         }
 

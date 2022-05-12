@@ -283,7 +283,7 @@ void SyncEngine::conflictRecordMaintenance()
     // If so, add them now.
     //
     // This happens when the conflicts table is new or when conflict files
-    // are downlaoded but the server doesn't send conflict headers.
+    // are downloaded but the server doesn't send conflict headers.
     for (const auto &path : qAsConst(_seenConflictFiles)) {
         OC_ASSERT(Utility::isConflictFile(path));
 
@@ -464,7 +464,7 @@ void SyncEngine::startSync()
     emit transmissionProgress(*_progressInfo);
 
     // TODO: add a constructor to DiscoveryPhase
-    // pass a syncEngine object rather than copying everyhting to another object
+    // pass a syncEngine object rather than copying everything to another object
     _discoveryPhase.reset(new DiscoveryPhase(_account, _syncOptions, _baseUrl));
     _discoveryPhase->_excludes = _excludedFiles.data();
     _discoveryPhase->_statedb = _journal;
@@ -474,7 +474,7 @@ void SyncEngine::startSync()
     _discoveryPhase->_remoteFolder = _remotePath;
     if (!_discoveryPhase->_remoteFolder.endsWith(QLatin1Char('/')))
         _discoveryPhase->_remoteFolder+=QLatin1Char('/');
-    _discoveryPhase->_shouldDiscoverLocaly = [this](const QString &s) { return shouldDiscoverLocally(s); };
+    _discoveryPhase->_shouldDiscoverLocally = [this](const QString &s) { return shouldDiscoverLocally(s); };
     _discoveryPhase->setSelectiveSyncBlackList(selectiveSyncBlackList);
     _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, &ok));
     if (!ok) {

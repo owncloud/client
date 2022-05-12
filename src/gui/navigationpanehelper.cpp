@@ -74,7 +74,7 @@ void NavigationPaneHelper::updateCloudStorageRegistry()
 
     // Then re-save every folder that has a valid navigationPaneClsid to the registry.
     // We currently don't distinguish between new and existing CLSIDs, if it's there we just
-    // save over it. We at least need to update the tile in case we are suddently using multiple accounts.
+    // save over it. We at least need to update the tile in case we are suddenly using multiple accounts.
     for (auto *folder : _folderMan->folders()) {
         if (folder->vfs().mode() == Vfs::WindowsCfApi)
         {

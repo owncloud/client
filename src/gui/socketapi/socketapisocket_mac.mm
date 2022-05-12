@@ -172,7 +172,7 @@ qint64 SocketApiSocket::writeData(const char *data, qint64 len)
 
     @try {
         // FIXME: The NSConnection will make this block unless the function is marked as "oneway"
-        // in the protocol. This isn't async and reduces our performances but this currectly avoids
+        // in the protocol. This isn't async and reduces our performances but this currently avoids
         // a Mach queue deadlock during requests bursts of the legacy OwnCloudFinder extension.
         // Since FinderSync already runs in a separate process, blocking isn't too critical.
         NSData *payload = QByteArray::fromRawData(data, static_cast<int>(len)).toRawNSData();
@@ -259,7 +259,7 @@ SocketApiSocket *SocketApiServer::nextPendingConnection()
 
 SocketApiServerPrivate::SocketApiServerPrivate()
 {
-    // Create the connection and server object to vend over Disributed Objects
+    // Create the connection and server object to vend over Distributed Objects
     connection = [[NSConnection alloc] init];
     server = [[Server alloc] initWithWrapper:this];
     [connection setRootObject:server];

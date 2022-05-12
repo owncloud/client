@@ -5,17 +5,17 @@
  *
  */
 
-#include <QtTest>
 #include "testutils/syncenginetestutils.h"
-#include <syncengine.h>
+#include <QtTest>
 #include <owncloudpropagator.h>
+#include <syncengine.h>
 
 using namespace std::chrono_literals;
 using namespace OCC;
 
 static constexpr qint64 stopAfter = 3'123'668;
 
-/* A FakeGetReply that sends max 'fakeSize' bytes, but whose ContentLength has the corect size */
+/* A FakeGetReply that sends max 'fakeSize' bytes, but whose ContentLength has the correct size */
 class BrokenFakeGetReply : public FakeGetReply
 {
     Q_OBJECT
@@ -32,7 +32,7 @@ public:
 
     qint64 readData(char *data, qint64 maxlen) override
     {
-        qint64 len = std::min(qint64{ fakeSize }, maxlen);
+        qint64 len = std::min(qint64 { fakeSize }, maxlen);
         std::fill_n(data, len, payload);
         size -= len;
         fakeSize -= len;
@@ -60,7 +60,7 @@ private slots:
 
     void testResume()
     {
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
         fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
         QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         auto size = 30 * 1000 * 1000;
@@ -93,10 +93,11 @@ private slots:
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 
-    void testErrorMessage () {
+    void testErrorMessage()
+    {
         // This test's main goal is to test that the error string from the server is shown in the UI
 
-        FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
+        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
         fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
         QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         auto size = 3'500'000;
@@ -111,8 +112,9 @@ private slots:
                     "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                     "<d:error xmlns:d=\"DAV:\" xmlns:s=\"http://sabredav.org/ns\">\n"
                     "<s:exception>Sabre\\DAV\\Exception\\Forbidden</s:exception>\n"
-                    "<s:message>"+serverMessage+"</s:message>\n"
-                    "</d:error>");
+                    "<s:message>"
+                        + serverMessage + "</s:message>\n"
+                                          "</d:error>");
             }
             return nullptr;
         });
@@ -125,10 +127,11 @@ private slots:
         QVERIFY(getItem(completeSpy, "A/broken")->_errorString.contains(serverMessage));
     }
 
-    void serverMaintenence() {
+    void serverMaintenance()
+    {
         // Server in maintenance must abort the sync.
 
-        FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
+        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
         fakeFolder.remoteModifier().insert("A/broken");
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
             if (op == QNetworkAccessManager::GetOperation) {
@@ -149,7 +152,8 @@ private slots:
         QVERIFY(getItem(completeSpy, "A/broken")->_errorString.contains("System in maintenance mode"));
     }
 
-    void testMoveFailsInAConflict() {
+    void testMoveFailsInAConflict()
+    {
 #ifdef Q_OS_WIN
         QSKIP("Not run on windows because permission on directory does not do what is expected");
 #else
@@ -163,7 +167,7 @@ private slots:
         // This tests uses the fact that a "touchedFile" notification will be sent at the right moment.
         // Note that there will be first a notification on the file and the conflict file before.
 
-        FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
+        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
         fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
         fakeFolder.remoteModifier().setContents("A/a1", 'A');
         fakeFolder.localModifier().setContents("A/a1", 'B');
@@ -171,25 +175,25 @@ private slots:
         bool propConnected = false;
         QString conflictFile;
         auto transProgress = connect(&fakeFolder.syncEngine(), &SyncEngine::transmissionProgress,
-                                     [&](const ProgressInfo &pi) {
-            auto propagator = fakeFolder.syncEngine().getPropagator();
-            if (pi.status() != ProgressInfo::Propagation || propConnected || !propagator)
-                return;
-            propConnected = true;
-            connect(propagator.data(), &OwncloudPropagator::touchedFile, [&](const QString &s) {
-                if (s.contains("conflicted copy")) {
-                    QCOMPARE(conflictFile, QString());
-                    conflictFile = s;
+            [&](const ProgressInfo &pi) {
+                auto propagator = fakeFolder.syncEngine().getPropagator();
+                if (pi.status() != ProgressInfo::Propagation || propConnected || !propagator)
                     return;
-                }
-                if (!conflictFile.isEmpty()) {
-                    // Check that the temporary file is still there
-                    QCOMPARE(QDir(fakeFolder.localPath() + "A/").entryList({"*.~*"}, QDir::Files | QDir::Hidden).count(), 1);
-                    // Set the permission to read only on the folder, so the rename of the temporary file will fail
-                    QFile(fakeFolder.localPath() + "A/").setPermissions(QFile::Permissions(0x5555));
-                }
+                propConnected = true;
+                connect(propagator.data(), &OwncloudPropagator::touchedFile, [&](const QString &s) {
+                    if (s.contains("conflicted copy")) {
+                        QCOMPARE(conflictFile, QString());
+                        conflictFile = s;
+                        return;
+                    }
+                    if (!conflictFile.isEmpty()) {
+                        // Check that the temporary file is still there
+                        QCOMPARE(QDir(fakeFolder.localPath() + "A/").entryList({ "*.~*" }, QDir::Files | QDir::Hidden).count(), 1);
+                        // Set the permission to read only on the folder, so the rename of the temporary file will fail
+                        QFile(fakeFolder.localPath() + "A/").setPermissions(QFile::Permissions(0x5555));
+                    }
+                });
             });
-        });
 
         QVERIFY(!fakeFolder.syncOnce()); // The sync must fail because the rename failed
         QVERIFY(!conflictFile.isEmpty());
@@ -214,8 +218,9 @@ private slots:
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 
-    void testHttp2Resend() {
-        FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
+    void testHttp2Resend()
+    {
+        FakeFolder fakeFolder { FileInfo::A12_B12_C12_S12() };
         fakeFolder.remoteModifier().insert("A/resendme", 300);
 
         QByteArray serverMessage = "Needs to be resend on a new connection!";

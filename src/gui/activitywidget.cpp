@@ -486,7 +486,7 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     connect(_issuesWidget, &IssuesWidget::issueCountUpdated,
         this, &ActivitySettings::slotShowIssueItemCount);
 
-    // Add a progress indicator to spin if the acitivity list is updated.
+    // Add a progress indicator to spin if the activity list is updated.
     _progressIndicator = new QProgressIndicator(this);
     _tab->setCornerWidget(_progressIndicator);
 

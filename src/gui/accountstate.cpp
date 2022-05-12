@@ -189,7 +189,7 @@ void AccountState::setState(State state)
     } else {
         _queueGuard.clear();
     }
-    // don't anounce a state change from connected to connected
+    // don't announce a state change from connected to connected
     // https://github.com/owncloud/client/commit/2c6c21d7532f0cbba4b768fde47810f6673ed931
     if (oldState != state || state != Connected) {
         emit stateChanged(_state);
@@ -251,7 +251,7 @@ bool AccountState::isConnected() const
     return _state == Connected;
 }
 
-void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)
+void AccountState::tagLastSuccessfulETagRequest(const QDateTime &tp)
 {
     _timeOfLastETagCheck = tp;
 }

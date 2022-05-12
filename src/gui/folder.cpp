@@ -425,13 +425,13 @@ void Folder::slotRunEtagJob()
     _requestEtagJob = new RequestEtagJob(account, webDavUrl(), remotePath(), this);
     _requestEtagJob->setTimeout(60s);
     // check if the etag is different when retrieved
-    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetreived, this, &Folder::etagRetreived);
+    QObject::connect(_requestEtagJob.data(), &RequestEtagJob::etagRetrieved, this, &Folder::etagRetrieved);
     QObject::connect(_requestEtagJob.data(), &RequestEtagJob::finishedWithResult, this, [=](const HttpResult<QByteArray>) { _timeSinceLastEtagCheckDone.start(); });
     FolderMan::instance()->slotScheduleETagJob(_requestEtagJob);
     // The _requestEtagJob is auto deleting itself on finish. Our guard pointer _requestEtagJob will then be null.
 }
 
-void Folder::etagRetreived(const QByteArray &etag, const QDateTime &tp)
+void Folder::etagRetrieved(const QByteArray &etag, const QDateTime &tp)
 {
     // re-enable sync if it was disabled because network was down
     FolderMan::instance()->setSyncEnabled(true);
@@ -442,13 +442,13 @@ void Folder::etagRetreived(const QByteArray &etag, const QDateTime &tp)
         slotScheduleThisFolder();
     }
 
-    _accountState->tagLastSuccessfullETagRequest(tp);
+    _accountState->tagLastSuccessfulETagRequest(tp);
 }
 
 void Folder::etagRetrievedFromSyncEngine(const QByteArray &etag, const QDateTime &time)
 {
     qCInfo(lcFolder) << "Root etag from during sync:" << etag;
-    accountState()->tagLastSuccessfullETagRequest(time);
+    accountState()->tagLastSuccessfulETagRequest(time);
     _lastEtag = etag;
 }
 
@@ -1295,7 +1295,7 @@ void Folder::registerFolderWatcher()
     connect(_folderWatcher.data(), &FolderWatcher::becameUnreliable,
         this, &Folder::slotWatcherUnreliable);
     _folderWatcher->init(path());
-    _folderWatcher->startNotificatonTest(path() + QLatin1String(".owncloudsync.log"));
+    _folderWatcher->startNotificationTest(path() + QLatin1String(".owncloudsync.log"));
 }
 
 bool Folder::virtualFilesEnabled() const

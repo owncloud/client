@@ -17,14 +17,14 @@
  */
 
 #include <QCryptographicHash>
+#include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QStringList>
-#include <QElapsedTimer>
 #include <QUrl>
-#include <QDir>
-#include <sqlite3.h>
 #include <cstring>
+#include <sqlite3.h>
 
 #include "common/asserts.h"
 #include "common/checksums.h"
@@ -354,14 +354,16 @@ bool SyncJournalDb::checkConnect()
         }
     }
 
-    sqlite3_create_function(_db.sqliteDb(), "parent_hash", 1, SQLITE_UTF8 | SQLITE_DETERMINISTIC, nullptr,
-                                [] (sqlite3_context *ctx,int, sqlite3_value **argv) {
-                                    auto text = reinterpret_cast<const char*>(sqlite3_value_text(argv[0]));
-                                    const char *end = std::strrchr(text, '/');
-                                    if (!end) end = text;
-                                    sqlite3_result_int64(ctx, c_jhash64(reinterpret_cast<const uint8_t*>(text),
-                                                                        end - text, 0));
-                                }, nullptr, nullptr);
+    sqlite3_create_function(
+        _db.sqliteDb(), "parent_hash", 1, SQLITE_UTF8 | SQLITE_DETERMINISTIC, nullptr,
+        [](sqlite3_context *ctx, int, sqlite3_value **argv) {
+            auto text = reinterpret_cast<const char *>(sqlite3_value_text(argv[0]));
+            const char *end = std::strrchr(text, '/');
+            if (!end)
+                end = text;
+            sqlite3_result_int64(ctx, c_jhash64(reinterpret_cast<const uint8_t *>(text), end - text, 0));
+        },
+        nullptr, nullptr);
 
     /* Because insert is so slow, we do everything in a transaction, and only need one call to commit */
     startTransaction();
@@ -391,7 +393,7 @@ bool SyncJournalDb::checkConnect()
 #ifndef SQLITE_IOERR_SHMMAP
 // Requires sqlite >= 3.7.7 but old CentOS6 has sqlite-3.6.20
 // Definition taken from https://sqlite.org/c3ref/c_abort_rollback.html
-#define SQLITE_IOERR_SHMMAP            (SQLITE_IOERR | (21<<8))
+#define SQLITE_IOERR_SHMMAP (SQLITE_IOERR | (21 << 8))
 #endif
 
     if (!createQuery.exec()) {
@@ -824,7 +826,7 @@ bool SyncJournalDb::updateErrorBlacklistTableStructure()
     SqlQuery query(_db);
     query.prepare("CREATE INDEX IF NOT EXISTS blacklist_index ON blacklist(path collate nocase);");
     if (!query.exec()) {
-        sqlFail(QStringLiteral("updateErrorBlacklistTableStructure: create index blacklit"), query);
+        sqlFail(QStringLiteral("updateErrorBlacklistTableStructure: create index blacklist"), query);
         re = false;
     }
 
@@ -1081,7 +1083,7 @@ bool SyncJournalDb::getFileRecordsByFileId(const QByteArray &fileId, const std::
     return true;
 }
 
-bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::function<void(const SyncJournalFileRecord&)> &rowCallback)
+bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::function<void(const SyncJournalFileRecord &)> &rowCallback)
 {
     QMutexLocker locker(&_mutex);
 
@@ -1110,7 +1112,7 @@ bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::functio
         return true;
     };
 
-    if(path.isEmpty()) {
+    if (path.isEmpty()) {
         // Since the path column doesn't store the starting /, the getFilesBelowPathQuery
         // can't be used for the root path "". It would scan for (path > '/' and path < '0')
         // and find nothing. So, unfortunately, we have to use a different query for
@@ -1140,8 +1142,8 @@ bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::functio
     }
 }
 
-bool SyncJournalDb::listFilesInPath(const QByteArray& path,
-                                    const std::function<void (const SyncJournalFileRecord &)>& rowCallback)
+bool SyncJournalDb::listFilesInPath(const QByteArray &path,
+    const std::function<void(const SyncJournalFileRecord &)> &rowCallback)
 {
     QMutexLocker locker(&_mutex);
 
@@ -1864,8 +1866,8 @@ int SyncJournalDb::mapChecksumType(const QByteArray &checksumType)
         return 0;
     }
 
-    auto it =  _checksymTypeCache.find(checksumType);
-    if (it != _checksymTypeCache.end())
+    auto it = _checksumTypeCache.find(checksumType);
+    if (it != _checksumTypeCache.end())
         return *it;
 
     // Ensure the checksum type is in the db
@@ -1896,7 +1898,7 @@ int SyncJournalDb::mapChecksumType(const QByteArray &checksumType)
             return 0;
         }
         auto value = query->intValue(0);
-        _checksymTypeCache[checksumType] = value;
+        _checksumTypeCache[checksumType] = value;
         return value;
     }
 }
@@ -2046,7 +2048,8 @@ void SyncJournalDb::markVirtualFileForDownloadRecursively(const QByteArray &path
     static_assert(ItemTypeVirtualFile == 4 && ItemTypeVirtualFileDownload == 5, "");
     SqlQuery query("UPDATE metadata SET type=5 WHERE "
                    "(" IS_PREFIX_PATH_OF("?1", "path") " OR ?1 == '') "
-                   "AND type=4;", _db);
+                                                       "AND type=4;",
+        _db);
     query.bindValue(1, path);
     query.exec();
 
@@ -2202,7 +2205,7 @@ SyncJournalDb::PinStateInterface::rawList()
 
 SyncJournalDb::PinStateInterface SyncJournalDb::internalPinStates()
 {
-    return {this};
+    return { this };
 }
 
 void SyncJournalDb::commit(const QString &context, bool startTrans)

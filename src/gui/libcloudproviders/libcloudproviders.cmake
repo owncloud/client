@@ -11,7 +11,7 @@ if (TARGET PkgConfig::CLOUDPROVIDERS)
     set(LIBCLOUDPROVIDERS_POSSIBLE TRUE)
 endif()
 
-option(WITH_LIBCLOUDPROVIDERS "Whether to bulid with libcloudproviders" ${LIBCLOUDPROVIDERS_POSSIBLE})
+option(WITH_LIBCLOUDPROVIDERS "Whether to build with libcloudproviders" ${LIBCLOUDPROVIDERS_POSSIBLE})
 
 if(WITH_LIBCLOUDPROVIDERS AND NOT LIBCLOUDPROVIDERS_POSSIBLE)
     message(FATAL_ERROR "Trying to enable libcloudproviders but dependencies are missing")

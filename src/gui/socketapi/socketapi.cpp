@@ -520,7 +520,7 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
         statusString = SyncFileStatus(SyncFileStatus::StatusNone).toSocketAPIString();
     } else {
         // The user probably visited this directory in the file shell.
-        // Let the listener know that it should now send status pushes for sibblings of this file.
+        // Let the listener know that it should now send status pushes for siblings of this file.
         QString directory = fileData.localPath.left(fileData.localPath.lastIndexOf('/'));
         listener->registerMonitoredDirectory(qHash(directory));
 

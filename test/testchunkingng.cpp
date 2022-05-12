@@ -413,7 +413,7 @@ private slots:
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
-        // Modify the file localy and start the upload
+        // Modify the file locally and start the upload
         fakeFolder.localModifier().setContents("A/a0", 'B');
         fakeFolder.localModifier().appendByte("A/a0");
 
@@ -519,13 +519,13 @@ private slots:
 
     // Check what happens when the connection is dropped on the PUT (non-chunking) or MOVE (chunking)
     // for on the issue #5106
-    void connectionDroppedBeforeEtagRecieved_data()
+    void connectionDroppedBeforeEtagReceived_data()
     {
         QTest::addColumn<bool>("chunking");
         QTest::newRow("big file") << true;
         QTest::newRow("small file") << false;
     }
-    void connectionDroppedBeforeEtagRecieved()
+    void connectionDroppedBeforeEtagReceived()
     {
         QFETCH(bool, chunking);
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };

@@ -588,7 +588,7 @@ void FolderMan::slotRunOneEtagJob()
         Folder *folder = nullptr;
         for (auto *f : qAsConst(_folders)) {
             if (f->etagJob()) {
-                // Caveat: always grabs the first folder with a job, but we think this is Ok for now and avoids us having a seperate queue.
+                // Caveat: always grabs the first folder with a job, but we think this is Ok for now and avoids us having a separate queue.
                 _currentEtagJob = f->etagJob();
                 folder = f;
                 break;

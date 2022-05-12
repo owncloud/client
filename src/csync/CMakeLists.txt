@@ -55,7 +55,7 @@ if(WIN32)
     target_compile_definitions(csync
         PUBLIC __USE_MINGW_ANSI_STDIO=1
                NOMINMAX
-               # Get APIs from from Vista onwards.
+               # Get APIs from Vista onwards.
                _WIN32_WINNT=0x0600
                WINVER=0x0600
                NTDDI_VERSION=0x0A000003

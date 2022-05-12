@@ -6,7 +6,7 @@
 # BASH_XTRACEFD=1
 # set -x
 
-# don't grep in one line, to avaoid grepping the grep process...
+# don't grep in one line, to avoid grepping the grep process...
 PROCESSES=$(ps aux)
 OC_INSTANCE=$(echo "${PROCESSES}" | grep "/Applications/@APPLICATION_EXECUTABLE@.app/Contents/MacOS/@APPLICATION_EXECUTABLE@")
 

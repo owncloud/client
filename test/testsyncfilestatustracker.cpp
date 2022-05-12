@@ -388,7 +388,8 @@ private slots:
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 
-    void parentsGetWarningStatusForError_SibblingStartsWithPath() {
+    void parentsGetWarningStatusForError_SiblingStartsWithPath()
+    {
         // A is a parent of A/a1, but A/a is not even if it's a substring of A/a1
         FakeFolder fakeFolder{{QString{},{
             {QStringLiteral("A"), {
@@ -400,7 +401,7 @@ private slots:
 
         fakeFolder.scheduleSync();
         fakeFolder.execUntilBeforePropagation();
-        // The SyncFileStatusTraker won't push any status for all of them, test with a pull.
+        // The SyncFileStatusTracker won't push any status for all of them, test with a pull.
         QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(""), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus("A"), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus("A/a1"), SyncFileStatus(SyncFileStatus::StatusSync));

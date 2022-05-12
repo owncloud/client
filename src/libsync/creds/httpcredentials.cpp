@@ -208,7 +208,7 @@ void HttpCredentials::fetchFromKeychainHelper()
             qCWarning(lcHttpCredentials) << "Could not retrieve client password from keychain" << job->errorString();
 
             // we come here if the password is empty or any other keychain
-            // error happend.
+            // error happened.
 
             _fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
 
@@ -234,7 +234,7 @@ void HttpCredentials::fetchFromKeychainHelper()
 bool HttpCredentials::stillValid(QNetworkReply *reply)
 {
     // The function is called in order to determine whether we need to ask the user for a password
-    // if we are using oaut we already started a refresh in slotAuthentication.
+    // if we are using oauth we already started a refresh in slotAuthentication.
     // If the refresh fails we will emit authenticationFailed ourself.
     if (isUsingOAuth()) {
         return true;
@@ -299,7 +299,7 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
         oAuth->deleteLater();
         _isRenewingOAuthToken = false;
         if (refreshToken.isEmpty()) {
-            // an error occured, log out
+            // an error occurred, log out
             forgetSensitiveData();
             Q_EMIT _account->invalidCredentials();
             Q_EMIT authenticationFailed();

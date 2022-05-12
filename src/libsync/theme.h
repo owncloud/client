@@ -73,7 +73,7 @@ public:
      *
      * By default, the name is derived from the APPLICATION_SHORTNAME
      * cmake variable, and should be the same. This method is only
-     * reimplementable for legacy reasons.
+     * overridable for legacy reasons.
      *
      * Warning: Do not modify this value, as many things, e.g. settings
      * depend on it! You most likely want to modify \ref appNameGUI().
@@ -90,7 +90,7 @@ public:
 
 #ifndef TOKEN_AUTH_ONLY
     /**
-     * Wehther we allow a fallback to a vanilla icon
+     * Whether we allow a fallback to a vanilla icon
      */
     enum class IconType {
         BrandedIcon,
@@ -172,9 +172,9 @@ public:
     QString overrideServerUrlV2() const;
 
     /**
-     * This is only usefull when previous version had a different overrideServerUrl
+     * This is only useful when previous version had a different overrideServerUrl
      * with a different auth type in that case You should then specify "http" or "shibboleth".
-     * Normaly this should be left empty.
+     * Normally this should be left empty.
      */
     virtual QString forceConfigAuthType() const;
 
@@ -189,7 +189,7 @@ public:
     virtual QString defaultClientFolder() const;
 
     /**
-     * Override to encforce a particular locale, i.e. "de" or "pt_BR"
+     * Override to enforce a particular locale, i.e. "de" or "pt_BR"
      */
     virtual QString enforcedLocale() const { return QString(); }
 
@@ -239,7 +239,7 @@ public:
     void setSystrayUseMonoIcons(bool mono);
 
     /**
-     * Retrieve wether to use mono icons for systray
+     * Retrieve whether to use mono icons for systray
      */
     bool systrayUseMonoIcons() const;
 
@@ -352,7 +352,7 @@ public:
     /**
      * @brief the server folder that should be queried for the quota information
      *
-     * This can be configured to show the quota infromation for a different
+     * This can be configured to show the quota information for a different
      * folder than the root. This is the folder on which the client will do
      * PROPFIND calls to get "quota-available-bytes" and "quota-used-bytes"
      *
@@ -383,12 +383,12 @@ public:
     virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
-     * Returns the required opeidconnect scopes
+     * Returns the required openidconnect scopes
      */
     virtual QString openIdConnectScopes() const;
 
     /**
-     * Returns the openidconnect promt type
+     * Returns the openidconnect prompt type
      * It is supposed to be "consent select_account".
      * For Konnect it currently needs to be select_account,
      * which is the current default.
@@ -406,7 +406,7 @@ public:
     /**
      * @brief Whether to show the option to create folders using "virtual files".
      *
-     * By default, this is the same as enableExperimentalFreatures()
+     * By default, this is the same as enableExperimentalFeatures()
      */
     virtual bool showVirtualFilesOption() const;
 
@@ -422,7 +422,7 @@ public:
 
     /**
      * Whether to clear cookies before checking status.php
-     * This is used with F5 BIG-IP seups.
+     * This is used with F5 BIG-IP setups.
      */
     virtual bool connectionValidatorClearCookies() const;
 

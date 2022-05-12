@@ -56,8 +56,8 @@ QSize FolderStatusDelegate::sizeHint(const QStyleOptionViewItem &option,
     QFontMetrics fm(font);
     QFontMetrics aliasFm(aliasFont);
 
-    auto classif = static_cast<const FolderStatusModel *>(index.model())->classify(index);
-    if (classif == FolderStatusModel::AddButton) {
+    auto classification = static_cast<const FolderStatusModel *>(index.model())->classify(index);
+    if (classification == FolderStatusModel::AddButton) {
         const int margins = aliasFm.height(); // same as 2*aliasMargin of paint
         QFontMetrics fm(qApp->font("QPushButton"));
         QStyleOptionButton opt;
@@ -69,7 +69,7 @@ QSize FolderStatusDelegate::sizeHint(const QStyleOptionViewItem &option,
             + QSize(0, margins);
     }
 
-    if (classif != FolderStatusModel::RootFolder) {
+    if (classification != FolderStatusModel::RootFolder) {
         return QStyledItemDelegate::sizeHint(option, index);
     }
 
@@ -241,8 +241,8 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     painter->setFont(aliasFont);
     painter->drawText(QStyle::visualRect(option.direction, option.rect, aliasRect), textAlign, elidedAlias);
 
-    const bool showProgess = !overallString.isEmpty() || !itemString.isEmpty();
-    if (!showProgess) {
+    const bool showProgress = !overallString.isEmpty() || !itemString.isEmpty();
+    if (!showProgress) {
         painter->setFont(subFont);
         const QString elidedRemotePathText = subFm.elidedText(
             syncText,
@@ -291,7 +291,7 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         drawTextBox(infoTexts, QColor(0x4d, 0x4d, 0xba));
 
     // Sync File Progress Bar: Show it if syncFile is not empty.
-    if (showProgess) {
+    if (showProgress) {
         int fileNameTextHeight = subFm.boundingRect(tr("File")).height();
         int barHeight = 7; // same height as quota bar
         int overallWidth = option.rect.right() - aliasMargin - optionsButtonVisualRect.width() - nextToIcon;

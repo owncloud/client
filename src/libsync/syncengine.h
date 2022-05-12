@@ -161,7 +161,7 @@ signals:
     void started();
 
     /**
-     * Emited when the sync engine detects that all the files have been removed or change.
+     * Emitted when the sync engine detects that all the files have been removed or change.
      * This usually happen when the server was reset or something.
      * Call abort(true) slot connected from this signal to abort the sync.
      */
@@ -194,7 +194,7 @@ private slots:
     void slotItemCompleted(const SyncFileItemPtr &item);
     void slotDiscoveryFinished();
     void slotPropagationFinished(bool success);
-    void slotProgress(const SyncFileItem &item, qint64 curent);
+    void slotProgress(const SyncFileItem &item, qint64 current);
     void updateFileTotal(const SyncFileItem &item, qint64 newSize);
 
     /** Records that a file was touched by a job. */
@@ -228,7 +228,7 @@ private:
     // cleanup and emit the finished signal
     void finalize(bool success);
 
-    // Must only be acessed during update and reconcile
+    // Must only be accessed during update and reconcile
     SyncFileItemSet _syncItems;
 
     AccountPtr _account;
@@ -266,7 +266,7 @@ private:
     // true if there is at least one file which was not changed on the server
     bool _hasNoneFiles;
 
-    // true if there is at leasr one file with instruction REMOVE
+    // true if there is at least one file with instruction REMOVE
     bool _hasRemoveFile;
 
     // If ignored files should be ignored

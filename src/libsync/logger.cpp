@@ -144,7 +144,7 @@ void Logger::setLogFile(const QString &name)
 
     bool openSucceeded = false;
     if (name == QLatin1Char('-')) {
-        attacheToConsole();
+        attachToConsole();
         setLogFlush(true);
         openSucceeded = _logFile.open(stdout, QIODevice::WriteOnly);
     } else {
@@ -313,7 +313,7 @@ void Logger::enterNextLogFile()
     }
 }
 
-void OCC::Logger::attacheToConsole()
+void OCC::Logger::attachToConsole()
 {
     if (_consoleIsAttached) {
         return;
@@ -321,7 +321,7 @@ void OCC::Logger::attacheToConsole()
     _consoleIsAttached = true;
 #ifdef Q_OS_WIN
     if (!isDebuggerPresent() && AttachConsole(ATTACH_PARENT_PROCESS)) {
-        // atache to the parent console output, if its an interactive terminal
+        // attach to the parent console output, if its an interactive terminal
         CONSOLE_SCREEN_BUFFER_INFO csbi;
         if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
             freopen("CONOUT$", "w", stdout);

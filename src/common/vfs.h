@@ -75,7 +75,7 @@ struct OCSYNC_EXPORT VfsSetupParams
     QVersionNumber providerVersion;
 
     /** when registering with the system we might use
-     *  a different presentaton to identify the accounts
+     *  a different presentation to identify the accounts
      */
     bool multipleAccountsRegistered = false;
 

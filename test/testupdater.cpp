@@ -44,7 +44,7 @@ private slots:
         UpdateInfo info;
         info.setDownloadUrl(url);
         info.setVersionString("ownCloud 2.2.4 (build 6408)");
-        // esnure we do the update
+        // ensure we do the update
         info.setVersion("100.2.4.6408");
         auto *updater = new NSISUpdater({});
         QSignalSpy downloadSpy(updater, &NSISUpdater::slotDownloadFinished);

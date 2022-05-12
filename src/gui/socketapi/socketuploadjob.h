@@ -39,7 +39,7 @@ private:
     QSharedPointer<SocketApiJobV2> _apiJob;
     QStringList _syncedFiles;
     QStringList _errorFiles;
-    int _finisedTagId = -1;
+    int _finishedTagId = -1;
     QByteArray _backupFileId;
 
     void prepareTag(const AccountPtr &account);

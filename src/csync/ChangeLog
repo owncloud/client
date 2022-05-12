@@ -1,6 +1,6 @@
 ChangeLog
 ==========
-version 0.91.4  (released 2013-12-12, ownCloud Cleint 1.5.0)
+version 0.91.4  (released 2013-12-12, ownCloud Client 1.5.0)
  * changelog added, version bumped.
 
 version 0.91.3  (released 2013-12-11, ownCloud Client 1.5.0rc1) 
@@ -67,7 +67,7 @@ version 0.90.1  (released 2013-09-24, ownCloud Client 1.4.1)
   * detect if server does not send an etag after an upload 
     completed.
   * fix crash in case of network timeout, reported as
-    https://github.comowncloud/client/issues/1010
+    https://github.com/owncloud/client/issues/1010
   * compile and cmake fixes for win32
   * fixed behaviour of csync_exclude
   * documentation and spelling fixes.
@@ -83,7 +83,7 @@ version 0.90.0  (released 2013-09-04, ownCloud Client 1.4.0)
   * Many fixes found by a Coverity check.
   * Fix: use correct stat struct on all platforms
   * Fix: download resuming.
-  * ownCloud module: Bandwith limitation added.
+  * ownCloud module: Bandwidth limitation added.
   * Added ability to remove ignored files automatically.
   * Fix: Use int64_t and friends
   * Fix: Removed all compile warnings.
@@ -249,7 +249,7 @@ version 0.50.0 (released 2013-08-01)
   * Added cmocka tests.
   * Added a way to export file_tree_walk functions.
   * Added capabilities for modules.
-  * Added possiblity to push information to the modules.
+  * Added possibility to push information to the modules.
   * Added iconv support to support various char sets.
   * Added csync_commit() to rerun on the same context.
   * Added content checking in conflict case.
@@ -257,7 +257,7 @@ version 0.50.0 (released 2013-08-01)
   * Added get() and put() functions for modules.
   * Improved database: more performance, more integrity checks
   * Improved error reporting: status codes, custom errnos
-  * Fixed serveral bugs.
+  * Fixed several bugs.
   * Relicensed libcsync to LGPLv2.1+.
 
 version 0.44.0 (released 2010-02-15)
@@ -323,10 +323,10 @@ version 0.42.0 alpha4 (released 2008-07-02)
   * Improved the exclude list handling in the file tree walker. This
     increased the speed of the update detection.
   * Fixed csync on PPC
-  * Fixed serveral small bugs
+  * Fixed several small bugs
 
   csync:
-  * Added commandline option to run csync completely without a journal
+  * Added command-line option to run csync completely without a journal
   * Added a manpage
 
 version 0.42.0 alpha3 (released 2008-06-25)
@@ -346,7 +346,7 @@ version 0.42.0 alpha3 (released 2008-06-25)
 version 0.42.0 alpha2 (released 2008-06-16)
 
   libcsync:
-  * Peformance improvements
+  * Performance improvements
   * Add more directories to the standard exclude file
   * Bugfixes
 

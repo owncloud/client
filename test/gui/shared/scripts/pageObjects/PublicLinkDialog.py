@@ -100,7 +100,7 @@ class PublicLinkDialog:
     ):
         radioObjectName = ''
         if permissions:
-            radioObjectName = self.getRadioObjectForPermssion(permissions)
+            radioObjectName = self.getRadioObjectForPermission(permissions)
 
         test.compare(
             str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
@@ -221,7 +221,7 @@ class PublicLinkDialog:
         squish.nativeType(month)
         squish.nativeType("<Return>")
 
-    def getRadioObjectForPermssion(self, permissions):
+    def getRadioObjectForPermission(self, permissions):
         radioObjectName = ''
         if permissions == 'Download / View' or permissions == 'Viewer':
             radioObjectName = self.READ_ONLY_RADIO_BUTTON
@@ -235,7 +235,7 @@ class PublicLinkDialog:
         return radioObjectName
 
     def createPublicLinkWithRole(self, role):
-        radioObjectName = self.getRadioObjectForPermssion(role)
+        radioObjectName = self.getRadioObjectForPermission(role)
 
         squish.clickButton(squish.waitForObject(radioObjectName))
         squish.clickButton(squish.waitForObject(self.CREATE_SHARE_BUTTON))

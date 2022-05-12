@@ -209,11 +209,11 @@ public:
      * This usually creates some temporary files next to the db file, like
      * $dbfile-shm or $dbfile-wal.
      *
-     * returns true if it could be openend or is currently opened.
+     * returns true if it could be opened or is currently opened.
      */
     bool open();
 
-    /** Returns whether the db is currently openend. */
+    /** Returns whether the db is currently opened. */
     bool isOpen();
 
     /** Close the database */
@@ -386,7 +386,7 @@ private:
     SqlDatabase _db;
     QString _dbFile;
     QMutex _mutex; // Public functions are protected with the mutex.
-    QMap<QByteArray, int> _checksymTypeCache;
+    QMap<QByteArray, int> _checksumTypeCache;
     int _transaction;
     bool _metadataTableIsEmpty;
 

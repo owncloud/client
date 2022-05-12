@@ -93,7 +93,7 @@ public:
         , _dynamicRegistrationData(dynamicRegistrationData)
         , _registrationEndpoint(registrationEndpoint)
     {
-        connect(this, &RegisterClientJob::errorOccured, this, &RegisterClientJob::deleteLater);
+        connect(this, &RegisterClientJob::errorOccurred, this, &RegisterClientJob::deleteLater);
         connect(this, &RegisterClientJob::finished, this, &RegisterClientJob::deleteLater);
     }
 
@@ -108,7 +108,7 @@ public:
 
 Q_SIGNALS:
     void finished(const QString &clientId, const QString &clientSecret, const QVariantMap &dynamicRegistrationData);
-    void errorOccured(const QString &error);
+    void errorOccurred(const QString &error);
 
 private:
     void registerClientOnline()
@@ -130,7 +130,7 @@ private:
                 registerClientFinished(json.object().toVariantMap());
             } else {
                 qCWarning(lcOauth) << "Failed to register the client" << error.errorString() << data;
-                Q_EMIT errorOccured(error.errorString());
+                Q_EMIT errorOccurred(error.errorString());
             }
         });
     }
@@ -141,7 +141,7 @@ private:
             QString error;
             const auto expireDate = getRequiredField(data, QStringLiteral("client_secret_expires_at"), &error).value<qint64>();
             if (!error.isEmpty()) {
-                Q_EMIT errorOccured(error);
+                Q_EMIT errorOccurred(error);
                 return;
             }
             // 0 means it doesn't expire
@@ -163,7 +163,7 @@ private:
         const auto client_id = getRequiredField(data, QStringLiteral("client_id"), &error).toString();
         const auto client_secret = getRequiredField(data, QStringLiteral("client_secret"), &error).toString();
         if (!error.isEmpty()) {
-            Q_EMIT errorOccured(error);
+            Q_EMIT errorOccurred(error);
             return;
         }
         Q_EMIT finished(client_id, client_secret, data);
@@ -212,7 +212,7 @@ void OAuth::startAuthentication()
                 Q_EMIT dynamicRegistrationDataReceived(dynamicRegistrationData);
                 Q_EMIT authorisationLinkChanged(authorisationLink());
             });
-            connect(job, &RegisterClientJob::errorOccured, this, [this](const QString &error) {
+            connect(job, &RegisterClientJob::errorOccurred, this, [this](const QString &error) {
                 qCWarning(lcOauth) << "Failed to dynamically register the client, try the default client id" << error;
                 Q_EMIT authorisationLinkChanged(authorisationLink());
             });
@@ -376,7 +376,7 @@ void OAuth::refreshAuthentication(const QString &refreshToken)
                 _clientSecret = clientSecret;
                 refresh();
             });
-            connect(registerJob, &RegisterClientJob::errorOccured, this, [this](const QString &error) {
+            connect(registerJob, &RegisterClientJob::errorOccurred, this, [this](const QString &error) {
                 qCWarning(lcOauth) << "Failed to dynamically register the client, try the default client id" << error;
                 Q_EMIT refreshFinished(QString(), QString());
             });
@@ -404,12 +404,12 @@ void OAuth::finalize(const QPointer<QTcpSocket> &socket, const QString &accessTo
         // We are still listening on the socket so we will get the new connection
         return;
     }
-    const auto loginSuccessfullHtml = QByteArrayLiteral("<h1>Login Successful</h1><p>You can close this window.</p>");
+    const auto loginSuccessfulHtml = QByteArrayLiteral("<h1>Login Successful</h1><p>You can close this window.</p>");
     if (messageUrl.isValid()) {
-        httpReplyAndClose(socket, QByteArrayLiteral("303 See Other"), loginSuccessfullHtml,
+        httpReplyAndClose(socket, QByteArrayLiteral("303 See Other"), loginSuccessfulHtml,
             QByteArrayLiteral("Location: ") + messageUrl.toEncoded());
     } else {
-        httpReplyAndClose(socket, QByteArrayLiteral("200 OK"), loginSuccessfullHtml);
+        httpReplyAndClose(socket, QByteArrayLiteral("200 OK"), loginSuccessfulHtml);
     }
     emit result(LoggedIn, user, accessToken, refreshToken);
 }
@@ -435,7 +435,7 @@ QNetworkReply *OAuth::postTokenRequest(const QList<QPair<QString, QString>> &que
 
 QByteArray OAuth::generateRandomString(size_t size) const
 {
-    // TODO: do we need a varaible size?
+    // TODO: do we need a variable size?
     std::vector<quint32> buffer(size, 0);
     QRandomGenerator::global()->fillRange(buffer.data(), static_cast<qsizetype>(size));
     return QByteArray(reinterpret_cast<char *>(buffer.data()), static_cast<int>(size * sizeof(quint32))).toBase64(QByteArray::Base64UrlEncoding);

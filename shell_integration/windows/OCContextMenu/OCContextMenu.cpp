@@ -118,7 +118,7 @@ IFACEMETHODIMP OCContextMenu::Initialize(
 
 #pragma region IContextMenu
 
-void InsertSeperator(HMENU hMenu, UINT indexMenu)
+void InsertSeparator(HMENU hMenu, UINT indexMenu)
 {
     // Add a separator.
     MENUITEMINFO sep = { sizeof(sep) };
@@ -140,7 +140,7 @@ IFACEMETHODIMP OCContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT
         return MAKE_HRESULT(SEVERITY_SUCCESS, 0, USHORT(0));
     }
 
-    InsertSeperator(hMenu, indexMenu++);
+    InsertSeparator(hMenu, indexMenu++);
 
     HMENU hSubmenu = CreateMenu();
     {
@@ -157,7 +157,7 @@ IFACEMETHODIMP OCContextMenu::QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT
         if (!InsertMenuItem(hMenu, indexMenu++, TRUE, &mii))
             return HRESULT_FROM_WIN32(GetLastError());
     }
-    InsertSeperator(hMenu, indexMenu++);
+    InsertSeparator(hMenu, indexMenu++);
 
     UINT indexSubMenu = 0;
     for (auto &item : m_info.menuItems) {

@@ -2,7 +2,7 @@ Feature: Visually check all tabs
 
     As a user
     I want to visually check all tabs in client
-    So that I can performe all the actions related to client
+    So that I can perform all the actions related to client
 
 
     Scenario: Tabs in toolbar looks correct

@@ -27,7 +27,7 @@ static void applyPermissionsFromName(FileInfo &info) {
 // https://github.com/owncloud/client/issues/2038
 static void assertCsyncJournalOk(SyncJournalDb &journal)
 {
-    // The DB is openend in locked mode: close to allow us to access.
+    // The DB is opened in locked mode: close to allow us to access.
     journal.close();
 
     SqlDatabase db;
@@ -287,7 +287,7 @@ private slots:
         QVERIFY(currentLocalState.find("readonlyDirectory_PERM_M_/subdir_PERM_CK_/subsubdir_PERM_CKDNV_/normalFile_PERM_WVND_.data" ));
         // new still exist
         QVERIFY(currentLocalState.find("readonlyDirectory_PERM_M_/newname_PERM_CK_/subsubdir_PERM_CKDNV_/normalFile_PERM_WVND_.data" ));
-        // but is not on server: so remove it localy for the future comarison
+        // but is not on server: so remove it locally for the future comparison
         fakeFolder.localModifier().remove("readonlyDirectory_PERM_M_/newname_PERM_CK_");
 
         //2.
@@ -421,7 +421,7 @@ private slots:
         // the contents can _move_
         QVERIFY(itemInstruction(completeSpy, "norename/sub_renamed/file", CSYNC_INSTRUCTION_RENAME));
 
-        // simiilarly forbidding moves becomes delete+create
+        // similarly forbidding moves becomes delete+create
         QVERIFY(itemInstruction(completeSpy, "nomove/file", CSYNC_INSTRUCTION_REMOVE));
         QVERIFY(completeSpy.findItem("norename/sub").isNull());
         QVERIFY(discoveryInstruction(discovery, "nomove/sub", CSYNC_INSTRUCTION_REMOVE));
@@ -484,22 +484,22 @@ private slots:
         rm.mkdir("changeonly");
         rm.mkdir("changeonly/sub1");
         rm.insert("changeonly/sub1/file1");
-        rm.insert("changeonly/sub1/filetorname1a");
-        rm.insert("changeonly/sub1/filetorname1z");
+        rm.insert("changeonly/sub1/filetorename1a");
+        rm.insert("changeonly/sub1/filetorename1z");
         rm.mkdir("changeonly/sub2");
         rm.insert("changeonly/sub2/file2");
-        rm.insert("changeonly/sub2/filetorname2a");
-        rm.insert("changeonly/sub2/filetorname2z");
+        rm.insert("changeonly/sub2/filetorename2a");
+        rm.insert("changeonly/sub2/filetorename2z");
 
         setAllPerm(rm.find("changeonly"), RemotePermissions::fromServerString("NSV"));
 
         QVERIFY(fakeFolder.syncOnce());
 
-        lm.rename("changeonly/sub1/filetorname1a", "changeonly/sub1/aaa1_renamed");
-        lm.rename("changeonly/sub1/filetorname1z", "changeonly/sub1/zzz1_renamed");
+        lm.rename("changeonly/sub1/filetorename1a", "changeonly/sub1/aaa1_renamed");
+        lm.rename("changeonly/sub1/filetorename1z", "changeonly/sub1/zzz1_renamed");
 
-        lm.rename("changeonly/sub2/filetorname2a", "changeonly/sub2/aaa2_renamed");
-        lm.rename("changeonly/sub2/filetorname2z", "changeonly/sub2/zzz2_renamed");
+        lm.rename("changeonly/sub2/filetorename2a", "changeonly/sub2/aaa2_renamed");
+        lm.rename("changeonly/sub2/filetorename2z", "changeonly/sub2/zzz2_renamed");
 
         lm.rename("changeonly/sub1", "changeonly/aaa");
         lm.rename("changeonly/sub2", "changeonly/zzz");

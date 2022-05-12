@@ -98,7 +98,7 @@ public:
     bool automaticLogDir() const;
     void setAutomaticLogDir(bool enabled);
 
-    /** Wheter the automaticLogDir should expire logs, and after how many hours */
+    /** Whether the automaticLogDir should expire logs, and after how many hours */
     Optional<std::chrono::hours> automaticDeleteOldLogsAge() const;
     void setAutomaticDeleteOldLogsAge(Optional<std::chrono::hours> expireTime);
 

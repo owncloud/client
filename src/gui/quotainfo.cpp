@@ -53,8 +53,8 @@ void QuotaInfo::setActive(bool active)
 void QuotaInfo::slotAccountStateChanged()
 {
     if (canGetQuota()) {
-        const auto elapsed = std::chrono::seconds(_lastQuotaRecieved.secsTo(QDateTime::currentDateTime()));
-        if (_lastQuotaRecieved.isNull() || elapsed >= defaultIntervalT) {
+        const auto elapsed = std::chrono::seconds(_lastQuotaReceived.secsTo(QDateTime::currentDateTime()));
+        if (_lastQuotaReceived.isNull() || elapsed >= defaultIntervalT) {
             slotCheckQuota();
         } else {
             _jobRestartTimer.start(defaultIntervalT - elapsed);
@@ -116,6 +116,6 @@ void QuotaInfo::slotUpdateLastQuota(const QMap<QString, QString> &result)
     _lastQuotaTotalBytes = avail >= 0 ? _lastQuotaUsedBytes + avail : avail;
     emit quotaUpdated(_lastQuotaTotalBytes, _lastQuotaUsedBytes);
     _jobRestartTimer.start(defaultIntervalT);
-    _lastQuotaRecieved = QDateTime::currentDateTime();
+    _lastQuotaReceived = QDateTime::currentDateTime();
 }
 }

@@ -22282,7 +22282,7 @@ class basic_json
     /*!
     @brief updates a JSON object from another object, overwriting existing keys
 
-    Inserts all values from from range `[first, last)` and overwrites existing
+    Inserts all values from range `[first, last)` and overwrites existing
     keys.
 
     @param[in] first begin of the range of elements to insert

@@ -58,7 +58,7 @@ const QString notificationRefreshIntervalC() { return QStringLiteral("notificati
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
-const QString optionalDesktopNoficationsC() { return QStringLiteral("optionalDesktopNotifications"); }
+const QString optionalDesktopNotificationsC() { return QStringLiteral("optionalDesktopNotifications"); }
 const QString showInExplorerNavigationPaneC() { return QStringLiteral("showInExplorerNavigationPane"); }
 const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
@@ -142,7 +142,7 @@ bool ConfigFile::setConfDir(const QString &value)
 bool ConfigFile::optionalDesktopNotifications() const
 {
     auto settings = makeQSettings();
-    return settings.value(optionalDesktopNoficationsC(), true).toBool();
+    return settings.value(optionalDesktopNotificationsC(), true).toBool();
 }
 
 bool ConfigFile::showInExplorerNavigationPane() const
@@ -192,7 +192,7 @@ chrono::milliseconds ConfigFile::targetChunkUploadDuration() const
 void ConfigFile::setOptionalDesktopNotifications(bool show)
 {
     auto settings = makeQSettings();
-    settings.setValue(optionalDesktopNoficationsC(), show);
+    settings.setValue(optionalDesktopNotificationsC(), show);
     settings.sync();
 }
 
@@ -470,7 +470,7 @@ chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::seconds remoteFr
     auto defaultInterval = chrono::hours(2);
     auto interval = millisecondsValue(settings, forceSyncIntervalC(), defaultInterval);
     if (interval < pollInterval) {
-        qCWarning(lcConfigFile) << "Force sync interval is less than the remote poll inteval, reverting to" << pollInterval.count();
+        qCWarning(lcConfigFile) << "Force sync interval is less than the remote poll interval, reverting to" << pollInterval.count();
         interval = pollInterval;
     }
     return interval;

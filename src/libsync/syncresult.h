@@ -33,7 +33,7 @@ class OWNCLOUDSYNC_EXPORT SyncResult
     Q_GADGET
 public:
     // the order of the values markes their importance
-    // higher values take prcedence when computing the
+    // higher values take precedence when computing the
     // overall status
     enum Status {
         Undefined,

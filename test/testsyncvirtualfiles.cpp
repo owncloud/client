@@ -60,7 +60,7 @@ QSharedPointer<Vfs> setupVfs(FakeFolder &folder)
     folder.switchToVfs(suffixVfs);
 
     // Using this directly doesn't recursively unpin everything and instead leaves
-    // the files in the hydration that that they start with
+    // the files in the hydration that they start with
     folder.syncJournal().internalPinStates().setForPath("", PinState::Unspecified);
 
     return suffixVfs;
@@ -142,7 +142,7 @@ private slots:
         QCOMPARE(dbRecord(fakeFolder, "A/a1" DVSUFFIX)._fileSize, 65);
         cleanup();
 
-        // If the local virtual file file is removed, it'll just be recreated
+        // If the local virtual file is removed, it'll just be recreated
         if (!doLocalDiscovery)
             fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, { "A" });
         fakeFolder.localModifier().remove("A/a1" DVSUFFIX);
@@ -1092,7 +1092,7 @@ private slots:
         QCOMPARE(*vfs->availability("online"), VfsItemAvailability::OnlineOnly);
         QCOMPARE(*vfs->availability("local"), VfsItemAvailability::AlwaysLocal);
 
-        auto r = vfs->availability("nonexistant");
+        auto r = vfs->availability("nonexistent");
         QVERIFY(!r);
         QCOMPARE(r.error(), Vfs::AvailabilityError::NoSuchItem);
     }
