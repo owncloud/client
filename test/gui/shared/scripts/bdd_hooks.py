@@ -121,7 +121,8 @@ def hook(context):
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in applicationContextList():
-        ctx.detach()
+        # ctx.detach()
+        os.system('pkill '+ str(ctx))
         # ToDo wait smarter till the app died
         snooze(context.userData['minSyncTimeout'])
 
