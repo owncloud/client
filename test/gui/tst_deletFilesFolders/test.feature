@@ -14,8 +14,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -28,8 +28,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -42,8 +42,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -56,8 +56,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -70,8 +70,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -84,8 +84,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -98,8 +98,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -112,8 +112,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -126,8 +126,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -140,8 +140,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -154,8 +154,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -168,8 +168,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -182,8 +182,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -196,8 +196,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -210,8 +210,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -224,8 +224,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -238,8 +238,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -252,8 +252,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -266,8 +266,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
@@ -280,8 +280,8 @@ Feature: deleting files and folders
         And user "Alice" has set up a client with default settings
         When the user waits for the files to sync
         And the user deletes the folder "<folderName>"
-        And the user waits for the files to sync
         And the user triggers force sync on the client
+        And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist on the server
         Examples:
             | folderName                                      |
