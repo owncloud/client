@@ -11,6 +11,7 @@
 #include <syncengine.h>
 #include <localdiscoverytracker.h>
 
+using namespace std::chrono_literals;
 using namespace OCC;
 
 #ifdef Q_OS_WIN
@@ -66,7 +67,7 @@ private slots:
         QVERIFY(watcher.contains(tmpFile));
 
         QEventLoop loop;
-        QTimer::singleShot(120, &loop, [&] { loop.exit(); });
+        QTimer::singleShot(120ms, &loop, [&] { loop.exit(); });
         loop.exec();
 
         QCOMPARE(count, 1);

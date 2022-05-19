@@ -54,6 +54,8 @@
 #include <QElapsedTimer>
 #include <qtextcodec.h>
 
+using namespace std::chrono_literals;
+
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcEngine, "sync.engine", QtInfoMsg)
@@ -76,9 +78,11 @@ static const std::chrono::milliseconds s_touchedFilesMaxAgeMs(3 * 1000);
 // doc in header
 std::chrono::milliseconds SyncEngine::minimumFileAgeForUpload(2000);
 
-SyncEngine::SyncEngine(AccountPtr account, const QString &localPath,
+SyncEngine::SyncEngine(AccountPtr account, const SyncOptions &syncOptions, const QUrl &baseUrl, const QString &localPath,
     const QString &remotePath, OCC::SyncJournalDb *journal)
     : _account(account)
+    , _syncOptions(syncOptions)
+    , _baseUrl(baseUrl)
     , _needsUpdate(false)
     , _syncRunning(false)
     , _localPath(localPath)
@@ -106,7 +110,7 @@ SyncEngine::SyncEngine(AccountPtr account, const QString &localPath,
     _syncFileStatusTracker.reset(new SyncFileStatusTracker(this));
 
     _clearTouchedFilesTimer.setSingleShot(true);
-    _clearTouchedFilesTimer.setInterval(30 * 1000);
+    _clearTouchedFilesTimer.setInterval(30s);
     connect(&_clearTouchedFilesTimer, &QTimer::timeout, this, &SyncEngine::slotClearTouchedFiles);
 }
 
@@ -244,8 +248,7 @@ void SyncEngine::deleteStaleUploadInfos(const SyncFileItemSet &syncItems)
         for (auto transferId : ids) {
             if (!transferId)
                 continue; // Was not a chunked upload
-            QUrl url = Utility::concatUrlPath(account()->url(), QLatin1String("remote.php/dav/uploads/") + account()->davUser() + QLatin1Char('/') + QString::number(transferId));
-            (new DeleteJob(account(), url, this))->start();
+            (new DeleteJob(account(), account()->url(), QLatin1String("remote.php/dav/uploads/") + account()->davUser() + QLatin1Char('/') + QString::number(transferId), this))->start();
         }
     }
 }
@@ -462,8 +465,7 @@ void SyncEngine::startSync()
 
     // TODO: add a constructor to DiscoveryPhase
     // pass a syncEngine object rather than copying everyhting to another object
-    _discoveryPhase.reset(new DiscoveryPhase);
-    _discoveryPhase->_account = _account;
+    _discoveryPhase.reset(new DiscoveryPhase(_account, _syncOptions, _baseUrl));
     _discoveryPhase->_excludes = _excludedFiles.data();
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
@@ -472,7 +474,6 @@ void SyncEngine::startSync()
     _discoveryPhase->_remoteFolder = _remotePath;
     if (!_discoveryPhase->_remoteFolder.endsWith(QLatin1Char('/')))
         _discoveryPhase->_remoteFolder+=QLatin1Char('/');
-    _discoveryPhase->_syncOptions = _syncOptions;
     _discoveryPhase->_shouldDiscoverLocaly = [this](const QString &s) { return shouldDiscoverLocally(s); };
     _discoveryPhase->setSelectiveSyncBlackList(selectiveSyncBlackList);
     _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, &ok));
@@ -483,19 +484,10 @@ void SyncEngine::startSync()
         return;
     }
 
-    // Check for invalid character in old server version
-    QString invalidFilenamePattern = _account->capabilities().invalidFilenameRegex();
-    if (invalidFilenamePattern.isNull()
-        && _account->serverVersionInt() < Account::makeServerVersion(8, 1, 0)) {
-        // Server versions older than 8.1 don't support some characters in filenames.
-        // If the capability is not set, default to a pattern that avoids uploading
-        // files with names that contain these.
-        // It's important to respect the capability also for older servers -- the
-        // version check doesn't make sense for custom servers.
-        invalidFilenamePattern = QLatin1String("[\\\\:?*\"<>|]");
-    }
-    if (!invalidFilenamePattern.isEmpty())
+    const QString invalidFilenamePattern = _account->capabilities().invalidFilenameRegex();
+    if (!invalidFilenamePattern.isEmpty()) {
         _discoveryPhase->_invalidFilenameRx = QRegExp(invalidFilenamePattern);
+    }
     _discoveryPhase->_serverBlacklistedFiles = _account->capabilities().blacklistedFiles();
     _discoveryPhase->_ignoreHiddenFiles = ignoreHiddenFiles();
 
@@ -646,22 +638,20 @@ void SyncEngine::slotDiscoveryFinished()
 
         // post update phase script: allow to tweak stuff by a custom script in debug mode.
         if (!qEnvironmentVariableIsEmpty("OWNCLOUD_POST_UPDATE_SCRIPT")) {
-    #ifndef NDEBUG
+#ifndef NDEBUG
             const QString script = qEnvironmentVariable("OWNCLOUD_POST_UPDATE_SCRIPT");
 
             qCDebug(lcEngine) << "Post Update Script: " << script;
-            QProcess::execute(script);
-    #else
+            QProcess::execute(script, {});
+#else
             qCWarning(lcEngine) << "**** Attention: POST_UPDATE_SCRIPT installed, but not executed because compiled with NDEBUG";
-    #endif
+#endif
         }
 
         // do a database commit
         _journal->commit(QStringLiteral("post treewalk"));
 
-        _propagator = QSharedPointer<OwncloudPropagator>(
-            new OwncloudPropagator(_account, _localPath, _remotePath, _journal));
-        _propagator->setSyncOptions(_syncOptions);
+        _propagator = QSharedPointer<OwncloudPropagator>::create(_account, _syncOptions, _baseUrl, _localPath, _remotePath, _journal);
         connect(_propagator.data(), &OwncloudPropagator::itemCompleted,
             this, &SyncEngine::slotItemCompleted);
         connect(_propagator.data(), &OwncloudPropagator::progress,

@@ -40,8 +40,11 @@
 
 Q_DECLARE_METATYPE(QTimer *)
 
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
 namespace {
-const int MaxRetryCount = 5;
+constexpr int MaxRetryCount = 5;
 }
 
 
@@ -50,50 +53,48 @@ namespace OCC {
 Q_LOGGING_CATEGORY(lcNetworkJob, "sync.networkjob", QtInfoMsg)
 
 // If not set, it is overwritten by the Application constructor with the value from the config
-int AbstractNetworkJob::httpTimeout = qEnvironmentVariableIntValue("OWNCLOUD_TIMEOUT");
+seconds AbstractNetworkJob::httpTimeout = [] {
+    const auto def = qEnvironmentVariableIntValue("OWNCLOUD_TIMEOUT");
+    if (def <= 0) {
+        return AbstractNetworkJob::DefaultHttpTimeout;
+    }
+    return seconds(def);
+}();
 
-AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QString &path, QObject *parent)
+AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, const QString &path, QObject *parent)
     : QObject(parent)
-    , _timedout(false)
     , _account(account)
-    , _ignoreCredentialFailure(false)
-    , _reply(nullptr)
+    , _baseUrl(baseUrl)
     , _path(path)
 {
     // Since we hold a QSharedPointer to the account, this makes no sense. (issue #6893)
     OC_ASSERT(account != parent);
-
-    _timer.setSingleShot(true);
-    _timer.setInterval((httpTimeout ? httpTimeout : 300) * 1000); // default to 5 minutes.
-    connect(&_timer, &QTimer::timeout, this, &AbstractNetworkJob::slotTimeout);
-
-    connect(this, &AbstractNetworkJob::networkActivity, this, &AbstractNetworkJob::resetTimeout);
-
-    // Network activity on the propagator jobs (GET/PUT) keeps all requests alive.
-    // This is a workaround for OC instances which only support one
-    // parallel up and download
-    if (_account) {
-        connect(_account.data(), &Account::propagatorNetworkActivity, this, &AbstractNetworkJob::resetTimeout);
-    }
 }
 
-void AbstractNetworkJob::setReply(QNetworkReply *reply)
+QUrl AbstractNetworkJob::baseUrl() const
 {
-    QNetworkReply *old = _reply;
-    _reply = reply;
-    delete old;
+    return _baseUrl;
 }
 
-void AbstractNetworkJob::setTimeout(qint64 msec)
+QUrl AbstractNetworkJob::url() const
 {
-    _timer.start(msec);
+    return Utility::concatUrlPath(baseUrl(), path(), query());
 }
 
-void AbstractNetworkJob::resetTimeout()
+
+void AbstractNetworkJob::setQuery(const QUrlQuery &query)
 {
-    qint64 interval = _timer.interval();
-    _timer.stop();
-    _timer.start(interval);
+    _query = query;
+}
+
+QUrlQuery AbstractNetworkJob::query() const
+{
+    return _query;
+}
+
+void AbstractNetworkJob::setTimeout(const std::chrono::seconds sec)
+{
+    _timeout = sec;
 }
 
 void AbstractNetworkJob::setIgnoreCredentialFailure(bool ignore)
@@ -101,32 +102,10 @@ void AbstractNetworkJob::setIgnoreCredentialFailure(bool ignore)
     _ignoreCredentialFailure = ignore;
 }
 
-void AbstractNetworkJob::setPath(const QString &path)
-{
-    _path = path;
-}
-
 QNetworkReply *AbstractNetworkJob::reply() const
 {
     Q_ASSERT(_reply);
     return _reply;
-}
-
-void AbstractNetworkJob::setupConnections(QNetworkReply *reply)
-{
-    connect(reply, &QNetworkReply::finished, this, &AbstractNetworkJob::slotFinished);
-    connect(reply, &QNetworkReply::encrypted, this, &AbstractNetworkJob::networkActivity);
-    connect(reply->manager(), &QNetworkAccessManager::proxyAuthenticationRequired, this, &AbstractNetworkJob::networkActivity);
-    connect(reply, &QNetworkReply::sslErrors, this, &AbstractNetworkJob::networkActivity);
-    connect(reply, &QNetworkReply::metaDataChanged, this, &AbstractNetworkJob::networkActivity);
-    connect(reply, &QNetworkReply::downloadProgress, this, &AbstractNetworkJob::networkActivity);
-    connect(reply, &QNetworkReply::uploadProgress, this, &AbstractNetworkJob::networkActivity);
-}
-
-QNetworkReply *AbstractNetworkJob::addTimer(QNetworkReply *reply)
-{
-    reply->setProperty("timer", QVariant::fromValue(&_timer));
-    return reply;
 }
 
 bool AbstractNetworkJob::isAuthenticationJob() const
@@ -159,86 +138,48 @@ bool AbstractNetworkJob::needsRetry() const
                 return true;
             }
         }
+        if (_reply->error() == QNetworkReply::ContentReSendError && _reply->attribute(QNetworkRequest::Http2WasUsedAttribute).toBool()) {
+            return true;
+        }
     }
     return false;
 }
 
-
-void AbstractNetworkJob::sendRequest(const QByteArray &verb, const QUrl &url,
+void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     const QNetworkRequest &req, QIODevice *requestBody)
 {
     _verb = verb;
     _request = req;
-    _request.setUrl(url);
     _requestBody = requestBody;
+    Q_ASSERT(_request.url().isEmpty() || _request.url() == url());
+    Q_ASSERT(_request.transferTimeout() == 0 || _request.transferTimeout() == duration_cast<milliseconds>(_timeout).count());
+    _request.setUrl(url());
+    _request.setTransferTimeout(duration_cast<milliseconds>(_timeout).count());
     if (!isAuthenticationJob() && _account->jobQueue()->enqueue(this)) {
         return;
     }
-    auto reply = _account->sendRawRequest(verb, url, req, requestBody);
+    auto reply = _account->sendRawRequest(verb, _request.url(), _request, requestBody);
     if (_requestBody) {
-        _requestBody->setParent(reply);
+        _requestBody->setParent(this);
     }
     adoptRequest(reply);
 }
 
-void AbstractNetworkJob::adoptRequest(QNetworkReply *reply)
+void AbstractNetworkJob::adoptRequest(QPointer<QNetworkReply> reply)
 {
-    addTimer(reply);
-    setReply(reply);
-    setupConnections(reply);
-    newReplyHook(reply);
-    _request = reply->request();
-}
+    std::swap(_reply, reply);
+    delete reply;
 
-QUrl AbstractNetworkJob::makeAccountUrl(const QString &relativePath) const
-{
-    return Utility::concatUrlPath(_account->url(), relativePath);
-}
+    _request = _reply->request();
 
-QUrl AbstractNetworkJob::makeDavUrl(const QString &relativePath) const
-{
-    // ensure we always used the remote folder
-    return Utility::concatUrlPath(_account->davUrl(), OC_ENSURE(relativePath.startsWith(QLatin1Char('/'))) ? relativePath : QLatin1Char('/') + relativePath);
+    connect(_reply, &QNetworkReply::finished, this, &AbstractNetworkJob::slotFinished);
+
+    newReplyHook(_reply);
 }
 
 void AbstractNetworkJob::slotFinished()
 {
-    _timer.stop();
-
-    if (_reply->error() == QNetworkReply::SslHandshakeFailedError) {
-        qCWarning(lcNetworkJob) << "SslHandshakeFailedError: " << errorString() << " : can be caused by a webserver wanting SSL client certificates";
-    }
-    // Qt doesn't yet transparently resend HTTP2 requests, do so here
-    const auto maxHttp2Resends = 3;
-    QByteArray verb = HttpLogger::requestVerb(*reply());
-    if (_reply->error() == QNetworkReply::ContentReSendError
-        && _reply->attribute(QNetworkRequest::HTTP2WasUsedAttribute).toBool()) {
-
-        if ((_requestBody && !_requestBody->isSequential()) || verb.isEmpty()) {
-            qCWarning(lcNetworkJob) << "Can't resend HTTP2 request, verb or body not suitable"
-                                    << _reply->request().url() << verb << _requestBody;
-        } else if (_http2ResendCount >= maxHttp2Resends) {
-            qCWarning(lcNetworkJob) << "Not resending HTTP2 request, number of resends exhausted"
-                                    << _reply->request().url() << _http2ResendCount;
-        } else {
-            qCInfo(lcNetworkJob) << "HTTP2 resending" << _reply->request().url();
-            _http2ResendCount++;
-
-            resetTimeout();
-            if (_requestBody) {
-                if(!_requestBody->isOpen())
-                   _requestBody->open(QIODevice::ReadOnly);
-                _requestBody->seek(0);
-            }
-            sendRequest(
-                verb,
-                _reply->request().url(),
-                _reply->request(),
-                _requestBody);
-            return;
-        }
-    }
-
+    _finished = true;
     if (_reply->error() != QNetworkReply::NoError) {
         if (_account->jobQueue()->retry(this)) {
             qCDebug(lcNetworkJob) << "Queuing: " << _reply->url() << " for retry";
@@ -251,6 +192,10 @@ void AbstractNetworkJob::slotFinished()
             if (_reply->error() == QNetworkReply::ProxyAuthenticationRequiredError) {
                 qCWarning(lcNetworkJob) << _reply->rawHeader("Proxy-Authenticate");
             }
+        }
+
+        if (_reply->error() == QNetworkReply::OperationCanceledError && !_aborted) {
+            _timedout = true;
         }
         emit networkError(_reply);
     }
@@ -327,25 +272,16 @@ QString AbstractNetworkJob::errorStringParsingBody(QByteArray *body)
 
 AbstractNetworkJob::~AbstractNetworkJob()
 {
-    setReply(nullptr);
+    if (!_finished && !_aborted && !_timedout) {
+        qCCritical(lcNetworkJob) << "Deleting running job" << this << parent();
+    }
+    delete _reply;
+    _reply = nullptr;
 }
 
 void AbstractNetworkJob::start()
 {
-    _timer.start();
     qCInfo(lcNetworkJob) << "Created" << this << "for" << parent();
-}
-
-void AbstractNetworkJob::slotTimeout()
-{
-    _timedout = true;
-    qCWarning(lcNetworkJob) << "Network job" << this << "timeout";
-    onTimedOut();
-}
-
-void AbstractNetworkJob::onTimedOut()
-{
-    abort();
 }
 
 QString AbstractNetworkJob::replyStatusString() {
@@ -353,23 +289,7 @@ QString AbstractNetworkJob::replyStatusString() {
     if (reply()->error() == QNetworkReply::NoError) {
         return QStringLiteral("OK");
     } else {
-        const QString enumStr = QString::fromUtf8(QMetaEnum::fromType<QNetworkReply::NetworkError>().valueToKey(static_cast<int>(reply()->error())));
-        return QStringLiteral("%1 %2").arg(enumStr, errorString());
-    }
-}
-
-NetworkJobTimeoutPauser::NetworkJobTimeoutPauser(QNetworkReply *reply)
-{
-    _timer = reply->property("timer").value<QTimer *>();
-    if (!_timer.isNull()) {
-        _timer->stop();
-    }
-}
-
-NetworkJobTimeoutPauser::~NetworkJobTimeoutPauser()
-{
-    if (!_timer.isNull()) {
-        _timer->start();
+        return QStringLiteral("%1, %2").arg(Utility::enumToString(reply()->error()), errorString());
     }
 }
 
@@ -426,16 +346,27 @@ void AbstractNetworkJob::retry()
     OC_ENFORCE(!_verb.isEmpty());
     _retryCount++;
     qCInfo(lcNetworkJob) << "Restarting" << _verb << _request.url() << "for the" << _retryCount << "time";
-    resetTimeout();
     if (_requestBody) {
-        _requestBody->seek(0);
+        if (_requestBody->isSequential()) {
+            Q_ASSERT(_requestBody->isOpen());
+            _requestBody->seek(0);
+        } else {
+            qCWarning(lcNetworkJob) << "Can't resend request, body not suitable" << this;
+            abort();
+            return;
+        }
     }
-    sendRequest(_verb, _request.url(), _request, _requestBody);
+    sendRequest(_verb, _request, _requestBody);
 }
 
 void AbstractNetworkJob::abort()
 {
     if (_reply) {
+        // calling abort will trigger the execution of finished()
+        // with _reply->error() == QNetworkReply::OperationCanceledError
+        // the api user can then decide whether to discard this job or retry it.
+        // The order is important, mark as _aborted before we abort the reply which will trigger slotFinished
+        _aborted = true;
         _reply->abort();
     } else {
         deleteLater();
@@ -448,7 +379,8 @@ QDebug operator<<(QDebug debug, const OCC::AbstractNetworkJob *job)
 {
     QDebugStateSaver saver(debug);
     debug.setAutoInsertSpaces(false);
-    debug << job->metaObject()->className() << "(" << job->url().toDisplayString();
+    debug << job->metaObject()->className() << "(" << job->url().toDisplayString()
+          << "," << job->_verb;
     if (auto reply = job->_reply) {
         debug << ", " << reply->request().rawHeader("Original-Request-ID")
               << ", " << reply->request().rawHeader("X-Request-ID");

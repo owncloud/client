@@ -12,7 +12,7 @@ with your computer.
 
 ### Binary packages
 
-* Refer to the download page https://owncloud.org/download/#owncloud-desktop-client
+* Refer to the download page https://owncloud.com/desktop-app/
 
 ### Source code
 
@@ -24,7 +24,7 @@ https://github.com/owncloud/client.
 
 ## Building the source code
 
-[Building the Client](https://doc.owncloud.org/desktop/building.html)
+[Building the Client](https://doc.owncloud.com/desktop/next/appendices/building.html)
 in the ownCloud Desktop Client manual.
 
 ## Reporting issues and contributing
@@ -49,6 +49,7 @@ you can join us at
 The current maintainers of this repository are:
 
 * Hannah von Reth <hannah.vonreth@owncloud.com>
+* Fabian Müller <fmueller@owncloud.com>
 * Dominik Schmidt <dev@dominik-schmidt.de>
 
 ownCloud Desktop Client is developed by the ownCloud community and [receives

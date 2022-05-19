@@ -44,11 +44,11 @@ private slots:
         QString dirPath = dir2.canonicalPath();
 
         AccountPtr account = TestUtils::createDummyAccount();
-        AccountStatePtr newAccountState(new AccountState(account));
+        AccountStatePtr newAccountState = AccountState::fromNewAccount(account);
         FolderMan *folderman = TestUtils::folderMan();
         QCOMPARE(folderman, FolderMan::instance());
-        QVERIFY(folderman->addFolder(newAccountState.data(), TestUtils::createDummyFolderDefinition(dirPath + "/sub/ownCloud1")));
-        QVERIFY(folderman->addFolder(newAccountState.data(), TestUtils::createDummyFolderDefinition(dirPath + "/ownCloud2")));
+        QVERIFY(folderman->addFolder(newAccountState, TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + "/sub/ownCloud1")));
+        QVERIFY(folderman->addFolder(newAccountState, TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + "/ownCloud2")));
 
 
         // those should be allowed
@@ -102,9 +102,11 @@ private slots:
         QVERIFY(folderman->checkPathValidityForNewFolder(dirPath + "/link1/subfolder").isNull());
         QVERIFY(folderman->checkPathValidityForNewFolder(dirPath + "/link2/free/subfolder").isNull());
 
-        // Should not have the rights
-        QVERIFY(!folderman->checkPathValidityForNewFolder("/").isNull());
-        QVERIFY(!folderman->checkPathValidityForNewFolder("/usr/bin/somefolder").isNull());
+        if (getuid() != 0) {
+            // Should not have the rights
+            QVERIFY(!folderman->checkPathValidityForNewFolder("/").isNull());
+            QVERIFY(!folderman->checkPathValidityForNewFolder("/usr/bin/somefolder").isNull());
+        }
 #endif
 
 #ifdef Q_OS_WIN // drive-letter tests
@@ -167,10 +169,10 @@ private slots:
 
         AccountPtr account = TestUtils::createDummyAccount();
 
-        AccountStatePtr newAccountState(new AccountState(account));
+        AccountStatePtr newAccountState = AccountState::fromNewAccount(account);
         FolderMan *folderman = TestUtils::folderMan();
-        QVERIFY(folderman->addFolder(newAccountState.data(), TestUtils::createDummyFolderDefinition(dirPath + "/sub/ownCloud/")));
-        QVERIFY(folderman->addFolder(newAccountState.data(), TestUtils::createDummyFolderDefinition(dirPath + "/ownCloud2/")));
+        QVERIFY(folderman->addFolder(newAccountState, TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + "/sub/ownCloud/")));
+        QVERIFY(folderman->addFolder(newAccountState, TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + "/ownCloud2/")));
 
         // TEST
 

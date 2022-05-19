@@ -143,14 +143,14 @@ void HttpCredentials::setAccount(Account *account)
     }
 }
 
-QNetworkAccessManager *HttpCredentials::createQNAM() const
+AccessManager *HttpCredentials::createAM() const
 {
-    AccessManager *qnam = new HttpCredentialsAccessManager(this);
+    AccessManager *am = new HttpCredentialsAccessManager(this);
 
-    connect(qnam, &QNetworkAccessManager::authenticationRequired,
+    connect(am, &QNetworkAccessManager::authenticationRequired,
         this, &HttpCredentials::slotAuthentication);
 
-    return qnam;
+    return am;
 }
 
 bool HttpCredentials::ready() const
@@ -160,7 +160,13 @@ bool HttpCredentials::ready() const
 
 QString HttpCredentials::fetchUser()
 {
-    _user = _account->credentialSetting(userC()).toString();
+    // it makes no sense to overwrite an existing username with a config file value
+    if (_user.isEmpty()) {
+        qCDebug(lcHttpCredentials) << "user not set, populating from settings";
+        _user = _account->credentialSetting(userC()).toString();
+    } else {
+        qCDebug(lcHttpCredentials) << "user already set, no need to fetch from settings";
+    }
     return _user;
 }
 
@@ -248,17 +254,17 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
 {
     if (_refreshToken.isEmpty())
         return false;
-    if (_isRenewingOAuthToken) {
+    if (_oAuthJob) {
         return true;
     }
-    _isRenewingOAuthToken = true;
 
     // don't touch _ready or the account state will start a new authentication
     // _ready = false;
 
-    OAuth *oauth = new OAuth(_account, this);
-    connect(oauth, &OAuth::refreshError, this, [oauth, tokenRefreshRetriesCount, this](QNetworkReply::NetworkError error, const QString &) {
-        oauth->deleteLater();
+    // parent with nam to ensure we reset when the nam is reset
+    _oAuthJob = new AccountBasedOAuth(_account->sharedFromThis(), _account->accessManager());
+    connect(_oAuthJob, &OAuth::refreshError, this, [tokenRefreshRetriesCount, this](QNetworkReply::NetworkError error, const QString &) {
+        _oAuthJob->deleteLater();
         int nextTry = tokenRefreshRetriesCount + 1;
         std::chrono::seconds timeout = {};
         switch (error) {
@@ -283,15 +289,13 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
             return;
         }
         QTimer::singleShot(timeout, this, [nextTry, this] {
-            _isRenewingOAuthToken = false;
             refreshAccessTokenInternal(nextTry);
         });
         Q_EMIT authenticationFailed();
     });
 
-    connect(oauth, &OAuth::refreshFinished, this, [this, oauth](const QString &accessToken, const QString &refreshToken){
-        oauth->deleteLater();
-        _isRenewingOAuthToken = false;
+    connect(_oAuthJob, &OAuth::refreshFinished, this, [this](const QString &accessToken, const QString &refreshToken) {
+        _oAuthJob->deleteLater();
         if (refreshToken.isEmpty()) {
             // an error occured, log out
             forgetSensitiveData();
@@ -300,16 +304,16 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
             return;
         }
         _refreshToken = refreshToken;
-        if (!accessToken.isNull())
-        {
+        if (!accessToken.isNull()) {
             _ready = true;
             _password = accessToken;
             persist();
         }
         emit fetched();
     });
-    oauth->refreshAuthentication(_refreshToken);
+    _oAuthJob->refreshAuthentication(_refreshToken);
     Q_EMIT authenticationStarted();
+
     return true;
 }
 
@@ -339,7 +343,7 @@ void HttpCredentials::invalidateToken()
     // indirectly) from QNetworkAccessManagerPrivate::authenticationRequired, which itself
     // is a called from a BlockingQueuedConnection from the Qt HTTP thread. And clearing the
     // cache needs to synchronize again with the HTTP thread.
-    QTimer::singleShot(0, _account, &Account::clearQNAMCache);
+    QTimer::singleShot(0, _account, &Account::clearAMCache);
 }
 
 void HttpCredentials::forgetSensitiveData()
@@ -380,7 +384,7 @@ void HttpCredentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *a
     qCWarning(lcHttpCredentials) << "Stop request: Authentication failed for " << reply->url().toString() << reply->request().rawHeader("Original-Request-ID");
     reply->setProperty(authenticationFailedC, true);
 
-    if (!_isRenewingOAuthToken && isUsingOAuth()) {
+    if (!_oAuthJob && isUsingOAuth()) {
         qCInfo(lcHttpCredentials) << "Refreshing token";
         refreshAccessToken();
     }

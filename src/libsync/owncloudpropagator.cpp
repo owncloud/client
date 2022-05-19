@@ -44,6 +44,8 @@
 #include <QTimerEvent>
 #include <qmath.h>
 
+using namespace std::chrono_literals;
+
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcPropagator, "sync.propagator", QtInfoMsg)
@@ -517,12 +519,6 @@ const SyncOptions &OwncloudPropagator::syncOptions() const
     return _syncOptions;
 }
 
-void OwncloudPropagator::setSyncOptions(const SyncOptions &syncOptions)
-{
-    _syncOptions = syncOptions;
-    _chunkSize = syncOptions._initialChunkSize;
-}
-
 Result<QString, bool> OwncloudPropagator::localFileNameClash(const QString &relFile)
 {
     OC_ASSERT(!relFile.isEmpty());
@@ -612,7 +608,7 @@ void OwncloudPropagator::scheduleNextJob()
 {
     if (_jobScheduled) return; // don't schedule more than 1
     _jobScheduled = true;
-    QTimer::singleShot(3, this, &OwncloudPropagator::scheduleNextJobImpl);
+    QTimer::singleShot(0, this, &OwncloudPropagator::scheduleNextJobImpl);
 }
 
 void OwncloudPropagator::scheduleNextJobImpl()
@@ -651,6 +647,29 @@ void OwncloudPropagator::scheduleNextJobImpl()
 void OwncloudPropagator::reportFileTotal(const SyncFileItem &item, qint64 newSize)
 {
     emit updateFileTotal(item, newSize);
+}
+
+void OwncloudPropagator::abort()
+{
+    if (_abortRequested)
+        return;
+    if (_rootJob) {
+        // Connect to abortFinished  which signals that abort has been asynchronously finished
+        connect(_rootJob.data(), &PropagateDirectory::abortFinished, this, &OwncloudPropagator::emitFinished);
+
+        // Use Queued Connection because we're possibly already in an item's finished stack
+        QMetaObject::invokeMethod(
+            _rootJob.data(), [this] {
+                _rootJob->abort(PropagatorJob::AbortType::Asynchronous);
+            },
+            Qt::QueuedConnection);
+
+        // Give asynchronous abort 5 sec to finish on its own
+        QTimer::singleShot(5s, this, &OwncloudPropagator::abortTimeout);
+    } else {
+        // No root job, call emitFinished
+        emitFinished(SyncFileItem::NormalError);
+    }
 }
 
 void OwncloudPropagator::reportProgress(const SyncFileItem &item, qint64 bytes)
@@ -1182,13 +1201,9 @@ void OCC::PropagateUpdateMetaDataJob::start()
 
     const QString filePath = propagator()->fullLocalPath(_item->destination());
     if (_item->_direction == SyncFileItem::Down) {
-        // If the 'W' remote permission changed, update the local filesystem
         SyncJournalFileRecord prev;
         if (propagator()->_journal->getFileRecord(_item->_file, &prev)
-            && prev.isValid()
-            && prev._remotePerm.hasPermission(RemotePermissions::CanWrite) != _item->_remotePerm.hasPermission(RemotePermissions::CanWrite)) {
-            const bool isReadOnly = !_item->_remotePerm.isNull() && !_item->_remotePerm.hasPermission(RemotePermissions::CanWrite);
-            FileSystem::setFileReadOnlyWeak(filePath, isReadOnly);
+            && prev.isValid()) {
             if (_item->_checksumHeader.isEmpty()) {
                 _item->_checksumHeader = prev._checksumHeader;
             }

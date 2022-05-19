@@ -12,6 +12,8 @@
 
 #include <qt5keychain/keychain.h>
 
+using namespace std::chrono_literals;
+
 OC_DISABLE_DEPRECATED_WARNING
 
 Q_DECLARE_LOGGING_CATEGORY(lcHttpLegacyCredentials)
@@ -97,7 +99,7 @@ private:
             // (Issues #4274 and #6522)
             // (For kwallet, the error is OtherError instead of NoBackendAvailable, maybe a bug in QtKeychain)
             qCInfo(lcHttpLegacyCredentials) << "Backend unavailable (yet?) Retrying in a few seconds." << incoming->errorString();
-            QTimer::singleShot(10000, this, &HttpLegacyCredentials::fetchFromKeychainHelper);
+            QTimer::singleShot(10s, this, &HttpLegacyCredentials::fetchFromKeychainHelper);
             _retryOnKeyChainError = false;
             return true;
         }

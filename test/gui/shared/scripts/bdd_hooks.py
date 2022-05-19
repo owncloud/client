@@ -16,6 +16,7 @@
 # See the section 'Performing Actions During Test Execution Via Hooks' in the Squish
 # manual for a complete reference of the available API.
 import shutil
+from tempfile import gettempdir
 import urllib.request
 import os
 import builtins
@@ -31,21 +32,24 @@ def hook(context):
         'secureLocalBackendUrl': 'SECURE_BACKEND_HOST',
         'maxSyncTimeout': 'MAX_SYNC_TIMEOUT',
         'minSyncTimeout': 'MIN_SYNC_TIMEOUT',
+        'lowestSyncTimeout': 'LOWEST_SYNC_TIMEOUT',
         'middlewareUrl': 'MIDDLEWARE_URL',
         'clientConfigFile': 'CLIENT_LOG_FILE',
         'clientRootSyncPath': 'CLIENT_ROOT_SYNC_PATH',
+        'tempFolderPath': 'TEMP_FOLDER_PATH',
     }
 
     DEFAULT_CONFIG = {
         'localBackendUrl': 'https://localhost:9200/',
         'secureLocalBackendUrl': 'https://localhost:9200/',
-        'maxSyncTimeout': 10,
+        'maxSyncTimeout': 60,
         'minSyncTimeout': 5,
+        'lowestSyncTimeout': 1,
         'middlewareUrl': 'http://localhost:3000/',
         'clientConfigFile': '-',
         'clientRootSyncPath': '/tmp/client-bdd/',
+        'tempFolderPath': gettempdir(),
     }
-
     # read configs from environment variables
     context.userData = {}
     for key, value in CONFIG_ENV_MAP.items():
@@ -59,7 +63,7 @@ def hook(context):
             if value == '':
                 context.userData[key] = cfg.get('DEFAULT', CONFIG_ENV_MAP[key])
     except Exception as err:
-        print(err)
+        test.log(str(err))
 
     # Set the default values if empty
     for key, value in context.userData.items():
@@ -67,7 +71,7 @@ def hook(context):
             context.userData[key] = DEFAULT_CONFIG[key]
         elif key == 'maxSyncTimeout' or key == 'minSyncTimeout':
             context.userData[key] = builtins.int(value)
-        elif key == 'clientRootSyncPath':
+        elif key == 'clientRootSyncPath' or 'tempFolderPath':
             # make sure there is always one trailing slash
             context.userData[key] = value.rstrip('/') + '/'
 
@@ -78,6 +82,9 @@ def hook(context):
 
     if not os.path.exists(context.userData['clientRootSyncPath']):
         os.makedirs(context.userData['clientRootSyncPath'])
+
+    if not os.path.exists(context.userData['tempFolderPath']):
+        os.makedirs(context.userData['tempFolderPath'])
 
     req = urllib.request.Request(
         os.path.join(context.userData['middlewareUrl'], 'init'),
@@ -94,18 +101,6 @@ def hook(context):
 
 @OnScenarioEnd
 def hook(context):
-    # search coredumps after every test scenario
-    # CI pipeline might fail although all tests are passing
-    coredumps = getCoredumps()
-    if coredumps:
-        try:
-            generateStacktrace(context, coredumps)
-            print("Stacktrace generated.")
-        except Exception as err:
-            print(err)
-    else:
-        print("No coredump found!")
-
     # capture screenshot if there is error in the scenario execution, and if the test is being run in CI
     if test.resultCount("errors") > 0 and os.getenv('CI'):
         import gi
@@ -140,7 +135,19 @@ def hook(context):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
+            test.log('Failed to delete' + file_path + ". Reason: " + e + '.')
+
+    # search coredumps after every test scenario
+    # CI pipeline might fail although all tests are passing
+    coredumps = getCoredumps()
+    if coredumps:
+        try:
+            generateStacktrace(context, coredumps)
+            test.log("Stacktrace generated!")
+        except Exception as err:
+            test.log("Exception occured:" + err)
+    else:
+        test.log("No coredump found!")
 
     # cleanup test server
     req = urllib.request.Request(

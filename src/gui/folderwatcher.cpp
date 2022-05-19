@@ -35,6 +35,8 @@
 #include "folder.h"
 #include "filesystem.h"
 
+using namespace std::chrono_literals;
+
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFolderWatcher, "gui.folderwatcher", QtInfoMsg)
@@ -98,8 +100,8 @@ void FolderWatcher::startNotificationTestWhenReady()
         // we already received the notification
         return;
     }
-    if (!_d->_ready) {
-        QTimer::singleShot(1000, this, &FolderWatcher::startNotificationTestWhenReady);
+    if (!_d->isReady()) {
+        QTimer::singleShot(1s, this, &FolderWatcher::startNotificationTestWhenReady);
         return;
     }
 
@@ -111,7 +113,7 @@ void FolderWatcher::startNotificationTestWhenReady()
         f.open(QIODevice::WriteOnly | QIODevice::Append);
     }
 
-    QTimer::singleShot(5000, this, [this]() {
+    QTimer::singleShot(5s, this, [this]() {
         if (!_testNotificationPath.isEmpty())
             emit becameUnreliable(tr("The watcher did not receive a test notification."));
         _testNotificationPath.clear();

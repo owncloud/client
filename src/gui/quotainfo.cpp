@@ -14,7 +14,6 @@
 
 #include "quotainfo.h"
 #include "account.h"
-#include "accountstate.h"
 #include "networkjobs.h"
 #include "folderman.h"
 #include "creds/abstractcredentials.h"
@@ -22,21 +21,23 @@
 
 #include <QTimer>
 
+using namespace std::chrono_literals;
+
 namespace OCC {
 
 namespace {
-    static const int defaultIntervalT = 30 * 1000;
-    static const int failIntervalT = 5 * 1000;
+    const auto defaultIntervalT = 30s;
+    const auto failIntervalT = 5s;
 }
 
-QuotaInfo::QuotaInfo(AccountState *accountState, QObject *parent)
+QuotaInfo::QuotaInfo(AccountStatePtr accountState, QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _lastQuotaTotalBytes(0)
     , _lastQuotaUsedBytes(0)
     , _active(false)
 {
-    connect(accountState, &AccountState::stateChanged,
+    connect(accountState.data(), &AccountState::stateChanged,
         this, &QuotaInfo::slotAccountStateChanged);
     connect(&_jobRestartTimer, &QTimer::timeout, this, &QuotaInfo::slotCheckQuota);
     _jobRestartTimer.setSingleShot(true);
@@ -52,7 +53,7 @@ void QuotaInfo::setActive(bool active)
 void QuotaInfo::slotAccountStateChanged()
 {
     if (canGetQuota()) {
-        auto elapsed = _lastQuotaRecieved.msecsTo(QDateTime::currentDateTime());
+        const auto elapsed = std::chrono::seconds(_lastQuotaRecieved.secsTo(QDateTime::currentDateTime()));
         if (_lastQuotaRecieved.isNull() || elapsed >= defaultIntervalT) {
             slotCheckQuota();
         } else {
@@ -72,7 +73,7 @@ void QuotaInfo::slotRequestFailed()
 
 bool QuotaInfo::canGetQuota() const
 {
-    if (!_accountState || !_active) {
+    if (!_accountState || !_active || _accountState->account()->hasCapabilities() && _accountState->account()->capabilities().spacesSupport().enabled) {
         return false;
     }
     AccountPtr account = _accountState->account();
@@ -97,10 +98,9 @@ void QuotaInfo::slotCheckQuota()
         _job->deleteLater();
     }
 
-    AccountPtr account = _accountState->account();
-    _job = new PropfindJob(account, quotaBaseFolder(), this);
-    _job->setProperties(QList<QByteArray>() << "quota-available-bytes"
-                                            << "quota-used-bytes");
+    const AccountPtr &account = _accountState->account();
+    _job = new PropfindJob(account, account->davUrl(), quotaBaseFolder(), this);
+    _job->setProperties({ QByteArrayLiteral("quota-available-bytes"), QByteArrayLiteral("quota-used-bytes") });
     connect(_job.data(), &PropfindJob::result, this, &QuotaInfo::slotUpdateLastQuota);
     connect(_job.data(), &AbstractNetworkJob::networkError, this, &QuotaInfo::slotRequestFailed);
     _job->start();

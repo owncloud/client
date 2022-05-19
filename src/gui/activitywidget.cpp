@@ -28,7 +28,6 @@
 #include "logger.h"
 #include "notificationconfirmjob.h"
 #include "notificationwidget.h"
-#include "ocsjob.h"
 #include "openfilemanager.h"
 #include "owncloudpropagator.h"
 #include "protocolwidget.h"
@@ -44,6 +43,9 @@
 #include "ui_activitywidget.h"
 
 #include <climits>
+
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 // time span in milliseconds which has to be between two
 // refreshes of the notifications
@@ -86,7 +88,7 @@ ActivityWidget::ActivityWidget(QWidget *parent)
     connect(_model, &ActivityListModel::activityJobStatusCode,
         this, &ActivityWidget::slotAccountActivityStatus);
 
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](const AccountStatePtr &ast) {
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr ast) {
         if (_accountsWithoutActivities.remove(ast->account()->displayName())) {
             showLabels();
         }
@@ -123,12 +125,12 @@ ActivityWidget::~ActivityWidget()
     delete _ui;
 }
 
-void ActivityWidget::slotRefreshActivities(AccountState *ptr)
+void ActivityWidget::slotRefreshActivities(AccountStatePtr ptr)
 {
     _model->slotRefreshActivity(ptr);
 }
 
-void ActivityWidget::slotRefreshNotifications(AccountState *ptr)
+void ActivityWidget::slotRefreshNotifications(AccountStatePtr ptr)
 {
     // start a server notification handler if no notification requests
     // are running
@@ -143,7 +145,7 @@ void ActivityWidget::slotRefreshNotifications(AccountState *ptr)
     }
 }
 
-void ActivityWidget::slotRemoveAccount(const AccountStatePtr &ptr)
+void ActivityWidget::slotRemoveAccount(AccountStatePtr ptr)
 {
     _model->slotRemoveAccount(ptr);
 }
@@ -165,7 +167,7 @@ void ActivityWidget::showLabels()
     _ui->_bottomLabel->setText(t);
 }
 
-void ActivityWidget::slotAccountActivityStatus(AccountState *ast, int statusCode)
+void ActivityWidget::slotAccountActivityStatus(AccountStatePtr ast, int statusCode)
 {
     if (!(ast && ast->account())) {
         return;
@@ -244,7 +246,7 @@ void ActivityWidget::slotBuildNotificationDisplay(const ActivityList &list)
         // will repeat the gui log.
 
         // after one hour, clear the gui log notification store
-        if (_guiLogTimer.elapsed() > 60 * 60 * 1000) {
+        if (_guiLogTimer.elapsed() > duration_cast<microseconds>(1h).count()) {
             _guiLoggedNotifications.clear();
         }
         if (!_guiLoggedNotifications.contains(activity.id())) {
@@ -328,16 +330,32 @@ void ActivityWidget::slotSendNotificationRequest(const QString &accountName, con
         QStringLiteral("DELETE") };
 
     if (validVerbs.contains(verb)) {
-        AccountStatePtr acc = AccountManager::instance()->account(accountName);
-        if (acc) {
-            NotificationConfirmJob *job = new NotificationConfirmJob(acc->account());
-            QUrl l(link);
-            job->setLinkAndVerb(l, verb);
+        if (auto acc = AccountManager::instance()->account(accountName)) {
+            const auto url = QUrl::fromUserInput(link);
+            // TODO: host validation?
+            QNetworkRequest req;
+            req.setUrl(url);
+
+            auto *job = new NotificationConfirmJob(acc->account(), {}, verb, {}, req, this);
             job->setWidget(theSender);
-            connect(job, &AbstractNetworkJob::networkError,
-                this, &ActivityWidget::slotNotifyNetworkError);
-            connect(job, &NotificationConfirmJob::jobFinished,
-                this, &ActivityWidget::slotNotifyServerFinished);
+            connect(job, &NotificationConfirmJob::finishedSignal,
+                this, [job, this] {
+                    if (job->reply()->error() == QNetworkReply::NoError) {
+                        endNotificationRequest(job->widget(), job->ocsSuccess());
+                        qCInfo(lcActivity) << "Server Notification reply code" << job->ocsStatus();
+
+                        // if the notification was successful start a timer that triggers
+                        // removal of the done widgets in a few seconds
+                        // Add 200 millisecs to the predefined value to make sure that the timer in
+                        // widget's method readyToClose() has elapsed.
+                        if (job->ocsSuccess()) {
+                            scheduleWidgetToRemove(job->widget());
+                        }
+                    } else {
+                        endNotificationRequest(job->widget(), job->ocsSuccess());
+                        qCWarning(lcActivity) << "Server notify job failed with code " << job->ocsStatus();
+                    }
+                });
             job->start();
 
             // count the number of running notification requests. If this member var
@@ -349,43 +367,11 @@ void ActivityWidget::slotSendNotificationRequest(const QString &accountName, con
     }
 }
 
-void ActivityWidget::endNotificationRequest(NotificationWidget *widget, int replyCode)
+void ActivityWidget::endNotificationRequest(NotificationWidget *widget, bool success)
 {
     _notificationRequestsRunning--;
     if (widget) {
-        widget->slotNotificationRequestFinished(replyCode);
-    }
-}
-
-void ActivityWidget::slotNotifyNetworkError(QNetworkReply *reply)
-{
-    NotificationConfirmJob *job = qobject_cast<NotificationConfirmJob *>(sender());
-    if (!job) {
-        return;
-    }
-
-    int resultCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    endNotificationRequest(job->widget(), resultCode);
-    qCWarning(lcActivity) << "Server notify job failed with code " << resultCode;
-}
-
-void ActivityWidget::slotNotifyServerFinished(const QString &reply, int replyCode)
-{
-    NotificationConfirmJob *job = qobject_cast<NotificationConfirmJob *>(sender());
-    if (!job) {
-        return;
-    }
-
-    endNotificationRequest(job->widget(), replyCode);
-    qCInfo(lcActivity) << "Server Notification reply code" << replyCode << reply;
-
-    // if the notification was successful start a timer that triggers
-    // removal of the done widgets in a few seconds
-    // Add 200 millisecs to the predefined value to make sure that the timer in
-    // widget's method readyToClose() has elapsed.
-    if (replyCode == OCS_SUCCESS_STATUS_CODE || replyCode == OCS_SUCCESS_STATUS_CODE_V2) {
-        scheduleWidgetToRemove(job->widget());
+        widget->slotNotificationRequestFinished(success);
     }
 }
 
@@ -560,12 +546,12 @@ void ActivitySettings::slotShowIssuesTab()
     _tab->setCurrentIndex(_syncIssueTabId);
 }
 
-void ActivitySettings::slotRemoveAccount(const AccountStatePtr &ptr)
+void ActivitySettings::slotRemoveAccount(AccountStatePtr ptr)
 {
     _activityWidget->slotRemoveAccount(ptr);
 }
 
-void ActivitySettings::slotRefresh(AccountState *ptr)
+void ActivitySettings::slotRefresh(AccountStatePtr ptr)
 {
     // QElapsedTimer isn't actually constructed as invalid.
     if (!_timeSinceLastCheck.contains(ptr)) {
@@ -591,7 +577,7 @@ void ActivitySettings::slotRefresh(AccountState *ptr)
 void ActivitySettings::slotRegularNotificationCheck()
 {
     for (const auto &a : AccountManager::instance()->accounts()) {
-        slotRefresh(a.data());
+        slotRefresh(a);
     }
 }
 

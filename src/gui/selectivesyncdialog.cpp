@@ -106,7 +106,8 @@ QSize SelectiveSyncWidget::sizeHint() const
 
 void SelectiveSyncWidget::refreshFolders()
 {
-    LsColJob *job = new LsColJob(_account, _folderPath, this);
+    // TODO: legacy
+    LsColJob *job = new LsColJob(_account, _account->davUrl(), _folderPath, this);
     job->setProperties(QList<QByteArray>() << "resourcetype"
                                            << "http://owncloud.org/ns:size");
     connect(job, &LsColJob::directoryListingSubfolders,
@@ -272,7 +273,8 @@ void SelectiveSyncWidget::slotItemExpanded(QTreeWidgetItem *item)
     QString dir = item->data(0, Qt::UserRole).toString();
     if (dir.isEmpty())
         return;
-    LsColJob *job = new LsColJob(_account, _folderPath + dir, this);
+    // TODO: legacy
+    LsColJob *job = new LsColJob(_account, _account->davUrl(), _folderPath + dir, this);
     job->setProperties(QList<QByteArray>() << "resourcetype"
                                            << "http://owncloud.org/ns:size");
     connect(job, &LsColJob::directoryListingSubfolders,
@@ -419,7 +421,7 @@ SelectiveSyncDialog::SelectiveSyncDialog(AccountPtr account, Folder *folder, QWi
     init(account);
     QStringList selectiveSyncList = _folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
     if (ok) {
-        _selectiveSync->setFolderInfo(_folder->remotePath(), _folder->alias(), selectiveSyncList);
+        _selectiveSync->setFolderInfo(_folder->remotePath(), _folder->id(), selectiveSyncList);
     } else {
         _okButton->setEnabled(false);
     }
@@ -427,13 +429,12 @@ SelectiveSyncDialog::SelectiveSyncDialog(AccountPtr account, Folder *folder, QWi
     connect(_folder, &QObject::destroyed, this, &QObject::deleteLater);
 }
 
-SelectiveSyncDialog::SelectiveSyncDialog(AccountPtr account, const QString &folder,
-    const QStringList &blacklist, QWidget *parent, Qt::WindowFlags f)
+SelectiveSyncDialog::SelectiveSyncDialog(AccountPtr account, const QString &folder, QWidget *parent, Qt::WindowFlags f)
     : QDialog(parent, f)
     , _folder(nullptr)
 {
     init(account);
-    _selectiveSync->setFolderInfo(folder, folder, blacklist);
+    _selectiveSync->setFolderInfo(folder, folder);
 }
 
 void SelectiveSyncDialog::init(const AccountPtr &account)

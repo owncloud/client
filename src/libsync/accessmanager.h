@@ -22,6 +22,7 @@ class QByteArray;
 class QUrl;
 
 namespace OCC {
+class CookieJar;
 
 /**
  * @brief The AccessManager class
@@ -36,8 +37,29 @@ public:
 
     AccessManager(QObject *parent = nullptr);
 
+    QSet<QSslCertificate> customTrustedCaCertificates();
+
+    /***
+     * Warning calling those will break running network jobs
+     */
+    void setCustomTrustedCaCertificates(const QSet<QSslCertificate> &certificates);
+    /***
+     * Warning calling those will break running network jobs
+     */
+    void addCustomTrustedCaCertificates(const QList<QSslCertificate> &certificates);
+
+    CookieJar *ownCloudCookieJar() const;
+
+    /***
+     * Remove all errors for already accepted certificates
+     */
+    QList<QSslError> filterSslErrors(const QList<QSslError> &errors) const;
+
 protected:
     QNetworkReply *createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData = nullptr) override;
+
+private:
+    QSet<QSslCertificate> _customTrustedCaCertificates;
 };
 
 } // namespace OCC

@@ -66,9 +66,9 @@ public:
 
     QString displayLanguage() const;
 
+    AccountStatePtr addNewAccount(AccountPtr newAccount);
+
 public slots:
-    // TODO: this should not be public
-    void slotownCloudWizardDone(int);
     void slotCrash();
     void slotCrashEnforce();
     void slotCrashFatal();
@@ -97,8 +97,8 @@ protected slots:
     void slotCheckConnection();
     void slotUseMonoIconsChanged(bool);
     void slotCleanup();
-    void slotAccountStateAdded(AccountState *accountState);
-    void slotAccountStateRemoved(const AccountStatePtr &accountState);
+    void slotAccountStateAdded(AccountStatePtr accountState) const;
+    void slotAccountStateRemoved(AccountStatePtr accountState) const;
     void slotSystemOnlineConfigurationChanged(QNetworkConfiguration);
 
 private:

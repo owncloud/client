@@ -10,6 +10,7 @@
 #include <syncengine.h>
 #include <owncloudpropagator.h>
 
+using namespace std::chrono_literals;
 using namespace OCC;
 
 static constexpr qint64 stopAfter = 3'123'668;
@@ -117,7 +118,7 @@ private slots:
         });
 
         bool timedOut = false;
-        QTimer::singleShot(10000, &fakeFolder.syncEngine(), [&]() { timedOut = true; fakeFolder.syncEngine().abort(); });
+        QTimer::singleShot(10s, &fakeFolder.syncEngine(), [&]() { timedOut = true; fakeFolder.syncEngine().abort(); });
         QVERIFY(!fakeFolder.syncOnce());  // Fail because A/broken
         QVERIFY(!timedOut);
         QCOMPARE(getItem(completeSpy, "A/broken")->_status, SyncFileItem::NormalError);
@@ -151,6 +152,10 @@ private slots:
     void testMoveFailsInAConflict() {
 #ifdef Q_OS_WIN
         QSKIP("Not run on windows because permission on directory does not do what is expected");
+#else
+        if (getuid() == 0) {
+            QSKIP("The permissions have no effect on the root user");
+        }
 #endif
         // Test for https://github.com/owncloud/client/issues/7015
         // We want to test the case in which the renaming of the original to the conflict file succeeds,
@@ -222,7 +227,7 @@ private slots:
             if (op == QNetworkAccessManager::GetOperation && request.url().path().endsWith("A/resendme") && resendActual < resendExpected) {
                 auto errorReply = new FakeErrorReply(op, request, this, 400, "ignore this body");
                 errorReply->setError(QNetworkReply::ContentReSendError, serverMessage);
-                errorReply->setAttribute(QNetworkRequest::HTTP2WasUsedAttribute, true);
+                errorReply->setAttribute(QNetworkRequest::Http2WasUsedAttribute, true);
                 errorReply->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, QVariant());
                 resendActual += 1;
                 return errorReply;
@@ -240,7 +245,7 @@ private slots:
 
         QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         QVERIFY(!fakeFolder.syncOnce());
-        QCOMPARE(resendActual, 4); // the 4th fails because it only resends 3 times
+        QCOMPARE(resendActual, 6); // AbstractNetworkJob::MaxRetryCount + 1
         QCOMPARE(getItem(completeSpy, "A/resendme")->_status, SyncFileItem::NormalError);
         QVERIFY(getItem(completeSpy, "A/resendme")->_errorString.contains(serverMessage));
     }

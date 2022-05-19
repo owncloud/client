@@ -54,7 +54,6 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
     OCSYNC_EXPORT void usleep(int usec);
     OCSYNC_EXPORT QString formatFingerprint(const QByteArray &, bool colonSeparated = true);
     OCSYNC_EXPORT void setupFavLink(const QString &folder);
-    OCSYNC_EXPORT bool writeRandomFile(const QString &fname, int size = -1);
     OCSYNC_EXPORT QString octetsToString(qint64 octets);
     OCSYNC_EXPORT QByteArray userAgentString();
     /**
@@ -205,6 +204,9 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
         const QUrl &url, const QString &concatPath,
         const QUrlQuery &queryItems = {});
 
+    /** Compares two urls and ignores whether thei end wit / */
+    OCSYNC_EXPORT bool urlEqual(QUrl a, QUrl b);
+
     /**  Returns a new settings pre-set in a specific group.  The Settings will be created
          with the given parent. If no parent is specified, the caller must destroy the settings */
     OCSYNC_EXPORT std::unique_ptr<QSettings> settingsWithGroup(const QString &group, QObject *parent = nullptr);
@@ -330,10 +332,34 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
 #endif
 
     template <class E>
-    QString enumName(E value)
+    E stringToEnum(const char *key)
     {
-        return QMetaEnum::fromType<E>().valueToKeys(value);
+        return static_cast<E>(QMetaEnum::fromType<E>().keyToValue(key));
     }
+
+    template <class E>
+    E stringToEnum(const QString &key)
+    {
+        return stringToEnum<E>(key.toUtf8().constData());
+    }
+
+    template <class E>
+    QString enumToString(E value)
+    {
+        return QString::fromUtf8(QMetaEnum::fromType<E>().valueToKeys(value));
+    }
+
+    template <class E = void>
+    QString enumToDisplayName(E)
+    {
+        static_assert(std::is_same<E, void>::value, "Not implemented");
+        Q_UNREACHABLE();
+    }
+
+#ifdef Q_OS_LINUX
+    OCSYNC_EXPORT QString appImageLocation();
+    OCSYNC_EXPORT bool runningInAppImage();
+#endif
 }
 /** @} */ // \addtogroup
 

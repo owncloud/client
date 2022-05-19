@@ -26,7 +26,7 @@
 #include <common/utility.h>
 #include <csync.h>
 
-#include <owncloudlib.h>
+#include "owncloudlib.h"
 
 namespace OCC {
 
@@ -103,8 +103,6 @@ public:
         StatusCount
     };
     Q_ENUM(Status)
-
-    static QString statusEnumDisplayName(Status s);
 
     SyncJournalFileRecord toSyncJournalFileRecordWithInode(const QString &localFileName) const;
 
@@ -290,6 +288,11 @@ public:
     bool _relevantDirectoyInstruction = false;
     bool _finished = false;
 };
+
+
+template <>
+OWNCLOUDSYNC_EXPORT QString Utility::enumToDisplayName(SyncFileItem::Status s);
+
 
 inline bool operator<(const SyncFileItemPtr &item1, const SyncFileItemPtr &item2)
 {

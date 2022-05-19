@@ -42,7 +42,7 @@ ProxyAuthHandler::ProxyAuthHandler()
     _dialog = new ProxyAuthDialog();
 
     _configFile.reset(new ConfigFile);
-    _settings.reset(new QSettings(ConfigFile::configFile(), QSettings::IniFormat));
+    _settings.reset(new QSettings(ConfigFile::makeQSettings()));
     _settings->beginGroup(QLatin1String("Proxy"));
     _settings->beginGroup(QLatin1String("Credentials"));
 }
@@ -88,7 +88,7 @@ void ProxyAuthHandler::handleProxyAuthenticationRequired(
         // Since we go into an event loop, it's possible for the account's qnam
         // to be destroyed before we get back. We can use this to check for its
         // liveness.
-        sending_qnam = account->sharedNetworkAccessManager().data();
+        sending_qnam = account->accessManager();
     }
     if (!sending_qnam) {
         qCWarning(lcProxy) << "Could not get the sending QNAM for" << sender();

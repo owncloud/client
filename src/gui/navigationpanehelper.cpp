@@ -42,7 +42,7 @@ void NavigationPaneHelper::setShowInExplorerNavigationPane(bool show)
     _showInExplorerNavigationPane = show;
     // Re-generate a new CLSID when enabling, possibly throwing away the old one.
     // updateCloudStorageRegistry will take care of removing any unknown CLSID our application owns from the registry.
-    for (auto *folder : _folderMan->map())
+    for (auto *folder : _folderMan->folders())
         folder->setNavigationPaneClsid(show ? QUuid::createUuid() : QUuid());
 
     scheduleUpdateCloudStorageRegistry();
@@ -75,7 +75,7 @@ void NavigationPaneHelper::updateCloudStorageRegistry()
     // Then re-save every folder that has a valid navigationPaneClsid to the registry.
     // We currently don't distinguish between new and existing CLSIDs, if it's there we just
     // save over it. We at least need to update the tile in case we are suddently using multiple accounts.
-    for (auto *folder : _folderMan->map()) {
+    for (auto *folder : _folderMan->folders()) {
         if (folder->vfs().mode() == Vfs::WindowsCfApi)
         {
             continue;
@@ -89,7 +89,7 @@ void NavigationPaneHelper::updateCloudStorageRegistry()
             QString clsidPathWow64 = QString() % "Software\\Classes\\Wow6432Node\\CLSID\\" % clsidStr;
             QString namespacePath = QString() % "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\" % clsidStr;
 
-            QString title = folder->shortGuiRemotePathOrAppName();
+            QString title = folder->displayName();
             // Write the account name in the sidebar only when using more than one account.
             if (AccountManager::instance()->accounts().size() > 1)
                 title = title % " - " % folder->accountState()->account()->displayName();

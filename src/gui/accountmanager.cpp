@@ -15,7 +15,6 @@
 #include "accountmanager.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
-#include "sslerrordialog.h"
 #include "proxyauthhandler.h"
 #include "common/asserts.h"
 #include <theme.h>
@@ -26,9 +25,14 @@
 #include <QNetworkAccessManager>
 
 namespace {
-static const char urlC[] = "url";
-static const char userC[] = "user";
-static const char httpUserC[] = "http_user";
+const char urlC[] = "url";
+const char userC[] = "user";
+const char httpUserC[] = "http_user";
+const auto defaultSyncRootC()
+{
+    return QStringLiteral("default_sync_root");
+}
+
 const QString davUserC()
 {
     return QStringLiteral("dav_user");
@@ -48,6 +52,11 @@ static const char caCertsKeyC[] = "CaCertificates";
 static const char accountsC[] = "Accounts";
 static const char versionC[] = "version";
 static const char serverVersionC[] = "serverVersion";
+
+auto capabilitesC()
+{
+    return QStringLiteral("capabilities");
+}
 
 // The maximum versions that this client can read
 static const int maxAccountsVersion = 2;
@@ -97,10 +106,6 @@ bool AccountManager::restore()
             if (auto acc = loadAccountHelper(*settings)) {
                 acc->_id = accountId;
                 if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
-                    auto jar = qobject_cast<CookieJar*>(acc->_am->cookieJar());
-                    OC_ASSERT(jar);
-                    if (jar)
-                        jar->restore(acc->cookieJarPath());
                     addAccountState(accState);
                 }
             }
@@ -162,7 +167,7 @@ bool AccountManager::restoreFromLegacySettings()
 #endif
         QFileInfo fi(oCCfgFile);
         if (fi.isReadable()) {
-            std::unique_ptr<QSettings> oCSettings(new QSettings(oCCfgFile, QSettings::IniFormat));
+            auto oCSettings = std::make_unique<QSettings>(oCCfgFile, QSettings::IniFormat);
             oCSettings->beginGroup(QLatin1String("ownCloud"));
 
             // Check the theme url to see if it is the same url that the oC config was for
@@ -225,18 +230,6 @@ void AccountManager::saveAccount(Account *a)
     qCDebug(lcAccountManager) << "Saved account settings, status:" << settings->status();
 }
 
-void AccountManager::saveAccountState(AccountState *a)
-{
-    qCDebug(lcAccountManager) << "Saving account state" << a->account()->url().toString();
-    auto settings = ConfigFile::settingsWithGroup(QLatin1String(accountsC));
-    settings->beginGroup(a->account()->id());
-    a->writeToSettings(*settings);
-    settings->endGroup();
-
-    settings->sync();
-    qCDebug(lcAccountManager) << "Saved account state settings, status:" << settings->status();
-}
-
 QStringList AccountManager::accountNames() const
 {
     QStringList accounts;
@@ -256,6 +249,12 @@ void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool s
     settings.setValue(davUserDisplyNameC(), acc->_displayName);
     settings.setValue(userUUIDC(), acc->uuid());
     settings.setValue(QLatin1String(serverVersionC), acc->_serverVersion);
+    if (acc->hasCapabilities()) {
+        settings.setValue(capabilitesC(), acc->capabilities().raw());
+    }
+    if (acc->hasDefaultSyncRoot()) {
+        settings.setValue(defaultSyncRootC(), acc->defaultSyncRoot());
+    }
     if (acc->_credentials) {
         if (saveCredentials) {
             // Only persist the credentials if the parameter is set, on migration from 1.8.x
@@ -286,18 +285,6 @@ void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool s
         settings.setValue(QLatin1String(caCertsKeyC), certs);
     }
     settings.endGroup();
-
-    // Save cookies.
-    if (acc->_am) {
-        CookieJar *jar = qobject_cast<CookieJar *>(acc->_am->cookieJar());
-        if (jar) {
-            qCInfo(lcAccountManager) << "Saving cookies." << acc->cookieJarPath();
-            if (!jar->save(acc->cookieJarPath()))
-            {
-                qCWarning(lcAccountManager) << "Failed to save cookies to" << acc->cookieJarPath();
-            }
-        }
-    }
 }
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
@@ -325,6 +312,8 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     acc->_davUser = settings.value(davUserC()).toString();
     acc->_displayName = settings.value(davUserDisplyNameC()).toString();
     acc->_uuid = settings.value(userUUIDC(), acc->_uuid).toUuid();
+    acc->setCapabilities(settings.value(capabilitesC()).value<QVariantMap>());
+    acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
     // We want to only restore settings for that auth type and the user value
     acc->_settingsMap.insert(QLatin1String(userC), settings.value(userC));
@@ -361,7 +350,7 @@ AccountStatePtr AccountManager::account(const QUuid uuid) {
     return _accounts.value(uuid);
 }
 
-AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
+AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
 {
     auto id = newAccount->id();
     if (id.isEmpty() || !isAccountIdAvailable(id)) {
@@ -369,35 +358,34 @@ AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
     }
     newAccount->_id = id;
 
-    auto newAccountState = new AccountState(newAccount);
+    AccountStatePtr newAccountState(AccountState::fromNewAccount(newAccount));
     addAccountState(newAccountState);
     return newAccountState;
 }
 
-void AccountManager::deleteAccount(AccountState *account)
+void AccountManager::deleteAccount(AccountStatePtr account)
 {
     auto it = std::find(_accounts.begin(), _accounts.end(), account);
     if (it == _accounts.end()) {
         return;
     }
-    auto copy = *it; // keep a reference to the shared pointer so it does not delete it just yet
+    // The argument keeps a strong reference to the AccountState, so we can safely remove other
+    // AccountStatePtr occurrences:
     _accounts.erase(it);
 
     // Forget account credentials, cookies
     account->account()->credentials()->forgetSensitiveData();
     account->account()->credentialManager()->clear();
-    QFile::remove(account->account()->cookieJarPath());
 
     auto settings = ConfigFile::settingsWithGroup(QLatin1String(accountsC));
     settings->remove(account->account()->id());
 
-    emit accountRemoved(copy);
+    emit accountRemoved(account);
 }
 
 AccountPtr AccountManager::createAccount()
 {
     AccountPtr acc = Account::create();
-    acc->setSslErrorHandler(new SslDialogErrorHandler);
     connect(acc.data(), &Account::proxyAuthenticationRequired,
         ProxyAuthHandler::instance(), &ProxyAuthHandler::handleProxyAuthenticationRequired);
     return acc;
@@ -435,13 +423,13 @@ QString AccountManager::generateFreeAccountId() const
     }
 }
 
-void AccountManager::addAccountState(AccountState *accountState)
+void AccountManager::addAccountState(AccountStatePtr accountState)
 {
     QObject::connect(accountState->account().data(),
         &Account::wantsAccountSaved,
         this, &AccountManager::saveAccount);
 
-    _accounts.insert(accountState->account()->uuid(), AccountStatePtr{accountState});
+    _accounts.insert(accountState->account()->uuid(), accountState);
     emit accountAdded(accountState);
 }
 }

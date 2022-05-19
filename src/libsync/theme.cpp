@@ -13,12 +13,12 @@
  */
 
 #include "theme.h"
-#include "config.h"
 #include "common/depreaction.h"
 #include "common/utility.h"
-#include "version.h"
-#include "configfile.h"
+#include "common/version.h"
 #include "common/vfs.h"
+#include "config.h"
+#include "configfile.h"
 
 #include <QtCore>
 #ifndef TOKEN_AUTH_ONLY
@@ -139,11 +139,6 @@ QString Theme::appNameGUI() const
 QString Theme::appName() const
 {
     return QStringLiteral(APPLICATION_SHORTNAME);
-}
-
-QString Theme::version() const
-{
-    return QStringLiteral(MIRALL_VERSION_STRING);
 }
 
 QString Theme::configFileName() const
@@ -301,7 +296,7 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::helpUrl() const
 {
-    return QStringLiteral("https://doc.owncloud.org/desktop/%1.%2/").arg(MIRALL_VERSION_MAJOR).arg(MIRALL_VERSION_MINOR);
+    return QStringLiteral("https://doc.owncloud.org/desktop/%1.%2/").arg(OCC::Version::version().majorVersion()).arg(OCC::Version::version().microVersion());
 }
 
 QString Theme::conflictHelpUrl() const
@@ -425,11 +420,11 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
     }();
     const QString qtVersion = QString::fromUtf8(qVersion());
     const QString qtVersionString = (QLatin1String(QT_VERSION_STR) == qtVersion ? qtVersion : QCoreApplication::translate("ownCloudTheme::qtVer", "%1 (Built against Qt %1)").arg(qtVersion, QStringLiteral(QT_VERSION_STR)));
-    QString _version = version();
+    QString _version = Version::displayString();
     QString gitUrl;
 #ifdef GIT_SHA1
     if (format != Theme::VersionFormat::Url) {
-        _version = QCoreApplication::translate("ownCloudTheme::versionWithSha", "%1 %2").arg(version(), gitSHA1(format));
+        _version = QCoreApplication::translate("ownCloudTheme::versionWithSha", "%1 %2").arg(_version, gitSHA1(format));
     } else {
         gitUrl = gitSHA1(format) + br;
     }
@@ -460,13 +455,14 @@ QString Theme::about() const
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
               "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
-              " Jan-Christoph Borchardt, Thomas Müller, Dominik Schmidt, Michael Stingl, Hannah von Reth, and others.</small></p>"
+              " Jan-Christoph Borchardt, Thomas Müller,<br>"
+              "Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.</small></p>"
               "<p>Copyright ownCloud GmbH</p>"
               "<p>Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.<br/>"
               "%5 and the %5 logo are registered trademarks of %4 in the "
               "United States, other countries, or both.</p>"
               "<p><small>%6</small></p>")
-        .arg(Utility::escape(version()),
+        .arg(Utility::escape(Version::displayString()),
             Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
             Utility::escape(QStringLiteral(APPLICATION_DOMAIN)),
             Utility::escape(vendor),

@@ -14,23 +14,18 @@
  */
 #include <QtGlobal>
 
-#include <signal.h>
-
-#ifdef Q_OS_UNIX
-#include <sys/time.h>
-#include <sys/resource.h>
-#endif
-
 #include "application.h"
-#include "cocoainitializer.h"
 #include "common/utility.h"
 #include "guiutility.h"
+#include "platform.h"
 #include "theme.h"
 
 #include "updater/updater.h"
 
 #include <QTimer>
 #include <QMessageBox>
+
+using namespace std::chrono_literals;
 
 using namespace OCC;
 
@@ -49,45 +44,19 @@ int main(int argc, char **argv)
     Q_INIT_RESOURCE(client);
 
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-#ifdef Q_OS_WIN
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-#endif // !Q_OS_WIN
 
-#ifdef Q_OS_MAC
-    Mac::CocoaInitializer cocoaInit; // RIIA
-#endif
+    // Create a `Platform` instance so it can set-up/tear-down stuff for us, and do any
+    // initialisation that needs to be done before creating a QApplication
+    auto platform = Platform::create();
+
+    // Create the (Q)Application instance:
     OCC::Application app(argc, argv);
 
+    Utility::tweakUIStyle();
+
 #ifdef Q_OS_WIN
-    // The Windows style still has pixelated elements with Qt 5.6,
-    // it's recommended to use the Fusion style in this case, even
-    // though it looks slightly less native. Check here after the
-    // QApplication was constructed, but before any QWidget is
-    // constructed.
-    if (app.devicePixelRatio() > 1) {
-        QApplication::setStyle(QStringLiteral("fusion"));
-    }
     // TODO: 2.11 move to platform class
     Utility::startShutdownWatcher();
-#endif // Q_OS_WIN
-
-#ifndef Q_OS_WIN
-    signal(SIGPIPE, SIG_IGN);
-#endif
-
-// check a environment variable for core dumps
-#ifdef Q_OS_UNIX
-    if (!qEnvironmentVariableIsEmpty("OWNCLOUD_CORE_DUMP")) {
-        struct rlimit core_limit;
-        core_limit.rlim_cur = RLIM_INFINITY;
-        core_limit.rlim_max = RLIM_INFINITY;
-
-        if (setrlimit(RLIMIT_CORE, &core_limit) < 0) {
-            fprintf(stderr, "Unable to set core dump limit\n");
-        } else {
-            qCInfo(lcApplication) << "Core dumps enabled";
-        }
-    }
 #endif
     // if handleStartup returns true, main()
     // needs to terminate here, e.g. because
@@ -147,7 +116,7 @@ int main(int argc, char **argv)
                 app.tryTrayAgain();
             } else if (desktopSession != "ubuntu") {
                 qCInfo(lcApplication) << "System tray still not available, showing window and trying again later";
-                QTimer::singleShot(10000, &app, &Application::tryTrayAgain);
+                QTimer::singleShot(10s, &app, &Application::tryTrayAgain);
             } else {
                 qCInfo(lcApplication) << "System tray still not available, but assuming it's fine on 'ubuntu' desktop";
             }

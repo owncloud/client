@@ -18,26 +18,26 @@
  */
 #include "config.h"
 
-#include "common/utility.h"
+#include "common/asserts.h"
 #include "common/filesystembase.h"
-#include "version.h"
+#include "common/utility.h"
+#include "common/version.h"
 
 // Note:  This file must compile without QtGui
+#include <QCollator>
 #include <QCoreApplication>
-#include <QSettings>
-#include <QTextStream>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
-#include <QUrl>
-#include <QProcess>
 #include <QObject>
-#include <QThread>
-#include <QDateTime>
-#include <QSysInfo>
+#include <QProcess>
+#include <QRandomGenerator>
+#include <QSettings>
 #include <QStandardPaths>
-#include <QCollator>
 #include <QSysInfo>
-
+#include <QTextStream>
+#include <QThread>
+#include <QUrl>
 
 #ifdef Q_OS_UNIX
 #include <sys/statvfs.h>
@@ -45,48 +45,15 @@
 #include <unistd.h>
 #endif
 
+#include <cstring>
 #include <math.h>
 #include <stdarg.h>
-#include <cstring>
-
-#if defined(Q_OS_WIN)
-#include "utility_win.cpp"
-#elif defined(Q_OS_MAC)
-#include "utility_mac.cpp"
-#else
-#include "utility_unix.cpp"
-#endif
 
 using namespace std::chrono;
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcUtility, "sync.utility", QtInfoMsg)
-
-bool Utility::writeRandomFile(const QString &fname, int size)
-{
-    int maxSize = 10 * 10 * 1024;
-    qsrand(QDateTime::currentMSecsSinceEpoch());
-
-    if (size == -1)
-        size = qrand() % maxSize;
-
-    QString randString;
-    for (int i = 0; i < size; i++) {
-        int r = qrand() % 128;
-        randString.append(QChar(r));
-    }
-
-    QFile file(fname);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file);
-        out << randString;
-        // optional, as QFile destructor will already do it:
-        file.close();
-        return true;
-    }
-    return false;
-}
+Q_LOGGING_CATEGORY(lcUtility, "sync.utility")
 
 QString Utility::formatFingerprint(const QByteArray &fmhash, bool colonSeparated)
 {
@@ -104,11 +71,6 @@ QString Utility::formatFingerprint(const QByteArray &fmhash, bool colonSeparated
     }
 
     return fp;
-}
-
-void Utility::setupFavLink(const QString &folder)
-{
-    setupFavLink_private(folder);
 }
 
 QString Utility::octetsToString(qint64 octets)
@@ -181,7 +143,7 @@ QByteArray Utility::userAgentString()
 {
     return QStringLiteral("Mozilla/5.0 (%1) mirall/%2 (%3, %4-%5 ClientArchitecture: %6 OsArchitecture: %7)")
         .arg(platform(),
-            QStringLiteral(MIRALL_VERSION_STRING),
+            OCC::Version::displayString(),
             // accessing the theme to fetch the string is rather difficult
             // since this is only needed server-side to identify clients, the app name (as of 2.9, the short name) is good enough
             qApp->applicationName(),
@@ -190,26 +152,6 @@ QByteArray Utility::userAgentString()
             QSysInfo::buildCpuArchitecture(),
             QSysInfo::currentCpuArchitecture())
         .toLatin1();
-}
-
-bool Utility::hasSystemLaunchOnStartup(const QString &appName)
-{
-#if defined(Q_OS_WIN)
-    return hasSystemLaunchOnStartup_private(appName);
-#else
-    Q_UNUSED(appName)
-    return false;
-#endif
-}
-
-bool Utility::hasLaunchOnStartup(const QString &appName)
-{
-    return hasLaunchOnStartup_private(appName);
-}
-
-void Utility::setLaunchOnStartup(const QString &appName, const QString &guiName, bool enable)
-{
-    setLaunchOnStartup_private(appName, guiName, enable);
 }
 
 qint64 Utility::freeDiskSpace(const QString &path)
@@ -393,14 +335,6 @@ QByteArray Utility::normalizeEtag(QByteArray etag)
     return etag;
 }
 
-#ifndef TOKEN_AUTH_ONLY
-bool Utility::hasDarkSystray()
-{
-    return hasDarkSystray_private();
-}
-#endif
-
-
 QString Utility::platformName()
 {
     return QSysInfo::prettyProductName();
@@ -553,11 +487,26 @@ QUrl Utility::concatUrlPath(const QUrl &url, const QString &concatPath,
         }
         path += concatPath; // put the complete path together
     }
-
+    Q_ASSERT(!path.contains(QStringLiteral("//")));
+    Q_ASSERT(url.query().isEmpty());
     QUrl tmpUrl = url;
     tmpUrl.setPath(path);
     tmpUrl.setQuery(queryItems);
     return tmpUrl;
+}
+
+bool Utility::urlEqual(QUrl url1, QUrl url2)
+{
+    // ensure https://demo.owncloud.org/ matches https://demo.owncloud.org
+    // the empty path was the legacy formating before 2.9
+    if (url1.path().isEmpty()) {
+        url1.setPath(QStringLiteral("/"));
+    }
+    if (url2.path().isEmpty()) {
+        url2.setPath(QStringLiteral("/"));
+    }
+
+    return url1.matches(url2, QUrl::StripTrailingSlash | QUrl::NormalizePathSegments);
 }
 
 QString Utility::makeConflictFileName(

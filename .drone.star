@@ -16,13 +16,13 @@ DOCKER_GIT = "docker:git"
 MYSQL = "mysql:8.0"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
-OC_CI_CLIENT = "owncloudci/client:2.9-amd64"
+OC_CI_CLIENT = "owncloudci/client:latest"
 OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
 OC_CI_PHP = "owncloudci/php:%s"
-OC_CI_SQUISH = "owncloudci/squish:qt512"
+OC_CI_SQUISH = "owncloudci/squish:6.7-20220106-1008-qt515x-linux64"
 OC_CI_TRANSIFEX = "owncloudci/transifex:latest"
-OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.4.0"
+OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.6.0"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
@@ -30,6 +30,7 @@ PLUGINS_SLACK = "plugins/slack"
 PYTHON = "python"
 THEGEEKLAB_DRONE_GITHUB_COMMENT = "thegeeklab/drone-github-comment:1"
 TOOLHIPPIE_CALENS = "toolhippie/calens:latest"
+OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 
 dir = {
     "base": "/drone",
@@ -178,7 +179,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
             "os": "linux",
             "arch": "amd64",
         },
-        "steps": [
+        "steps": skipIfUnchanged(ctx, "unit-tests") + [
                      {
                          "name": "submodules",
                          "image": DOCKER_GIT,
@@ -210,7 +211,7 @@ def build_and_test_client(ctx, c_compiler, cxx_compiler, build_type, generator, 
 def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--retry 1 --reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -224,7 +225,7 @@ def gui_tests(ctx, trigger = {}, depends_on = [], filterTags = [], version = "da
             "os": "linux",
             "arch": "amd64",
         },
-        "steps": [
+        "steps": skipIfUnchanged(ctx, "gui-tests") + [
                      {
                          "name": "submodules",
                          "image": DOCKER_GIT,
@@ -688,3 +689,43 @@ def cancelPreviousBuilds():
             ],
         },
     }
+
+def skipIfUnchanged(ctx, type):
+    if ("full-ci" in ctx.build.title.lower()):
+        return []
+
+    base = [
+        "^.github/.*",
+        "^.vscode/.*",
+        "^changelog/.*",
+        "README.md",
+        ".gitignore",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "COPYING",
+        "COPYING.documentation",
+    ]
+
+    skip = []
+    if type == "unit-tests":
+        skip = base + [
+            "^test/gui/.*",
+        ]
+
+    if type == "gui-tests":
+        skip = base + [
+            "^test/([^g]|g[^u]|gu[^i]).*",
+        ]
+
+    return [{
+        "name": "skip-if-unchanged",
+        "image": OC_CI_DRONE_SKIP_PIPELINE,
+        "settings": {
+            "ALLOW_SKIP_CHANGED": skip,
+        },
+        "when": {
+            "event": [
+                "pull_request",
+            ],
+        },
+    }]

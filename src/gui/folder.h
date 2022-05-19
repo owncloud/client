@@ -17,11 +17,12 @@
 #ifndef MIRALL_FOLDER_H
 #define MIRALL_FOLDER_H
 
-#include "syncresult.h"
-#include "progressdispatcher.h"
+#include "accountstate.h"
 #include "common/syncjournaldb.h"
 #include "networkjobs.h"
+#include "progressdispatcher.h"
 #include "syncoptions.h"
+#include "syncresult.h"
 
 #include <QDateTime>
 #include <QObject>
@@ -39,7 +40,6 @@ namespace OCC {
 
 class Vfs;
 class SyncEngine;
-class AccountState;
 class SyncRunFileLog;
 class FolderWatcher;
 class LocalDiscoveryTracker;
@@ -51,24 +51,18 @@ class LocalDiscoveryTracker;
 class FolderDefinition
 {
 public:
-    FolderDefinition()
-        : paused(false)
-        , ignoreHiddenFiles(true)
+    static auto createNewFolderDefinition(const QUrl &davUrl, const QString &displayName = {})
     {
+        return FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, displayName);
     }
 
-    /// The name of the folder in the ui and internally
-    QString alias;
-    /// path on local machine (always trailing /)
-    QString localPath;
     /// path to the journal, usually relative to localPath
     QString journalPath;
-    /// path on remote (usually no trailing /, exception "/")
-    QString targetPath;
+
     /// whether the folder is paused
-    bool paused;
+    bool paused = false;
     /// whether the folder syncs hidden files
-    bool ignoreHiddenFiles;
+    bool ignoreHiddenFiles = true;
     /// Which virtual files setting the folder uses
     Vfs::Mode virtualFilesMode = Vfs::Off;
     /// The CLSID where this folder appears in registry for the Explorer navigation pane entry.
@@ -81,8 +75,7 @@ public:
     static void save(QSettings &settings, const FolderDefinition &folder);
 
     /// Reads a folder definition from the current settings group.
-    static bool load(QSettings &settings, const QString &alias,
-        FolderDefinition *folder);
+    static FolderDefinition load(QSettings &settings, const QByteArray &id);
 
     /** The highest version in the settings that load() can read
      *
@@ -95,13 +88,45 @@ public:
     static int maxSettingsVersion() { return 4; }
 
     /// Ensure / as separator and trailing /.
-    static QString prepareLocalPath(const QString &path);
+    void setLocalPath(const QString &path);
 
     /// Remove ending /, then ensure starting '/': so "/foo/bar" and "/".
-    static QString prepareTargetPath(const QString &path);
+    void setTargetPath(const QString &path);
 
     /// journalPath relative to localPath.
     QString absoluteJournalPath() const;
+
+    QString localPath() const
+    {
+        return _localPath;
+    }
+    QString targetPath() const
+    {
+        return _targetPath;
+    }
+    const QUrl &webDavUrl() const
+    {
+        Q_ASSERT(_webDavUrl.isValid());
+        return _webDavUrl;
+    }
+
+    const QByteArray &id() const;
+
+    QString displayName() const;
+
+private:
+    FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &displayName);
+
+    QUrl _webDavUrl;
+    /// For legacy reasons this can be a string, new folder objects will use a uuid
+    QByteArray _id;
+    QString _displayName;
+    /// path on local machine (always trailing /)
+    QString _localPath;
+    /// path on remote (usually no trailing /, exception "/")
+    QString _targetPath;
+
+    friend class FolderMan;
 };
 
 /**
@@ -121,19 +146,17 @@ public:
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> vfs, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountStatePtr accountState, std::unique_ptr<Vfs> vfs, QObject *parent = nullptr);
 
     ~Folder() override;
     /**
      * The account the folder is configured on.
      */
-    AccountState *accountState() const { return _accountState.data(); }
+    AccountStatePtr accountState() const { return _accountState; }
 
-    /**
-     * alias or nickname
-     */
-    QString alias() const;
-    QString shortGuiRemotePathOrAppName() const; // since 2.0 we don't want to show aliases anymore, show the path instead
+    QByteArray id() const;
+
+    QString displayName() const;
 
     /**
      * short local path to display on the GUI  (native separators)
@@ -157,6 +180,11 @@ public:
      * remote folder path, usually without trailing /, exception "/"
      */
     QString remotePath() const;
+
+    /**
+     * The full remote webdav url
+     */
+    QUrl webDavUrl() const;
 
     /**
      * remote folder path, always with a trailing /
@@ -229,9 +257,16 @@ public:
     bool ignoreHiddenFiles();
     void setIgnoreHiddenFiles(bool ignore);
 
-    // Used by the Socket API
-    SyncJournalDb *journalDb() { return &_journal; }
-    SyncEngine &syncEngine() { return *_engine; }
+    // TODO: don't expose
+    SyncJournalDb *journalDb()
+    {
+        return &_journal;
+    }
+    // TODO: don't expose
+    SyncEngine &syncEngine()
+    {
+        return *_engine;
+    }
     Vfs &vfs()
     {
         OC_ENFORCE(_vfs);
@@ -304,6 +339,14 @@ public:
 
     /** Whether this folder should show selective sync ui */
     bool supportsSelectiveSync() const;
+
+    /**
+     * Whether to register the parent folder of our sync root in the explorer
+     * The default behaviour is to register alls spaces in a common dir in the home folder
+     * in that case we only display that common dir in the Windows side bar.
+     * With the legacy behaviour we only have one dir which we will register with Windows
+     */
+    bool groupInSidebar() const;
 
 signals:
     void syncStateChange();
@@ -412,7 +455,7 @@ private slots:
      * This is pretty awkward, but IssuesWidget just keeps better track
      * of conflicts across partial local discovery.
      */
-    void slotFolderConflicts(const QString &folder, const QStringList &conflictPaths);
+    void slotFolderConflicts(Folder *folder, const QStringList &conflictPaths);
 
     /** Warn users if they create a file or folder that is selective-sync excluded */
     void warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringView path);
@@ -437,7 +480,7 @@ private:
 
     bool checkLocalPath();
 
-    void setSyncOptions();
+    SyncOptions loadSyncOptions();
 
     enum LogStatus {
         LogStatusRemove,

@@ -37,12 +37,11 @@ class FolderWatcherPrivate : public QObject
 public:
     FolderWatcherPrivate() {}
     FolderWatcherPrivate(FolderWatcher *p, const QString &path);
-    ~FolderWatcherPrivate() override;
 
     int testWatchCount() const { return _pathToWatch.size(); }
 
     /// On linux the watcher is ready when the ctor finished.
-    bool _ready = 1;
+    constexpr bool isReady() const { return true; }
 
 protected slots:
     void slotReceivedNotification(int fd);

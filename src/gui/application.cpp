@@ -19,30 +19,28 @@
 #include <iostream>
 #include <random>
 
-#include "config.h"
-#include "common/asserts.h"
 #include "account.h"
+#include "accountmanager.h"
 #include "accountstate.h"
+#include "clientproxy.h"
+#include "common/asserts.h"
+#include "common/version.h"
+#include "common/vfs.h"
+#include "config.h"
+#include "configfile.h"
 #include "connectionvalidator.h"
+#include "creds/abstractcredentials.h"
+#include "csync_exclude.h"
 #include "folder.h"
 #include "folderman.h"
-#include "logger.h"
 #include "logbrowser.h"
-#include "configfile.h"
-#include "socketapi/socketapi.h"
-#include "sslerrordialog.h"
-#include "theme.h"
-#include "clientproxy.h"
-#include "sharedialog.h"
-#include "accountmanager.h"
-#include "creds/abstractcredentials.h"
-#include "updater/ocupdater.h"
-#include "owncloudsetupwizard.h"
-#include "version.h"
-#include "csync_exclude.h"
-#include "common/vfs.h"
+#include "logger.h"
 #include "settingsdialog.h"
+#include "sharedialog.h"
+#include "socketapi/socketapi.h"
+#include "theme.h"
 #include "translations.h"
+#include "updater/ocupdater.h"
 
 #include "config.h"
 
@@ -54,9 +52,14 @@
 #include <libcrashreporter-handler/Handler.h>
 #endif
 
-#include <QTranslator>
+#include <QCommandLineParser>
+#include <QDir>
+#include <QLibraryInfo>
 #include <QMenu>
 #include <QMessageBox>
+#include <QScopeGuard>
+#include <QTranslator>
+
 #pragma push_macro("QT_DISABLE_DEPRECATED_BEFORE")
 #undef QT_DISABLE_DEPRECATED_BEFORE
 #define QT_DISABLE_DEPRECATED_BEFORE 0
@@ -157,7 +160,7 @@ bool Application::configVersionMigration()
 
     // Did the client version change?
     // (The client version is adjusted further down)
-    bool versionChanged = configFile.clientVersionString() != MIRALL_VERSION_STRING;
+    const bool versionChanged = QVersionNumber::fromString(configFile.clientVersionString()) != OCC::Version::version();
 
     // We want to message the user either for destructive changes,
     // or if we're ignoring something and the client version changed.
@@ -203,7 +206,7 @@ bool Application::configVersionMigration()
             settings->remove(badKey);
     }
 
-    configFile.setClientVersionString(MIRALL_VERSION_STRING);
+    configFile.setClientVersionString(OCC::Version::version().toString());
     return true;
 }
 
@@ -227,11 +230,9 @@ Application::Application(int &argc, char **argv)
     , _userTriggeredConnect(false)
     , _debugMode(false)
 {
-    qsrand(std::random_device()());
-
 #ifdef Q_OS_WIN
     // Ensure OpenSSL config file is only loaded from app directory
-    QString opensslConf = QCoreApplication::applicationDirPath() + QString("/openssl.cnf");
+    const QString opensslConf = QCoreApplication::applicationDirPath() + QString("/openssl.cnf");
     qputenv("OPENSSL_CONF", opensslConf.toLocal8Bit());
 #elif defined(Q_OS_LINUX)
 #if defined(OC_PLUGIN_DIR)
@@ -287,8 +288,18 @@ Application::Application(int &argc, char **argv)
 
     ConfigFile cfg;
     // The timeout is initialized with an environment variable, if not, override with the value from the config
-    if (!AbstractNetworkJob::httpTimeout)
+    if (AbstractNetworkJob::httpTimeout == AbstractNetworkJob::DefaultHttpTimeout) {
         AbstractNetworkJob::httpTimeout = cfg.timeout();
+    }
+
+    // Check vfs plugins
+    if (Theme::instance()->showVirtualFilesOption() && bestAvailableVfsMode() == Vfs::Off) {
+        qCWarning(lcApplication) << "Theme wants to show vfs mode, but no vfs plugins are available";
+    }
+    if (isVfsPluginAvailable(Vfs::WindowsCfApi))
+        qCInfo(lcApplication) << "VFS windows plugin is available";
+    if (isVfsPluginAvailable(Vfs::WithSuffix))
+        qCInfo(lcApplication) << "VFS suffix plugin is available";
 
     if (_quitInstance) {
         QTimer::singleShot(0, qApp, &QApplication::quit);
@@ -343,7 +354,7 @@ Application::Application(int &argc, char **argv)
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &Application::slotAccountStateRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai.data());
+        slotAccountStateAdded(ai);
     }
 
     connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived,
@@ -351,7 +362,7 @@ Application::Application(int &argc, char **argv)
 
     // startup procedure.
     connect(&_checkConnectionTimer, &QTimer::timeout, this, &Application::slotCheckConnection);
-    _checkConnectionTimer.setInterval(ConnectionValidator::DefaultCallingIntervalMsec); // check for connection every 32 seconds.
+    _checkConnectionTimer.setInterval(ConnectionValidator::DefaultCallingInterval);
     _checkConnectionTimer.start();
     // Also check immediately
     QTimer::singleShot(0, this, &Application::slotCheckConnection);
@@ -385,7 +396,7 @@ Application::~Application()
     AccountManager::instance()->shutdown();
 }
 
-void Application::slotAccountStateRemoved(const AccountStatePtr &accountState)
+void Application::slotAccountStateRemoved(AccountStatePtr accountState) const
 {
     if (_gui) {
         disconnect(accountState.data(), &AccountState::stateChanged,
@@ -408,13 +419,16 @@ void Application::slotAccountStateRemoved(const AccountStatePtr &accountState)
     }
 }
 
-void Application::slotAccountStateAdded(AccountState *accountState)
+void Application::slotAccountStateAdded(AccountStatePtr accountState) const
 {
-    connect(accountState, &AccountState::stateChanged,
+    // Hook up the GUI slots to the account state's signals:
+    connect(accountState.data(), &AccountState::stateChanged,
         _gui.data(), &ownCloudGui::slotAccountStateChanged);
     connect(accountState->account().data(), &Account::serverVersionChanged,
         _gui.data(), &ownCloudGui::slotTrayMessageIfServerUnsupported);
-    connect(accountState, &AccountState::stateChanged,
+
+    // Hook up the folder manager slots to the account state's signals:
+    connect(accountState.data(), &AccountState::stateChanged,
         _folderManager.data(), &FolderMan::slotAccountStateChanged);
     connect(accountState->account().data(), &Account::serverVersionChanged,
         _folderManager.data(), &FolderMan::slotServerVersionChanged);
@@ -486,32 +500,32 @@ void Application::slotShowGuiMessage(const QString &title, const QString &messag
 }
 
 
-void Application::slotownCloudWizardDone(int res)
+AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
 {
-    AccountManager *accountMan = AccountManager::instance();
-    FolderMan *folderMan = FolderMan::instance();
+    auto *accountMan = AccountManager::instance();
 
-    // During the wizard, scheduling of new syncs is disabled
-    folderMan->setSyncEnabled(true);
+    // first things first: we need to add the new account
+    auto accountStatePtr = accountMan->addAccount(newAccount);
 
-    if (res == QDialog::Accepted) {
-        // Check connectivity of the newly created account
-        _checkConnectionTimer.start();
-        slotCheckConnection();
+    // check connectivity of the newly created account
+    _checkConnectionTimer.start();
+    slotCheckConnection();
 
-        // If one account is configured: enable autostart
-        bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
+    // if one account is configured: enable autostart
+    bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
 #ifdef Q_OS_MAC
-        // Don't auto start when not being 'installed'
-        shouldSetAutoStart = shouldSetAutoStart
-            && QCoreApplication::applicationDirPath().startsWith("/Applications/");
+    // Don't auto start when not being 'installed'
+    shouldSetAutoStart = shouldSetAutoStart
+        && QCoreApplication::applicationDirPath().startsWith("/Applications/");
 #endif
-        if (shouldSetAutoStart) {
-            Utility::setLaunchOnStartup(_theme->appName(), _theme->appNameGUI(), true);
-        }
-
-        _gui->slotShowSettings();
+    if (shouldSetAutoStart) {
+        Utility::setLaunchOnStartup(_theme->appName(), _theme->appNameGUI(), true);
     }
+
+    // showing the UI to show the user that the account has been added successfully
+    _gui->slotShowSettings();
+
+    return accountStatePtr;
 }
 
 void Application::setupLogging()
@@ -577,7 +591,7 @@ void Application::parseOptions(const QStringList &arguments)
     QString descriptionText;
     QTextStream descriptionTextStream(&descriptionText);
 
-    descriptionTextStream << tr("%1 version %2\r\nFile synchronization desktop utility.").arg(_theme->appName(), _theme->version()) << endl;
+    descriptionTextStream << tr("%1 version %2\r\nFile synchronization desktop utility.").arg(_theme->appName(), OCC::Version::displayString()) << endl;
 
     if (_theme->appName() == QLatin1String("ownCloud")) {
         descriptionTextStream << endl

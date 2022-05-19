@@ -6,16 +6,17 @@
  */
 #pragma once
 
+#include "accessmanager.h"
 #include "account.h"
-#include "creds/abstractcredentials.h"
-#include "logger.h"
-#include "filesystem.h"
-#include "folder.h"
-#include "syncengine.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/vfs.h"
+#include "creds/abstractcredentials.h"
 #include "csync_exclude.h"
+#include "filesystem.h"
+#include "folder.h"
+#include "logger.h"
+#include "syncengine.h"
 #include <cstring>
 
 #include <QDir>
@@ -25,6 +26,7 @@
 #include <cookiejar.h>
 #include <QTimer>
 
+#include <chrono>
 /*
  * TODO: In theory we should use QVERIFY instead of Q_ASSERT for testing, but this
  * only works when directly called from a QTest :-(
@@ -50,11 +52,11 @@ inline QString getFilePathFromUrl(const QUrl &url)
 
 inline QByteArray generateEtag()
 {
-    return QByteArray::number(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch(), 16) + QByteArray::number(qrand(), 16);
+    return QByteArray::number(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch(), 16) + QByteArray::number(QRandomGenerator::global()->generate(), 16);
 }
 inline QByteArray generateFileId()
 {
-    return QByteArray::number(qrand(), 16);
+    return QByteArray::number(QRandomGenerator::global()->generate(), 16);
 }
 
 class PathComponents : public QStringList
@@ -452,12 +454,12 @@ class DelayedReply : public OriginalReply
 {
 public:
     template <typename... Args>
-    explicit DelayedReply(quint64 delayMS, Args &&...args)
+    explicit DelayedReply(const std::chrono::milliseconds delayMS, Args &&...args)
         : OriginalReply(std::forward<Args>(args)...)
         , _delayMs(delayMS)
     {
     }
-    quint64 _delayMs;
+    std::chrono::milliseconds _delayMs;
 
     void respond() override
     {
@@ -468,7 +470,7 @@ public:
     }
 };
 
-class FakeQNAM : public QNetworkAccessManager
+class FakeAM : public OCC::AccessManager
 {
 public:
     using Override = std::function<QNetworkReply *(Operation, const QNetworkRequest &, QIODevice *)>;
@@ -482,7 +484,7 @@ private:
     Override _override;
 
 public:
-    FakeQNAM(FileInfo initialRoot);
+    FakeAM(FileInfo initialRoot);
     FileInfo &currentRemoteState() { return _remoteRootFileInfo; }
     FileInfo &uploadState() { return _uploadFileInfo; }
 
@@ -497,16 +499,15 @@ protected:
 
 class FakeCredentials : public OCC::AbstractCredentials
 {
-    QNetworkAccessManager *_qnam;
-
 public:
-    FakeCredentials(QNetworkAccessManager *qnam)
-        : _qnam { qnam }
+    FakeCredentials(OCC::AccessManager *am)
+        : _am { am }
     {
     }
+
     QString authType() const override { return QStringLiteral("test"); }
     QString user() const override { return QStringLiteral("admin"); }
-    QNetworkAccessManager *createQNAM() const override { return _qnam; }
+    OCC::AccessManager *createAM() const override { return _am; }
     bool ready() const override { return true; }
     void fetchFromKeychain() override { }
     void askFromUser() override { }
@@ -514,6 +515,9 @@ public:
     void persist() override { }
     void invalidateToken() override { }
     void forgetSensitiveData() override { }
+
+private:
+    OCC::AccessManager *_am;
 };
 
 class FakeFolder
@@ -521,7 +525,7 @@ class FakeFolder
     QTemporaryDir _tempDir;
     DiskFileModifier _localModifier;
     // FIXME: Clarify ownership, double delete
-    FakeQNAM *_fakeQnam;
+    FakeAM *_fakeAm;
     OCC::AccountPtr _account;
     std::unique_ptr<OCC::SyncJournalDb> _journalDb;
     std::unique_ptr<OCC::SyncEngine> _syncEngine;
@@ -537,24 +541,24 @@ public:
     OCC::SyncJournalDb &syncJournal() const { return *_journalDb; }
 
     FileModifier &localModifier() { return _localModifier; }
-    FileInfo &remoteModifier() { return _fakeQnam->currentRemoteState(); }
+    FileInfo &remoteModifier() { return _fakeAm->currentRemoteState(); }
     FileInfo currentLocalState();
 
-    FileInfo currentRemoteState() { return _fakeQnam->currentRemoteState(); }
-    FileInfo &uploadState() { return _fakeQnam->uploadState(); }
+    FileInfo currentRemoteState() { return _fakeAm->currentRemoteState(); }
+    FileInfo &uploadState() { return _fakeAm->uploadState(); }
     FileInfo dbState() const;
 
     struct ErrorList
     {
-        FakeQNAM *_qnam;
+        FakeAM *_qnam;
         void append(const QString &path, int error = 500)
         {
             _qnam->errorPaths().insert(path, error);
         }
         void clear() { _qnam->errorPaths().clear(); }
     };
-    ErrorList serverErrorPaths() { return { _fakeQnam }; }
-    void setServerOverride(const FakeQNAM::Override &override) { _fakeQnam->setOverride(override); }
+    ErrorList serverErrorPaths() { return { _fakeAm }; }
+    void setServerOverride(const FakeAM::Override &override) { _fakeAm->setOverride(override); }
 
     QString localPath() const;
 
@@ -581,6 +585,7 @@ public:
     bool isDehydratedPlaceholder(const QString &filePath);
 
 private:
+    void startVfs();
     static void toDisk(QDir &dir, const FileInfo &templateFi);
 
     void fromDisk(QDir &dir, FileInfo &templateFi);

@@ -13,17 +13,19 @@
  */
 #pragma once
 
+#include "assert.h"
+#include "ocsynclib.h"
+#include "pinstate.h"
+#include "result.h"
+#include "syncfilestatus.h"
+
 #include <QObject>
 #include <QScopedPointer>
 #include <QSharedPointer>
+#include <QUrl>
+#include <QVersionNumber>
 
 #include <memory>
-
-#include "assert.h"
-#include "ocsynclib.h"
-#include "result.h"
-#include "syncfilestatus.h"
-#include "pinstate.h"
 
 typedef struct csync_file_stat_s csync_file_stat_t;
 
@@ -38,6 +40,14 @@ class SyncFileItem;
 /** Collection of parameters for initializing a Vfs instance. */
 struct OCSYNC_EXPORT VfsSetupParams
 {
+    VfsSetupParams() = default;
+
+    explicit VfsSetupParams(const AccountPtr &account, const QUrl &baseUrl, bool groupInSidebar)
+        : account(account)
+        , _baseUrl(baseUrl)
+        , _groupInSidebar(groupInSidebar)
+    {
+    }
     /** The full path to the folder on the local filesystem
      *
      * Always ends with /.
@@ -62,12 +72,27 @@ struct OCSYNC_EXPORT VfsSetupParams
     /// Strings potentially passed on to the platform
     QString providerDisplayName;
     QString providerName;
-    QString providerVersion;
+    QVersionNumber providerVersion;
 
     /** when registering with the system we might use
      *  a different presentaton to identify the accounts
      */
     bool multipleAccountsRegistered = false;
+
+    const QUrl &baseUrl() const
+    {
+        return _baseUrl;
+    }
+
+    bool groupInSidebar() const
+    {
+        return _groupInSidebar;
+    }
+
+
+private:
+    QUrl _baseUrl;
+    bool _groupInSidebar = false;
 };
 
 /** Interface describing how to deal with virtual/placeholder files.
@@ -262,43 +287,6 @@ protected:
     VfsSetupParams _setupParams;
 
     friend class OwncloudPropagator;
-};
-
-/// Implementation of Vfs for Vfs::Off mode - does nothing
-class OCSYNC_EXPORT VfsOff : public Vfs
-{
-    Q_OBJECT
-
-public:
-    VfsOff(QObject* parent = nullptr);
-    ~VfsOff() override;
-
-    Mode mode() const override { return Vfs::Off; }
-
-    QString fileSuffix() const override { return QString(); }
-
-    void stop() override {}
-    void unregisterFolder() override {}
-
-    bool socketApiPinStateActionsShown() const override { return false; }
-    bool isHydrating() const override { return false; }
-
-    Result<void, QString> createPlaceholder(const SyncFileItem &) override { return {}; }
-
-    bool needsMetadataUpdate(const SyncFileItem &) override { return false; }
-    bool isDehydratedPlaceholder(const QString &) override { return false; }
-    bool statTypeVirtualFile(csync_file_stat_t *, void *) override { return false; }
-
-    bool setPinState(const QString &, PinState) override { return true; }
-    Optional<PinState> pinState(const QString &) override { return PinState::AlwaysLocal; }
-    AvailabilityResult availability(const QString &) override { return VfsItemAvailability::AlwaysLocal; }
-
-public slots:
-    void fileStatusChanged(const QString &, SyncFileStatus) override {}
-
-protected:
-    Result<ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &, const QString &, const QString &) override { return { ConvertToPlaceholderResult::Ok }; }
-    void startImpl(const VfsSetupParams &) override { Q_EMIT started(); }
 };
 
 /// Check whether the plugin for the mode is available.

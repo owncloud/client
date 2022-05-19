@@ -14,12 +14,12 @@
 
 #include "config.h"
 
-#include "common/utility.h"
 #include "common/asserts.h"
+#include "common/utility.h"
+#include "common/version.h"
 #include "configfile.h"
 #include "logger.h"
 #include "theme.h"
-#include "version.h"
 
 #include "creds/abstractcredentials.h"
 
@@ -40,7 +40,8 @@
 #include <QOperatingSystemVersion>
 #include <QStandardPaths>
 
-#define DEFAULT_MAX_LOG_LINES 20000
+#include <chrono>
+using namespace std::chrono_literals;
 
 namespace OCC {
 
@@ -140,56 +141,57 @@ bool ConfigFile::setConfDir(const QString &value)
 
 bool ConfigFile::optionalDesktopNotifications() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(optionalDesktopNoficationsC(), true).toBool();
 }
 
 bool ConfigFile::showInExplorerNavigationPane() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(showInExplorerNavigationPaneC(), QOperatingSystemVersion::current() >= QOperatingSystemVersion::Windows10).toBool();
 }
 
 void ConfigFile::setShowInExplorerNavigationPane(bool show)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(showInExplorerNavigationPaneC(), show);
     settings.sync();
 }
 
-int ConfigFile::timeout() const
+std::chrono::seconds ConfigFile::timeout() const
 {
     QSettings settings(configFile(), QSettings::IniFormat);
-    return settings.value(timeoutC(), 300).toInt(); // default to 5 min
+    const auto val = settings.value(timeoutC()).toInt(); // default to 5 min
+    return val ? std::chrono::seconds(val) : 5min;
 }
 
 qint64 ConfigFile::chunkSize() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(chunkSizeC(), 10 * 1000 * 1000).toLongLong(); // default to 10 MB
 }
 
 qint64 ConfigFile::maxChunkSize() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(maxChunkSizeC(), 100 * 1000 * 1000).toLongLong(); // default to 100 MB
 }
 
 qint64 ConfigFile::minChunkSize() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(minChunkSizeC(), 1000 * 1000).toLongLong(); // default to 1 MB
 }
 
 chrono::milliseconds ConfigFile::targetChunkUploadDuration() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return millisecondsValue(settings, targetChunkUploadDurationC(), chrono::minutes(1));
 }
 
 void ConfigFile::setOptionalDesktopNotifications(bool show)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(optionalDesktopNoficationsC(), show);
     settings.sync();
 }
@@ -198,7 +200,7 @@ void ConfigFile::saveGeometry(QWidget *w)
 {
 #ifndef TOKEN_AUTH_ONLY
     OC_ASSERT(!w->objectName().isNull());
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(w->objectName());
     settings.setValue(geometryC(), w->saveGeometry());
     settings.sync();
@@ -219,7 +221,7 @@ void ConfigFile::saveGeometryHeader(QHeaderView *header)
         return;
     OC_ASSERT(!header->objectName().isEmpty());
 
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(header->objectName());
     settings.setValue(geometryC(), header->saveState());
     settings.sync();
@@ -233,7 +235,7 @@ void ConfigFile::restoreGeometryHeader(QHeaderView *header)
         return;
     OC_ASSERT(!header->objectName().isNull());
 
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(header->objectName());
     header->restoreState(settings.value(geometryC()).toByteArray());
 #endif
@@ -369,6 +371,11 @@ QString ConfigFile::configFile()
     return configPath() + Theme::instance()->configFileName();
 }
 
+QSettings ConfigFile::makeQSettings()
+{
+    return { configFile(), QSettings::IniFormat };
+}
+
 bool ConfigFile::exists()
 {
     return QFileInfo::exists(configFile());
@@ -382,7 +389,7 @@ QString ConfigFile::defaultConnection() const
 void ConfigFile::storeData(const QString &group, const QString &key, const QVariant &value)
 {
     const QString con(group.isEmpty() ? defaultConnection() : group);
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
 
     settings.beginGroup(con);
     settings.setValue(key, value);
@@ -392,7 +399,7 @@ void ConfigFile::storeData(const QString &group, const QString &key, const QVari
 void ConfigFile::removeData(const QString &group, const QString &key)
 {
     const QString con(group.isEmpty() ? defaultConnection() : group);
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
 
     settings.beginGroup(con);
     settings.remove(key);
@@ -401,7 +408,7 @@ void ConfigFile::removeData(const QString &group, const QString &key)
 bool ConfigFile::dataExists(const QString &group, const QString &key) const
 {
     const QString con(group.isEmpty() ? defaultConnection() : group);
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
 
     settings.beginGroup(con);
     return settings.contains(key);
@@ -413,7 +420,7 @@ chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds default
     if (connection.isEmpty())
         con = defaultConnection();
 
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(con);
 
     auto defaultPollInterval { DefaultRemotePollInterval };
@@ -444,7 +451,7 @@ void ConfigFile::setRemotePollInterval(chrono::milliseconds interval, const QStr
         qCWarning(lcConfigFile) << "Remote Poll interval of " << interval.count() << " is below five seconds.";
         return;
     }
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(con);
     settings.setValue(remotePollIntervalC(), qlonglong(interval.count()));
     settings.sync();
@@ -457,7 +464,7 @@ chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::seconds remoteFr
     QString con(connection);
     if (connection.isEmpty())
         con = defaultConnection();
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(con);
 
     auto defaultInterval = chrono::hours(2);
@@ -471,7 +478,7 @@ chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::seconds remoteFr
 
 chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(defaultConnection());
     return millisecondsValue(settings, fullLocalDiscoveryIntervalC(), chrono::hours(1));
 }
@@ -481,7 +488,7 @@ chrono::milliseconds ConfigFile::notificationRefreshInterval(const QString &conn
     QString con(connection);
     if (connection.isEmpty())
         con = defaultConnection();
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(con);
 
     auto defaultInterval = chrono::minutes(5);
@@ -498,7 +505,7 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
     QString con(connection);
     if (connection.isEmpty())
         con = defaultConnection();
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(con);
 
     auto defaultInterval = chrono::hours(10);
@@ -531,7 +538,7 @@ void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
     if (connection.isEmpty())
         con = defaultConnection();
 
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.beginGroup(con);
 
     settings.setValue(skipUpdateCheckC(), QVariant(skip));
@@ -541,7 +548,7 @@ void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
 QString ConfigFile::updateChannel() const
 {
     QString defaultUpdateChannel = QStringLiteral("stable");
-    const QString suffix = MIRALL_VERSION_SUFFIX();
+    const QString suffix = OCC::Version::suffix();
     if (suffix.startsWith(QLatin1String("daily"))
         || suffix.startsWith(QLatin1String("nightly"))
         || suffix.startsWith(QLatin1String("alpha"))
@@ -550,25 +557,25 @@ QString ConfigFile::updateChannel() const
         defaultUpdateChannel = QStringLiteral("beta");
     }
 
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(updateChannelC(), defaultUpdateChannel).toString();
 }
 
 void ConfigFile::setUpdateChannel(const QString &channel)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(updateChannelC(), channel);
 }
 
 QString ConfigFile::uiLanguage() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(uiLanguageC(), QString()).toString();
 }
 
 void ConfigFile::setUiLanguage(const QString &uiLanguage)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(uiLanguageC(), uiLanguage);
 }
 
@@ -578,7 +585,7 @@ void ConfigFile::setProxyType(int proxyType,
     const QString &user,
     const QString &pass)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
 
     settings.setValue(proxyTypeC(), proxyType);
 
@@ -618,7 +625,7 @@ QVariant ConfigFile::getValue(const QString &param, const QString &group,
         systemSetting = systemSettings.value(param, defaultValue);
     }
 
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     if (!group.isEmpty())
         settings.beginGroup(group);
 
@@ -627,7 +634,7 @@ QVariant ConfigFile::getValue(const QString &param, const QString &group,
 
 void ConfigFile::setValue(const QString &key, const QVariant &value)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
 
     settings.setValue(key, value);
 }
@@ -742,19 +749,19 @@ void ConfigFile::setMoveToTrash(bool isChecked)
 
 bool ConfigFile::promptDeleteFiles() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(promptDeleteC(), true).toBool();
 }
 
 void ConfigFile::setPromptDeleteFiles(bool promptDeleteFiles)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(promptDeleteC(), promptDeleteFiles);
 }
 
 bool ConfigFile::monoIcons() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     bool monoDefault = false; // On Mac we want bw by default
 #ifdef Q_OS_MAC
     // OEM themes are not obliged to ship mono icons
@@ -765,37 +772,37 @@ bool ConfigFile::monoIcons() const
 
 void ConfigFile::setMonoIcons(bool useMonoIcons)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(monoIconsC(), useMonoIcons);
 }
 
 bool ConfigFile::crashReporter() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(crashReporterC(), true).toBool();
 }
 
 void ConfigFile::setCrashReporter(bool enabled)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(crashReporterC(), enabled);
 }
 
 bool ConfigFile::automaticLogDir() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(automaticLogDirC(), false).toBool();
 }
 
 void ConfigFile::setAutomaticLogDir(bool enabled)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(automaticLogDirC(), enabled);
 }
 
 Optional<chrono::hours> ConfigFile::automaticDeleteOldLogsAge() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     auto value = settings.value(deleteOldLogsAfterHoursC());
     if (!value.isValid())
         return chrono::hours(4);
@@ -807,7 +814,7 @@ Optional<chrono::hours> ConfigFile::automaticDeleteOldLogsAge() const
 
 void ConfigFile::setAutomaticDeleteOldLogsAge(Optional<chrono::hours> expireTime)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     if (!expireTime) {
         settings.setValue(deleteOldLogsAfterHoursC(), -1);
     } else {
@@ -817,7 +824,7 @@ void ConfigFile::setAutomaticDeleteOldLogsAge(Optional<chrono::hours> expireTime
 
 void ConfigFile::setLogHttp(bool b)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(logHttpC(), b);
     const QSet<QString> rule = { QStringLiteral("sync.httplogger=true") };
     if (b) {
@@ -829,31 +836,31 @@ void ConfigFile::setLogHttp(bool b)
 
 bool ConfigFile::logHttp() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(logHttpC(), false).toBool();
 }
 
 bool ConfigFile::showExperimentalOptions() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(showExperimentalOptionsC(), false).toBool();
 }
 
 QString ConfigFile::clientVersionString() const
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     return settings.value(clientVersionC(), QString()).toString();
 }
 
 void ConfigFile::setClientVersionString(const QString &version)
 {
-    QSettings settings(configFile(), QSettings::IniFormat);
+    auto settings = makeQSettings();
     settings.setValue(clientVersionC(), version);
 }
 
-std::unique_ptr<QSettings> ConfigFile::settingsWithGroup(const QString &group, QObject *parent)
+std::unique_ptr<QSettings> ConfigFile::settingsWithGroup(const QString &group)
 {
-    std::unique_ptr<QSettings> settings(new QSettings(ConfigFile::configFile(), QSettings::IniFormat, parent));
+    auto settings = std::make_unique<QSettings>(ConfigFile::configFile(), QSettings::IniFormat);
     settings->beginGroup(group);
     return settings;
 }

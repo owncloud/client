@@ -19,24 +19,23 @@
 
 #include "socketapi/socketuploadjob.h"
 
-#include "config.h"
-#include "configfile.h"
-#include "folderman.h"
-#include "folder.h"
-#include "theme.h"
-#include "common/syncjournalfilerecord.h"
-#include "syncengine.h"
-#include "syncfileitem.h"
-#include "filesystem.h"
-#include "version.h"
-#include "account.h"
-#include "accountstate.h"
 #include "account.h"
 #include "accountmanager.h"
+#include "accountstate.h"
 #include "capabilities.h"
 #include "common/asserts.h"
+#include "common/syncjournalfilerecord.h"
+#include "common/version.h"
+#include "config.h"
+#include "configfile.h"
+#include "filesystem.h"
+#include "folder.h"
+#include "folderman.h"
 #include "guiutility.h"
 #include "sharemanager.h"
+#include "syncengine.h"
+#include "syncfileitem.h"
+#include "theme.h"
 
 #include <array>
 #include <QBitArray>
@@ -215,73 +214,45 @@ void SocketListener::sendMessage(const QString &message, bool doWait) const
 SocketApi::SocketApi(QObject *parent)
     : QObject(parent)
 {
-    QString socketPath;
-
     qRegisterMetaType<SocketListener *>("SocketListener*");
     qRegisterMetaType<QSharedPointer<SocketApiJob>>("QSharedPointer<SocketApiJob>");
     qRegisterMetaType<QSharedPointer<SocketApiJobV2>>("QSharedPointer<SocketApiJobV2>");
 
-    if (Utility::isWindows()) {
-        socketPath = QLatin1String("\\\\.\\pipe\\")
-            + QLatin1String("ownCloud-")
-            + QString::fromLocal8Bit(qgetenv("USERNAME"));
-        // TODO: once the windows extension supports multiple
-        // client connections, switch back to the theme name
-        // See issue #2388
-        // + Theme::instance()->appName();
-    } else if (Utility::isMac()) {
-        // This must match the code signing Team setting of the extension
-        // Example for developer builds (with ad-hoc signing identity): "" "com.owncloud.desktopclient" ".socketApi"
-        // Example for official signed packages: "9B5WD74GWJ." "com.owncloud.desktopclient" ".socketApi"
-        socketPath = SOCKETAPI_TEAM_IDENTIFIER_PREFIX APPLICATION_REV_DOMAIN ".socketApi";
-#ifdef Q_OS_MAC
-        CFURLRef url = (CFURLRef)CFAutorelease((CFURLRef)CFBundleCopyBundleURL(CFBundleGetMainBundle()));
-        QString bundlePath = QUrl::fromCFURL(url).path();
+    const QString socketPath = Utility::socketApiSocketPath();
 
-        auto _system = [](const QString &cmd, const QStringList &args) {
-            QProcess process;
-            process.setProcessChannelMode(QProcess::MergedChannels);
-            process.start(cmd, args);
-            if (!process.waitForFinished()) {
-                qCWarning(lcSocketApi) << "Failed to load shell extension:" << cmd << args.join(" ") << process.errorString();
-            } else {
-                qCInfo(lcSocketApi) << (process.exitCode() != 0 ? "Failed to load" : "Loaded") << "shell extension:" << cmd << args.join(" ") << process.readAll();
-            }
-        };
-        // Add it again. This was needed for Mojave to trigger a load.
-        _system(QStringLiteral("pluginkit"), { QStringLiteral("-a"), QStringLiteral("%1Contents/PlugIns/FinderSyncExt.appex/").arg(bundlePath) });
-        // Tell Finder to use the Extension (checking it from System Preferences -> Extensions)
-        _system(QStringLiteral("pluginkit"), { QStringLiteral("-e"), QStringLiteral("use"), QStringLiteral("-i"), QStringLiteral(APPLICATION_REV_DOMAIN ".FinderSyncExt") });
-
-#endif
-    } else if (Utility::isLinux() || Utility::isBSD()) {
-        QString runtimeDir;
-        runtimeDir = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
-        socketPath = runtimeDir + "/" + Theme::instance()->appName() + "/socket";
-    } else {
-        qCWarning(lcSocketApi) << "An unexpected system detected, this probably won't work.";
-    }
-
+    // Remove any old socket that might be lying around:
     SocketApiServer::removeServer(socketPath);
-    QFileInfo info(socketPath);
-    if (!info.dir().exists()) {
-        bool result = info.dir().mkpath(".");
-        qCDebug(lcSocketApi) << "creating" << info.dir().path() << result;
-        if (result) {
-            QFile::setPermissions(socketPath,
-                QFile::Permissions(QFile::ReadOwner + QFile::WriteOwner + QFile::ExeOwner));
+
+    // Create the socket path:
+    if (!Utility::isMac()) {
+        // Not on macOS: there the directory is there, and created for us by the sandboxing
+        // environment, because we belong to an App Group.
+        QFileInfo info(socketPath);
+        if (!info.dir().exists()) {
+            bool result = info.dir().mkpath(".");
+            qCDebug(lcSocketApi) << "creating" << info.dir().path() << result;
+            if (result) {
+                QFile::setPermissions(socketPath,
+                    QFile::Permissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner));
+            }
         }
     }
-    if (!_localServer.listen(socketPath)) {
-        qCWarning(lcSocketApi) << "can't start server" << socketPath;
-    } else {
-        qCInfo(lcSocketApi) << "server started, listening at " << socketPath;
-    }
 
+    // Wire up the server instance to us, so we can accept new connections:
     connect(&_localServer, &SocketApiServer::newConnection, this, &SocketApi::slotNewConnection);
+
+    // Start listeneing:
+    if (_localServer.listen(socketPath)) {
+        qCInfo(lcSocketApi) << "server started, listening at " << socketPath;
+    } else {
+        qCWarning(lcSocketApi) << "can't start server" << socketPath;
+    }
 
     // folder watcher
     connect(FolderMan::instance(), &FolderMan::folderSyncStateChange, this, &SocketApi::slotUpdateFolderView);
+
+    // Now we're ready to start the native shell integration:
+    Utility::startShellIntegration();
 }
 
 SocketApi::~SocketApi()
@@ -317,7 +288,7 @@ void SocketApi::slotNewConnection()
 
     auto listener = QSharedPointer<SocketListener>::create(socket);
     _listeners.insert(socket, listener);
-    for (Folder *f : FolderMan::instance()->map()) {
+    for (Folder *f : FolderMan::instance()->folders()) {
         if (f->canSync()) {
             QString message = buildRegisterPathMessage(removeTrailingSlash(f->path()));
             listener->sendMessage(message);
@@ -419,30 +390,23 @@ void SocketApi::slotReadSocket()
     }
 }
 
-void SocketApi::slotRegisterPath(const QString &alias)
+void SocketApi::slotRegisterPath(Folder *folder)
 {
     // Make sure not to register twice to each connected client
-    if (_registeredAliases.contains(alias))
+    if (_registeredFolders.contains(folder))
         return;
 
-    Folder *f = FolderMan::instance()->folder(alias);
-    if (f) {
-        broadcastMessage(buildRegisterPathMessage(removeTrailingSlash(f->path())));
-    }
-
-    _registeredAliases.insert(alias);
+    broadcastMessage(buildRegisterPathMessage(removeTrailingSlash(folder->path())));
+    _registeredFolders.insert(folder);
 }
 
-void SocketApi::slotUnregisterPath(const QString &alias)
+void SocketApi::slotUnregisterPath(Folder *folder)
 {
-    if (!_registeredAliases.contains(alias))
+    if (!_registeredFolders.contains(folder))
         return;
 
-    Folder *f = FolderMan::instance()->folder(alias);
-    if (f)
-        broadcastMessage(buildMessage(QLatin1String("UNREGISTER_PATH"), removeTrailingSlash(f->path()), QString()), true);
-
-    _registeredAliases.remove(alias);
+    broadcastMessage(buildMessage(QLatin1String("UNREGISTER_PATH"), removeTrailingSlash(folder->path()), QString()), true);
+    _registeredFolders.remove(folder);
 }
 
 void SocketApi::slotUpdateFolderView(Folder *f)
@@ -477,7 +441,7 @@ void SocketApi::slotUpdateFolderView(Folder *f)
         case OCC::SyncResult::SyncRunning:
             Q_FALLTHROUGH();
         case OCC::SyncResult::SyncAbortRequested:
-            qCDebug(lcSocketApi) << "Not sending UPDATE_VIEW for" << f->alias() << "because status() is" << f->syncResult().status();
+            qCDebug(lcSocketApi) << "Not sending UPDATE_VIEW for" << f->path() << "because status() is" << f->syncResult().status();
         }
     }
 }
@@ -503,7 +467,7 @@ void SocketApi::processShareRequest(const QString &localFile, SocketListener *li
         const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
         // if the folder isn't connected, don't open the share dialog
         listener->sendMessage(message);
-    } else if (!theme->linkSharing() && (!theme->userGroupSharing() || shareFolder->accountState()->account()->serverVersionInt() < Account::makeServerVersion(8, 2, 0))) {
+    } else if (!theme->linkSharing() && !theme->userGroupSharing()) {
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
     } else {
@@ -579,7 +543,7 @@ void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketList
 
 void SocketApi::command_VERSION(const QString &, SocketListener *listener)
 {
-    listener->sendMessage(QLatin1String("VERSION:" MIRALL_VERSION_STRING ":" MIRALL_SOCKET_API_VERSION));
+    listener->sendMessage(QStringLiteral("VERSION:%1:%2").arg(OCC::Version::versionWithBuildNumber().toString(), QStringLiteral(MIRALL_SOCKET_API_VERSION)));
 }
 
 void SocketApi::command_SHARE_MENU_TITLE(const QString &, SocketListener *listener)
@@ -711,6 +675,7 @@ void SocketApi::fetchPrivateLinkUrlHelper(const QString &localFile, const std::f
 
     fetchPrivateLinkUrl(
         fileData.folder->accountState()->account(),
+        fileData.folder->webDavUrl(),
         fileData.serverRelativePath,
         this,
         targetFun);

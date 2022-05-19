@@ -7,13 +7,14 @@
 
 #include <QtTest>
 
-#include "folderwatcher.h"
 #include "common/utility.h"
+#include "folderwatcher.h"
+#include "testutils/testutils.h"
 
 void touch(const QString &file)
 {
 #ifdef Q_OS_WIN
-    OCC::Utility::writeRandomFile(file);
+    OCC::TestUtils::writeRandomFile(file);
 #else
     QString cmd;
     cmd = QString("touch %1").arg(file);
@@ -104,7 +105,6 @@ class TestFolderWatcher : public QObject
 
 public:
     TestFolderWatcher() {
-        qsrand(QTime::currentTime().msec());
         QDir rootDir(_root.path());
         _rootPath = rootDir.canonicalPath();
         qDebug() << "creating test directory tree in " << _rootPath;
@@ -114,10 +114,10 @@ public:
         rootDir.mkpath("a1/b2/c1");
         rootDir.mkpath("a1/b3/c3");
         rootDir.mkpath("a2/b3/c3");
-        Utility::writeRandomFile( _rootPath+"/a1/random.bin");
-        Utility::writeRandomFile( _rootPath+"/a1/b2/todelete.bin");
-        Utility::writeRandomFile( _rootPath+"/a2/renamefile");
-        Utility::writeRandomFile( _rootPath+"/a1/movefile");
+        TestUtils::writeRandomFile(_rootPath + "/a1/random.bin");
+        TestUtils::writeRandomFile(_rootPath + "/a1/b2/todelete.bin");
+        TestUtils::writeRandomFile(_rootPath + "/a2/renamefile");
+        TestUtils::writeRandomFile(_rootPath + "/a1/movefile");
 
         _watcher.reset(new FolderWatcher);
         _watcher->init(_rootPath);

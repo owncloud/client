@@ -12,21 +12,26 @@
  * for more details.
  */
 
-#include "application.h"
 #include "accountstate.h"
-#include "accountmanager.h"
 #include "account.h"
+#include "accountmanager.h"
+#include "application.h"
+#include "configfile.h"
 #include "creds/abstractcredentials.h"
 #include "creds/httpcredentials.h"
+#include "gui/settingsdialog.h"
+#include "gui/tlserrordialog.h"
 #include "logger.h"
-#include "configfile.h"
 #include "settingsdialog.h"
 #include "theme.h"
 
-#include <QMessageBox>
+#include <QFontMetrics>
+#include <QRandomGenerator>
 #include <QSettings>
 #include <QTimer>
-#include <qfontmetrics.h>
+
+using namespace std::chrono;
+using namespace std::chrono_literals;
 
 namespace {
 
@@ -41,47 +46,26 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountState, "gui.account.state", QtInfoMsg)
 
-void AccountState::updateUrlDialog(const QUrl &newUrl)
+// Returns the dialog when one is shown, so callers can attach to signals. If no dialog is shown
+// (because there is one already, or the new URL matches the current URL), a nullptr is returned.
+UpdateUrlDialog *AccountState::updateUrlDialog(const QUrl &newUrl)
 {
     // guard to prevent multiple dialogs
     if (_updateUrlDialog) {
-        return;
+        return nullptr;
     }
-    auto accept = [=] {
+
+    _updateUrlDialog = UpdateUrlDialog::fromAccount(_account, newUrl, ocApp()->activeWindow());
+
+    connect(_updateUrlDialog, &UpdateUrlDialog::accepted, this, [=]() {
         _account->setUrl(newUrl);
         Q_EMIT _account->wantsAccountSaved(_account.data());
         Q_EMIT urlUpdated();
-    };
-
-    auto matchUrl = [](QUrl url1, QUrl url2) {
-        // ensure https://demo.owncloud.org/ matches https://demo.owncloud.org
-        // the empty path was the legacy formating before 2.9
-        if (url1.path().isEmpty()) {
-            url1.setPath(QStringLiteral("/"));
-        }
-        if (url2.path().isEmpty()) {
-            url2.setPath(QStringLiteral("/"));
-        }
-        return url1.matches(url2, QUrl::StripTrailingSlash | QUrl::NormalizePathSegments);
-    };
-
-    if (matchUrl(newUrl, _account->url())) {
-        accept();
-        return;
-    }
-
-    _updateUrlDialog = new QMessageBox(QMessageBox::Warning, tr("Url update requested for %1").arg(_account->displayName()),
-        tr("The url for %1 changed from %2 to %3, do you want to accept the changed url?").arg(_account->displayName(), _account->url().toString(), newUrl.toString()),
-        QMessageBox::NoButton, ocApp()->gui()->settingsDialog());
-    _updateUrlDialog->setAttribute(Qt::WA_DeleteOnClose);
-    auto yes = _updateUrlDialog->addButton(tr("Change url permanently to %1").arg(newUrl.toString()), QMessageBox::AcceptRole);
-    _updateUrlDialog->addButton(tr("Reject"), QMessageBox::RejectRole);
-    connect(_updateUrlDialog, &QMessageBox::finished, _account.data(), [yes, accept, this] {
-        if (_updateUrlDialog->clickedButton() == yes) {
-            accept();
-        }
     });
+
     _updateUrlDialog->show();
+
+    return _updateUrlDialog;
 }
 
 AccountState::AccountState(AccountPtr account)
@@ -91,7 +75,7 @@ AccountState::AccountState(AccountPtr account)
     , _state(AccountState::Disconnected)
     , _connectionStatus(ConnectionValidator::Undefined)
     , _waitingForNewCredentials(false)
-    , _maintenanceToConnectedDelay(60000 + (qrand() % (4 * 60000))) // 1-5min delay
+    , _maintenanceToConnectedDelay(1min + minutes(QRandomGenerator::global()->generate() % 4)) // 1-5min delay
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
@@ -125,15 +109,20 @@ AccountState::~AccountState()
 {
 }
 
-AccountState *AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
+AccountStatePtr AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
 {
-    auto accountState = new AccountState(account);
+    auto accountState = AccountStatePtr(new AccountState(account));
     const bool userExplicitlySignedOut = settings.value(userExplicitlySignedOutC(), false).toBool();
     if (userExplicitlySignedOut) {
         // see writeToSettings below
         accountState->_state = SignedOut;
     }
     return accountState;
+}
+
+AccountStatePtr AccountState::fromNewAccount(AccountPtr account)
+{
+    return AccountStatePtr(new AccountState(account));
 }
 
 void AccountState::writeToSettings(QSettings &settings) const
@@ -199,8 +188,6 @@ void AccountState::setState(State state)
             // ensure the connection validator is done
             _queueGuard.unblock();
         });
-    } else {
-        _queueGuard.clear();
     }
     // don't anounce a state change from connected to connected
     // https://github.com/owncloud/client/commit/2c6c21d7532f0cbba4b768fde47810f6673ed931
@@ -275,6 +262,10 @@ void AccountState::checkConnectivity(bool blockJobs)
     if (isSignedOut() || _waitingForNewCredentials) {
         return;
     }
+    if (_tlsDialog) {
+        qCDebug(lcAccountState) << "Skip checkConnectivity, waiting for tls dialog";
+        return;
+    }
 
     if (_connectionValidator && blockJobs && !_queueGuard.queue()->isBlocked()) {
         // abort already running non blocking validator
@@ -291,18 +282,18 @@ void AccountState::checkConnectivity(bool blockJobs)
     if (!account()->credentials()->wasFetched()) {
         _waitingForNewCredentials = true;
         account()->credentials()->fetchFromKeychain();
-        return;
     }
-
-    // IF the account is connected the connection check can be skipped
-    // if the last successful etag check job is not so long ago.
-    const auto pta = account()->capabilities().remotePollInterval();
-    const auto polltime = std::chrono::duration_cast<std::chrono::seconds>(ConfigFile().remotePollInterval(pta));
-    const auto elapsed = _timeOfLastETagCheck.secsTo(QDateTime::currentDateTimeUtc());
-    if (!blockJobs && isConnected() && _timeOfLastETagCheck.isValid()
-        && elapsed <= polltime.count()) {
-        qCDebug(lcAccountState) << account()->displayName() << "The last ETag check succeeded within the last " << polltime.count() << "s (" << elapsed << "s). No connection check needed!";
-        return;
+    if (account()->hasCapabilities()) {
+        // IF the account is connected the connection check can be skipped
+        // if the last successful etag check job is not so long ago.
+        const auto pta = account()->capabilities().remotePollInterval();
+        const auto polltime = duration_cast<seconds>(ConfigFile().remotePollInterval(pta));
+        const auto elapsed = _timeOfLastETagCheck.secsTo(QDateTime::currentDateTimeUtc());
+        if (!blockJobs && isConnected() && _timeOfLastETagCheck.isValid()
+            && elapsed <= polltime.count()) {
+            qCDebug(lcAccountState) << account()->displayName() << "The last ETag check succeeded within the last " << polltime.count() << "s (" << elapsed << "s). No connection check needed!";
+            return;
+        }
     }
 
     if (blockJobs) {
@@ -311,34 +302,56 @@ void AccountState::checkConnectivity(bool blockJobs)
     _connectionValidator = new ConnectionValidator(account());
     connect(_connectionValidator, &ConnectionValidator::connectionResult,
         this, &AccountState::slotConnectionValidatorResult);
+
+    connect(_connectionValidator, &ConnectionValidator::sslErrors, this, [blockJobs, this](const QList<QSslError> &errors) {
+        if (!_tlsDialog) {
+            // ignore errors for already accepted certificates
+            auto filteredErrors = _account->accessManager()->filterSslErrors(errors);
+            if (!filteredErrors.isEmpty()) {
+                _tlsDialog = new TlsErrorDialog(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
+                _tlsDialog->setAttribute(Qt::WA_DeleteOnClose);
+                QSet<QSslCertificate> certs;
+                certs.reserve(filteredErrors.size());
+                for (const auto &error : filteredErrors) {
+                    certs << error.certificate();
+                }
+                connect(_tlsDialog, &TlsErrorDialog::accepted, _tlsDialog, [certs, blockJobs, this]() {
+                    _account->addApprovedCerts(certs);
+                    _tlsDialog.clear();
+                    _waitingForNewCredentials = false;
+                    checkConnectivity(blockJobs);
+                });
+                connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() {
+                    setState(SignedOut);
+                });
+
+                _tlsDialog->show();
+            }
+        }
+        if (_tlsDialog) {
+            ocApp()->gui()->raiseDialog(_tlsDialog);
+        }
+    });
+    ConnectionValidator::ValidationMode mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
     if (isConnected()) {
         // Use a small authed propfind as a minimal ping when we're
         // already connected.
         if (blockJobs) {
             _connectionValidator->setClearCookies(true);
-            _connectionValidator->checkServer();
+            mode = ConnectionValidator::ValidationMode::ValidateAuth;
         } else {
-            _connectionValidator->checkServerAndUpdate();
+            mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
         }
     } else {
         // Check the server and then the auth.
-
-        // Let's try this for all OS and see if it fixes the Qt issues we have on Linux  #4720 #3888 #4051
-        //#ifdef Q_OS_WIN
-        // There seems to be a bug in Qt on Windows where QNAM sometimes stops
-        // working correctly after the computer woke up from sleep. See #2895 #2899
-        // and #2973.
-        // As an attempted workaround, reset the QNAM regularly if the account is
-        // disconnected.
-        account()->resetNetworkAccessManager();
-
-        // If we don't reset the ssl config a second CheckServerJob can produce a
-        // ssl config that does not have a sensible certificate chain.
-        account()->setSslConfiguration(QSslConfiguration());
-        //#endif
-        account()->clearCookieJar();
-        _connectionValidator->checkServerAndUpdate();
+        if (_waitingForNewCredentials) {
+            mode = ConnectionValidator::ValidationMode::ValidateServer;
+        } else {
+            _connectionValidator->setClearCookies(true);
+            mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
+        }
     }
+    _connectionValidator->checkServer(mode);
 }
 
 void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors)
@@ -354,11 +367,11 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
                || _connectionStatus == ConnectionValidator::MaintenanceMode)) {
         if (!_timeSinceMaintenanceOver.isValid()) {
             qCInfo(lcAccountState) << "AccountState reconnection: delaying for"
-                                   << _maintenanceToConnectedDelay << "ms";
+                                   << _maintenanceToConnectedDelay.count() << "ms";
             _timeSinceMaintenanceOver.start();
-            QTimer::singleShot(_maintenanceToConnectedDelay + 100, this, [this] { AccountState::checkConnectivity(false); });
+            QTimer::singleShot(_maintenanceToConnectedDelay + 100ms, this, [this] { AccountState::checkConnectivity(false); });
             return;
-        } else if (_timeSinceMaintenanceOver.elapsed() < _maintenanceToConnectedDelay) {
+        } else if (_timeSinceMaintenanceOver.elapsed() < _maintenanceToConnectedDelay.count()) {
             qCInfo(lcAccountState) << "AccountState reconnection: only"
                                    << _timeSinceMaintenanceOver.elapsed() << "ms have passed";
             return;
@@ -395,7 +408,7 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         slotInvalidCredentials();
         break;
     case ConnectionValidator::SslError:
-        setState(SignedOut);
+        // handled with the tlsDialog
         break;
     case ConnectionValidator::ServiceUnavailable:
         _timeSinceMaintenanceOver.invalidate();

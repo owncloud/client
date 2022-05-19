@@ -27,9 +27,11 @@
 #include "propagateremotedelete.h"
 #include "common/asserts.h"
 
-#include <QNetworkAccessManager>
-#include <QFileInfo>
 #include <QDir>
+#include <QFileInfo>
+#include <QNetworkAccessManager>
+#include <QRandomGenerator>
+
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -54,7 +56,7 @@ void PropagateUploadFileV1::doStartUpload()
         _chunkCount = int(std::ceil(_item->_size / double(chunkSize())));
     }
     _startChunk = 0;
-    _transferId = uint(qrand()) ^ uint(_item->_modtime) ^ (uint(_item->_size) << 16);
+    _transferId = uint(QRandomGenerator::global()->generate()) ^ uint(_item->_modtime) ^ (uint(_item->_size) << 16);
 
     const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->_file);
 
@@ -138,8 +140,8 @@ void PropagateUploadFileV1::startNextChunk()
     }
 
     const QString fileName = propagator()->fullLocalPath(_item->_file);
-    auto device = std::unique_ptr<UploadDevice>(new UploadDevice(
-            fileName, chunkStart, currentChunkSize, &propagator()->_bandwidthManager));
+    auto device = std::make_unique<UploadDevice>(fileName, chunkStart, currentChunkSize,
+        &propagator()->_bandwidthManager);
     if (!device->open(QIODevice::ReadOnly)) {
         qCWarning(lcPropagateUploadV1) << "Could not prepare upload device: " << device->errorString();
         // Soft error because this is likely caused by the user modifying his files while syncing
@@ -149,7 +151,7 @@ void PropagateUploadFileV1::startNextChunk()
 
     // job takes ownership of device via a QScopedPointer. Job deletes itself when finishing
     auto devicePtr = device.get(); // for connections later
-    PUTFileJob *job = new PUTFileJob(propagator()->account(), propagator()->fullRemotePath(path), std::move(device), headers, _currentChunk, this);
+    PUTFileJob *job = new PUTFileJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(path), std::move(device), headers, _currentChunk, this);
     _jobs.append(job);
     connect(job, &PUTFileJob::finishedSignal, this, &PropagateUploadFileV1::slotPutFinished);
     connect(job, &PUTFileJob::uploadProgress, this, &PropagateUploadFileV1::slotUploadProgress);
@@ -167,17 +169,14 @@ void PropagateUploadFileV1::startNextChunk()
         // Server may also disable parallel chunked upload for any higher version
         parallelChunkUpload = false;
     } else {
-        QByteArray env = qgetenv("OWNCLOUD_PARALLEL_CHUNK");
-        if (!env.isEmpty()) {
-            parallelChunkUpload = env != "false" && env != "0";
-        } else {
-            int versionNum = propagator()->account()->serverVersionInt();
-            if (versionNum < Account::makeServerVersion(8, 0, 3)) {
-                // Disable parallel chunk upload severs older than 8.0.3 to avoid too many
-                // internal sever errors (#2743, #2938)
-                parallelChunkUpload = false;
+        static bool envEnabled = [] {
+            const auto env = qEnvironmentVariable("OWNCLOUD_PARALLEL_CHUNK");
+            if (!env.isEmpty()) {
+                return env != QLatin1String("false") && env != QLatin1String("0");
             }
-        }
+            return true;
+        }();
+        parallelChunkUpload = envEnabled;
     }
 
 

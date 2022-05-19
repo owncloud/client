@@ -35,17 +35,9 @@ protected:
     QPointer<BandwidthManager> _bandwidthManager = nullptr;
 
 public:
-    GETJob(AccountPtr account, const QString &path, QObject *parent = nullptr)
-        : AbstractNetworkJob(account, path, parent)
-    {
-    }
+    GETJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
 
-    ~GETJob() override
-    {
-        if (_bandwidthManager) {
-            _bandwidthManager->unregisterDownloadJob(this);
-        }
-    }
+    ~GETJob() override;
 
     virtual qint64 currentDownloadPosition() = 0;
     virtual qint64 resumeStart() { return 0; }
@@ -61,7 +53,6 @@ public:
     void setChoked(bool c);
     void setBandwidthLimited(bool b);
     void giveBandwidthQuota(qint64 q);
-    void onTimedOut() override;
 
 signals:
     void finishedSignal();
@@ -80,7 +71,6 @@ class OWNCLOUDSYNC_EXPORT GETFileJob : public GETJob
     qint64 _expectedContentLength;
     qint64 _contentLength;
     qint64 _resumeStart;
-    QUrl _directDownloadUrl;
     bool _hasEmittedFinishedSignal;
 
     /// Will be set to true once we've seen a 2xx response header
@@ -88,11 +78,8 @@ class OWNCLOUDSYNC_EXPORT GETFileJob : public GETJob
 
 public:
     // DOES NOT take ownership of the device.
-    explicit GETFileJob(AccountPtr account, const QString &path, QIODevice *device,
-        const QMap<QByteArray, QByteArray> &headers, const QByteArray &expectedEtagForResume,
-        qint64 resumeStart, QObject *parent = nullptr);
     // For directDownloadUrl:
-    explicit GETFileJob(AccountPtr account, const QUrl &url, QIODevice *device,
+    explicit GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device,
         const QMap<QByteArray, QByteArray> &headers, const QByteArray &expectedEtagForResume,
         qint64 resumeStart, QObject *parent = nullptr);
 

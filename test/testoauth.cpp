@@ -13,6 +13,7 @@
 #include "theme.h"
 #include "common/asserts.h"
 
+using namespace std::chrono_literals;
 using namespace OCC;
 
 class DesktopServiceHook : public QObject
@@ -82,7 +83,7 @@ public:
     using FakePostReply::FakePostReply;
     void respond() override {
         // override of FakePostReply::respond, will call the real one with a delay.
-        QTimer::singleShot(100, this, [this] { this->FakePostReply::respond(); });
+        QTimer::singleShot(100ms, this, [this] { this->FakePostReply::respond(); });
     }
 };
 
@@ -105,7 +106,7 @@ public:
     bool gotAuthOk = false;
     virtual bool done() const { return replyToBrowserOk && gotAuthOk; }
 
-    FakeQNAM *fakeQnam = nullptr;
+    FakeAM *fakeAm = nullptr;
     QNetworkAccessManager realQNAM;
     QPointer<QNetworkReply> browserReply = nullptr;
     QString code = generateEtag();
@@ -114,12 +115,13 @@ public:
     QScopedPointer<OAuth> oauth;
 
     virtual void test() {
-        fakeQnam = new FakeQNAM({});
+        fakeAm = new FakeAM({});
         account = OCC::Account::create();
         account->setUrl(sOAuthTestServer);
-        account->setCredentials(new FakeCredentials{fakeQnam});
-        fakeQnam->setParent(this);
-        fakeQnam->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
+        // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
+        // therefore, we should never call fakeAm->setThis(...)
+        account->setCredentials(new FakeCredentials { fakeAm });
+        fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
             if (req.url().path().endsWith(".well-known/openid-configuration")) {
                 return this->wellKnownReply(op, req);
             } else if (req.url().path().endsWith("status.php")) {
@@ -133,9 +135,11 @@ public:
         QObject::connect(&desktopServiceHook, &DesktopServiceHook::hooked,
                          this, &OAuthTestCase::openBrowserHook);
 
-        oauth.reset(new OAuth(account.data(), nullptr));
+        oauth.reset(new AccountBasedOAuth(account, this));
         QObject::connect(oauth.data(), &OAuth::result, this, &OAuthTestCase::oauthResult);
         oauth->startAuthentication();
+        oauth->openBrowser();
+
         QTRY_VERIFY(done());
     }
 
@@ -175,9 +179,9 @@ public:
         OC_ASSERT(op == QNetworkAccessManager::PostOperation);
         OC_ASSERT(req.url().toString().startsWith(sOAuthTestServer.toString()));
         OC_ASSERT(req.url().path() == sOAuthTestServer.path() + "/index.php/apps/oauth2/api/v1/token");
-        std::unique_ptr<QBuffer> payload(new QBuffer());
+        auto payload = std::make_unique<QBuffer>();
         payload->setData(tokenReplyPayload());
-        return new FakePostReply(op, req, std::move(payload), fakeQnam);
+        return new FakePostReply(op, req, std::move(payload), fakeAm);
     }
 
     virtual QNetworkReply *statusPhpReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req)
@@ -187,14 +191,14 @@ public:
         OC_ASSERT(op == QNetworkAccessManager::GetOperation);
         OC_ASSERT(req.url().toString().startsWith(sOAuthTestServer.toString()));
         OC_ASSERT(req.url().path() == sOAuthTestServer.path() + "/status.php");
-        std::unique_ptr<QBuffer> payload(new QBuffer());
+        auto payload = std::make_unique<QBuffer>();
         payload->setData(statusPhpPayload());
-        return new FakePostReply(op, req, std::move(payload), fakeQnam);
+        return new FakePostReply(op, req, std::move(payload), fakeAm);
     }
 
     virtual QNetworkReply *wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req)
     {
-        return new FakeErrorReply(op, req, fakeQnam, 404);
+        return new FakeErrorReply(op, req, fakeAm, 404);
     }
 
     virtual QByteArray tokenReplyPayload() const {
@@ -223,8 +227,8 @@ public:
     }
 
     virtual void oauthResult(OAuth::Result result, const QString &user, const QString &token , const QString &refreshToken) {
-        QCOMPARE(state, TokenAsked);
         QCOMPARE(result, OAuth::LoggedIn);
+        QCOMPARE(state, TokenAsked);
         QCOMPARE(user, QString("admin"));
         QCOMPARE(token, QString("123"));
         QCOMPARE(refreshToken, QString("456"));
@@ -290,9 +294,9 @@ private slots:
                 OC_ASSERT(state == BrowserOpened);
                 state = TokenAsked;
 
-                std::unique_ptr<QBuffer> payload(new QBuffer);
+                auto payload = std::make_unique<QBuffer>();
                 payload->setData(tokenReplyPayload());
-                return new SlowFakePostReply(op, req, std::move(payload), fakeQnam);
+                return new SlowFakePostReply(op, req, std::move(payload), fakeAm);
             }
 
             void browserReplyFinished() override
@@ -330,7 +334,7 @@ private slots:
                     }
 
                     // Do the actual request a bit later
-                    QTimer::singleShot(100, this, [this, request] {
+                    QTimer::singleShot(100ms, this, [this, request] {
                         QCOMPARE(state, CustomState);
                         state = BrowserOpened;
                         this->OAuthTestCase::createBrowserReply(request);
@@ -370,7 +374,7 @@ private slots:
                             "oauthtest://openidserver" + sOAuthTestServer.path() + "/index.php/apps/oauth2/authorize") },
                     { "token_endpoint" , "oauthtest://openidserver/token_endpoint" }
                 });
-                return new FakePayloadReply(op, req, jsondata.toJson(), fakeQnam);
+                return new FakePayloadReply(op, req, jsondata.toJson(), fakeAm);
             }
 
             void openBrowserHook(const QUrl & url) override {
@@ -398,10 +402,10 @@ private slots:
     {
         struct Test : OAuthTestCase
         {
-            QScopedValueRollback<int> rollback;
+            QScopedValueRollback<std::chrono::seconds> rollback;
 
             Test()
-                : rollback(AbstractNetworkJob::httpTimeout, 1)
+                : rollback(AbstractNetworkJob::httpTimeout, 1s)
             {
                 localHost = QLatin1String("127.0.0.1");
             }
@@ -409,7 +413,7 @@ private slots:
             QNetworkReply *statusPhpReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req) override
             {
                 OC_ASSERT(op == QNetworkAccessManager::GetOperation);
-                return new FakeHangingReply(op, req, fakeQnam);
+                return new FakeHangingReply(op, req, fakeAm);
             }
 
             void oauthResult(OAuth::Result result, const QString &user, const QString &token, const QString &refreshToken) override

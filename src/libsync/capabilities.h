@@ -46,6 +46,21 @@ struct TusSupport
     bool isValid() const;
 };
 
+struct SpaceSupport
+{
+    /**
+        "spaces": {
+          "version": "0.0.1",
+          "enabled": true
+        }
+    */
+    SpaceSupport(const QVariantMap &spaces_support);
+    bool enabled = false;
+    QVersionNumber version;
+
+    bool isValid() const;
+};
+
 /**
  * @brief The Capabilities class represents the capabilities of an ownCloud
  * server
@@ -91,6 +106,7 @@ public:
     bool bigfilechunkingEnabled() const;
 
     const TusSupport &tusSupport() const;
+    const SpaceSupport &spacesSupport() const;
 
     /// disable parallel upload in chunking
     bool chunkingParallelUploadDisabled() const;
@@ -183,11 +199,15 @@ public:
     /** Are avatars (profile pictures) available? */
     bool avatarsAvailable() const;
 
+
+    QVariantMap raw() const;
+
 private:
     QVariantMap _capabilities;
     QVariantMap _fileSharingCapabilities;
     QVariantMap _fileSharingPublicCapabilities;
     TusSupport _tusSupport;
+    SpaceSupport _spaces;
 };
 }
 

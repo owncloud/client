@@ -27,9 +27,10 @@
 #include "propagateremotedelete.h"
 #include "common/asserts.h"
 
-#include <QNetworkAccessManager>
-#include <QFileInfo>
 #include <QDir>
+#include <QFileInfo>
+#include <QNetworkAccessManager>
+#include <QRandomGenerator>
 
 #include <cmath>
 #include <cstring>
@@ -37,7 +38,7 @@
 
 namespace OCC {
 
-QUrl PropagateUploadFileNG::chunkUrl(qint64 chunkOffset)
+QString PropagateUploadFileNG::chunkPath(qint64 chunkOffset)
 {
     QString path = QLatin1String("remote.php/dav/uploads/")
         + propagator()->account()->davUser()
@@ -46,7 +47,7 @@ QUrl PropagateUploadFileNG::chunkUrl(qint64 chunkOffset)
         // We need to do add leading 0 because the server orders the chunk alphabetically
         path += QLatin1Char('/') + QString::number(chunkOffset).rightJustified(16, QLatin1Char('0')); // 1e16 is 10 petabyte
     }
-    return Utility::concatUrlPath(propagator()->account()->url(), path);
+    return path;
 }
 
 
@@ -82,6 +83,11 @@ State machine:
         +-> MOVE +-----> moveJobFinished() +--> finalize()
  */
 
+PropagateUploadFileNG::PropagateUploadFileNG(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
+    : PropagateUploadFileCommon(propagator, item)
+    , _bytesToUpload(item->_size)
+{
+}
 void PropagateUploadFileNG::doStartUpload()
 {
     const QString fileName = propagator()->fullLocalPath(_item->_file);
@@ -109,11 +115,9 @@ void PropagateUploadFileNG::doStartUploadNext()
     if (progressInfo._valid && progressInfo.isChunked() && progressInfo._modtime == _item->_modtime
             && progressInfo._size == _item->_size) {
         _transferId = progressInfo._transferid;
-        auto url = chunkUrl();
-        auto job = new LsColJob(propagator()->account(), url, this);
+        auto job = new LsColJob(propagator()->account(), propagator()->account()->url(), chunkPath(), this);
         _jobs.append(job);
-        job->setProperties(QList<QByteArray>() << "resourcetype"
-                                               << "getcontentlength");
+        job->setProperties({ QByteArrayLiteral("resourcetype"), QByteArrayLiteral("getcontentlength") });
         connect(job, &LsColJob::finishedWithoutError, this, &PropagateUploadFileNG::slotPropfindFinished);
         connect(job, &LsColJob::finishedWithError,
             this, &PropagateUploadFileNG::slotPropfindFinishedWithError);
@@ -126,7 +130,7 @@ void PropagateUploadFileNG::doStartUploadNext()
         // The upload info is stale. remove the stale chunks on the server
         _transferId = progressInfo._transferid;
         // Fire and forget. Any error will be ignored.
-        (new DeleteJob(propagator()->account(), chunkUrl(), this))->start();
+        (new DeleteJob(propagator()->account(), propagator()->account()->url(), chunkPath(), this))->start();
         // startNewUpload will reset the _transferId and the UploadInfo in the db.
     }
 
@@ -135,7 +139,7 @@ void PropagateUploadFileNG::doStartUploadNext()
 
 void PropagateUploadFileNG::slotPropfindIterate(const QString &name, const QMap<QString, QString> &properties)
 {
-    if (name == chunkUrl().path()) {
+    if (name.endsWith(chunkPath())) {
         return; // skip the info about the path itself
     }
     bool ok = false;
@@ -199,7 +203,7 @@ void PropagateUploadFileNG::slotPropfindFinished()
 
         // Wipe the old chunking data.
         // Fire and forget. Any error will be ignored.
-        (new DeleteJob(propagator()->account(), chunkUrl(), this))->start();
+        (new DeleteJob(propagator()->account(), propagator()->account()->url(), chunkPath(), this))->start();
 
         propagator()->_activeJobList.append(this);
         startNewUpload();
@@ -217,7 +221,7 @@ void PropagateUploadFileNG::slotPropfindFinished()
         // we should remove the later chunks. Otherwise when we do dynamic chunk sizing, we may end up
         // with corruptions if there are too many chunks, or if we abort and there are still stale chunks.
         for (auto it = _serverChunks.begin(); it != _serverChunks.end(); ++it) {
-            auto job = new DeleteJob(propagator()->account(), Utility::concatUrlPath(chunkUrl(), it->originalName), this);
+            auto job = new DeleteJob(propagator()->account(), propagator()->account()->url(), chunkPath() + QLatin1Char('/') + it->originalName, this);
             QObject::connect(job, &DeleteJob::finishedSignal, this, &PropagateUploadFileNG::slotDeleteJobFinished);
             _jobs.append(job);
             job->start();
@@ -232,12 +236,14 @@ void PropagateUploadFileNG::slotPropfindFinished()
 void PropagateUploadFileNG::slotPropfindFinishedWithError()
 {
     auto job = qobject_cast<LsColJob *>(sender());
+    _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    _item->_responseTimeStamp = job->responseTimestamp();
+    _item->_requestId = job->requestId();
     slotJobDestroyed(job); // remove it from the _jobs list
+
     QNetworkReply::NetworkError err = job->reply()->error();
-    auto httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    auto status = classifyError(err, httpErrorCode, &propagator()->_anotherSyncNeeded);
+    auto status = classifyError(err, _item->_httpErrorCode, &propagator()->_anotherSyncNeeded);
     if (status == SyncFileItem::FatalError) {
-        _item->_requestId = job->requestId();
         propagator()->_activeJobList.removeOne(this);
         abortWithError(status, job->errorStringParsingBody());
         return;
@@ -249,14 +255,16 @@ void PropagateUploadFileNG::slotDeleteJobFinished()
 {
     auto job = qobject_cast<DeleteJob *>(sender());
     OC_ASSERT(job);
-    _jobs.remove(_jobs.indexOf(job));
+    _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    _item->_responseTimeStamp = job->responseTimestamp();
+    _item->_requestId = job->requestId();
+    slotJobDestroyed(job);
 
     QNetworkReply::NetworkError err = job->reply()->error();
     if (err != QNetworkReply::NoError && err != QNetworkReply::ContentNotFoundError) {
         const int httpStatus = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         SyncFileItem::Status status = classifyError(err, httpStatus);
         if (status == SyncFileItem::FatalError) {
-            _item->_requestId = job->requestId();
             abortWithError(status, job->errorString());
             return;
         } else {
@@ -283,11 +291,10 @@ void PropagateUploadFileNG::slotDeleteJobFinished()
     }
 }
 
-
 void PropagateUploadFileNG::startNewUpload()
 {
     OC_ASSERT(propagator()->_activeJobList.count(this) == 1);
-    _transferId = uint(qrand()) ^ uint(_item->_modtime) ^ (uint(_item->_size) << 16) ^ qHash(_item->_file);
+    _transferId = QRandomGenerator::global()->generate();
     _sent = 0;
 
     propagator()->reportProgress(*_item, 0);
@@ -302,7 +309,7 @@ void PropagateUploadFileNG::startNewUpload()
     propagator()->_journal->commit(QStringLiteral("Upload info"));
     QMap<QByteArray, QByteArray> headers;
     headers["OC-Total-Length"] = QByteArray::number(_item->_size);
-    auto job = new MkColJob(propagator()->account(), chunkUrl(), headers, this);
+    auto job = new MkColJob(propagator()->account(), propagator()->account()->url(), chunkPath(), headers, this);
     connect(job, &MkColJob::finishedWithError,
         this, &PropagateUploadFileNG::slotMkColFinished);
     connect(job, &MkColJob::finishedWithoutError,
@@ -315,10 +322,12 @@ void PropagateUploadFileNG::slotMkColFinished()
 {
     propagator()->_activeJobList.removeOne(this);
     auto job = qobject_cast<MkColJob *>(sender());
-    slotJobDestroyed(job); // remove it from the _jobs list
-    QNetworkReply::NetworkError err = job->reply()->error();
     _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    _item->_responseTimeStamp = job->responseTimestamp();
+    _item->_requestId = job->requestId();
+    slotJobDestroyed(job); // remove it from the _jobs list
 
+    QNetworkReply::NetworkError err = job->reply()->error();
     if (err != QNetworkReply::NoError || _item->_httpErrorCode != 201) {
         _item->_requestId = job->requestId();
         SyncFileItem::Status status = classifyError(err, _item->_httpErrorCode,
@@ -356,7 +365,7 @@ void PropagateUploadFileNG::doFinalMove()
     headers[QByteArrayLiteral("OC-Total-Length")] = QByteArray::number(_bytesToUpload);
     headers[QByteArrayLiteral("OC-Total-File-Length")] = QByteArray::number(_item->_size);
 
-    const QUrl source = Utility::concatUrlPath(chunkUrl(), QStringLiteral("/.file"));
+    const QString source = chunkPath() + QStringLiteral("/.file");
 
 #ifdef Q_OS_WIN
     // Try to accuire a lock on the file and keep it until we done.
@@ -371,7 +380,7 @@ void PropagateUploadFileNG::doFinalMove()
     }
 #endif
 
-    auto job = new MoveJob(propagator()->account(), source, destination, headers, this);
+    auto job = new MoveJob(propagator()->account(), propagator()->account()->url(), source, destination, headers, this);
     _jobs.append(job);
     connect(job, &MoveJob::finishedSignal, this, &PropagateUploadFileNG::slotMoveJobFinished);
     connect(job, &QObject::destroyed, this, &PropagateUploadFileCommon::slotJobDestroyed);
@@ -398,8 +407,8 @@ void PropagateUploadFileNG::startNextChunk()
     _currentChunkSize = qMin(propagator()->_chunkSize, _rangesToUpload.first().size);
 
     const QString fileName = propagator()->fullLocalPath(_item->_file);
-    auto device = std::unique_ptr<UploadDevice>(new UploadDevice(
-            fileName, _currentChunkOffset, _currentChunkSize, &propagator()->_bandwidthManager));
+    auto device = std::make_unique<UploadDevice>(fileName, _currentChunkOffset, _currentChunkSize,
+        &propagator()->_bandwidthManager);
     if (!device->open(QIODevice::ReadOnly)) {
         qCWarning(lcPropagateUploadNG) << "Could not prepare upload device: " << device->errorString();
         // Soft error because this is likely caused by the user modifying his files while syncing
@@ -410,11 +419,9 @@ void PropagateUploadFileNG::startNextChunk()
     QMap<QByteArray, QByteArray> headers;
     headers["OC-Chunk-Offset"] = QByteArray::number(_currentChunkOffset);
 
-    QUrl url = chunkUrl(_currentChunkOffset);
-
     // job takes ownership of device via a QScopedPointer. Job deletes itself when finishing
     auto devicePtr = device.get(); // for connections later
-    PUTFileJob *job = new PUTFileJob(propagator()->account(), url, std::move(device), headers, 0, this);
+    PUTFileJob *job = new PUTFileJob(propagator()->account(), propagator()->account()->url(), chunkPath(_currentChunkOffset), std::move(device), headers, 0, this);
     _jobs.append(job);
     connect(job, &PUTFileJob::finishedSignal, this, &PropagateUploadFileNG::slotPutFinished);
     connect(job, &PUTFileJob::uploadProgress,
@@ -431,6 +438,10 @@ void PropagateUploadFileNG::slotPutFinished()
     PUTFileJob *job = qobject_cast<PUTFileJob *>(sender());
     OC_ASSERT(job);
 
+    _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    _item->_responseTimeStamp = job->responseTimestamp();
+    _item->_requestId = job->requestId();
+
     slotJobDestroyed(job); // remove it from the _jobs list
 
     propagator()->_activeJobList.removeOne(this);
@@ -443,8 +454,6 @@ void PropagateUploadFileNG::slotPutFinished()
     QNetworkReply::NetworkError err = job->reply()->error();
 
     if (err != QNetworkReply::NoError) {
-        _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        _item->_requestId = job->requestId();
         commonErrorHandling(job);
         return;
     }
@@ -561,7 +570,6 @@ void PropagateUploadFileNG::slotMoveJobFinished()
     }
 
     _item->_etag = getEtagFromReply(job->reply());
-    ;
     if (_item->_etag.isEmpty()) {
         qCWarning(lcPropagateUploadNG) << "Server did not return an ETAG" << _item->_file;
         abortWithError(SyncFileItem::NormalError, tr("Missing ETag from server"));

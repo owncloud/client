@@ -29,14 +29,13 @@
 #include "folderman.h"
 #include "folderstatusdelegate.h"
 #include "folderstatusmodel.h"
-#include "folderwizard.h"
 #include "guiutility.h"
-#include "owncloudsetupwizard.h"
 #include "quotainfo.h"
 #include "settingsdialog.h"
 #include "theme.h"
 #include "tooltipupdater.h"
-#include "wizard/owncloudwizard.h"
+
+#include "folderwizard/folderwizard.h"
 
 #include <math.h>
 
@@ -55,6 +54,7 @@
 #include <qpropertyanimation.h>
 
 #include "account.h"
+#include "askexperimentalvirtualfilesfeaturemessagebox.h"
 
 namespace OCC {
 
@@ -106,7 +106,7 @@ protected:
     }
 };
 
-AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
+AccountSettings::AccountSettings(AccountStatePtr accountState, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AccountSettings)
     , _wasDisabledBefore(false)
@@ -181,7 +181,7 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     ui->connectLabel->setText(tr("No account configured."));
 
-    connect(_accountState, &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
+    connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
     slotAccountStateChanged();
 
     connect(&_quotaInfo, &QuotaInfo::quotaUpdated,
@@ -211,18 +211,15 @@ void AccountSettings::createAccountToolbox()
     ui->_accountToolbox->setPopupMode(QToolButton::InstantPopup);
 }
 
-QString AccountSettings::selectedFolderAlias() const
+Folder *AccountSettings::selectedFolder() const
 {
-    QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
-    if (!selected.isValid())
-        return "";
-    return _model->data(selected, FolderStatusDelegate::FolderAliasRole).toString();
+    const QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
+    return _model->folder(selected);
 }
 
 void AccountSettings::slotToggleSignInState()
 {
     if (_accountState->isSignedOut()) {
-        _accountState->account()->resetRejectedCertificates();
         _accountState->signIn();
     } else {
         _accountState->signOutByUi();
@@ -277,9 +274,8 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
         folderUrl = QUrl::fromLocalFile(fileName);
     } else {
         // the root folder
-        auto alias = _model->data(index, FolderStatusDelegate::FolderAliasRole).toString();
-        if (Folder *f = FolderMan::instance()->folder(alias)) {
-            folderUrl = QUrl::fromLocalFile(f->path());
+        if (auto *folder = selectedFolder()) {
+            folderUrl = QUrl::fromLocalFile(folder->path());
         }
     }
 
@@ -304,8 +300,8 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
             // Only add the path of subfolders, because the remote path is the path of the root folder.
             path += info->_path;
         }
-        menu->addAction(CommonStrings::showInWebBrowser(), [this, path] {
-            fetchPrivateLinkUrl(_accountState->account(), path, this, [](const QString &url) {
+        menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = info->_folder->webDavUrl(), this] {
+            fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QString &url) {
                 Utility::openBrowser(url, nullptr);
             });
         });
@@ -323,48 +319,46 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     menu->addSeparator();
 
     tv->setCurrentIndex(index);
-    QString alias = _model->data(index, FolderStatusDelegate::FolderAliasRole).toString();
     bool folderPaused = _model->data(index, FolderStatusDelegate::FolderSyncPaused).toBool();
     bool folderConnected = _model->data(index, FolderStatusDelegate::FolderAccountConnected).toBool();
-    auto folderMan = FolderMan::instance();
-    QPointer<Folder> folder = folderMan->folder(alias);
-    OC_ASSERT(folder && folder->isReady());
 
-    if (!ui->_folderList->isExpanded(index) && folder->supportsSelectiveSync()) {
-        QAction *ac = menu->addAction(tr("Choose what to sync"));
-        ac->setEnabled(folderConnected);
-        connect(ac, &QAction::triggered, this, &AccountSettings::doExpand);
-    }
-
-    if (!folderPaused) {
-        QAction *ac = menu->addAction(tr("Force sync now"));
-        if (folder->isSyncRunning()) {
-            ac->setText(tr("Restart sync"));
+    // qpointer for the async context menu
+    QPointer<Folder> folder = selectedFolder();
+    if (OC_ENSURE(folder && folder->isReady())) {
+        if (!ui->_folderList->isExpanded(index) && folder->supportsSelectiveSync()) {
+            QAction *ac = menu->addAction(tr("Choose what to sync"));
+            ac->setEnabled(folderConnected);
+            connect(ac, &QAction::triggered, this, &AccountSettings::doExpand);
         }
-        ac->setEnabled(folderConnected);
-        connect(ac, &QAction::triggered, this, &AccountSettings::slotForceSyncCurrentFolder);
-    }
 
-    QAction *ac = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
-    connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableCurrentFolder);
-
-    removeFolderAction(menu);
-
-    if (folder->virtualFilesEnabled() && !Theme::instance()->forceVirtualFilesOption()) {
-        menu->addAction(tr("Disable virtual file support..."), this, &AccountSettings::slotDisableVfsCurrentFolder);
-    }
-
-    if (Theme::instance()->showVirtualFilesOption()
-        && !folder->virtualFilesEnabled() && FolderMan::instance()->checkVfsAvailability(folder->path())) {
-        const auto mode = bestAvailableVfsMode();
-        if (mode == Vfs::WindowsCfApi || Theme::instance()->enableExperimentalFeatures()) {
-            ac = menu->addAction(tr("Enable virtual file support%1...").arg(mode == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
-            connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableVfsCurrentFolder);
+        if (!folderPaused) {
+            QAction *ac = menu->addAction(tr("Force sync now"));
+            if (folder->isSyncRunning()) {
+                ac->setText(tr("Restart sync"));
+            }
+            ac->setEnabled(folderConnected);
+            connect(ac, &QAction::triggered, this, &AccountSettings::slotForceSyncCurrentFolder);
         }
+
+        QAction *ac = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
+        connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableCurrentFolder);
+
+        removeFolderAction(menu);
+
+        if (folder->virtualFilesEnabled() && !Theme::instance()->forceVirtualFilesOption()) {
+            menu->addAction(tr("Disable virtual file support..."), this, &AccountSettings::slotDisableVfsCurrentFolder);
+        }
+
+        if (Theme::instance()->showVirtualFilesOption()
+            && !folder->virtualFilesEnabled() && FolderMan::instance()->checkVfsAvailability(folder->path())) {
+            const auto mode = bestAvailableVfsMode();
+            if (mode == Vfs::WindowsCfApi || Theme::instance()->enableExperimentalFeatures()) {
+                ac = menu->addAction(tr("Enable virtual file support%1...").arg(mode == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
+                connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableVfsCurrentFolder);
+            }
+        }
+        menu->popup(QCursor::pos());
     }
-
-
-    menu->popup(QCursor::pos());
 }
 
 void AccountSettings::slotFolderListClicked(const QModelIndex &indx)
@@ -400,7 +394,7 @@ void AccountSettings::slotFolderListClicked(const QModelIndex &indx)
             return;
         }
         if (FolderStatusDelegate::errorsListRect(tv->visualRect(indx), indx).contains(pos)) {
-            emit showIssuesList(_model->data(indx, FolderStatusDelegate::FolderAliasRole).toString());
+            emit showIssuesList();
             return;
         }
 
@@ -417,12 +411,14 @@ void AccountSettings::slotAddFolder()
     FolderMan *folderMan = FolderMan::instance();
     folderMan->setSyncEnabled(false); // do not start more syncs.
 
-    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), this);
+    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), ocApp()->gui()->settingsDialog());
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
+    folderWizard->resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
 
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
     connect(folderWizard, &QDialog::rejected, this, &AccountSettings::slotFolderWizardRejected);
     folderWizard->open();
+    ocApp()->gui()->raiseDialog(folderWizard);
 }
 
 
@@ -433,59 +429,26 @@ void AccountSettings::slotFolderWizardAccepted()
 
     qCInfo(lcAccountSettings) << "Folder wizard completed";
 
-    FolderDefinition definition;
-    definition.localPath = FolderDefinition::prepareLocalPath(
-        folderWizard->field(QLatin1String("sourceFolder")).toString());
-    definition.targetPath = FolderDefinition::prepareTargetPath(
-        folderWizard->property("targetPath").toString());
+    bool useVfs = folderWizard->property("useVirtualFiles").toBool();
 
-    if (folderWizard->property("useVirtualFiles").toBool()) {
-        definition.virtualFilesMode = bestAvailableVfsMode();
-    }
+    auto folder = folderMan->addFolderFromWizard(_accountState,
+        folderWizard->field(QLatin1String("sourceFolder")).toString(),
+        folderWizard->property("targetPath").toString(),
+        folderWizard->davUrl(),
+        folderWizard->displayName(),
+        useVfs);
 
-    {
-        QDir dir(definition.localPath);
-        if (!dir.exists()) {
-            qCInfo(lcAccountSettings) << "Creating folder" << definition.localPath;
-            if (!dir.mkpath(".")) {
-                QMessageBox::warning(this, tr("Folder creation failed"),
-                    tr("<p>Could not create local folder <i>%1</i>.")
-                        .arg(QDir::toNativeSeparators(definition.localPath)));
-                return;
-            }
-        }
-        FileSystem::setFolderMinimumPermissions(definition.localPath);
-        Utility::setupFavLink(definition.localPath);
-    }
 
-    /* take the value from the definition of already existing folders. All folders have
-     * the same setting so far.
-     * The default is to not sync hidden files
-     */
-    definition.ignoreHiddenFiles = folderMan->ignoreHiddenFiles();
-
-#ifdef Q_OS_WIN
-    if (folderMan->navigationPaneHelper().showInExplorerNavigationPane())
-        definition.navigationPaneClsid = QUuid::createUuid();
-#endif
-
-    auto selectiveSyncBlackList = folderWizard->property("selectiveSyncBlackList").toStringList();
-
-    folderMan->setSyncEnabled(true);
-
-    Folder *f = folderMan->addFolder(_accountState, definition);
-    if (f) {
-        if (definition.virtualFilesMode != Vfs::Off && folderWizard->property("useVirtualFiles").toBool())
-            f->setRootPinState(PinState::OnlineOnly);
-
-        f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSyncBlackList);
+    const auto selectiveSyncBlackList = folderWizard->property("selectiveSyncBlackList").toStringList();
+    if (!selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !useVfs)) {
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSyncBlackList);
 
         // The user already accepted the selective sync dialog. everything is in the white list
-        f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList,
             QStringList() << QLatin1String("/"));
-        folderMan->scheduleAllFolders();
         emit folderChanged();
     }
+    folderMan->scheduleAllFolders();
 }
 
 void AccountSettings::slotFolderWizardRejected()
@@ -497,12 +460,12 @@ void AccountSettings::slotFolderWizardRejected()
 
 void AccountSettings::slotRemoveCurrentFolder()
 {
-    auto folder = FolderMan::instance()->folder(selectedFolderAlias());
+    auto folder = selectedFolder();
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
     if (selected.isValid() && folder) {
         int row = selected.row();
 
-        qCInfo(lcAccountSettings) << "Remove Folder alias " << folder->alias();
+        qCInfo(lcAccountSettings) << "Remove Folder " << folder->path();
         QString shortGuiLocalPath = folder->shortGuiLocalPath();
 
         auto messageBox = new QMessageBox(QMessageBox::Question,
@@ -533,14 +496,17 @@ void AccountSettings::slotRemoveCurrentFolder()
 void AccountSettings::slotEnableVfsCurrentFolder()
 {
     FolderMan *folderMan = FolderMan::instance();
-    QPointer<Folder> folder = folderMan->folder(selectedFolderAlias());
+    QPointer<Folder> folder = selectedFolder();
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
     if (!selected.isValid() || !folder)
         return;
 
-    OwncloudWizard::askExperimentalVirtualFilesFeature(this, [folder, this](bool enable) {
-        if (!enable || !folder)
+    auto messageBox = new AskExperimentalVirtualFilesFeatureMessageBox(this);
+
+    connect(messageBox, &AskExperimentalVirtualFilesFeatureMessageBox::accepted, this, [this, folder]() {
+        if (!folder) {
             return;
+        }
 
 #ifdef Q_OS_WIN
         // we might need to add or remove the panel entry as cfapi brings this feature out of the box
@@ -588,12 +554,20 @@ void AccountSettings::slotEnableVfsCurrentFolder()
             switchVfsOn();
         }
     });
+
+    // no need to show the message box on Windows
+    // as a little shortcut, we just re-use the message box's accept handler
+    if (bestAvailableVfsMode() == Vfs::WindowsCfApi) {
+        Q_EMIT messageBox->accepted();
+    } else {
+        messageBox->show();
+    }
 }
 
 void AccountSettings::slotDisableVfsCurrentFolder()
 {
     FolderMan *folderMan = FolderMan::instance();
-    QPointer<Folder> folder = folderMan->folder(selectedFolderAlias());
+    QPointer<Folder> folder = selectedFolder();
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
     if (!selected.isValid() || !folder)
         return;
@@ -660,8 +634,7 @@ void AccountSettings::slotSetCurrentFolderAvailability(PinState state)
 {
     OC_ASSERT(state == PinState::OnlineOnly || state == PinState::AlwaysLocal);
 
-    FolderMan *folderMan = FolderMan::instance();
-    QPointer<Folder> folder = folderMan->folder(selectedFolderAlias());
+    QPointer<Folder> folder = selectedFolder();
     QModelIndex selected = ui->_folderList->selectionModel()->currentIndex();
     if (!selected.isValid() || !folder)
         return;
@@ -693,23 +666,17 @@ void AccountSettings::showConnectionLabel(const QString &message, QStringList er
 
 void AccountSettings::slotEnableCurrentFolder(bool terminate)
 {
-    auto alias = selectedFolderAlias();
+    auto folder = selectedFolder();
 
-    if (!alias.isEmpty()) {
-        FolderMan *folderMan = FolderMan::instance();
-
-        qCInfo(lcAccountSettings) << "Application: enable folder with alias " << alias;
+    if (folder) {
+        qCInfo(lcAccountSettings) << "Application: enable folder with alias " << folder->path();
         bool currentlyPaused = false;
 
         // this sets the folder status to disabled but does not interrupt it.
-        Folder *f = folderMan->folder(alias);
-        if (!f) {
-            return;
-        }
-        currentlyPaused = f->syncPaused();
+        currentlyPaused = folder->syncPaused();
         if (!currentlyPaused && !terminate) {
             // check if a sync is still running and if so, ask if we should terminate.
-            if (f->isSyncRunning()) { // its still running
+            if (folder->isSyncRunning()) { // its still running
                 auto msgbox = new QMessageBox(QMessageBox::Question, tr("Sync Running"),
                     tr("The syncing operation is running.<br/>Do you want to terminate it?"),
                     QMessageBox::Yes | QMessageBox::No, this);
@@ -725,55 +692,52 @@ void AccountSettings::slotEnableCurrentFolder(bool terminate)
 
         // message box can return at any time while the thread keeps running,
         // so better check again after the user has responded.
-        if (f->isSyncRunning() && terminate) {
-            f->slotTerminateSync();
+        if (folder->isSyncRunning() && terminate) {
+            folder->slotTerminateSync();
         }
-        f->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
-        f->setSyncPaused(!currentlyPaused);
+        folder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
+        folder->setSyncPaused(!currentlyPaused);
 
         // keep state for the icon setting.
         if (currentlyPaused)
             _wasDisabledBefore = true;
 
-        _model->slotUpdateFolderState(f);
+        _model->slotUpdateFolderState(folder);
     }
 }
 
 void AccountSettings::slotScheduleCurrentFolder()
 {
-    FolderMan *folderMan = FolderMan::instance();
-    if (auto folder = folderMan->folder(selectedFolderAlias())) {
-        folderMan->scheduleFolder(folder);
+    if (auto folder = selectedFolder()) {
+        FolderMan::instance()->scheduleFolder(folder);
     }
 }
 
 void AccountSettings::slotScheduleCurrentFolderForceFullDiscovery()
 {
-    FolderMan *folderMan = FolderMan::instance();
-    if (auto folder = folderMan->folder(selectedFolderAlias())) {
+    if (auto folder = selectedFolder()) {
         folder->slotWipeErrorBlacklist();
         folder->slotNextSyncFullLocalDiscovery();
         folder->journalDb()->forceRemoteDiscoveryNextSync();
-        folderMan->scheduleFolder(folder);
+        FolderMan::instance()->scheduleFolder(folder);
     }
 }
 
 void AccountSettings::slotForceSyncCurrentFolder()
 {
-    FolderMan *folderMan = FolderMan::instance();
-    if (auto selectedFolder = folderMan->folder(selectedFolderAlias())) {
+    if (auto selectedFolder = this->selectedFolder()) {
         // Terminate and reschedule any running sync
-        for (auto f : folderMan->map()) {
-            if (f->isSyncRunning()) {
-                f->slotTerminateSync();
-                folderMan->scheduleFolder(f);
+        for (auto *folder : FolderMan::instance()->folders()) {
+            if (folder->isSyncRunning()) {
+                folder->slotTerminateSync();
+                FolderMan::instance()->scheduleFolder(folder);
             }
         }
 
         selectedFolder->slotWipeErrorBlacklist(); // issue #6757
         selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
         // Insert the selected folder at the front of the queue
-        folderMan->scheduleFolderNext(selectedFolder);
+        FolderMan::instance()->scheduleFolderNext(selectedFolder);
     }
 }
 
@@ -817,12 +781,11 @@ void AccountSettings::slotAccountStateChanged()
 {
     const AccountState::State state = _accountState ? _accountState->state() : AccountState::Disconnected;
     if (state != AccountState::Disconnected) {
-        ui->sslButton->updateAccountState(_accountState);
         AccountPtr account = _accountState->account();
         QUrl safeUrl(account->url());
         safeUrl.setPassword(QString()); // Remove the password from the URL to avoid showing it in the UI
         FolderMan *folderMan = FolderMan::instance();
-        for (Folder *folder : folderMan->map()) {
+        for (auto *folder : folderMan->folders()) {
             _model->slotUpdateFolderState(folder);
         }
 
@@ -842,7 +805,7 @@ void AccountSettings::slotAccountStateChanged()
         case AccountState::Connected: {
             QStringList errors;
             if (account->serverVersionUnsupported()) {
-                errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->serverVersion());
+                errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->serverVersionString());
             }
             showConnectionLabel(tr("Connected to %1.").arg(serverWithUser), errors);
             ui->openBrowserButton->setVisible(false);
@@ -923,30 +886,32 @@ void AccountSettings::slotLinkActivated(const QString &link)
     const QStringList li = link.split(QLatin1String("?folder="));
     if (li.count() > 1) {
         QString myFolder = li[0];
-        const QString alias = li[1];
+        const QByteArray id = QUrl::fromPercentEncoding(li[1].toUtf8()).toUtf8();
         if (myFolder.endsWith(QLatin1Char('/')))
             myFolder.chop(1);
 
         // Make sure the folder itself is expanded
-        Folder *f = FolderMan::instance()->folder(alias);
-        QModelIndex folderIndx = _model->indexForPath(f, QString());
-        if (!ui->_folderList->isExpanded(folderIndx)) {
-            ui->_folderList->setExpanded(folderIndx, true);
-        }
-
-        QModelIndex indx = _model->indexForPath(f, myFolder);
-        if (indx.isValid()) {
-            // make sure all the parents are expanded
-            for (auto i = indx.parent(); i.isValid(); i = i.parent()) {
-                if (!ui->_folderList->isExpanded(i)) {
-                    ui->_folderList->setExpanded(i, true);
-                }
+        Folder *folder = FolderMan::instance()->folder(id);
+        if (folder) {
+            QModelIndex folderIndx = _model->indexForPath(folder, QString());
+            if (!ui->_folderList->isExpanded(folderIndx)) {
+                ui->_folderList->setExpanded(folderIndx, true);
             }
-            ui->_folderList->setSelectionMode(QAbstractItemView::SingleSelection);
-            ui->_folderList->setCurrentIndex(indx);
-            ui->_folderList->scrollTo(indx);
-        } else {
-            qCWarning(lcAccountSettings) << "Unable to find a valid index for " << myFolder;
+
+            QModelIndex indx = _model->indexForPath(folder, myFolder);
+            if (indx.isValid()) {
+                // make sure all the parents are expanded
+                for (auto i = indx.parent(); i.isValid(); i = i.parent()) {
+                    if (!ui->_folderList->isExpanded(i)) {
+                        ui->_folderList->setExpanded(i, true);
+                    }
+                }
+                ui->_folderList->setSelectionMode(QAbstractItemView::SingleSelection);
+                ui->_folderList->setCurrentIndex(indx);
+                ui->_folderList->scrollTo(indx);
+            } else {
+                qCWarning(lcAccountSettings) << "Unable to find a valid index for " << myFolder;
+            }
         }
     }
 }
@@ -960,7 +925,7 @@ void AccountSettings::refreshSelectiveSyncStatus()
 {
     QString msg;
     int cnt = 0;
-    for (Folder *folder : FolderMan::instance()->map()) {
+    for (Folder *folder : FolderMan::instance()->folders()) {
         if (folder->accountState() != _accountState || !folder->isReady()) {
             continue;
         }
@@ -980,7 +945,7 @@ void AccountSettings::refreshSelectiveSyncStatus()
             QModelIndex theIndx = _model->indexForPath(folder, myFolder);
             if (theIndx.isValid()) {
                 msg += QString::fromLatin1("<a href=\"%1?folder=%2\">%1</a>")
-                           .arg(Utility::escape(myFolder), Utility::escape(folder->alias()));
+                           .arg(Utility::escape(myFolder), QUrl::toPercentEncoding(folder->id()));
             } else {
                 msg += myFolder; // no link because we do not know the index yet.
             }
@@ -1051,9 +1016,6 @@ void AccountSettings::slotDeleteAccount()
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
     connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton]{
         if (messageBox->clickedButton() == yesButton) {
-            // Else it might access during destruction. This should be better handled by it having a QSharedPointer
-            _model->setAccountState(nullptr);
-
             auto manager = AccountManager::instance();
             manager->deleteAccount(_accountState);
             manager->save();

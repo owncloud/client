@@ -24,9 +24,7 @@
 
 #include <iostream>
 
-#ifdef ZLIB_FOUND
 #include <zlib.h>
-#endif
 
 #ifdef Q_OS_WIN
 #include <io.h> // for stdout
@@ -150,7 +148,7 @@ void Logger::setLogFile(const QString &name)
         setLogFlush(true);
         openSucceeded = _logFile.open(stdout, QIODevice::WriteOnly);
     } else {
-        _logFile.setFileName(name);
+        _logFile.setFileName(name); 
         openSucceeded = _logFile.open(QIODevice::WriteOnly);
     }
 
@@ -244,7 +242,6 @@ void Logger::dumpCrashLog()
 
 static bool compressLog(const QString &originalName, const QString &targetName)
 {
-#ifdef ZLIB_FOUND
     QFile original(originalName);
     if (!original.open(QIODevice::ReadOnly))
         return false;
@@ -263,9 +260,6 @@ static bool compressLog(const QString &originalName, const QString &targetName)
     }
     gzclose(compressed);
     return true;
-#else
-    return false;
-#endif
 }
 
 void Logger::enterNextLogFile()

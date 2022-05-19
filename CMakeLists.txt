@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.1)
-set(CMAKE_CXX_STANDARD 14)
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CXX_STANDARD 17)
 
 include(VERSION.cmake)
 project(client LANGUAGES CXX C VERSION ${MIRALL_VERSION_MAJOR}.${MIRALL_VERSION_MINOR}.${MIRALL_VERSION_PATCH})
@@ -45,14 +45,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/THEME.cmake")
 set(synclib_NAME "${APPLICATION_EXECUTABLE}sync")
 
 
-# For config.h
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-# Allows includes based on src/ like #include "common/utility.h" or #include "csync/csync.h"
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_BINARY_DIR}/src
-)
-
 # disable the crashreporter if libcrashreporter-qt is not available or we're building for ARM
 if( CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/libcrashreporter-qt/CMakeLists.txt")
     set( WITH_CRASHREPORTER OFF )
@@ -66,14 +58,8 @@ include(GenerateExportHeader)
 
 include(GetGitRevisionDescription)
 
+# used in src/csync/CMakeLists.txt
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
-
-add_definitions(
-    -DQT_USE_QSTRINGBUILDER
-    -DQT_MESSAGELOGCONTEXT #enable function name and line number in debug output
-    -DQT_DEPRECATED_WARNINGS
-    -DQT_NO_FOREACH
-)
 
 # if we cannot get it from git, directly try .tag (packages)
 # this will work if the tar balls have been properly created
@@ -93,15 +79,8 @@ set(SYSCONFDIR ${SYSCONF_INSTALL_DIR})
 # this option removes Http authentication, keychain, shibboleth etc and is intended for
 # external authentication mechanisms
 option(TOKEN_AUTH_ONLY "TOKEN_AUTH_ONLY" OFF)
-if(TOKEN_AUTH_ONLY)
-   message("Compiling with token authentication")
-   add_definitions(-DTOKEN_AUTH_ONLY=1)
-endif()
 
 option(NO_MSG_HANDLER "Don't redirect QDebug outputs to the log window/file" OFF)
-if(NO_MSG_HANDLER)
-   add_definitions(-DNO_MSG_HANDLER=1)
-endif()
 
 # this option builds the shell integration
 option(BUILD_SHELL_INTEGRATION "BUILD_SHELL_INTEGRATION" ON)
@@ -128,7 +107,7 @@ option(BUILD_LIBRARIES_ONLY "BUILD_LIBRARIES_ONLY" OFF)
 option(BUILD_GUI "BUILD_GUI" ON)
 
 # specify additional vfs plugins
-set(VIRTUAL_FILE_SYSTEM_PLUGINS suffix win CACHE STRING "Name of internal plugin in src/libsync/vfs or the locations of virtual file plugins")
+set(VIRTUAL_FILE_SYSTEM_PLUGINS off suffix win CACHE STRING "Name of internal plugin in src/libsync/vfs or the locations of virtual file plugins")
 
 if(APPLE)
   set( SOCKETAPI_TEAM_IDENTIFIER_PREFIX "" CACHE STRING "SocketApi prefix (including a following dot) that must match the codesign key's TeamIdentifier/Organizational Unit" )
@@ -140,6 +119,12 @@ if(BUILD_CLIENT)
     if(APPLE)
         find_package(Sparkle REQUIRED)
     endif(APPLE)
+
+    option(WITH_APPIMAGEUPDATER OFF "Enable built-in libappimageupdate based updater on Linux")
+    add_feature_info(AppImageUpdate WITH_APPIMAGEUPDATER "Built-in libappimageupdate based updater")
+    if(WITH_APPIMAGEUPDATER)
+        find_package(AppImageUpdate REQUIRED)
+    endif()
 
     if(UNIX AND NOT APPLE)
         find_package(Inotify REQUIRED)
@@ -154,15 +139,6 @@ endif()
 # theme does not define the variable
 if (NOT DEFINED APPLICATION_ICON_NAME)
     set(APPLICATION_ICON_NAME "${APPLICATION_SHORTNAME}")
-endif()
-
-if( WIN32 )
-    add_definitions( -D__USE_MINGW_ANSI_STDIO=1 )
-    add_definitions( -DNOMINMAX )
-    # Get APIs from from Vista onwards.
-    add_definitions(-D_WIN32_WINNT=0x0600)
-    add_definitions(-DWINVER=0x0600)
-    add_definitions(-DNTDDI_VERSION=0x0A000003)
 endif()
 
 file(GLOB_RECURSE OWNCLOUD_ICONS "${OEM_THEME_DIR}/theme/colored/*-${APPLICATION_ICON_NAME}-icon.png")
@@ -203,9 +179,6 @@ endif()
 if(BUILD_TESTING)
     add_subdirectory(test)
 endif()
-
-configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 

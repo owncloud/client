@@ -18,11 +18,11 @@
 
 #include "abstractnetworkjob.h"
 #include "common/result.h"
+#include <QJsonObject>
 #include <QUrlQuery>
 #include <functional>
 
 class QUrl;
-class QJsonObject;
 
 namespace OCC {
 
@@ -46,7 +46,7 @@ class OWNCLOUDSYNC_EXPORT EntityExistsJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
-    explicit EntityExistsJob(AccountPtr account, const QString &path, QObject *parent = nullptr);
+    explicit EntityExistsJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
     void start() override;
 
 signals:
@@ -79,8 +79,7 @@ class OWNCLOUDSYNC_EXPORT LsColJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
-    explicit LsColJob(AccountPtr account, const QString &path, QObject *parent = nullptr);
-    explicit LsColJob(AccountPtr account, const QUrl &url, QObject *parent = nullptr);
+    explicit LsColJob(AccountPtr account, const QUrl &url, const QString &path, QObject *parent = nullptr);
     void start() override;
 
     /**
@@ -110,7 +109,6 @@ protected:
 
 private:
     QList<QByteArray> _properties;
-    QUrl _url; // Used instead of path() if the url is specified in the constructor
     QHash<QString, qint64> _sizes;
 };
 
@@ -170,49 +168,8 @@ signals:
 
 private slots:
     bool finished() override;
-
-private:
-    QUrl _avatarUrl;
 };
 #endif
-
-/**
- * @brief Send a Proppatch request
- *
- * Setting the desired properties with setProperties() is mandatory.
- *
- * WARNING: Untested!
- *
- * @ingroup libsync
- */
-class OWNCLOUDSYNC_EXPORT ProppatchJob : public AbstractNetworkJob
-{
-    Q_OBJECT
-public:
-    explicit ProppatchJob(AccountPtr account, const QString &path, QObject *parent = nullptr);
-    void start() override;
-
-    /**
-     * Used to specify which properties shall be set.
-     *
-     * The property keys can
-     *  - contain no colon: they refer to a property in the DAV: namespace
-     *  - contain a colon: and thus specify an explicit namespace,
-     *    e.g. "ns:with:colons:bar", which is "bar" in the "ns:with:colons" namespace
-     */
-    void setProperties(QMap<QByteArray, QByteArray> properties);
-    QMap<QByteArray, QByteArray> properties() const;
-
-signals:
-    void success();
-    void finishedWithError();
-
-private slots:
-    bool finished() override;
-
-private:
-    QMap<QByteArray, QByteArray> _properties;
-};
 
 /**
  * @brief The MkColJob class
@@ -221,13 +178,11 @@ private:
 class OWNCLOUDSYNC_EXPORT MkColJob : public AbstractNetworkJob
 {
     Q_OBJECT
-    QUrl _url; // Only used if the constructor taking a url is taken.
-    QMap<QByteArray, QByteArray> _extraHeaders;
+    HeaderMap _extraHeaders;
 
 public:
-    explicit MkColJob(AccountPtr account, const QString &path, QObject *parent = nullptr);
-    explicit MkColJob(AccountPtr account, const QUrl &url,
-        const QMap<QByteArray, QByteArray> &extraHeaders, QObject *parent = nullptr);
+    explicit MkColJob(AccountPtr account, const QUrl &url, const QString &path,
+        const HeaderMap &extraHeaders, QObject *parent = nullptr);
     void start() override;
 
 signals:
@@ -239,87 +194,13 @@ private:
 };
 
 /**
- * @brief The CheckServerJob class
- * @ingroup libsync
- */
-class OWNCLOUDSYNC_EXPORT CheckServerJob : public AbstractNetworkJob
-{
-    Q_OBJECT
-public:
-    explicit CheckServerJob(AccountPtr account, QObject *parent = nullptr);
-    void start() override;
-
-    static QString version(const QJsonObject &info);
-    static QString versionString(const QJsonObject &info);
-    static bool installed(const QJsonObject &info);
-
-    int maxRedirectsAllowed() const;
-    void setMaxRedirectsAllowed(int maxRedirectsAllowed);
-
-    /** Whether to clear the cookies before we start the job
-     * This option also depends on Theme::instance()->connectionValidatorClearCookies()
-     */
-    void setClearCookies(bool clearCookies);
-
-signals:
-    /** Emitted when a status.php was successfully read.
-     *
-     * \a url see _serverStatusUrl (does not include "/status.php")
-     * \a info The status.php reply information
-     */
-    void instanceFound(const QUrl &url, const QJsonObject &info);
-
-    /** Emitted on invalid status.php reply.
-     *
-     * \a reply is never null
-     */
-    void instanceNotFound(QNetworkReply *reply);
-
-    /** A timeout occurred.
-     *
-     * \a url The specific url where the timeout happened.
-     */
-    void timeout(const QUrl &url);
-
-private:
-    bool finished() override;
-    void onTimedOut() override;
-private slots:
-    virtual void metaDataChangedSlot();
-    virtual void encryptedSlot();
-
-protected:
-    void newReplyHook(QNetworkReply *) override;
-
-private:
-    bool _clearCookies = false;
-
-    /** The permanent-redirect adjusted account url.
-     *
-     * Note that temporary redirects or a permanent redirect behind a temporary
-     * one do not affect this url.
-     */
-    QUrl _serverUrl;
-
-    int _maxRedirectsAllowed = 5;
-
-    /** we only got permanent redirects */
-    bool _redirectDistinct = true;
-    /** only retry once, the first try might give us needed cookies
-        the second is supposed to succeed
-    */
-    bool _firstTry = true;
-};
-
-
-/**
  * @brief The RequestEtagJob class
  */
 class OWNCLOUDSYNC_EXPORT RequestEtagJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
-    explicit RequestEtagJob(AccountPtr account, const QString &path, QObject *parent = nullptr);
+    explicit RequestEtagJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
     void start() override;
 
 signals:
@@ -328,61 +209,6 @@ signals:
 
 private slots:
     bool finished() override;
-};
-
-/**
- * @brief Job to check an API that return JSON
- *
- * Note! you need to be in the connected state before calling this because of a server bug:
- * https://github.com/owncloud/core/issues/12930
- *
- * To be used like this:
- * \code
- * _job = new JsonApiJob(account, QLatin1String("ocs/v1.php/foo/bar"), this);
- * connect(job, SIGNAL(jsonReceived(QJsonDocument)), ...)
- * The received QVariantMap is null in case of error
- * \encode
- *
- * @ingroup libsync
- */
-class OWNCLOUDSYNC_EXPORT JsonApiJob : public AbstractNetworkJob
-{
-    Q_OBJECT
-public:
-    explicit JsonApiJob(const AccountPtr &account, const QString &path, QObject *parent = nullptr);
-
-    /**
-     * @brief addQueryParams - add more parameters to the ocs call
-     * @param params: list pairs of strings containing the parameter name and the value.
-     *
-     * All parameters from the passed list are appended to the query. Note
-     * that the format=json parameter is added automatically and does not
-     * need to be set this way.
-     *
-     * This function needs to be called before start() obviously.
-     */
-    void addQueryParams(const QUrlQuery &params);
-
-public slots:
-    void start() override;
-    /**
-     * Start which allow to specify a request that might contains already headers or attributes
-     */
-    void startWithRequest(QNetworkRequest request);
-
-protected:
-    bool finished() override;
-signals:
-
-    /**
-     * @brief jsonReceived - signal to report the json answer from ocs
-     * @param json - the parsed json document
-     * @param statusCode - the OCS status code: 100 (!) for success
-     */
-    void jsonReceived(const QJsonDocument &json, int statusCode);
-
-private:
-    QUrlQuery _additionalParams;
 };
 
 /**
@@ -419,37 +245,35 @@ class OWNCLOUDSYNC_EXPORT SimpleNetworkJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
-    explicit SimpleNetworkJob(AccountPtr account, QObject *parent = nullptr);
+    using UrlQuery = QList<QPair<QString, QString>>;
 
-    void prepareRequest(const QByteArray &verb, const QUrl &url,
-        const QNetworkRequest &req = QNetworkRequest(),
-        QIODevice *requestBody = nullptr);
+    // fully qualified urls can be passed in the QNetworkRequest
+    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QIODevice *requestBody, const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const UrlQuery &arguments, const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QJsonObject &arguments, const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QByteArray &&requestBody, const QNetworkRequest &req = {}, QObject *parent = nullptr);
 
-    void prepareRequest(const QByteArray &verb, const QUrl &url,
-        const QNetworkRequest &req,
-        const QUrlQuery &arguments);
-
-    void prepareRequest(const QByteArray &verb, const QUrl &url,
-        const QNetworkRequest &req,
-        const QJsonObject &arguments);
+    virtual ~SimpleNetworkJob();
 
     void start() override;
 
     void addNewReplyHook(std::function<void(QNetworkReply *)> &&hook);
 
 signals:
-    void finishedSignal(QNetworkReply *reply);
-private slots:
-    bool finished() override;
+    void finishedSignal();
 
 protected:
+    bool finished() override;
     void newReplyHook(QNetworkReply *) override;
 
+    QNetworkRequest _request;
+
 private:
-    QByteArray _simpleVerb;
-    QUrl _simpleUrl;
-    QIODevice *_simpleBody;
-    QNetworkRequest _simpleRequest;
+    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QNetworkRequest &req, QObject *parent);
+
+    QByteArray _verb;
+    QByteArray _body;
+    QIODevice *_device = nullptr;
     std::vector<std::function<void(QNetworkReply *)>> _replyHooks;
 };
 
@@ -465,7 +289,7 @@ private:
  * Note: targetFun is guaranteed to be called only through the event
  * loop and never directly.
  */
-void OWNCLOUDSYNC_EXPORT fetchPrivateLinkUrl(AccountPtr account, const QString &remotePath, QObject *target,
+void OWNCLOUDSYNC_EXPORT fetchPrivateLinkUrl(AccountPtr account, const QUrl &baseUrl, const QString &remotePath, QObject *target,
     std::function<void(const QString &url)> targetFun);
 
 } // namespace OCC

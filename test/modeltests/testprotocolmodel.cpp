@@ -34,15 +34,15 @@ private Q_SLOTS:
 
         auto account = TestUtils::createDummyAccount();
 
-        AccountStatePtr newAccountState(new AccountState(account));
+        AccountStatePtr newAccountState = AccountState::fromNewAccount(account);
         const QDir d(dir.path());
         QVERIFY(d.mkdir("foo"));
         QVERIFY(d.mkdir("bar"));
-        const QString foo = dir.path() + QStringLiteral("/foo");
-        const QString bar = dir.path() + QStringLiteral("/bar");
-        QVERIFY(TestUtils::folderMan()->addFolder(newAccountState.data(), TestUtils::createDummyFolderDefinition(foo)));
-        QVERIFY(TestUtils::folderMan()->addFolder(newAccountState.data(), TestUtils::createDummyFolderDefinition(bar)));
+        auto foo = TestUtils::folderMan()->addFolder(newAccountState, TestUtils::createDummyFolderDefinition(newAccountState->account(), dir.path() + QStringLiteral("/foo")));
+        auto bar = TestUtils::folderMan()->addFolder(newAccountState, TestUtils::createDummyFolderDefinition(newAccountState->account(), dir.path() + QStringLiteral("/bar")));
 
+        QVERIFY(foo);
+        QVERIFY(bar);
 
         // populate with dummy data
         // -1 to test the ring buffer window roll over

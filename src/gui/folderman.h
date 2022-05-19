@@ -25,6 +25,8 @@
 #include "navigationpanehelper.h"
 #include "syncfileitem.h"
 
+#include "newwizard/syncmode.h"
+
 class TestFolderMigration;
 
 namespace OCC {
@@ -82,6 +84,9 @@ class FolderMan : public QObject
 {
     Q_OBJECT
 public:
+    static QString suggestSyncFolder(const QUrl &server, const QString &displayName);
+    static bool prepareFolder(const QString &folder);
+
     ~FolderMan() override;
     static FolderMan *instance();
 
@@ -107,11 +112,17 @@ public:
      */
     static void backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringList *ignoreKeys);
 
-    const QMap<QString, Folder *> &map() const;
+    const QVector<Folder *> &folders() const;
 
     /** Adds a folder for an account, ensures the journal is gone and saves it in the settings.
       */
-    Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
+    Folder *addFolder(AccountStatePtr accountState, const FolderDefinition &folderDefinition);
+
+    /**
+     * Adds a folder for an account. Used to be part of the wizard code base. Constructs the folder definition from the parameters.
+     * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
+     */
+    Folder *addFolderFromWizard(AccountStatePtr accountStatePtr, const QString &localFolder, const QString &remotePath, const QUrl &webDavUrl, const QString &displayName, bool useVfs);
 
     /** Removes a folder */
     void removeFolder(Folder *);
@@ -131,14 +142,8 @@ public:
       */
     QStringList findFileInLocalFolders(const QString &relPath, const AccountPtr acc);
 
-    /** Returns the folder by alias or NULL if no folder with the alias exists. */
-    Folder *folder(const QString &);
-
-    /**
-     * Migrate accounts from owncloud < 2.0
-     * Creates a folder for a specific configuration, identified by alias.
-     */
-    Folder *setupFolderFromOldConfigFile(const QString &, AccountState *account);
+    /** Returns the folder by id or NULL if no folder with the id exists. */
+    [[deprecated("directly reference the folder")]] Folder *folder(const QByteArray &id);
 
     /**
      * Ensures that a given directory does not contain a sync journal file.
@@ -157,12 +162,7 @@ public:
      * Compute status summarizing multiple folders
      * @return tuple containing folders, status, unresolvedConflicts and lastSyncDone
      */
-    static TrayOverallStatusResult trayOverallStatus(const QList<Folder *> &folders);
-
-    // Escaping of the alias which is used in QSettings AND the file
-    // system, thus need to be escaped.
-    static QString escapeAlias(const QString &);
-    static QString unescapeAlias(const QString &);
+    static TrayOverallStatusResult trayOverallStatus(const QVector<Folder *> &folders);
 
     SocketApi *socketApi();
 #ifdef Q_OS_WIN
@@ -262,7 +262,7 @@ signals:
     /**
      * Emitted whenever the list of configured folders changes.
      */
-    void folderListChanged(const QMap<QString, Folder *> &);
+    void folderListChanged();
     void folderRemoved(Folder *folder);
 
 public slots:
@@ -286,8 +286,8 @@ public slots:
      */
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
 
-    // slot to schedule an ETag job (from Folder only)
-    void slotScheduleETagJob(const QString &alias, RequestEtagJob *job);
+    // slot to schedule an ETag job
+    void slotScheduleETagJob(RequestEtagJob *job);
 
 private slots:
     void slotFolderSyncPaused(Folder *, bool paused);
@@ -302,7 +302,7 @@ private slots:
     void slotStartScheduledFolderSync();
     void slotEtagPollTimerTimeout();
 
-    void slotRemoveFoldersForAccount(const AccountStatePtr &accountState);
+    void slotRemoveFoldersForAccount(AccountStatePtr accountState);
 
     // Wraps the Folder::syncStateChange() signal into the
     // FolderMan::folderSyncStateChange(Folder*) signal.
@@ -331,7 +331,7 @@ private:
      *  does not set an account on the new folder.
       */
     Folder *addFolderInternal(FolderDefinition folderDefinition,
-        AccountState *accountState, std::unique_ptr<Vfs> vfs);
+        AccountStatePtr accountState, std::unique_ptr<Vfs> vfs);
 
     /* unloads a folder object, does not delete it */
     void unloadFolder(Folder *);
@@ -352,7 +352,7 @@ private:
     void setupFoldersHelper(QSettings &settings, AccountStatePtr account, const QStringList &ignoreKeys, bool backwardsCompatible, bool foldersWithPlaceholders);
 
     QSet<Folder *> _disabledFolders;
-    QMap<QString, Folder *> _folderMap;
+    QVector<Folder *> _folders;
     QString _folderConfigPath;
     Folder *_currentSyncFolder;
     QPointer<Folder> _lastSyncFolder;

@@ -5,10 +5,14 @@
  *
  */
 
-#include <QtTest>
-#include "testutils/syncenginetestutils.h"
 #include <syncengine.h>
 
+#include "testutils/syncenginetestutils.h"
+#include "testutils/testutils.h"
+
+#include <QtTest>
+
+using namespace std::chrono_literals;
 using namespace OCC;
 
 bool itemDidComplete(const ItemCompletedSpy &spy, const QString &path)
@@ -459,7 +463,7 @@ private slots:
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
 
         // Disable parallel uploads
-        SyncOptions syncOptions;
+        SyncOptions syncOptions = fakeFolder.syncEngine().syncOptions();
         syncOptions._parallelNetworkJobs = 0;
         fakeFolder.syncEngine().setSyncOptions(syncOptions);
 
@@ -577,27 +581,23 @@ private slots:
         FakeFolder fakeFolder{ FileInfo::A12_B12_C12_S12() };
 
 #ifndef Q_OS_WIN  // We can't have local file with these character
-        // For current servers, no characters are forbidden
-        fakeFolder.syncEngine().account()->setServerVersion("10.0.0");
         fakeFolder.localModifier().insert("A/\\:?*\"<>|.txt");
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
-
-        // For legacy servers, some characters were forbidden by the client
-        fakeFolder.syncEngine().account()->setServerVersion("8.0.0");
-        fakeFolder.localModifier().insert("B/\\:?*\"<>|.txt");
-        QVERIFY(fakeFolder.syncOnce());
-        QVERIFY(!fakeFolder.currentRemoteState().find("B/\\:?*\"<>|.txt"));
 #endif
 
-        // We can override that by setting the capability
-        fakeFolder.syncEngine().account()->setCapabilities({ { "dav", QVariantMap{ { "invalidFilenameRegex", "" } } } });
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
         // Check that new servers also accept the capability
-        fakeFolder.syncEngine().account()->setServerVersion("10.0.0");
-        fakeFolder.syncEngine().account()->setCapabilities({ { "dav", QVariantMap{ { "invalidFilenameRegex", "my[fgh]ile" } } } });
+        auto invalidFilenameRegexCapabilities = [](const QString &regex) {
+            auto cap = TestUtils::testCapabilities();
+            auto dav = cap["dav"].toMap();
+            dav.insert({ { "invalidFilenameRegex", regex } });
+            cap["dav"] = dav;
+            return cap;
+        };
+        fakeFolder.syncEngine().account()->setCapabilities(invalidFilenameRegexCapabilities("my[fgh]ile"));
         fakeFolder.localModifier().insert("C/myfile.txt");
         QVERIFY(fakeFolder.syncOnce());
         QVERIFY(!fakeFolder.currentRemoteState().find("C/myfile.txt"));
@@ -696,11 +696,15 @@ private slots:
     void testUploadV1Multiabort()
     {
         FakeFolder fakeFolder{ FileInfo{} };
-        SyncOptions options;
+        SyncOptions options = fakeFolder.syncEngine().syncOptions();
         options._initialChunkSize = 10;
         options._maxChunkSize = 10;
         options._minChunkSize = 10;
         fakeFolder.syncEngine().setSyncOptions(options);
+        auto cap = TestUtils::testCapabilities();
+        // unset chunking v1
+        cap.remove("dav");
+        fakeFolder.account()->setCapabilities(cap);
 
         QObject parent;
         int nPUT = 0;
@@ -713,7 +717,7 @@ private slots:
         });
 
         fakeFolder.localModifier().insert("file", 100, 'W');
-        QTimer::singleShot(100, &fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine().abort(); });
+        QTimer::singleShot(100ms, &fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine().abort(); });
         QVERIFY(!fakeFolder.syncOnce());
 
         QCOMPARE(nPUT, 3);

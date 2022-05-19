@@ -17,16 +17,17 @@
 #define SERVERCONNECTION_H
 
 #include <QByteArray>
-#include <QUrl>
-#include <QUuid>
+#include <QNetworkAccessManager>
 #include <QNetworkCookie>
 #include <QNetworkRequest>
-#include <QSslSocket>
-#include <QSslCertificate>
-#include <QSslConfiguration>
-#include <QSslCipher>
-#include <QSslError>
 #include <QSharedPointer>
+#include <QSslCertificate>
+#include <QSslCipher>
+#include <QSslConfiguration>
+#include <QSslError>
+#include <QSslSocket>
+#include <QUrl>
+#include <QUuid>
 
 #ifndef TOKEN_AUTH_ONLY
 #include <QPixmap>
@@ -40,7 +41,7 @@
 class QSettings;
 class QNetworkReply;
 class QUrl;
-class QNetworkAccessManager;
+class AccessManager;
 
 namespace OCC {
 
@@ -52,17 +53,6 @@ class QuotaInfo;
 class AccessManager;
 class SimpleNetworkJob;
 
-
-/**
- * @brief Reimplement this to handle SSL errors from libsync
- * @ingroup libsync
- */
-class AbstractSslErrorHandler
-{
-public:
-    virtual ~AbstractSslErrorHandler() {}
-    virtual bool handleErrors(const QList<QSslError> &, const QSslConfiguration &conf, QList<QSslCertificate> *, AccountPtr) = 0;
-};
 
 /**
  * @brief The Account class represents an account on an ownCloud Server
@@ -94,6 +84,24 @@ public:
     QString davUser() const;
     void setDavUser(const QString &newDavUser);
 
+    /***
+     * With OC 10 this is the equivalent to the sync root.
+     * With ocis and spaces this will be the default folder containing all spaces.
+     * This function will assert if the sync root is empty.
+     */
+    QString defaultSyncRoot() const;
+
+    /***
+     * Whether we have defaultSyncRoot defined.
+     */
+    bool hasDefaultSyncRoot() const;
+
+    /***
+     * Set defaultSyncRoot and creates the path on the filesystem.
+     * Setting an empty string will have no effect.
+     */
+    void setDefaultSyncRoot(const QString &syncRoot);
+
     QString davDisplayName() const;
     void setDavDisplayName(const QString &newDisplayName);
 
@@ -118,7 +126,6 @@ public:
      * @returns the (themeable) dav path for the account.
      */
     QString davPath() const;
-    void setDavPath(const QString &s) { _davPath = s; }
 
     /** Returns webdav entry URL, based on url() */
     QUrl davUrl() const;
@@ -138,28 +145,18 @@ public:
         QNetworkRequest req = QNetworkRequest(),
         QIODevice *data = nullptr);
 
-    /** The ssl configuration during the first connection */
-    QSslConfiguration getOrCreateSslConfig();
-    QSslConfiguration sslConfiguration() const { return _sslConfiguration; }
-    void setSslConfiguration(const QSslConfiguration &config);
-    // Because of bugs in Qt, we use this to store info needed for the SSL Button
-    QSslCipher _sessionCipher;
-    QByteArray _sessionTicket;
-    QList<QSslCertificate> _peerCertificateChain;
-
-
     /** The certificates of the account */
-    QList<QSslCertificate> approvedCerts() const { return _approvedCerts; }
-    void setApprovedCerts(const QList<QSslCertificate> certs);
-    void addApprovedCerts(const QList<QSslCertificate> certs);
+    QSet<QSslCertificate> approvedCerts() const { return _approvedCerts; }
 
-    // Usually when a user explicitly rejects a certificate we don't
-    // ask again. After this call, a dialog will again be shown when
-    // the next unknown certificate is encountered.
-    void resetRejectedCertificates();
+    /***
+     * Warning calling those will break running network jobs on the current access manager
+     */
+    void setApprovedCerts(const QList<QSslCertificate> &certs);
 
-    // pluggable handler
-    void setSslErrorHandler(AbstractSslErrorHandler *handler);
+    /***
+     * Warning calling those will break running network jobs on the current access manager
+     */
+    void addApprovedCerts(const QSet<QSslCertificate> &certs);
 
     // To be called by credentials only, for storing username and the like
     QVariant credentialSetting(const QString &key) const;
@@ -167,25 +164,22 @@ public:
 
     /** Access the server capabilities */
     const Capabilities &capabilities() const;
-    void setCapabilities(const QVariantMap &caps);
+    void setCapabilities(const Capabilities &caps);
+
+    bool hasCapabilities() const;
+
 
     /** Access the server version
      *
      * For servers >= 10.0.0, this can be the empty string until capabilities
      * have been received.
      */
-    QString serverVersion() const;
+    QString serverVersionString() const;
+    QVersionNumber serverVersion() const;
 
-    /** Server version for easy comparison.
-     *
-     * Example: serverVersionInt() >= makeServerVersion(11, 2, 3)
-     *
-     * Will be 0 if the version is not available yet.
-     */
-    int serverVersionInt() const;
+    QString serverProductName() const;
 
-    static int makeServerVersion(int majorVersion, int minorVersion, int patchVersion);
-    void setServerVersion(const QString &version);
+    void setServerInfo(const QString &version, const QString &product);
 
     /** Whether the server is too old.
      *
@@ -204,12 +198,8 @@ public:
     void setHttp2Supported(bool value) { _http2Supported = value; }
 
     void clearCookieJar();
-    void lendCookieJarTo(QNetworkAccessManager *guest);
-    QString cookieJarPath();
 
-    void resetNetworkAccessManager();
-    QNetworkAccessManager *networkAccessManager();
-    QSharedPointer<QNetworkAccessManager> sharedNetworkAccessManager();
+    AccessManager *accessManager();
 
     JobQueue *jobQueue();
 
@@ -219,13 +209,9 @@ public:
 
 public slots:
     /// Used when forgetting credentials
-    void clearQNAMCache();
-    void slotHandleSslErrors(QPointer<QNetworkReply>, const QList<QSslError> &);
+    void clearAMCache();
 
 signals:
-    /// Emitted whenever there's network activity
-    void propagatorNetworkActivity();
-
     /// Triggered by handleInvalidCredentials()
     void invalidCredentials();
 
@@ -260,28 +246,22 @@ private:
     QUuid _uuid;
     QString _davUser;
     QString _displayName;
+    QString _defaultSyncRoot;
 #ifndef TOKEN_AUTH_ONLY
     QPixmap _avatarImg;
 #endif
     QMap<QString, QVariant> _settingsMap;
     QUrl _url;
 
-    QList<QSslCertificate> _approvedCerts;
-    QSslConfiguration _sslConfiguration;
+    QSet<QSslCertificate> _approvedCerts;
     Capabilities _capabilities;
     QString _serverVersion;
-    QScopedPointer<AbstractSslErrorHandler> _sslErrorHandler;
+    QString _serverProduct;
     QuotaInfo *_quotaInfo;
-    QSharedPointer<QNetworkAccessManager> _am;
+    QPointer<AccessManager> _am;
     QScopedPointer<AbstractCredentials> _credentials;
     bool _http2Supported = false;
 
-    /// Certificates that were explicitly rejected by the user
-    QList<QSslCertificate> _rejectedCertificates;
-
-    static QString _configFileName;
-
-    QString _davPath; // defaults to value from theme, might be overwritten in brandings
     JobQueue _jobQueue;
     JobQueueGuard _queueGuard;
     CredentialManager *_credentialManager;

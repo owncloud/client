@@ -10,10 +10,11 @@
 #include <QString>
 
 #include "common/checksums.h"
-#include "networkjobs.h"
 #include "common/utility.h"
 #include "filesystem.h"
+#include "networkjobs.h"
 #include "propagatorjobs.h"
+#include "testutils/testutils.h"
 
 using namespace OCC;
 using namespace OCC::Utility;
@@ -68,13 +69,13 @@ using namespace OCC::Utility;
 
     void initTestCase() {
         _testfile = _root.path()+"/csFile";
-        Utility::writeRandomFile( _testfile);
+        TestUtils::writeRandomFile(_testfile);
     }
 
     void testMd5Calc()
     {
         QString file( _root.path() + "/file_a.bin");
-        QVERIFY(writeRandomFile(file));
+        QVERIFY(TestUtils::writeRandomFile(file));
         QFileInfo fi(file);
         QVERIFY(fi.exists());
 
@@ -94,7 +95,7 @@ using namespace OCC::Utility;
     void testSha1Calc()
     {
         QString file( _root.path() + "/file_b.bin");
-        writeRandomFile(file);
+        TestUtils::writeRandomFile(file);
         QFileInfo fi(file);
         QVERIFY(fi.exists());
 
@@ -112,9 +113,6 @@ using namespace OCC::Utility;
     }
 
     void testUploadChecksummingAdler() {
-#ifndef ZLIB_FOUND
-        QSKIP("ZLIB not found.", SkipSingle);
-#else
         ComputeChecksum *vali = new ComputeChecksum(this);
         _expectedType = "Adler32";
         vali->setChecksumType(_expectedType);
@@ -132,7 +130,6 @@ using namespace OCC::Utility;
         loop.exec();
 
         delete vali;
-#endif
     }
 
     void testUploadChecksummingMd5() {
@@ -155,7 +152,6 @@ using namespace OCC::Utility;
     }
 
     void testUploadChecksummingSha1() {
-
         ComputeChecksum *vali = new ComputeChecksum(this);
         _expectedType = OCC::checkSumSHA1C;
         vali->setChecksumType(_expectedType);
@@ -175,9 +171,6 @@ using namespace OCC::Utility;
     }
 
     void testDownloadChecksummingAdler() {
-#ifndef ZLIB_FOUND
-        QSKIP("ZLIB not found.", SkipSingle);
-#else
         ValidateChecksumHeader *vali = new ValidateChecksumHeader(this);
         connect(vali, &ValidateChecksumHeader::validated, this, &TestChecksumValidator::slotDownValidated);
         connect(vali, &ValidateChecksumHeader::validationFailed, this, &TestChecksumValidator::slotDownError);
@@ -209,7 +202,6 @@ using namespace OCC::Utility;
         QTRY_VERIFY(_errorSeen);
 
         delete vali;
-#endif
     }
 
 

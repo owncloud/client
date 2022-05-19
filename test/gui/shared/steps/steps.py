@@ -8,6 +8,7 @@ import re
 import urllib.request
 import json
 import requests
+import builtins
 import shutil
 
 from objectmaphelper import RegularExpression
@@ -428,6 +429,11 @@ def step(context, type, resource):
     waitForFileOrFolderToSync(context, resource, type)
 
 
+@Given(r'user has waited for (file|folder) to be synced', regexp=True)
+def step(context, type, resource):
+    waitForFileOrFolderToSync(context, resource, type)
+
+
 @When(r'the user waits for (file|folder) "([^"]*)" to have sync error', regexp=True)
 def step(context, type, resource):
     waitForFileOrFolderToHaveSyncError(context, resource, type)
@@ -484,10 +490,14 @@ def step(context, username, foldername):
     createFolder(context, foldername, username)
 
 
-def createFolder(context, foldername, username=None):
+# To create folders in a temporary directory, we set isTempFolder True
+# And if isTempFolder is True, the createFolder function create folders in tempFolderPath
+def createFolder(context, foldername, username=None, isTempFolder=False):
     syncPath = None
-    if username:
+    if username and not isTempFolder:
         syncPath = getUserSyncPath(context, username)
+    elif isTempFolder:
+        syncPath = context.userData['tempFolderPath']
     else:
         syncPath = context.userData['currentUserSyncPath']
     path = join(syncPath, foldername)
@@ -498,6 +508,21 @@ def renameFileFolder(context, source, destination):
     source = join(context.userData['currentUserSyncPath'], source)
     destination = join(context.userData['currentUserSyncPath'], destination)
     rename(source, destination)
+
+
+@When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
+def step(context, username, filename, filesize):
+    createFileWithSize(context, filename, filesize)
+
+
+def createFileWithSize(context, filename, filesize, isTempFolder=False):
+    if isTempFolder:
+        path = context.userData['tempFolderPath']
+    else:
+        path = context.userData['currentUserSyncPath']
+    file = join(path, filename)
+    cmd = "truncate -s {filesize} {file}".format(filesize=filesize, file=file)
+    os.system(cmd)
 
 
 @When('the user copies the folder "|any|" to "|any|"')
@@ -685,7 +710,11 @@ def step(context, filename):
 @Then('the file "|any|" should be blacklisted')
 def step(context, filename):
     activity = Activity()
-    activity.checkBlackListedFileExist(filename)
+    test.compare(
+        True,
+        activity.checkBlackListedResourceExist(context, filename),
+        "File is blacklisted",
+    )
 
 
 @When('the user selects "|any|" tab in the activity')
@@ -1419,3 +1448,21 @@ def step(context, username):
         filename = syncPath + row[0]
         f = open(join(syncPath, filename), "w")
         f.close()
+
+
+@Given(
+    'the user has created a folder "|any|" with "|any|" files each of size "|any|" bytes in temp folder'
+)
+def step(context, foldername, filenumber, filesize):
+    createFolder(context, foldername, isTempFolder=True)
+    filesize = builtins.int(filesize)
+    for i in range(0, builtins.int(filenumber)):
+        filename = f"file{i}.txt"
+        createFileWithSize(context, join(foldername, filename), filesize, True)
+
+
+@When('user "|any|" moves folder "|any|" from the temp folder into the sync folder')
+def step(context, username, foldername):
+    source_dir = join(context.userData['tempFolderPath'], foldername)
+    destination_dir = getUserSyncPath(context, username)
+    shutil.move(source_dir, destination_dir)

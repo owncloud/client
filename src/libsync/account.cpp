@@ -43,7 +43,6 @@ Account::Account(QObject *parent)
     : QObject(parent)
     , _uuid(QUuid::createUuid())
     , _capabilities(QVariantMap())
-    , _davPath(Theme::instance()->webDavPath())
     , _jobQueue(this)
     , _queueGuard(&_jobQueue)
     , _credentialManager(new CredentialManager(this))
@@ -64,18 +63,7 @@ Account::~Account()
 
 QString Account::davPath() const
 {
-    if (capabilities().chunkingNg()) {
-        // The chunking-ng means the server prefer to use the new webdav URL
-        return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
-    }
-
-    // make sure to have a trailing slash
-    if (!_davPath.endsWith(QLatin1Char('/'))) {
-        QString dp(_davPath);
-        dp.append(QLatin1Char('/'));
-        return dp;
-    }
-    return _davPath;
+    return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
 }
 
 void Account::setSharedThis(AccountPtr sharedThis)
@@ -164,8 +152,7 @@ void Account::setCredentials(AbstractCredentials *cred)
     if (_am) {
         jar = _am->cookieJar();
         jar->setParent(nullptr);
-
-        _am = QSharedPointer<QNetworkAccessManager>();
+        _am->deleteLater();
     }
 
     // The order for these two is important! Reading the credential's
@@ -173,16 +160,11 @@ void Account::setCredentials(AbstractCredentials *cred)
     _credentials.reset(cred);
     cred->setAccount(this);
 
-    // Note: This way the QNAM can outlive the Account and Credentials.
-    // This is necessary to avoid issues with the QNAM being deleted while
-    // processing slotHandleSslErrors().
-    _am = QSharedPointer<QNetworkAccessManager>(_credentials->createQNAM(), &QObject::deleteLater);
+    _am = _credentials->createAM();
 
     if (jar) {
         _am->setCookieJar(jar);
     }
-    connect(_am.data(), &QNetworkAccessManager::sslErrors,
-        this, &Account::slotHandleSslErrors);
     connect(_am.data(), &QNetworkAccessManager::proxyAuthenticationRequired,
         this, &Account::proxyAuthenticationRequired);
     connect(_credentials.data(), &AbstractCredentials::fetched,
@@ -207,63 +189,20 @@ QUrl Account::davUrl() const
  */
 void Account::clearCookieJar()
 {
-    auto jar = qobject_cast<CookieJar *>(_am->cookieJar());
-    OC_ASSERT(jar);
     qCInfo(lcAccount) << "Clearing cookies";
-    jar->setAllCookies(QList<QNetworkCookie>());
-    emit wantsAccountSaved(this);
+    _am->cookieJar()->deleteLater();
+    _am->setCookieJar(new CookieJar);
 }
 
-/*! This shares our official cookie jar (containing all the tasty
-    authentication cookies) with another QNAM while making sure
-    of not losing its ownership. */
-void Account::lendCookieJarTo(QNetworkAccessManager *guest)
-{
-    auto jar = _am->cookieJar();
-    auto oldParent = jar->parent();
-    guest->setCookieJar(jar); // takes ownership of our precious cookie jar
-    jar->setParent(oldParent); // takes it back
-}
-
-QString Account::cookieJarPath()
-{
-    return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + QStringLiteral("/cookies") + id() + QStringLiteral(".db");
-}
-
-void Account::resetNetworkAccessManager()
-{
-    if (!_credentials || !_am) {
-        return;
-    }
-
-    qCDebug(lcAccount) << "Resetting QNAM";
-    QNetworkCookieJar *jar = _am->cookieJar();
-
-    // Use a QSharedPointer to allow locking the life of the QNAM on the stack.
-    // Make it call deleteLater to make sure that we can return to any QNAM stack frames safely.
-    _am = QSharedPointer<QNetworkAccessManager>(_credentials->createQNAM(), &QObject::deleteLater);
-
-    _am->setCookieJar(jar); // takes ownership of the old cookie jar
-    connect(_am.data(), &QNetworkAccessManager::sslErrors, this,
-        &Account::slotHandleSslErrors);
-    connect(_am.data(), &QNetworkAccessManager::proxyAuthenticationRequired,
-        this, &Account::proxyAuthenticationRequired);
-}
-
-QNetworkAccessManager *Account::networkAccessManager()
+AccessManager *Account::accessManager()
 {
     return _am.data();
 }
 
-QSharedPointer<QNetworkAccessManager> Account::sharedNetworkAccessManager()
-{
-    return _am;
-}
-
 QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, QNetworkRequest req, QIODevice *data)
 {
+    Q_ASSERT(verb.isUpper());
     req.setUrl(url);
-    req.setSslConfiguration(this->getOrCreateSslConfig());
     if (verb == "HEAD" && !data) {
         return _am->head(req);
     } else if (verb == "GET" && !data) {
@@ -278,50 +217,17 @@ QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, 
     return _am->sendCustomRequest(req, verb, data);
 }
 
-void Account::setSslConfiguration(const QSslConfiguration &config)
+void Account::setApprovedCerts(const QList<QSslCertificate> &certs)
 {
-    _sslConfiguration = config;
+    _approvedCerts = { certs.begin(), certs.end() };
+    _am->setCustomTrustedCaCertificates(_approvedCerts);
 }
 
-QSslConfiguration Account::getOrCreateSslConfig()
+void Account::addApprovedCerts(const QSet<QSslCertificate> &certs)
 {
-    if (!_sslConfiguration.isNull()) {
-        // Will be set by CheckServerJob::finished()
-        // We need to use a central shared config to get SSL session tickets
-        return _sslConfiguration;
-    }
-
-    // if setting the client certificate fails, you will probably get an error similar to this:
-    //  "An internal error number 1060 happened. SSL handshake failed, client certificate was requested: SSL error: sslv3 alert handshake failure"
-    QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
-
-    // Try hard to re-use session for different requests
-    sslConfig.setSslOption(QSsl::SslOptionDisableSessionTickets, false);
-    sslConfig.setSslOption(QSsl::SslOptionDisableSessionSharing, false);
-    sslConfig.setSslOption(QSsl::SslOptionDisableSessionPersistence, false);
-
-    return sslConfig;
-}
-
-void Account::setApprovedCerts(const QList<QSslCertificate> certs)
-{
-    _approvedCerts = certs;
-    QSslSocket::addDefaultCaCertificates(certs);
-}
-
-void Account::addApprovedCerts(const QList<QSslCertificate> certs)
-{
-    _approvedCerts += certs;
-}
-
-void Account::resetRejectedCertificates()
-{
-    _rejectedCertificates.clear();
-}
-
-void Account::setSslErrorHandler(AbstractSslErrorHandler *handler)
-{
-    _sslErrorHandler.reset(handler);
+    _approvedCerts.unite(certs);
+    _am->setCustomTrustedCaCertificates(_approvedCerts);
+    Q_EMIT wantsAccountSaved(this);
 }
 
 void Account::setUrl(const QUrl &url)
@@ -350,107 +256,6 @@ void Account::setCredentialSetting(const QString &key, const QVariant &value)
     }
 }
 
-void Account::slotHandleSslErrors(QPointer<QNetworkReply> reply, const QList<QSslError> &errors)
-{
-    const NetworkJobTimeoutPauser pauser(reply);
-
-    // Copy info out of reply ASAP
-    if (reply.isNull()) {
-        return;
-    }
-
-    const QString urlString = reply->url().toString();
-    const auto sslConfiguration = reply->sslConfiguration();
-
-    qCDebug(lcAccount) << "SSL diagnostics for url " << urlString;
-    QList<QSslError> filteredErrors;
-    QList<QSslError> ignoredErrors;
-    for (const auto &error : qAsConst(errors)) {
-        if (error.error() == QSslError::UnableToGetLocalIssuerCertificate) {
-            // filter out this "error"
-            qCDebug(lcAccount) << "- Info for " << error.certificate() << ": " << error.errorString()
-                               << ". Local SSL certificates are known and always accepted.";
-            ignoredErrors << error;
-        } else {
-            qCDebug(lcAccount) << "- Error for " << error.certificate() << ": "
-                               << error.errorString() << "(" << int(error.error()) << ")"
-                               << "\n";
-            filteredErrors << error;
-        }
-    }
-
-    // ask the _sslErrorHandler what to do with filteredErrors
-    const auto handleErrors = [&urlString, &sslConfiguration, this](const QList<QSslError> &filteredErrors) -> QList<QSslError> {
-        if (filteredErrors.isEmpty()) {
-            return {};
-        }
-        bool allPreviouslyRejected = true;
-        for (const auto &error : qAsConst(filteredErrors)) {
-            if (!_rejectedCertificates.contains(error.certificate())) {
-                allPreviouslyRejected = false;
-                break;
-            }
-        }
-
-        // If all certs have previously been rejected by the user, don't ask again.
-        if (allPreviouslyRejected) {
-            qCInfo(lcAccount) << "SSL diagnostics for url " << urlString
-                              << ": certificates not trusted by user decision, returning.";
-            return {};
-        }
-
-        if (_sslErrorHandler.isNull()) {
-            qCWarning(lcAccount) << Q_FUNC_INFO << " called without a valid SSL error handler for account" << url()
-                                 << "(" << urlString << ")";
-            return {};
-        }
-
-        // SslDialogErrorHandler::handleErrors will run an event loop that might execute
-        // the deleteLater() of the QNAM before we have the chance of unwinding our stack.
-        // Keep a ref here on our stackframe to make sure that it doesn't get deleted before
-        // handleErrors returns.
-        QSharedPointer<QNetworkAccessManager> qnamLock = _am;
-        QList<QSslCertificate> approvedCerts;
-        if (_sslErrorHandler->handleErrors(filteredErrors, sslConfiguration, &approvedCerts, sharedFromThis())) {
-            if (!approvedCerts.isEmpty()) {
-                QSslSocket::addDefaultCaCertificates(approvedCerts);
-                addApprovedCerts(approvedCerts);
-                emit wantsAccountSaved(this);
-
-                // all ssl certs are known and accepted. We can ignore the problems right away.
-                qCDebug(lcAccount) << "Certs are known and trusted! This is not an actual error.";
-            }
-            return filteredErrors;
-        } else {
-            // Mark all involved certificates as rejected, so we don't ask the user again.
-            for (const auto &error : qAsConst(filteredErrors)) {
-                if (!_rejectedCertificates.contains(error.certificate())) {
-                    _rejectedCertificates.append(error.certificate());
-                }
-            }
-        }
-        return {};
-    };
-
-    // Call `handleErrors` NOW, BEFORE checking if the scoped `reply` pointer. The lambda might take
-    // a long time to complete: if a dialog is shown, the user could be "slow" to click it away, and
-    // the reply might have been deleted at that point. So if we'd do this call inside the if below,
-    // the object inside the reply guarded pointer could there, but might be gone *after* we finish
-    // with `ignoreSslErrors`. Even when the scenario with a deleted reply happens, the handling is
-    // still needed: the `handleErrors` call will also set the default CA certificates through
-    // `QSslSocket::addDefaultCaCertificates()`, so future requests/replies can use those
-    // user-approved certificates.
-    auto moreIgnoredErrors = handleErrors(filteredErrors);
-
-    // always apply the filter when we leave the scope
-    if (reply) {
-        // Warning: Do *not* use ignoreSslErrors() (without args) here:
-        // it permanently ignores all SSL errors for this host, even
-        // certificate changes.
-        reply->ignoreSslErrors(ignoredErrors + moreIgnoredErrors);
-    }
-}
-
 void Account::slotCredentialsFetched()
 {
     emit credentialsFetched(_credentials.data());
@@ -467,52 +272,66 @@ JobQueue *Account::jobQueue()
     return &_jobQueue;
 }
 
-void Account::clearQNAMCache()
+void Account::clearAMCache()
 {
     _am->clearAccessCache();
 }
 
 const Capabilities &Account::capabilities() const
 {
+    Q_ASSERT(hasCapabilities());
     return _capabilities;
 }
 
-void Account::setCapabilities(const QVariantMap &caps)
+bool Account::hasCapabilities() const
 {
-    _capabilities = Capabilities(caps);
+    return _capabilities.isValid();
 }
 
-QString Account::serverVersion() const
+void Account::setCapabilities(const Capabilities &caps)
+{
+    _capabilities = caps;
+}
+
+QString Account::serverProductName() const
+{
+    return _serverProduct;
+}
+
+QString Account::serverVersionString() const
 {
     return _serverVersion;
 }
 
-int Account::serverVersionInt() const
-{
-    // FIXME: Use Qt 5.5 QVersionNumber
-    auto components = serverVersion().split(QLatin1Char('.'));
-    return makeServerVersion(components.value(0).toInt(),
-        components.value(1).toInt(),
-        components.value(2).toInt());
-}
-
-int Account::makeServerVersion(int majorVersion, int minorVersion, int patchVersion)
-{
-    return (majorVersion << 16) + (minorVersion << 8) + patchVersion;
-}
-
 bool Account::serverVersionUnsupported() const
 {
-    if (serverVersionInt() == 0) {
+    if (serverVersion().isNull()) {
         // not detected yet, assume it is fine.
         return false;
     }
+    // TODO: this is a work around for a ocis announcing version 2.0.0
+    // next version will announce ocisvison and keep version to 10
+    if (serverProductName() == QLatin1String("Infinite Scale")) {
+        return false;
+    }
     // Older version which is not "end of life" according to https://github.com/owncloud/core/wiki/Maintenance-and-Release-Schedule
-    return serverVersionInt() < makeServerVersion(10, 0, 0) || serverVersion().endsWith(QLatin1String("Nextcloud"));
+    if (serverVersion() < QVersionNumber(10)) {
+        return true;
+    }
+    if (serverProductName().endsWith(QLatin1String("Nextcloud"))) {
+        return true;
+    }
+    return false;
 }
 
-void Account::setServerVersion(const QString &version)
+QVersionNumber Account::serverVersion() const
 {
+    return QVersionNumber::fromString(_serverVersion);
+}
+
+void Account::setServerInfo(const QString &version, const QString &productName)
+{
+    _serverProduct = productName;
     if (version == _serverVersion) {
         return;
     }
@@ -520,6 +339,27 @@ void Account::setServerVersion(const QString &version)
     auto oldServerVersion = _serverVersion;
     _serverVersion = version;
     emit serverVersionChanged(this, oldServerVersion, version);
+}
+
+QString Account::defaultSyncRoot() const
+{
+    Q_ASSERT(!_defaultSyncRoot.isEmpty());
+    return _defaultSyncRoot;
+}
+bool Account::hasDefaultSyncRoot() const
+{
+    return !_defaultSyncRoot.isEmpty();
+}
+
+void Account::setDefaultSyncRoot(const QString &syncRoot)
+{
+    Q_ASSERT(_defaultSyncRoot.isEmpty());
+    if (!syncRoot.isEmpty()) {
+        _defaultSyncRoot = syncRoot;
+        if (!QFileInfo::exists(syncRoot)) {
+            OC_ASSERT(QDir().mkpath(syncRoot));
+        }
+    }
 }
 
 } // namespace OCC

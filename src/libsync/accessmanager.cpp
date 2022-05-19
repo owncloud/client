@@ -12,21 +12,23 @@
  * for more details.
  */
 
-#include <QLoggingCategory>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QNetworkProxy>
 #include <QAuthenticator>
-#include <QSslConfiguration>
+#include <QLoggingCategory>
+#include <QNetworkConfiguration>
 #include <QNetworkCookie>
 #include <QNetworkCookieJar>
-#include <QNetworkConfiguration>
+#include <QNetworkProxy>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QSslConfiguration>
 #include <QUuid>
 
-#include "cookiejar.h"
 #include "accessmanager.h"
 #include "common/utility.h"
+#include "cookiejar.h"
 #include "httplogger.h"
+
+#include <algorithm>
 
 namespace OCC {
 
@@ -40,6 +42,16 @@ AccessManager::AccessManager(QObject *parent)
     setConfiguration(QNetworkConfiguration());
 #endif
     setCookieJar(new CookieJar);
+
+    connect(this, &AccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
+        auto filtered = errors;
+        filtered.erase(std::remove_if(
+                           filtered.begin(), filtered.end(), [this](const QSslError &e) {
+                               return !_customTrustedCaCertificates.contains(e.certificate());
+                           }),
+            filtered.end());
+        reply->ignoreSslErrors(filtered);
+    });
 }
 
 QByteArray AccessManager::generateRequestId()
@@ -64,7 +76,6 @@ QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op,
 
     // Generate a new request id
     const QByteArray requestId = generateRequestId();
-    qInfo(lcAccessManager) << op << verb << newRequest.url().toString() << "has X-Request-ID" << requestId;
     newRequest.setRawHeader(QByteArrayLiteral("X-Request-ID"), requestId);
     const auto originalIdKey = QByteArrayLiteral("Original-Request-ID");
     if (!newRequest.hasRawHeader(originalIdKey)) {
@@ -75,12 +86,62 @@ QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op,
         // http2 seems to cause issues, as with our recommended server setup we don't support http2, disable it by default for now
         static const bool http2EnabledEnv = qEnvironmentVariableIntValue("OWNCLOUD_HTTP2_ENABLED") == 1;
 
-        newRequest.setAttribute(QNetworkRequest::HTTP2AllowedAttribute, http2EnabledEnv);
+        newRequest.setAttribute(QNetworkRequest::Http2AllowedAttribute, http2EnabledEnv);
     }
+
+    auto sslConfiguration = newRequest.sslConfiguration();
+
+    sslConfiguration.setSslOption(QSsl::SslOptionDisableSessionTickets, false);
+    sslConfiguration.setSslOption(QSsl::SslOptionDisableSessionSharing, false);
+    sslConfiguration.setSslOption(QSsl::SslOptionDisableSessionPersistence, false);
+    if (!_customTrustedCaCertificates.isEmpty()) {
+        // for some reason, passing an empty list causes the default chain to be removed
+        // this behavior does not match the documentation
+        sslConfiguration.addCaCertificates({ _customTrustedCaCertificates.begin(), _customTrustedCaCertificates.end() });
+    }
+    newRequest.setSslConfiguration(sslConfiguration);
 
     const auto reply = QNetworkAccessManager::createRequest(op, newRequest, outgoingData);
     HttpLogger::logRequest(reply, op, outgoingData);
     return reply;
+}
+
+QSet<QSslCertificate> AccessManager::customTrustedCaCertificates()
+{
+    return _customTrustedCaCertificates;
+}
+
+void AccessManager::setCustomTrustedCaCertificates(const QSet<QSslCertificate> &certificates)
+{
+    _customTrustedCaCertificates = certificates;
+    // we have to terminate the existing (cached) connection to make the access manager re-evaluate the certificate sent by the server
+    clearConnectionCache();
+}
+
+void AccessManager::addCustomTrustedCaCertificates(const QList<QSslCertificate> &certificates)
+{
+    _customTrustedCaCertificates.unite({ certificates.begin(), certificates.end() });
+
+    // we have to terminate the existing (cached) connection to make the access manager re-evaluate the certificate sent by the server
+    clearConnectionCache();
+}
+
+CookieJar *AccessManager::ownCloudCookieJar() const
+{
+    auto jar = qobject_cast<CookieJar *>(cookieJar());
+    Q_ASSERT(jar);
+    return jar;
+}
+
+QList<QSslError> AccessManager::filterSslErrors(const QList<QSslError> &errors) const
+{
+    auto filtered = errors;
+    filtered.erase(std::remove_if(
+                       filtered.begin(), filtered.end(), [this](const QSslError &e) {
+                           return _customTrustedCaCertificates.contains(e.certificate());
+                       }),
+        filtered.end());
+    return filtered;
 }
 
 } // namespace OCC

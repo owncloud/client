@@ -1,3 +1,140 @@
+Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+=======================================
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v2.10.1...master
+
+Summary
+-------
+
+* Bugfix - Add request time and other missing data to .owncloudsync.log: [#7348](https://github.com/owncloud/client/issues/7348)
+* Bugfix - Fix copy url location for private links: [#9048](https://github.com/owncloud/client/issues/9048)
+* Bugfix - Fix status of files uploaded with TUS: [#9472](https://github.com/owncloud/client/pull/9472)
+* Bugfix - Use UTF-8 for .owncloudsync.log: [#9571](https://github.com/owncloud/client/pull/9571)
+* Bugfix - Crash when interacting with a folder in an error state: [#9600](https://github.com/owncloud/client/issues/9600)
+* Change - Make sharedialog preview be more resilient: [#8938](https://github.com/owncloud/client/issues/8938)
+* Change - We no longer persist cookies: [#9495](https://github.com/owncloud/client/issues/9495)
+* Change - We removed support for ownCloud servers < 10.0: [#9578](https://github.com/owncloud/client/issues/9578)
+* Change - Remove support for Windows 7 sidebar links: [#9618](https://github.com/owncloud/client/pull/9618)
+* Change - Rewrote TLS error handling: [#9655](https://github.com/owncloud/client/issues/9655)
+* Change - We removed the TLS certificate button from the account page: [#9675](https://github.com/owncloud/client/pull/9675)
+* Enhancement - Built-in AppImage self-updater: [#8923](https://github.com/owncloud/client/issues/8923)
+* Enhancement - Rewrite wizard from scratch: [#9249](https://github.com/owncloud/client/issues/9249)
+* Enhancement - Remove use of legacy DAV endpoint: [#9538](https://github.com/owncloud/client/pull/9538)
+* Enhancement - Support for OCIS Spaces: [#9154](https://github.com/owncloud/client/pull/9154)
+* Enhancement - Set Windows VFS placeholders readonly if needed: [#9598](https://github.com/owncloud/client/issues/9598)
+
+Details
+-------
+
+* Bugfix - Add request time and other missing data to .owncloudsync.log: [#7348](https://github.com/owncloud/client/issues/7348)
+
+   Some parameters were missing for some operations. This fix makes the log more complete and more
+   useful as a result.
+
+   https://github.com/owncloud/client/issues/7348
+
+* Bugfix - Fix copy url location for private links: [#9048](https://github.com/owncloud/client/issues/9048)
+
+   We fixed a bug where a placholder was copied to the clipboard instead of the url.
+
+   https://github.com/owncloud/client/issues/9048
+
+* Bugfix - Fix status of files uploaded with TUS: [#9472](https://github.com/owncloud/client/pull/9472)
+
+   Setting the upload status of files uploaded with TUS failed as we were still using the file.
+
+   https://github.com/owncloud/client/pull/9472
+
+* Bugfix - Use UTF-8 for .owncloudsync.log: [#9571](https://github.com/owncloud/client/pull/9571)
+
+   We fixed a bug where unicode file names were not correctly displayed in .owncloudsync.log.
+
+   https://github.com/owncloud/client/pull/9571
+
+* Bugfix - Crash when interacting with a folder in an error state: [#9600](https://github.com/owncloud/client/issues/9600)
+
+   We fixed a crash wher using the context menu on a folder that encountered an error and was not
+   using virutal files.
+
+   https://github.com/owncloud/client/issues/9600
+
+* Change - Make sharedialog preview be more resilient: [#8938](https://github.com/owncloud/client/issues/8938)
+
+   We no longer enforce png thumbnails. We no longer replace the file icon if the thumbnail is
+   invalid.
+
+   https://github.com/owncloud/client/issues/8938
+   https://github.com/owncloud/client/pull/8939
+
+* Change - We no longer persist cookies: [#9495](https://github.com/owncloud/client/issues/9495)
+
+   We no longer persist cookies over multiple client sessions.
+
+   https://github.com/owncloud/client/issues/9495
+
+* Change - We removed support for ownCloud servers < 10.0: [#9578](https://github.com/owncloud/client/issues/9578)
+
+   https://github.com/owncloud/client/issues/9578
+
+* Change - Remove support for Windows 7 sidebar links: [#9618](https://github.com/owncloud/client/pull/9618)
+
+   We removed the support for Windows < 10 sidebar links.
+
+   https://github.com/owncloud/client/pull/9618
+
+* Change - Rewrote TLS error handling: [#9655](https://github.com/owncloud/client/issues/9655)
+
+   We rewrote the way we handle TLS errors.
+
+   https://github.com/owncloud/client/issues/9655
+   https://github.com/owncloud/client/pull/9643
+   https://github.com/owncloud/client/pull/9667
+
+* Change - We removed the TLS certificate button from the account page: [#9675](https://github.com/owncloud/client/pull/9675)
+
+   https://github.com/owncloud/client/pull/9675
+
+* Enhancement - Built-in AppImage self-updater: [#8923](https://github.com/owncloud/client/issues/8923)
+
+   In release 2.10, we introduced a preview on our future AppImage packaging for Linux
+   distributions. Now, these AppImages can self-update using a built-in libappimageupdate
+   based updater and ownCloud's update infrastructure.
+
+   https://github.com/owncloud/client/issues/8923
+   https://github.com/owncloud/client/pull/9376
+
+* Enhancement - Rewrite wizard from scratch: [#9249](https://github.com/owncloud/client/issues/9249)
+
+   We completely rewrote the wizard from scratch. The new wizard provides greater flexibility
+   and makes adding new features easier in the future. It has also been redesigned to improve the
+   user experience.
+
+   https://github.com/owncloud/client/issues/9249
+   https://github.com/owncloud/client/pull/9482
+   https://github.com/owncloud/client/pull/9566
+
+* Enhancement - Remove use of legacy DAV endpoint: [#9538](https://github.com/owncloud/client/pull/9538)
+
+   We no longer guess the DAV endpoint depending on the chunking-ng feature.
+
+   https://github.com/owncloud/client/pull/9538
+
+* Enhancement - Support for OCIS Spaces: [#9154](https://github.com/owncloud/client/pull/9154)
+
+   We added support to sync OCIS Spaces.
+
+   https://github.com/owncloud/client/pull/9154
+   https://github.com/owncloud/client/pull/9575/
+
+* Enhancement - Set Windows VFS placeholders readonly if needed: [#9598](https://github.com/owncloud/client/issues/9598)
+
+   We now properly set the read only flag on Windows virtual files.
+
+   https://github.com/owncloud/client/issues/9598
+   https://github.com/owncloud/client-desktop-vfs-win/issues/24
+
 Changelog for ownCloud Desktop Client [2.10.1] (2022-04-05)
 =======================================
 The following sections list the changes in ownCloud Desktop Client 2.10.1 relevant to

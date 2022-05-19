@@ -15,12 +15,14 @@
 #ifndef CONNECTIONVALIDATOR_H
 #define CONNECTIONVALIDATOR_H
 
+#include "accountfwd.h"
 #include "owncloudlib.h"
+
+#include <QNetworkReply>
 #include <QObject>
 #include <QStringList>
 #include <QVariantMap>
-#include <QNetworkReply>
-#include "accountfwd.h"
+#include <chrono>
 
 namespace OCC {
 
@@ -59,19 +61,15 @@ namespace OCC {
   +---------------------------+
   |
   +-> checkServerCapabilities
-        JsonApiJob (cloud/capabilities)
-        |
-        +-> slotCapabilitiesRecieved -+
-                                      |
-  +-----------------------------------+
+        JsonApiJob (cloud/capabilities) -> slotCapabilitiesRecieved -+
+                                                                     |
+  +------------------------------------------------------------------+
   |
-  +-> fetchUser
-        PropfindJob
-        |
-        +-> slotUserFetched
-              AvatarJob
-              |
-              +-> slotAvatarImage --> reportResult()
+  +-> fetchUser -+
+                 |
+                 +-> AvatarJob
+                            |
+                            +-> slotAvatarImage --> reportResult()
 
     \endcode
  */
@@ -80,6 +78,11 @@ class ConnectionValidator : public QObject
     Q_OBJECT
 public:
     explicit ConnectionValidator(AccountPtr account, QObject *parent = nullptr);
+    enum class ValidationMode {
+        ValidateServer,
+        ValidateAuth,
+        ValidateAuthAndUpdate
+    };
 
     enum Status {
         Undefined,
@@ -97,7 +100,7 @@ public:
     Q_ENUM(Status);
 
     // How often should the Application ask this object to check for the connection?
-    enum { DefaultCallingIntervalMsec = 62 * 1000 };
+    static constexpr auto DefaultCallingInterval = std::chrono::seconds(62);
 
 
     /** Whether to clear the cookies before we start the CheckServerJob job
@@ -107,12 +110,14 @@ public:
 
 public slots:
     /// Checks the server and the authentication.
-    void checkServer();
-    void checkServerAndUpdate();
+    void checkServer(ConnectionValidator::ValidationMode mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate);
+
     void systemProxyLookupDone(const QNetworkProxy &proxy);
 
 signals:
     void connectionResult(ConnectionValidator::Status status, const QStringList &errors);
+
+    void sslErrors(const QList<QSslError> &errors);
 
 protected slots:
     /// Checks authentication only.
@@ -120,13 +125,10 @@ protected slots:
     void slotCheckServerAndAuth();
 
     void slotStatusFound(const QUrl &url, const QJsonObject &info);
-    void slotNoStatusFound(QNetworkReply *reply);
 
     void slotAuthFailed(QNetworkReply *reply);
     void slotAuthSuccess();
 
-    void slotCapabilitiesRecieved(const QJsonDocument &);
-    void slotUserFetched(const QJsonDocument &);
 #ifndef TOKEN_AUTH_ONLY
     void slotAvatarImage(const QPixmap &img);
 #endif
@@ -140,13 +142,15 @@ private:
      *
      * Returns false and reports ServerVersionMismatch for very old servers.
      */
-    bool setAndCheckServerVersion(const QString &version);
+    bool setAndCheckServerInfo(const QString &version, const QString &serverProduct);
 
     QStringList _errors;
     AccountPtr _account;
-    bool _updateConfig = true;
     bool _clearCookies = false;
+
+    ConnectionValidator::ValidationMode _mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
 };
 }
+
 
 #endif // CONNECTIONVALIDATOR_H

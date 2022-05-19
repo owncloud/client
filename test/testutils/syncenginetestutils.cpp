@@ -6,10 +6,13 @@
  */
 
 #include "syncenginetestutils.h"
+#include "testutils.h"
 
 #include "httplogger.h"
 #include "accessmanager.h"
 #include "libsync/configfile.h"
+
+using namespace std::chrono_literals;
 
 PathComponents::PathComponents(const char *path)
     : PathComponents { QString::fromUtf8(path) }
@@ -17,7 +20,7 @@ PathComponents::PathComponents(const char *path)
 }
 
 PathComponents::PathComponents(const QString &path)
-    : QStringList { path.split(QLatin1Char('/'), QString::SkipEmptyParts) }
+    : QStringList { path.split(QLatin1Char('/'), Qt::SkipEmptyParts) }
 {
 }
 
@@ -783,7 +786,7 @@ FakePayloadReply::FakePayloadReply(QNetworkAccessManager::Operation op, const QN
     setUrl(request.url());
     setOperation(op);
     open(QIODevice::ReadOnly);
-    QTimer::singleShot(10, this, &FakePayloadReply::respond);
+    QTimer::singleShot(10ms, this, &FakePayloadReply::respond);
 }
 
 void FakePayloadReply::respond()
@@ -827,7 +830,7 @@ void FakeErrorReply::respond()
     emit metaDataChanged();
     emit readyRead();
     // finishing can come strictly after readyRead was called
-    QTimer::singleShot(5, this, &FakeErrorReply::slotSetFinished);
+    QTimer::singleShot(5ms, this, &FakeErrorReply::slotSetFinished);
 }
 
 void FakeErrorReply::slotSetFinished()
@@ -868,13 +871,13 @@ void FakeHangingReply::abort()
     emit finished();
 }
 
-FakeQNAM::FakeQNAM(FileInfo initialRoot)
+FakeAM::FakeAM(FileInfo initialRoot)
     : _remoteRootFileInfo { std::move(initialRoot) }
 {
     setCookieJar(new OCC::CookieJar);
 }
 
-QNetworkReply *FakeQNAM::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData)
+QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData)
 {
     QNetworkReply *reply = nullptr;
     auto newRequest = request;
@@ -916,6 +919,12 @@ QNetworkReply *FakeQNAM::createRequest(QNetworkAccessManager::Operation op, cons
             Q_UNREACHABLE();
         }
     }
+    // timeout would be handled by Qt
+    if (request.transferTimeout() != 0) {
+        QTimer::singleShot(request.transferTimeout(), reply, [reply] {
+            reply->abort();
+        });
+    }
     OCC::HttpLogger::logRequest(reply, op, outgoingData);
     return reply;
 }
@@ -931,27 +940,26 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode)
     qDebug() << "FakeFolder operating on" << rootDir;
     toDisk(rootDir, fileTemplate);
 
-    _fakeQnam = new FakeQNAM(fileTemplate);
-    _account = OCC::Account::create();
-    _account->setUrl(QUrl(QStringLiteral("http://admin:admin@localhost/owncloud")));
-    _account->setCredentials(new FakeCredentials { _fakeQnam });
-    _account->setDavDisplayName(QStringLiteral("fakename"));
-    _account->setServerVersion(QStringLiteral("10.0.0"));
+    _fakeAm = new FakeAM(fileTemplate);
+    _account = OCC::TestUtils::createDummyAccount();
+    _account->setCredentials(new FakeCredentials { _fakeAm });
 
     _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db")));
-    _syncEngine.reset(new OCC::SyncEngine(_account, localPath(), QString(), _journalDb.get()));
+    // TODO: davUrl
+
+    const OCC::SyncOptions opt(QSharedPointer<OCC::Vfs>(OCC::createVfsFromPlugin(_vfsMode).release()));
+
+    _syncEngine.reset(new OCC::SyncEngine(_account, opt, _account->davUrl(), localPath(), QString(), _journalDb.get()));
     // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
     _syncEngine->excludedFiles().addManualExclude(QStringLiteral("]*.~*"));
 
     // handle aboutToRemoveAllFiles with a timeout in case our test does not handle it
     QObject::connect(_syncEngine.get(), &OCC::SyncEngine::aboutToRemoveAllFiles, _syncEngine.get(), [this](OCC::SyncFileItem::Direction, std::function<void(bool)> callback) {
-        QTimer::singleShot(1 * 1000, _syncEngine.get(), [callback] {
+        QTimer::singleShot(1s, _syncEngine.get(), [callback] {
             callback(false);
         });
     });
-
-    // Ensure we have a valid VfsOff instance "running"
-    switchToVfs(_syncEngine->syncOptions()._vfs);
+    startVfs();
 
     // A new folder will update the local file state database on first sync.
     // To have a state matching what users will encounter, we have to a sync
@@ -961,6 +969,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode)
 
 void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
 {
+    Q_ASSERT(vfs);
     auto opts = _syncEngine->syncOptions();
 
     opts._vfs->stop();
@@ -968,30 +977,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
 
     opts._vfs = vfs;
     _syncEngine->setSyncOptions(opts);
-
-    OCC::VfsSetupParams vfsParams;
-    vfsParams.filesystemPath = localPath();
-    vfsParams.remotePath = QLatin1Char('/');
-    vfsParams.account = _account;
-    vfsParams.journal = _journalDb.get();
-    vfsParams.providerName = QStringLiteral("OC-TEST");
-    vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
-    vfsParams.providerVersion = QStringLiteral("0.1");
-    QObject::connect(_syncEngine.get(), &QObject::destroyed, vfs.data(), [vfs]() {
-        vfs->stop();
-        vfs->unregisterFolder();
-    });
-
-    QObject::connect(vfs.get(), &OCC::Vfs::error, vfs.get(), [](const QString &error) {
-        QFAIL(qUtf8Printable(error));
-    });
-    QSignalSpy spy(vfs.get(), &OCC::Vfs::started);
-    vfs->start(vfsParams);
-
-    // don't use QVERIFY outside of the test slot
-    if (spy.isEmpty() && !spy.wait()) {
-        QFAIL("VFS Setup failed");
-    }
+    startVfs();
 }
 
 FileInfo FakeFolder::currentLocalState()
@@ -1043,6 +1029,34 @@ void FakeFolder::execUntilItemCompleted(const QString &relativePath)
 bool FakeFolder::isDehydratedPlaceholder(const QString &filePath)
 {
     return _syncEngine->syncOptions()._vfs->isDehydratedPlaceholder(filePath);
+}
+
+void FakeFolder::startVfs()
+{
+    auto vfs = _syncEngine->syncOptions()._vfs;
+    OCC::VfsSetupParams vfsParams;
+    vfsParams.filesystemPath = localPath();
+    vfsParams.remotePath = QLatin1Char('/');
+    vfsParams.account = _account;
+    vfsParams.journal = _journalDb.get();
+    vfsParams.providerName = QStringLiteral("OC-TEST");
+    vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
+    vfsParams.providerVersion = QVersionNumber(0, 1);
+    QObject::connect(_syncEngine.get(), &QObject::destroyed, vfs.data(), [vfs]() {
+        vfs->stop();
+        vfs->unregisterFolder();
+    });
+
+    QObject::connect(vfs.get(), &OCC::Vfs::error, vfs.get(), [](const QString &error) {
+        QFAIL(qUtf8Printable(error));
+    });
+    QSignalSpy spy(vfs.get(), &OCC::Vfs::started);
+    vfs->start(vfsParams);
+
+    // don't use QVERIFY outside of the test slot
+    if (spy.isEmpty() && !spy.wait()) {
+        QFAIL("VFS Setup failed");
+    }
 }
 
 void FakeFolder::toDisk(QDir &dir, const FileInfo &templateFi)

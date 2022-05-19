@@ -19,20 +19,29 @@
 namespace OCC {
 
 ThumbnailJob::ThumbnailJob(const QString &path, AccountPtr account, QObject *parent)
-    : AbstractNetworkJob(account, QLatin1String("index.php/apps/files/api/v1/thumbnail/150/150/") + path, parent)
+    : AbstractNetworkJob(account, account->davUrl(), QStringLiteral("index.php/apps/files/api/v1/thumbnail/150/150") + path, parent)
 {
+    Q_ASSERT(path.startsWith(QLatin1Char('/')));
     setIgnoreCredentialFailure(true);
 }
 
 void ThumbnailJob::start()
 {
-    sendRequest("GET", makeAccountUrl(path()));
+    sendRequest("GET");
     AbstractNetworkJob::start();
 }
 
 bool ThumbnailJob::finished()
 {
-    emit jobFinished(reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply()->readAll());
+    const auto result = reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QPixmap p;
+    if (result == 200) {
+        p.loadFromData(reply()->readAll());
+        if (p.isNull()) {
+            qWarning() << Q_FUNC_INFO << "Invalid thumbnail";
+        }
+    }
+    emit jobFinished(result, p);
     return true;
 }
 }

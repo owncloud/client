@@ -1,24 +1,7 @@
-add_definitions(-DQT_NO_CAST_TO_ASCII
-                -DQT_NO_CAST_FROM_ASCII
-                -DQT_NO_URL_CAST_FROM_STRING
-                -DQT_NO_CAST_FROM_BYTEARRAY)
-
 # global needed variables
-set(APPLICATION_NAME "ocsync")
-
-set(LIBRARY_VERSION ${MIRALL_VERSION})
-set(LIBRARY_SOVERSION "0")
-
-# add definitions
-option(MEM_NULL_TESTS "Enable NULL memory testing" OFF)
-
 
 include(ConfigureChecks.cmake)
 include(../common/common.cmake)
-
-if (MEM_NULL_TESTS)
-  add_definitions(-DCSYNC_MEM_NULL_TESTS)
-endif (MEM_NULL_TESTS)
 
 set(csync_SRCS
   csync.cpp
@@ -42,10 +25,42 @@ configure_file(csync_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/csync_version.h)
 
 add_library(csync SHARED ${common_SOURCES} ${csync_SRCS})
 
-target_include_directories(
-  csync
-  PUBLIC ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/std
+target_include_directories(csync
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/std
+    # include root source dir in order to make src/common available to the targets
+    PUBLIC ${PROJECT_SOURCE_DIR}/src
 )
+
+target_compile_definitions(csync
+    PRIVATE QT_NO_CAST_TO_ASCII
+            QT_NO_CAST_FROM_ASCII
+            QT_NO_URL_CAST_FROM_STRING
+            QT_NO_CAST_FROM_BYTEARRAY
+            QT_USE_QSTRINGBUILDER
+            QT_MESSAGELOGCONTEXT  # enable function name and line number in debug output
+            QT_DEPRECATED_WARNINGS
+            QT_NO_FOREACH
+)
+
+if(TOKEN_AUTH_ONLY)
+    message("Compiling with token authentication")
+    target_compile_definitions(csync PUBLIC -DTOKEN_AUTH_ONLY=1)
+endif()
+
+if(NO_MSG_HANDLER)
+    target_compile_definitions(csync PUBLIC -DNO_MSG_HANDLER=1)
+endif()
+
+if(WIN32)
+    target_compile_definitions(csync
+        PUBLIC __USE_MINGW_ANSI_STDIO=1
+               NOMINMAX
+               # Get APIs from from Vista onwards.
+               _WIN32_WINNT=0x0600
+               WINVER=0x0600
+               NTDDI_VERSION=0x0A000003
+    )
+endif()
 
 generate_export_header(csync
   EXPORT_MACRO_NAME OCSYNC_EXPORT
@@ -55,13 +70,9 @@ generate_export_header(csync
 target_link_libraries(csync
   ${CSYNC_REQUIRED_LIBRARIES}
   SQLite::SQLite3
+  ZLIB::ZLIB
   Qt5::Core Qt5::Concurrent
 )
-
-if(ZLIB_FOUND)
-  target_link_libraries(csync ZLIB::ZLIB)
-endif(ZLIB_FOUND)
-
 
 # For src/common/utility_mac.cpp
 if (APPLE)
@@ -76,10 +87,12 @@ set_target_properties(
       OUTPUT_NAME
         "${APPLICATION_EXECUTABLE}_csync"
       VERSION
-        ${LIBRARY_VERSION}
+        ${MIRALL_VERSION}
       SOVERSION
-        ${LIBRARY_SOVERSION}
+        "0"
 )
 INSTALL(TARGETS csync ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 configure_file(config_csync.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config_csync.h)
+
+configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
