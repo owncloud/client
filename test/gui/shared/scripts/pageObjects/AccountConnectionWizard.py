@@ -11,9 +11,7 @@ class AccountConnectionWizard:
     USERNAME_BOX = names.contentWidget_usernameLineEdit_QLineEdit
     PASSWORD_BOX = names.contentWidget_passwordLineEdit_QLineEdit
     SELECT_LOCAL_FOLDER = names.localDirectoryGroupBox_localDirectoryLineEdit_QLineEdit
-    DIRECTORY_NAME_BOX = (
-        names.localDirectoryGroupBox_chooseLocalDirectoryButton_QToolButton
-    )
+    DIRECTORY_NAME_BOX = names.localDirectoryGroupBox_chooseLocalDirectoryButton_QToolButton
     CHOOSE_BUTTON = names.qFileDialog_Choose_QPushButton
     FINISH_BUTTON = {
         "name": "qt_wizard_finish",
