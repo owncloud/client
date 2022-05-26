@@ -11,7 +11,9 @@ class AccountConnectionWizard:
     USERNAME_BOX = names.contentWidget_usernameLineEdit_QLineEdit
     PASSWORD_BOX = names.contentWidget_passwordLineEdit_QLineEdit
     SELECT_LOCAL_FOLDER = names.localDirectoryGroupBox_localDirectoryLineEdit_QLineEdit
-    DIRECTORY_NAME_BOX = names.localDirectoryGroupBox_chooseLocalDirectoryButton_QToolButton
+    DIRECTORY_NAME_BOX = (
+        names.localDirectoryGroupBox_chooseLocalDirectoryButton_QToolButton
+    )
     CHOOSE_BUTTON = names.qFileDialog_Choose_QPushButton
     FINISH_BUTTON = {
         "name": "qt_wizard_finish",
@@ -20,22 +22,23 @@ class AccountConnectionWizard:
         "window": names.owncloudWizard_OCC_OwncloudWizard,
     }
     ERROR_LABEL = {
-        "name": "errorLabel",
+        "name": "errorMessageLabel",
         "type": "QLabel",
         "visible": 1,
-        "window": names.owncloudWizard_OCC_OwncloudWizard,
+        "window": names.setupWizardWindow_OCC_Wizard_SetupWizardWindow,
     }
     CREDENTIAL_PAGE = {
-        "name": "OwncloudHttpCredsPage",
-        "type": "OCC::OwncloudHttpCredsPage",
+        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
+        "name": "BasicCredentialsSetupWizardPage",
+        "type": "OCC::Wizard::BasicCredentialsSetupWizardPage",
         "visible": 1,
-        "window": names.owncloudWizard_OCC_OwncloudWizard,
     }
+
     ADVANCE_SETUP_PAGE = {
         "name": "OwncloudAdvancedSetupPage",
         "type": "OCC::OwncloudAdvancedSetupPage",
         "visible": 1,
-        "window": names.owncloudWizard_OCC_OwncloudWizard,
+        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
     }
     MANUAL_SYNC_FOLDER_OPTION = {
         "name": "rManualFolder",
