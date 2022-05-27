@@ -94,9 +94,16 @@ class AccountConnectionWizard:
             clientDetails['server'],
         )
         squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
-        squish.clickButton(
-            squish.waitForObject(self.CONFIRM_INSECURE_CONNECTION_BUTTON)
-        )
+
+        try:
+            squish.clickButton(
+                squish.waitForObject(self.CONFIRM_INSECURE_CONNECTION_BUTTON)
+            )
+        except:
+            test.log(
+                "No insecure connection warning for server " + clientDetails['server']
+            )
+            pass
 
     def addUserCreds(self, context):
         clientDetails = getClientDetails(context)

@@ -126,3 +126,5 @@ contentWidget_advancedConfigGroupBox_QGroupBox = {"container": setupWizardWindow
 advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox = {"container": contentWidget_advancedConfigGroupBox_QGroupBox, "name": "localDirectoryGroupBox", "type": "QGroupBox", "visible": 1}
 localDirectoryGroupBox_localDirectoryLineEdit_QLineEdit = {"container": advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox, "name": "localDirectoryLineEdit", "type": "QLineEdit", "visible": 1}
 localDirectoryGroupBox_chooseLocalDirectoryButton_QToolButton = {"container": advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox, "name": "chooseLocalDirectoryButton", "type": "QToolButton", "visible": 1}
+oCC_TlsErrorDialog_OCC_TlsErrorDialog = {"name": "OCC__TlsErrorDialog", "type": "OCC::TlsErrorDialog", "visible": 1}
+oCC_TlsErrorDialog_Yes_QPushButton = {"text": "Yes", "type": "QPushButton", "unnamed": 1, "visible": 1, "window": oCC_TlsErrorDialog_OCC_TlsErrorDialog}

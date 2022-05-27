@@ -37,12 +37,12 @@ Feature: adding accounts
             | password | 12345 |
         Then error "Login failed: username and/or password incorrect" should be displayed
 
-	@skip @issue-9733
+
     Scenario: Adding account with self signed certificate for the first time
         Given the user has started the client
         When the user adds the following server address:
             | server | %secure_local_server% |
         And the user accepts the certificate
-        Then the lock shown should be closed
+        Then credentials wizard should be visible
 
 
