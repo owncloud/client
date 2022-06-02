@@ -26,7 +26,7 @@ OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.6.0"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
-PLUGINS_SLACK = "plugins/slack"
+PLUGINS_SLACK = "plugins/slack:1"
 PYTHON = "python"
 THEGEEKLAB_DRONE_GITHUB_COMMENT = "thegeeklab/drone-github-comment:1"
 TOOLHIPPIE_CALENS = "toolhippie/calens:latest"
@@ -78,11 +78,10 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_tests_format(build_trigger) + \
-                    check_starlark(build_trigger) + \
-                    changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, version = "latest")
+                    notification(
+                        name = "build",
+                        trigger = build_trigger,
+                    )
 
     return pipelines
 
@@ -143,7 +142,7 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
 def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @notskip" % GUI_TEST_REPORT_DIR
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -391,8 +390,9 @@ def notification(name, trigger = {}):
                 "image": PLUGINS_SLACK,
                 "settings": {
                     "webhook": from_secret("private_rocketchat"),
-                    "channel": "desktop-internal",
-                    "template": "file:%s/template.md" % NOTIFICATION_TEMPLATE_DIR,
+                    "channel": "desktop-client-builds",
+                    # "template": "file:%s/template.md" % NOTIFICATION_TEMPLATE_DIR,
+                    # "template": "hello from drone",
                 },
                 "depends_on": ["create-template"],
             },
