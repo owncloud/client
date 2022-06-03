@@ -1299,10 +1299,8 @@ def step(context):
 @Then('the sync all checkbox should be checked')
 def step(context):
     newAccount = AccountConnectionWizard()
-    test.compare(
-        waitForObjectExists(newAccount.SYNC_DIALOG_ROOT_FOLDER).checkState,
-        "checked",
-        "Assert sync all checkbox is checked",
+    clickButton(
+        waitForObject(newAccount.SYNC_CONNECTION_WIZARD_FINISH_BUTTON)
     )
 
 
@@ -1466,3 +1464,38 @@ def step(context, username, foldername):
 @Then("credentials wizard should be visible")
 def step(context):
     waitForObject(AccountConnectionWizard.CREDENTIAL_PAGE)
+
+
+@When("user selects configure_synchronization_manually option in advanced section")
+def step(context):
+    clickButton(
+        waitForObject(
+            names.syncModeGroupBox_configureSyncManuallyRadioButton_QRadioButton
+        )
+    )
+    clickButton(waitForObject(names.setupWizardWindow_nextButton_QPushButton))
+
+
+@Then("dialog add folder sync connection should be visible")
+def step(context):
+    clickButton(
+        waitForObject(
+            names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
+        )
+    )
+
+
+@Then("dialog select a remote destination folder should be visible")
+def step(context):
+    mouseClick(
+        waitForObjectItem(names.groupBox_folderTreeWidget_QTreeWidget, "ownCloud"),
+        0,
+        0,
+        Qt.NoModifier,
+        Qt.LeftButton,
+    )
+    clickButton(
+        waitForObject(
+            names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
+        )
+    )

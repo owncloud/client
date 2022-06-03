@@ -56,7 +56,7 @@ Feature: Syncing files
             client content
             """
 
-    @skip @issue-9733
+
     Scenario: Sync all is selected by default
         Given user "Alice" has created folder "simple-folder" on the server
         And user "Alice" has created folder "large-folder" on the server
@@ -65,8 +65,9 @@ Feature: Syncing files
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
-        When the user opens chose_what_to_sync dialog
-        Then the dialog chose_what_to_sync should be visible
+        When user selects configure_synchronization_manually option in advanced section
+        Then dialog add folder sync connection should be visible
+        And dialog select a remote destination folder should be visible
         And the sync all checkbox should be checked
 
     @skip @issue-9733
