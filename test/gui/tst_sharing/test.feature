@@ -483,7 +483,7 @@ Feature: Sharing
         Then the expiration date of the last public link of file "textfile.txt" should be "%default%"
         And as user "Alice" the file "textfile.txt" should have a public link on the server
 
-    @issue-9321 @skip
+    @issue-9321
     Scenario: simple sharing of file and folder by public link with expiration date
         Given user "Alice" has set up a client with default settings
         And user "Alice" has created folder "FOLDER" on the server
@@ -502,7 +502,7 @@ Feature: Sharing
         And the last public link share response of user "Alice" should include the following fields on the server
             | expireDate | 2031-12-30 |
 
-    @issue-9321 @skip
+    @issue-9321
     Scenario: simple sharing of a file by public link with password and expiration date
         Given user "Alice" has set up a client with default settings
         And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
