@@ -132,3 +132,4 @@ add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton = {"name": "__qt
 add_Folder_Sync_Connection_groupBox_QGroupBox = {"name": "groupBox", "type": "QGroupBox", "visible": 1, "window": add_Folder_Sync_Connection_OCC_FolderWizard}
 groupBox_folderTreeWidget_QTreeWidget = {"container": add_Folder_Sync_Connection_groupBox_QGroupBox, "name": "folderTreeWidget", "type": "QTreeWidget", "visible": 1}
 add_Folder_Sync_Connection_qt_wizard_finish_QPushButton = {"name": "qt_wizard_finish", "type": "QPushButton", "visible": 1, "window": add_Folder_Sync_Connection_OCC_FolderWizard}
+add_Folder_Sync_Connection_FolderWizardSourcePage_OCC_FolderWizardLocalPath = {"name": "FolderWizardSourcePage", "type": "OCC::FolderWizardLocalPath", "visible": 1, "window": add_Folder_Sync_Connection_OCC_FolderWizard}

@@ -1299,9 +1299,7 @@ def step(context):
 @Then('the sync all checkbox should be checked')
 def step(context):
     newAccount = AccountConnectionWizard()
-    clickButton(
-        waitForObject(newAccount.SYNC_CONNECTION_WIZARD_FINISH_BUTTON)
-    )
+    waitForObject(newAccount.SYNC_CONNECTION_WIZARD_FINISH_BUTTON)
 
 
 @Then("the folders should be in the following order:")
@@ -1476,7 +1474,19 @@ def step(context):
     clickButton(waitForObject(names.setupWizardWindow_nextButton_QPushButton))
 
 
-@Then("dialog add folder sync connection should be visible")
+@Then("wizard add folder sync connection should be visible")
+def step(context):
+    waitForObject(
+        names.add_Folder_Sync_Connection_FolderWizardSourcePage_OCC_FolderWizardLocalPath
+    )
+
+
+@Then("wizard select a remote destination folder should be visible")
+def step(context):
+    waitForObjectItem(names.groupBox_folderTreeWidget_QTreeWidget, "ownCloud")
+
+
+@When("user clicks on next button")
 def step(context):
     clickButton(
         waitForObject(
@@ -1485,15 +1495,10 @@ def step(context):
     )
 
 
-@Then("dialog select a remote destination folder should be visible")
-def step(context):
-    mouseClick(
-        waitForObjectItem(names.groupBox_folderTreeWidget_QTreeWidget, "ownCloud"),
-        0,
-        0,
-        Qt.NoModifier,
-        Qt.LeftButton,
-    )
+@When('user selects "|any|" as a remote destination folder')
+def step(context, folderName):
+    newAccount = AccountConnectionWizard()
+    newAccount.OWNCLOUD_AS_A_ROOT_SYNC_DIRECTORY(folderName)
     clickButton(
         waitForObject(
             names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton

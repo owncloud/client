@@ -66,9 +66,11 @@ Feature: Syncing files
             | user     | Alice          |
             | password | 1234           |
         When user selects configure_synchronization_manually option in advanced section
-        Then dialog add folder sync connection should be visible
-        And dialog select a remote destination folder should be visible
-        And the sync all checkbox should be checked
+        Then wizard add folder sync connection should be visible
+        When user clicks on next button
+        Then wizard select a remote destination folder should be visible
+        When user selects "ownCloud" as a remote destination folder
+        Then the sync all checkbox should be checked
 
     @skip @issue-9733
     Scenario: Sync only one folder from the server
