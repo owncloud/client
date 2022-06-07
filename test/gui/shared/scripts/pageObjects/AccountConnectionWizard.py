@@ -53,6 +53,15 @@ class AccountConnectionWizard:
         "window": names.owncloudWizard_OCC_OwncloudWizard,
     }
     SELECTIVE_SYNC_DIALOG = names.choose_What_to_Sync_OCC_SelectiveSyncDialog
+    ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON = (
+        names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
+    )
+    CONF_SYNC_MANUALLY_RADIO_BUTTON = (
+        names.syncModeGroupBox_configureSyncManuallyRadioButton_QRadioButton
+    )
+    ADD_FOLDER_SYNC_CONNECTION_WIZARD = (
+        names.add_Folder_Sync_Connection_FolderWizardSourcePage_OCC_FolderWizardLocalPath
+    )
     SYNC_CONNECTION_WIZARD_FINISH_BUTTON = (
         names.add_Folder_Sync_Connection_qt_wizard_finish_QPushButton
     )

@@ -1466,19 +1466,15 @@ def step(context):
 
 @When("user selects configure_synchronization_manually option in advanced section")
 def step(context):
-    clickButton(
-        waitForObject(
-            names.syncModeGroupBox_configureSyncManuallyRadioButton_QRadioButton
-        )
-    )
-    clickButton(waitForObject(names.setupWizardWindow_nextButton_QPushButton))
+    newAccount = AccountConnectionWizard()
+    clickButton(waitForObject(newAccount.CONF_SYNC_MANUALLY_RADIO_BUTTON))
+    clickButton(waitForObject(newAccount.NEXT_BUTTON))
 
 
 @Then("wizard add folder sync connection should be visible")
 def step(context):
-    waitForObject(
-        names.add_Folder_Sync_Connection_FolderWizardSourcePage_OCC_FolderWizardLocalPath
-    )
+    newAccount = AccountConnectionWizard()
+    waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
 
 
 @Then("wizard select a remote destination folder should be visible")
@@ -1488,19 +1484,12 @@ def step(context):
 
 @When("user clicks on next button")
 def step(context):
-    clickButton(
-        waitForObject(
-            names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
-        )
-    )
+    newAccount = AccountConnectionWizard()
+    clickButton(waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON))
 
 
 @When('user selects "|any|" as a remote destination folder')
 def step(context, folderName):
     newAccount = AccountConnectionWizard()
     newAccount.OWNCLOUD_AS_A_ROOT_SYNC_DIRECTORY(folderName)
-    clickButton(
-        waitForObject(
-            names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
-        )
-    )
+    clickButton(waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON))
