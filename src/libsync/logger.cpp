@@ -35,6 +35,10 @@ namespace {
 constexpr int crashLogSizeC = 20;
 constexpr int maxLogSizeC = 1024 * 1024 * 100; // 100 MiB
 constexpr int minLogsToKeepC = 5;
+QString dateFormatC()
+{
+    return QStringLiteral("MMdd_hh.mm.ss.zzz");
+}
 
 #ifdef Q_OS_WIN
 bool isDebuggerPresent()
@@ -178,9 +182,10 @@ void Logger::setMaxLogFiles(int i)
     _maxLogFiles = std::max(i, minLogsToKeepC);
 }
 
-void Logger::setLogDir(const QString &dir)
+void Logger::setLogDir(const QString &dir, bool includePidInFileName)
 {
     _logDirectory = dir;
+    _includePidInFileName = includePidInFileName;
     rotateLog();
 }
 
@@ -281,9 +286,23 @@ void Logger::rotateLog()
         if (!dir.exists()) {
             dir.mkpath(QStringLiteral("."));
         }
+        const QString pid = QString::number(qApp->applicationPid());
+        const auto logFileNamem = [&] {
+            if (_includePidInFileName) {
+                return QStringLiteral("%1.%2.log").arg(qApp->applicationName(), pid);
+            }
+            return QStringLiteral("%1.log").arg(qApp->applicationName());
+        };
+
+        const auto archiveName = [&](const QFileInfo &info) {
+            if (_includePidInFileName) {
+                return QStringLiteral("%1.%2-%3.log").arg(qApp->applicationName(), pid, info.birthTime().toString(dateFormatC()));
+            }
+            return QStringLiteral("%1-%2.log").arg(qApp->applicationName(), info.birthTime().toString(dateFormatC()));
+        };
 
         // Tentative new log name, will be adjusted if one like this already exists
-        const QString logName = dir.filePath(QStringLiteral("%1.log").arg(qApp->applicationName()));
+        const QString logName = dir.filePath(logFileNamem());
         QString previousLog;
 
         if (_logFile.isOpen()) {
@@ -291,8 +310,8 @@ void Logger::rotateLog()
         }
         // rename previous log file if size != 0
         const auto info = QFileInfo(logName);
-        if (info.exists(logName) && !info.size() == 0) {
-            previousLog = dir.filePath(QStringLiteral("%1-%2.log").arg(qApp->applicationName(), info.created().toString(QStringLiteral("MMdd_hh.mm.ss.zzz"))));
+        if (info.exists(logName) && !(info.size() == 0)) {
+            previousLog = dir.filePath(archiveName(info));
             if (!QFile(logName).rename(previousLog)) {
                 std::cerr << "Failed to rename: " << qPrintable(logName) << " to " << qPrintable(previousLog) << std::endl;
             }
@@ -305,14 +324,25 @@ void Logger::rotateLog()
 
         QtConcurrent::run([now, previousLog, dir, maxLogFiles = _maxLogFiles] {
             // Expire old log files and deal with conflicts
-            auto files = dir.entryList(QStringList(QStringLiteral("*%1-*.log.gz").arg(qApp->applicationName())), QDir::Files, QDir::Name);
+
+            const auto fileFilterPattern = {
+                // !_includePidInFileName
+                QStringLiteral("*%1-*.log.gz").arg(qApp->applicationName()),
+                // _includePidInFileName
+                QStringLiteral("*%1.*-*.log.gz").arg(qApp->applicationName()),
+                // the actual log files _includePidInFileName
+                QStringLiteral("*%1.*.log").arg(qApp->applicationName()),
+            };
+            auto files = dir.entryInfoList(fileFilterPattern, QDir::Files, QDir::Name);
             if (files.size() > maxLogFiles) {
-                std::sort(files.begin(), files.end(), std::greater<QString>());
+                std::sort(files.begin(), files.end(), [](const QFileInfo &a, const QFileInfo &b) {
+                    return a.birthTime() > b.birthTime();
+                });
                 // remove the maxLogFiles newest, we keep them
                 files.erase(files.begin(), files.begin() + maxLogFiles);
-                for (const auto &s : files) {
-                    if (!QFile::remove(dir.absoluteFilePath(s))) {
-                        std::cerr << "Failed to remove: " << qPrintable(s) << std::endl;
+                for (const auto &f : files) {
+                    if (!QFile::remove(f.absoluteFilePath())) {
+                        std::cerr << "Failed to remove: " << qPrintable(f.absoluteFilePath()) << std::endl;
                     }
                 }
             }

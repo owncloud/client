@@ -46,7 +46,7 @@ public:
     static Logger *instance();
 
     void setLogFile(const QString &name);
-    void setLogDir(const QString &dir);
+    void setLogDir(const QString &dir, bool includePidInFileName = false);
     void setLogFlush(bool flush);
 
     /**
@@ -97,7 +97,17 @@ private:
     bool _logDebug = false;
     QScopedPointer<QTextStream> _logstream;
     mutable QMutex _mutex;
+
     QString _logDirectory;
+    /**
+     * When using _logDirectory include the pid in the logs file name
+     */
+    bool _includePidInFileName = false;
+
+    /**
+     * Housekeeping
+     * TODO: should not be part of the logger interface
+     */
     bool _temporaryFolderLogDir = false;
     QSet<QString> _logRules;
     QVector<QString> _crashLog;
