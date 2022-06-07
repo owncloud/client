@@ -1479,7 +1479,7 @@ def step(context):
 
 @Then("wizard select a remote destination folder should be visible")
 def step(context):
-    waitForObjectItem(names.groupBox_folderTreeWidget_QTreeWidget, "ownCloud")
+    waitForObject(names.add_Folder_Sync_Connection_groupBox_QGroupBox)
 
 
 @When("user clicks on next button")
