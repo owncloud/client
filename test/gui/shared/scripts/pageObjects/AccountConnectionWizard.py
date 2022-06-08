@@ -53,6 +53,7 @@ class AccountConnectionWizard:
         "window": names.owncloudWizard_OCC_OwncloudWizard,
     }
     SELECTIVE_SYNC_DIALOG = names.choose_What_to_Sync_OCC_SelectiveSyncDialog
+    SELECT_REMOTE_DESTINATION_FOLDER_WIZARD = names.add_Folder_Sync_Connection_groupBox_QGroupBox
     ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON = (
         names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
     )
@@ -196,7 +197,7 @@ class AccountConnectionWizard:
             )
         )
 
-    def OWNCLOUD_AS_A_ROOT_SYNC_DIRECTORY(self, folderName):
+    def selectARootSyncDirectory(self, folderName):
         squish.mouseClick(
             squish.waitForObjectItem(
                 names.groupBox_folderTreeWidget_QTreeWidget, folderName

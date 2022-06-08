@@ -66,9 +66,9 @@ Feature: Syncing files
             | user     | Alice          |
             | password | 1234           |
         When user selects configure_synchronization_manually option in advanced section
-        Then wizard add folder sync connection should be visible
-        When user clicks on next button
-        Then wizard select a remote destination folder should be visible
+        Then add folder sync connection wizard should be visible
+        When user clicks on the next button in sync connection wizard
+        Then select a remote destination folder wizard should be visible
         When user selects "ownCloud" as a remote destination folder
         Then the sync all checkbox should be checked
 
