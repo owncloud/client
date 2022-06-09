@@ -1299,7 +1299,10 @@ def step(context):
 @Then('the sync all checkbox should be checked')
 def step(context):
     newAccount = AccountConnectionWizard()
-    waitForObject(newAccount.SYNC_CONNECTION_WIZARD_FINISH_BUTTON)
+    state = waitForObject(
+        names.deselect_remote_folders_you_do_not_wish_to_synchronize_ownCloud_QModelIndex
+    )["checkState"]
+    test.compare("checked", state, "Sync all checkbox is checked")
 
 
 @Then("the folders should be in the following order:")

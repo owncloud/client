@@ -53,7 +53,9 @@ class AccountConnectionWizard:
         "window": names.owncloudWizard_OCC_OwncloudWizard,
     }
     SELECTIVE_SYNC_DIALOG = names.choose_What_to_Sync_OCC_SelectiveSyncDialog
-    SELECT_REMOTE_DESTINATION_FOLDER_WIZARD = names.add_Folder_Sync_Connection_groupBox_QGroupBox
+    SELECT_REMOTE_DESTINATION_FOLDER_WIZARD = (
+        names.add_Folder_Sync_Connection_groupBox_QGroupBox
+    )
     ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON = (
         names.add_Folder_Sync_Connection_qt_passive_wizardbutton1_QPushButton
     )
@@ -62,9 +64,6 @@ class AccountConnectionWizard:
     )
     ADD_FOLDER_SYNC_CONNECTION_WIZARD = (
         names.add_Folder_Sync_Connection_FolderWizardSourcePage_OCC_FolderWizardLocalPath
-    )
-    SYNC_CONNECTION_WIZARD_FINISH_BUTTON = (
-        names.add_Folder_Sync_Connection_qt_wizard_finish_QPushButton
     )
     SYNC_DIALOG_FOLDER_TREE = names.choose_What_To_Synchronize_QTreeWidget
     SYNC_DIALOG_ROOT_FOLDER = {
