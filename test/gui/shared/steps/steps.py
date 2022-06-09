@@ -1299,9 +1299,7 @@ def step(context):
 @Then('the sync all checkbox should be checked')
 def step(context):
     newAccount = AccountConnectionWizard()
-    state = waitForObject(
-        names.deselect_remote_folders_you_do_not_wish_to_synchronize_ownCloud_QModelIndex
-    )["checkState"]
+    state = waitForObject(newAccount.SYNC_DIALOG_ROOT_FOLDER)["checkState"]
     test.compare("checked", state, "Sync all checkbox is checked")
 
 
@@ -1467,33 +1465,35 @@ def step(context):
     waitForObject(AccountConnectionWizard.CREDENTIAL_PAGE)
 
 
-@When("user selects configure_synchronization_manually option in advanced section")
+@When("the user selects configure_synchronization_manually option in advanced section")
 def step(context):
     newAccount = AccountConnectionWizard()
     clickButton(waitForObject(newAccount.CONF_SYNC_MANUALLY_RADIO_BUTTON))
     clickButton(waitForObject(newAccount.NEXT_BUTTON))
 
 
-@Then("add folder sync connection wizard should be visible")
+@Then("the 'add folder sync connection' wizard should be visible")
 def step(context):
     newAccount = AccountConnectionWizard()
     waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
 
 
-@Then("select a remote destination folder wizard should be visible")
+@Then("the 'select a remote destination folder' wizard should be visible")
 def step(context):
     newAccount = AccountConnectionWizard()
     waitForObject(newAccount.SELECT_REMOTE_DESTINATION_FOLDER_WIZARD)
 
 
-@When("user clicks on the next button in sync connection wizard")
+@When("the user clicks on the next button in sync connection wizard")
 def step(context):
     newAccount = AccountConnectionWizard()
+    waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
     clickButton(waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON))
 
 
-@When('user selects "|any|" as a remote destination folder')
+@When('the user selects "|any|" as a remote destination folder')
 def step(context, folderName):
     newAccount = AccountConnectionWizard()
+    waitForObject(newAccount.SELECT_REMOTE_DESTINATION_FOLDER_WIZARD)
     newAccount.selectARootSyncDirectory(folderName)
     clickButton(waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON))
