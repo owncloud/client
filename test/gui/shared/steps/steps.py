@@ -1472,18 +1472,6 @@ def step(context):
     clickButton(waitForObject(newAccount.NEXT_BUTTON))
 
 
-@Then("the 'add folder sync connection' wizard should be visible")
-def step(context):
-    newAccount = AccountConnectionWizard()
-    waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
-
-
-@Then("the 'select a remote destination folder' wizard should be visible")
-def step(context):
-    newAccount = AccountConnectionWizard()
-    waitForObject(newAccount.SELECT_REMOTE_DESTINATION_FOLDER_WIZARD)
-
-
 @When("the user clicks on the next button in sync connection wizard")
 def step(context):
     newAccount = AccountConnectionWizard()
