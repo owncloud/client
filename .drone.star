@@ -36,6 +36,20 @@ dir = {
     "base": "/drone",
 }
 
+gui_tests1 = [
+    "tst_sharing",
+]
+gui_tests2 = [
+    "tst_addAccount",
+    "tst_syncing",
+    "tst_checkAlltabs",
+    "tst_vfs",
+    "tst_deletFilesFolders",
+    "tst_editFiles",
+    "tst_loginLogout",
+    "tst_removeAccountConnection",
+]
+
 def main(ctx):
     build_trigger = {
         "ref": [
@@ -180,7 +194,8 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                      build_config["build_command"],
                      build_dir,
                  ) +
-                 gui_tests(squish_parameters, [build_config["build_command"]]) +
+                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = gui_tests1, pipeline_name = "gui_tests1") +
+                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = gui_tests2, pipeline_name = "gui_tests2") +
                  # GUI test result has been disabled for now, as we squish can not produce the result in both html and json format.
                  # Disabled untill the feature to generate json result is implemented in squish, or some other method to reuse the log parser is implemented.
                  #  showGuiTestResult() +
@@ -243,9 +258,13 @@ def unit_tests(build_dir, depends_on = []):
         "depends_on": depends_on,
     }]
 
-def gui_tests(squish_parameters = "", depends_on = []):
+def gui_tests(squish_parameters = "", depends_on = [], testCases = [], pipeline_name = ""):
+    if (len(testCases) > 0):
+        for testCase in testCases:
+            squish_parameters += " --testcase " + testCase
+
     return [{
-        "name": "GUItests",
+        "name": pipeline_name,
         "image": OC_CI_SQUISH,
         "environment": {
             "LICENSEKEY": from_secret("squish_license_server"),
@@ -559,7 +578,7 @@ def uploadGuiTestLogs():
                 "from_secret": "cache_public_s3_secret_key",
             },
         },
-        "depends_on": stepDependsOn(gui_tests()),
+        "depends_on": ["gui_tests1", "gui_tests2"],
         "when": {
             "status": [
                 "failure",
