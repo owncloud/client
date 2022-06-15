@@ -5,6 +5,9 @@
 # with a specific compiler.
 #
 
+from unittest import TestCase
+
+
 DEFAULT_PHP_VERSION = "7.4"
 GUI_TEST_DIR = "/drone/src/test/gui"
 GUI_TEST_REPORT_DIR = "/drone/src/test/guiReportUpload"
@@ -82,7 +85,8 @@ def main(ctx):
                     check_starlark(build_trigger) + \
                     changelog(ctx, trigger = build_trigger) + \
                     unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, version = "latest")
+                    gui_test_pipeline(ctx, trigger = build_trigger, version = "latest", TestCases=["tst_addAccount","tst_sharing"]) + \
+                    gui_test_pipeline(ctx, trigger = build_trigger, version = "latest", TestCases=["tst_loginLogout","tst_removeAccountConnection","tst_checkAlltabs","tst_vfs","tst_deletFilesFolders","tst_editFiles"])
 
     return pipelines
 
@@ -140,15 +144,20 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
         "trigger": trigger,
     }]
 
-def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
+def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa", TestCases = []):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = " --reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
 
     if (len(filterTags) > 0):
         for tags in filterTags:
             squish_parameters += " --tags " + tags
             pipeline_name += "-" + tags
+
+    if (len(TestCases) > 0):
+        for testCase in TestCases:
+            squish_parameters += " --testcase " + testCase
+            pipeline_name += "-" + testCase
 
     build_config = {
         "c_compiler": "gcc",
@@ -361,7 +370,7 @@ def notification(name, trigger = {}):
         trigger["status"] = []
 
     trigger["status"].append("success")
-    trigger["status"].append("failure")
+    trigger["status"].append("fadocker run -v ${PWD}:/app owncloudci/bazel-buildifier bash -c "buildifier --mode=fix /app/.drone.star"ilure")
 
     return [{
         "kind": "pipeline",
