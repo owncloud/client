@@ -144,6 +144,14 @@ def step(context):
     newAccount.selectSyncFolder(context)
 
 
+@When('the user adds the following account information:')
+def step(context):
+    newAccount = AccountConnectionWizard()
+    newAccount.addServer(context)
+    newAccount.addUserCreds(context)
+    newAccount.selectDownloadDir(context)
+
+
 # Using socket API to check file sync status
 def hasSyncStatus(type, itemName, status):
     if type != 'FILE' and type != 'FOLDER':
@@ -1487,3 +1495,18 @@ def step(context, folderName):
     waitForObject(newAccount.SELECT_REMOTE_DESTINATION_FOLDER_WIZARD)
     newAccount.selectARootSyncDirectory(folderName)
     clickButton(waitForObject(newAccount.ADD_FOLDER_SYNC_CONNECTION_NEXT_BUTTON))
+
+
+@Then("the default sync directory should be created in local file system")
+def step(context):
+    newAccount = AccountConnectionWizard()
+    default_sync_path = waitForObject(newAccount.CHOOSE_LOCAL_DOWNLOAD_DIRECTORY)[
+        'displayText'
+    ]
+    folder_name = str(default_sync_path)
+    clickButton(waitForObject(newAccount.CONF_SYNC_MANUALLY_RADIO_BUTTON))
+    clickButton(waitForObject(newAccount.NEXT_BUTTON))
+    exist = squish.waitFor(
+        lambda: os.path.exists(folder_name), context.userData['maxSyncTimeout'] * 500
+    )
+    test.xcompare(True, exist)

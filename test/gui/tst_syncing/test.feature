@@ -70,6 +70,17 @@ Feature: Syncing files
         And the user selects "ownCloud" as a remote destination folder
         Then the sync all checkbox should be checked
 
+    @issue-9797
+    Scenario: Not to create default sync path as a sync folder
+        Given user "Alice" has created folder "simple-folder" on the server
+        And user "Alice" has created folder "large-folder" on the server
+        And the user has started the client
+        When the user adds the following account information:
+            | server   | %local_server% |
+            | user     | Alice          |
+            | password | 1234           |
+        Then the default sync directory should be created in local file system
+
     @skip @issue-9733
     Scenario: Sync only one folder from the server
         Given user "Alice" has created folder "simple-folder" on the server

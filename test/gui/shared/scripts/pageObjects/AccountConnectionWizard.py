@@ -52,7 +52,13 @@ class AccountConnectionWizard:
         "visible": 1,
         "window": names.owncloudWizard_OCC_OwncloudWizard,
     }
-    CHOOSE_LOCAL_SYNC_FOLDER = {
+    CHOOSE_LOCAL_DOWNLOAD_DIRECTORY = {
+        "container": names.advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox,
+        "name": "localDirectoryLineEdit",
+        "type": "QLineEdit",
+        "visible": 1,
+    }
+    SYNC_PATH_INPUT_FIELD = {
         "container": names.add_Folder_Sync_Connection_groupBox_QGroupBox,
         "name": "localFolderLineEdit",
         "type": "QLineEdit",
@@ -156,6 +162,12 @@ class AccountConnectionWizard:
             str(squish.waitForObjectExists(self.SELECT_LOCAL_FOLDER).text),
             self.sanitizeFolderPath(syncPath),
         )
+
+    def selectDownloadDir(self, context):
+        clientDetails = getClientDetails(context)
+        # create sync folder for user
+        syncPath = createUserSyncPath(context, clientDetails['user'])
+        squish.waitForObject(self.ADVANCED_CONFIGURATION_CHECKBOX).setChecked(True)
 
     def addAccount(self, context):
         self.addServer(context)
