@@ -36,19 +36,21 @@ dir = {
     "base": "/drone",
 }
 
-gui_tests1 = [
-    "tst_sharing",
-]
-gui_tests2 = [
-    "tst_addAccount",
-    "tst_syncing",
-    "tst_checkAlltabs",
-    "tst_vfs",
-    "tst_deletFilesFolders",
-    "tst_editFiles",
-    "tst_loginLogout",
-    "tst_removeAccountConnection",
-]
+config = {
+    "gui_tests1": [
+        "tst_sharing",
+    ],
+    "gui_tests2": [
+        "tst_addAccount",
+        "tst_syncing",
+        "tst_checkAlltabs",
+        "tst_vfs",
+        "tst_deletFilesFolders",
+        "tst_editFiles",
+        "tst_loginLogout",
+        "tst_removeAccountConnection",
+    ],
+}
 
 def main(ctx):
     build_trigger = {
@@ -194,8 +196,8 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                      build_config["build_command"],
                      build_dir,
                  ) +
-                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = gui_tests1, pipeline_name = "gui_tests1") +
-                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = gui_tests2, pipeline_name = "gui_tests2") +
+                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = config["gui_tests1"], pipeline_name = "gui_tests1") +
+                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = config["gui_tests2"], pipeline_name = "gui_tests2") +
                  # GUI test result has been disabled for now, as we squish can not produce the result in both html and json format.
                  # Disabled untill the feature to generate json result is implemented in squish, or some other method to reuse the log parser is implemented.
                  #  showGuiTestResult() +
