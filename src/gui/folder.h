@@ -480,7 +480,7 @@ private:
 
     bool checkLocalPath();
 
-    SyncOptions loadSyncOptions();
+    std::unique_ptr<SyncOptions> loadSyncOptions();
 
     enum LogStatus {
         LogStatusRemove,

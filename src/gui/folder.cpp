@@ -105,7 +105,7 @@ Folder::Folder(const FolderDefinition &definition,
     if (checkLocalPath()) {
         // those errors should not persist over sessions
         _journal.wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
-        _engine.reset(new SyncEngine(_accountState->account(), loadSyncOptions(), webDavUrl(), path(), remotePath(), &_journal));
+        _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
         _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles);
 
@@ -225,25 +225,25 @@ bool Folder::checkLocalPath()
     return true;
 }
 
-SyncOptions Folder::loadSyncOptions()
+std::unique_ptr<SyncOptions> Folder::loadSyncOptions()
 {
-    SyncOptions opt(_vfs);
+    auto opt = std::make_unique<SyncOptions>(_vfs);
     ConfigFile cfgFile;
 
     auto newFolderLimit = cfgFile.newBigFolderSizeLimit();
-    opt._newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
-    opt._confirmExternalStorage = cfgFile.confirmExternalStorage();
-    opt._moveFilesToTrash = cfgFile.moveToTrash();
-    opt._vfs = _vfs;
-    opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
+    opt->_newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
+    opt->_confirmExternalStorage = cfgFile.confirmExternalStorage();
+    opt->_moveFilesToTrash = cfgFile.moveToTrash();
+    opt->_vfs = _vfs;
+    opt->_parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
-    opt._initialChunkSize = cfgFile.chunkSize();
-    opt._minChunkSize = cfgFile.minChunkSize();
-    opt._maxChunkSize = cfgFile.maxChunkSize();
-    opt._targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
+    opt->_initialChunkSize = cfgFile.chunkSize();
+    opt->_minChunkSize = cfgFile.minChunkSize();
+    opt->_maxChunkSize = cfgFile.maxChunkSize();
+    opt->_targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
 
-    opt.fillFromEnvironmentVariables();
-    opt.verifyChunkSizes();
+    opt->fillFromEnvironmentVariables();
+    opt->verifyChunkSizes();
     return opt;
 }
 
@@ -586,6 +586,7 @@ void Folder::startVfs()
         QString stateDbFile = _journal.databaseFilePath();
         _vfs->fileStatusChanged(stateDbFile + QStringLiteral("-wal"), SyncFileStatus::StatusExcluded);
         _vfs->fileStatusChanged(stateDbFile + QStringLiteral("-shm"), SyncFileStatus::StatusExcluded);
+        _engine->setSyncOptions(loadSyncOptions());
         _vfsIsReady = true;
         slotScheduleThisFolder();
     });
@@ -759,12 +760,14 @@ void Folder::setVirtualFilesEnabled(bool enabled)
         disconnect(_vfs.data(), nullptr, this, nullptr);
         disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.data(), nullptr);
 
+        _vfsIsReady = false;
         _vfs.reset(createVfsFromPlugin(newMode).release());
 
         _definition.virtualFilesMode = newMode;
         startVfs();
-        if (newMode != Vfs::Off)
+        if (newMode != Vfs::Off) {
             _saveInFoldersWithPlaceholders = true;
+        }
         saveToSettings();
     }
 }

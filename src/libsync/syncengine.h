@@ -59,7 +59,7 @@ class OWNCLOUDSYNC_EXPORT SyncEngine : public QObject
 {
     Q_OBJECT
 public:
-    SyncEngine(AccountPtr account, const SyncOptions &syncOptions, const QUrl &baseUrl, const QString &localPath,
+    SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath,
         const QString &remotePath, SyncJournalDb *journal);
     ~SyncEngine() override;
 
@@ -71,10 +71,14 @@ public:
 
     bool isSyncRunning() const { return _syncRunning; }
 
-    const SyncOptions &syncOptions() const { return _syncOptions; }
-    void setSyncOptions(const SyncOptions &options)
+    const SyncOptions &syncOptions() const
     {
-        _syncOptions = options;
+        Q_ASSERT(_syncOptions);
+        return *_syncOptions;
+    }
+    void setSyncOptions(std::unique_ptr<SyncOptions> &&options)
+    {
+        _syncOptions = std::move(options);
     }
     bool ignoreHiddenFiles() const { return _ignore_hidden_files; }
     void setIgnoreHiddenFiles(bool ignore) { _ignore_hidden_files = ignore; }
@@ -276,7 +280,7 @@ private:
     int _uploadLimit;
     int _downloadLimit;
 
-    SyncOptions _syncOptions;
+    std::unique_ptr<SyncOptions> _syncOptions;
 
     AnotherSyncNeeded _anotherSyncNeeded;
 
