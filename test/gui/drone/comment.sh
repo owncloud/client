@@ -3,6 +3,7 @@
 # $1 - GUI_TEST_REPORT_DIR
 # $2 - DRONE_REPO
 # $3 - DRONE_BUILD_NUMBER
+# $4 - GUI_TEST_PIPELINE_NAME
 
 # create a github comment file only if guiTestUpload Folder is not empty
 if [[ $(find "$1" -maxdepth 0 -empty) ]]; then

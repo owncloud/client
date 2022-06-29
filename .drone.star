@@ -593,7 +593,7 @@ def buildGithubComment(suite = ""):
         "name": "build-github-comment",
         "image": OC_UBUNTU,
         "commands": [
-            "bash /drone/src/test/gui/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER}" % GUI_TEST_REPORT_DIR,
+            "bash /drone/src/test/gui/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER} %s" % (GUI_TEST_REPORT_DIR, config.keys()[0]),
         ],
         "environment": {
             "TEST_CONTEXT": suite,
