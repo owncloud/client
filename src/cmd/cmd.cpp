@@ -143,12 +143,12 @@ void sync(const SyncCTX &ctx)
         selectiveSyncFixup(db, selectiveSyncList);
     }
 
-    auto opt = std::make_unique<SyncOptions>(QSharedPointer<Vfs>(createVfsFromPlugin(Vfs::Off).release()));
-    opt->fillFromEnvironmentVariables();
-    opt->verifyChunkSizes();
+    SyncOptions opt { QSharedPointer<Vfs>(createVfsFromPlugin(Vfs::Off).release()) };
+    opt.fillFromEnvironmentVariables();
+    opt.verifyChunkSizes();
     auto engine = new SyncEngine(
         ctx.account, ctx.account->davUrl(), ctx.options.source_dir, ctx.folder, db);
-    engine->setSyncOptions(std::move(opt));
+    engine->setSyncOptions(opt);
     engine->setParent(db);
 
     QObject::connect(engine, &SyncEngine::finished, engine, [engine, ctx, restartCount = std::make_shared<int>(0)](bool result) {

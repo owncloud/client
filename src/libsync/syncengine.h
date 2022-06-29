@@ -24,7 +24,6 @@
 #include <QMap>
 #include <QStringList>
 #include <QSharedPointer>
-#include <set>
 
 #include "csync/csync_exclude.h"
 
@@ -35,6 +34,9 @@
 #include "accountfwd.h"
 #include "discoveryphase.h"
 #include "common/checksums.h"
+
+#include <optional>
+#include <set>
 
 class QProcess;
 
@@ -76,9 +78,9 @@ public:
         Q_ASSERT(_syncOptions);
         return *_syncOptions;
     }
-    void setSyncOptions(std::unique_ptr<SyncOptions> &&options)
+    void setSyncOptions(const SyncOptions &options)
     {
-        _syncOptions = std::move(options);
+        _syncOptions = options;
     }
     bool ignoreHiddenFiles() const { return _ignore_hidden_files; }
     void setIgnoreHiddenFiles(bool ignore) { _ignore_hidden_files = ignore; }
@@ -280,7 +282,7 @@ private:
     int _uploadLimit;
     int _downloadLimit;
 
-    std::unique_ptr<SyncOptions> _syncOptions;
+    std::optional<SyncOptions> _syncOptions;
 
     AnotherSyncNeeded _anotherSyncNeeded;
 

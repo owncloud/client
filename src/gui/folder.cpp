@@ -225,25 +225,25 @@ bool Folder::checkLocalPath()
     return true;
 }
 
-std::unique_ptr<SyncOptions> Folder::loadSyncOptions()
+SyncOptions Folder::loadSyncOptions()
 {
-    auto opt = std::make_unique<SyncOptions>(_vfs);
+    SyncOptions opt(_vfs);
     ConfigFile cfgFile;
 
     auto newFolderLimit = cfgFile.newBigFolderSizeLimit();
-    opt->_newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
-    opt->_confirmExternalStorage = cfgFile.confirmExternalStorage();
-    opt->_moveFilesToTrash = cfgFile.moveToTrash();
-    opt->_vfs = _vfs;
-    opt->_parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
+    opt._newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
+    opt._confirmExternalStorage = cfgFile.confirmExternalStorage();
+    opt._moveFilesToTrash = cfgFile.moveToTrash();
+    opt._vfs = _vfs;
+    opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
-    opt->_initialChunkSize = cfgFile.chunkSize();
-    opt->_minChunkSize = cfgFile.minChunkSize();
-    opt->_maxChunkSize = cfgFile.maxChunkSize();
-    opt->_targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
+    opt._initialChunkSize = cfgFile.chunkSize();
+    opt._minChunkSize = cfgFile.minChunkSize();
+    opt._maxChunkSize = cfgFile.maxChunkSize();
+    opt._targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
 
-    opt->fillFromEnvironmentVariables();
-    opt->verifyChunkSizes();
+    opt.fillFromEnvironmentVariables();
+    opt.verifyChunkSizes();
     return opt;
 }
 
