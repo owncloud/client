@@ -196,8 +196,8 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                      build_config["build_command"],
                      build_dir,
                  ) +
-                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = config["gui_tests1"], pipeline_name = "gui_tests1") +
-                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = config["gui_tests2"], pipeline_name = "gui_tests2") +
+                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = config[config.keys()[0]], pipeline_name = config.keys()[0]) +
+                 gui_tests(squish_parameters, [build_config["build_command"]], testCases = config[config.keys()[1]], pipeline_name = config.keys()[1]) +
                  # GUI test result has been disabled for now, as we squish can not produce the result in both html and json format.
                  # Disabled untill the feature to generate json result is implemented in squish, or some other method to reuse the log parser is implemented.
                  #  showGuiTestResult() +
@@ -270,7 +270,7 @@ def gui_tests(squish_parameters = "", depends_on = [], testCases = [], pipeline_
         "image": OC_CI_SQUISH,
         "environment": {
             "LICENSEKEY": from_secret("squish_license_server"),
-            "GUI_TEST_REPORT_DIR": GUI_TEST_REPORT_DIR,
+            "GUI_TEST_REPORT_DIR": GUI_TEST_REPORT_DIR + "/" + pipeline_name,
             "CLIENT_REPO": "/drone/src/",
             "MIDDLEWARE_URL": "http://testmiddleware:3000/",
             "BACKEND_HOST": "http://owncloud/",
