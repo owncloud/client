@@ -159,7 +159,7 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
 def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = "--envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @skip"
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -261,16 +261,19 @@ def unit_tests(build_dir, depends_on = []):
     }]
 
 def gui_tests(squish_parameters = "", depends_on = [], testCases = [], pipeline_name = ""):
+    REPORT_DIR = GUI_TEST_REPORT_DIR + "/" + pipeline_name
     if (len(testCases) > 0):
         for testCase in testCases:
             squish_parameters += " --testcase " + testCase
+
+    squish_parameters += "--reportgen html,%s" % REPORT_DIR
 
     return [{
         "name": pipeline_name,
         "image": OC_CI_SQUISH,
         "environment": {
             "LICENSEKEY": from_secret("squish_license_server"),
-            "GUI_TEST_REPORT_DIR": GUI_TEST_REPORT_DIR + "/" + pipeline_name,
+            "GUI_TEST_REPORT_DIR": REPORT_DIR,
             "CLIENT_REPO": "/drone/src/",
             "MIDDLEWARE_URL": "http://testmiddleware:3000/",
             "BACKEND_HOST": "http://owncloud/",
@@ -593,7 +596,7 @@ def buildGithubComment(suite = ""):
         "name": "build-github-comment",
         "image": OC_UBUNTU,
         "commands": [
-            "bash /drone/src/test/gui/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER} %s" % (GUI_TEST_REPORT_DIR, config.keys()[0]),
+            "bash /drone/src/test/gui/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER} %s" % (GUI_TEST_REPORT_DIR, config.keys()),
         ],
         "environment": {
             "TEST_CONTEXT": suite,
