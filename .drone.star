@@ -541,6 +541,7 @@ def setGuiTestReportDir(REPORT_DIR):
         "name": "create-gui-test-report-directory",
         "image": OC_UBUNTU,
         "commands": [
+            # GUI_TEST_REPORT_DIR
             "mkdir %s/screenshots -p" % REPORT_DIR,
             "chmod 777 %s -R" % REPORT_DIR,
         ],
