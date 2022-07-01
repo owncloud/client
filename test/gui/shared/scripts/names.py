@@ -136,5 +136,4 @@ add_Folder_Sync_Connection_Deselect_remote_folders_you_do_not_wish_to_synchroniz
 deselect_remote_folders_you_do_not_wish_to_synchronize_ownCloud_QModelIndex = {"column": 0, "container": add_Folder_Sync_Connection_Deselect_remote_folders_you_do_not_wish_to_synchronize_QTreeWidget, "text": "ownCloud", "type": "QModelIndex"}
 syncModeGroupBox_useVfsRadioButton_QRadioButton = {"container": advancedConfigGroupBox_syncModeGroupBox_QGroupBox, "name": "useVfsRadioButton", "type": "QRadioButton", "visible": 1}
 contentWidget_Enable_experimental_placeholder_mode_QPushButton = {"container": setupWizardWindow_contentWidget_QStackedWidget, "text": "Enable experimental placeholder mode", "type": "QPushButton", "unnamed": 1, "visible": 1}
-enable_experimental_feature_QMessageBox = {"type": "QMessageBox", "unnamed": 1, "visible": 1, "windowTitle": "Enable experimental feature?"}
 contentWidget_Stay_safe_QPushButton = {"container": setupWizardWindow_contentWidget_QStackedWidget, "text": "Stay safe", "type": "QPushButton", "unnamed": 1, "visible": 1}

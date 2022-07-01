@@ -46,14 +46,14 @@ Feature: adding accounts
         Then credentials wizard should be visible
 
 
-    Scenario: Adding account with virtual files advance configuration
+    Scenario: Adding account with virtual files enabled through advance configuration
         Given the user has started the client
         When the user adds the first account with advanced configuration
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
         And the user selects virtual_files option in advanced section
-        And the user enables experimental feature
+        And the user selects enable_experimental_placeholder_mode option in enable experimental feature dialogue box
         Then VFS enabled baseline image should match the default screenshot
 
 
@@ -66,3 +66,4 @@ Feature: adding accounts
         And the user selects virtual_files option in advanced section
         And the user selects stay_safe option in enable experimental feature dialogue box
         Then an account should be displayed with the displayname Alice Hansen and host %local_server_hostname%
+        And VFS enabled baseline image should not match the default screenshot
