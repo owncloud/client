@@ -187,7 +187,6 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                  setupServerAndApp() +
                  fixPermissions() +
                  owncloudLog() +
-                 setGuiTestReportDir() +
                  build_client(
                      build_config["c_compiler"],
                      build_config["cxx_compiler"],
@@ -267,6 +266,8 @@ def gui_tests(squish_parameters = "", depends_on = [], testCases = [], pipeline_
             squish_parameters += " --testcase " + testCase
 
     squish_parameters += "--reportgen html,%s" % REPORT_DIR
+
+    setGuiTestReportDir(REPORT_DIR)
 
     return [{
         "name": pipeline_name,
@@ -535,13 +536,13 @@ def gitSubModules():
         ],
     }]
 
-def setGuiTestReportDir():
+def setGuiTestReportDir(REPORT_DIR):
     return [{
         "name": "create-gui-test-report-directory",
         "image": OC_UBUNTU,
         "commands": [
-            "mkdir %s/screenshots -p" % GUI_TEST_REPORT_DIR,
-            "chmod 777 %s -R" % GUI_TEST_REPORT_DIR,
+            "mkdir %s/screenshots -p" % REPORT_DIR,
+            "chmod 777 %s -R" % REPORT_DIR,
         ],
     }]
 
