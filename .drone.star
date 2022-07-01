@@ -159,7 +159,6 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
 def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @skip"
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -187,6 +186,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                  setupServerAndApp() +
                  fixPermissions() +
                  owncloudLog() +
+                 setGuiTestReportDir() +
                  build_client(
                      build_config["c_compiler"],
                      build_config["cxx_compiler"],
@@ -261,13 +261,16 @@ def unit_tests(build_dir, depends_on = []):
 
 def gui_tests(squish_parameters = "", depends_on = [], testCases = [], pipeline_name = ""):
     REPORT_DIR = GUI_TEST_REPORT_DIR + "/" + pipeline_name
+
+    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @skip" % REPORT_DIR
+
     if (len(testCases) > 0):
         for testCase in testCases:
             squish_parameters += " --testcase " + testCase
 
-    squish_parameters += "--reportgen html,%s" % REPORT_DIR
+    # squish_parameters += "--reportgen html,%s" % REPORT_DIR
 
-    setGuiTestReportDir(REPORT_DIR)
+    # setGuiTestReportDir(REPORT_DIR)
 
     return [{
         "name": pipeline_name,
@@ -536,14 +539,15 @@ def gitSubModules():
         ],
     }]
 
-def setGuiTestReportDir(REPORT_DIR):
+def setGuiTestReportDir():
     return [{
         "name": "create-gui-test-report-directory",
         "image": OC_UBUNTU,
         "commands": [
             # GUI_TEST_REPORT_DIR
-            "mkdir %s/screenshots -p" % REPORT_DIR,
-            "chmod 777 %s -R" % REPORT_DIR,
+            "mkdir %s/gui_tests1/screenshots -p" % GUI_TEST_REPORT_DIR,
+            "mkdir %s/gui_tests2/screenshots -p" % GUI_TEST_REPORT_DIR,
+            "chmod 777 %s -R" % GUI_TEST_REPORT_DIR,
         ],
     }]
 
