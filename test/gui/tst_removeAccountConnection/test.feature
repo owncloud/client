@@ -1,3 +1,4 @@
+@skip
 Feature: remove account connection
 
   As a user

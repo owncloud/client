@@ -1,3 +1,4 @@
+@skip
 Feature: Visually check all tabs
 
     As a user

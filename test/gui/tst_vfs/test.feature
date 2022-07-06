@@ -1,3 +1,4 @@
+@skip
 Feature: Enable/disable virtual file support
 
     As a user

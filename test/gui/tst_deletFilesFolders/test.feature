@@ -1,3 +1,4 @@
+@skip
 Feature: deleting files and folders
 
   	As a user

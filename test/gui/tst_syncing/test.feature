@@ -1,3 +1,4 @@
+@skip
 Feature: Syncing files
 
     As a user

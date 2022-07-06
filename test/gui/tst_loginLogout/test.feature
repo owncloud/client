@@ -1,3 +1,4 @@
+@skip
 Feature:  Logout users
   As a user
   I want to be able to login and logout of my account
