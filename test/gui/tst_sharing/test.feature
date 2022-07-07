@@ -9,6 +9,7 @@ Feature: Sharing
         Given user "Alice" has been created on the server with default attributes and without skeleton files
         And the setting "shareapi_auto_accept_share" on the server of app "core" has been set to "yes"
 
+
     Scenario: reshare a file/folder
         Given user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Carol" has been created on the server with default attributes and without skeleton files

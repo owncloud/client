@@ -723,7 +723,11 @@ def step(context, tabName):
 
 def openSharingDialog(context, resource, itemType='file'):
     resource = getResourcePath(context, resource)
-    waitFor(lambda: os.path.exists(resource), context.userData['maxSyncTimeout'] * 100)
+    resourceExist = waitFor(
+        lambda: os.path.exists(resource), context.userData['maxSyncTimeout'] * 1000
+    )
+    if not resourceExist:
+        raise Exception("{} doesn't exists".format(resource))
     waitFor(lambda: shareResource(resource), context.userData['maxSyncTimeout'] * 1000)
 
 
