@@ -98,7 +98,7 @@ def step(context, displayname, host):
 
     test.compare(
         accountStatus.getText(),
-        displayname + "\n" + host,
+        displayname + "\nasds" + host,
     )
 
 
