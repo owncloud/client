@@ -118,9 +118,10 @@ def hook(context):
 
 @OnScenarioEnd
 def hook(context):
+    # This workaround is needed because resultCount() return number of results of the given resultCategory(fails/errors) of the current test cases/ tests suite.
     global previousFailResultCount
     global previousErrorResultCount
-    # capture screenshot if there is error in the scenario execution, and if the test is being run in CI
+    # capture screenshot if there is error in the scenario execution that leads to tests failure, and if the test is being run in CI
     if (
         (test.resultCount("fails") - previousFailResultCount) > 0
         or (test.resultCount("errors") - previousErrorResultCount) > 0
