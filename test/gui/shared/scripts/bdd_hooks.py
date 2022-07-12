@@ -23,6 +23,9 @@ import builtins
 from helpers.StacktraceHelper import getCoredumps, generateStacktrace
 from datetime import datetime
 
+previousFailResultCount = 0
+previousErrorResultCount = 0
+
 
 @OnScenarioStart
 def hook(context):
@@ -116,7 +119,16 @@ def hook(context):
 @OnScenarioEnd
 def hook(context):
     # capture screenshot if there is error in the scenario execution, and if the test is being run in CI
-    if test.resultCount("errors") > 0 and os.getenv('CI'):
+    global previousFailResultCount
+    global previousErrorResultCount
+    # capture screenshot if there is error in the scenario execution that leads to tests failure, and if the test is being run in CI
+    if (
+        (test.resultCount("fails") - previousFailResultCount) > 0
+        or (test.resultCount("errors") - previousErrorResultCount) > 0
+        and os.getenv('CI')
+    ):
+        previousFailResultCount = test.resultCount("fails")
+        previousErrorResultCount = test.resultCount("errors")
         import gi
 
         gi.require_version('Gtk', '3.0')
