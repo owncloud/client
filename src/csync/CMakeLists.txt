@@ -6,9 +6,6 @@ include(../common/common.cmake)
 set(csync_SRCS
   csync.cpp
   csync_exclude.cpp
-
-  std/c_time.cpp
-
 )
 
 if (WIN32)

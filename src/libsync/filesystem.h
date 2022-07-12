@@ -22,6 +22,8 @@
 // Chain in the base include and extend the namespace
 #include "common/filesystembase.h"
 
+#include <filesystem>
+
 class QFile;
 
 namespace OCC {
@@ -37,6 +39,12 @@ class SyncJournal;
  * @brief This file contains file system helper
  */
 namespace FileSystem {
+
+    // https://github.com/qt/qtbase/blob/067b53864112c084587fa9a507eb4bde3d50a6e1/src/corelib/io/qfile.h#L40
+    inline std::filesystem::path toFilesystemPath(const QString &path)
+    {
+        return std::filesystem::path(reinterpret_cast<const char16_t *>(path.cbegin()), reinterpret_cast<const char16_t *>(path.cend()));
+    }
 
     /**
      * @brief compare two files with given filename and return true if they have the same content
