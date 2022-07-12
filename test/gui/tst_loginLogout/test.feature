@@ -1,3 +1,4 @@
+@debug
 Feature:  Logout users
   As a user
   I want to be able to login and logout of my account
@@ -11,8 +12,286 @@ Feature:  Logout users
     When the user "Alice" logs out of the client-UI
     Then user "Alice" should be signed out
 
-  Scenario: login after loggin out
+
+  Scenario: logging out
     Given user "Alice" has set up a client with default settings
-    And user "Alice" has logged out of the client-UI
-    When user "Alice" logs in to the client-UI
-    Then user "Alice" should be connect to the client-UI
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
+
+
+  Scenario: logging out
+    Given user "Alice" has set up a client with default settings
+    When the user "Alice" logs out of the client-UI
+    Then user "Alice" should be signed out
