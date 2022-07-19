@@ -29,7 +29,7 @@ private slots:
 #ifdef Q_OS_WIN
         Utility::NtfsPermissionLookupRAII ntfs_perm;
 #endif
-        QTemporaryDir dir;
+        auto dir = TestUtils::createTempDir();
         QVERIFY(dir.isValid());
         QDir dir2(dir.path());
         QVERIFY(dir2.mkpath("sub/ownCloud1/folder/f"));
@@ -156,7 +156,7 @@ private slots:
     {
         // SETUP
 
-        QTemporaryDir dir;
+        auto dir = TestUtils::createTempDir();
         QVERIFY(dir.isValid());
         QDir dir2(dir.path());
         QVERIFY(dir2.mkpath("sub/ownCloud1/folder/f"));
