@@ -1,5 +1,5 @@
-Enhancement: Allow http1.1 pipelining
+Enhancement: Allow HTTP/1.1 pipelining
 
-Under certain conditions that can result in a better network utilisation.
+Under certain conditions, this change can result in a better network utilization.
 
 https://github.com/owncloud/client/pull/9930/
