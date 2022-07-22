@@ -137,3 +137,7 @@ deselect_remote_folders_you_do_not_wish_to_synchronize_ownCloud_QModelIndex = {"
 syncModeGroupBox_useVfsRadioButton_QRadioButton = {"container": advancedConfigGroupBox_syncModeGroupBox_QGroupBox, "name": "useVfsRadioButton", "type": "QRadioButton", "visible": 1}
 contentWidget_Enable_experimental_placeholder_mode_QPushButton = {"container": setupWizardWindow_contentWidget_QStackedWidget, "text": "Enable experimental placeholder mode", "type": "QPushButton", "unnamed": 1, "visible": 1}
 contentWidget_Stay_safe_QPushButton = {"container": setupWizardWindow_contentWidget_QStackedWidget, "text": "Stay safe", "type": "QPushButton", "unnamed": 1, "visible": 1}
+oCC_ProtocolWidget_filterButton_QPushButton = {"container": qt_tabwidget_stackedwidget_OCC_ProtocolWidget_OCC_ProtocolWidget, "name": "_filterButton", "type": "QPushButton", "visible": 1}
+oCC_ProtocolWidget_tableView_QTableView = {"container": qt_tabwidget_stackedwidget_OCC_ProtocolWidget_OCC_ProtocolWidget, "name": "_tableView", "type": "QTableView", "visible": 1}
+stack_QTabWidget = {"container": settings_stack_QStackedWidget, "type": "QTabWidget", "unnamed": 1, "visible": 1}
+oCC_IssuesWidget_filterButton_QPushButton = {"container": qt_tabwidget_stackedwidget_OCC_IssuesWidget_OCC_IssuesWidget, "name": "_filterButton", "type": "QPushButton", "visible": 1}

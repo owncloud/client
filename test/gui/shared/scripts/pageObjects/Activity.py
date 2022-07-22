@@ -43,7 +43,7 @@ class Activity:
         if not tabFound:
             raise Exception("Tab not found: " + tabName)
 
-    def checkFileExist(self, filename):
+    def checkConflictFileExist(self, filename):
         squish.waitForObject(names.settings_OCC_SettingsDialog)
         squish.waitForObjectExists(
             {
@@ -90,3 +90,55 @@ class Activity:
             return True
         except:
             return False
+
+    def isResourceExcluded(self, context, filename):
+        try:
+            fileRow = squish.waitForObject(
+                {
+                    "column": 1,
+                    "container": names.oCC_IssuesWidget_tableView_QTableView,
+                    "text": filename,
+                    "type": "QModelIndex",
+                },
+                context.userData['lowestSyncTimeout'] * 1000,
+            )["row"]
+            squish.waitForObjectExists(
+                {
+                    "column": 6,
+                    "row": fileRow,
+                    "container": names.oCC_IssuesWidget_tableView_QTableView,
+                    "text": "Excluded",
+                    "type": "QModelIndex",
+                },
+                context.userData['lowestSyncTimeout'] * 1000,
+            )
+
+            return True
+        except:
+            return False
+
+    def checkResourceNotExist(self, context, filename):
+        squish.waitForObject(names.settings_OCC_SettingsDialog)
+
+        result = squish.waitFor(
+            lambda: self.isResourceNotVisible(context, filename),
+            context.userData['maxSyncTimeout'] * 1000,
+        )
+
+        return result
+
+    def isResourceNotVisible(self, context, filename):
+        try:
+            squish.waitForObjectExists(
+                {
+                    "column": 1,
+                    "container": names.oCC_IssuesWidget_tableView_QTableView,
+                    "text": filename,
+                    "type": "QModelIndex",
+                },
+            context.userData['lowestSyncTimeout'] * 1000,
+            )
+
+            return False
+        except:
+            return True

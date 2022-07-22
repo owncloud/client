@@ -1526,3 +1526,81 @@ def step(context):
     newAccount = AccountConnectionWizard()
     clickButton(waitForObject(newAccount.STAY_SAFE_BUTTON))
     clickButton(waitForObject(newAccount.NEXT_BUTTON))
+
+
+@When('the user selects "|any|" option on filter dropdown button')
+def step(context, account):
+    clickButton(waitForObject(names.oCC_ProtocolWidget_filterButton_QPushButton))
+    activateItem(waitForObjectItem(names.settings_QMenu, account))
+
+@Then(r'^the following information should be displayed on the sync table$', regexp=True)
+def step(context):
+    rowIndex = 0
+    for row in context.table[1:]:
+        action = row[0]
+        resource = row[1]
+        account = row[2]
+        test.compare(
+            str(
+                waitForObjectExists(
+                    {
+                        "column": 0,
+                        "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                        "row": rowIndex,
+                        "type": "QModelIndex",
+                    }
+                ).text
+            ),
+            action,
+        )
+        test.compare(
+            str(
+                waitForObjectExists(
+                    {
+                        "column": 1,
+                        "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                        "row": rowIndex,
+                        "type": "QModelIndex",
+                    }
+                ).text
+            ),
+            resource,
+        )
+        test.compare(
+            str(
+                waitForObjectExists(
+                    {
+                        "column": 4,
+                        "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                        "row": rowIndex,
+                        "type": "QModelIndex",
+                    }
+                ).text
+            ),
+            account,
+        )
+        rowIndex += 1
+
+@Then('the file "|any|" should be excluded')
+def step(context, filename):
+    activity = Activity()
+    test.compare(
+        True,
+        activity.isResourceExcluded(context, filename),
+        "File is excluded",
+    )
+
+
+@When('the user uncheck "|any|" filter on not synced tab')
+def step(context, filename):
+    clickButton(waitForObject(names.oCC_IssuesWidget_filterButton_QPushButton))
+    activateItem(waitForObjectItem(names.settings_QMenu, filename))
+
+
+@Then('the file "|any|" should not be visible')
+def step(context, filename):
+    activity = Activity()
+    test.compare(
+        activity.checkResourceNotExist(context, filename),
+        True,
+        "File not visible")
