@@ -198,9 +198,11 @@ Feature: Sharing
         And user "Alice" has shared folder "simple-folder" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Brian" has set up a client with default settings
+        And the user has waited for files to be synced
         When the user overwrites the file "textfile.txt" with content "overwrite file in the root"
+        And the user waits for file "textfile.txt" to be synced
         And the user overwrites the file "simple-folder/textfile.txt" with content "overwrite file inside a folder"
-        And the user waits for the files to sync
+        And the user waits for file "simple-folder/textfile.txt" to be synced
         Then as "Brian" the file "simple-folder/textfile.txt" on the server should have the content "overwrite file inside a folder"
         And as "Brian" the file "textfile.txt" on the server should have the content "overwrite file in the root"
         And as "Alice" the file "simple-folder/textfile.txt" on the server should have the content "overwrite file inside a folder"
