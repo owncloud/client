@@ -54,17 +54,27 @@ class Activity:
             }
         )
 
-    def checkBlackListedResourceExist(self, context, filename):
+    def checkNotSyncedResourceExist(self, context, filename, status):
         squish.waitForObject(names.settings_OCC_SettingsDialog)
 
         result = squish.waitFor(
-            lambda: self.isResourceBlackListed(context, filename),
+            lambda: self.isNotSyncedResourceExist(context, filename, status),
             context.userData['maxSyncTimeout'] * 1000,
         )
 
         return result
 
-    def isResourceBlackListed(self, context, filename):
+    def waitForResourceNotExist(self, context, filename, status="Excluded"):
+        squish.waitForObject(names.settings_OCC_SettingsDialog)
+
+        result = squish.waitFor(
+            lambda: not self.isNotSyncedResourceExist(context, filename, status),
+            context.userData['maxSyncTimeout'] * 1000,
+        )
+
+        return result
+    
+    def isNotSyncedResourceExist(self, context, filename, status):
         try:
             # The blacklisted file does not have text like (conflicted copy) appended to it in the not synced table.
             fileRow = squish.waitForObject(
@@ -81,33 +91,53 @@ class Activity:
                     "column": 6,
                     "row": fileRow,
                     "container": names.oCC_IssuesWidget_tableView_QTableView,
-                    "text": "Blacklisted",
+                    "text": status,
                     "type": "QModelIndex",
                 },
                 context.userData['lowestSyncTimeout'] * 1000,
             )
-
+            
             return True
         except:
             return False
 
-    def isResourceExcluded(self, context, filename):
+    def checkTableContent(self, context, action, resource, account):
+        squish.waitForObject(names.settings_OCC_SettingsDialog)
+
+        result = squish.waitFor(
+            lambda: self.isTableContentMatch(context, action, resource, account),
+            context.userData['maxSyncTimeout'] * 1000,
+        )
+
+        return result
+
+    def isTableContentMatch(self, context, action, resource, account):
         try:
             fileRow = squish.waitForObject(
                 {
                     "column": 1,
-                    "container": names.oCC_IssuesWidget_tableView_QTableView,
-                    "text": filename,
+                    "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                    "text": resource,
                     "type": "QModelIndex",
                 },
                 context.userData['lowestSyncTimeout'] * 1000,
             )["row"]
             squish.waitForObjectExists(
                 {
-                    "column": 6,
+                    "column": 0,
                     "row": fileRow,
-                    "container": names.oCC_IssuesWidget_tableView_QTableView,
-                    "text": "Excluded",
+                    "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                    "text": action,
+                    "type": "QModelIndex",
+                },
+                context.userData['lowestSyncTimeout'] * 1000,
+            )
+            squish.waitForObjectExists(
+                {
+                    "column": 4,
+                    "row": fileRow,
+                    "container": names.oCC_ProtocolWidget_tableView_QTableView,
+                    "text": account,
                     "type": "QModelIndex",
                 },
                 context.userData['lowestSyncTimeout'] * 1000,
@@ -116,29 +146,3 @@ class Activity:
             return True
         except:
             return False
-
-    def checkResourceNotExist(self, context, filename):
-        squish.waitForObject(names.settings_OCC_SettingsDialog)
-
-        result = squish.waitFor(
-            lambda: self.isResourceNotVisible(context, filename),
-            context.userData['maxSyncTimeout'] * 1000,
-        )
-
-        return result
-
-    def isResourceNotVisible(self, context, filename):
-        try:
-            squish.waitForObjectExists(
-                {
-                    "column": 1,
-                    "container": names.oCC_IssuesWidget_tableView_QTableView,
-                    "text": filename,
-                    "type": "QModelIndex",
-                },
-            context.userData['lowestSyncTimeout'] * 1000,
-            )
-
-            return False
-        except:
-            return True

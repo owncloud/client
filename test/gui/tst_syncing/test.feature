@@ -241,7 +241,7 @@ Feature: Syncing files
         Then as "Alice" folder "Folder1" should exist on the server
         When the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
-        Then the file "Folder1/a\\a.txt" should be blacklisted
+        Then the file "Folder1/a\\a.txt" should be "Blacklisted"
 
 
     Scenario Outline: Verify one empty folder with a length longer than the allowed limit will not be synced
@@ -338,7 +338,7 @@ Feature: Syncing files
             """
         And the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
-        Then the file "<filename>" should be blacklisted
+        Then the file "<filename>" should be "Blacklisted"
         Examples:
             | filename                                                                                                                                                                                                                                  |
             | aQuickBrownFoxJumpsOverAVeryLazyDog-aQuickBrownFoxJumpsOverAVeryLazyDog-aQuickBrownFoxJumpsOverAVeryLazyDog-aQuickBrownFoxJumpsOverAVeryLazyDog-aQuickBrownFoxJumpsOverAVeryLazyDog-aQuickBrownFoxJumpsOverAVeryLazyDog-aQuickBrownFo.txt |
