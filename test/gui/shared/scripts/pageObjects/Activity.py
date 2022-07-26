@@ -73,7 +73,7 @@ class Activity:
         )
 
         return result
-    
+
     def isNotSyncedResourceExist(self, context, filename, status):
         try:
             # The blacklisted file does not have text like (conflicted copy) appended to it in the not synced table.
@@ -96,7 +96,7 @@ class Activity:
                 },
                 context.userData['lowestSyncTimeout'] * 1000,
             )
-            
+
             return True
         except:
             return False

@@ -711,7 +711,7 @@ def step(context, filename, status):
     test.compare(
         True,
         activity.checkNotSyncedResourceExist(context, filename, status),
-        filename + " file status should be " + status
+        filename + " file status should be " + status,
     )
 
 
@@ -1541,7 +1541,11 @@ def step(context):
         action = row[0]
         resource = row[1]
         account = row[2]
-        test.compare(activity.checkTableContent(context, action, resource, account), True, "Matching sync tab table content")
+        test.compare(
+            activity.checkTableContent(context, action, resource, account),
+            True,
+            "Matching sync tab table content",
+        )
 
 
 @When('the user uncheck "|any|" filter on the not_synced tab')
@@ -1554,5 +1558,7 @@ def step(context, filename):
 def step(context, filename):
     activity = Activity()
     test.compare(
-        activity.waitForResourceNotExist(context, filename), True, filename + " file should not exist in not_synced tab"
+        activity.waitForResourceNotExist(context, filename),
+        True,
+        filename + " file should not exist in not_synced tab",
     )
