@@ -44,5 +44,13 @@ EOF
         done
     fi
 
+    if ! [[ $(find "$1/videos" -maxdepth 0 -empty) ]]; then
+        echo "creating comment for videos"
+        echo -e "\nScreen Recordings:" >> "$1/comments.file"
+        for i in "$1"/screenshots/*; do
+            echo "- [$(basename "$i")](${CACHE_ENDPOINT}/${CACHE_BUCKET}/$2/$3/guiReportUpload/videos/$(basename "$i"))" >> "$1/comments.file"
+        done
+    fi
+
     echo -e '\n</details>\n' >> "$1/comments.file"
 fi

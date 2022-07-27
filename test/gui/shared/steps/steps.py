@@ -943,6 +943,7 @@ def isUserSignedIn(context, username):
 @Then('user "|any|" should be signed out')
 def step(context, username):
     isUserSignedOut(context, username)
+    test.compare(True, False)
 
 
 @Given('user "|any|" has logged out of the client-UI')

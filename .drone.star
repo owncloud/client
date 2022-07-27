@@ -78,10 +78,6 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_tests_format(build_trigger) + \
-                    check_starlark(build_trigger) + \
-                    changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, version = "latest")
 
     return pipelines
@@ -143,7 +139,7 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
 def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @test" % GUI_TEST_REPORT_DIR
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -257,7 +253,12 @@ def gui_tests(squish_parameters = "", depends_on = []):
             "SERVER_INI": "/drone/src/test/gui/drone/server.ini",
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": STACKTRACE_FILE,
+            "RECORD_VIDEO": True,
         },
+        "commands": [
+            "apt install ffmpeg -y",
+            "bash /dockerstartup/entrypoint.sh",
+        ],
         "depends_on": depends_on,
     }]
 

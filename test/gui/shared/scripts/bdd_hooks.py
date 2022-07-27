@@ -38,7 +38,10 @@ def sanitizeFilename(name):
     return name.replace(" ", "_").replace("/", "_").strip(".")
 
 def createVideoFilename(title):
-    video_dir = os.getenv("VIDEO_DIR", "../video")
+    if os.environ["GUI_TEST_REPORT_DIR"]:
+        video_dir = os.environ["GUI_TEST_REPORT_DIR"] + '/videos'
+    else:
+        video_dir = "../videos"
     if not os.path.exists(video_dir):
         os.makedirs(video_dir)
 
