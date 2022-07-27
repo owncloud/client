@@ -23,13 +23,48 @@ import builtins
 from helpers.StacktraceHelper import getCoredumps, generateStacktrace
 from datetime import datetime
 
+import subprocess
+import signal
+import re
+
 # this will reset in every test suite
 previousFailResultCount = 0
 previousErrorResultCount = 0
 
+# video recording process
+video = None
+
+def sanitizeFilename(name):
+    return name.replace(" ", "_").replace("/", "_").strip(".")
+
+def createVideoFilename(title):
+    video_dir = os.getenv("VIDEO_DIR", "../video")
+    if not os.path.exists(video_dir):
+        os.makedirs(video_dir)
+
+    return os.path.join(video_dir, sanitizeFilename(title) + ".mp4")
+
+def recordScreen(feature):
+    global video
+
+    video_file = createVideoFilename(feature)
+
+    video_size = subprocess.run("xprop -notype -len 16 -root _NET_DESKTOP_GEOMETRY".split(" "), check=True, capture_output=True)
+    video_size = subprocess.run(['cut', '-c', '25-'], input=video_size.stdout, capture_output=True)
+    video_size = str(video_size.stdout)
+    match = re.search('[\d, ]+', video_size)
+    video_size = video_size[match.start():match.end()]
+    video_size = video_size.replace(', ', 'x')
+
+    cmd = "ffmpeg -video_size %s -framerate 25 -f x11grab -i :0.0 %s" % (video_size, video_file)
+    video = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+    print("Recording screen...")
 
 @OnScenarioStart
 def hook(context):
+    if os.getenv('RECORD_VIDEO'):
+        recordScreen(context.title)
+
     from configparser import ConfigParser
 
     CONFIG_ENV_MAP = {
@@ -119,6 +154,10 @@ def hook(context):
 
 @OnScenarioEnd
 def hook(context):
+    if os.getenv('RECORD_VIDEO'):
+        global video
+        os.killpg(os.getpgid(video.pid), signal.SIGTERM)
+
     # Currently, this workaround is needed because we cannot find out a way to determine the pass/fail status of currently running test scenario.
     # And, resultCount("errors")  and resultCount("fails") return the total number of error/failed test scenarios of a test suite.
     global previousFailResultCount
@@ -150,6 +189,12 @@ def hook(context):
             os.makedirs(directory)
 
         pb.savev(os.path.join(directory, filename), "png", [], [])
+    else:
+        video_file = createVideoFilename(context.title)
+        try:
+            os.unlink(video_file)
+        except:
+            pass
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in applicationContextList():
