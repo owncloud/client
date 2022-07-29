@@ -26,6 +26,7 @@ from datetime import datetime
 import subprocess
 import signal
 import re
+import glob
 
 # this will reset in every test suite
 previousFailResultCount = 0
@@ -59,7 +60,9 @@ def recordScreen(feature):
     video_size = video_size[match.start():match.end()]
     video_size = video_size.replace(', ', 'x')
 
-    cmd = "ffmpeg -video_size %s -framerate 25 -f x11grab -i :0.0 %s" % (video_size, video_file)
+    ffmpeg = os.getenv("FFMPEG_PATH", "ffmpeg")
+    cmd = "%s -video_size %s -framerate 25 -f x11grab -i :0.0 %s" % (ffmpeg, video_size, video_file)
+    print(cmd)
     video = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
     print("Recording screen...")
 
@@ -154,25 +157,24 @@ def hook(context):
             "Step execution through test middleware failed. Error: " + e.read().decode()
         )
 
+def isTestFailed():
+    global previousFailResultCount, previousErrorResultCount
+    return (previousFailResultCount > 0 or previousErrorResultCount > 0)
 
 @OnScenarioEnd
 def hook(context):
     if os.getenv('RECORD_VIDEO'):
         global video
         os.killpg(os.getpgid(video.pid), signal.SIGTERM)
+        print("Video saved!")
+        print(glob.glob("/drone/src/test/guiReportUpload/videos/*"))
 
     # Currently, this workaround is needed because we cannot find out a way to determine the pass/fail status of currently running test scenario.
     # And, resultCount("errors")  and resultCount("fails") return the total number of error/failed test scenarios of a test suite.
-    global previousFailResultCount
-    global previousErrorResultCount
+    global previousFailResultCount, previousErrorResultCount
 
     # capture a screenshot if there is error or test failure in the current scenario execution
-    if (
-        (test.resultCount("fails") - previousFailResultCount) > 0
-        or (test.resultCount("errors") - previousErrorResultCount) > 0
-        and os.getenv('CI')
-    ):
-
+    if isTestFailed() and os.getenv('CI'):
         import gi
 
         gi.require_version('Gtk', '3.0')
@@ -192,7 +194,7 @@ def hook(context):
             os.makedirs(directory)
 
         pb.savev(os.path.join(directory, filename), "png", [], [])
-    else:
+    elif not isTestFailed() and os.getenv('RECORD_VIDEO'):
         video_file = createVideoFilename(context.title)
         try:
             os.unlink(video_file)
