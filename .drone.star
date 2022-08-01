@@ -176,7 +176,6 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                      build_config["build_command"],
                      build_dir,
                  ) +
-                 install_ffmpeg() +
                  gui_tests(squish_parameters, [build_config["build_command"]]) +
                  # GUI test result has been disabled for now, as we squish can not produce the result in both html and json format.
                  # Disabled untill the feature to generate json result is implemented in squish, or some other method to reuse the log parser is implemented.
@@ -240,21 +239,6 @@ def unit_tests(build_dir, depends_on = []):
         "depends_on": depends_on,
     }]
 
-def install_ffmpeg():
-    return [{
-        "name": "install-ffmpeg",
-        "image": OC_CI_CLIENT,
-        "commands": [
-            "cd ffmpeg-src",
-            "wget -O- https://ffmpeg.org/releases/ffmpeg-4.3.4.tar.gz | tar xz --strip 1 -C .",
-            "echo '[BUILD] Started...'",
-            "./configure --disable-x86asm",
-            "make",
-            "echo '[BUILD] Finished!'",
-        ],
-        "depends_on": ["create-gui-test-report-directory"],
-    }]
-
 def gui_tests(squish_parameters = "", depends_on = []):
     return [{
         "name": "GUItests",
@@ -270,9 +254,8 @@ def gui_tests(squish_parameters = "", depends_on = []):
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": STACKTRACE_FILE,
             "RECORD_VIDEO": True,
-            "FFMPEG_PATH": "/drone/src/ffmpeg-src/ffmpeg",
         },
-        "depends_on": depends_on + ["install-ffmpeg"],
+        "depends_on": depends_on,
     }]
 
 def gui_tests_format(trigger):
@@ -531,7 +514,6 @@ def setGuiTestReportDir():
         "image": OC_UBUNTU,
         "commands": [
             "mkdir %s/screenshots -p" % GUI_TEST_REPORT_DIR,
-            "mkdir -p ffmpeg-src",
             "chmod 777 %s -R" % GUI_TEST_REPORT_DIR,
         ],
     }]
@@ -587,7 +569,6 @@ def buildGithubComment(suite = ""):
         "name": "build-github-comment",
         "image": OC_UBUNTU,
         "commands": [
-            "ls %s" % GUI_TEST_REPORT_DIR,
             "ls %s/videos" % GUI_TEST_REPORT_DIR,
             "bash /drone/src/test/gui/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER}" % GUI_TEST_REPORT_DIR,
         ],

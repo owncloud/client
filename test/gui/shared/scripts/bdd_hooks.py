@@ -39,10 +39,7 @@ def sanitizeFilename(name):
     return name.replace(" ", "_").replace("/", "_").strip(".")
 
 def createVideoFilename(title):
-    if os.environ["GUI_TEST_REPORT_DIR"]:
-        video_dir = os.environ["GUI_TEST_REPORT_DIR"] + '/videos'
-    else:
-        video_dir = "../videos"
+    video_dir = os.getenv("GUI_TEST_REPORT_DIR", "..") + "/videos"
     if not os.path.exists(video_dir):
         os.makedirs(video_dir)
 
@@ -59,9 +56,9 @@ def recordScreen(feature):
     match = re.search('[\d, ]+', video_size)
     video_size = video_size[match.start():match.end()]
     video_size = video_size.replace(', ', 'x')
+    display = os.getenv("DISPLAY", ":0")
 
-    ffmpeg = os.getenv("FFMPEG_PATH", "ffmpeg")
-    cmd = "%s -video_size %s -framerate 25 -f x11grab -i :0.0 %s" % (ffmpeg, video_size, video_file)
+    cmd = "ffmpeg -video_size %s -framerate 25 -f x11grab -i %s %s" % (video_size, display, video_file)
     print(cmd)
     video = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
     print("Recording screen...")
