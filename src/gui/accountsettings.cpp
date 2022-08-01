@@ -57,6 +57,7 @@
 #include "account.h"
 #include "askexperimentalvirtualfilesfeaturemessagebox.h"
 #include "askforoauthlogindialog.h"
+#include "openfilemanager.h"
 
 namespace OCC {
 
@@ -281,9 +282,9 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     if (!folderUrl.isEmpty()) {
         QAction *ac = menu->addAction(CommonStrings::showInFileBrowser(), [folderUrl]() {
             qCInfo(lcAccountSettings) << "Opening local folder" << folderUrl;
-            if (!QDesktopServices::openUrl(folderUrl)) {
-                qCWarning(lcAccountSettings) << "QDesktopServices::openUrl failed for" << folderUrl;
-            }
+
+            // it does not make too much sense to convert it back, but it's easier than maintaining another variable
+            showInFileManager(folderUrl.toLocalFile());
         });
 
         if (!QFile::exists(folderUrl.toLocalFile())) {
