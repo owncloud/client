@@ -23,7 +23,7 @@ namespace OCC::Wizard {
 
 Q_LOGGING_CATEGORY(lcSetupWizardController, "setupwizard.controller")
 
-SetupWizardController::SetupWizardController(QWidget *parent)
+SetupWizardController::SetupWizardController(SettingsDialog *parent)
     : QObject(parent)
     , _context(new SetupWizardContext(parent, this))
 {
