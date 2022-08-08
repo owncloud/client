@@ -82,10 +82,8 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_tests_format(build_trigger) + \
-                    check_starlark(build_trigger) + \
-                    changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger)
+                    gui_test_pipeline(ctx, trigger = build_trigger, version = "latest")
+
         # owncloudci/squish image is not working as expected
         # Skipping GUI test pipeline until the following issue is resolved:
         # https://github.com/owncloud-ci/squish/issues/34
@@ -150,7 +148,7 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
 def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
     pipeline_name = "GUI-tests"
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % GUI_TEST_REPORT_DIR
+    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags @test" % GUI_TEST_REPORT_DIR
 
     if (len(filterTags) > 0):
         for tags in filterTags:
@@ -265,6 +263,7 @@ def gui_tests(squish_parameters = "", depends_on = []):
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": STACKTRACE_FILE,
         },
+        "security_opt": "seccomp=unconfined",
         "depends_on": depends_on,
     }]
 

@@ -6,6 +6,7 @@ Feature:  Logout users
   Background:
     Given user "Alice" has been created on the server with default attributes and without skeleton files
 
+  @test
   Scenario: logging out
     Given user "Alice" has set up a client with default settings
     When the user "Alice" logs out of the client-UI
