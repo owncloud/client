@@ -38,6 +38,12 @@ OAuthLoginWidget::OAuthLoginWidget(QWidget *parent)
     _ui->copyUrlToClipboardButton->setIcon(Utility::getCoreIcon(QStringLiteral("copy")));
 
     setFocusProxy(_ui->openBrowserButton);
+
+    _ui->retryFrame->hide();
+
+    connect(_ui->retryButton, &QPushButton::clicked, this, [this]() {
+        Q_EMIT retryButtonClicked();
+    });
 }
 
 OAuthLoginWidget::~OAuthLoginWidget()
@@ -50,4 +56,19 @@ void OAuthLoginWidget::setOpenBrowserButtonText(const QString &newText)
     _ui->openBrowserButton->setText(newText);
 }
 
+void OAuthLoginWidget::showRetryFrame()
+{
+    _ui->retryFrame->show();
+
+    _ui->openBrowserButton->setEnabled(false);
+    _ui->copyUrlToClipboardButton->setEnabled(false);
+}
+
+void OAuthLoginWidget::hideRetryFrame()
+{
+    _ui->retryFrame->hide();
+
+    _ui->openBrowserButton->setEnabled(true);
+    _ui->copyUrlToClipboardButton->setEnabled(true);
+}
 }
