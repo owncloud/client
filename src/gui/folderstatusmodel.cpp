@@ -570,6 +570,14 @@ bool FolderStatusModel::canFetchMore(const QModelIndex &parent) const
 
 void FolderStatusModel::fetchMore(const QModelIndex &parent)
 {
+    {
+        // TODO: investigate why data(...) returns a QVariant(Invalid) for subfolders
+        const auto isReady = data(parent, FolderStatusDelegate::IsReady);
+        if (isReady.isValid() && !isReady.toBool()) {
+            return;
+        }
+    }
+
     auto info = infoForIndex(parent);
 
     if (!info || info->_fetched || info->_fetchingJob)
