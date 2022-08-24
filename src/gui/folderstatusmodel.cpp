@@ -185,6 +185,10 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
                 return QVariant();
             return QVariant(f->path() + x._path);
         }
+        case FolderStatusDelegate::IsReady: {
+            auto f = x._folder;
+            return f->isReady();
+        }
         }
     }
         return QVariant();
@@ -571,9 +575,11 @@ bool FolderStatusModel::canFetchMore(const QModelIndex &parent) const
 void FolderStatusModel::fetchMore(const QModelIndex &parent)
 {
     {
-        // TODO: investigate why data(...) returns a QVariant(Invalid) for subfolders
         const auto isReady = data(parent, FolderStatusDelegate::IsReady);
-        if (isReady.isValid() && !isReady.toBool()) {
+
+        Q_ASSERT(isReady.isValid());
+
+        if (!isReady.toBool()) {
             return;
         }
     }
