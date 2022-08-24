@@ -195,7 +195,11 @@ private slots:
                     // Check that the temporary file is still there
                     QCOMPARE(QDir(fakeFolder.localPath() + "A/").entryList({"*.~*"}, QDir::Files | QDir::Hidden).count(), 1);
                     // Set the permission to read only on the folder, so the rename of the temporary file will fail
-                    QFile(fakeFolder.localPath() + "A/").setPermissions(QFile::Permissions(0x5555));
+                    QFile folderA(fakeFolder.localPath() + "A/");
+                    QVERIFY(folderA.setPermissions(QFile::Permissions(0x5555)));
+                    // For some reason, on some linux system the setPermissions above succeeds, but the directory is still 755.
+                    // So double check it here, otherwise the move will succeed, and the sync will succeed (while it should fail).
+                    QCOMPARE(folderA.permissions(), QFile::Permissions(0x5555));
                 }
             });
         });
