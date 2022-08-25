@@ -16,7 +16,7 @@ DOCKER_GIT = "docker:git"
 MYSQL = "mysql:8.0"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
-OC_CI_CLIENT = "owncloudci/client:latest"
+OC_CI_CLIENT = "sawjan/client-fedora:latest"
 OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
 OC_CI_PHP = "owncloudci/php:%s"
@@ -85,7 +85,8 @@ def main(ctx):
                     gui_tests_format(build_trigger) + \
                     check_starlark(build_trigger) + \
                     changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger)
+                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
+                    unit_test_pipeline(ctx, "gcc", "g++", "Release", "Unix Makefiles", trigger = build_trigger)
         # owncloudci/squish image is not working as expected
         # Skipping GUI test pipeline until the following issue is resolved:
         # https://github.com/owncloud-ci/squish/issues/34
