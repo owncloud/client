@@ -3,8 +3,13 @@ on:
   schedule:
   - cron: "0 0 * * *"
 
+permissions: {} # none
+
 jobs:
   stale:
+    permissions:
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/stale@v5
