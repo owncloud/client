@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 3 * * *"
+    
+permissions: {} # none
 
 defaults:
   run:
@@ -11,6 +13,8 @@ defaults:
 
 jobs:
   update-translations:
+    permissions:
+      contents: write # for git push
     runs-on: ubuntu-latest
 
     env:
