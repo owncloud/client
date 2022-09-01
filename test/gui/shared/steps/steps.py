@@ -438,6 +438,11 @@ def step(context, type, resource):
     waitForFileOrFolderToBeSyncIgnored(context, resource, type)
 
 
+@Given('the user has waited for the files to be synced')
+def step(context):
+    waitForRootFolderToSync(context)
+
+
 @Given(r'the user has waited for (file|folder) "([^"]*)" to be synced', regexp=True)
 def step(context, type, resource):
     waitForFileOrFolderToSync(context, resource, type)
