@@ -115,6 +115,8 @@ def step(context, username):
     setUpClient(context, username, displayName, context.userData['clientConfigFile'])
     enterUserPassword = EnterPassword()
     enterUserPassword.enterPassword(password)
+    # wait for files to sync
+    waitForRootFolderToSync(context)
 
 
 @Given('the user has started the client')
@@ -950,6 +952,7 @@ def step(context, username):
 
 @Given('user "|any|" has logged out of the client-UI')
 def step(context, username):
+    # Todo: may be this is not needed
     waitForRootFolderToSync(context)
     accountStatus = AccountStatus(context, getDisplaynameForUser(context, username))
     accountStatus.accountAction("Log out")
