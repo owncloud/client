@@ -37,7 +37,7 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
         _ui->advancedConfigGroupBox->setVisible(false);
     }
 
-    if (!Theme::instance()->showVirtualFilesOption()) {
+    if (!Theme::instance()->enableExperimentalFeatures() || !Theme::instance()->showVirtualFilesOption()) {
         _ui->useVfsRadioButton->setVisible(false);
         vfsIsAvailable = false;
     }
@@ -87,7 +87,7 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
     });
 
     // this should be handled on application startup, too
-    Q_ASSERT(!Theme::instance()->forceVirtualFilesOption() || vfsIsAvailable);
+    Q_ASSERT(!(Theme::instance()->enableExperimentalFeatures() && Theme::instance()->forceVirtualFilesOption()) || vfsIsAvailable);
 
     if (Theme::instance()->forceVirtualFilesOption()) {
         // this has no visual effect, but is needed for syncMode()
