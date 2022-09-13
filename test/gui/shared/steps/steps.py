@@ -22,77 +22,14 @@ from pageObjects.SyncWizard import SyncWizard
 from pageObjects.Toolbar import Toolbar
 from pageObjects.Activity import Activity
 from pageObjects.AccountStatus import AccountStatus
+from helpers.SyncHelper import SYNC_STATUS, getDefaultSyncPatterns, generateSyncPatternFromMessage
 
 # the script needs to use the system wide python
 # to switch from the built-in interpreter see https://kb.froglogic.com/squish/howto/using-external-python-interpreter-squish-6-6/
 # if the IDE fails to reference the script, add the folder in Edit->Preferences->PyDev->Interpreters->Libraries
 sys.path.append(os.path.realpath('../../../shell_integration/nautilus/'))
 from syncstate import SocketConnect
-import functools
 
-createdUsers = {}
-
-# File syncing in client has the following status
-SYNC_STATUS = {
-    'SYNC': 'STATUS:SYNC',  # sync in process
-    'OK': 'STATUS:OK',  # sync completed
-    'ERROR': 'STATUS:ERROR',  # file sync has error
-    'IGNORE': 'STATUS:IGNORE',  # file is igored
-    'NOP': 'STATUS:NOP',  # file yet to be synced
-    'REGISTER': 'REGISTER_PATH',
-    'UPDATE': 'UPDATE_VIEW',
-}
-
-# default sync patterns for the initial sync (after adding account)
-SYNC_PATTERNS = [
-    # pattern 1
-    # empty
-    {
-        'length': 7,
-        'pattern': {
-            SYNC_STATUS['OK']: [0, 2, 4, 5],
-            SYNC_STATUS['REGISTER']: [1],
-            SYNC_STATUS['UPDATE']: [3, 6],
-        },
-    },
-    # pattern 2
-    # only hidden files
-    {
-        'length': 8,
-        'pattern': {
-            SYNC_STATUS['OK']: [0, 2, 4, 5, 6],
-            SYNC_STATUS['REGISTER']: [1],
-            SYNC_STATUS['UPDATE']: [3, 7],
-        },
-    },
-    # pattern 3
-    # single folder
-    # single file
-    # multiple folders
-    # folders and a file
-    {
-        'length': 10,
-        'pattern': {
-            SYNC_STATUS['OK']: [0, 2, 6, 7, 8],
-            SYNC_STATUS['REGISTER']: [1],
-            SYNC_STATUS['SYNC']: [4, 5],
-            SYNC_STATUS['UPDATE']: [3, 9],
-        },
-    },
-    # pattern 4
-    # multiple files
-    # a file and a folder
-    # files and a folder
-    {
-        'length': 15,
-        'pattern': {
-            SYNC_STATUS['OK']: [0, 2, 6, 7, 8, 10, 12, 13],
-            SYNC_STATUS['REGISTER']: [1],
-            SYNC_STATUS['SYNC']: [4, 5],
-            SYNC_STATUS['UPDATE']: [3, 9, 11, 14],
-        },
-    },
-]
 
 # gets all users information created in a test scenario
 def getCreatedUsersFromMiddleware(context):
@@ -215,42 +152,6 @@ def getSocketMessages():
     return sync_messages
 
 
-def getSyncMessages():
-    messages = getSocketMessages()
-    start_idx = messages.index('GET_STRINGS:END') + 1
-    return messages[start_idx:]
-
-
-def generateSyncPatternFromMessage():
-    messages = getSyncMessages()
-    pattern = []
-    for message in messages:
-        # E.g; from "STATUS:OK:/tmp/client-bdd/Alice/"
-        # excludes ":/tmp/client-bdd/Alice/"
-        # adds only "STATUS:OK" to the pattern list
-        match = re.search(":/.*", message)
-        if match:
-            (end, _) = match.span()
-            pattern.append(message[:end])
-    return pattern
-
-
-def generateSyncPattern(pattern_meta):
-    pattern = [None] * pattern_meta['length']
-    for status in pattern_meta['pattern']:
-        for idx in pattern_meta['pattern'][status]:
-            pattern[idx] = status
-    return pattern
-
-
-def getDefaultSyncPatterns():
-    patterns = []
-    for pattern_meta in SYNC_PATTERNS:
-        patterns.append(generateSyncPattern(pattern_meta))
-
-    return patterns
-
-
 def waitForSyncToComplete(context):
     default_patterns = getDefaultSyncPatterns()
     synced = waitFor(
@@ -262,12 +163,13 @@ def waitForSyncToComplete(context):
 
 
 def checkSyncPattern(default_patterns):
-    sync_pattern = generateSyncPatternFromMessage()
-    result = False
+    synced = False
+    messages = getSocketMessages()
+    sync_pattern = generateSyncPatternFromMessage(messages)
     for pattern in default_patterns:
         if sync_pattern == pattern:
-            result = True
-    return result
+            synced = True
+    return synced
 
 
 # Using socket API to check file sync status

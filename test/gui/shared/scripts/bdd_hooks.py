@@ -34,6 +34,9 @@ socketConnect = None
 # messages cleared in after hook
 sync_messages = []
 
+# list of user information created within the test suite
+createdUsers = {}
+
 @OnScenarioStart
 def hook(context):
     from configparser import ConfigParser
