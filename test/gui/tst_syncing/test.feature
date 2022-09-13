@@ -31,7 +31,7 @@ Feature: Syncing files
         And the folder "simple-folder" should exist on the file system
         And the folder "large-folder" should exist on the file system
 
-    @issue-9733
+    @skip @issue-9733
     Scenario: Syncing a file from the server and creating a conflict
         Given user "Alice" has uploaded file on the server with content "server content" to "/conflict.txt"
         And user "Alice" has set up a client with default settings

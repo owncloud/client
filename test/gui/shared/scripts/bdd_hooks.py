@@ -30,12 +30,13 @@ previousErrorResultCount = 0
 # Socket connection
 socketConnect = None
 
-# stores sync messages for this scenario
-# messages cleared in after hook
-sync_messages = []
+# stores socket messages for this scenario
+# messages are cleared in after hook
+socket_messages = []
 
 # list of user information created within the test suite
 createdUsers = {}
+
 
 @OnScenarioStart
 def hook(context):
@@ -160,8 +161,9 @@ def scenarioFailed():
 
 @OnScenarioEnd
 def hook(context):
-    # clear sync messages
-    sync_messages.clear()
+    # clear socket messages
+    global socket_messages
+    socket_messages.clear()
 
     # close socket connection
     global socketConnect

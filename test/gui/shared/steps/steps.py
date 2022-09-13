@@ -11,7 +11,6 @@ import requests
 import builtins
 import shutil
 
-from objectmaphelper import RegularExpression
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 from helpers.SetupClientHelper import *
 from helpers.FilesHelper import buildConflictedRegex
@@ -22,7 +21,12 @@ from pageObjects.SyncWizard import SyncWizard
 from pageObjects.Toolbar import Toolbar
 from pageObjects.Activity import Activity
 from pageObjects.AccountStatus import AccountStatus
-from helpers.SyncHelper import SYNC_STATUS, getDefaultSyncPatterns, generateSyncPatternFromMessage
+
+from helpers.SyncHelper import (
+    SYNC_STATUS,
+    getDefaultSyncPatterns,
+    generateSyncPatternFromMessage,
+)
 
 # the script needs to use the system wide python
 # to switch from the built-in interpreter see https://kb.froglogic.com/squish/howto/using-external-python-interpreter-squish-6-6/
@@ -144,12 +148,12 @@ def listenSyncStatusForItem(item, type='FOLDER'):
 
 
 def getSocketMessages():
-    global sync_messages
+    global socket_messages
     socketConnect = getSocketConnection()
     socketConnect.read_socket_data_with_timeout(0.1)
     for line in socketConnect.get_available_responses():
-        sync_messages.append(line)
-    return sync_messages
+        socket_messages.append(line)
+    return socket_messages
 
 
 def waitForSyncToComplete(context):
