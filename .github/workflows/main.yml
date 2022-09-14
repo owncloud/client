@@ -58,7 +58,14 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.target }}
 
     - name: Clone CraftMaster
-      run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
+      run: |
+        if ($IsLinux) {
+          $Env:CRAFT_DIR = "/tmp/craft/CraftMaster/CraftMaster"
+        } else {
+          $Env:CRAFT_DIR = "$env:HOME/craft/CraftMaster/CraftMaster"
+        }
+        git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:CRAFT_DIR"
+        echo "CRAFT_DIR=$env:CRAFT_DIR" >> "$env:GITHUB_ENV"
 
     - name: Craft setup
       run: |
