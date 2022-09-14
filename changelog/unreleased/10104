@@ -1,4 +1,4 @@
-Enhancement: Add a prefer: minimal header to PROPFINDs.
+Enhancement: Add a prefer: minimal header to PROPFINDs
 
 This will not return missing attribs in the reply in a 404 not found status propset. 
 That reduces the amount of transfered data significantely.
