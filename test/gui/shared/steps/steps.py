@@ -171,7 +171,7 @@ def getSocketMessagesDry():
 def waitForSyncToComplete(context):
     default_patterns = getDefaultSyncPatterns()
     synced = waitFor(
-        lambda: checkSyncPattern(default_patterns),
+        lambda: checkInitialSyncPattern(default_patterns),
         context.userData['maxSyncTimeout'] * 1000,
     )
     if not synced:
@@ -232,14 +232,14 @@ def checkActionSyncPattern(pattern_meta):
     return False
 
 
-def checkSyncPattern(default_patterns):
-    synced = False
+def checkInitialSyncPattern(default_patterns):
     messages = getSocketMessages()
     sync_pattern = generateSyncPatternFromMessage(messages)
     for pattern in default_patterns:
-        if sync_pattern == pattern:
-            synced = True
-    return synced
+        actual_pattern = sync_pattern[: len(pattern)]
+        if actual_pattern == pattern:
+            return True
+    return False
 
 
 # Using socket API to check file sync status
@@ -1156,7 +1156,7 @@ def step(context, resource, group):
     sharingDialog.selectCollaborator(group, True)
 
 
-def writeFile(resource, content = ''):
+def writeFile(resource, content=''):
     f = open(resource, "w")
     f.write(content)
     f.close()
