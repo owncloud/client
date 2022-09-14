@@ -58,7 +58,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.target }}
 
     - name: Clone CraftMaster
-      run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
+      run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "${env:GITHUB_WORKSPACE}/craft/CraftMaster/CraftMaster"
 
     - name: Craft setup
       run: |
@@ -115,7 +115,7 @@ jobs:
     - name: Prepare artifacts
       run: |
         New-Item -ItemType Directory "${env:GITHUB_WORKSPACE}/binaries/" -ErrorAction SilentlyContinue
-        Copy-Item "$env:HOME/craft/binaries/*" "${env:GITHUB_WORKSPACE}/binaries/"
+        Copy-Item "${env:GITHUB_WORKSPACE}/craft/binaries/*" "${env:GITHUB_WORKSPACE}/binaries/"
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --shelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
         Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
 
