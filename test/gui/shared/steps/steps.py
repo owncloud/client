@@ -24,8 +24,10 @@ from pageObjects.AccountStatus import AccountStatus
 
 from helpers.SyncHelper import (
     SYNC_STATUS,
+    SYNC_PATTERNS,
     getDefaultSyncPatterns,
     generateSyncPatternFromMessage,
+    generateSyncPattern,
 )
 
 # the script needs to use the system wide python
@@ -144,11 +146,21 @@ def getSocketConnection():
 
 def listenSyncStatusForItem(item, type='FOLDER'):
     socketConnect = getSocketConnection()
-    socketConnect.sendCommand("RETRIEVE_" + type + "_STATUS:" + item + "\n")
+    socketConnect.sendCommand("RETRIEVE_" + type.upper() + "_STATUS:" + item + "\n")
 
 
 def getSocketMessages():
     global socket_messages
+    socket_messages.extend(getSocketMessagesDry())
+    return socket_messages
+
+
+def updateSocketMessages():
+    return getSocketMessages()
+
+
+def getSocketMessagesDry():
+    socket_messages = []
     socketConnect = getSocketConnection()
     socketConnect.read_socket_data_with_timeout(0.1)
     for line in socketConnect.get_available_responses():
@@ -164,6 +176,60 @@ def waitForSyncToComplete(context):
     )
     if not synced:
         raise Exception("Timeout while waiting for sync to complete")
+
+
+# to store new socket messages temporarily
+new_sock_messages = []
+
+
+def waitForActionToBeSynced(context, action):
+    if action == 'delete':
+        func = deleteSynced
+    elif action == 'edit':
+        func = editSynced
+    elif action == 'create':
+        func = editSynced
+    else:
+        raise Exception("Unknown action: " + action)
+
+    synced = waitFor(
+        lambda: func(),
+        context.userData['maxSyncTimeout'] * 1000,
+    )
+
+    new_sock_messages.clear()
+
+    if not synced:
+        raise Exception("Timeout while waiting for sync delete action to complete")
+
+    # update socket messages
+    updateSocketMessages()
+
+
+def deleteSynced():
+    return checkActionSyncPattern(SYNC_PATTERNS['delete_sync'])
+
+
+def editSynced():
+    return checkActionSyncPattern(SYNC_PATTERNS['edit_sync'])
+
+
+def checkActionSyncPattern(pattern_meta):
+    global new_sock_messages
+    new_sock_messages.extend(getSocketMessagesDry())
+
+    pattern = generateSyncPattern(pattern_meta)
+    for message in new_sock_messages:
+        if pattern[0] in message:
+            idx = new_sock_messages.index(message)
+            new_sock_messages = new_sock_messages[idx:]
+
+            pattern_messages = new_sock_messages[idx : idx + pattern_meta['length']]
+            act_pattern = generateSyncPatternFromMessage(pattern_messages)
+
+            if act_pattern == pattern:
+                return True
+    return False
 
 
 def checkSyncPattern(default_patterns):
@@ -451,6 +517,11 @@ def collaboratorShouldBeListed(
     shareItem.closeSharingDialog()
 
 
+@When('the user waits for "|any|" action to sync')
+def step(context, action):
+    waitForActionToBeSynced(context, action)
+
+
 @When('the user waits for the files to sync')
 def step(context):
     waitForRootFolderToSync(context)
@@ -485,31 +556,30 @@ def step(context, type, resource):
     'user "|any|" has created a file "|any|" with the following content inside the sync folder'
 )
 def step(context, username, filename):
-    createFile(context, filename, username)
+    fileContent = "\n".join(context.multiLineText)
+    syncPath = getUserSyncPath(context, username)
+
+    writeFile(join(syncPath, filename), fileContent)
+    # Todo: check file exists with content
 
 
 @When(
     'user "|any|" creates a file "|any|" with the following content inside the sync folder'
 )
 def step(context, username, filename):
-    createFile(context, filename, username)
-
-
-def createFile(context, filename, username=None):
     fileContent = "\n".join(context.multiLineText)
-    syncPath = None
-    if username:
-        syncPath = getUserSyncPath(context, username)
-    else:
-        syncPath = context.userData['currentUserSyncPath']
+    syncPath = getUserSyncPath(context, username)
 
-    # A file is scheduled to be synced but is marked as ignored for 5 seconds. And if we try to sync it, it will fail. So we need to wait for 5 seconds.
-    # https://github.com/owncloud/client/issues/9325
-    snooze(context.userData['minSyncTimeout'])
+    waitAndCreateFile(context, join(syncPath, filename), fileContent)
 
-    f = open(join(syncPath, filename), "w")
-    f.write(fileContent)
-    f.close()
+
+def waitAndCreateFile(context, file, content):
+    # performing actions immediately after completing the sync from the server does not work
+    # The test should wait for a while before performing the action
+    # issue: https://github.com/owncloud/client/issues/8832
+    snooze(context.userData['touchTimeout'])
+
+    writeFile(file, content)
 
 
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
@@ -657,9 +727,7 @@ def step(context):
 @Given('the user has changed the content of local file "|any|" to:')
 def step(context, filename):
     fileContent = "\n".join(context.multiLineText)
-    f = open(context.userData['currentUserSyncPath'] + filename, "w")
-    f.write(fileContent)
-    f.close()
+    writeFile(context.userData['currentUserSyncPath'] + filename, fileContent)
 
 
 @When('the user resumes the file sync on the client')
@@ -981,8 +1049,6 @@ def step(context, username):
 
 @Given('user "|any|" has logged out of the client-UI')
 def step(context, username):
-    # Todo: may be this is not needed
-    waitForRootFolderToSync(context)
     accountStatus = AccountStatus(context, getDisplaynameForUser(context, username))
     accountStatus.accountAction("Log out")
     isUserSignedOut(context, username)
@@ -1090,7 +1156,7 @@ def step(context, resource, group):
     sharingDialog.selectCollaborator(group, True)
 
 
-def overwriteFile(resource, content):
+def writeFile(resource, content = ''):
     f = open(resource, "w")
     f.write(content)
     f.close()
@@ -1098,7 +1164,7 @@ def overwriteFile(resource, content):
 
 def tryToOverwriteFile(context, resource, content):
     try:
-        overwriteFile(resource, content)
+        writeFile(resource, content)
     except:
         pass
 
@@ -1108,14 +1174,12 @@ def step(context, resource, content):
     print("starting file overwrite")
     resource = join(context.userData['currentUserSyncPath'], resource)
 
-    # overwriting the file immediately after it has been synced from the server seems to have some problem.
-    # The client does not see the change although the changes have already been made thus we are having a race condition
-    # So for now we add 5sec static wait
-    # an issue https://github.com/owncloud/client/issues/8832 has been created for it
-    snooze(context.userData['minSyncTimeout'])
+    # performing actions immediately after completing the sync from the server does not work
+    # The test should wait for a while before performing the action
+    # issue: https://github.com/owncloud/client/issues/8832
+    snooze(context.userData['touchTimeout'])
 
-    overwriteFile(resource, content)
-
+    writeFile(resource, content)
     print("file has been overwritten")
 
 
@@ -1213,7 +1277,8 @@ def step(context, errorMsg):
 
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
 def step(context, itemType, resource):
-    # deleting the file immediately after it has been synced from the server seems to have some problem.
+    # performing actions immediately after completing the sync from the server does not work
+    # The test should wait for a while before performing the action
     # issue: https://github.com/owncloud/client/issues/8832
     snooze(context.userData['touchTimeout'])
 
@@ -1472,14 +1537,14 @@ def step(context, username):
     '''
     syncPath = getUserSyncPath(context, username)
 
-    # A file is scheduled to be synced but is marked as ignored for 5 seconds. And if we try to sync it, it will fail. So we need to wait for 5 seconds.
-    # https://github.com/owncloud/client/issues/9325
-    snooze(context.userData['minSyncTimeout'])
+    # performing actions immediately after completing the sync from the server does not work
+    # The test should wait for a while before performing the action
+    # issue: https://github.com/owncloud/client/issues/8832
+    snooze(context.userData['touchTimeout'])
 
     for row in context.table[1:]:
         filename = syncPath + row[0]
-        f = open(join(syncPath, filename), "w")
-        f.close()
+        writeFile(join(syncPath, filename), "")
 
 
 @Given(

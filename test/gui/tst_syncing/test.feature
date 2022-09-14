@@ -14,7 +14,7 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for file "lorem-for-upload.txt" to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" the file "lorem-for-upload.txt" on the server should have the content "test content"
 
 
@@ -132,7 +132,7 @@ Feature: Syncing files
     Scenario Outline: Syncing a folder to the server
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a folder <foldername> inside the sync folder
-        And the user waits for folder <foldername> to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" folder <foldername> should exist on the server
         Examples:
             | foldername                                                               |
