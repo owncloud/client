@@ -16,53 +16,70 @@ SYNC_STATUS = {
 # default sync patterns for the initial sync (after adding account)
 SYNC_PATTERNS = {
     'root_sync': [
-        # pattern 1
-        # empty
+        {
+            'length': 5,
+            'pattern': {
+                SYNC_STATUS['OK']: [0, 2, 4],
+                SYNC_STATUS['REGISTER']: [1],
+                SYNC_STATUS['UPDATE']: [3],
+            },
+        },
         {
             'length': 7,
             'pattern': {
-                SYNC_STATUS['OK']: [0, 2, 4, 5],
+                SYNC_STATUS['OK']: [0, 2, 6],
                 SYNC_STATUS['REGISTER']: [1],
-                SYNC_STATUS['UPDATE']: [3, 6],
+                SYNC_STATUS['SYNC']: [4, 5],
+                SYNC_STATUS['UPDATE']: [3],
             },
         },
+        # pattern 1
+        # empty
+        # {
+        #     'length': 7,
+        #     'pattern': {
+        #         SYNC_STATUS['OK']: [0, 2, 4, 5],
+        #         SYNC_STATUS['REGISTER']: [1],
+        #         SYNC_STATUS['UPDATE']: [3, 6],
+        #     },
+        # },
         # pattern 2
         # only hidden files
-        {
-            'length': 8,
-            'pattern': {
-                SYNC_STATUS['OK']: [0, 2, 4, 5, 6],
-                SYNC_STATUS['REGISTER']: [1],
-                SYNC_STATUS['UPDATE']: [3, 7],
-            },
-        },
+        # {
+        #     'length': 8,
+        #     'pattern': {
+        #         SYNC_STATUS['OK']: [0, 2, 4, 5, 6],
+        #         SYNC_STATUS['REGISTER']: [1],
+        #         SYNC_STATUS['UPDATE']: [3, 7],
+        #     },
+        # },
         # pattern 3
         # single folder
         # single file
         # multiple folders
         # folders and a file
-        {
-            'length': 10,
-            'pattern': {
-                SYNC_STATUS['OK']: [0, 2, 6, 7, 8],
-                SYNC_STATUS['REGISTER']: [1],
-                SYNC_STATUS['SYNC']: [4, 5],
-                SYNC_STATUS['UPDATE']: [3, 9],
-            },
-        },
+        # {
+        #     'length': 10,
+        #     'pattern': {
+        #         SYNC_STATUS['OK']: [0, 2, 6, 7, 8],
+        #         SYNC_STATUS['REGISTER']: [1],
+        #         SYNC_STATUS['SYNC']: [4, 5],
+        #         SYNC_STATUS['UPDATE']: [3, 9],
+        #     },
+        # },
         # pattern 4
         # multiple files
         # a file and a folder
         # files and a folder
-        {
-            'length': 15,
-            'pattern': {
-                SYNC_STATUS['OK']: [0, 2, 6, 7, 8, 10, 12, 13],
-                SYNC_STATUS['REGISTER']: [1],
-                SYNC_STATUS['SYNC']: [4, 5],
-                SYNC_STATUS['UPDATE']: [3, 9, 11, 14],
-            },
-        },
+        # {
+        #     'length': 15,
+        #     'pattern': {
+        #         SYNC_STATUS['OK']: [0, 2, 6, 7, 8, 10, 12, 13],
+        #         SYNC_STATUS['REGISTER']: [1],
+        #         SYNC_STATUS['SYNC']: [4, 5],
+        #         SYNC_STATUS['UPDATE']: [3, 9, 11, 14],
+        #     },
+        # },
     ],
     'delete_sync': {
         'length': 5,
