@@ -574,10 +574,13 @@ def step(context, username, filename):
 
 
 def waitAndCreateFile(context, file, content):
+    global waitedAfterSync
     # performing actions immediately after completing the sync from the server does not work
     # The test should wait for a while before performing the action
     # issue: https://github.com/owncloud/client/issues/8832
-    snooze(context.userData['touchTimeout'])
+    if not waitedAfterSync:
+        snooze(context.userData['touchTimeout'])
+        waitedAfterSync = True
 
     writeFile(file, content)
 
@@ -1177,7 +1180,10 @@ def step(context, resource, content):
     # performing actions immediately after completing the sync from the server does not work
     # The test should wait for a while before performing the action
     # issue: https://github.com/owncloud/client/issues/8832
-    snooze(context.userData['touchTimeout'])
+    global waitedAfterSync
+    if not waitedAfterSync:
+        snooze(context.userData['touchTimeout'])
+        waitedAfterSync = True
 
     writeFile(resource, content)
     print("file has been overwritten")
@@ -1280,7 +1286,10 @@ def step(context, itemType, resource):
     # performing actions immediately after completing the sync from the server does not work
     # The test should wait for a while before performing the action
     # issue: https://github.com/owncloud/client/issues/8832
-    snooze(context.userData['touchTimeout'])
+    global waitedAfterSync
+    if not waitedAfterSync:
+        snooze(context.userData['touchTimeout'])
+        waitedAfterSync = True
 
     resourcePath = sanitizePath(context.userData['currentUserSyncPath'] + resource)
     if itemType == 'file':
@@ -1540,7 +1549,10 @@ def step(context, username):
     # performing actions immediately after completing the sync from the server does not work
     # The test should wait for a while before performing the action
     # issue: https://github.com/owncloud/client/issues/8832
-    snooze(context.userData['touchTimeout'])
+    global waitedAfterSync
+    if not waitedAfterSync:
+        snooze(context.userData['touchTimeout'])
+        waitedAfterSync = True
 
     for row in context.table[1:]:
         filename = syncPath + row[0]

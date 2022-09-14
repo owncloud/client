@@ -37,6 +37,10 @@ socket_messages = []
 # list of user information created within the test suite
 createdUsers = {}
 
+# whether waited for context.userData['touchTimeout'] seconds or not
+# this is useful for waiting only for the first time
+waitedAfterSync = False
+
 
 @OnScenarioStart
 def hook(context):
@@ -165,8 +169,9 @@ def scenarioFailed():
 @OnScenarioEnd
 def hook(context):
     # clear socket messages
-    global socket_messages
+    global socket_messages, waitedAfterSync
     socket_messages.clear()
+    waitedAfterSync = False
 
     # close socket connection
     global socketConnect
