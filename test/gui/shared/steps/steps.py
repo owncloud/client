@@ -185,9 +185,7 @@ new_sock_messages = []
 def waitForActionToBeSynced(context, action):
     if action == 'delete':
         func = deleteSynced
-    elif action == 'edit':
-        func = editSynced
-    elif action == 'create':
+    elif action == 'edit' or action == 'create' or action == 'copy':
         func = editSynced
     else:
         raise Exception("Unknown action: " + action)
@@ -204,6 +202,18 @@ def waitForActionToBeSynced(context, action):
 
     # update socket messages
     updateSocketMessages()
+
+
+def waitForMultiFilesToBeSynced(context):
+    for count in range(0, 2):
+        synced = waitFor(
+            lambda: editSynced(),
+            context.userData['maxSyncTimeout'] * 1000,
+        )
+        if not synced:
+            raise Exception("Timeout while waiting for sync to complete: " + str(count + 1) + " of 2")
+        new_sock_messages.clear()
+        updateSocketMessages()
 
 
 def deleteSynced():
@@ -520,6 +530,11 @@ def collaboratorShouldBeListed(
 @When('the user waits for "|any|" action to sync')
 def step(context, action):
     waitForActionToBeSynced(context, action)
+
+
+@When('the user waits for multiple files to sync')
+def step(context):
+    waitForMultiFilesToBeSynced(context)
 
 
 @When('the user waits for the files to sync')

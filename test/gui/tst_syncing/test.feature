@@ -174,7 +174,7 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for the files to sync
+        And the user waits for multiple files to sync
         Then as "Alice" folder "parent/subfolderEmpty1" should exist on the server
         And as "Alice" folder "parent/subfolderEmpty2" should exist on the server
         And as "Alice" folder "parent/subfolderEmpty3" should exist on the server
@@ -195,7 +195,7 @@ Feature: Syncing files
             test content
             """
         When the user copies the folder "original" to "copied"
-        And the user waits for folder "copied" to be synced
+        And the user waits for "copy" action to sync
         Then as "Alice" folder "original" should exist on the server
         And as "Alice" folder "copied" should exist on the server
 
@@ -208,7 +208,7 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for the files to sync
+        And the user waits for multiple files to sync
         Then as "Alice" folder "Folder1" should exist on the server
         And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the server
         And the file "Folder1/really long folder name with some spaces and special char such as $%ñ&/test.txt" should exist on the file system with the following content
@@ -231,8 +231,8 @@ Feature: Syncing files
     Scenario: Filenames that are rejected by the server are reported
         Given user "Alice" has set up a client with default settings
         And user "Alice" has created a folder "Folder1" inside the sync folder
-        And the user has waited for folder "Folder1" to be synced
-        When user "Alice" creates a file "Folder1/a\\a.txt" with the following content inside the sync folder
+        When the user waits for "create" action to sync
+        And user "Alice" creates a file "Folder1/a\\a.txt" with the following content inside the sync folder
             """
             test content
             """
@@ -249,7 +249,7 @@ Feature: Syncing files
         And user "Alice" creates a folder "<foldername>/<foldername>/<foldername>" inside the sync folder
         And user "Alice" creates a folder "<foldername>/<foldername>/<foldername>/<foldername>" inside the sync folder
         And user "Alice" creates a folder "<foldername>/<foldername>/<foldername>/<foldername>/<foldername>" inside the sync folder
-        And the user waits for folder "<foldername>/<foldername>/<foldername>/<foldername>/<foldername>" to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" folder "<foldername>" should exist on the server
         And as "Alice" folder "<foldername>/<foldername>" should exist on the server
         And as "Alice" folder "<foldername>/<foldername>/<foldername>" should exist on the server
@@ -304,7 +304,7 @@ Feature: Syncing files
             | /testaudio.mp3   |
             | /test_video.mp4  |
             | /simple.txt      |
-        When the user waits for the files to sync
+        When the user waits for "create" action to sync
         Then as "Alice" file "testavatar.png" should exist on the server
         And as "Alice" file "testavatar.jpg" should exist on the server
         And as "Alice" file "testavatar.jpeg" should exist on the server
@@ -319,7 +319,7 @@ Feature: Syncing files
             """
             test content
             """
-        And the user waits for file "<filename>" to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" file "<filename>" should exist on the server
         Examples:
             | filename                                                                                                                                                                                                                     |
@@ -343,7 +343,7 @@ Feature: Syncing files
     Scenario: Syncing file of 1 GB size
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a file "newfile.txt" with size "1GB" inside the sync folder
-        And the user waits for file "newfile.txt" to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" file "newfile.txt" should exist on the server
 
 
@@ -353,7 +353,7 @@ Feature: Syncing files
             """
             test contents
             """
-        And the user waits for file "file with space.txt" to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" file "file with space.txt" should exist on the server
 
 
@@ -363,8 +363,7 @@ Feature: Syncing files
         And the user has created a folder "folder2" with "500" files each of size "1048576" bytes in temp folder
         When user "Alice" moves folder "folder1" from the temp folder into the sync folder
         And user "Alice" moves folder "folder2" from the temp folder into the sync folder
-        And the user waits for folder "folder1" to be synced
-        And the user waits for folder "folder2" to be synced
+        And the user waits for "create" action to sync
         Then as "Alice" folder "folder1" should exist on the server
         And as user "Alice" folder "folder1" should contain "500" items on the server
         And as "Alice" folder "folder2" should exist on the server
