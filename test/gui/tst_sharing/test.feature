@@ -199,8 +199,9 @@ Feature: Sharing
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Brian" has set up a client with default settings
         When the user overwrites the file "textfile.txt" with content "overwrite file in the root"
+        And the user waits for "edit" action to sync
         And the user overwrites the file "simple-folder/textfile.txt" with content "overwrite file inside a folder"
-        And the user waits for the files to sync
+        And the user waits for "edit" action to sync
         Then as "Brian" the file "simple-folder/textfile.txt" on the server should have the content "overwrite file inside a folder"
         And as "Brian" the file "textfile.txt" on the server should have the content "overwrite file in the root"
         And as "Alice" the file "simple-folder/textfile.txt" on the server should have the content "overwrite file inside a folder"
@@ -217,7 +218,7 @@ Feature: Sharing
         And user "Brian" has set up a client with default settings
         When the user tries to overwrite the file "Parent/textfile.txt" with content "overwrite file inside a folder"
         And the user tries to overwrite the file "textfile.txt" with content "overwrite file in the root"
-        And the user waits for the files to sync
+        And the user waits for sync to be ignored
         Then as "Brian" the file "Parent/textfile.txt" on the server should have the content "file inside a folder"
         And as "Brian" the file "textfile.txt" on the server should have the content "file in the root"
         And as "Alice" the file "Parent/textfile.txt" on the server should have the content "file inside a folder"
@@ -241,7 +242,7 @@ Feature: Sharing
         And the user removes permissions "edit" for user "Brian Murphy" of resource "FOLDER" using the client-UI
         And user "Brian" tries to overwrite the file "textfile.txt" with content "overwrite ownCloud test text file"
         And user "Brian" tries to overwrite the file "FOLDER/simple.txt" with content "overwrite some content"
-        And the user waits for the files to sync
+        And the user waits for sync to be ignored
         Then as "Brian" the file "textfile.txt" on the server should have the content "ownCloud test text file"
         And as "Brian" the file "FOLDER/simple.txt" on the server should have the content "some content"
         And as "Alice" the file "textfile.txt" on the server should have the content "ownCloud test text file"
@@ -258,8 +259,7 @@ Feature: Sharing
             test content
             """
         And user "Brian" creates a folder "Parent/localFolder" inside the sync folder
-        And the user waits for file "Parent/localFile.txt" to be synced
-        And the user waits for folder "Parent/localFolder" to be synced
+        And the user waits for "create" action to sync
         Then as "Brian" file "Parent/localFile.txt" should exist on the server
         And as "Brian" folder "Parent/localFolder" should exist on the server
         And as "Alice" file "Parent/localFile.txt" should exist on the server
@@ -293,8 +293,7 @@ Feature: Sharing
         And user "Brian" has set up a client with default settings
         When the user renames a file "textfile.txt" to "lorem.txt"
         And the user renames a folder "FOLDER" to "PARENT"
-        And the user waits for folder "PARENT" to be synced
-        And the user waits for file "lorem.txt" to be synced
+        And the user waits for "edit" action to sync
         Then as "Brian" folder "FOLDER" should not exist on the server
         And as "Brian" file "textfile.txt" should not exist on the server
         And as "Brian" folder "PARENT" should exist on the server
@@ -315,7 +314,7 @@ Feature: Sharing
         And user "Brian" has set up a client with default settings
         When the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
-        And the user waits for the files to sync
+        And the user waits for "delete" action to sync
         Then as "Brian" file "textfile.txt" on the server should not exist
         And as "Brian" folder "Folder" on the server should not exist
         And as "Alice" file "textfile.txt" on the server should exist
@@ -331,7 +330,7 @@ Feature: Sharing
         And user "Brian" has set up a client with default settings
         When the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
-        And the user waits for the files to sync
+        And the user waits for "delete" action to sync
         # Sharee can delete (means unshare) the file shared with read permission
         Then as "Brian" file "textfile.txt" on the server should not exist
         And as "Brian" folder "Folder" on the server should not exist
@@ -456,8 +455,8 @@ Feature: Sharing
 
 
     Scenario: sharing of a file by public link with password and changing the password
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        And user "Alice" has set up a client with default settings
         And user "Alice" has created a public link on the server with following settings
             | path     | textfile0.txt |
             | name     | Public-link   |
@@ -469,8 +468,8 @@ Feature: Sharing
 
 
     Scenario: simple sharing of a file by public link with default expiration date
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        And user "Alice" has set up a client with default settings
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
             | expireDate | %default%    |
@@ -480,9 +479,9 @@ Feature: Sharing
 
     @issue-9321
     Scenario: simple sharing of file and folder by public link with expiration date
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created folder "FOLDER" on the server
+        Given user "Alice" has created folder "FOLDER" on the server
         And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        And user "Alice" has set up a client with default settings
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
             | expireDate | 2031-10-14   |
@@ -499,8 +498,8 @@ Feature: Sharing
 
     @issue-9321
     Scenario: simple sharing of a file by public link with password and expiration date
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        And user "Alice" has set up a client with default settings
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
             | password   | pass123      |

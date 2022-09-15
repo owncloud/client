@@ -97,6 +97,13 @@ SYNC_PATTERNS = {
             SYNC_STATUS['OK']: [2],
         },
     },
+    'sync_ignore': {
+        'length': 6,
+        'pattern': {
+            SYNC_STATUS['SYNC']: [0, 1, 2],
+            SYNC_STATUS['IGNORE']: [3, 4, 5],
+        },
+    },
 }
 
 

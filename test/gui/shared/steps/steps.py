@@ -183,6 +183,7 @@ new_sock_messages = []
 
 
 def waitForActionToBeSynced(context, action):
+    global new_sock_messages
     if action == 'delete':
         func = deleteSynced
     elif action == 'edit' or action == 'create' or action == 'copy':
@@ -205,6 +206,7 @@ def waitForActionToBeSynced(context, action):
 
 
 def waitForMultiFilesToBeSynced(context):
+    global new_sock_messages
     for count in range(0, 2):
         synced = waitFor(
             lambda: editSynced(),
@@ -214,6 +216,18 @@ def waitForMultiFilesToBeSynced(context):
             raise Exception("Timeout while waiting for sync to complete: " + str(count + 1) + " of 2")
         new_sock_messages.clear()
         updateSocketMessages()
+
+
+def waitForSyncToBeIgnored(context):
+    global new_sock_messages
+    synced = waitFor(
+        lambda: checkActionSyncPattern(SYNC_PATTERNS['sync_ignore']),
+        context.userData['maxSyncTimeout'] * 1000,
+    )
+    if not synced:
+        raise Exception("Timeout while waiting for sync to be ignored")
+    new_sock_messages.clear()
+    updateSocketMessages()
 
 
 def deleteSynced():
@@ -552,9 +566,9 @@ def step(context, type, resource):
     waitForFileOrFolderToHaveSyncError(context, resource, type)
 
 
-@When(r'the user waits for (file|folder) "([^"]*)" to be sync ignored', regexp=True)
-def step(context, type, resource):
-    waitForFileOrFolderToBeSyncIgnored(context, resource, type)
+@When('the user waits for sync to be ignored')
+def step(context):
+    waitForSyncToBeIgnored(context)
 
 
 @Given('user has waited for the files to be synced')
@@ -585,10 +599,10 @@ def step(context, username, filename):
     fileContent = "\n".join(context.multiLineText)
     syncPath = getUserSyncPath(context, username)
 
-    waitAndCreateFile(context, join(syncPath, filename), fileContent)
+    waitAndWriteFile(context, join(syncPath, filename), fileContent)
 
 
-def waitAndCreateFile(context, file, content):
+def waitAndWriteFile(context, file, content):
     global waitedAfterSync
     # performing actions immediately after completing the sync from the server does not work
     # The test should wait for a while before performing the action
@@ -1180,40 +1194,43 @@ def writeFile(resource, content=''):
     f.close()
 
 
-def tryToOverwriteFile(context, resource, content):
+def tryToOverwriteFile(resource, content):
     try:
         writeFile(resource, content)
     except:
         pass
 
 
+def waitAndTryToWriteFile(context, resource, content):
+    global waitedAfterSync
+    # performing actions immediately after completing the sync from the server does not work
+    # The test should wait for a while before performing the action
+    # issue: https://github.com/owncloud/client/issues/8832
+    if not waitedAfterSync:
+        snooze(context.userData['touchTimeout'])
+        waitedAfterSync = True
+
+    tryToOverwriteFile(resource, content)
+
 @When('the user overwrites the file "|any|" with content "|any|"')
 def step(context, resource, content):
     print("starting file overwrite")
     resource = join(context.userData['currentUserSyncPath'], resource)
 
-    # performing actions immediately after completing the sync from the server does not work
-    # The test should wait for a while before performing the action
-    # issue: https://github.com/owncloud/client/issues/8832
-    global waitedAfterSync
-    if not waitedAfterSync:
-        snooze(context.userData['touchTimeout'])
-        waitedAfterSync = True
-
-    writeFile(resource, content)
+    waitAndWriteFile(context, resource, content)
     print("file has been overwritten")
 
 
 @When('the user tries to overwrite the file "|any|" with content "|any|"')
 def step(context, resource, content):
     resource = context.userData['currentUserSyncPath'] + resource
-    tryToOverwriteFile(context, resource, content)
+    waitAndTryToWriteFile(context, resource, content)
 
 
 @When('user "|any|" tries to overwrite the file "|any|" with content "|any|"')
 def step(context, user, resource, content):
     resource = getResourcePath(context, resource, user)
-    tryToOverwriteFile(context, resource, content)
+    waitAndTryToWriteFile(context, resource, content)
 
 
 def enableVFSSupport(vfsBtnText):
@@ -1564,6 +1581,8 @@ def step(context, username):
     # performing actions immediately after completing the sync from the server does not work
     # The test should wait for a while before performing the action
     # issue: https://github.com/owncloud/client/issues/8832
+    # Todo: remove the wait
+    # 'Given' step should not be used after adding account
     global waitedAfterSync
     if not waitedAfterSync:
         snooze(context.userData['touchTimeout'])
