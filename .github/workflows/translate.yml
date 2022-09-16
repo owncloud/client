@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: "0 3 * * *"
     
-permissions: {} # none
+permissions: {}
 
 defaults:
   run:
@@ -14,7 +14,8 @@ defaults:
 jobs:
   update-translations:
     permissions:
-      contents: write # for git push
+      # for git push
+      contents: write
     runs-on: ubuntu-latest
 
     env:
