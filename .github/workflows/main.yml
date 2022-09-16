@@ -7,7 +7,7 @@ on:
       - '[0-9]+.*'
   pull_request:
   
-permissions: {} # none
+permissions: {}
 
 defaults:
   run:
@@ -17,7 +17,8 @@ jobs:
 # ------------------------------------------------------------------------------------------------------------------------------------------
   build:
     permissions:
-      contents: read # actions/upload-artifact doesn't need contents: write
+      # actions/upload-artifact doesn't need contents: write
+      contents: read
     strategy:
         matrix:
             include:
