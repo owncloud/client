@@ -23,17 +23,17 @@ jobs:
         matrix:
             include:
             - name: Windows 64-bit cl
-              target: windows-msvc2019_64-cl
+              target: windows-msvc2019_64-cl-debug
               os: windows-latest
               fetch-depth: 0
               container:
             - name: macOS 64-bit clang
-              target: macos-64-clang
+              target: macos-64-clang-debug
               os: macos-latest
               fetch-depth: 1
               container:
             - name: CentOS 7 64-bit gcc
-              target: linux-64-gcc
+              target: linux-64-gcc-debug
               os: ubuntu-latest
               container: owncloudci/appimage-build:centos7-amd64
               fetch-depth: 1
