@@ -103,6 +103,7 @@ jobs:
     - name: Run tests
       run: |
         if($IsLinux) {
+          chmod og+rw -R "${env:CRAFT_DIR}"
           useradd -m testuser
           # sudo works better than runuser
           yum install -y sudo
