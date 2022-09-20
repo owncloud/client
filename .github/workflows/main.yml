@@ -108,7 +108,7 @@ jobs:
           yum install -y sudo
           chmod -v -R og+rw "${env:CRAFT_DIR}"
           chown -v -R testuser "${env:CRAFT_DIR}"
-          ls -al --recursive
+          ls -al --recursive "${env:CRAFT_DIR}"
           sudo -E -u testuser -- pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
         } else {
           & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
