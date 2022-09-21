@@ -107,7 +107,7 @@ void SpacesDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
             painter->restore();
         }
-        if (nameRect.isValid()) {
+        if (subtitleRect.isValid()) {
             subtitleRect.moveTop(nameRect.bottom());
             painter->drawText(QStyle::visualRect(option.direction, option.rect, subtitleRect), subTitleTextFlags, subTitle);
         }
