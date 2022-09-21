@@ -17,3 +17,6 @@ $command = @("${env:CRAFT_DIR}/CraftMaster.py",
 Write-Host "Exec: ${python} ${command}"
 
 & $python @command
+if ($LASTEXITCODE -ne 0) {
+    exit 1
+}

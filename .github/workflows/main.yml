@@ -115,6 +115,9 @@ jobs:
           ls -al /tmp/craft/CraftMaster/linux-64-gcc/
           ls -al --recursive /tmp/
           sudo -E -u testuser -- pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
+          if ($LASTEXITCODE -ne 0) {
+              exit 1
+          }
         } else {
           & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
         }
