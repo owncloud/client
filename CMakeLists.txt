@@ -24,6 +24,11 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+find_file(cldapi_FOUND CldApi.dll)
+if(NOT cldapi_FOUND)
+    message(WARNING "Failed to detect CldApi.dll: Skipping WinVfsTest")
+endif()
+
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
 if(UNIT_TESTING)
