@@ -73,8 +73,8 @@ struct CmdOptions
     QString exclude;
     QString unsyncedfolders;
     int restartTimes = 3;
-    int downlimit = 0;
-    int uplimit = 0;
+    int downlimitKbPerSec = 0;
+    int uplimitKbPerSec = 0;
     bool deltasync;
     qint64 deltasyncminfilesize;
 };
@@ -201,7 +201,7 @@ void sync(const SyncCTX &ctx)
     QObject::connect(engine, &SyncEngine::syncError, engine,
         [](const QString &error) { qWarning() << "Sync error:" << error; });
     engine->setIgnoreHiddenFiles(ctx.options.ignoreHiddenFiles);
-    engine->setNetworkLimits(ctx.options.uplimit, ctx.options.downlimit);
+    engine->setNetworkLimits(ctx.options.uplimitKbPerSec, ctx.options.downlimitKbPerSec);
 
 
     // Exclude lists
@@ -312,8 +312,8 @@ public:
     std::cout << "  -n                     Use netrc (5) for login" << std::endl;
     std::cout << "  --non-interactive      Do not block execution with interaction" << std::endl;
     std::cout << "  --max-sync-retries [n] Retries maximum n times (default to 3)" << std::endl;
-    std::cout << "  --uplimit [n]          Limit the upload speed of files to n KB/s" << std::endl;
-    std::cout << "  --downlimit [n]        Limit the download speed of files to n KB/s" << std::endl;
+    std::cout << "  --uplimitKbPerSec [n]  Limit the upload speed of files to n KB/s" << std::endl;
+    std::cout << "  --downlimitKbPerSec [n]     Limit the download speed of files to n KB/s" << std::endl;
     std::cout << "  -h                     Sync hidden files,do not ignore them" << std::endl;
     std::cout << "  --version, -v          Display version and exit" << std::endl;
     std::cout << "  --logdebug             More verbose logging" << std::endl;
@@ -391,10 +391,10 @@ CmdOptions parseOptions(const QStringList &app_args)
             options.unsyncedfolders = it.next();
         } else if (option == QLatin1String("--max-sync-retries") && !it.peekNext().startsWith(QLatin1String("-"))) {
             options.restartTimes = it.next().toInt();
-        } else if (option == QLatin1String("--uplimit") && !it.peekNext().startsWith(QLatin1String("-"))) {
-            options.uplimit = it.next().toInt() * 1000;
-        } else if (option == QLatin1String("--downlimit") && !it.peekNext().startsWith(QLatin1String("-"))) {
-            options.downlimit = it.next().toInt() * 1000;
+        } else if (option == QLatin1String("--uplimitKbPerSec") && !it.peekNext().startsWith(QLatin1String("-"))) {
+            options.uplimitKbPerSec = it.next().toInt() * 1000;
+        } else if (option == QLatin1String("--downlimitKbPerSec") && !it.peekNext().startsWith(QLatin1String("-"))) {
+            options.downlimitKbPerSec = it.next().toInt() * 1000;
         } else if (option == QLatin1String("--logdebug")) {
             Logger::instance()->setLogFile(QStringLiteral("-"));
             Logger::instance()->setLogDebug(true);
