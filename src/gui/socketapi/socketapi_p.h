@@ -34,7 +34,7 @@ class BloomFilter
     // Initialize with m=1024 bits and k=2 (high and low 16 bits of a qHash).
     // For a client navigating in less than 100 directories, this gives us a probability less than
     // (1-e^(-2*100/1024))^2 = 0.03147872136 false positives.
-    const static int NumBits = 1024;
+    const static int NumBytesPerKibibyte = 1024;
 
 public:
     BloomFilter()

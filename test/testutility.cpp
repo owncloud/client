@@ -72,7 +72,8 @@ private slots:
         //NOTE: in order for the plural to work we would need to load the english translation
 
         quint64 sec = 1000;
-        quint64 hour = 3600 * sec;
+        const int secondsPerHour = 3600;
+        quint64 hour = secondsPerHour * sec;
 
         QDateTime current = QDateTime::currentDateTimeUtc();
 
