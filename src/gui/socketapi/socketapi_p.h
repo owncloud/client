@@ -38,19 +38,19 @@ class BloomFilter
 
 public:
     BloomFilter()
-        : hashBits(NumBits)
+        : hashBits(NumBytesPerKibibyte)
     {
     }
 
     void storeHash(uint hash)
     {
-        hashBits.setBit((hash & 0xFFFF) % NumBits);
-        hashBits.setBit((hash >> 16) % NumBits);
+        hashBits.setBit((hash & 0xFFFF) % NumBytesPerKibibyte);
+        hashBits.setBit((hash >> 16) % NumBytesPerKibibyte);
     }
     bool isHashMaybeStored(uint hash) const
     {
-        return hashBits.testBit((hash & 0xFFFF) % NumBits)
-            && hashBits.testBit((hash >> 16) % NumBits);
+        return hashBits.testBit((hash & 0xFFFF) % NumBytesPerKibibyte)
+            && hashBits.testBit((hash >> 16) % NumBytesPerKibibyte);
     }
 
 private:

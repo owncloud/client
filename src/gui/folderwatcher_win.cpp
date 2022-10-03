@@ -181,8 +181,7 @@ void WatcherThread::run()
     // If this buffer fills up before we've extracted its data we will lose
     // change information. Therefore start big.
     size_t bufferSize = 4096 * 10;
-    const int bytesPerKibiByte = 1024;
-    const size_t maxBuffer = 64 * bytesPerKibiByte;
+    const size_t maxBuffer = 64 * 1024;
 
     while (true) {
         switch (watchChanges(bufferSize)) {
