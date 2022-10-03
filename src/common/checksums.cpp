@@ -88,8 +88,7 @@ namespace {
 
 QByteArray calcAdler32(QIODevice *device)
 {
-    const int bytesPerKibibyte = 1024;
-    const qint64 BUFSIZE(500 * bytesPerKibibyte); // 500 KiB
+    const qint64 BUFSIZE(500 * 1024); // 500 KiB
     if (device->size() == 0) {
         return QByteArray();
     }
