@@ -122,8 +122,7 @@ QString Updater::getSystemInfo()
     process.waitForFinished();
     QByteArray output = process.readAllStandardOutput();
     qCDebug(lcUpdater) << "Sys Info size: " << output.length();
-    const int bytesPerKibiByte = 1024;
-    if (output.length() > bytesPerKibiByte)
+    if (output.length() > 1024)
         output.clear(); // don't send too much.
 
     return QString::fromLocal8Bit(output.toBase64());
