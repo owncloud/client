@@ -844,8 +844,9 @@ void AccountSettings::slotAccountStateChanged()
                     contentWidget->hideRetryFrame();
                 });
 
-                connect(cred, &HttpCredentialsGui::asked, this, [contentWidget, cred]() {
+                connect(cred, &HttpCredentialsGui::asked, this, [loginDialog = _askForOAuthLoginDialog, contentWidget, cred]() {
                     if (!cred->ready()) {
+                        ocApp()->gui()->raiseDialog(loginDialog);
                         contentWidget->showRetryFrame();
                     }
                 });
