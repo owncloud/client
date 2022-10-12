@@ -159,9 +159,6 @@ void HttpCredentialsGui::restartOAuth()
         this, &HttpCredentialsGui::asyncAuthResult);
     connect(_asyncAuth.data(), &OAuth::destroyed,
         this, &HttpCredentialsGui::authorisationLinkChanged);
-    connect(_asyncAuth.data(), &AccountBasedOAuth::refreshError, this, [this]() {
-        // FIXME
-    });
     _asyncAuth->startAuthentication();
     emit authorisationLinkChanged();
 }
