@@ -14,31 +14,31 @@
  * for more details.
  */
 
-#include <iostream>
-#include <random>
-#include <qcoreapplication.h>
-#include <QStringList>
-#include <QUrl>
-#include <QFile>
-#include <QFileInfo>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QNetworkProxy>
-#include <qdebug.h>
-
 #include "account.h"
 #include "common/syncjournaldb.h"
 #include "config.h"
 #include "configfile.h" // ONLY ACCESS THE STATIC FUNCTIONS!
-#include "csync_exclude.h"
+#include "httpcredentialstext.h"
 #include "libsync/logger.h"
 #include "libsync/theme.h"
+#include "netrcparser.h"
 #include "networkjobs/checkserverjobfactory.h"
 #include "networkjobs/jsonjob.h"
+#include "platform.h"
 #include "syncengine.h"
 
-#include "httpcredentialstext.h"
-#include "netrcparser.h"
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonObject>
+#include <QNetworkProxy>
+#include <QStringList>
+#include <QUrl>
+
+#include <iostream>
+#include <memory>
+#include <random>
 
 
 using namespace OCC;
@@ -416,13 +416,13 @@ CmdOptions parseOptions(const QStringList &app_args)
 
 int main(int argc, char **argv)
 {
-    QCoreApplication app(argc, argv);
+    auto platform = OCC::Platform::create();
 
-#ifdef Q_OS_WIN
-    // Ensure OpenSSL config file is only loaded from app directory
-    QString opensslConf = QCoreApplication::applicationDirPath() + QStringLiteral("/openssl.cnf");
-    qputenv("OPENSSL_CONF", opensslConf.toLocal8Bit());
-#endif
+    platform->migrate();
+
+    QCoreApplication app(argc, argv);
+    platform->setApplication(&app);
+
     SyncCTX ctx { parseOptions(app.arguments()) };
 
     if (ctx.options.silent) {
