@@ -30,8 +30,8 @@ previousErrorResultCount = 0
 # socket messages
 socket_messages = []
 
-# whether waited for context.userData['touchTimeout'] seconds or not
-# this is useful for waiting only for the first time
+# Whether wait has been made or not after account is set up
+# This is useful for waiting only for the first time
 waitedAfterSync = False
 
 
@@ -171,10 +171,12 @@ def waitUntilAppIsKilled(context, pid=0):
     timeout = context.userData['minSyncTimeout'] * 1000
     killed = waitFor(
         lambda: isAppKilled(pid),
-         timeout,
+        timeout,
     )
     if not killed:
-        test.log("Application was not terminated within {} milliseconds".format(timeout))
+        test.log(
+            "Application was not terminated within {} milliseconds".format(timeout)
+        )
 
 
 @OnScenarioEnd

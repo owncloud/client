@@ -692,7 +692,9 @@ def step(context):
 @Given('the user has changed the content of local file "|any|" to:')
 def step(context, filename):
     fileContent = "\n".join(context.multiLineText)
-    waitAndWriteFile(join(context.userData['currentUserSyncPath'], filename), fileContent)
+    waitAndWriteFile(
+        join(context.userData['currentUserSyncPath'], filename), fileContent
+    )
 
 
 @When('the user resumes the file sync on the client')
