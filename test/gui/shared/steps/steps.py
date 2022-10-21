@@ -40,6 +40,7 @@ sys.path.append(os.path.realpath('../../../shell_integration/nautilus/'))
 from syncstate import SocketConnect
 import functools
 
+
 socketConnect = None
 
 createdUsers = {}
@@ -537,15 +538,6 @@ def step(context, type, resource):
     waitForFileOrFolderToSync(context, resource, type)
 
 
-@Given(
-    'user "|any|" has created a file "|any|" with the following content inside the sync folder'
-)
-def step(context, username, filename):
-    fileContent = "\n".join(context.multiLineText)
-    syncPath = getUserSyncPath(context, username)
-    writeFile(join(syncPath, filename), fileContent)
-
-
 @When(
     'user "|any|" creates a file "|any|" with the following content inside the sync folder'
 )
@@ -553,11 +545,6 @@ def step(context, username, filename):
     fileContent = "\n".join(context.multiLineText)
     syncPath = getUserSyncPath(context, username)
     waitAndWriteFile(context, join(syncPath, filename), fileContent)
-
-
-def waitAndWriteFile(context, path, content):
-    waitForClientToBeReady(context)
-    writeFile(path, content)
 
 
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
@@ -705,7 +692,7 @@ def step(context):
 @Given('the user has changed the content of local file "|any|" to:')
 def step(context, filename):
     fileContent = "\n".join(context.multiLineText)
-    writeFile(join(context.userData['currentUserSyncPath'], filename), fileContent)
+    waitAndWriteFile(join(context.userData['currentUserSyncPath'], filename), fileContent)
 
 
 @When('the user resumes the file sync on the client')
@@ -1150,6 +1137,11 @@ def writeFile(resource, content):
     f.close()
 
 
+def waitAndWriteFile(context, path, content):
+    waitForClientToBeReady(context)
+    writeFile(path, content)
+
+
 def waitAndTryToWriteFile(context, resource, content):
     waitForClientToBeReady(context)
     try:
@@ -1508,20 +1500,6 @@ def step(context):
 @Then('VFS enabled baseline image should not match the default screenshot')
 def step(context):
     test.xvp("VP_VFS_enabled")
-
-
-@Given('user "|any|" has created the following files inside the sync folder:')
-def step(context, username):
-    '''
-    Create files without any content
-    '''
-    syncPath = getUserSyncPath(context, username)
-
-    waitForClientToBeReady(context)
-
-    for row in context.table[1:]:
-        filename = syncPath + row[0]
-        writeFile(join(syncPath, filename), '')
 
 
 @When('user "|any|" creates the following files inside the sync folder:')
