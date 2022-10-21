@@ -158,6 +158,25 @@ def scenarioFailed():
     )
 
 
+def isAppKilled(pid):
+    if os.path.isdir('/proc/{}'.format(pid)):
+        # process is still running
+        # wait 100ms before checking again
+        snooze(0.1)
+        return False
+    return True
+
+
+def waitUntilAppIsKilled(context, pid=0):
+    timeout = context.userData['minSyncTimeout'] * 1000
+    killed = waitFor(
+        lambda: isAppKilled(pid),
+         timeout,
+    )
+    if not killed:
+        test.log("Application was not terminated within {} milliseconds".format(timeout))
+
+
 @OnScenarioEnd
 def hook(context):
     global socketConnect, socket_messages, waitedAfterSync, previousFailResultCount, previousErrorResultCount, waitedAfterSync
@@ -196,9 +215,10 @@ def hook(context):
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in applicationContextList():
+        # get pid before detaching
+        pid = ctx.pid
         ctx.detach()
-        # ToDo wait smarter till the app died
-        snooze(context.userData['minSyncTimeout'])
+        waitUntilAppIsKilled(context, pid)
 
     # delete local files/folders
     for filename in os.listdir(context.userData['clientRootSyncPath']):
