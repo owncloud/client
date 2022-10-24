@@ -563,6 +563,7 @@ def uploadGuiTestLogs():
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
         },
     }]
@@ -586,6 +587,7 @@ def buildGithubComment(suite = ""):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
@@ -612,6 +614,7 @@ def githubComment(alternateSuiteName):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
