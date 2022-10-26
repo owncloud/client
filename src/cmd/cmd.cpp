@@ -418,9 +418,10 @@ int main(int argc, char **argv)
 {
     auto platform = OCC::Platform::create();
 
+    QCoreApplication app(argc, argv);
+
     platform->migrate();
 
-    QCoreApplication app(argc, argv);
     platform->setApplication(&app);
 
     SyncCTX ctx { parseOptions(app.arguments()) };
