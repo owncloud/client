@@ -13,12 +13,8 @@
  * for more details.
  */
 
+#include "platform_mac.h"
 #include "application.h"
-#include "platform.h"
-
-#import <AppKit/NSApplication.h>
-
-#include <QProcess>
 
 @interface OwnAppDelegate : NSObject <NSApplicationDelegate>
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag;
@@ -38,22 +34,6 @@
 
 namespace OCC {
 
-// implemented in platform_mac_deprecated.mm
-void migrateLaunchOnStartup();
-
-class MacPlatform : public Platform
-{
-public:
-    MacPlatform();
-    ~MacPlatform() override;
-
-    void migrate() override;
-
-private:
-    QMacAutoReleasePool _autoReleasePool;
-    OwnAppDelegate *_appDelegate;
-};
-
 MacPlatform::MacPlatform()
 {
     NSApplicationLoad();
@@ -70,6 +50,8 @@ MacPlatform::~MacPlatform()
 
 void MacPlatform::migrate()
 {
+    Platform::migrate();
+
     migrateLaunchOnStartup();
 }
 
