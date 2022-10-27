@@ -56,7 +56,12 @@ void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, c
     if (reply) {
         stream << " " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << " (";
         if (reply->error() != QNetworkReply::NoError) {
-            stream << "Error: " << reply->errorString() << ",";
+            stream << "Error: ";
+            {
+                QDebugStateSaver state(stream);
+                stream.quote() << reply->errorString();
+            }
+            stream << ",";
         }
         if (reply->attribute(QNetworkRequest::HttpPipeliningWasUsedAttribute).toBool()) {
             stream << "Piplined,";
@@ -64,16 +69,23 @@ void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, c
         stream << duration << ")";
     }
     stream << " " << url << " Header: { ";
+
+    QStringList headerList;
     for (const auto &it : header) {
-        stream << it.first << ": ";
-        if (it.first == "Authorization") {
-            stream << (it.second.startsWith("Bearer ") ? "Bearer" : "Basic");
-            stream << " [redacted]";
-        } else {
-            stream << it.second;
+        QString s;
+        {
+            QDebug headerStream(&s);
+            headerStream.quote() << it.first;
+            headerStream.noquote() << ": ";
+            if (it.first == "Authorization") {
+                headerStream << (it.second.startsWith("Bearer ") ? "\"Bearer [redacted]\"" : "\"Basic [redacted]\"");
+            } else {
+                headerStream.quote() << it.second;
+            }
         }
-        stream << ", ";
+        headerList << s;
     }
+    stream << headerList.join(QStringLiteral(", "));
     stream << "} Data: [";
     if (contentLength > 0) {
         if (isTextBody(contentType)) {
@@ -83,7 +95,10 @@ void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, c
                 device->open(QIODevice::ReadOnly);
             }
             Q_ASSERT(device->pos() == 0);
-            stream << device->peek(PeekSize);
+            {
+                QDebugStateSaver state(stream);
+                stream.quote() << device->peek(PeekSize);
+            }
             if (PeekSize < contentLength)
             {
                 stream << "...(" << (contentLength - PeekSize) << "bytes elided)";
@@ -93,7 +108,7 @@ void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, c
         }
     }
     stream << "]";
-    qCInfo(lcNetworkHttp) << msg;
+    qCInfo(lcNetworkHttp).noquote() << msg;
 }
 }
 
