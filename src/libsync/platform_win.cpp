@@ -27,7 +27,7 @@ WinPlatform::~WinPlatform()
 {
 }
 
-void Platform::setApplication(QCoreApplication *application)
+void WinPlatform::setApplication(QCoreApplication *application)
 {
     Q_UNUSED(application)
 
