@@ -13,7 +13,6 @@
  */
 
 #include "platform_win.h"
-#include "application.h"
 
 #include <QCoreApplication>
 
