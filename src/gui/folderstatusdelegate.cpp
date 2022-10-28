@@ -36,8 +36,8 @@ inline static QFont makeAliasFont(const QFont &normalFont)
 
 namespace OCC {
 
-FolderStatusDelegate::FolderStatusDelegate()
-    : QStyledItemDelegate()
+FolderStatusDelegate::FolderStatusDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
 {
 }
 
