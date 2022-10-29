@@ -421,7 +421,7 @@ bool AccountManager::isAccountIdAvailable(const QString &id) const
         }
     }
     
-    return _additionalBlockedAccountIds.contains(id));
+    return _additionalBlockedAccountIds.contains(id);
 }
 
 QString AccountManager::generateFreeAccountId() const
