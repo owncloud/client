@@ -310,17 +310,19 @@ void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool s
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    auto urlConfig = settings.value(urlC());
-    if (!urlConfig.isValid()) {
-        // No URL probably means a corrupted entry in the account settings
-        qCWarning(lcAccountManager) << "No URL for account " << settings.group();
-        return AccountPtr();
-    }
-
     auto acc = createAccount();
-
-    acc->setUrl(urlConfig.toUrl());
-
+    
+    {
+        auto urlConfig = settings.value(urlC());
+        if (!urlConfig.isValid()) {
+            // No URL probably means a corrupted entry in the account settings
+            qCWarning(lcAccountManager) << "No URL for account " << settings.group();
+            return AccountPtr();
+        }
+        
+        acc->setUrl(urlConfig.toUrl());
+    }
+    
     acc->_davUser = settings.value(davUserC()).toString();
     acc->_displayName = settings.value(davUserDisplyNameC()).toString();
     acc->_uuid = settings.value(userUUIDC(), acc->_uuid).toUuid();
@@ -418,9 +420,8 @@ bool AccountManager::isAccountIdAvailable(const QString &id) const
             return false;
         }
     }
-    if (_additionalBlockedAccountIds.contains(id))
-        return false;
-    return true;
+    
+    return _additionalBlockedAccountIds.contains(id));
 }
 
 QString AccountManager::generateFreeAccountId() const
