@@ -17,8 +17,7 @@
 #include "platform.h"
 
 #include <QProcess>
-
-#import <AppKit/NSApplication.h>
+#include <qglobal.h>
 
 namespace OCC {
 
@@ -34,8 +33,7 @@ public:
     void migrate() override;
 
 private:
-    QMacAutoReleasePool _autoReleasePool;
-    OwnAppDelegate *_appDelegate;
+    Q_DECLARE_PRIVATE(FolderWizard);
 };
 
 } // namespace OCC

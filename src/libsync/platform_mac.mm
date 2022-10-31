@@ -16,6 +16,8 @@
 #include "platform_mac.h"
 #include "application.h"
 
+#import <AppKit/NSApplication.h>
+
 @interface OwnAppDelegate : NSObject <NSApplicationDelegate>
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag;
 @end
@@ -34,10 +36,19 @@
 
 namespace OCC {
 
+class MacPlatformPrivate
+{
+public:
+    QMacAutoReleasePool _autoReleasePool;
+    OwnAppDelegate *_appDelegate;
+};
+
 MacPlatform::MacPlatform()
 {
+    Q_D(MacPlatform);
+
     NSApplicationLoad();
-    _appDelegate = [[OwnAppDelegate alloc] init];
+    d->_appDelegate = [[OwnAppDelegate alloc] init];
     [[NSApplication sharedApplication] setDelegate:_appDelegate];
 
     signal(SIGPIPE, SIG_IGN);
@@ -45,7 +56,8 @@ MacPlatform::MacPlatform()
 
 MacPlatform::~MacPlatform()
 {
-    [_appDelegate release];
+    Q_D(MacPlatform);
+    [d->_appDelegate release];
 }
 
 void MacPlatform::migrate()
