@@ -72,7 +72,8 @@ std::shared_ptr<HBITMAP> saveImage(const string &data)
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
 
-    DWORD size = 2 * 1024;
+    const int bytesPerKibibyte = 1024;
+    DWORD size = 2 * bytesPerKibibyte;
     std::vector<BYTE> buf(size, 0);
     DWORD skipped;
     if (!CryptStringToBinaryA(data.data(), 0, CRYPT_STRING_BASE64, buf.data(), &size, &skipped, nullptr)) {
