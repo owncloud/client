@@ -20,14 +20,12 @@ Major/Minor release template. Enter here, when we have three estimated dates:
 
 * [ ] Check Sprint Board that no remaining ``to do`` issues left - @mstingl
 * [ ] Dev: Internally announce feature freeze - @TheOneRing
-* [ ] Dev: Make sure the previous version branch is merged into the current master branch e.g. 2.6 into master "one flow" - @TheOneRing 
+* [ ] Dev: Make sure the previous version branch is merged into the current master branch e.g. 2.6 into master "one flow" - @TheOneRing @fmoc
 * [ ] Dev: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates - @TheOneRing @fmoc
 * [ ] Dev: Update [ChangeLog](https://confluence.owncloud.com/display/OG/ChangeLog) - @TheOneRing @fmoc
-* [ ] Dev: Update branch in translation https://github.com/owncloud/client/actions/workflows/translate.yml
-* [ ] Dev: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
-  If this *is* a major or minor release:
-  * [ ] Dev: Create new `X.x` version branch.
-  * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
+* [ ] Dev: Update branch in translation https://github.com/owncloud/client/actions/workflows/translate.yml - @TheOneRing @fmoc
+* [ ] Dev: Create new `X.x` version branch - @TheOneRing @fmoc
+* [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
 * [ ] QA: Review list of [supported platforms](https://confluence.owncloud.com/display/OG/Supported+Platforms) -  @HanaGemela @fmoc @TheOneRing @mstingl
 * [ ] QA: Update [documentation](https://confluence.owncloud.com/display/OG/Documentation) - @HanaGemela
 * [ ] QA: Inform the docu team on rocketchat ``#documentation-internal`` about an upcoming major or minor release - @HanaGemela
@@ -35,7 +33,7 @@ Major/Minor release template. Enter here, when we have three estimated dates:
 * [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
 * [ ] QA: Update Test Plans - @HanaGemela 
 
-### Beta release:
+### Build Beta:
 
 * [ ] Dev: Bump [`VERSION.cmake`](https://handbook.owncloud.com/release_processes/client/branch.html#version-cmake) - @TheOneRing 
 * [ ] Dev: Run calens on the work branch - @TheOneRing @fmoc
@@ -55,13 +53,10 @@ Major/Minor release template. Enter here, when we have three estimated dates:
    * [ ] Website links for beta (needed for the following posts)
    * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] All other stakeholders
-
-### Beta tasks:
-
 * [ ] Announce the new branch to community and advertise dailies for public testing - marketing
-* [ ] QA: [Antivirus scan](https://handbook.owncloud.com/release_processes/client/virus.html) - @HanaGemela @jnweiger 
+* [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning) - @HanaGemela @jnweiger 
 * [ ] TODO (DEV or QA): Upload linux gpg keys to key server [key_server_upload](https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/key_server_upload.sh)
-* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
+* [ ] QA: Check Crash reporter is available in Beta (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
 
 ### For All Sprint Builds:
 
@@ -81,6 +76,15 @@ Major/Minor release template. Enter here, when we have three estimated dates:
 * [ ] Inform community mailinglists devel@owncloud.org and testpilots@owncloud.org (make sure to mention it is an rc). Link to the central post so discussion happens there. - marketing
 * [ ] Check crash reporter after some days  @guruz @hvonreth
 * [ ] Update unstable channel in the owncloud hosted auto updater. Instructions [here](https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy) and [here](https://handbook.owncloud.com/release_processes/client/desktop.html#update-the-updater) @hgemela @jnweiger
+* [ ] QA: Run [automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests) (includes [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-DEVSmokeTest))
+* [ ] QA: All Linux platform install and gpg test ssh://git@gitea.owncloud.services:2222/client/linux-docker-install.git
+  * [ ] manually deploy a linux download repo, or use a download repo from https://download.owncloud.com/desktop/ownCloud/testing/
+  * [ ] in defs.sh edit `repo=` and update `platform_docker_images=`
+  * [ ] RUN.sh -> paste the log/test_YYYYMMDD_hhmm.log file into the client release ticket.
+* [ ] QA: Create the testplan according to release type (patch release: add tests in a comment, for major/minor release: create a separate ticket), see [Testplan Templates](https://confluence.owncloud.com/display/OG/Desktop+Client+Release+Process) - add the link here
+* [ ] QA: Add the __Changelog Testing__ as a comment (to this ticket or the testplan), for changelog issues see [Client Releases](https://github.com/owncloud/client/releases/) - add the link here
+* [ ] QA: If required: create a separate test plan ticket for Windows VFS testing from [VFS Template](https://github.com/owncloud/QA/blob/master/Desktop/Test_Plan_VFS.md) - add the link here
+
 
 ### One Week Before the Final Release (Skip this section for patch releases):
 
@@ -92,7 +96,7 @@ Major/Minor release template. Enter here, when we have three estimated dates:
 * [ ] Check [crash reporter](https://handbook.owncloud.com/release_processes/client/desktop.html#crash-reporter) for bad crashes of this RC (same crash happening to many users) @guruz @hvonreth
 * [ ] Check the translations coming from transifex: All synchronized? TODO: (20181109jw: where? how?)
 * [ ] Review drone results: `make test` TODO: Mac, [Lin](https://drone.owncloud.services/client/build-linux), Win? 
-* [ ] Run smashbox (20180719 jw: FIXME: add details, how?) (ask @dschmidt, put link to smashbox results here)
+* [ ] DEV: [Smash box test](https://drone.owncloud.com/owncloud/smashbox-testing) Make sure tests run on latest version - @TheOneRing @fmoc
 * [ ] Inform product management and marketing and #general channel in rocker chat that we are 1 day out
 
 ### On Release Day (for the Final Release):
