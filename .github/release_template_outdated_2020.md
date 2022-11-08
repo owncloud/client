@@ -3,7 +3,7 @@ This is the template for new release issues.
 TODO: split off a patch release template, so that this one is clearly only for major/minor releases.
 -->
 
-Open an issue called 'Release 2.x.0' in client repository and copy below text into a task and tick the items:
+Open an issue called 'Release x.x.x' in client repository and copy below text into a task and tick the items:
 <hr>
 
 Major/Minor release template. Enter here, when we have three estimated dates:
@@ -12,34 +12,56 @@ Major/Minor release template. Enter here, when we have three estimated dates:
 * Date of QA start
 * Date of final
 
+## Reason
 
-### Before Branching Off:
+* Needed for branded client X.x.x release (link to branded release ticket)
 
-* [ ] Dev: Make sure previous minor/major version's branch is merged into current master branch e.g. 2.6 into master "one flow" - @TheOneRing @guruz
-* [ ] Dev: Check [dependencies](https://handbook.owncloud.com/release_processes/client/dependencies.html) for updates - @TheOneRing @guruz
-* [ ] Dev: Update [ChangeLog](https://handbook.owncloud.com/release_processes/client/change_log.html) - @TheOneRing @guruz
-* [ ] QA: Update [Test Plans](https://handbook.owncloud.com/release_processes/client/testlink.html) - @HanaGemela @jnweiger
-* [ ] QA: Review list of [supported platforms](https://handbook.owncloud.com/release_processes/client/supported_platforms.html) -  @HanaGemela @jnweiger @TheOneRing @guruz
-* [ ] QA: Update [documentation](https://handbook.owncloud.com/release_processes/client/documentation.html) -  @HanaGemela @jnweiger
-* [ ] QA: Check Sprint Board for remaining issues -  @HanaGemela @jnweiger
+### Prerequisites for Beta release:
 
-### On the Day of the First Daily Build of the New Branch:
+* [ ] Check Sprint Board that no remaining ``to do`` issues left - @mstingl
+* [ ] Dev: Internally announce feature freeze - @TheOneRing
+* [ ] Dev: Make sure the previous version branch is merged into the current master branch e.g. 2.6 into master "one flow" - @TheOneRing 
+* [ ] Dev: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates - @TheOneRing @fmoc
+* [ ] Dev: Update [ChangeLog](https://confluence.owncloud.com/display/OG/ChangeLog) - @TheOneRing @fmoc
+* [ ] Dev: Update branch in translation https://github.com/owncloud/client/actions/workflows/translate.yml
+* [ ] Dev: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
+  If this *is* a major or minor release:
+  * [ ] Dev: Create new `X.x` version branch.
+  * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
+* [ ] QA: Review list of [supported platforms](https://confluence.owncloud.com/display/OG/Supported+Platforms) -  @HanaGemela @fmoc @TheOneRing @mstingl
+* [ ] QA: Update [documentation](https://confluence.owncloud.com/display/OG/Documentation) - @HanaGemela
+* [ ] QA: Inform the docu team on rocketchat ``#documentation-internal`` about an upcoming major or minor release - @HanaGemela
+* [ ] QA: Check the translations coming from https://github.com/owncloud/client/actions/workflows/translate.yml
+* [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
+* [ ] QA: Update Test Plans - @HanaGemela 
 
-* [ ] Dev: Internally announce it feature freeze - @TheOneRing @guruz
-* [ ] Dev: Edit [`VERSION.cmake`](https://handbook.owncloud.com/release_processes/client/branch.html#version-cmake) - @TheOneRing @guruz
+### Beta release:
+
+* [ ] Dev: Bump [`VERSION.cmake`](https://handbook.owncloud.com/release_processes/client/branch.html#version-cmake) - @TheOneRing 
+* [ ] Dev: Run calens on the work branch - @TheOneRing @fmoc
+* [ ] Dev: Edit and run release script - @TheOneRing @fmoc
+* [ ] DEV: Tag Beta and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
+* [ ] Dev: Create github release - @TheOneRing @fmoc
+* [ ] Dev: Ping marketing - @TheOneRing @fmoc
+* [ ] DEV: Prepare the update server for new version (AppImages included)
+* [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
+* [ ] Dev: Start running automated tests on the dailies - @TheOneRing 
 * [ ] QA: Adjust [Linux Templates](https://handbook.owncloud.com/release_processes/client/branch.html#linux-templates) - @HanaGemela @jnweiger
 * [ ] QA: Adjust [ownBrander](https://handbook.owncloud.com/release_processes/client/branch.html#ownbrander) - @HanaGemela @jnweiger
-* [ ] QA: Adjust [AppVeyor](https://handbook.owncloud.com/release_processes/client/branch.html#appveyor) - @HanaGemela @jnweiger
 * [ ] QA: Adjust [drone](https://handbook.owncloud.com/release_processes/client/branch.html#drone) - @HanaGemela @jnweiger
-* [ ] QA: Adjust [translation jobs](https://handbook.owncloud.com/release_processes/client/branch.html#translations) - @HanaGemela @jnweiger
-* [ ] QA: Use `obs-copyprj.sh` to backup the desktop project to `desktop:client-2.6.x` (unless already done) - @HanaGemela @jnweiger
-* [ ] QA: Adjust branch of Cron Job `nightly-2-x` to the next release branch @HanaGemela @individual-it
-* [ ] Dev: Start running automated tests on the dailies - @TheOneRing @guruz
+* [ ] TODO (possibly redundant): QA: Adjust [translation jobs](https://handbook.owncloud.com/release_processes/client/branch.html#translations) - @HanaGemela @jnweiger
+* [ ] QA: Ping ``#documentation-internal``: Changelog is ready. (open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary)
+* [ ] Beta/RC [Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
+   * [ ] Website links for beta (needed for the following posts)
+   * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
+   * [ ] All other stakeholders
 
-### After the First Daily Build of the New Branch:
+### Beta tasks:
 
 * [ ] Announce the new branch to community and advertise dailies for public testing - marketing
 * [ ] QA: [Antivirus scan](https://handbook.owncloud.com/release_processes/client/virus.html) - @HanaGemela @jnweiger 
+* [ ] TODO (DEV or QA): Upload linux gpg keys to key server [key_server_upload](https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/key_server_upload.sh)
+* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
 
 ### For All Sprint Builds:
 
@@ -112,5 +134,5 @@ For major, minor, and patch releases, but skip this section for ALPHA/BETA
 
 ## A few days after the release (for final release)
 
-* [ ] Check the crash reporter if auto update is a good idea or we need a new release
+* [ ] DEV: Check the [crash reporter](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-CrashReporter) for bad/frequent crashes
 * [ ] Update the owncloud hosted auto [updater](https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy)  
