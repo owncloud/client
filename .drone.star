@@ -16,6 +16,8 @@ OC_CI_CLIENT = "owncloudci/client:latest"
 OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
 OC_CI_PHP = "owncloudci/php:%s"
+OC_OCIS = "owncloud/ocis:2.0.0-rc.1"
+OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
@@ -176,6 +178,9 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
                     databaseService()
     else:
         squish_parameters += " --tags ~@skip,~@skipOnOCIS"
+
+        steps += ocisService() + \
+                 waitForOcisService()
 
     steps += setGuiTestReportDir() + \
              build_client(
@@ -515,6 +520,37 @@ def fixPermissions():
         "commands": [
             "cd %s" % dir["server"],
             "chown www-data * -R",
+        ],
+    }]
+
+def ocisService():
+    return [{
+        "name": "ocis",
+        "image": OC_OCIS,
+        "detach": True,
+        "environment": {
+            "OCIS_URL": "https://ocis:9200",
+            "IDM_ADMIN_PASSWORD": "admin",
+            "STORAGE_HOME_DRIVER": "ocis",
+            "STORAGE_USERS_DRIVER": "ocis",
+            "OCIS_INSECURE": "true",
+            "PROXY_ENABLE_BASIC_AUTH": True,
+            "OCIS_LOG_LEVEL": "error",
+            "OCIS_LOG_PRETTY": "true",
+            "OCIS_LOG_COLOR": "true",
+        },
+        "commands": [
+            "/usr/bin/ocis init",
+            "/usr/bin/ocis server",
+        ],
+    }]
+
+def waitForOcisService():
+    return [{
+        "name": "wait-for-ocis",
+        "image": OC_CI_WAIT_FOR,
+        "commands": [
+            "wait-for -it ocis:9200 -t 300",
         ],
     }]
 
