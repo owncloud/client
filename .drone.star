@@ -88,7 +88,8 @@ def main(ctx):
                     check_starlark(build_trigger) + \
                     changelog(ctx, trigger = build_trigger) + \
                     unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, version = "latest")
+                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
+                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "ocis")
 
     return pipelines
 
@@ -146,15 +147,20 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
         "trigger": trigger,
     }]
 
-def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-master-qa"):
-    pipeline_name = "GUI-tests"
+def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "daily-master-qa", server_type = "oc10"):
+    pipeline_name = "GUI-tests-%s" % server_type
     build_dir = "build-" + pipeline_name
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip" % dir["guiTestReport"]
+    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
+
+    if server_type == "oc10":
+        squish_parameters += " --tags ~@skip,~@skipOnOC10"
+    else:
+        squish_parameters += " --tags ~@skip,~@skipOnOCIS"
 
     if (len(filterTags) > 0):
-        for tags in filterTags:
-            squish_parameters += " --tags " + tags
-            pipeline_name += "-" + tags
+        tags = ",".join(filterTags)
+        squish_parameters += " --tags %s" % tags
+        pipeline_name += "-" + tags
 
     build_config = {
         "c_compiler": "gcc",
@@ -173,7 +179,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
         },
         "steps": skipIfUnchanged(ctx, "gui-tests") +
                  gitSubModules() +
-                 installCore(version) +
+                 installCore(server_version) +
                  setupServerAndApp() +
                  fixPermissions() +
                  owncloudLog() +
@@ -423,12 +429,12 @@ def databaseService():
         "command": ["--default-authentication-plugin=mysql_native_password"],
     }]
 
-def installCore(version = "latest"):
+def installCore(server_version = "latest"):
     return [{
         "name": "install-core",
         "image": OC_CI_CORE,
         "settings": {
-            "version": version,
+            "version": server_version,
             "core_path": dir["server"],
             "db_type": "mysql",
             "db_name": "owncloud",
