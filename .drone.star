@@ -159,7 +159,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
     build_config = {
         "c_compiler": "gcc",
         "cxx_compiler": "g++",
-        "build_type": "Debug",
+        "build_type": "Release",
         "generator": "Ninja",
         "build_command": "ninja",
     }
@@ -186,6 +186,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
                      build_config["build_command"],
                      build_dir,
                      OC_CI_CLIENT_FEDORA,
+                     False,
                  ) +
                  gui_tests(squish_parameters) +
                  # GUI test result has been disabled for now, as we squish can not produce the result in both html and json format.
@@ -206,7 +207,13 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], version = "daily-maste
         ],
     }]
 
-def build_client(c_compiler, cxx_compiler, build_type, generator, build_command, build_dir, image = OC_CI_CLIENT):
+def build_client(c_compiler, cxx_compiler, build_type, generator, build_command, build_dir, image = OC_CI_CLIENT, ctest = True):
+    cmake_options = '-G"%s" -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s" -DWITH_LIBCLOUDPROVIDERS=ON' % (generator, c_compiler, cxx_compiler, build_type)
+    if ctest:
+        cmake_options += " -DBUILD_TESTING=1"
+    else:
+        cmake_options += " -DBUILD_TESTING=0"
+
     return [
         {
             "name": "generate",
@@ -217,7 +224,7 @@ def build_client(c_compiler, cxx_compiler, build_type, generator, build_command,
             "commands": [
                 'mkdir -p "' + build_dir + '"',
                 'cd "' + build_dir + '"',
-                'cmake -G"' + generator + '" -DCMAKE_C_COMPILER="' + c_compiler + '" -DCMAKE_CXX_COMPILER="' + cxx_compiler + '" -DCMAKE_BUILD_TYPE="' + build_type + '" -DBUILD_TESTING=1 -DWITH_LIBCLOUDPROVIDERS=ON -S ..',
+                "cmake %s -S .." % cmake_options,
             ],
         },
         {
