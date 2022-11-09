@@ -152,16 +152,6 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
     build_dir = "build-" + pipeline_name
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
 
-    if server_type == "oc10":
-        squish_parameters += " --tags ~@skip,~@skipOnOC10"
-    else:
-        squish_parameters += " --tags ~@skip,~@skipOnOCIS"
-
-    if (len(filterTags) > 0):
-        tags = ",".join(filterTags)
-        squish_parameters += " --tags %s" % tags
-        pipeline_name += "-" + tags
-
     build_config = {
         "c_compiler": "gcc",
         "cxx_compiler": "g++",
@@ -170,6 +160,44 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
         "build_command": "ninja",
     }
 
+    steps = skipIfUnchanged(ctx, "gui-tests") + \
+            gitSubModules()
+
+    services = testMiddlewareService()
+
+    if server_type == "oc10":
+        squish_parameters += " --tags ~@skip,~@skipOnOC10"
+
+        steps += installCore(server_version) + \
+                 setupServerAndApp() + \
+                 fixPermissions() + \
+                 owncloudLog()
+        services += owncloudService() + \
+                    databaseService()
+    else:
+        squish_parameters += " --tags ~@skip,~@skipOnOCIS"
+
+    steps += setGuiTestReportDir() + \
+             build_client(
+                 build_config["c_compiler"],
+                 build_config["cxx_compiler"],
+                 build_config["build_type"],
+                 build_config["generator"],
+                 build_config["build_command"],
+                 build_dir,
+                 OC_CI_CLIENT_FEDORA,
+                 False,
+             ) + \
+             gui_tests(squish_parameters, server_type) + \
+             uploadGuiTestLogs() + \
+             buildGithubComment(pipeline_name) + \
+             githubComment(pipeline_name)
+
+    if (len(filterTags) > 0):
+        tags = ",".join(filterTags)
+        squish_parameters += " --tags %s" % tags
+        pipeline_name += "-" + tags
+
     return [{
         "kind": "pipeline",
         "name": pipeline_name,
@@ -177,33 +205,8 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
             "os": "linux",
             "arch": "amd64",
         },
-        "steps": skipIfUnchanged(ctx, "gui-tests") +
-                 gitSubModules() +
-                 installCore(server_version) +
-                 setupServerAndApp() +
-                 fixPermissions() +
-                 owncloudLog() +
-                 setGuiTestReportDir() +
-                 build_client(
-                     build_config["c_compiler"],
-                     build_config["cxx_compiler"],
-                     build_config["build_type"],
-                     build_config["generator"],
-                     build_config["build_command"],
-                     build_dir,
-                     OC_CI_CLIENT_FEDORA,
-                     False,
-                 ) +
-                 gui_tests(squish_parameters) +
-                 # GUI test result has been disabled for now, as we squish can not produce the result in both html and json format.
-                 # Disabled untill the feature to generate json result is implemented in squish, or some other method to reuse the log parser is implemented.
-                 #  showGuiTestResult() +
-                 uploadGuiTestLogs() +
-                 buildGithubComment(pipeline_name) +
-                 githubComment(pipeline_name),
-        "services": testMiddlewareService() +
-                    owncloudService() +
-                    databaseService(),
+        "steps": steps,
+        "services": services,
         "trigger": trigger,
         "volumes": [
             {
@@ -261,7 +264,7 @@ def unit_tests(build_dir):
         ],
     }]
 
-def gui_tests(squish_parameters = ""):
+def gui_tests(squish_parameters = "", server_type = "oc10"):
     return [{
         "name": "GUItests",
         "image": OC_CI_SQUISH,
@@ -270,8 +273,8 @@ def gui_tests(squish_parameters = ""):
             "GUI_TEST_REPORT_DIR": dir["guiTestReport"],
             "CLIENT_REPO": dir["base"],
             "MIDDLEWARE_URL": "http://testmiddleware:3000/",
-            "BACKEND_HOST": "http://owncloud/",
-            "SECURE_BACKEND_HOST": "https://owncloud/",
+            "BACKEND_HOST": "http://owncloud/" if server_type == "oc10" else "https://ocis:9200",
+            "SECURE_BACKEND_HOST": "https://owncloud/" if server_type == "oc10" else "https://ocis:9200",
             "SERVER_INI": "%s/drone/server.ini" % dir["guiTest"],
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
