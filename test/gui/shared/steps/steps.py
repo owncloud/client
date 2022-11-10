@@ -10,6 +10,7 @@ import json
 import requests
 import builtins
 import shutil
+import subprocess
 
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 from helpers.SetupClientHelper import *
@@ -250,10 +251,14 @@ def step(context, username):
     displayName = getDisplaynameForUser(context, username)
     setUpClient(context, username, displayName, context.userData['clientConfigFile'])
 
-    waitUntilConnectionIsConfigured(context)
-
-    enterUserPassword = EnterPassword()
-    enterUserPassword.enterPassword(password)
+    if context.userData['ocis']:
+        newAccount = AccountConnectionWizard()
+        newAccount.acceptCertificate()
+        newAccount.oidcLogin(username, password, True)
+    else:
+        waitUntilConnectionIsConfigured(context)
+        enterUserPassword = EnterPassword()
+        enterUserPassword.enterPassword(password)
 
     # wait for files to sync
     waitForInitialSyncToComplete(context)
@@ -1201,7 +1206,8 @@ def step(context):
 
 @When('the user accepts the certificate')
 def step(context):
-    clickButton(waitForObject(names.oCC_TlsErrorDialog_Yes_QPushButton))
+    newAccount = AccountConnectionWizard()
+    newAccount.acceptCertificate()
 
 
 @Then('the lock shown should be closed')
@@ -1259,7 +1265,7 @@ def step(context):
     newAccount = AccountConnectionWizard()
     newAccount.addServer(context)
     test.compare(
-        waitForObjectExists(newAccount.CREDENTIAL_PAGE).visible,
+        waitForObjectExists(newAccount.BASIC_CREDENTIAL_PAGE).visible,
         True,
         "Assert credentials page is visible",
     )
@@ -1463,7 +1469,10 @@ def step(context, username, foldername):
 
 @Then("credentials wizard should be visible")
 def step(context):
-    waitForObject(AccountConnectionWizard.CREDENTIAL_PAGE)
+    if context.userData['ocis']:
+        waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
+    else:
+        waitForObject(AccountConnectionWizard.BASIC_CREDENTIAL_PAGE)
 
 
 @When('the user "|any|" clicks on the next button in sync connection wizard')

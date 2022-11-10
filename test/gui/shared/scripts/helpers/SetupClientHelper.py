@@ -93,26 +93,28 @@ def setUpClient(context, username, displayName, confFilePath):
     0/Folders/1/virtualFilesMode=off
     0/dav_user={davUserName}
     0/display-name={displayUserName}
-    0/http_oauth=false
+    0/http_oauth={oauth}
     0/http_user={davUserName}
     0/url={local_server}
     0/user={displayUserFirstName}
     0/version=1
     version=2
     '''
-    userFirstName = username.split()
+
     userSetting = userSetting + getPollingInterval()
 
-    syncPath = createUserSyncPath(context, userFirstName[0])
+    syncPath = createUserSyncPath(context, username)
 
     args = {
         'displayUserName': displayName,
-        'davUserName': userFirstName[0].lower(),
-        'displayUserFirstName': userFirstName[0],
+        'davUserName': username,
+        'displayUserFirstName': displayName.split()[0],
         'client_sync_path': syncPath,
         'local_server': context.userData['localBackendUrl'],
+        'oauth': 'true' if context.userData['ocis'] else 'false',
     }
     userSetting = userSetting.format(**args)
+    print(userSetting)
     configFile = open(confFilePath, "w")
     configFile.write(userSetting)
     configFile.close()

@@ -51,6 +51,7 @@ def hook(context):
         'tempFolderPath': 'TEMP_FOLDER_PATH',
         'clientConfigDir': 'CLIENT_CONFIG_DIR',
         'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
+        'ocis': 'OCIS',
     }
 
     context.userData = {
@@ -65,6 +66,7 @@ def hook(context):
         'tempFolderPath': gettempdir(),
         'clientConfigDir': '/tmp/owncloud-client/',
         'guiTestReportDir': os.path.abspath('../reports/'),
+        'ocis': False,
     }
 
     # try reading configs from config.ini
