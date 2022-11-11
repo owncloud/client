@@ -84,6 +84,7 @@ set(client_SRCS
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
+    models/virtualelementsproxymodel.cpp
 )
 
 set(3rdparty_SRC

@@ -110,14 +110,6 @@ Qt::ItemFlags FolderStatusModel::flags(const QModelIndex &index) const
     const auto flags = Qt::ItemIsEnabled;
 
     switch (classify(index)) {
-    case AddButton: {
-        Qt::ItemFlags ret;
-        ret = Qt::ItemNeverHasChildren;
-        if (!_accountState->isConnected()) {
-            return ret;
-        }
-        return flags | ret;
-    }
     case FetchLabel:
         return flags | Qt::ItemNeverHasChildren;
     case RootFolder:
@@ -142,15 +134,6 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
         return itemType;
     }
     switch (itemType) {
-    case AddButton: {
-        if (role == Qt::ToolTipRole) {
-            if (!_accountState->isConnected()) {
-                return tr("You need to be connected to add a folder");
-            }
-            return _accountState->supportsSpaces() ? tr("Click this button to add a space.") : tr("Click this button to add a folder to synchronize.");
-        }
-        return QVariant();
-    }
     case SubFolder: {
         const auto &x = static_cast<SubFolderInfo *>(index.internalPointer())->_subs.at(index.row());
 
@@ -375,11 +358,7 @@ int FolderStatusModel::columnCount(const QModelIndex &) const
 int FolderStatusModel::rowCount(const QModelIndex &parent) const
 {
     if (!parent.isValid()) {
-        if (Theme::instance()->singleSyncFolder() && _folders.count() != 0) {
-            // "Add folder" button not visible in the singleSyncFolder configuration.
-            return _folders.count();
-        }
-        return _folders.count() + 1; // +1 for the "add folder" button
+        return _folders.count();
     }
     auto info = infoForIndex(parent);
     if (!info)
@@ -401,7 +380,7 @@ FolderStatusModel::ItemType FolderStatusModel::classify(const QModelIndex &index
     if (index.row() < _folders.count()) {
         return RootFolder;
     }
-    return AddButton;
+    Q_UNREACHABLE();
 }
 
 FolderStatusModel::SubFolderInfo *FolderStatusModel::infoForIndex(const QModelIndex &index) const
@@ -417,10 +396,7 @@ FolderStatusModel::SubFolderInfo *FolderStatusModel::infoForIndex(const QModelIn
         }
         return &parentInfo->_subs[index.row()];
     } else {
-        if (index.row() >= _folders.count()) {
-            // AddButton
-            return nullptr;
-        }
+        Q_ASSERT(index.row() < _folders.count());
         return const_cast<SubFolderInfo *>(&_folders[index.row()]);
     }
 }
@@ -480,7 +456,6 @@ QModelIndex FolderStatusModel::index(int row, int column, const QModelIndex &par
         return createIndex(row, column /*, nullptr*/);
     }
     switch (classify(parent)) {
-    case AddButton:
     case FetchLabel:
         return QModelIndex();
     case RootFolder:
@@ -508,8 +483,6 @@ QModelIndex FolderStatusModel::parent(const QModelIndex &child) const
     }
     switch (classify(child)) {
     case RootFolder:
-    case AddButton:
-        return QModelIndex();
     case SubFolder:
     case FetchLabel:
         break;

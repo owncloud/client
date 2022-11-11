@@ -58,6 +58,7 @@
 #include "account.h"
 #include "askexperimentalvirtualfilesfeaturemessagebox.h"
 #include "gui/models/models.h"
+#include "gui/models/virtualelementsproxymodel.h"
 #include "loginrequireddialog.h"
 #include "oauthloginwidget.h"
 
@@ -122,8 +123,53 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     _model = new FolderStatusModel(this);
     _model->setAccountState(_accountState);
 
+    auto virutalProxyModel = new Models::VirtualElementsProxyModel(this);
+    virutalProxyModel->setSourceModel(_model);
+
+    /*
+     *
+        if (Theme::instance()->singleSyncFolder() && _folders.count() != 0) {
+            // "Add folder" button not visible in the singleSyncFolder configuration.
+            return _folders.count();
+        }
+
+     *
+     */
+    virutalProxyModel->addVirtualElement({ [this](int column, int role) -> QVariant {
+                                              if (role == Qt::ToolTipRole) {
+                                                  if (!_accountState->isConnected()) {
+                                                      return tr("You need to be connected to add a folder");
+                                                  }
+                                                  return _accountState->supportsSpaces() ? tr("Click this button to add a space.") : tr("Click this button to add a folder to synchronize.");
+                                              }
+                                              switch (static_cast<FolderStatusModel::Columns>(column)) {
+                                              case FolderStatusModel::Columns::ItemType:
+                                                  return FolderStatusModel::AddButton;
+                                              default:
+                                                  return {};
+                                              }
+                                          },
+        [this](int column) {
+            Qt::ItemFlags ret = Qt::ItemNeverHasChildren;
+            if (!_accountState->isConnected()) {
+                return ret;
+            }
+            return ret | Qt::ItemIsEnabled;
+        } });
+
+    virutalProxyModel->addVirtualElement({ [](int column, int role) -> QVariant {
+        switch (static_cast<FolderStatusModel::Columns>(column)) {
+        case FolderStatusModel::Columns::ItemType:
+            return FolderStatusModel::Separator;
+        case FolderStatusModel::Columns::Priority:
+            return 2;
+        default:
+            return {};
+        }
+    } });
+
     auto weightedModel = new Models::WeightedQSortFilterProxyModel(this);
-    weightedModel->setSourceModel(_model);
+    weightedModel->setSourceModel(virutalProxyModel);
     weightedModel->setWeightedColumn(static_cast<int>(FolderStatusModel::Columns::Priority));
     weightedModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 

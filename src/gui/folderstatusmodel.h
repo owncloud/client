@@ -156,7 +156,8 @@ public:
         RootFolder,
         SubFolder,
         AddButton,
-        FetchLabel
+        FetchLabel,
+        Separator
     };
     Q_ENUM(ItemType);
 
