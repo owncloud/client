@@ -72,7 +72,8 @@ def hook(context):
     # try reading configs from config.ini
     cfg = ConfigParser()
     try:
-        if cfg.read('../config.ini'):
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        if cfg.read(os.path.join(script_path, '..', 'config.ini')):
             for key, _ in context.userData.items():
                 if key in CONFIG_ENV_MAP:
                     value = cfg.get('DEFAULT', CONFIG_ENV_MAP[key])

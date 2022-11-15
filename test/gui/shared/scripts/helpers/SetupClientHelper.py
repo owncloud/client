@@ -114,7 +114,7 @@ def setUpClient(context, username, displayName, confFilePath):
         'oauth': 'true' if context.userData['ocis'] else 'false',
     }
     userSetting = userSetting.format(**args)
-    print(userSetting)
+
     configFile = open(confFilePath, "w")
     configFile.write(userSetting)
     configFile.close()
