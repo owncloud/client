@@ -1,3 +1,4 @@
+@skipOnOCIS
 Feature: Sharing
 
     As a user
