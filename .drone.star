@@ -18,6 +18,7 @@ OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
 OC_CI_PHP = "owncloudci/php:%s"
 OC_OCIS = "owncloud/ocis:2.0.0-rc.1"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
+OC_CI_NODEJS = "owncloudci/nodejs:16"
 
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
@@ -157,7 +158,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
     build_config = {
         "c_compiler": "gcc",
         "cxx_compiler": "g++",
-        "build_type": "Release",
+        "build_type": "Debug",
         "generator": "Ninja",
         "build_command": "ninja",
     }
@@ -165,22 +166,25 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
     steps = skipIfUnchanged(ctx, "gui-tests") + \
             gitSubModules()
 
-    services = testMiddlewareService()
+    services = []
 
     if server_type == "oc10":
-        squish_parameters += " --tags ~@skip,~@skipOnOC10"
+        squish_parameters += " --tags ~@skip,~@skipOnOC10 --tags @only"
 
         steps += installCore(server_version) + \
                  setupServerAndApp() + \
                  fixPermissions() + \
                  owncloudLog()
         services += owncloudService() + \
-                    databaseService()
+                    databaseService() + \
+                    testMiddlewareService()
     else:
-        squish_parameters += " --tags ~@skip,~@skipOnOCIS"
+        squish_parameters += " --tags ~@skip,~@skipOnOCIS --tags @only"
 
-        steps += ocisService() + \
+        steps += installPnpm() + \
+                 ocisService() + \
                  waitForOcisService()
+        services += testMiddlewareService(True)
 
     steps += setGuiTestReportDir() + \
              build_client(
@@ -226,7 +230,7 @@ def build_client(c_compiler, cxx_compiler, build_type, generator, build_command,
     if ctest:
         cmake_options += " -DBUILD_TESTING=1"
     else:
-        cmake_options += " -DBUILD_TESTING=0"
+        cmake_options += " -DBUILD_TESTING=1"
 
     return [
         {
@@ -280,6 +284,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "MIDDLEWARE_URL": "http://testmiddleware:3000/",
             "BACKEND_HOST": "http://owncloud/" if server_type == "oc10" else "https://ocis:9200",
             "SECURE_BACKEND_HOST": "https://owncloud/" if server_type == "oc10" else "https://ocis:9200",
+            "OCIS": True if server_type == "ocis" else False,
             "SERVER_INI": "%s/drone/server.ini" % dir["guiTest"],
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
@@ -485,13 +490,19 @@ def owncloudService():
         ],
     }]
 
-def testMiddlewareService():
+def testMiddlewareService(ocis = False):
     environment = {
-        "BACKEND_HOST": "http://owncloud",
         "NODE_TLS_REJECT_UNAUTHORIZED": "0",
         "MIDDLEWARE_HOST": "testmiddleware",
         "REMOTE_UPLOAD_DIR": "/uploads",
     }
+
+    if ocis:
+        environment["BACKEND_HOST"] = "https://ocis:9200"
+        environment["TEST_WITH_GRAPH_API"] = "true"
+        environment["RUN_ON_OCIS"] = "true"
+    else:
+        environment["BACKEND_HOST"] = "http://owncloud"
 
     return [{
         "name": "testmiddleware",
@@ -551,6 +562,20 @@ def waitForOcisService():
         "image": OC_CI_WAIT_FOR,
         "commands": [
             "wait-for -it ocis:9200 -t 300",
+        ],
+    }]
+
+def installPnpm():
+    return [{
+        "name": "pnpm-install",
+        "image": OC_CI_NODEJS,
+        "environment": {
+            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
+        },
+        "commands": [
+            "cd %s/webUI" % dir["guiTest"],
+            "pnpm config set store-dir ./.pnpm-store",
+            "pnpm install",
         ],
     }]
 

@@ -399,6 +399,8 @@ def executeStepThroughMiddleware(context, step):
 def step(context, receiver, resource, permissions):
     openSharingDialog(context, resource)
     shareItem = SharingDialog()
+
+
 #     shareItem.addCollaborator(receiver, permissions)
 #     shareItem.closeSharingDialog()
 
@@ -1441,7 +1443,6 @@ def step(context):
         test.vp("VP_VFS_enabled_oCIS")
     else:
         test.vp("VP_VFS_enabled")
-
 
 
 @Then('VFS enabled baseline image should not match the default screenshot')

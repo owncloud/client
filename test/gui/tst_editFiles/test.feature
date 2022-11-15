@@ -1,3 +1,4 @@
+@only
 Feature: edit files
 
     As a user

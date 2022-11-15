@@ -37,7 +37,9 @@ def getClientDetails(context):
 
 def createUserSyncPath(context, username):
     if context.userData['ocis']:
-        userSyncPath = join(context.userData['clientRootSyncPath'], username, 'Personal')
+        userSyncPath = join(
+            context.userData['clientRootSyncPath'], username, 'Personal'
+        )
     else:
         userSyncPath = join(context.userData['clientRootSyncPath'], username)
 
@@ -110,7 +112,7 @@ def setUpClient(context, username, displayName, confFilePath):
     syncPath = createUserSyncPath(context, username)
 
     args = {
-        'displayString': 'Personal' if  context.userData['ocis'] else None,
+        'displayString': 'Personal' if context.userData['ocis'] else None,
         'displayUserName': displayName,
         'davUserName': username,
         'displayUserFirstName': displayName.split()[0],

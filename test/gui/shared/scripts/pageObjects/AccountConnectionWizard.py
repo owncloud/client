@@ -38,19 +38,19 @@ class AccountConnectionWizard:
         "container": names.setupWizardWindow_contentWidget_QStackedWidget,
         "name": "CredentialsSetupWizardPage",
         "type": "OCC::Wizard::OAuthCredentialsSetupWizardPage",
-        "visible": 1
+        "visible": 1,
     }
     ACCEPT_CERTIFICATE_YES = {
         "text": "Yes",
         "type": "QPushButton",
         "visible": 1,
-        "window": names.oCC_TlsErrorDialog_OCC_TlsErrorDialog
+        "window": names.oCC_TlsErrorDialog_OCC_TlsErrorDialog,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
         "container": names.contentWidget_contentWidget_QStackedWidget,
         "name": "copyUrlToClipboardButton",
         "type": "QPushButton",
-        "visible": 1
+        "visible": 1,
     }
     ADVANCE_SETUP_PAGE = {
         "name": "OwncloudAdvancedSetupPage",
@@ -146,7 +146,8 @@ class AccountConnectionWizard:
                 )
             except:
                 test.log(
-                    "No insecure connection warning for server " + clientDetails['server']
+                    "No insecure connection warning for server "
+                    + clientDetails['server']
                 )
                 pass
 
@@ -162,32 +163,35 @@ class AccountConnectionWizard:
             self.basicLogin(clientDetails['user'], clientDetails['password'])
 
     def basicLogin(self, username, password):
-            squish.type(
-                squish.waitForObject(self.USERNAME_BOX),
-                username,
-            )
-            squish.type(
-                squish.waitForObject(self.USERNAME_BOX),
-                "<Tab>",
-            )
-            squish.type(
-                squish.waitForObject(self.PASSWORD_BOX),
-                password,
-            )
-            squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
+        squish.type(
+            squish.waitForObject(self.USERNAME_BOX),
+            username,
+        )
+        squish.type(
+            squish.waitForObject(self.USERNAME_BOX),
+            "<Tab>",
+        )
+        squish.type(
+            squish.waitForObject(self.PASSWORD_BOX),
+            password,
+        )
+        squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
 
     def oidcLogin(self, username, password, relogin=False):
         # copy link
-        squish.snooze(1/2)
+        squish.snooze(1 / 2)
         if relogin:
-            self.COPY_URL_TO_CLIPBOARD_BUTTON["container"] = names.loginRequiredDialog_contentWidget_QStackedWidget
+            self.COPY_URL_TO_CLIPBOARD_BUTTON[
+                "container"
+            ] = names.loginRequiredDialog_contentWidget_QStackedWidget
             squish.clickButton(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))
         else:
-            self.COPY_URL_TO_CLIPBOARD_BUTTON["container"] = names.contentWidget_contentWidget_QStackedWidget
+            self.COPY_URL_TO_CLIPBOARD_BUTTON[
+                "container"
+            ] = names.contentWidget_contentWidget_QStackedWidget
             squish.clickButton(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))
 
         authorize_via_webui(username, password)
-
 
     def finishSetup(self):
         squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
