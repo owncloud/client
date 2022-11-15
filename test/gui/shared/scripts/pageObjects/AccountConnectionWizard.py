@@ -178,7 +178,7 @@ class AccountConnectionWizard:
 
     def oidcLogin(self, username, password, relogin=False):
         # copy link
-        squish.snooze(1)
+        squish.snooze(1/2)
         if relogin:
             self.COPY_URL_TO_CLIPBOARD_BUTTON["container"] = names.loginRequiredDialog_contentWidget_QStackedWidget
             squish.clickButton(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))

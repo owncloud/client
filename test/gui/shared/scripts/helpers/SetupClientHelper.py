@@ -36,11 +36,15 @@ def getClientDetails(context):
 
 
 def createUserSyncPath(context, username):
-    userSyncPath = join(context.userData['clientRootSyncPath'], username)
+    if context.userData['ocis']:
+        userSyncPath = join(context.userData['clientRootSyncPath'], username, 'Personal')
+    else:
+        userSyncPath = join(context.userData['clientRootSyncPath'], username)
+
     if not exists(userSyncPath):
         makedirs(userSyncPath)
 
-    setCurrentUserSyncPath(context, username)
+    setCurrentUserSyncPath(context, userSyncPath)
     return userSyncPath
 
 
@@ -48,8 +52,7 @@ def getUserSyncPath(context, username):
     return createUserSyncPath(context, username)
 
 
-def setCurrentUserSyncPath(context, user):
-    syncPath = join(context.userData['clientRootSyncPath'], user, '')
+def setCurrentUserSyncPath(context, syncPath):
     context.userData['currentUserSyncPath'] = syncPath
 
 
@@ -87,6 +90,7 @@ def setUpClient(context, username, displayName, confFilePath):
     [Accounts]
     0/Folders/1/ignoreHiddenFiles=true
     0/Folders/1/localPath={client_sync_path}
+    0/Folders/1/displayString={displayString}
     0/Folders/1/paused=false
     0/Folders/1/targetPath=/
     0/Folders/1/version=2
@@ -106,6 +110,7 @@ def setUpClient(context, username, displayName, confFilePath):
     syncPath = createUserSyncPath(context, username)
 
     args = {
+        'displayString': 'Personal' if  context.userData['ocis'] else None,
         'displayUserName': displayName,
         'davUserName': username,
         'displayUserFirstName': displayName.split()[0],

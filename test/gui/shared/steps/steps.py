@@ -399,8 +399,8 @@ def executeStepThroughMiddleware(context, step):
 def step(context, receiver, resource, permissions):
     openSharingDialog(context, resource)
     shareItem = SharingDialog()
-    shareItem.addCollaborator(receiver, permissions)
-    shareItem.closeSharingDialog()
+#     shareItem.addCollaborator(receiver, permissions)
+#     shareItem.closeSharingDialog()
 
 
 @When('the user adds following collaborators of resource "|any|" using the client-UI')
@@ -993,8 +993,13 @@ def step(context, username):
     accountStatus = AccountStatus(context, getDisplaynameForUser(context, username))
     accountStatus.accountAction("Log in")
     password = getPasswordForUser(context, username)
-    enterUserPassword = EnterPassword()
-    enterUserPassword.enterPassword(password)
+
+    if context.userData['ocis']:
+        account = AccountConnectionWizard()
+        account.oidcLogin(username, password, True)
+    else:
+        enterUserPassword = EnterPassword()
+        enterUserPassword.enterPassword(password)
 
     # wait for files to sync
     waitForInitialSyncToComplete(context)
@@ -1139,12 +1144,13 @@ def step(context, user, resource, content):
     waitAndTryToWriteFile(context, resource, content)
 
 
-def enableVFSSupport(vfsBtnText):
+def enableVFSSupport(context, vfsBtnText):
     # The enabling/disabling VFS button do not have it's own object
     # But it is inside the "stack_folderList_QTreeView" object.
     # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
+    item_text = "Personal" if context.userData['ocis'] else "ownCloud"
     mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, "ownCloud"),
+        waitForObjectItem(names.stack_folderList_QTreeView, item_text),
         718,
         27,
         Qt.NoModifier,
@@ -1160,7 +1166,7 @@ def enableVFSSupport(vfsBtnText):
 
 @When("the user enables virtual file support")
 def step(context):
-    enableVFSSupport("Enable virtual file support (experimental)...")
+    enableVFSSupport(context, "Enable virtual file support (experimental)...")
 
 
 @Then('the "|any|" button should be available')
@@ -1168,8 +1174,9 @@ def step(context, btnText):
     # The enabling/disabling VFS button do not have it's own object
     # But it is inside the "stack_folderList_QTreeView" object.
     # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
+    item_text = "Personal" if context.userData['ocis'] else "ownCloud"
     mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, "ownCloud"),
+        waitForObjectItem(names.stack_folderList_QTreeView, item_text),
         718,
         27,
         Qt.NoModifier,
@@ -1180,7 +1187,7 @@ def step(context, btnText):
 
 @Given("the user has enabled virtual file support")
 def step(context):
-    enableVFSSupport("Enable virtual file support (experimental)...")
+    enableVFSSupport(context, "Enable virtual file support (experimental)...")
 
 
 @When("the user disables virtual file support")
@@ -1188,8 +1195,9 @@ def step(context):
     # The enabling/disabling VFS button do not have it's own object
     # But it is inside the "stack_folderList_QTreeView" object.
     # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
+    item_text = "Personal" if context.userData['ocis'] else "ownCloud"
     mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, "ownCloud"),
+        waitForObjectItem(names.stack_folderList_QTreeView, item_text),
         733,
         27,
         Qt.NoModifier,
