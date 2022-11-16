@@ -88,13 +88,12 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
+                    gui_tests_format(build_trigger) + \
+                    check_starlark(build_trigger) + \
+                    changelog(ctx, trigger = build_trigger) + \
+                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
+                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "ocis")
-        # gui_tests_format(build_trigger) + \
-        # check_starlark(build_trigger) + \
-        # changelog(ctx, trigger = build_trigger) + \
-        # unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-        # gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
-        # gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "ocis")
 
     return pipelines
 
@@ -569,12 +568,14 @@ def installPnpm():
         "image": OC_CI_NODEJS,
         "environment": {
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
+            "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "true",
         },
         "commands": [
             "cd %s/webUI" % dir["guiTest"],
             "pnpm config set store-dir ./.pnpm-store",
             "pnpm install",
-            "ls -al",
+            # install required browser
+            "npx playwright install chromium",
         ],
     }]
 
