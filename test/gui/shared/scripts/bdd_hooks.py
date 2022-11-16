@@ -85,7 +85,10 @@ def hook(context):
     # read and override configs from environment variables
     for key, value in CONFIG_ENV_MAP.items():
         if os.environ.get(value):
-            context.userData[key] = os.environ.get(value)
+            if value == 'OCIS':
+                context.userData[key] = os.environ.get(value) == 'true'
+            else:
+                context.userData[key] = os.environ.get(value)
 
     # Set the default values if empty
     for key, value in context.userData.items():

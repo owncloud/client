@@ -18,5 +18,8 @@ def authorize_via_webui(username, password):
         "pnpm run login", capture_output=True, shell=True, env={**os.environ, **envs}
     )
     if proc.returncode != 0:
-        raise Exception(proc.stdout.decode('utf-8'))
+        if proc.stderr.decode('utf-8'):
+            raise Exception(proc.stderr.decode('utf-8'))
+        else:
+            raise Exception(proc.stdout.decode('utf-8'))
     os.chdir(script_path)

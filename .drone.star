@@ -24,7 +24,7 @@ OC_CI_NODEJS = "owncloudci/nodejs:16"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-36-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-36-6.7-20220106-1008-qt515x-linux64"
+OC_CI_SQUISH = "sawjan/squish:nodejs"  # "owncloudci/squish:fedora-36-6.7-20220106-1008-qt515x-linux64"
 
 OC_CI_TRANSIFEX = "owncloudci/transifex:latest"
 OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.2"
@@ -42,6 +42,7 @@ dir = {
     "server": "/drone/src/server",
     "guiTest": "/drone/src/test/gui",
     "guiTestReport": "/drone/src/test/guiReportUpload",
+    "build": "/drone/src/build",
 }
 
 def main(ctx):
@@ -87,12 +88,13 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_tests_format(build_trigger) + \
-                    check_starlark(build_trigger) + \
-                    changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "ocis")
+        # gui_tests_format(build_trigger) + \
+        # check_starlark(build_trigger) + \
+        # changelog(ctx, trigger = build_trigger) + \
+        # unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
+        # gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
+        # gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "ocis")
 
     return pipelines
 
@@ -134,7 +136,6 @@ def check_starlark(trigger = {}):
 def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, trigger = {}):
     build_command = "ninja" if generator == "Ninja" else "make"
     pipeline_name = c_compiler + "-" + build_type.lower() + "-" + build_command
-    build_dir = "build-" + pipeline_name
 
     return [{
         "kind": "pipeline",
@@ -145,14 +146,13 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
         },
         "steps": skipIfUnchanged(ctx, "unit-tests") +
                  gitSubModules() +
-                 build_client(c_compiler, cxx_compiler, build_type, generator, build_command, build_dir) +
-                 unit_tests(build_dir),
+                 build_client(c_compiler, cxx_compiler, build_type, generator, build_command) +
+                 unit_tests(),
         "trigger": trigger,
     }]
 
 def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "daily-master-qa", server_type = "oc10"):
     pipeline_name = "GUI-tests-%s" % server_type
-    build_dir = "build-" + pipeline_name
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
 
     build_config = {
@@ -166,7 +166,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
     steps = skipIfUnchanged(ctx, "gui-tests") + \
             gitSubModules()
 
-    services = []
+    services = testMiddlewareService(server_type)
 
     if server_type == "oc10":
         squish_parameters += " --tags ~@skip,~@skipOnOC10 --tags @only"
@@ -176,15 +176,13 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
                  fixPermissions() + \
                  owncloudLog()
         services += owncloudService() + \
-                    databaseService() + \
-                    testMiddlewareService()
+                    databaseService()
     else:
         squish_parameters += " --tags ~@skip,~@skipOnOCIS --tags @only"
 
         steps += installPnpm() + \
                  ocisService() + \
                  waitForOcisService()
-        services += testMiddlewareService(True)
 
     steps += setGuiTestReportDir() + \
              build_client(
@@ -193,7 +191,6 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
                  build_config["build_type"],
                  build_config["generator"],
                  build_config["build_command"],
-                 build_dir,
                  OC_CI_CLIENT_FEDORA,
                  False,
              ) + \
@@ -225,12 +222,12 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
         ],
     }]
 
-def build_client(c_compiler, cxx_compiler, build_type, generator, build_command, build_dir, image = OC_CI_CLIENT, ctest = True):
+def build_client(c_compiler, cxx_compiler, build_type, generator, build_command, image = OC_CI_CLIENT, ctest = True):
     cmake_options = '-G"%s" -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s" -DWITH_LIBCLOUDPROVIDERS=ON' % (generator, c_compiler, cxx_compiler, build_type)
     if ctest:
         cmake_options += " -DBUILD_TESTING=1"
     else:
-        cmake_options += " -DBUILD_TESTING=1"
+        cmake_options += " -DBUILD_TESTING=0"
 
     return [
         {
@@ -240,8 +237,8 @@ def build_client(c_compiler, cxx_compiler, build_type, generator, build_command,
                 "LC_ALL": "C.UTF-8",
             },
             "commands": [
-                'mkdir -p "' + build_dir + '"',
-                'cd "' + build_dir + '"',
+                "mkdir -p %s" % dir["build"],
+                "cd %s" % dir["build"],
                 "cmake %s -S .." % cmake_options,
             ],
         },
@@ -252,13 +249,13 @@ def build_client(c_compiler, cxx_compiler, build_type, generator, build_command,
                 "LC_ALL": "C.UTF-8",
             },
             "commands": [
-                'cd "' + build_dir + '"',
+                "cd %s" % dir["build"],
                 build_command + " -j4",
             ],
         },
     ]
 
-def unit_tests(build_dir):
+def unit_tests():
     return [{
         "name": "ctest",
         "image": OC_CI_CLIENT,
@@ -266,7 +263,7 @@ def unit_tests(build_dir):
             "LC_ALL": "C.UTF-8",
         },
         "commands": [
-            'cd "' + build_dir + '"',
+            "cd %s" % dir["build"],
             "useradd -m -s /bin/bash tester",
             "chown -R tester:tester .",
             "su-exec tester ctest --output-on-failure -LE nodrone",
@@ -284,10 +281,11 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "MIDDLEWARE_URL": "http://testmiddleware:3000/",
             "BACKEND_HOST": "http://owncloud/" if server_type == "oc10" else "https://ocis:9200",
             "SECURE_BACKEND_HOST": "https://owncloud/" if server_type == "oc10" else "https://ocis:9200",
-            "OCIS": True if server_type == "ocis" else False,
+            "OCIS": "true" if server_type == "ocis" else "false",
             "SERVER_INI": "%s/drone/server.ini" % dir["guiTest"],
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
+            "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
         },
     }]
 
@@ -490,14 +488,14 @@ def owncloudService():
         ],
     }]
 
-def testMiddlewareService(ocis = False):
+def testMiddlewareService(server_type = "oc10"):
     environment = {
         "NODE_TLS_REJECT_UNAUTHORIZED": "0",
         "MIDDLEWARE_HOST": "testmiddleware",
         "REMOTE_UPLOAD_DIR": "/uploads",
     }
 
-    if ocis:
+    if server_type == "ocis":
         environment["BACKEND_HOST"] = "https://ocis:9200"
         environment["TEST_WITH_GRAPH_API"] = "true"
         environment["RUN_ON_OCIS"] = "true"
@@ -570,12 +568,13 @@ def installPnpm():
         "name": "pnpm-install",
         "image": OC_CI_NODEJS,
         "environment": {
-            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
+            "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
         },
         "commands": [
             "cd %s/webUI" % dir["guiTest"],
             "pnpm config set store-dir ./.pnpm-store",
             "pnpm install",
+            "ls -al",
         ],
     }]
 
