@@ -196,7 +196,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "late
              gui_tests(squish_parameters, server_type) + \
              uploadGuiTestLogs() + \
              buildGithubComment(pipeline_name) + \
-             githubComment(pipeline_name)
+             githubComment(pipeline_name, server_type)
 
     if (len(filterTags) > 0):
         tags = ",".join(filterTags)
@@ -669,14 +669,14 @@ def buildGithubComment(suite = ""):
         },
     }]
 
-def githubComment(alternateSuiteName):
+def githubComment(alternateSuiteName, server_type = "oc10"):
     prefix = "Results for <strong>%s</strong> ${DRONE_BUILD_LINK}/${DRONE_JOB_NUMBER}${DRONE_STAGE_NUMBER}/1" % alternateSuiteName
     return [{
         "name": "github-comment",
         "image": THEGEEKLAB_DRONE_GITHUB_COMMENT,
         "settings": {
             "message": "%s/comments.file" % dir["guiTestReport"],
-            "key": "pr-${DRONE_PULL_REQUEST}",
+            "key": "pr-${DRONE_PULL_REQUEST}-%s" % server_type,
             "update": "true",
             "api_key": {
                 "from_secret": "github_token",
