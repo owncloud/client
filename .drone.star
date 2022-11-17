@@ -92,7 +92,7 @@ def main(ctx):
                     check_starlark(build_trigger) + \
                     changelog(ctx, trigger = build_trigger) + \
                     unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
+                    gui_test_pipeline(ctx, trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = "2.0.0-rc.1", server_type = "ocis")
 
     return pipelines
@@ -150,7 +150,7 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
         "trigger": trigger,
     }]
 
-def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "daily-master-qa", server_type = "oc10"):
+def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "latest", server_type = "oc10"):
     pipeline_name = "GUI-tests-%s" % server_type
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
 
