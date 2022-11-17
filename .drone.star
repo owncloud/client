@@ -16,7 +16,7 @@ OC_CI_CLIENT = "owncloudci/client:latest"
 OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
 OC_CI_PHP = "owncloudci/php:%s"
-OC_OCIS = "owncloud/ocis:2.0.0-rc.1"
+OC_OCIS = "owncloud/ocis:%s"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_CI_NODEJS = "owncloudci/nodejs:16"
 
@@ -24,7 +24,7 @@ OC_CI_NODEJS = "owncloudci/nodejs:16"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-36-amd64"
-OC_CI_SQUISH = "sawjan/squish:nodejs"  # "owncloudci/squish:fedora-36-6.7-20220106-1008-qt515x-linux64"
+OC_CI_SQUISH = "owncloudci/squish:fedora-36-6.7-20220106-1008-qt515x-linux64"
 
 OC_CI_TRANSIFEX = "owncloudci/transifex:latest"
 OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.2"
@@ -93,7 +93,7 @@ def main(ctx):
                     changelog(ctx, trigger = build_trigger) + \
                     unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "oc10") + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "latest", server_type = "ocis")
+                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "2.0.0-rc.1", server_type = "ocis")
 
     return pipelines
 
@@ -168,7 +168,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
     services = testMiddlewareService(server_type)
 
     if server_type == "oc10":
-        squish_parameters += " --tags ~@skip,~@skipOnOC10 --tags @only"
+        squish_parameters += " --tags ~@skip,~@skipOnOC10"
 
         steps += installCore(server_version) + \
                  setupServerAndApp() + \
@@ -177,10 +177,10 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "dail
         services += owncloudService() + \
                     databaseService()
     else:
-        squish_parameters += " --tags ~@skip,~@skipOnOCIS --tags @only"
+        squish_parameters += " --tags ~@skip,~@skipOnOCIS"
 
         steps += installPnpm() + \
-                 ocisService() + \
+                 ocisService(server_version) + \
                  waitForOcisService()
 
     steps += setGuiTestReportDir() + \
@@ -531,10 +531,10 @@ def fixPermissions():
         ],
     }]
 
-def ocisService():
+def ocisService(server_version = "latest"):
     return [{
         "name": "ocis",
-        "image": OC_OCIS,
+        "image": OC_OCIS % server_version,
         "detach": True,
         "environment": {
             "OCIS_URL": "https://ocis:9200",

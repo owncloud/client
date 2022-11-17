@@ -178,7 +178,7 @@ class AccountConnectionWizard:
         squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
 
     def oidcLogin(self, username, password, relogin=False):
-        # copy link
+        # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
         if relogin:
             self.COPY_URL_TO_CLIPBOARD_BUTTON[

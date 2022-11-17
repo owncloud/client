@@ -399,10 +399,8 @@ def executeStepThroughMiddleware(context, step):
 def step(context, receiver, resource, permissions):
     openSharingDialog(context, resource)
     shareItem = SharingDialog()
-
-
-#     shareItem.addCollaborator(receiver, permissions)
-#     shareItem.closeSharingDialog()
+    shareItem.addCollaborator(receiver, permissions)
+    shareItem.closeSharingDialog()
 
 
 @When('the user adds following collaborators of resource "|any|" using the client-UI')
