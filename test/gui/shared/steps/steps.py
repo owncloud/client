@@ -1145,17 +1145,7 @@ def step(context, user, resource, content):
 
 
 def enableVFSSupport(context, vfsBtnText):
-    # The enabling/disabling VFS button do not have it's own object
-    # But it is inside the "stack_folderList_QTreeView" object.
-    # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
-    item_text = "Personal" if context.userData['ocis'] else "ownCloud"
-    mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, item_text),
-        718,
-        27,
-        Qt.NoModifier,
-        Qt.LeftButton,
-    )
+    AccountStatus.openAccountMenu(context)
     activateItem(waitForObjectItem(names.settings_QMenu, vfsBtnText))
     clickButton(
         waitForObject(
@@ -1171,17 +1161,7 @@ def step(context):
 
 @Then('the "|any|" button should be available')
 def step(context, btnText):
-    # The enabling/disabling VFS button do not have it's own object
-    # But it is inside the "stack_folderList_QTreeView" object.
-    # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
-    item_text = "Personal" if context.userData['ocis'] else "ownCloud"
-    mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, item_text),
-        718,
-        27,
-        Qt.NoModifier,
-        Qt.LeftButton,
-    )
+    AccountStatus.openAccountMenu(context)
     waitForObjectItem(names.settings_QMenu, btnText)
 
 
@@ -1192,17 +1172,7 @@ def step(context):
 
 @When("the user disables virtual file support")
 def step(context):
-    # The enabling/disabling VFS button do not have it's own object
-    # But it is inside the "stack_folderList_QTreeView" object.
-    # So we are clicking at (718, 27) of "stack_folderList_QTreeView" object to enable/disable VFS
-    item_text = "Personal" if context.userData['ocis'] else "ownCloud"
-    mouseClick(
-        waitForObjectItem(names.stack_folderList_QTreeView, item_text),
-        733,
-        27,
-        Qt.NoModifier,
-        Qt.LeftButton,
-    )
+    AccountStatus.openAccountMenu(context)
     activateItem(
         waitForObjectItem(names.settings_QMenu, "Disable virtual file support...")
     )
