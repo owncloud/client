@@ -41,7 +41,7 @@ class AccountStatus:
         "column": 0,
         "container": names.stack_folderList_QTreeView,
         "text": "%s",
-        "type": "QModelIndex"
+        "type": "QModelIndex",
     }
 
     settingsdialogToolbutton = None
@@ -82,7 +82,7 @@ class AccountStatus:
     @staticmethod
     def confirmRemoveAllFiles():
         squish.clickButton(squish.waitForObject(AccountStatus.REMOVE_ALL_FILES))
-    
+
     @staticmethod
     def openAccountMenu(context):
         # The account menu does not have its unique identifier
