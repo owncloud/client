@@ -36,12 +36,13 @@ def getClientDetails(context):
 
 
 def createUserSyncPath(context, username):
+    # '' add the end adds '/' to the path
     if context.userData['ocis']:
         userSyncPath = join(
-            context.userData['clientRootSyncPath'], username, 'Personal'
+            context.userData['clientRootSyncPath'], username, 'Personal', ''
         )
     else:
-        userSyncPath = join(context.userData['clientRootSyncPath'], username)
+        userSyncPath = join(context.userData['clientRootSyncPath'], username, '')
 
     if not exists(userSyncPath):
         makedirs(userSyncPath)
