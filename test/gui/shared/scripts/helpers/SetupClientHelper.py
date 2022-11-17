@@ -115,7 +115,7 @@ def setUpClient(context, username, displayName, confFilePath):
     args = {
         'displayString': 'Personal' if context.userData['ocis'] else 'ownCloud',
         'displayUserName': displayName,
-        'davUserName': username,
+        'davUserName': username if context.userData['ocis'] else username.lower(),
         'displayUserFirstName': displayName.split()[0],
         'client_sync_path': syncPath,
         'local_server': context.userData['localBackendUrl'],
