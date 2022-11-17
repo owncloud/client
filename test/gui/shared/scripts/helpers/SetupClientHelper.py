@@ -36,7 +36,7 @@ def getClientDetails(context):
 
 
 def createUserSyncPath(context, username):
-    # '' add the end adds '/' to the path
+    # '' at the end adds '/' to the path
     if context.userData['ocis']:
         userSyncPath = join(
             context.userData['clientRootSyncPath'], username, 'Personal', ''

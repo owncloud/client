@@ -194,7 +194,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "late
                  False,
              ) + \
              gui_tests(squish_parameters, server_type) + \
-             uploadGuiTestLogs() + \
+             uploadGuiTestLogs(server_type) + \
              buildGithubComment(pipeline_name) + \
              githubComment(pipeline_name, server_type)
 
@@ -612,7 +612,7 @@ def showGuiTestResult():
         },
     }]
 
-def uploadGuiTestLogs():
+def uploadGuiTestLogs(server_type = "oc10"):
     return [{
         "name": "upload-gui-test-result",
         "image": PLUGINS_S3,
@@ -626,7 +626,7 @@ def uploadGuiTestLogs():
             "path_style": True,
             "source": "%s/**/*" % dir["guiTestReport"],
             "strip_prefix": "%s" % dir["guiTestReport"],
-            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/guiReportUpload",
+            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/%s/guiReportUpload" % server_type,
         },
         "environment": {
             "AWS_ACCESS_KEY_ID": {
@@ -643,12 +643,12 @@ def uploadGuiTestLogs():
         },
     }]
 
-def buildGithubComment(suite = ""):
+def buildGithubComment(suite = "", server_type = "oc10"):
     return [{
         "name": "build-github-comment",
         "image": OC_UBUNTU,
         "commands": [
-            "bash %s/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER}" % (dir["guiTest"], dir["guiTestReport"]),
+            "bash %s/drone/comment.sh %s ${DRONE_REPO} ${DRONE_BUILD_NUMBER} %s" % (dir["guiTest"], dir["guiTestReport"], server_type),
         ],
         "environment": {
             "TEST_CONTEXT": suite,
