@@ -20,7 +20,7 @@ else
 
 :boom: The GUI tests failed.
 
-GUI Logs: ${LOG_URL_PATH}/guiReportUpload/index.html
+GUI Logs: ${LOG_URL_PATH}/index.html
 EOF
     fi
 
