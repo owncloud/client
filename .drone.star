@@ -45,6 +45,9 @@ dir = {
     "build": "/drone/src/build",
 }
 
+oc10_server_version = "latest"  # stable release
+ocis_server_version = "2.0.0-rc.1"
+
 def main(ctx):
     build_trigger = {
         "ref": [
@@ -81,7 +84,7 @@ def main(ctx):
         )
 
         gui_tests = gui_test_pipeline(ctx, trigger = cron_trigger) + \
-                    gui_test_pipeline(ctx, trigger = cron_trigger, server_version = "2.0.0-rc.1", server_type = "ocis")
+                    gui_test_pipeline(ctx, trigger = cron_trigger, server_version = ocis_server_version, server_type = "ocis")
 
         notify = notification(
             name = "build",
@@ -95,7 +98,7 @@ def main(ctx):
                     changelog(ctx, trigger = build_trigger) + \
                     unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = "2.0.0-rc.1", server_type = "ocis")
+                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = ocis_server_version, server_type = "ocis")
 
     return pipelines
 
@@ -152,7 +155,7 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
         "trigger": trigger,
     }]
 
-def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "latest", server_type = "oc10"):
+def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_server_version, server_type = "oc10"):
     pipeline_name = "GUI-tests-%s" % server_type
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
 
@@ -193,7 +196,6 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "late
                  build_config["generator"],
                  build_config["build_command"],
                  OC_CI_CLIENT_FEDORA,
-                 False,
              ) + \
              gui_tests(squish_parameters, server_type) + \
              uploadGuiTestLogs(server_type) + \
@@ -223,12 +225,8 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "late
         ],
     }]
 
-def build_client(c_compiler, cxx_compiler, build_type, generator, build_command, image = OC_CI_CLIENT, ctest = True):
-    cmake_options = '-G"%s" -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s" -DWITH_LIBCLOUDPROVIDERS=ON' % (generator, c_compiler, cxx_compiler, build_type)
-    if ctest:
-        cmake_options += " -DBUILD_TESTING=1"
-    else:
-        cmake_options += " -DBUILD_TESTING=0"
+def build_client(c_compiler, cxx_compiler, build_type, generator, build_command, image = OC_CI_CLIENT):
+    cmake_options = '-G"%s" -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s" -DBUILD_TESTING=1 -DWITH_LIBCLOUDPROVIDERS=ON' % (generator, c_compiler, cxx_compiler, build_type)
 
     return [
         {
