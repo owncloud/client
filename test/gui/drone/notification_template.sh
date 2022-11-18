@@ -25,13 +25,13 @@ if [ "${DRONE_BUILD_STATUS}" != "success" ]; then
         STACKTRACE_STATUS_CODE=$($CURL "$STACKTRACE")
 
         LOGS=""
-        if [[ "$SERVER_STATUS_CODE" != "200" ]]; then
+        if [[ "$SERVER_STATUS_CODE" == "200" ]]; then
             LOGS+="\n> [Server log]($SERVER_LOG)  " # 2 spaces at the end act as line-break
         fi
-        if [[ "$GUI_STATUS_CODE" != "200" ]]; then
+        if [[ "$GUI_STATUS_CODE" == "200" ]]; then
             LOGS+="\n> [GUI test log]($GUI_LOG)"
         fi
-        if [[ "$STACKTRACE_STATUS_CODE" != "200" ]]; then
+        if [[ "$STACKTRACE_STATUS_CODE" == "200" ]]; then
             LOGS+="\n> [Stacktrace]($STACKTRACE)"
         fi
 
