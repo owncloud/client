@@ -15,10 +15,14 @@ OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_CLIENT = "owncloudci/client:latest"
 OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
-OC_CI_PHP = "owncloudci/php:%s"
-OC_OCIS = "owncloud/ocis:%s"
-OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
+OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_NODEJS = "owncloudci/nodejs:16"
+OC_CI_PHP = "owncloudci/php:%s"
+OC_CI_TRANSIFEX = "owncloudci/transifex:latest"
+OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
+OC_OCIS = "owncloud/ocis:%s"
+OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.2"
+OC_UBUNTU = "owncloud/ubuntu:20.04"
 
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
@@ -26,16 +30,12 @@ OC_CI_NODEJS = "owncloudci/nodejs:16"
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-36-amd64"
 OC_CI_SQUISH = "owncloudci/squish:fedora-36-6.7-20220106-1008-qt515x-linux64"
 
-OC_CI_TRANSIFEX = "owncloudci/transifex:latest"
-OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.2"
-OC_UBUNTU = "owncloud/ubuntu:20.04"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
 PLUGINS_SLACK = "plugins/slack"
 PYTHON = "python"
 THEGEEKLAB_DRONE_GITHUB_COMMENT = "thegeeklab/drone-github-comment:1"
 TOOLHIPPIE_CALENS = "toolhippie/calens:latest"
-OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 
 dir = {
     "base": "/drone/src",
