@@ -80,7 +80,9 @@ def main(ctx):
             trigger = cron_trigger,
         )
 
-        gui_tests = gui_test_pipeline(ctx, trigger = cron_trigger)
+        gui_tests = gui_test_pipeline(ctx, trigger = cron_trigger) + \
+                    gui_test_pipeline(ctx, trigger = cron_trigger, server_version = "2.0.0-rc.1", server_type = "ocis")
+
         notify = notification(
             name = "build",
             trigger = cron_trigger,
@@ -195,7 +197,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = "late
              ) + \
              gui_tests(squish_parameters, server_type) + \
              uploadGuiTestLogs(server_type) + \
-             buildGithubComment(pipeline_name) + \
+             buildGithubComment(pipeline_name, server_type) + \
              githubComment(pipeline_name, server_type)
 
     if (len(filterTags) > 0):
