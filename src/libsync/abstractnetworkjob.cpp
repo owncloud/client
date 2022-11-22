@@ -142,6 +142,9 @@ bool AbstractNetworkJob::needsRetry() const
         if (reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
                 return true;
+            } else if (reply->error() == QNetworkReply::RemoteHostClosedError) {
+                // 401 but we detected the closed socket before the 401 message
+                return true;
             }
         }
         if (_reply->error() == QNetworkReply::ContentReSendError && _reply->attribute(QNetworkRequest::Http2WasUsedAttribute).toBool()) {
