@@ -494,7 +494,7 @@ void AccountState::slotCredentialsAsked(AbstractCredentials *credentials)
     case AbstractCredentials::ReadyState::Error:
         setState(SignedOut);
         return;
-    default:
+    case AbstractCredentials::ReadyState::Ready:
         break;
     }
 
