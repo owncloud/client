@@ -768,6 +768,7 @@ void AccountSettings::slotUpdateQuota(qint64 total, qint64 used)
 void AccountSettings::slotAccountStateChanged()
 {
     const AccountState::State state = _accountState ? _accountState->state() : AccountState::Disconnected;
+    qDebug() << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << state;
     if (state != AccountState::Disconnected) {
         AccountPtr account = _accountState->account();
         QUrl safeUrl(account->url());
@@ -846,7 +847,10 @@ void AccountSettings::slotAccountStateChanged()
 
                 connect(
                     cred, &HttpCredentialsGui::authorisationLinkChanged,
-                    this, &AccountSettings::slotAccountStateChanged,
+                    this, [this]() {
+                        qDebug() << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+                        AccountSettings::slotAccountStateChanged();
+                    },
                     Qt::UniqueConnection);
 
                 connect(_askForOAuthLoginDialog, &LoginRequiredDialog::rejected, this, [this]() {
@@ -861,7 +865,7 @@ void AccountSettings::slotAccountStateChanged()
                 });
 
                 connect(cred, &HttpCredentialsGui::asked, _askForOAuthLoginDialog, [loginDialog = _askForOAuthLoginDialog, contentWidget, cred]() {
-                    if (!cred->ready()) {
+                    if (cred->ready() == AbstractCredentials::ReadyState::Retry) {
                         ocApp()->gui()->raiseDialog(loginDialog);
                         contentWidget->showRetryFrame();
                     }

@@ -32,9 +32,9 @@ AccessManager *DummyCredentials::createAM() const
     return new AccessManager;
 }
 
-bool DummyCredentials::ready() const
+AbstractCredentials::ReadyState DummyCredentials::ready() const
 {
-    return true;
+    return AbstractCredentials::ReadyState::Ready;
 }
 
 bool DummyCredentials::stillValid(QNetworkReply *reply)

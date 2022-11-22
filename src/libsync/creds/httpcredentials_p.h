@@ -150,7 +150,7 @@ private:
             _parent->_fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
 
             _parent->_password.clear();
-            _parent->_ready = false;
+            _parent->_ready = AbstractCredentials::ReadyState::Error;
             emit _parent->fetched();
         } else {
             qCWarning(lcHttpLegacyCredentials) << "Migrated old keychain entries";
@@ -162,13 +162,13 @@ private:
                 // Still, the password can be empty which indicates a problem and
                 // the password dialog has to be opened.
                 _parent->_password = data;
-                _parent->_ready = true;
+                _parent->_ready = AbstractCredentials::ReadyState::Ready;
                 emit _parent->fetched();
             }
         }
         // If keychain data was read from legacy location, wipe these entries and store new ones
         deleteOldKeychainEntries();
-        if (_parent->_ready) {
+        if (_parent->_ready == AbstractCredentials::ReadyState::Ready) {
             _parent->persist();
             qCWarning(lcHttpLegacyCredentials) << "Migrated old keychain entries";
         }

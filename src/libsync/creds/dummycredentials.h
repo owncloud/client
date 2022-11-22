@@ -29,7 +29,7 @@ public:
     QString authType() const override;
     QString user() const override;
     AccessManager *createAM() const override;
-    bool ready() const override;
+    ReadyState ready() const override;
     bool stillValid(QNetworkReply *reply) override;
     void fetchFromKeychain() override;
     void askFromUser() override;

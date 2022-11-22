@@ -210,7 +210,7 @@ void AbstractNetworkJob::slotFinished()
     // get the Date timestamp from reply
     _responseTimestamp = _reply->rawHeader("Date");
 
-    if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull() && !(isAuthenticationJob() || reply()->request().hasRawHeader(QByteArrayLiteral("OC-Connection-Validator")))) {
+    if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull() && !isAuthenticationJob()) {
         Q_EMIT _account->unknownConnectionState();
         qCWarning(lcNetworkJob) << this << "Unsupported redirect on" << _reply->url().toString() << "to" << reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
         Q_EMIT networkError(_reply);

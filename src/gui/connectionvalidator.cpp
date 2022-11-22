@@ -175,7 +175,7 @@ void ConnectionValidator::slotStatusFound(const QUrl &url, const QJsonObject &in
     }
 
     AbstractCredentials *creds = _account->credentials();
-    if (!creds->ready()) {
+    if (creds->ready() != AbstractCredentials::ReadyState::Ready) {
         reportResult(CredentialsNotReady);
         return;
     }

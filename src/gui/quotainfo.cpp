@@ -79,7 +79,7 @@ bool QuotaInfo::canGetQuota() const
     AccountPtr account = _accountState->account();
     return _accountState->isConnected()
         && account->credentials()
-        && account->credentials()->ready();
+        && account->credentials()->ready() == AbstractCredentials::ReadyState::Ready;
 }
 
 QString QuotaInfo::quotaBaseFolder() const

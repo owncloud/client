@@ -56,7 +56,7 @@ public:
 
     QString authType() const override;
     AccessManager *createAM() const override;
-    bool ready() const override;
+    ReadyState ready() const override;
     void fetchFromKeychain() override;
     bool stillValid(QNetworkReply *reply) override;
     void persist() override;
@@ -91,9 +91,8 @@ protected:
     QString _previousPassword;
 
     QString _fetchErrorString;
-    bool _ready = false;
+    ReadyState _ready = AbstractCredentials::ReadyState::Ready;
     QPointer<AccountBasedOAuth> _oAuthJob;
-    bool _retryOnKeyChainError = true; // true if we haven't done yet any reading from keychain
 
     DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
 

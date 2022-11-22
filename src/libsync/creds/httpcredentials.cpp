@@ -115,8 +115,6 @@ private:
 HttpCredentials::HttpCredentials(DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password)
     : _user(user)
     , _password(password)
-    , _ready(true)
-    , _retryOnKeyChainError(false)
     , _authType(authType)
 {
 }
@@ -153,7 +151,7 @@ AccessManager *HttpCredentials::createAM() const
     return am;
 }
 
-bool HttpCredentials::ready() const
+AbstractCredentials::ReadyState HttpCredentials::ready() const
 {
     return _ready;
 }
@@ -177,14 +175,14 @@ void HttpCredentials::fetchFromKeychain()
     // User must be fetched from config file
     fetchUser();
 
-    if (!_ready && !_refreshToken.isEmpty()) {
+    if (_ready != AbstractCredentials::ReadyState::Ready && !_refreshToken.isEmpty()) {
         // This happens if the credentials are still loaded from the keychain, bur we are called
         // here because the auth is invalid, so this means we simply need to refresh the credentials
         refreshAccessToken();
         return;
     }
 
-    if (_ready) {
+    if (_ready == AbstractCredentials::ReadyState::Ready) {
         Q_EMIT fetched();
     } else {
         fetchFromKeychainHelper();
@@ -213,7 +211,7 @@ void HttpCredentials::fetchFromKeychainHelper()
             _fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
 
             _password.clear();
-            _ready = false;
+            _ready = AbstractCredentials::ReadyState::Error;
             emit fetched();
             return;
         }
@@ -224,7 +222,7 @@ void HttpCredentials::fetchFromKeychainHelper()
                 refreshAccessToken();
             } else {
                 _password = data;
-                _ready = true;
+                _ready = AbstractCredentials::ReadyState::Ready;
                 emit fetched();
             }
         }
@@ -251,7 +249,7 @@ bool HttpCredentials::stillValid(QNetworkReply *reply)
 void HttpCredentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator)
 {
     qCDebug(lcHttpCredentials) << Q_FUNC_INFO << reply;
-    if (!_ready)
+    if (_ready != AbstractCredentials::ReadyState::Ready)
         return;
     Q_UNUSED(authenticator)
     // Because of issue #4326, we need to set the login and password manually at every requests
@@ -325,7 +323,7 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
         }
         _refreshToken = refreshToken;
         if (!accessToken.isNull()) {
-            _ready = true;
+            _ready = AbstractCredentials::ReadyState::Ready;
             _password = accessToken;
             persist();
         }
@@ -343,7 +341,7 @@ void HttpCredentials::invalidateToken()
         _previousPassword = _password;
     }
     _password = QString();
-    _ready = false;
+    _ready = AbstractCredentials::ReadyState::Error;
 
     // User must be fetched from config file to generate a valid key
     fetchUser();

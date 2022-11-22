@@ -87,6 +87,7 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &user,
         showDialog();
         return;
     case OAuth::Error:
+        _ready = AbstractCredentials::ReadyState::Retry;
         emit asked();
         return;
     case OAuth::LoggedIn:
@@ -97,7 +98,7 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &user,
 
     _password = token;
     _refreshToken = refreshToken;
-    _ready = true;
+    _ready = AbstractCredentials::ReadyState::Ready;
     persist();
     emit asked();
 }
@@ -126,7 +127,7 @@ void HttpCredentialsGui::showDialog()
             Q_ASSERT(contentWidget->username() == _account->davUser());
             _password = contentWidget->password();
             _refreshToken.clear();
-            _ready = true;
+            _ready = AbstractCredentials::ReadyState::Ready;
             persist();
         } else {
             Q_EMIT requestLogout();
@@ -163,8 +164,11 @@ void HttpCredentialsGui::restartOAuth()
     _asyncAuth.reset(new AccountBasedOAuth(_account->sharedFromThis(), this));
     connect(_asyncAuth.data(), &OAuth::result,
         this, &HttpCredentialsGui::asyncAuthResult);
-    connect(_asyncAuth.data(), &OAuth::destroyed,
-        this, &HttpCredentialsGui::authorisationLinkChanged);
+    connect(_asyncAuth.data(), &OAuth::authorisationLinkChanged,
+        this, [this]() {
+            qDebug() << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
+            authorisationLinkChanged();
+        });
     _asyncAuth->startAuthentication();
     emit authorisationLinkChanged();
 }

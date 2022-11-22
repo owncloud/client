@@ -34,7 +34,7 @@ ServerNotificationHandler::ServerNotificationHandler(QObject *parent)
 void ServerNotificationHandler::slotFetchNotifications(AccountStatePtr ptr)
 {
     // check connectivity and credentials
-    if (!(ptr && ptr->isConnected() && ptr->account() && ptr->account()->credentials() && ptr->account()->credentials()->ready())) {
+    if (!(ptr && ptr->isConnected() && ptr->account() && ptr->account()->credentials() && ptr->account()->credentials()->ready() == AbstractCredentials::ReadyState::Ready)) {
         deleteLater();
         return;
     }

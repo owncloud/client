@@ -33,6 +33,13 @@ class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
     Q_OBJECT
 
 public:
+    enum class ReadyState {
+        Ready,
+        Retry,
+        Error,
+    };
+    Q_ENUM(ReadyState)
+
     AbstractCredentials();
     // No need for virtual destructor - QObject already has one.
 
@@ -49,7 +56,7 @@ public:
     virtual AccessManager *createAM() const = 0;
 
     /** Whether there are credentials that can be used for a connection attempt. */
-    virtual bool ready() const = 0;
+    virtual ReadyState ready() const = 0;
 
     /** Whether fetchFromKeychain() was called before. */
     bool wasFetched() const { return _wasFetched; }

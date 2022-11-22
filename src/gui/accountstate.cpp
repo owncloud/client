@@ -454,7 +454,7 @@ void AccountState::slotInvalidCredentials()
         qCInfo(lcAccountState) << "Invalid credentials for" << _account->url().toString();
 
         _waitingForNewCredentials = true;
-        if (account()->credentials()->ready()) {
+        if (account()->credentials()->ready() != AbstractCredentials::ReadyState::Ready) {
             account()->credentials()->invalidateToken();
         }
         if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
@@ -488,10 +488,14 @@ void AccountState::slotCredentialsAsked(AbstractCredentials *credentials)
 
     _waitingForNewCredentials = false;
 
-    if (!credentials->ready()) {
-        // User canceled the connection or did not give a password
+    switch (credentials->ready()) {
+    case AbstractCredentials::ReadyState::Retry:
+        return;
+    case AbstractCredentials::ReadyState::Error:
         setState(SignedOut);
         return;
+    default:
+        break;
     }
 
     if (_connectionValidator) {
