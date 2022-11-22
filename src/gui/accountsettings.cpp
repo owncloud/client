@@ -768,7 +768,6 @@ void AccountSettings::slotUpdateQuota(qint64 total, qint64 used)
 void AccountSettings::slotAccountStateChanged()
 {
     const AccountState::State state = _accountState ? _accountState->state() : AccountState::Disconnected;
-    qDebug() << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << state;
     if (state != AccountState::Disconnected) {
         AccountPtr account = _accountState->account();
         QUrl safeUrl(account->url());
@@ -845,13 +844,7 @@ void AccountSettings::slotAccountStateChanged()
                     contentWidget->setEnabled(true);
                 });
 
-                connect(
-                    cred, &HttpCredentialsGui::authorisationLinkChanged,
-                    this, [this]() {
-                        qDebug() << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-                        AccountSettings::slotAccountStateChanged();
-                    },
-                    Qt::UniqueConnection);
+                connect(cred, &HttpCredentialsGui::authorisationLinkChanged, this, &AccountSettings::slotAccountStateChanged, Qt::UniqueConnection);
 
                 connect(_askForOAuthLoginDialog, &LoginRequiredDialog::rejected, this, [this]() {
                     // if a user dismisses the dialog, we have no choice but signing them out

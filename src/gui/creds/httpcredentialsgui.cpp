@@ -164,11 +164,7 @@ void HttpCredentialsGui::restartOAuth()
     _asyncAuth.reset(new AccountBasedOAuth(_account->sharedFromThis(), this));
     connect(_asyncAuth.data(), &OAuth::result,
         this, &HttpCredentialsGui::asyncAuthResult);
-    connect(_asyncAuth.data(), &OAuth::authorisationLinkChanged,
-        this, [this]() {
-            qDebug() << "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
-            authorisationLinkChanged();
-        });
+    connect(_asyncAuth.data(), &OAuth::authorisationLinkChanged, this, &HttpCredentialsGui::authorisationLinkChanged);
     _asyncAuth->startAuthentication();
     emit authorisationLinkChanged();
 }
