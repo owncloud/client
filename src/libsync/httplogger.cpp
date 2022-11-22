@@ -58,9 +58,6 @@ void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, c
         if (reply->error() != QNetworkReply::NoError) {
             stream << "Error: " << reply->errorString() << ",";
         }
-        if (reply->attribute(QNetworkRequest::HttpPipeliningWasUsedAttribute).toBool()) {
-            stream << "Piplined,";
-        }
         stream << duration << ")";
     }
     stream << " " << url << " Header: { ";
