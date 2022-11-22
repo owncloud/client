@@ -39,20 +39,14 @@ bool isTextBody(const QString &s)
     return regexp.match(s).hasMatch();
 }
 
-void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, const QString &contentType, const QList<QNetworkReply::RawHeaderPair> &header, QIODevice *device, const nanoseconds &duration = {})
+void logHttp(const QString &action, const QByteArray &verb, const QString &url, const QByteArray &id, const QString &contentType, const QList<QNetworkReply::RawHeaderPair> &header, QIODevice *device, const nanoseconds &duration = {})
 {
     const auto reply = qobject_cast<QNetworkReply *>(device);
     const auto contentLength = device ? device->size() : 0;
     QString msg;
     QDebug stream(&msg);
     stream.nospace().noquote();
-    stream << id << ": ";
-    if (!reply) {
-        stream << "Request: ";
-    } else {
-        stream << "Response: ";
-    }
-    stream << verb;
+    stream << id << ": " << action << ": " << verb;
     if (reply) {
         stream << " " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << " (";
         if (reply->error() != QNetworkReply::NoError) {
@@ -112,15 +106,32 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
     for (const auto &key : keys) {
         header << qMakePair(key, request.rawHeader(key));
     }
-    logHttp(requestVerb(operation, request),
+    logHttp(QStringLiteral("Request"), requestVerb(operation, request),
         request.url().toString(),
         request.rawHeader(XRequestId()),
         request.header(QNetworkRequest::ContentTypeHeader).toString(),
         header,
         device);
-
+    QObject::connect(reply, &QNetworkReply::metaDataChanged, reply, [reply, timer] {
+        logHttp(QStringLiteral("MetaDataChanged"), requestVerb(*reply),
+            reply->url().toString(),
+            reply->request().rawHeader(XRequestId()),
+            reply->header(QNetworkRequest::ContentTypeHeader).toString(),
+            reply->rawHeaderPairs(),
+            reply,
+            timer.duration());
+    });
+    QObject::connect(reply, &QNetworkReply::errorOccurred, reply, [reply, timer] {
+        logHttp(QStringLiteral("ErrorOccurred"), requestVerb(*reply),
+            reply->url().toString(),
+            reply->request().rawHeader(XRequestId()),
+            reply->header(QNetworkRequest::ContentTypeHeader).toString(),
+            reply->rawHeaderPairs(),
+            reply,
+            timer.duration());
+    });
     QObject::connect(reply, &QNetworkReply::finished, reply, [reply, timer] {
-        logHttp(requestVerb(*reply),
+        logHttp(QStringLiteral("Response"), requestVerb(*reply),
             reply->url().toString(),
             reply->request().rawHeader(XRequestId()),
             reply->header(QNetworkRequest::ContentTypeHeader).toString(),
