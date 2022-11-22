@@ -370,6 +370,7 @@ void AbstractNetworkJob::retry()
 void AbstractNetworkJob::abort()
 {
     if (_reply) {
+        qCInfo(lcNetworkJob) << Q_FUNC_INFO << this;
         // calling abort will trigger the execution of finished()
         // with _reply->error() == QNetworkReply::OperationCanceledError
         // the api user can then decide whether to discard this job or retry it.
@@ -418,6 +419,9 @@ QDebug operator<<(QDebug debug, const OCC::AbstractNetworkJob *job)
     }
     if (job->_timedout) {
         debug << ", timedout";
+    }
+    if (job->_aborted) {
+        debug << ", aborted";
     }
     debug << ")";
     return debug.maybeSpace();
