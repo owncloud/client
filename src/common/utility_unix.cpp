@@ -32,7 +32,7 @@ void Utility::setupFavLink(const QString &folder)
 {
     // Nautilus: add to ~/.gtk-bookmarks
     QFile gtkBookmarks(QDir::homePath() + QLatin1String("/.config/gtk-3.0/bookmarks"));
-    QByteArray folderUrl = "file://" + QUrl(folder).url(QUrl::ComponentFormattingOption::EncodeSpaces).toUtf8();
+    QByteArray folderUrl = QUrl::fromLocalFile(folder).url(QUrl::ComponentFormattingOption::EncodeSpaces).toUtf8();
     if (gtkBookmarks.open(QFile::ReadWrite)) {
         QByteArray places = gtkBookmarks.readAll();
         if (!places.contains(folderUrl)) {
