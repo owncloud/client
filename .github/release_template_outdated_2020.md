@@ -179,7 +179,7 @@ Major/Minor release template. Enter here, when we have three estimated dates:
 * [ ] QA: Ensure that the [testplan patch release template](https://github.com/owncloud/QA/blob/master/Desktop/Regression_Test_Plan_Patch_Release.md) is up to date.
 * [ ] QA: Ensure that the [testplan minor release template](https://github.com/owncloud/QA/blob/master/Desktop/Regression_Test_Plan_Minor_Release.md) is up to date
 
-## A few days after the release (for final release)
+## A few days after the final release
 
 * [ ] DEV: Check the [crash reporter](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-CrashReporter) for bad/frequent crashes
 * [ ] Update the owncloud hosted auto [updater](https://github.com/owncloud/enterprise/blob/master/client_update_checker/README.md#deploy)  
