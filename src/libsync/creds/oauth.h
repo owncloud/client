@@ -74,6 +74,10 @@ Q_SIGNALS:
      */
     void result(OAuth::Result result, const QString &userName = QString(), const QString &token = QString(), const QString &refreshToken = QString(), const QString &displayName = QString());
 
+
+    void refreshFinished(const QString &accessToken, const QString &refreshToken);
+    void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
+
     /**
      * emitted when the call to the well-known endpoint is finished
      */
@@ -99,6 +103,7 @@ protected:
 
     QNetworkReply *postTokenRequest(const QList<QPair<QString, QString>> &queryItems);
 
+    bool hasRedirectError(QNetworkReply *reply);
 
 private:
     void finalize(const QPointer<QTcpSocket> &socket, const QString &accessToken, const QString &refreshToken, const QString &userName, const QString &displayName, const QUrl &messageUrl);
@@ -130,10 +135,6 @@ public:
     void startAuthentication() override;
 
     void refreshAuthentication(const QString &refreshToken);
-
-Q_SIGNALS:
-    void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
-    void refreshFinished(const QString &accessToken, const QString &refreshToken);
 
 protected:
     void fetchWellKnown() override;

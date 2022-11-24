@@ -288,6 +288,8 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
         int nextTry = tokenRefreshRetriesCount + 1;
         std::chrono::seconds timeout = {};
         switch (error) {
+        case QNetworkReply::TooManyRedirectsError:
+            [[fallthrough]];
         case QNetworkReply::ContentNotFoundError:
             // 404: bigip f5?
             timeout = 0s;

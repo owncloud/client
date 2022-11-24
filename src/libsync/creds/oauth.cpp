@@ -510,8 +510,11 @@ void OAuth::fetchWellKnown()
                 Q_EMIT fetchWellKnownFinished();
                 return;
             }
+            if (hasRedirectError(reply)) {
+                return;
+            }
             QJsonParseError err = {};
-            QJsonObject data = QJsonDocument::fromJson(reply->readAll(), &err).object();
+            const QJsonObject data = QJsonDocument::fromJson(reply->readAll(), &err).object();
             if (err.error == QJsonParseError::NoError) {
                 _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
                 _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
@@ -650,6 +653,9 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
             auto reply = postTokenRequest({ { QStringLiteral("grant_type"), QStringLiteral("refresh_token") },
                 { QStringLiteral("refresh_token"), refreshToken } });
             connect(reply, &QNetworkReply::finished, this, [reply, refreshToken, this]() {
+                if (hasRedirectError(reply)) {
+                    return;
+                }
                 const auto jsonData = reply->readAll();
                 QJsonParseError jsonParseError;
                 const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
@@ -718,4 +724,20 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
     });
 }
 
+
+bool OAuth::hasRedirectError(QNetworkReply *reply)
+{
+    // Special handling for BIGIP F5, the apm might redirect us at random to present us we new cookies.
+    // this redirect during a refresh is supposed to trigger a retry, where the connection validator is run again.
+    if (reply->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull()) {
+        qCWarning(lcOauth) << "redirects during authentication are not supported";
+        if (_isRefreshingToken) {
+            Q_EMIT refreshError(QNetworkReply::TooManyRedirectsError, tr("Unsupported redirect on %1").arg(wellKnownPathC));
+        } else {
+            Q_EMIT result(Error);
+        }
+        return true;
+    }
+    return false;
+}
 #include "oauth.moc"
