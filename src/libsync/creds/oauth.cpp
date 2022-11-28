@@ -462,10 +462,8 @@ QUrl OAuth::authorisationLink() const
 
     if (!_davUser.isEmpty()) {
         const QString davUser = QString::fromUtf8(QUrl::toPercentEncoding(_davUser)); // Issue #7762;
-        // open id connect
+        // add hint only for OIDC/oCIS, see #10300
         query.addQueryItem(QStringLiteral("login_hint"), davUser);
-        // oc 10
-        query.addQueryItem(QStringLiteral("user"), davUser);
     }
     const QUrl url = _authEndpoint.isValid()
         ? Utility::concatUrlPath(_authEndpoint, {}, query)
