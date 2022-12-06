@@ -18,7 +18,7 @@
 using namespace OCC;
 
 AbstractCoreJobFactory::AbstractCoreJobFactory(QNetworkAccessManager *nam)
-    : QObject(nullptr)
+    : QObject()
     , _nam(nam)
 {
 }
