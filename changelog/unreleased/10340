@@ -1,4 +1,4 @@
-Bugfix: Display `Add a Space` instead of `Add Folder Sync Connection` with OCIS
+Bugfix: Display `Add a Space` instead of `Add Folder Sync Connection` with oCIS
 
 We fixed a bug where the wrong text was displayed on the "add" button.
 
