@@ -155,8 +155,10 @@ class SharingDialog:
         )
 
     @staticmethod
-    def closeSharingDialog(self):
-        squish.clickButton(squish.waitForObject(self.SHARING_DIALOG_CLOSE_BUTTON))
+    def closeSharingDialog():
+        squish.clickButton(
+            squish.waitForObject(SharingDialog.SHARING_DIALOG_CLOSE_BUTTON)
+        )
 
     @staticmethod
     def getCollaborators():
@@ -180,7 +182,7 @@ class SharingDialog:
         ).checked
 
     @staticmethod
-    def getCollaboratorName(occurrence):
+    def getCollaboratorName(occurrence=1):
         selector = SharingDialog.SHARING_DIALOG_CONTRIBUTOR_ROW.copy()
         selector["occurrence"] = occurrence
         return str(squish.waitForObjectExists(selector).text)

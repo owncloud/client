@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import names
 import os
 import sys
 from os import listdir, rename
@@ -637,8 +636,7 @@ def step(context, resourceType, resource):
 
 @Given('the user has paused the file sync')
 def step(context):
-    syncWizard = SyncWizard()
-    syncWizard.performAction(context, "Pause sync")
+    SyncWizard.pauseSync(context)
 
 
 @Given('the user has changed the content of local file "|any|" to:')
@@ -651,8 +649,7 @@ def step(context, filename):
 
 @When('the user resumes the file sync on the client')
 def step(context):
-    syncWizard = SyncWizard()
-    syncWizard.performAction(context, "Resume sync")
+    SyncWizard.resumeSync(context)
 
 
 @Then(
@@ -1054,41 +1051,25 @@ def step(context, user, resource, content):
     waitAndTryToWriteFile(context, resource, content)
 
 
-def enableVFSSupport(context, vfsBtnText):
-    AccountStatus.openAccountMenu(context)
-    activateItem(waitForObjectItem(names.settings_QMenu, vfsBtnText))
-    clickButton(
-        waitForObject(
-            names.enable_experimental_feature_Enable_experimental_placeholder_mode_QPushButton
-        )
-    )
-
-
 @When("the user enables virtual file support")
 def step(context):
-    enableVFSSupport(context, "Enable virtual file support (experimental)...")
+    SyncWizard.enableVFS(context)
 
 
 @Then('the "|any|" button should be available')
-def step(context, btnText):
-    AccountStatus.openAccountMenu(context)
-    waitForObjectItem(names.settings_QMenu, btnText)
+def step(context, item):
+    SyncWizard.openMenu(context)
+    SyncWizard.hasMenuItem(item)
 
 
 @Given("the user has enabled virtual file support")
 def step(context):
-    enableVFSSupport(context, "Enable virtual file support (experimental)...")
+    SyncWizard.enableVFS(context)
 
 
 @When("the user disables virtual file support")
 def step(context):
-    AccountStatus.openAccountMenu(context)
-    activateItem(
-        waitForObjectItem(names.settings_QMenu, "Disable virtual file support...")
-    )
-    clickButton(
-        waitForObject(names.disable_virtual_file_support_Disable_support_QPushButton)
-    )
+    SyncWizard.disableVFS(context)
 
 
 @When('the user accepts the certificate')

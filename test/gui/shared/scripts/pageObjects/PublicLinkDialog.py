@@ -1,5 +1,6 @@
 import names
 import squish
+import object
 import test
 from datetime import datetime
 
@@ -286,7 +287,7 @@ class PublicLinkDialog:
         squish.clickButton(
             squish.waitForObject(PublicLinkDialog.CONFIRM_LINK_DELETE_BUTTON)
         )
-        waitFor(
+        squish.waitFor(
             lambda: (not object.exists(PublicLinkDialog.DELETE_LINK_BUTTON)),
         )
 
