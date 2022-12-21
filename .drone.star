@@ -615,6 +615,7 @@ def showGuiTestResult():
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
         },
     }]
@@ -646,6 +647,7 @@ def uploadGuiTestLogs(server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
         },
     }]
@@ -669,6 +671,7 @@ def buildGithubComment(suite = "", server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
@@ -695,6 +698,7 @@ def githubComment(alternateSuiteName, server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
