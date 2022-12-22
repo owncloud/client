@@ -1176,6 +1176,55 @@ private slots:
         QVERIFY(fakeFolder.currentLocalState().find("onlinerenamed2/file1rename" DVSUFFIX));
         QCOMPARE(*vfs->pinState("onlinerenamed2/file1rename" DVSUFFIX), PinState::OnlineOnly);
     }
+
+
+    void testFreeUnsycned_data()
+    {
+        QTest::addColumn<Vfs::Mode>("vfsMode");
+
+        QTest::newRow("suffix") << Vfs::WithSuffix;
+        QTest::newRow("cfapi") << Vfs::WindowsCfApi;
+    }
+
+    // when calling free up space the needs to be in sync, else it will cause data loss
+    void testFreeUnsycned()
+    {
+        QFETCH(Vfs::Mode, vfsMode);
+        FakeFolder fakeFolder { FileInfo {}, vfsMode };
+        fakeFolder.account()->setCapabilities(TestUtils::testCapabilities(CheckSums::Algorithm::SHA1));
+        const QString someFile = QStringLiteral("someFile.txt");
+        fakeFolder.localModifier().insert(someFile);
+        const auto someDate = QDateTime(QDate(1984, 07, 30), QTime(1, 3, 2));
+        fakeFolder.localModifier().setModTime(someFile, someDate);
+
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+        QVERIFY(fakeFolder.vfs()->setPinState(someFile, OCC::PinState::Unspecified));
+
+        OperationCounter counter(fakeFolder);
+        QCOMPARE(fakeFolder.vfs()->availability(someFile).get(), VfsItemAvailability::AllHydrated);
+        QCOMPARE(fakeFolder.vfs()->pinState(someFile).get(), PinState::Unspecified);
+        // modify the file, keep size and date the same
+        fakeFolder.localModifier().setContents(someFile, FileModifier::DefaultFileSize, FileModifier::DefaultContentChar + 1);
+        fakeFolder.localModifier().setModTime(someFile, someDate);
+        QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
+        QVERIFY(fakeFolder.vfs()->setPinState(someFile, OCC::PinState::OnlineOnly));
+
+        // sync once, upload
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+        // the file was uploaded
+        QCOMPARE(counter.nPUT, 1);
+        // the file is still around
+        const auto state = fakeFolder.vfs()->availability(someFile);
+        QVERIFY(state);
+        QCOMPARE(*state, VfsItemAvailability::AllHydrated);
+        counter.reset();
+
+        // sync twice, the file is in sync and is dehydrated
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        QCOMPARE(fakeFolder.vfs()->pinState(someFile).get(), PinState::OnlineOnly);
+        QCOMPARE(fakeFolder.vfs()->availability(someFile).get(), VfsItemAvailability::AllDehydrated);
+    }
 };
 
 QTEST_GUILESS_MAIN(TestSyncVirtualFiles)
