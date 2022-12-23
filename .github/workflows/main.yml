@@ -22,16 +22,6 @@ jobs:
     strategy:
         matrix:
             include:
-            - name: Windows 64-bit cl
-              target: windows-msvc2019_64-cl
-              os: windows-latest
-              fetch-depth: 0
-              container:
-            - name: macOS 64-bit clang
-              target: macos-64-clang
-              os: macos-latest
-              fetch-depth: 1
-              container:
             - name: CentOS 7 64-bit gcc
               target: linux-64-gcc
               os: ubuntu-latest
@@ -99,6 +89,14 @@ jobs:
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" owncloud/owncloud-client
         }
 
+    - name: Clazy
+      if: ${{ matrix.target == 'linux-64-gcc' }}
+      run: |
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c clazy
+        $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
+        git clone --depth=1 https://invent.kde.org/vonreth/clazy-report.git "${env:HOME}/craft/clazy-report"
+         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 "${env:HOME}/craft/clazy-report/clazy-report.py" --src "${env:GITHUB_WORKSPACE}" --build "${env:BUILD_DIR}"
+
     - name: Run tests
       run: |
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --test owncloud/owncloud-client
@@ -119,6 +117,7 @@ jobs:
         Copy-Item "$env:HOME/craft/binaries/*" "${env:GITHUB_WORKSPACE}/binaries/" -ErrorAction SilentlyContinue
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --shelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
         Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
+        Copy-Item "${env:HOME}/craft/clazy-report/clazy-report.json" "${env:GITHUB_WORKSPACE}/binaries/" -ErrorAction SilentlyContinue
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
