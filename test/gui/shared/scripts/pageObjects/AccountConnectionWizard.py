@@ -86,12 +86,6 @@ class AccountConnectionWizard:
         "type": "QPushButton",
         "visible": 1,
     }
-    ADVANCE_SETUP_PAGE = {
-        "name": "OwncloudAdvancedSetupPage",
-        "type": "OCC::OwncloudAdvancedSetupPage",
-        "visible": 1,
-        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
-    }
     CONF_SYNC_MANUALLY_RADIO_BUTTON = {
         "container": names.advancedConfigGroupBox_syncModeGroupBox_QGroupBox,
         "name": "configureSyncManuallyRadioButton",
