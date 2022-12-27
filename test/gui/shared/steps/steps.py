@@ -239,13 +239,12 @@ def step(context, username):
     if context.userData['ocis']:
         newAccount = AccountConnectionWizard()
         newAccount.acceptCertificate()
-        newAccount.oidcLogin(username, password, True)
+        EnterPassword.oidcReLogin(username, password)
     else:
         AccountStatus.waitUntilConnectionIsConfigured(
             context.userData['maxSyncTimeout'] * 1000
         )
-        enterUserPassword = EnterPassword()
-        enterUserPassword.enterPassword(password)
+        EnterPassword.enterPassword(password)
 
     # wait for files to sync
     waitForInitialSyncToComplete(context)
@@ -914,11 +913,9 @@ def step(context, username):
     password = getPasswordForUser(context, username)
 
     if context.userData['ocis']:
-        account = AccountConnectionWizard()
-        account.oidcLogin(username, password, True)
+        EnterPassword.oidcReLogin(username, password, True)
     else:
-        enterUserPassword = EnterPassword()
-        enterUserPassword.enterPassword(password)
+        EnterPassword.enterPassword(password)
 
     # wait for files to sync
     waitForInitialSyncToComplete(context)
