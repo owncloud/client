@@ -743,26 +743,18 @@ def step(context, resource):
     openSharingDialog(context, resource, 'folder')
 
 
-def getSharingDialogText():
-    shareItem = SharingDialog()
-    errorText = shareItem.getSharingDialogMessage()
-    return errorText
-
-
 @Then('the text "|any|" should be displayed in the sharing dialog')
 def step(context, fileShareContext):
-    errorText = getSharingDialogText()
     test.compare(
-        errorText,
+        SharingDialog.getSharingDialogMessage(),
         fileShareContext,
     )
 
 
 @Then('the error text "|any|" should be displayed in the sharing dialog')
 def step(context, fileShareContext):
-    errorText = getSharingDialogText()
     test.compare(
-        errorText,
+        SharingDialog.getSharingDialogMessage(),
         fileShareContext,
     )
 
@@ -913,7 +905,7 @@ def step(context, username):
     password = getPasswordForUser(context, username)
 
     if context.userData['ocis']:
-        EnterPassword.oidcReLogin(username, password, True)
+        EnterPassword.oidcReLogin(username, password)
     else:
         EnterPassword.enterPassword(password)
 
