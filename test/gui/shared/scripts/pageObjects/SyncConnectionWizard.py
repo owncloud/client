@@ -22,7 +22,7 @@ class SyncConnectionWizard:
         "visible": 1,
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
     }
-    SYNC_DIALOG_ROOT_FOLDER = {
+    SELECTIVE_SYNC_ROOT_FOLDER = {
         "column": 0,
         "container": names.add_Folder_Sync_Connection_Deselect_remote_folders_you_do_not_wish_to_synchronize_QTreeWidget,
         "text": "ownCloud",
@@ -45,7 +45,7 @@ class SyncConnectionWizard:
         "type": "QTreeWidget",
         "visible": 1,
     }
-    SELECTIVE_SYNC_FOLDER_TREE = {
+    SELECTIVE_SYNC_TREE_HEADER = {
         "container": names.add_Folder_Sync_Connection_Deselect_remote_folders_you_do_not_wish_to_synchronize_QTreeWidget,
         "orientation": 1,
         "type": "QHeaderView",
@@ -76,7 +76,7 @@ class SyncConnectionWizard:
     def selectFoldersToSync(self, context):
         # first deselect all
         squish.mouseClick(
-            squish.waitForObject(self.SYNC_DIALOG_ROOT_FOLDER),
+            squish.waitForObject(self.SELECTIVE_SYNC_ROOT_FOLDER),
             11,
             11,
             squish.Qt.NoModifier,
@@ -98,7 +98,7 @@ class SyncConnectionWizard:
         squish.mouseClick(
             squish.waitForObject(
                 {
-                    "container": SyncConnectionWizard.SELECTIVE_SYNC_FOLDER_TREE,
+                    "container": SyncConnectionWizard.SELECTIVE_SYNC_TREE_HEADER,
                     "text": headerText,
                     "type": "HeaderViewItem",
                     "visible": True,
@@ -108,3 +108,19 @@ class SyncConnectionWizard:
 
     def addSyncConnection(self):
         squish.clickButton(squish.waitForObject(self.ADD_SYNC_CONNECTION_BUTTON))
+
+    @staticmethod
+    def getItemNameFromRow(row_index):
+        FOLDER_ROW = {
+            "row": row_index,
+            "container": SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER,
+            "type": "QModelIndex",
+        }
+        return str(squish.waitForObjectExists(FOLDER_ROW).displayText)
+
+    @staticmethod
+    def isRootFolderChecked():
+        state = squish.waitForObject(SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER)[
+            "checkState"
+        ]
+        return state == "checked"

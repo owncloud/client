@@ -222,3 +222,30 @@ class AccountConnectionWizard:
 
     def cancelEnableExperimentalVFSOption(self):
         squish.clickButton(squish.waitForObject(self.STAY_SAFE_BUTTON))
+
+    @staticmethod
+    def getErrorMessage():
+        return str(squish.waitForObjectExists(AccountConnectionWizard.ERROR_LABEL).text)
+
+    @staticmethod
+    def isNewConnectionWindowVisible():
+        visible = False
+        try:
+            squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
+            visible = True
+        except:
+            pass
+        return visible
+
+    @staticmethod
+    def isCredentialWindowVisible(context):
+        visible = False
+        try:
+            if context.userData['ocis']:
+                squish.waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
+            else:
+                squish.waitForObject(AccountConnectionWizard.BASIC_CREDENTIAL_PAGE)
+            visible = True
+        except:
+            pass
+        return visible

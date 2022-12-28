@@ -181,3 +181,13 @@ class SharingDialog:
         selector = SharingDialog.SHARING_DIALOG_CONTRIBUTOR_ROW.copy()
         selector["occurrence"] = occurrence
         return str(squish.waitForObjectExists(selector).text)
+
+    @staticmethod
+    def isUserInSuggestionList(user):
+        exists = False
+        try:
+            squish.waitForObjectItem(SharingDialog.SUGGESTED_COLLABORATOR, user)
+            exists = True
+        except LookupError as e:
+            pass
+        return exists

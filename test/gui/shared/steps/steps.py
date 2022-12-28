@@ -930,7 +930,11 @@ def step(context, username, host):
 
 @Then('connection wizard should be visible')
 def step(context):
-    waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
+    test.compare(
+        AccountConnectionWizard.isNewConnectionWindowVisible(),
+        True,
+        "Connection window is visible",
+    )
 
 
 @Then("the following tabs in the toolbar should match the default baseline")
@@ -1068,8 +1072,7 @@ def step(context):
 
 @Then('error "|any|" should be displayed')
 def step(context, errorMsg):
-    newAccount = AccountConnectionWizard()
-    test.compare(str(waitForObjectExists(newAccount.ERROR_LABEL).text), errorMsg)
+    test.compare(AccountConnectionWizard.getErrorMessage(), errorMsg)
 
 
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
@@ -1113,7 +1116,7 @@ def step(context):
     newAccount = AccountConnectionWizard()
     newAccount.addServer(context)
     test.compare(
-        waitForObjectExists(newAccount.BASIC_CREDENTIAL_PAGE).visible,
+        AccountConnectionWizard.isCredentialWindowVisible(),
         True,
         "Assert credentials page is visible",
     )
@@ -1151,23 +1154,17 @@ def step(context, headerText):
 
 @Then('the sync all checkbox should be checked')
 def step(context):
-    syncConnection = SyncConnectionWizard()
-    state = waitForObject(syncConnection.SYNC_DIALOG_ROOT_FOLDER)["checkState"]
-    test.compare("checked", state, "Sync all checkbox is checked")
+    test.compare(
+        SyncConnectionWizard.isRootFolderChecked(), True, "Sync all checkbox is checked"
+    )
 
 
 @Then("the folders should be in the following order:")
 def step(context):
-    syncConnection = SyncConnectionWizard()
     rowIndex = 0
     for row in context.table[1:]:
-        FOLDER_TREE_ROW = {
-            "row": rowIndex,
-            "container": syncConnection.SYNC_DIALOG_ROOT_FOLDER,
-            "type": "QModelIndex",
-        }
         expectedFolder = row[0]
-        actualFolder = waitForObjectExists(FOLDER_TREE_ROW).displayText
+        actualFolder = SyncConnectionWizard.getItemNameFromRow(rowIndex)
         test.compare(actualFolder, expectedFolder)
 
         rowIndex += 1
@@ -1225,16 +1222,12 @@ def step(context, collaborator):
 
 @Then('the following users should be listed as suggested collaborators:')
 def step(context):
-    shareItem = SharingDialog()
     for collaborator in context.table[1:]:
-        exists = False
-        try:
-            waitForObjectItem(shareItem.SUGGESTED_COLLABORATOR, collaborator[0])
-            exists = True
-        except LookupError as e:
-            pass
-
-        test.compare(exists, True, "Assert user '" + collaborator[0] + "' is listed")
+        test.compare(
+            SharingDialog.isUserInSuggestionList(collaborator[0]),
+            True,
+            "Assert user '" + collaborator[0] + "' is listed",
+        )
 
 
 @Then('the collaborators should be listed in the following order:')
@@ -1293,10 +1286,11 @@ def step(context, username, foldername):
 
 @Then("credentials wizard should be visible")
 def step(context):
-    if context.userData['ocis']:
-        waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
-    else:
-        waitForObject(AccountConnectionWizard.BASIC_CREDENTIAL_PAGE)
+    test.compare(
+        AccountConnectionWizard.isCredentialWindowVisible(),
+        True,
+        "Credentials wizard is visible",
+    )
 
 
 @When('the user sets the sync path in sync connection wizard')
