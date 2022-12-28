@@ -17,10 +17,10 @@ from helpers.FilesHelper import buildConflictedRegex
 from pageObjects.EnterPassword import EnterPassword
 from pageObjects.PublicLinkDialog import PublicLinkDialog
 from pageObjects.SharingDialog import SharingDialog
-from pageObjects.SyncWizard import SyncWizard
+from pageObjects.SyncConnection import SyncConnection
 from pageObjects.Toolbar import Toolbar
 from pageObjects.Activity import Activity
-from pageObjects.AccountStatus import AccountStatus
+from pageObjects.AccountSetting import AccountSetting
 
 from helpers.SyncHelper import (
     SYNC_STATUS,
@@ -237,7 +237,7 @@ def step(context, username):
         AccountConnectionWizard.acceptCertificate()
         EnterPassword.oidcReLogin(username, password)
     else:
-        AccountStatus.waitUntilConnectionIsConfigured(
+        AccountSetting.waitUntilConnectionIsConfigured(
             context.userData['maxSyncTimeout'] * 1000
         )
         EnterPassword.enterPassword(password)
@@ -624,7 +624,7 @@ def step(context, resourceType, resource):
 
 @Given('the user has paused the file sync')
 def step(context):
-    SyncWizard.pauseSync(context)
+    SyncConnection.pauseSync(context)
 
 
 @Given('the user has changed the content of local file "|any|" to:')
@@ -637,7 +637,7 @@ def step(context, filename):
 
 @When('the user resumes the file sync on the client')
 def step(context):
-    SyncWizard.resumeSync(context)
+    SyncConnection.resumeSync(context)
 
 
 @Then(
@@ -849,7 +849,7 @@ def step(context, resource):
 
 @When('the user "|any|" logs out of the client-UI')
 def step(context, username):
-    AccountStatus.logout()
+    AccountSetting.logout()
 
 
 @Then('user "|any|" should be signed out')
@@ -857,7 +857,7 @@ def step(context, username):
     displayname = getDisplaynameForUser(context, username)
     server = context.userData['localBackendUrl']
     test.compare(
-        AccountStatus.isUserSignedOut(displayname, server),
+        AccountSetting.isUserSignedOut(displayname, server),
         True,
         "User '%s' is signed out" % username,
     )
@@ -865,16 +865,16 @@ def step(context, username):
 
 @Given('user "|any|" has logged out of the client-UI')
 def step(context, username):
-    AccountStatus.logout()
+    AccountSetting.logout()
     displayname = getDisplaynameForUser(context, username)
     server = context.userData['localBackendUrl']
-    if not AccountStatus.isUserSignedOut(displayname, server):
+    if not AccountSetting.isUserSignedOut(displayname, server):
         raise Exception("Failed to logout user '%s'" % username)
 
 
 @When('user "|any|" logs in to the client-UI')
 def step(context, username):
-    AccountStatus.login()
+    AccountSetting.login()
     password = getPasswordForUser(context, username)
 
     if context.userData['ocis']:
@@ -891,7 +891,7 @@ def step(context, username):
     displayname = getDisplaynameForUser(context, username)
     server = context.userData['localBackendUrl']
     test.compare(
-        AccountStatus.isUserSignedIn(displayname, server),
+        AccountSetting.isUserSignedIn(displayname, server),
         True,
         "User '%s' is connected" % username,
     )
@@ -903,7 +903,7 @@ def step(context, username, host):
     displayname = substituteInLineCodes(context, displayname)
     host = substituteInLineCodes(context, host)
 
-    AccountStatus.removeAccountConnection()
+    AccountSetting.removeAccountConnection()
 
 
 @Then('connection wizard should be visible')
@@ -1014,23 +1014,23 @@ def step(context, user, resource, content):
 
 @When("the user enables virtual file support")
 def step(context):
-    SyncWizard.enableVFS(context)
+    SyncConnection.enableVFS(context)
 
 
 @Then('the "|any|" button should be available')
 def step(context, item):
-    SyncWizard.openMenu(context)
-    SyncWizard.hasMenuItem(item)
+    SyncConnection.openMenu(context)
+    SyncConnection.hasMenuItem(item)
 
 
 @Given("the user has enabled virtual file support")
 def step(context):
-    SyncWizard.enableVFS(context)
+    SyncConnection.enableVFS(context)
 
 
 @When("the user disables virtual file support")
 def step(context):
-    SyncWizard.disableVFS(context)
+    SyncConnection.disableVFS(context)
 
 
 @When('the user accepts the certificate')
@@ -1071,7 +1071,7 @@ def step(context, itemType, resource):
     # a dialog will popup asking to confirm "Remove all files"
     if isSyncFolderEmpty:
         try:
-            AccountStatus.confirmRemoveAllFiles()
+            AccountSetting.confirmRemoveAllFiles()
         except:
             pass
 
