@@ -149,12 +149,6 @@ class SharingDialog:
     def unshareWith(collaborator):
         squish.clickButton(squish.waitForObject(SharingDialog.DELETE_SHARE_BUTTON))
 
-    def verifyResource(self, resource):
-        test.compare(
-            str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
-            resource,
-        )
-
     @staticmethod
     def closeSharingDialog():
         squish.clickButton(

@@ -118,15 +118,7 @@ class PublicLinkDialog:
         if permissions:
             radioObjectName = self.getRadioObjectForPermssion(permissions)
 
-        test.compare(
-            str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
-            resource.replace(context.userData['currentUserSyncPath'], ''),
-        )
-
         if radioObjectName:
-            test.compare(
-                str(squish.waitForObjectExists(radioObjectName).text), permissions
-            )
             squish.clickButton(squish.waitForObject(radioObjectName))
 
         if password:
@@ -294,25 +286,15 @@ class PublicLinkDialog:
             lambda: (not object.exists(PublicLinkDialog.DELETE_LINK_BUTTON)),
         )
 
-    def verifyPublicLinkName(self, publicLinkName):
-        test.compare(
-            str(squish.waitForObjectExists(self.PUBLIC_LINK_NAME).text),
-            publicLinkName,
-        )
-
-    def verifyResource(self, resource):
-        test.compare(
-            str(squish.waitForObjectExists(self.ITEM_TO_SHARE).text),
-            resource,
-        )
-
-    def verifyExpirationDate(self, expectedDate):
+    @staticmethod
+    def getExpirationDate():
         expectedDate = datetime.strptime(expectedDate, '%Y-%m-%d')
         # date format in client UI is 'mm/dd/yy' e.g. '01/15/22'
         expYear = expectedDate.year - 2000
         expectedDate = f"{expectedDate.month}/{expectedDate.day}/{expYear}"
 
-        test.compare(
-            str(squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText),
-            str(expectedDate),
+        return str(
+            squish.waitForObjectExists(
+                PublicLinkDialog.EXPIRATION_DATE_FIELD
+            ).displayText
         )

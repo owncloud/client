@@ -794,16 +794,10 @@ def step(context, resource, expiryDate):
     if expiryDate.strip("%") == "default":
         expiryDate = PublicLinkDialog.getDefaultExpiryDate()
 
-    publicLinkDialog.verifyExpirationDate(expiryDate)
+    actualExpiryDate = PublicLinkDialog.getExpirationDate()
+    test.compare(expiryDate, actualExpiryDate)
 
     SharingDialog.closeSharingDialog()
-
-
-def setExpirationDateWithVerification(resource, publicLinkName, expireDate):
-    publicLinkDialog = PublicLinkDialog()
-    publicLinkDialog.verifyResource(resource)
-    publicLinkDialog.verifyPublicLinkName(publicLinkName)
-    publicLinkDialog.setExpirationDate(expireDate)
 
 
 @When('the user edits the public link named "|any|" of file "|any|" changing following')
@@ -813,7 +807,8 @@ def step(context, publicLinkName, resource):
         if row[0] == 'expireDate':
             expireDate = row[1]
             break
-    setExpirationDateWithVerification(resource, publicLinkName, expireDate)
+    publicLinkDialog = PublicLinkDialog()
+    publicLinkDialog.setExpirationDate(expireDate)
 
 
 @When(
@@ -965,7 +960,6 @@ def step(context, permissions, user, resource):
     permissionsList = permissions.split(',')
 
     shareItem = SharingDialog()
-    shareItem.verifyResource(resource)
     editChecked, shareChecked = shareItem.getAvailablePermission()
 
     if 'edit' in permissionsList:
@@ -1192,7 +1186,6 @@ def step(context, resource):
 )
 def step(context, publicLinkName, password):
     publicLinkDialog = PublicLinkDialog()
-    publicLinkDialog.verifyPublicLinkName(publicLinkName)
     publicLinkDialog.changePassword(password)
 
 

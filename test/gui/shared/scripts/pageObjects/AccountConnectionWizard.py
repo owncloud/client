@@ -197,10 +197,6 @@ class AccountConnectionWizard:
         squish.mouseClick(squish.waitForObject(self.DIRECTORY_NAME_BOX))
         squish.type(squish.waitForObject(self.DIRECTORY_NAME_EDIT_BOX), syncPath)
         squish.clickButton(squish.waitForObject(self.CHOOSE_BUTTON))
-        test.compare(
-            str(squish.waitForObjectExists(self.SELECT_LOCAL_FOLDER).text),
-            self.sanitizeFolderPath(syncPath),
-        )
 
     def addAccount(self, context):
         self.addAccountCredential(context)
