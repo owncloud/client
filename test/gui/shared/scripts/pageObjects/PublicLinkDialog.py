@@ -102,35 +102,35 @@ class PublicLinkDialog:
     def getDefaultExpiryDate():
         return PublicLinkDialog.defaultExpiryDate
 
-    def openPublicLinkDialog(self):
+    @staticmethod
+    def openPublicLinkTab():
         squish.mouseClick(
-            squish.waitForObject(self.PUBLIC_LINKS_TAB),
+            squish.waitForObject(PublicLinkDialog.PUBLIC_LINKS_TAB),
             0,
             0,
             squish.Qt.NoModifier,
             squish.Qt.LeftButton,
         )
 
-    def createPublicLink(
-        self, context, resource, password='', permissions='', expireDate='', linkName=''
-    ):
+    @staticmethod
+    def createPublicLink(password='', permissions='', expireDate='', linkName=''):
         radioObjectName = ''
         if permissions:
-            radioObjectName = self.getRadioObjectForPermssion(permissions)
+            radioObjectName = PublicLinkDialog.getRadioObjectForPermssion(permissions)
 
         if radioObjectName:
             squish.clickButton(squish.waitForObject(radioObjectName))
 
         if password:
-            self.setPassword(password)
+            PublicLinkDialog.setPassword(password)
 
         if expireDate:
-            self.setExpirationDate(expireDate)
+            PublicLinkDialog.setExpirationDate(expireDate)
 
         if linkName:
-            self.setLinkName(linkName)
+            PublicLinkDialog.setLinkName(linkName)
 
-        squish.clickButton(squish.waitForObject(self.CREATE_SHARE_BUTTON))
+        squish.clickButton(squish.waitForObject(PublicLinkDialog.CREATE_SHARE_BUTTON))
         squish.waitFor(
             lambda: (
                 squish.waitForObject(PublicLinkDialog.PUBLIC_LINK_NAME).displayText
@@ -138,39 +138,45 @@ class PublicLinkDialog:
             )
         )
 
-    def togglePassword(self):
-        squish.clickButton(squish.waitForObject(self.PASSWORD_CHECKBOX))
+    @staticmethod
+    def togglePassword():
+        squish.clickButton(squish.waitForObject(PublicLinkDialog.PASSWORD_CHECKBOX))
 
-    def setPassword(self, password):
-        enabled = squish.waitForObjectExists(self.PASSWORD_CHECKBOX).checked
+    @staticmethod
+    def setPassword(password):
+        enabled = squish.waitForObjectExists(PublicLinkDialog.PASSWORD_CHECKBOX).checked
         if not enabled:
-            self.togglePassword()
+            PublicLinkDialog.togglePassword()
 
         squish.mouseClick(
-            squish.waitForObject(self.PASSWORD_INPUT_FIELD),
+            squish.waitForObject(PublicLinkDialog.PASSWORD_INPUT_FIELD),
             0,
             0,
             squish.Qt.NoModifier,
             squish.Qt.LeftButton,
         )
         squish.type(
-            squish.waitForObject(self.PASSWORD_INPUT_FIELD),
+            squish.waitForObject(PublicLinkDialog.PASSWORD_INPUT_FIELD),
             password,
         )
 
-    def toggleExpirationDate(self):
-        squish.clickButton(squish.waitForObject(self.EXPIRYDATE_CHECKBOX))
+    @staticmethod
+    def toggleExpirationDate():
+        squish.clickButton(squish.waitForObject(PublicLinkDialog.EXPIRYDATE_CHECKBOX))
 
-    def setExpirationDate(self, expireDate):
-        enabled = squish.waitForObjectExists(self.EXPIRYDATE_CHECKBOX).checked
+    @staticmethod
+    def setExpirationDate(expireDate):
+        enabled = squish.waitForObjectExists(
+            PublicLinkDialog.EXPIRYDATE_CHECKBOX
+        ).checked
         if not enabled:
-            self.toggleExpirationDate()
+            PublicLinkDialog.toggleExpirationDate()
 
         if not expireDate == "default":
             expDate = datetime.strptime(expireDate, '%Y-%m-%d')
             expYear = expDate.year - 2000
             squish.mouseClick(
-                squish.waitForObject(self.EXPIRATION_DATE_FIELD),
+                squish.waitForObject(PublicLinkDialog.EXPIRATION_DATE_FIELD),
                 0,
                 0,
                 squish.Qt.NoModifier,
@@ -196,7 +202,9 @@ class PublicLinkDialog:
             squish.nativeType("<Return>")
 
             actualDate = str(
-                squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText
+                squish.waitForObjectExists(
+                    PublicLinkDialog.EXPIRATION_DATE_FIELD
+                ).displayText
             )
             expectedDate = f"{expDate.month}/{expDate.day}/{expYear}"
             if not actualDate == expectedDate:
@@ -204,11 +212,13 @@ class PublicLinkDialog:
                     f"Expected date: {expectedDate} is not same as that of Actual date: {actualDate}, trying workaround"
                 )
                 # retry with workaround
-                self.setExpirationDateWithWorkaround(
+                PublicLinkDialog.setExpirationDateWithWorkaround(
                     expYear, expDate.month, expDate.day
                 )
                 actualDate = str(
-                    squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText
+                    squish.waitForObjectExists(
+                        PublicLinkDialog.EXPIRATION_DATE_FIELD
+                    ).displayText
                 )
                 if not actualDate == expectedDate:
                     test.fail(
@@ -219,15 +229,18 @@ class PublicLinkDialog:
             )
         else:
             defaultDate = str(
-                squish.waitForObjectExists(self.EXPIRATION_DATE_FIELD).displayText
+                squish.waitForObjectExists(
+                    PublicLinkDialog.EXPIRATION_DATE_FIELD
+                ).displayText
             )
             PublicLinkDialog.setDefaultExpiryDate(defaultDate)
 
     # This workaround is needed because the above function 'setExpirationDate' can not set the month field sometime.
     # See for more details: https://github.com/owncloud/client/issues/9218
-    def setExpirationDateWithWorkaround(self, year, month, day):
+    @staticmethod
+    def setExpirationDateWithWorkaround(year, month, day):
         squish.mouseClick(
-            squish.waitForObject(self.EXPIRATION_DATE_FIELD),
+            squish.waitForObject(PublicLinkDialog.EXPIRATION_DATE_FIELD),
             0,
             0,
             squish.Qt.NoModifier,
@@ -245,24 +258,26 @@ class PublicLinkDialog:
         squish.nativeType(year)
         squish.nativeType("<Return>")
 
-    def getRadioObjectForPermssion(self, permissions):
+    @staticmethod
+    def getRadioObjectForPermssion(permissions):
         radioObjectName = ''
         if permissions == 'Download / View' or permissions == 'Viewer':
-            radioObjectName = self.READ_ONLY_RADIO_BUTTON
+            radioObjectName = PublicLinkDialog.READ_ONLY_RADIO_BUTTON
         elif permissions == 'Download / View / Edit' or permissions == 'Editor':
-            radioObjectName = self.READ_WRITE_RADIO_BUTTON
+            radioObjectName = PublicLinkDialog.READ_WRITE_RADIO_BUTTON
         elif permissions == 'Upload only (File Drop)' or permissions == 'Contributor':
-            radioObjectName = self.UPLOAD_ONLY_RADIO_BUTTON
+            radioObjectName = PublicLinkDialog.UPLOAD_ONLY_RADIO_BUTTON
         else:
             raise Exception("No such radio object found for given permission")
 
         return radioObjectName
 
-    def createPublicLinkWithRole(self, role):
-        radioObjectName = self.getRadioObjectForPermssion(role)
+    @staticmethod
+    def createPublicLinkWithRole(role):
+        radioObjectName = PublicLinkDialog.getRadioObjectForPermssion(role)
 
         squish.clickButton(squish.waitForObject(radioObjectName))
-        squish.clickButton(squish.waitForObject(self.CREATE_SHARE_BUTTON))
+        squish.clickButton(squish.waitForObject(PublicLinkDialog.CREATE_SHARE_BUTTON))
         squish.waitFor(
             lambda: (
                 squish.findObject(PublicLinkDialog.PUBLIC_LINK_NAME).displayText
@@ -270,8 +285,9 @@ class PublicLinkDialog:
             )
         )
 
-    def changePassword(self, password):
-        self.setPassword(password)
+    @staticmethod
+    def changePassword(password):
+        PublicLinkDialog.setPassword(password)
         squish.clickButton(
             squish.waitForObject(PublicLinkDialog.UPDATE_PASSWORD_BUTTON)
         )

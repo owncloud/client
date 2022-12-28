@@ -53,17 +53,21 @@ class SyncConnectionWizard:
         "visible": 1,
     }
 
-    def setSyncPathInSyncConnectionWizard(self, context):
-        squish.waitForObject(self.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
+    @staticmethod
+    def setSyncPathInSyncConnectionWizard(context):
+        squish.waitForObject(SyncConnectionWizard.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
         squish.type(
-            self.CHOOSE_LOCAL_SYNC_FOLDER, context.userData['currentUserSyncPath']
+            SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER,
+            context.userData['currentUserSyncPath'],
         )
-        self.nextStep()
+        SyncConnectionWizard.nextStep()
 
-    def nextStep(self):
-        squish.clickButton(squish.waitForObject(self.NEXT_BUTTON))
+    @staticmethod
+    def nextStep():
+        squish.clickButton(squish.waitForObject(SyncConnectionWizard.NEXT_BUTTON))
 
-    def selectRemoteDestinationFolder(self, folder):
+    @staticmethod
+    def selectRemoteDestinationFolder(folder):
         squish.mouseClick(
             squish.waitForObjectItem(SyncConnectionWizard.REMOTE_FOLDER_TREE, folder),
             0,
@@ -71,30 +75,32 @@ class SyncConnectionWizard:
             squish.Qt.NoModifier,
             squish.Qt.LeftButton,
         )
-        self.nextStep()
+        SyncConnectionWizard.nextStep()
 
-    def selectFoldersToSync(self, context):
+    @staticmethod
+    def selectFoldersToSync(context):
         # first deselect all
         squish.mouseClick(
-            squish.waitForObject(self.SELECTIVE_SYNC_ROOT_FOLDER),
+            squish.waitForObject(SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER),
             11,
             11,
             squish.Qt.NoModifier,
             squish.Qt.LeftButton,
         )
         for row in context.table[1:]:
-            self.SYNC_DIALOG_FOLDER_TREE['text'] = row[
+            SyncConnectionWizard.SYNC_DIALOG_FOLDER_TREE['text'] = row[
                 0
             ]  # added a new key 'text' to dictionary SYNC_DIALOG_FOLDER_TREE
             squish.mouseClick(
-                squish.waitForObject(self.SYNC_DIALOG_FOLDER_TREE),
+                squish.waitForObject(SyncConnectionWizard.SYNC_DIALOG_FOLDER_TREE),
                 11,
                 11,
                 squish.Qt.NoModifier,
                 squish.Qt.LeftButton,
             )
 
-    def sortBy(self, headerText):
+    @staticmethod
+    def sortBy(headerText):
         squish.mouseClick(
             squish.waitForObject(
                 {
@@ -106,8 +112,11 @@ class SyncConnectionWizard:
             )
         )
 
-    def addSyncConnection(self):
-        squish.clickButton(squish.waitForObject(self.ADD_SYNC_CONNECTION_BUTTON))
+    @staticmethod
+    def addSyncConnection():
+        squish.clickButton(
+            squish.waitForObject(SyncConnectionWizard.ADD_SYNC_CONNECTION_BUTTON)
+        )
 
     @staticmethod
     def getItemNameFromRow(row_index):
