@@ -6,6 +6,7 @@ from pageObjects.AccountSetting import AccountSetting
 from helpers.SetupClientHelper import substituteInLineCodes
 from helpers.UserHelper import getDisplaynameForUser, getPasswordForUser
 from helpers.SetupClientHelper import setUpClient, startClient
+from helpers.SyncHelper import waitForInitialSyncToComplete
 
 
 @Given(r'the user has added (the first|another) account with', regexp=True)

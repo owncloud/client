@@ -5,7 +5,7 @@ from pageObjects.SharingDialog import SharingDialog
 
 from helpers.SetupClientHelper import getResourcePath, substituteInLineCodes
 from helpers.FilesHelper import sanitizePath
-from helpers.SocketHelper import getSocketConnection
+from helpers.SyncHelper import getSocketConnection
 
 
 def shareResourceCommand(resource):

@@ -21,7 +21,7 @@ import urllib.request
 import os
 import builtins
 from helpers.StacktraceHelper import getCoredumps, generateStacktrace
-from helpers.SocketHelper import closeSocketConnection
+from helpers.SyncHelper import closeSocketConnection
 from datetime import datetime
 
 # this will reset in every test suite
