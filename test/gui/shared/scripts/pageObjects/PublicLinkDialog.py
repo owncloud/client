@@ -304,13 +304,9 @@ class PublicLinkDialog:
 
     @staticmethod
     def getExpirationDate():
-        expectedDate = datetime.strptime(expectedDate, '%Y-%m-%d')
-        # date format in client UI is 'mm/dd/yy' e.g. '01/15/22'
-        expYear = expectedDate.year - 2000
-        expectedDate = f"{expectedDate.month}/{expectedDate.day}/{expYear}"
-
-        return str(
+        defaultDate = str(
             squish.waitForObjectExists(
                 PublicLinkDialog.EXPIRATION_DATE_FIELD
             ).displayText
         )
+        return str(datetime.strptime(defaultDate, '%m/%d/%y')).split(' ')[0]

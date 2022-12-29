@@ -773,7 +773,6 @@ def step(context, resource, expiryDate):
 
     if expiryDate.strip("%") == "default":
         expiryDate = PublicLinkDialog.getDefaultExpiryDate()
-
     actualExpiryDate = PublicLinkDialog.getExpirationDate()
     test.compare(expiryDate, actualExpiryDate)
 
@@ -1088,7 +1087,7 @@ def step(context, resource, receiver):
 def step(context):
     AccountConnectionWizard.addServer(context)
     test.compare(
-        AccountConnectionWizard.isCredentialWindowVisible(),
+        AccountConnectionWizard.isCredentialWindowVisible(context),
         True,
         "Assert credentials page is visible",
     )
@@ -1252,7 +1251,7 @@ def step(context, username, foldername):
 @Then("credentials wizard should be visible")
 def step(context):
     test.compare(
-        AccountConnectionWizard.isCredentialWindowVisible(),
+        AccountConnectionWizard.isCredentialWindowVisible(context),
         True,
         "Credentials wizard is visible",
     )
