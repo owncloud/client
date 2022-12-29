@@ -3,13 +3,10 @@ import os
 from os import listdir, rename
 from os.path import isfile, join, isdir
 import re
-import requests
 import builtins
 import shutil
 
-from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 from pageObjects.SyncConnectionWizard import SyncConnectionWizard
-from pageObjects.EnterPassword import EnterPassword
 from pageObjects.SyncConnection import SyncConnection
 from pageObjects.Toolbar import Toolbar
 from pageObjects.Activity import Activity
@@ -30,9 +27,6 @@ from helpers.SyncHelper import (
     generateSyncPatternFromMessages,
     filterMessagesForItem,
 )
-
-
-createdUsers = {}
 
 
 def listenSyncStatusForItem(item, type='FOLDER'):
@@ -117,110 +111,6 @@ def hasSyncPattern(patterns, resource=None):
     # 100 milliseconds polling interval
     snooze(0.1)
     return False
-
-
-# gets all users information created in a test scenario
-def getCreatedUsersFromMiddleware(context):
-    createdUsers = {}
-    try:
-        res = requests.get(
-            os.path.join(context.userData['middlewareUrl'], 'state'),
-            headers={"Content-Type": "application/json"},
-        )
-        createdUsers = res.json()['created_users']
-    except ValueError:
-        raise Exception("Could not get created users information from middleware")
-
-    return createdUsers
-
-
-@Given(r'the user has added (the first|another) account with', regexp=True)
-def step(context, accountType):
-    if accountType == 'another':
-        Toolbar.openNewAccountSetup()
-    AccountConnectionWizard.addAccount(context)
-
-
-@When('the user adds the following wrong user credentials:')
-def step(context):
-    AccountConnectionWizard.addUserCreds(context)
-
-
-@Then('the account with displayname "|any|" and host "|any|" should be displayed')
-def step(context, displayname, host):
-    displayname = substituteInLineCodes(context, displayname)
-    host = substituteInLineCodes(context, host)
-
-    test.compare(
-        Toolbar.getDisplayedAccountText(displayname, host),
-        displayname + "\n" + host,
-    )
-
-
-@Then('the account with displayname "|any|" and host "|any|" should not be displayed')
-def step(context, displayname, host):
-    displayname = substituteInLineCodes(context, displayname)
-    host = substituteInLineCodes(context, host)
-
-    waitFor(
-        lambda: (not object.exists(Toolbar.getItemSelector(displayname + "@" + host))),
-    )
-
-
-def getUserInfo(context, username, attribute):
-    # add and update users to the global createdUsers dict if not already there
-    # so that we don't have to request for user information in every scenario
-    # but instead get user information from the global dict
-    global createdUsers
-    if username in createdUsers:
-        return createdUsers[username][attribute]
-    else:
-        createdUsers = {**createdUsers, **getCreatedUsersFromMiddleware(context)}
-        return createdUsers[username][attribute]
-
-
-def getDisplaynameForUser(context, username):
-    return getUserInfo(context, username, 'displayname')
-
-
-def getPasswordForUser(context, username):
-    return getUserInfo(context, username, 'password')
-
-
-@Given('user "|any|" has set up a client with default settings')
-def step(context, username):
-    password = getPasswordForUser(context, username)
-    displayName = getDisplaynameForUser(context, username)
-    setUpClient(context, username, displayName, context.userData['clientConfigFile'])
-
-    if context.userData['ocis']:
-        AccountConnectionWizard.acceptCertificate()
-        EnterPassword.oidcReLogin(username, password)
-    else:
-        AccountSetting.waitUntilConnectionIsConfigured(
-            context.userData['maxSyncTimeout'] * 1000
-        )
-        EnterPassword.enterPassword(password)
-
-    # wait for files to sync
-    waitForInitialSyncToComplete(context)
-
-
-@Given('the user has started the client')
-def step(context):
-    startClient(context)
-
-
-@When(r'^the user adds (the first|another) account with$', regexp=True)
-def step(context, accountType):
-    if accountType == 'another':
-        Toolbar.openNewAccountSetup()
-    AccountConnectionWizard.addAccount(context)
-
-
-@Given('the user has added the following account information:')
-def step(context):
-    AccountConnectionWizard.addAccountCredential(context)
 
 
 # Using socket API to check file sync status
@@ -499,74 +389,6 @@ def step(context, tabName):
     Activity.clickTab(tabName)
 
 
-@When('the user "|any|" logs out of the client-UI')
-def step(context, username):
-    AccountSetting.logout()
-
-
-@Then('user "|any|" should be signed out')
-def step(context, username):
-    displayname = getDisplaynameForUser(context, username)
-    server = context.userData['localBackendUrl']
-    test.compare(
-        AccountSetting.isUserSignedOut(displayname, server),
-        True,
-        "User '%s' is signed out" % username,
-    )
-
-
-@Given('user "|any|" has logged out of the client-UI')
-def step(context, username):
-    AccountSetting.logout()
-    displayname = getDisplaynameForUser(context, username)
-    server = context.userData['localBackendUrl']
-    if not AccountSetting.isUserSignedOut(displayname, server):
-        raise Exception("Failed to logout user '%s'" % username)
-
-
-@When('user "|any|" logs in to the client-UI')
-def step(context, username):
-    AccountSetting.login()
-    password = getPasswordForUser(context, username)
-
-    if context.userData['ocis']:
-        EnterPassword.oidcReLogin(username, password)
-    else:
-        EnterPassword.enterPassword(password)
-
-    # wait for files to sync
-    waitForInitialSyncToComplete(context)
-
-
-@Then('user "|any|" should be connect to the client-UI')
-def step(context, username):
-    displayname = getDisplaynameForUser(context, username)
-    server = context.userData['localBackendUrl']
-    test.compare(
-        AccountSetting.isUserSignedIn(displayname, server),
-        True,
-        "User '%s' is connected" % username,
-    )
-
-
-@When('the user removes the connection for user "|any|" and host |any|')
-def step(context, username, host):
-    displayname = getDisplaynameForUser(context, username)
-    displayname = substituteInLineCodes(context, displayname)
-    host = substituteInLineCodes(context, host)
-
-    AccountSetting.removeAccountConnection()
-
-
-@Then('connection wizard should be visible')
-def step(context):
-    test.compare(
-        AccountConnectionWizard.isNewConnectionWindowVisible(),
-        True,
-        "Connection window is visible",
-    )
-
-
 @Then("the following tabs in the toolbar should match the default baseline")
 def step(context):
     for tabName in context.table:
@@ -643,21 +465,6 @@ def step(context):
     SyncConnection.disableVFS(context)
 
 
-@When('the user accepts the certificate')
-def step(context):
-    AccountConnectionWizard.acceptCertificate()
-
-
-@Then('the lock shown should be closed')
-def step(context):
-    test.vp("urlLock")
-
-
-@Then('error "|any|" should be displayed')
-def step(context, errorMsg):
-    test.compare(AccountConnectionWizard.getErrorMessage(), errorMsg)
-
-
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
 def step(context, itemType, resource):
     waitForClientToBeReady(context)
@@ -686,31 +493,10 @@ def step(context, itemType, resource):
             pass
 
 
-@Given('the user has added the following server address:')
-def step(context):
-    AccountConnectionWizard.addServer(context)
-    test.compare(
-        AccountConnectionWizard.isCredentialWindowVisible(context),
-        True,
-        "Assert credentials page is visible",
-    )
-
-
-@When('the user adds the following server address:')
-def step(context):
-    AccountConnectionWizard.addServer(context)
-
-
 @When('the user selects the following folders to sync:')
 def step(context):
     SyncConnectionWizard.selectFoldersToSync(context)
     SyncConnectionWizard.addSyncConnection()
-
-
-@When('the user selects manual sync folder option in advanced section')
-def step(context):
-    AccountConnectionWizard.selectManualSyncFolderOption()
-    AccountConnectionWizard.nextStep()
 
 
 @When('the user sorts the folder list by "|any|"')
@@ -785,15 +571,6 @@ def step(context, username, foldername):
     shutil.move(source_dir, destination_dir)
 
 
-@Then("credentials wizard should be visible")
-def step(context):
-    test.compare(
-        AccountConnectionWizard.isCredentialWindowVisible(context),
-        True,
-        "Credentials wizard is visible",
-    )
-
-
 @When('the user sets the sync path in sync connection wizard')
 def step(context):
     SyncConnectionWizard.setSyncPathInSyncConnectionWizard(context)
@@ -802,17 +579,3 @@ def step(context):
 @When('the user selects "|any|" as a remote destination folder')
 def step(context, folderName):
     SyncConnectionWizard.selectRemoteDestinationFolder(folderName)
-
-
-@When('the user selects vfs option in advanced section')
-def step(context):
-    AccountConnectionWizard.selectVFSOption()
-
-
-@When(r'^the user (confirms|cancels) the enable experimental vfs option$', regexp=True)
-def step(context, action):
-    if action == "confirms":
-        AccountConnectionWizard.confirmEnableExperimentalVFSOption()
-    else:
-        AccountConnectionWizard.cancelEnableExperimentalVFSOption()
-    AccountConnectionWizard.nextStep()
