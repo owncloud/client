@@ -72,9 +72,3 @@ def filterMessagesForItem(messages, item):
         if msg.rstrip('/').endswith(item.rstrip('/')):
             filteredMsg.append(msg)
     return filteredMsg
-
-
-def isEqual(p1, p2):
-    if p1 == p2:
-        return True
-    return False
