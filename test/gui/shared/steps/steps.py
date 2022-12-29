@@ -4,8 +4,6 @@ import sys
 from os import listdir, rename
 from os.path import isfile, join, isdir
 import re
-import urllib.request
-import json
 import requests
 import builtins
 import shutil
@@ -351,27 +349,6 @@ def shareResource(resource):
             return False
 
 
-def executeStepThroughMiddleware(context, step):
-    body = {"step": step}
-    if hasattr(context, "table"):
-        body["table"] = context.table
-
-    params = json.dumps(body).encode('utf8')
-
-    req = urllib.request.Request(
-        context.userData['middlewareUrl'] + 'execute',
-        data=params,
-        headers={"Content-Type": "application/json"},
-        method='POST',
-    )
-    try:
-        urllib.request.urlopen(req)
-    except urllib.error.HTTPError as e:
-        raise Exception(
-            "Step execution through test middleware failed. Error: " + e.read().decode()
-        )
-
-
 @When(
     'the user adds "|any|" as collaborator of resource "|any|" with permissions "|any|" using the client-UI'
 )
@@ -541,30 +518,6 @@ def step(context, sourceFolder, destinationFolder):
 @When(r'the user renames a (file|folder) "([^"]*)" to "([^"]*)"', regexp=True)
 def step(context, type, source, destination):
     renameFileFolder(context, source, destination)
-
-
-@Given(r"^(.*) on the server (.*)$", regexp=True)
-def step(context, stepPart1, stepPart2):
-    executeStepThroughMiddleware(context, "Given " + stepPart1 + " " + stepPart2)
-    global usersDataFromMiddleware
-    usersDataFromMiddleware = None
-
-
-@Given(r"^(.*) on the server$", regexp=True)
-def step(context, stepPart1):
-    executeStepThroughMiddleware(context, "Given " + stepPart1)
-    global usersDataFromMiddleware
-    usersDataFromMiddleware = None
-
-
-@Then(r"^(.*) on the server (.*)$", regexp=True)
-def step(context, stepPart1, stepPart2):
-    executeStepThroughMiddleware(context, "Then " + stepPart1 + " " + stepPart2)
-
-
-@Then(r"^(.*) on the server$", regexp=True)
-def step(context, stepPart1):
-    executeStepThroughMiddleware(context, "Then " + stepPart1)
 
 
 @Then('the file "|any|" should exist on the file system with the following content')
