@@ -9,10 +9,14 @@ from squish import waitFor, snooze
 sys.path.append(realpath('../../../shell_integration/nautilus/'))
 from syncstate import SocketConnect
 
+from helpers.FilesHelper import sanitizePath
 
 # socket messages
 socket_messages = []
 socketConnect = None
+# Whether wait has been made or not after account is set up
+# This is useful for waiting only for the first time
+waitedAfterSync = False
 
 # File syncing in client has the following status
 SYNC_STATUS = {
@@ -266,3 +270,18 @@ def waitForFileOrFolderToHaveSyncError(context, resource, resourceType):
     waitForFileOrFolderToHaveSyncStatus(
         context, resource, resourceType, SYNC_STATUS['ERROR']
     )
+
+
+# performing actions immediately after completing the sync from the server does not work
+# The test should wait for a while before performing the action
+# issue: https://github.com/owncloud/client/issues/8832
+def waitForClientToBeReady(context):
+    global waitedAfterSync
+    if not waitedAfterSync:
+        snooze(context.userData['minSyncTimeout'])
+        waitedAfterSync = True
+
+
+def clearWaitedAfterSync():
+    global waitedAfterSync
+    waitedAfterSync = False

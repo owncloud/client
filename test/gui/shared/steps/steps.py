@@ -6,18 +6,11 @@ import re
 import builtins
 import shutil
 
-from pageObjects.SyncConnectionWizard import SyncConnectionWizard
-from pageObjects.SyncConnection import SyncConnection
-from pageObjects.Toolbar import Toolbar
-from pageObjects.Activity import Activity
 from pageObjects.AccountSetting import AccountSetting
 
 from helpers.SetupClientHelper import *
 from helpers.FilesHelper import buildConflictedRegex, sanitizePath
-from helpers.SyncHelper import (
-    waitForFileOrFolderToSync,
-    waitForFileOrFolderToHaveSyncError,
-)
+from helpers.SyncHelper import waitForClientToBeReady
 
 
 def folderExists(folderPath, timeout=1000):
@@ -32,48 +25,6 @@ def fileExists(filePath, timeout=1000):
         lambda: isfile(sanitizePath(filePath)),
         timeout,
     )
-
-
-@When('the user waits for the files to sync')
-def step(context):
-    waitForFileOrFolderToSync(context)
-
-
-@When(r'the user waits for (file|folder) "([^"]*)" to be synced', regexp=True)
-def step(context, type, resource):
-    waitForFileOrFolderToSync(context, resource, type)
-
-
-@When(r'the user waits for (file|folder) "([^"]*)" to have sync error', regexp=True)
-def step(context, type, resource):
-    waitForFileOrFolderToHaveSyncError(context, resource, type)
-
-
-@When(
-    r'user "([^"]*)" waits for (file|folder) "([^"]*)" to have sync error', regexp=True
-)
-def step(context, username, type, resource):
-    resource = join(getUserSyncPath(context, username), resource)
-    waitForFileOrFolderToHaveSyncError(context, resource, type)
-
-
-@When(
-    'user "|any|" creates a file "|any|" with the following content inside the sync folder'
-)
-def step(context, username, filename):
-    fileContent = "\n".join(context.multiLineText)
-    syncPath = getUserSyncPath(context, username)
-    waitAndWriteFile(context, join(syncPath, filename), fileContent)
-
-
-@When('user "|any|" creates a folder "|any|" inside the sync folder')
-def step(context, username, foldername):
-    createFolder(context, foldername, username)
-
-
-@Given('user "|any|" has created a folder "|any|" inside the sync folder')
-def step(context, username, foldername):
-    createFolder(context, foldername, username)
 
 
 # To create folders in a temporary directory, we set isTempFolder True
@@ -96,11 +47,6 @@ def renameFileFolder(context, source, destination):
     rename(source, destination)
 
 
-@When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
-def step(context, username, filename, filesize):
-    createFileWithSize(context, filename, filesize)
-
-
 def createFileWithSize(context, filename, filesize, isTempFolder=False):
     if isTempFolder:
         path = context.userData['tempFolderPath']
@@ -109,6 +55,49 @@ def createFileWithSize(context, filename, filesize, isTempFolder=False):
     file = join(path, filename)
     cmd = "truncate -s {filesize} {file}".format(filesize=filesize, file=file)
     os.system(cmd)
+
+
+def writeFile(resource, content):
+    f = open(resource, "w")
+    f.write(content)
+    f.close()
+
+
+def waitAndWriteFile(context, path, content):
+    waitForClientToBeReady(context)
+    writeFile(path, content)
+
+
+def waitAndTryToWriteFile(context, resource, content):
+    waitForClientToBeReady(context)
+    try:
+        writeFile(resource, content)
+    except:
+        pass
+
+
+@When(
+    'user "|any|" creates a file "|any|" with the following content inside the sync folder'
+)
+def step(context, username, filename):
+    fileContent = "\n".join(context.multiLineText)
+    syncPath = getUserSyncPath(context, username)
+    waitAndWriteFile(context, join(syncPath, filename), fileContent)
+
+
+@When('user "|any|" creates a folder "|any|" inside the sync folder')
+def step(context, username, foldername):
+    createFolder(context, foldername, username)
+
+
+@Given('user "|any|" has created a folder "|any|" inside the sync folder')
+def step(context, username, foldername):
+    createFolder(context, foldername, username)
+
+
+@When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
+def step(context, username, filename, filesize):
+    createFileWithSize(context, filename, filesize)
 
 
 @When('the user copies the folder "|any|" to "|any|"')
@@ -178,22 +167,12 @@ def step(context, resourceType, resource):
     )
 
 
-@Given('the user has paused the file sync')
-def step(context):
-    SyncConnection.pauseSync(context)
-
-
 @Given('the user has changed the content of local file "|any|" to:')
 def step(context, filename):
     fileContent = "\n".join(context.multiLineText)
     waitAndWriteFile(
         context, join(context.userData['currentUserSyncPath'], filename), fileContent
     )
-
-
-@When('the user resumes the file sync on the client')
-def step(context):
-    SyncConnection.resumeSync(context)
 
 
 @Then(
@@ -221,65 +200,6 @@ def step(context, filename):
         raise Exception("Conflict file not found with given name")
 
 
-@When('the user clicks on the activity tab')
-def step(context):
-    Toolbar.openActivity()
-
-
-@Then('the table of conflict warnings should include file "|any|"')
-def step(context, filename):
-    Activity.checkFileExist(filename)
-
-
-@Then('the file "|any|" should be blacklisted')
-def step(context, filename):
-    test.compare(
-        True,
-        Activity.checkBlackListedResourceExist(context, filename),
-        "File is blacklisted",
-    )
-
-
-@When('the user selects "|any|" tab in the activity')
-def step(context, tabName):
-    Activity.clickTab(tabName)
-
-
-@Then("the following tabs in the toolbar should match the default baseline")
-def step(context):
-    for tabName in context.table:
-        test.vp(tabName[0])
-
-
-# performing actions immediately after completing the sync from the server does not work
-# The test should wait for a while before performing the action
-# issue: https://github.com/owncloud/client/issues/8832
-def waitForClientToBeReady(context):
-    global waitedAfterSync
-    if not waitedAfterSync:
-        snooze(context.userData['minSyncTimeout'])
-        waitedAfterSync = True
-
-
-def writeFile(resource, content):
-    f = open(resource, "w")
-    f.write(content)
-    f.close()
-
-
-def waitAndWriteFile(context, path, content):
-    waitForClientToBeReady(context)
-    writeFile(path, content)
-
-
-def waitAndTryToWriteFile(context, resource, content):
-    waitForClientToBeReady(context)
-    try:
-        writeFile(resource, content)
-    except:
-        pass
-
-
 @When('the user overwrites the file "|any|" with content "|any|"')
 def step(context, resource, content):
     print("starting file overwrite")
@@ -298,27 +218,6 @@ def step(context, resource, content):
 def step(context, user, resource, content):
     resource = getResourcePath(context, resource, user)
     waitAndTryToWriteFile(context, resource, content)
-
-
-@When("the user enables virtual file support")
-def step(context):
-    SyncConnection.enableVFS(context)
-
-
-@Then('the "|any|" button should be available')
-def step(context, item):
-    SyncConnection.openMenu(context)
-    SyncConnection.hasMenuItem(item)
-
-
-@Given("the user has enabled virtual file support")
-def step(context):
-    SyncConnection.enableVFS(context)
-
-
-@When("the user disables virtual file support")
-def step(context):
-    SyncConnection.disableVFS(context)
 
 
 @When(r'the user deletes the (file|folder) "([^"]*)"', regexp=True)
@@ -349,55 +248,6 @@ def step(context, itemType, resource):
             pass
 
 
-@When('the user selects the following folders to sync:')
-def step(context):
-    SyncConnectionWizard.selectFoldersToSync(context)
-    SyncConnectionWizard.addSyncConnection()
-
-
-@When('the user sorts the folder list by "|any|"')
-def step(context, headerText):
-    headerText = headerText.capitalize()
-    if headerText in ["Size", "Name"]:
-        SyncConnectionWizard.sortBy(headerText)
-    else:
-        raise Exception("Sorting by '" + headerText + "' is not supported.")
-
-
-@Then('the sync all checkbox should be checked')
-def step(context):
-    test.compare(
-        SyncConnectionWizard.isRootFolderChecked(), True, "Sync all checkbox is checked"
-    )
-
-
-@Then("the folders should be in the following order:")
-def step(context):
-    rowIndex = 0
-    for row in context.table[1:]:
-        expectedFolder = row[0]
-        actualFolder = SyncConnectionWizard.getItemNameFromRow(rowIndex)
-        test.compare(actualFolder, expectedFolder)
-
-        rowIndex += 1
-
-
-@Then('VFS enabled baseline image should match the default screenshot')
-def step(context):
-    if context.userData['ocis']:
-        test.vp("VP_VFS_enabled_oCIS")
-    else:
-        test.vp("VP_VFS_enabled")
-
-
-@Then('VFS enabled baseline image should not match the default screenshot')
-def step(context):
-    if context.userData['ocis']:
-        test.xvp("VP_VFS_enabled_oCIS")
-    else:
-        test.xvp("VP_VFS_enabled")
-
-
 @When('user "|any|" creates the following files inside the sync folder:')
 def step(context, username):
     syncPath = getUserSyncPath(context, username)
@@ -425,13 +275,3 @@ def step(context, username, foldername):
     source_dir = join(context.userData['tempFolderPath'], foldername)
     destination_dir = getUserSyncPath(context, username)
     shutil.move(source_dir, destination_dir)
-
-
-@When('the user sets the sync path in sync connection wizard')
-def step(context):
-    SyncConnectionWizard.setSyncPathInSyncConnectionWizard(context)
-
-
-@When('the user selects "|any|" as a remote destination folder')
-def step(context, folderName):
-    SyncConnectionWizard.selectRemoteDestinationFolder(folderName)
