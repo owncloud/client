@@ -158,7 +158,7 @@ def step(context):
 
 @When('the user opens the sharing dialog of "|any|" using the client-UI')
 def step(context, resource):
-    openSharingDialog(context, resource, 'folder')
+    openSharingDialog(context, resource)
 
 
 @Then('the text "|any|" should be displayed in the sharing dialog')

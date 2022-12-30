@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from os import listdir, rename
 from os.path import isfile, join, isdir
 import re
 import builtins
@@ -8,7 +7,7 @@ import shutil
 
 from pageObjects.AccountSetting import AccountSetting
 
-from helpers.SetupClientHelper import *
+from helpers.SetupClientHelper import getUserSyncPath, getResourcePath
 from helpers.FilesHelper import buildConflictedRegex, sanitizePath
 from helpers.SyncHelper import waitForClientToBeReady
 
@@ -44,7 +43,7 @@ def createFolder(context, foldername, username=None, isTempFolder=False):
 def renameFileFolder(context, source, destination):
     source = join(context.userData['currentUserSyncPath'], source)
     destination = join(context.userData['currentUserSyncPath'], destination)
-    rename(source, destination)
+    os.rename(source, destination)
 
 
 def createFileWithSize(context, filename, filesize, isTempFolder=False):
@@ -183,7 +182,7 @@ def step(context, filename):
 
     onlyfiles = [
         f
-        for f in listdir(context.userData['currentUserSyncPath'])
+        for f in os.listdir(context.userData['currentUserSyncPath'])
         if isfile(join(context.userData['currentUserSyncPath'], f))
     ]
     found = False
@@ -233,7 +232,7 @@ def step(context, itemType, resource):
         raise Exception("No such item type for resource")
 
     isSyncFolderEmpty = True
-    for item in listdir(context.userData['currentUserSyncPath']):
+    for item in os.listdir(context.userData['currentUserSyncPath']):
         # do not count the hidden files as they are ignored by the client
         if not item.startswith("."):
             isSyncFolderEmpty = False
