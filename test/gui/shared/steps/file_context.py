@@ -5,6 +5,9 @@ import re
 import builtins
 import shutil
 
+import zipfile
+from zipfile import ZipFile
+
 from pageObjects.AccountSetting import AccountSetting
 
 from helpers.SetupClientHelper import getResourcePath
@@ -69,6 +72,14 @@ def waitAndTryToWriteFile(resource, content):
         writeFile(resource, content)
     except:
         pass
+
+
+def zipFilesAndfolders(filesAndFolders, path, zipFileName):
+    print(filesAndFolders[1:])
+    with zipfile.ZipFile(join(path, zipFileName), 'w') as zippedFile:
+        for file in filesAndFolders[1:]:
+            os.chdir('/tmp')
+            zippedFile.write(file[0])
 
 
 @When(
@@ -271,3 +282,33 @@ def step(context, username, resourceType, source, destination):
         destination = ""
     destination_dir = getResourcePath(destination, username)
     shutil.move(source_dir, destination_dir)
+
+
+@Given('the user has created a zip file "|any|" with following folders and files')
+def step(context, zipFileName):
+    path = context.userData['tempFolderPath']
+    for content in context.table[1:]:
+        if content[1] == 'folder':
+            folder = join(path, content[0])
+            os.makedirs(folder)
+        elif content[1] == 'file':
+            file = join(path, content[0])
+            with open(file, 'w') as fp:
+                fp.write(content[2])
+    zipFilesAndfolders(context.table, path, zipFileName)
+
+
+@Given('the user "|any|" copies the zip file "|any|" into the sync root')
+def step(context, username, zipFileName):
+    path = context.userData['tempFolderPath']
+    source_dir = join(path, zipFileName)
+    syncPath = getUserSyncPath(context, username)
+    destination_dir = join(syncPath, zipFileName)
+    shutil.copyfile(source_dir, destination_dir)
+
+
+@When('the user "|any|" unzips the zip file "|any|" inside the sync root')
+def step(context, username, zipFileName):
+    destination_dir = join(getUserSyncPath(context, username), zipFileName)
+    with ZipFile(destination_dir, 'r') as zObject:
+        zObject.extractall(path=getUserSyncPath(context, username))
