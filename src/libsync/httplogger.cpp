@@ -17,15 +17,38 @@
 #include "common/chronoelapsedtimer.h"
 #include "common/utility.h"
 
-#include <QRegularExpression>
-#include <QLoggingCategory>
 #include <QBuffer>
+#include <QHostInfo>
+#include <QLoggingCategory>
+#include <QRegularExpression>
 
 
 using namespace std::chrono;
 
 namespace {
 Q_LOGGING_CATEGORY(lcNetworkHttp, "sync.httplogger", QtWarningMsg)
+
+class RequestInfo : public QObject
+{
+    Q_OBJECT
+public:
+    RequestInfo(const QNetworkRequest &request)
+    {
+        QHostInfo::lookupHost(request.url().host(), this, [this](const QHostInfo &info) {
+            _hostInfo = info;
+        });
+    }
+
+    const OCC::Utility::ChronoElapsedTimer timer = {};
+
+    const QHostInfo &host() const
+    {
+        return _hostInfo;
+    }
+
+private:
+    QHostInfo _hostInfo;
+};
 
 const qint64 PeekSize = 1024 * 1024;
 
@@ -39,7 +62,7 @@ bool isTextBody(const QString &s)
     return regexp.match(s).hasMatch();
 }
 
-void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, const QString &contentType, const QList<QNetworkReply::RawHeaderPair> &header, QIODevice *device, const nanoseconds &duration = {})
+void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, const QString &contentType, const QList<QNetworkReply::RawHeaderPair> &header, QIODevice *device, const RequestInfo &info)
 {
     const auto reply = qobject_cast<QNetworkReply *>(device);
     const auto contentLength = device ? device->size() : 0;
@@ -61,10 +84,18 @@ void logHttp(const QByteArray &verb, const QString &url, const QByteArray &id, c
         if (reply->attribute(QNetworkRequest::HttpPipeliningWasUsedAttribute).toBool()) {
             stream << "Piplined,";
         }
-        const auto durationInMs = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        const auto durationInMs = std::chrono::duration_cast<std::chrono::milliseconds>(info.timer.duration());
         stream << durationInMs.count() << "ms)";
     }
-    stream << " " << url << " Header: { ";
+    stream << " " << url;
+    if (!info.host().addresses().isEmpty()) {
+        stream << " (Address: ";
+        for (const auto &address : info.host().addresses()) {
+            stream << address.toString() << " ";
+        }
+        stream << ")";
+    }
+    stream << " Header: { ";
     for (const auto &it : header) {
         stream << it.first << ": ";
         static const bool dontRedact = qEnvironmentVariableIsSet("OWNCLOUD_HTTPLOGGER_NO_REDACT");
@@ -107,8 +138,8 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
     if (!lcNetworkHttp().isInfoEnabled()) {
         return;
     }
-    const auto timer = Utility::ChronoElapsedTimer();
     const auto request = reply->request();
+    auto info = std::make_unique<RequestInfo>(request);
 
     const auto keys = request.rawHeaderList();
     QList<QNetworkReply::RawHeaderPair> header;
@@ -121,16 +152,17 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
         request.rawHeader(XRequestId()),
         request.header(QNetworkRequest::ContentTypeHeader).toString(),
         header,
-        device);
+        device,
+        *info.get());
 
-    QObject::connect(reply, &QNetworkReply::finished, reply, [reply, timer] {
+    QObject::connect(reply, &QNetworkReply::finished, reply, [reply, info = std::move(info)] {
         logHttp(requestVerb(*reply),
             reply->url().toString(),
             reply->request().rawHeader(XRequestId()),
             reply->header(QNetworkRequest::ContentTypeHeader).toString(),
             reply->rawHeaderPairs(),
             reply,
-            timer.duration());
+            *info.get());
     });
 }
 
@@ -156,3 +188,5 @@ QByteArray HttpLogger::requestVerb(QNetworkAccessManager::Operation operation, c
 }
 
 }
+
+#include "httplogger.moc"
