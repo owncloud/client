@@ -84,9 +84,11 @@ void Utility::setLaunchOnStartup(const QString &appName, const QString &guiName,
             // if it is set, we can assume to be run from within an AppImage
             // in that case, the desktop file should point to the AppImage rather than the
             // main binary, which will be in a temporary mount point
+#ifdef Q_OS_LINUX
             if (Utility::runningInAppImage()) {
                 return Utility::appImageLocation();
             }
+#endif
 
             return QCoreApplication::applicationFilePath();
         }();
