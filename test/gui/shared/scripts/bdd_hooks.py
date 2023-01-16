@@ -61,6 +61,7 @@ def hook(context):
         'clientConfigDir': '/tmp/owncloud-client/',
         'guiTestReportDir': os.path.abspath('../reports/'),
         'ocis': False,
+        'syncConnectionName': 'ownCloud',
     }
 
     # try reading configs from config.ini

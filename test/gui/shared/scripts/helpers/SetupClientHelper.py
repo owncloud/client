@@ -113,7 +113,7 @@ def setUpClient(context, username, displayName, confFilePath):
     syncPath = createUserSyncPath(context, username)
 
     args = {
-        'displayString': 'Personal' if context.userData['ocis'] else 'ownCloud',
+        'displayString': context.userData['syncConnectionName'],
         'displayUserName': displayName,
         'davUserName': username if context.userData['ocis'] else username.lower(),
         'displayUserFirstName': displayName.split()[0],
