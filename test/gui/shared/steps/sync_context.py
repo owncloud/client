@@ -1,4 +1,5 @@
 from os.path import join
+import time
 
 from pageObjects.SyncConnectionWizard import SyncConnectionWizard
 from pageObjects.SyncConnection import SyncConnection
@@ -10,6 +11,8 @@ from helpers.SyncHelper import (
     waitForFileOrFolderToSync,
     waitForFileOrFolderToHaveSyncError,
 )
+
+timerEnd = 0
 
 
 @Given('the user has paused the file sync')
@@ -30,6 +33,9 @@ def step(context):
 @When(r'the user waits for (file|folder) "([^"]*)" to be synced', regexp=True)
 def step(context, type, resource):
     waitForFileOrFolderToSync(context, resource, type)
+    global timerStart, timerEnd
+    timerEnd = time.perf_counter()
+    print(f"########## Upload Time: {timerEnd - timerStart:0.4f} seconds")
 
 
 @When(r'the user waits for (file|folder) "([^"]*)" to have sync error', regexp=True)

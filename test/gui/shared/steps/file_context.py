@@ -4,12 +4,15 @@ from os.path import isfile, join, isdir
 import re
 import builtins
 import shutil
+import time
 
 from pageObjects.AccountSetting import AccountSetting
 
 from helpers.SetupClientHelper import getUserSyncPath, getResourcePath
 from helpers.FilesHelper import buildConflictedRegex, sanitizePath
 from helpers.SyncHelper import waitForClientToBeReady
+
+timerStart = 0
 
 
 def folderExists(folderPath, timeout=1000):
@@ -97,6 +100,8 @@ def step(context, username, foldername):
 @When('user "|any|" creates a file "|any|" with size "|any|" inside the sync folder')
 def step(context, username, filename, filesize):
     createFileWithSize(context, filename, filesize)
+    global timerStart
+    timerStart = time.perf_counter()
 
 
 @When('the user copies the folder "|any|" to "|any|"')
