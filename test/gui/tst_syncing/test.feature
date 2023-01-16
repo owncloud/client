@@ -332,6 +332,13 @@ Feature: Syncing files
         Then as "Alice" file "newfile.txt" should exist on the server
 
 
+    Scenario: Syncing file of size 3GB
+        Given user "Alice" has set up a client with default settings
+        When user "Alice" creates a file "larger.txt" with size "3GB" inside the sync folder
+        And the user waits for file "larger.txt" to be synced
+        Then as "Alice" file "larger.txt" should exist on the server
+
+
     Scenario: File with spaces in the name can sync
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a file "file with space.txt" with the following content inside the sync folder
