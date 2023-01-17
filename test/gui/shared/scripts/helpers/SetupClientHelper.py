@@ -58,7 +58,6 @@ def setCurrentUserSyncPath(context, syncPath):
 
 
 def getResourcePath(context, resource='', user='', space=''):
-    resource = resource.strip('/')
     sync_path = context.userData['currentUserSyncPath']
     if user:
         sync_path = user
@@ -66,8 +65,9 @@ def getResourcePath(context, resource='', user='', space=''):
         # default space for oCIS is "Personal"
         space = space or "Personal"
         sync_path = join(sync_path, space)
+    sync_path = join(context.userData['clientRootSyncPath'], sync_path)
+    resource = resource.replace(sync_path, '').strip('/')
     return join(
-        context.userData['clientRootSyncPath'],
         sync_path,
         resource,
     )

@@ -32,6 +32,7 @@ def step(context, type, resource):
 
 @When(r'the user waits for (file|folder) "([^"]*)" to have sync error', regexp=True)
 def step(context, type, resource):
+    resource = getResourcePath(context, resource)
     waitForFileOrFolderToHaveSyncError(context, resource, type)
 
 

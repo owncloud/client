@@ -1,7 +1,7 @@
 import re
 import sys
 import test
-from os.path import join, realpath
+from os.path import realpath
 from squish import waitFor, snooze
 
 # the script needs to use the system wide python
@@ -238,7 +238,7 @@ def hasSyncStatus(itemName, status):
 def waitForFileOrFolderToHaveSyncStatus(
     context, resource, resourceType, status=SYNC_STATUS['OK'], timeout=None
 ):
-    resource = sanitizePath(getResourcePath(context, resource))
+    resource = sanitizePath(resource)
 
     listenSyncStatusForItem(resource, resourceType)
 
