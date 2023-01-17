@@ -61,7 +61,6 @@ def hook(context):
         'clientConfigDir': '/tmp/owncloud-client/',
         'guiTestReportDir': os.path.abspath('../reports/'),
         'ocis': False,
-        'syncConnectionName': 'ownCloud',
     }
 
     # try reading configs from config.ini
@@ -149,6 +148,11 @@ def hook(context):
         raise Exception(
             "Step execution through test middleware failed. Error: " + e.read().decode()
         )
+
+    # sync connection folder display name
+    context.userData['syncConnectionName'] = (
+        "Personal" if context.userData['ocis'] else "ownCloud"
+    )
 
 
 # determines if the test scenario failed or not

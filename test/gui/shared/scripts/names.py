@@ -47,3 +47,4 @@ loginRequiredDialog_contentWidget_QStackedWidget = {"name": "contentWidget", "ty
 enable_experimental_feature_QMessageBox = {"type": "QMessageBox", "unnamed": 1, "visible": 1, "windowTitle": "Enable experimental feature?"}
 o_folderList_ownCloud_QModelIndex = {"column": 0, "container": stack_folderList_QTreeView, "text": "ownCloud", "type": "QModelIndex"}
 contentWidget_contentWidget_QStackedWidget = {"container": setupWizardWindow_contentWidget_QStackedWidget, "name": "contentWidget", "type": "QStackedWidget", "visible": 1}
+o_folderList_Personal_QModelIndex = {"column": 0, "container": stack_folderList_QTreeView, "text": "Personal", "type": "QModelIndex"}

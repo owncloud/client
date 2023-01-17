@@ -129,12 +129,18 @@ def step(context):
 
 @Then('VFS enabled baseline image should match the default screenshot')
 def step(context):
-    test.vp("VP_VFS_enabled")
+    if context.userData['ocis']:
+        test.vp("VP_VFS_enabled_oCIS")
+    else:
+        test.vp("VP_VFS_enabled")
 
 
 @Then('VFS enabled baseline image should not match the default screenshot')
 def step(context):
-    test.xvp("VP_VFS_enabled")
+    if context.userData['ocis']:
+        test.xvp("VP_VFS_enabled_oCIS")
+    else:
+        test.xvp("VP_VFS_enabled")
 
 
 @When('the user sets the sync path in sync connection wizard')
