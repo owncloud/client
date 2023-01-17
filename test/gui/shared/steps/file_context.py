@@ -7,7 +7,7 @@ import shutil
 
 from pageObjects.AccountSetting import AccountSetting
 
-from helpers.SetupClientHelper import getUserSyncPath, getResourcePath
+from helpers.SetupClientHelper import getResourcePath
 from helpers.FilesHelper import buildConflictedRegex, sanitizePath
 from helpers.SyncHelper import waitForClientToBeReady
 
@@ -75,8 +75,8 @@ def waitAndTryToWriteFile(context, resource, content):
 )
 def step(context, username, filename):
     fileContent = "\n".join(context.multiLineText)
-    syncPath = getUserSyncPath(context, username)
-    waitAndWriteFile(context, join(syncPath, filename), fileContent)
+    file = getResourcePath(context, filename, username)
+    waitAndWriteFile(context, file, fileContent)
 
 
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
@@ -242,13 +242,11 @@ def step(context, itemType, resource):
 
 @When('user "|any|" creates the following files inside the sync folder:')
 def step(context, username):
-    syncPath = getUserSyncPath(context, username)
-
     waitForClientToBeReady(context)
 
     for row in context.table[1:]:
-        filename = syncPath + row[0]
-        writeFile(join(syncPath, filename), '')
+        file = getResourcePath(context, row[0], username)
+        writeFile(file, '')
 
 
 @Given(
@@ -265,5 +263,5 @@ def step(context, foldername, filenumber, filesize):
 @When('user "|any|" moves folder "|any|" from the temp folder into the sync folder')
 def step(context, username, foldername):
     source_dir = join(context.userData['tempFolderPath'], foldername)
-    destination_dir = getUserSyncPath(context, username)
+    destination_dir = getResourcePath(context, '/', username)
     shutil.move(source_dir, destination_dir)

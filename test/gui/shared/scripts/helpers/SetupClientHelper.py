@@ -46,8 +46,11 @@ def createUserSyncPath(context, username):
     return userSyncPath
 
 
-def getUserSyncPath(context, username):
-    return createUserSyncPath(context, username)
+def createSpacePath(context, space='Personal'):
+    spacePath = join(context.userData['currentUserSyncPath'], space, '')
+    if not exists(spacePath):
+        makedirs(spacePath)
+    return spacePath
 
 
 def setCurrentUserSyncPath(context, syncPath):
@@ -55,7 +58,7 @@ def setCurrentUserSyncPath(context, syncPath):
 
 
 def getResourcePath(context, resource='', user='', space=''):
-    resource == resource.strip('/')
+    resource = resource.strip('/')
     sync_path = context.userData['currentUserSyncPath']
     if user:
         sync_path = user
@@ -118,6 +121,8 @@ def setUpClient(context, username, displayName, confFilePath):
     userSetting = userSetting + getPollingInterval()
 
     syncPath = createUserSyncPath(context, username)
+    if context.userData['ocis']:
+        syncPath = createSpacePath(context)
 
     args = {
         'displayString': context.userData['syncConnectionName'],
