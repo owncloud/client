@@ -128,10 +128,9 @@ def hook(context):
         )
         f.close()
 
-    # initially set user sync path to root
     # this path will be changed according to the user added to the client
     # e.g.: /tmp/client-bdd/Alice
-    context.userData['currentUserSyncPath'] = context.userData['clientRootSyncPath']
+    context.userData['currentUserSyncPath'] = ''
 
     if not os.path.exists(context.userData['clientRootSyncPath']):
         os.makedirs(context.userData['clientRootSyncPath'])

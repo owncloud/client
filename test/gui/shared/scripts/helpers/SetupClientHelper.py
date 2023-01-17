@@ -37,12 +37,7 @@ def getClientDetails(context):
 
 def createUserSyncPath(context, username):
     # '' at the end adds '/' to the path
-    if context.userData['ocis']:
-        userSyncPath = join(
-            context.userData['clientRootSyncPath'], username, 'Personal', ''
-        )
-    else:
-        userSyncPath = join(context.userData['clientRootSyncPath'], username, '')
+    userSyncPath = join(context.userData['clientRootSyncPath'], username, '')
 
     if not exists(userSyncPath):
         makedirs(userSyncPath)
@@ -59,12 +54,24 @@ def setCurrentUserSyncPath(context, syncPath):
     context.userData['currentUserSyncPath'] = syncPath
 
 
-def getResourcePath(context, resource, user=None):
+def getResourcePath(context, resource='', user='', space=''):
     resource == resource.strip('/')
-    if not user == None:
-        return join(context.userData['clientRootSyncPath'], user, resource)
-    else:
-        return join(context.userData['currentUserSyncPath'], resource)
+    sync_path = context.userData['currentUserSyncPath']
+    if user:
+        sync_path = user
+    if context.userData['ocis']:
+        # default space for oCIS is "Personal"
+        space = space or "Personal"
+        sync_path = join(sync_path, space)
+    return join(
+        context.userData['clientRootSyncPath'],
+        sync_path,
+        resource,
+    )
+
+
+def getCurrentUserSyncPath(context):
+    return context.userData['currentUserSyncPath']
 
 
 def startClient(context):
