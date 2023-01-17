@@ -1,5 +1,3 @@
-from os.path import join
-
 from pageObjects.SyncConnectionWizard import SyncConnectionWizard
 from pageObjects.SyncConnection import SyncConnection
 from pageObjects.Toolbar import Toolbar
