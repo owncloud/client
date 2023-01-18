@@ -3,7 +3,82 @@ Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
 The following sections list the changes in ownCloud Desktop Client unreleased relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v2.11.1...master
+[unreleased]: https://github.com/owncloud/client/compare/v3.0.0...master
+
+Summary
+-------
+
+* Bugfix - Fix the display of the version string for released builds: [#10329](https://github.com/owncloud/client/pull/10329)
+* Bugfix - Only clear cookies if enabled in theme, clear cookies before OAuth2: [#10338](https://github.com/owncloud/client/pull/10338)
+* Bugfix - Display `Add a Space` instead of `Add Folder Sync Connection` with oCIS: [#10340](https://github.com/owncloud/client/pull/10340)
+* Bugfix - Mac: Don't inherit the environment of the installer after an update: [#10346](https://github.com/owncloud/client/issues/10346)
+* Bugfix - Correctly detect timeouts during token refrshs: [#10373](https://github.com/owncloud/client/pull/10373)
+* Bugfix - Open in web if debug logs are turned off: [#10387](https://github.com/owncloud/client/pull/10387)
+* Bugfix - We fixed building the client on non linux unix systems: [#10398](https://github.com/owncloud/client/issues/10398)
+* Enhancement - Add a `Reconnect` option to the account menu, when dissconnected: [#10294](https://github.com/owncloud/client/issues/10294)
+* Enhancement - (Re)introduce "sync hidden files" parameter in owncloudcmd: [#10390](https://github.com/owncloud/client/issues/10390)
+
+Details
+-------
+
+* Bugfix - Fix the display of the version string for released builds: [#10329](https://github.com/owncloud/client/pull/10329)
+
+   We removed a trailing `-` in the version string of released clients.
+
+   https://github.com/owncloud/client/pull/10329
+
+* Bugfix - Only clear cookies if enabled in theme, clear cookies before OAuth2: [#10338](https://github.com/owncloud/client/pull/10338)
+
+   We fixed a bug that enabled the explicit cookie clearing required for F5 BIG-IP setups
+   unconditionally. We fixed a bug where the cookie clearing was not performed during OAuth2.
+
+   https://github.com/owncloud/client/pull/10338
+
+* Bugfix - Display `Add a Space` instead of `Add Folder Sync Connection` with oCIS: [#10340](https://github.com/owncloud/client/pull/10340)
+
+   We fixed a bug where the wrong text was displayed on the "add" button.
+
+   https://github.com/owncloud/client/pull/10340
+
+* Bugfix - Mac: Don't inherit the environment of the installer after an update: [#10346](https://github.com/owncloud/client/issues/10346)
+
+   https://github.com/owncloud/client/issues/10346
+
+* Bugfix - Correctly detect timeouts during token refrshs: [#10373](https://github.com/owncloud/client/pull/10373)
+
+   https://github.com/owncloud/client/pull/10373
+
+* Bugfix - Open in web if debug logs are turned off: [#10387](https://github.com/owncloud/client/pull/10387)
+
+   Due to a bug opening the browser only worked if logging was enabled.
+
+   https://github.com/owncloud/client/pull/10387
+
+* Bugfix - We fixed building the client on non linux unix systems: [#10398](https://github.com/owncloud/client/issues/10398)
+
+   https://github.com/owncloud/client/issues/10398
+
+* Enhancement - Add a `Reconnect` option to the account menu, when dissconnected: [#10294](https://github.com/owncloud/client/issues/10294)
+
+   We added a `Reconnect` button to the account menu, this allows to trigger a manual reconnect
+   try. Note: The client would try to reconnect by itself at some point.
+
+   https://github.com/owncloud/client/issues/10294
+
+* Enhancement - (Re)introduce "sync hidden files" parameter in owncloudcmd: [#10390](https://github.com/owncloud/client/issues/10390)
+
+   There used to be an option to enable the synchronization of hidden files using the -h parameter
+   which collided with the --help option and subsequently was removed. A new
+   --sync-hidden-files parameter was introduced to fill in the missing feature.
+
+   https://github.com/owncloud/client/issues/10390
+
+Changelog for ownCloud Desktop Client [3.0.0] (2022-11-30)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 3.0.0 relevant to
+ownCloud admins and users.
+
+[3.0.0]: https://github.com/owncloud/client/compare/v2.11.1...v3.0.0
 
 Summary
 -------
@@ -11,6 +86,7 @@ Summary
 * Bugfix - Don't unset implicit log flush: [#9515](https://github.com/owncloud/client/pull/9515)
 * Bugfix - We fixed a crash: [#10017](https://github.com/owncloud/client/pull/10017)
 * Bugfix - Sync status changes are now directly displayed: [#10101](https://github.com/owncloud/client/issues/10101)
+* Bugfix - Windows VFS fixed some failing downloads: [#49](https://github.com/owncloud/client-desktop-vfs-win/pull/49)
 * Bugfix - Don't trigger ignore list when files are locked on the server: [#5382](https://github.com/owncloud/enterprise/issues/5382)
 * Bugfix - Properly resume upload with a partial local discovery: [#5382](https://github.com/owncloud/enterprise/issues/5382)
 * Bugfix - Add request time and other missing data to .owncloudsync.log: [#7348](https://github.com/owncloud/client/issues/7348)
@@ -23,6 +99,10 @@ Summary
 * Bugfix - Fix adding bookmarks on Gtk+ 3 based desktops: [#9752](https://github.com/owncloud/client/pull/9752)
 * Bugfix - Stop the activity spinner when the request failed: [#9798](https://github.com/owncloud/client/issues/9798)
 * Bugfix - Changes during upload of a file could still trigger the ignore list: [#9924](https://github.com/owncloud/client/issues/9924)
+* Change - Windows: Update the folder icon on every start: [#10184](https://github.com/owncloud/client/issues/10184)
+* Change - Don't guess remote folder in owncloudcmd: [#10193](https://github.com/owncloud/client/issues/10193)
+* Change - When connected to oCIS, open the browser instead of the sharing dialog: [#10206](https://github.com/owncloud/client/issues/10206)
+* Change - Owncloudcmd OCIS support: [#10239](https://github.com/owncloud/client/pull/10239)
 * Change - Make sharedialog preview be more resilient: [#8938](https://github.com/owncloud/client/issues/8938)
 * Change - We no longer persist cookies: [#9495](https://github.com/owncloud/client/issues/9495)
 * Change - We removed support for ownCloud servers < 10.0: [#9578](https://github.com/owncloud/client/issues/9578)
@@ -37,6 +117,7 @@ Summary
 * Enhancement - Allow creation of sync roots with long paths: [#10135](https://github.com/owncloud/client/pull/10135/)
 * Enhancement - Windows add longPath awareness: [#10136](https://github.com/owncloud/client/pull/10136)
 * Enhancement - Estimate duration of network requests in httplogger: [#10142](https://github.com/owncloud/client/pull/10142)
+* Enhancement - Tweak logging format: [#10310](https://github.com/owncloud/client/pull/10310)
 * Enhancement - Display `Show ownCloud` instead of `Settings` in systray: [#8234](https://github.com/owncloud/client/issues/8234)
 * Enhancement - Built-in AppImage self-updater: [#8923](https://github.com/owncloud/client/issues/8923)
 * Enhancement - Don't query private links if disabled on the server: [#8998](https://github.com/owncloud/client/issues/8998)
@@ -73,6 +154,12 @@ Details
 * Bugfix - Sync status changes are now directly displayed: [#10101](https://github.com/owncloud/client/issues/10101)
 
    https://github.com/owncloud/client/issues/10101
+
+* Bugfix - Windows VFS fixed some failing downloads: [#49](https://github.com/owncloud/client-desktop-vfs-win/pull/49)
+
+   We fixed an api issue where some downloads in the Explorer caused infite download restarts.
+
+   https://github.com/owncloud/client-desktop-vfs-win/pull/49
 
 * Bugfix - Don't trigger ignore list when files are locked on the server: [#5382](https://github.com/owncloud/enterprise/issues/5382)
 
@@ -147,6 +234,35 @@ Details
    increasing amount of time.
 
    https://github.com/owncloud/client/issues/9924
+
+* Change - Windows: Update the folder icon on every start: [#10184](https://github.com/owncloud/client/issues/10184)
+
+   The ownCloud installation path might have changed, causing the desktop.ini to point at the
+   wrong path. We now update the icon location on every application start.
+
+   https://github.com/owncloud/client/issues/10184
+
+* Change - Don't guess remote folder in owncloudcmd: [#10193](https://github.com/owncloud/client/issues/10193)
+
+   The commandline client was modified to explicitly accept remote folder, the remote folder
+   must no longer be encoded in the server url.
+
+   https://github.com/owncloud/client/issues/10193
+
+* Change - When connected to oCIS, open the browser instead of the sharing dialog: [#10206](https://github.com/owncloud/client/issues/10206)
+
+   When connected to oCIS, we now open the browser and navigate to the file the user wanted to share
+   instead of opening the legacy sharing dialog.
+
+   https://github.com/owncloud/client/issues/10206
+
+* Change - Owncloudcmd OCIS support: [#10239](https://github.com/owncloud/client/pull/10239)
+
+   When using ocis and spaces with the cmd client the additional parameter `--server` is
+   required. `--server` spcifies the url to the server, while the positional parameter
+   'server_url' specifies the webdav url.
+
+   https://github.com/owncloud/client/pull/10239
 
 * Change - Make sharedialog preview be more resilient: [#8938](https://github.com/owncloud/client/issues/8938)
 
@@ -233,6 +349,12 @@ Details
    We now include an estimated duration in the httploger.
 
    https://github.com/owncloud/client/pull/10142
+
+* Enhancement - Tweak logging format: [#10310](https://github.com/owncloud/client/pull/10310)
+
+   The logging format is now better parseable for 3rdparty apps that ease debugging.
+
+   https://github.com/owncloud/client/pull/10310
 
 * Enhancement - Display `Show ownCloud` instead of `Settings` in systray: [#8234](https://github.com/owncloud/client/issues/8234)
 
