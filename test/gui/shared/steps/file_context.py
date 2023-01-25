@@ -75,7 +75,6 @@ def waitAndTryToWriteFile(resource, content):
 
 
 def zipFilesAndfolders(filesAndFolders, path, zipFileName):
-    print(filesAndFolders[1:])
     with zipfile.ZipFile(join(path, zipFileName), 'w') as zippedFile:
         for file in filesAndFolders[1:]:
             os.chdir('/tmp')
@@ -276,8 +275,8 @@ def step(context, username, foldername):
     regexp=True,
 )
 def step(context, username, resourceType, resourceName):
-    source_dir = join(context.userData['tempFolderPath'], resourceName)
-    destination_dir = getResourcePath(context, '/', username)
+    source_dir = join(get_config('tempFolderPath'), resourceName)
+    destination_dir = getResourcePath('/', username)
     shutil.move(source_dir, destination_dir)
 
 
@@ -295,7 +294,7 @@ def step(context, username, resourceType, source, destination):
 
 @Given('the user has created a zip file "|any|" with following folders and files')
 def step(context, zipFileName):
-    path = context.userData['tempFolderPath']
+    path = get_config('tempFolderPath')
     for content in context.table[1:]:
         if content[1] == 'folder':
             folder = join(path, content[0])
@@ -307,17 +306,8 @@ def step(context, zipFileName):
     zipFilesAndfolders(context.table, path, zipFileName)
 
 
-@Given('the user "|any|" copies the zip file "|any|" into the sync root')
-def step(context, username, zipFileName):
-    path = context.userData['tempFolderPath']
-    source_dir = join(path, zipFileName)
-    syncPath = getUserSyncPath(context, username)
-    destination_dir = join(syncPath, zipFileName)
-    shutil.copyfile(source_dir, destination_dir)
-
-
 @When('the user "|any|" unzips the zip file "|any|" inside the sync root')
 def step(context, username, zipFileName):
-    destination_dir = getResourcePath(context, zipFileName, username)
+    destination_dir = getResourcePath(zipFileName, username)
     with ZipFile(destination_dir, 'r') as zObject:
-        zObject.extractall(path=getResourcePath(context))
+        zObject.extractall(path=getResourcePath('/'))
