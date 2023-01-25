@@ -29,6 +29,8 @@ namespace {
 
 const auto mountpointC = QLatin1String("mountpoint");
 const auto personalC = QLatin1String("personal");
+
+// https://github.com/cs3org/reva/blob/0cde0a3735beaa14ebdfd8988c3eb77b3c2ab0e6/pkg/utils/utils.go#L56-L59
 const auto sharesIdC = QLatin1String("a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668");
 }
 
