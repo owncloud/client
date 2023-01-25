@@ -269,6 +269,15 @@ def step(context, foldername, filenumber, filesize):
 def step(context, username, foldername):
     source_dir = join(get_config('tempFolderPath'), foldername)
     destination_dir = getResourcePath('/', username)
+
+
+@When(
+    r'user "([^"]*)" moves (folder|file) "([^"]*)" from the temp folder into the sync folder',
+    regexp=True,
+)
+def step(context, username, resourceType, resourceName):
+    source_dir = join(context.userData['tempFolderPath'], resourceName)
+    destination_dir = getResourcePath(context, '/', username)
     shutil.move(source_dir, destination_dir)
 
 
@@ -309,6 +318,6 @@ def step(context, username, zipFileName):
 
 @When('the user "|any|" unzips the zip file "|any|" inside the sync root')
 def step(context, username, zipFileName):
-    destination_dir = join(getUserSyncPath(context, username), zipFileName)
+    destination_dir = getResourcePath(context, zipFileName, username)
     with ZipFile(destination_dir, 'r') as zObject:
-        zObject.extractall(path=getUserSyncPath(context, username))
+        zObject.extractall(path=getResourcePath(context))
