@@ -207,7 +207,9 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
                  False,
              ) + \
              gui_tests(squish_parameters, server_type) + \
-             uploadGuiTestLogs(server_type, ctx.build.event == "cron") + \
+             generateCustomTestReport(server_type) + \
+             uploadCustomTestReport(server_type) + \
+             uploadGuiTestLogs(server_type) + \
              buildGithubComment(pipeline_name, server_type) + \
              githubComment(pipeline_name, server_type)
 
@@ -666,6 +668,61 @@ def uploadGuiTestLogs(server_type = "oc10", is_cron_event = False):
         },
         "when": {
             "status": status,
+        },
+    }]
+
+def generateCustomTestReport(server_type = "oc10"):
+    return [{
+        "name": "generate-custom-report",
+        "image": OC_CI_NODEJS,
+        "commands": [
+            "node %s/drone/generate_report.js %s %s" % (dir["guiTest"], dir["guiTestReport"], server_type),
+        ],
+        # enable only on cron events
+        # "events": [
+        #     "cron",
+        # ],
+        "when": {
+            "status": [
+                "failure",
+                "failure",
+            ],
+        },
+    }]
+
+def uploadCustomTestReport(server_type = "oc10"):
+    return [{
+        "name": "upload-custom-report",
+        "image": PLUGINS_S3,
+        "settings": {
+            "bucket": {
+                "from_secret": "cache_public_s3_bucket",
+            },
+            "endpoint": {
+                "from_secret": "cache_public_s3_server",
+            },
+            "path_style": True,
+            "source": "%s/minimal-report.html" % dir["guiTestReport"],
+            "strip_prefix": "%s" % dir["guiTestReport"],
+            "target": "/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/%s/guiReportUpload" % server_type,
+        },
+        "environment": {
+            "AWS_ACCESS_KEY_ID": {
+                "from_secret": "cache_public_s3_access_key",
+            },
+            "AWS_SECRET_ACCESS_KEY": {
+                "from_secret": "cache_public_s3_secret_key",
+            },
+        },
+        # enable only on cron events
+        # "events": [
+        #     "cron",
+        # ],
+        "when": {
+            "status": [
+                "failure",
+                "failure",
+            ],
         },
     }]
 
