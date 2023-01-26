@@ -118,9 +118,9 @@ def main(ctx):
                     gui_test_pipeline(ctx, trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = ocis_server_version, server_type = "ocis")
 
-        notify = notify_pipelines(notification_trigger)
+        pipelines += pipelinesDependsOn(notify_pipelines(notification_trigger), pipelines)
 
-    return pipelines + pipelinesDependsOn(notify, pipelines)
+    return pipelines
 
 def notify_pipelines(trigger):
     pipelines = notification(
