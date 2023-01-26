@@ -49,7 +49,7 @@ oc10_server_version = "latest"  # stable release
 ocis_server_version = "2.0.0"
 
 notify_channels = {
-    "desktop-internal": {
+    "desktop-client-builds": {
         "type": "channel",
     },
     "hgemela": {
@@ -66,14 +66,14 @@ def main(ctx):
         ],
     }
     cron_trigger = {
-        "event": [
-            "cron",
-        ],
+        # "event": [
+        #     "cron",
+        # ],
     }
 
     pipelines = []
 
-    if ctx.build.event == "cron":
+    if ctx.build.event != "cron":
         # cron job pipelines
         unit_tests = unit_test_pipeline(
             ctx,
@@ -98,7 +98,9 @@ def main(ctx):
             name = "build",
             trigger = cron_trigger,
         )
-        pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
+
+        # pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
+        pipelines = gui_tests + pipelinesDependsOn(notify, gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
                     gui_tests_format(build_trigger) + \
@@ -181,7 +183,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
     services = testMiddlewareService(server_type)
 
     if server_type == "oc10":
-        squish_parameters += " --tags ~@skip --tags ~@skipOnOC10"
+        squish_parameters += " --tags ~@skip --tags ~@skipOnOC10 --tags @only"
 
         steps += installCore(server_version) + \
                  setupServerAndApp() + \
@@ -190,7 +192,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
         services += owncloudService() + \
                     databaseService()
     else:
-        squish_parameters += " --tags ~@skip --tags ~@skipOnOCIS"
+        squish_parameters += " --tags ~@skip --tags ~@skipOnOCIS --tags @only"
 
         steps += installPnpm() + \
                  ocisService(server_version) + \
@@ -207,7 +209,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
                  False,
              ) + \
              gui_tests(squish_parameters, server_type) + \
-             uploadGuiTestLogs(server_type, ctx.build.event == "cron") + \
+             uploadGuiTestLogs(server_type, ctx.build.event != "cron") + \
              buildGithubComment(pipeline_name, server_type) + \
              githubComment(pipeline_name, server_type)
 

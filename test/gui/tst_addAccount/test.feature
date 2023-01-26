@@ -8,7 +8,7 @@ Feature: adding accounts
     Background:
         Given user "Alice" has been created on the server with default attributes and without skeleton files
 
-
+    @only
     Scenario: Adding normal Account
         Given the user has started the client
         When the user adds the first account with
