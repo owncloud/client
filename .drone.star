@@ -704,7 +704,7 @@ def generateCustomTestReport(server_type = "oc10"):
         "commands": [
             "node %s/drone/generate_report.js %s %s" % (dir["guiTest"], dir["guiTestReport"], server_type),
         ],
-        "trigger": {
+        "when": {
             "ref": {
                 "exclude": [
                     "refs/pull/**",
@@ -741,7 +741,7 @@ def uploadCustomTestReport(server_type = "oc10"):
                 "from_secret": "cache_public_s3_secret_key",
             },
         },
-        "trigger": {
+        "when": {
             "ref": {
                 "exclude": [
                     "refs/pull/**",
