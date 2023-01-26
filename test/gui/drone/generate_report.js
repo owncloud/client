@@ -39,7 +39,7 @@ function generateResult(scenario) {
       }
     }
   } else {
-    result.status = 'Skipped'
+    result.status = 'SKIP'
   }
   return result
 }
@@ -84,17 +84,38 @@ function generateReport(result) {
 // }
 
 function htmlReport(report) {
-  console.log(report)
-  log = ['<body>']
+  const html = [
+    `<style>
+body{font-family:sans-serif; padding:8px; color:#384c6b;}
+table,td{border:solid 1px #384c6b; border-collapse:collapse; width:100%;}
+th,td{padding:8px; text-align:left;}
+th{background:#384c6b; color:white;}
+.pass{background:#1ead1e; color:white;}
+.fail{background:red; color:white;}
+.skip{background:gray; color:white;}
+.sn{width:auto;}
+</style>`,
+    '<body>',
+    '<h1>Squish GUI Test Report</h1>',
+    '<table>',
+  ]
   for (const tstCase in report) {
+    html.push(`<tr><th colspan="3">${tstCase}</th></tr>`)
     report[tstCase].forEach((test, idx) => {
-      //
+      html.push('<tr>')
+      html.push(`<td class="sn">${idx + 1}.</td>`)
+      html.push(`<td>${test.scenario}</td>`)
+      html.push(
+        `<td class="${test.status.toLowerCase()}">${test.status.toUpperCase()}</td>`
+      )
+      html.push('</tr>')
     })
   }
-  log.push('</body>')
+  html.push('</table></body>')
+  const htmlContent = html.join('\n')
   fs.writeFileSync(
     path.resolve(path.join('..', 'reports', 'minimal-report.html')),
-    log.join('\n')
+    htmlContent
   )
 }
 
@@ -116,6 +137,9 @@ function parseResult() {
   for (const result of results) {
     const report = generateReport(result)
     htmlReport(report)
+    // generate reports for the first test suite
+    // TODO: generate reports for multiple test suites
+    break
   }
 }
 
