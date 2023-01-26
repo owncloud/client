@@ -107,6 +107,7 @@ def main(ctx):
         notify = notification(
             name = "build",
             trigger = build_trigger,
+            custom_report = True,
         )
 
     return pipelines + pipelinesDependsOn(notify, pipelines)
@@ -400,7 +401,7 @@ def changelog(ctx, trigger = {}):
         "trigger": trigger,
     }]
 
-def notification(name, trigger = {}):
+def notification(name, trigger = {}, custom_report = False):
     trigger = dict(trigger)
     if not "status" in trigger:
         trigger["status"] = []
@@ -420,7 +421,7 @@ def notification(name, trigger = {}):
             },
         },
         "commands": [
-            "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
+            "bash %s/drone/%s.sh %s" % (dir["guiTest"], "notify_custom_report" if custom_report else "notification_template", dir["base"]),
         ],
     }]
 
@@ -686,7 +687,7 @@ def generateCustomTestReport(server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
-                "failure",
+                "success",
             ],
         },
     }]
@@ -722,7 +723,7 @@ def uploadCustomTestReport(server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
-                "failure",
+                "success",
             ],
         },
     }]
