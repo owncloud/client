@@ -87,7 +87,7 @@ function generateReport(result) {
 function htmlReport(report) {
   const html = [
     `<style>
-body{font-family:sans-serif; padding:8px; color:#384c6b;}
+body{font-family:sans-serif; padding:8px; color:#384c6b; width:85vw; margin:auto;}
 table,td{border:solid 1px #384c6b; border-collapse:collapse; width:100%;}
 th,td{padding:8px; text-align:left;}
 th{background:#384c6b; color:white;}
@@ -103,9 +103,13 @@ th{background:#384c6b; color:white;}
   for (const tstCase in report) {
     html.push(`<tr><th colspan="3">${tstCase}</th></tr>`)
     report[tstCase].forEach((test, idx) => {
+      let scenarioTitle = test.scenario
+      scenarioTitle += test.example
+        ? `<br/><i><small>(${test.example})</small></i>`
+        : ''
       html.push('<tr>')
       html.push(`<td class="sn">${idx + 1}.</td>`)
-      html.push(`<td>${test.scenario}</td>`)
+      html.push(`<td>${scenarioTitle}</td>`)
       html.push(
         `<td class="${test.status.toLowerCase()}">${test.status.toUpperCase()}</td>`
       )
