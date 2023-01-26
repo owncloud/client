@@ -25,6 +25,25 @@ function parse(file) {
   return eval(content)
 }
 
+function generateResult(scenario) {
+  let result = { scenario: scenario.name }
+  if (!scenario.isSkipped) {
+    result.status = 'PASS'
+    for (const step of scenario.tests) {
+      if (step.tests && step.tests.length) {
+        for (const error of step.tests) {
+          if (error.result === 'ERROR' || error.result === 'FAIL') {
+            result.status = 'FAIL'
+          }
+        }
+      }
+    }
+  } else {
+    result.status = 'Skipped'
+  }
+  return result
+}
+
 function generateReport(result) {
   const report = {}
   for (const suite of result.tests) {
@@ -32,14 +51,16 @@ function generateReport(result) {
       const test_case_report = []
       for (const feature of tstCase.tests) {
         for (const scenario of feature.tests) {
-          // TODO: for scenario outline
-          // TODO: check each step for result
-          test_case_report.push({
-            scenario: scenario.name,
-            status: scenario.isSkipped
-              ? ':skipped: Skipped'
-              : scenario.result ?? ':tick: PASS',
-          })
+          if (scenario.type == 'scenariooutline') {
+            for (const example of scenario.tests) {
+              const result = generateResult(example)
+              result.example = example.name
+              test_case_report.push(result)
+            }
+          } else {
+            const result = generateResult(scenario)
+            test_case_report.push(result)
+          }
         }
       }
       report[tstCase.name] = test_case_report
@@ -48,32 +69,33 @@ function generateReport(result) {
   return report
 }
 
-function logReport(report) {
-  log = ['+' + '-'.repeat(80) + '+']
-  for (const tstCase in report) {
-    log.push(`| ${tstCase}` + ' '.repeat(66) + '|')
-    log.push('+' + '-'.repeat(80) + '+')
-    report[tstCase].forEach((test, idx) => {
-      log.push(`| ${idx + 1}. | ${test.scenario} | ${test.status} |`)
-      log.push('|' + '_'.repeat(80) + '|')
-    })
-  }
-  console.log(log.join('\n'))
-  return log.join('\n')
-}
+// function textReport(report) {
+//   log = ['+' + '-'.repeat(80) + '+']
+//   for (const tstCase in report) {
+//     log.push(`| ${tstCase}` + ' '.repeat(66) + '|')
+//     log.push('+' + '-'.repeat(80) + '+')
+//     report[tstCase].forEach((test, idx) => {
+//       log.push(`| ${idx + 1}. | ${test.scenario} | ${test.status} |`)
+//       log.push('|' + '_'.repeat(80) + '|')
+//     })
+//   }
+//   console.log(log.join('\n'))
+//   return log.join('\n')
+// }
 
-function htmlLog(report) {
-  log = ['+' + '-'.repeat(80) + '+']
+function htmlReport(report) {
+  console.log(report)
+  log = ['<body>']
   for (const tstCase in report) {
-    log.push(`| ${tstCase}` + ' '.repeat(66) + '|')
-    log.push('+' + '-'.repeat(80) + '+')
     report[tstCase].forEach((test, idx) => {
-      log.push(`| ${idx + 1}. | ${test.scenario} | ${test.status} |`)
-      log.push('|' + '_'.repeat(80) + '|')
+      //
     })
   }
-  console.log(log.join('\n'))
-  return log.join('\n')
+  log.push('</body>')
+  fs.writeFileSync(
+    path.resolve(path.join('..', 'reports', 'minimal-report.html')),
+    log.join('\n')
+  )
 }
 
 function parseResult() {
@@ -93,7 +115,7 @@ function parseResult() {
   const results = parse(resultFile)
   for (const result of results) {
     const report = generateReport(result)
-    logReport(report)
+    htmlReport(report)
   }
 }
 
