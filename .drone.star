@@ -49,28 +49,41 @@ oc10_server_version = "latest"  # stable release
 ocis_server_version = "2.0.0"
 
 notify_channels = {
-    # "desktop-internal": {
-    #     "type": "channel",
-    # },
+    "desktop-client-builds": {
+        "type": "channel",
+    },
+}
+custom_notify_channels = {
     "sgurung": {
         "type": "user",
     },
 }
 
-def main(ctx):
-    build_trigger = {
-        "ref": [
-            "refs/heads/master",
-            "refs/tags/**",
-            "refs/pull/**",
-        ],
-    }
-    cron_trigger = {
-        "event": [
-            "cron",
-        ],
-    }
+# triggers
+build_trigger = {
+    "ref": [
+        "refs/heads/master",
+        "refs/tags/**",
+        "refs/pull/**",
+        # branch
+        # "refs/heads/4.0",
+    ],
+}
+notification_trigger = {
+    "ref": [
+        "refs/heads/master",
+        "refs/tags/**",
+        # branch
+        # "refs/heads/4.0",
+    ],
+}
+cron_trigger = {
+    "event": [
+        "cron",
+    ],
+}
 
+def main(ctx):
     pipelines = []
 
     if ctx.build.event == "cron":
@@ -94,23 +107,34 @@ def main(ctx):
         gui_tests = gui_test_pipeline(ctx, trigger = cron_trigger) + \
                     gui_test_pipeline(ctx, trigger = cron_trigger, server_version = ocis_server_version, server_type = "ocis")
 
-        notify = notification(
-            name = "build",
-            trigger = cron_trigger,
-        )
+        notify = notify_pipelines(cron_trigger)
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
+                    gui_tests_format(build_trigger) + \
+                    check_starlark(build_trigger) + \
+                    changelog(ctx, trigger = build_trigger) + \
+                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = ocis_server_version, server_type = "ocis")
 
-        notify = notification(
-            name = "build",
-            trigger = build_trigger,
-            custom_report = True,
-        )
+        notify = notify_pipelines(notification_trigger)
 
     return pipelines + pipelinesDependsOn(notify, pipelines)
+
+def notify_pipelines(trigger):
+    pipelines = notification(
+                    name = "build",
+                    trigger = trigger,
+                    channels = notify_channels,
+                ) + \
+                notification(
+                    name = "report",
+                    trigger = trigger,
+                    channels = custom_notify_channels,
+                    custom_report = True,
+                )
+    return pipelines
 
 def from_secret(name):
     return {
@@ -210,10 +234,10 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
              ) + \
              gui_tests(squish_parameters, server_type) + \
              generateCustomTestReport(server_type) + \
-             uploadCustomTestReport(server_type)
-    #  uploadGuiTestLogs(server_type) + \
-    #  buildGithubComment(pipeline_name, server_type) + \
-    #  githubComment(pipeline_name, server_type)
+             uploadCustomTestReport(server_type) + \
+             uploadGuiTestLogs(server_type) + \
+             buildGithubComment(pipeline_name, server_type) + \
+             githubComment(pipeline_name, server_type)
 
     if (len(filterTags) > 0):
         tags = ",".join(filterTags)
@@ -401,7 +425,7 @@ def changelog(ctx, trigger = {}):
         "trigger": trigger,
     }]
 
-def notification(name, trigger = {}, custom_report = False):
+def notification(name, trigger = {}, channels = {}, custom_report = False):
     trigger = dict(trigger)
     if not "status" in trigger:
         trigger["status"] = []
@@ -425,7 +449,7 @@ def notification(name, trigger = {}, custom_report = False):
         ],
     }]
 
-    for channel, params in notify_channels.items():
+    for channel, params in channels.items():
         settings = {
             "webhook": from_secret("private_rocketchat"),
             "template": "file:%s/template.md" % dir["base"],
