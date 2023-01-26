@@ -445,7 +445,7 @@ def notification(name, trigger = {}, channels = {}, custom_report = False):
             },
         },
         "commands": [
-            "bash %s/drone/%s.sh %s" % (dir["guiTest"], "notify_custom_report" if custom_report else "notification_template", dir["base"]),
+            "bash %s/drone/notification_template.sh %s %s" % (dir["guiTest"], dir["base"], "custom" if custom_report else ""),
         ],
     }]
 
