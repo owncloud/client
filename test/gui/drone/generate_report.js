@@ -3,18 +3,50 @@ const fs = require('fs')
 const path = require('path')
 const process = require('process')
 
+const config = {
+  reportFile: 'results-v1.js',
+  reportDir: '',
+  server: '',
+}
+
 function getResultFile() {
-  const resultDir = process.argv.pop()
+  const args = Object.values(process.argv)
+  // first element is the node executable
+  // second element is the script path
+  // strip the first two elements
+  args.shift()
+  args.shift()
+  const resultDir = path.resolve(args[0])
+  config.server = args[1] ?? ''
 
   if (!resultDir) {
     throw new Error('[Error] Report directory path not provided')
   }
+  if (!fs.existsSync(resultDir)) {
+    throw new Error('[Error] Cannot locate path: ' + resultDir)
+  }
 
-  const filename = 'results-v1.js'
-  const resultFile = path.join(path.resolve(resultDir), filename)
+  if (fs.lstatSync(resultDir).isFile()) {
+    if (path.extname(resultDir) !== '.js') {
+      throw new Error(
+        '[Error] Invalid report file: ' + resultDir + '\n(MUST be a .js file)'
+      )
+    }
+    return resultDir
+  }
+
+  config.reportDir = resultDir
+  // report file is located in the 'data' subdirectory
+  let resultFile = path.join(resultDir, 'data', config.reportFile)
 
   if (!fs.existsSync(resultFile)) {
-    throw new Error('Report file not found: ' + resultFile)
+    console.info('Report file not found: ' + resultFile)
+    // try to find report file in the root of the report directory
+    resultFile = path.join(resultDir, config.reportFile)
+    console.info('Retrying with the path: ' + resultFile)
+    if (!fs.existsSync(resultFile)) {
+      throw new Error('Report file not found: ' + resultFile)
+    }
   }
   return resultFile
 }
@@ -97,7 +129,7 @@ th{background:#384c6b; color:white;}
 .sn{width:auto;}
 </style>`,
     '<body>',
-    '<h1>Squish GUI Test Report</h1>',
+    `<h1>Squish GUI Test Report (server: ${config.server})</h1>`,
     '<table>',
   ]
   for (const tstCase in report) {
@@ -119,7 +151,7 @@ th{background:#384c6b; color:white;}
   html.push('</table></body>')
   const htmlContent = html.join('\n')
   fs.writeFileSync(
-    path.resolve(path.join('..', 'reports', 'minimal-report.html')),
+    path.join(config.reportDir, 'minimal-report.html'),
     htmlContent
   )
 }
