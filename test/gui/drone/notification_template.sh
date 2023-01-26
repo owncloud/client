@@ -12,6 +12,8 @@ SERVERS=("oc10" "ocis")
 BUILD_STATUS=":white_check_mark:**Success**"
 TEST_LOGS=""
 
+echo "${DRONE_FAILED_STAGES}"
+
 if [ "${DRONE_BUILD_STATUS}" == "failure" ]; then
     BUILD_STATUS=":x:**Failure**"
 fi

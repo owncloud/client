@@ -207,7 +207,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
     services = testMiddlewareService(server_type)
 
     if server_type == "oc10":
-        squish_parameters += " --tags ~@skip --tags ~@skipOnOC10"
+        squish_parameters += " --tags ~@skip --tags ~@skipOnOC10 --tags @only"
 
         steps += installCore(server_version) + \
                  setupServerAndApp() + \
@@ -216,7 +216,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
         services += owncloudService() + \
                     databaseService()
     else:
-        squish_parameters += " --tags ~@skip --tags ~@skipOnOCIS"
+        squish_parameters += " --tags ~@skip --tags ~@skipOnOCIS --tags @only"
 
         steps += installPnpm() + \
                  ocisService(server_version) + \
