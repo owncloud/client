@@ -49,10 +49,10 @@ oc10_server_version = "latest"  # stable release
 ocis_server_version = "2.0.0"
 
 notify_channels = {
-    "desktop-internal": {
-        "type": "channel",
-    },
-    "hgemela": {
+    # "desktop-internal": {
+    #     "type": "channel",
+    # },
+    "sgurung": {
         "type": "user",
     },
 }
@@ -101,14 +101,15 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_tests_format(build_trigger) + \
-                    check_starlark(build_trigger) + \
-                    changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = ocis_server_version, server_type = "ocis")
 
-    return pipelines
+        notify = notification(
+            name = "build",
+            trigger = build_trigger,
+        )
+
+    return pipelines + pipelinesDependsOn(notify, pipelines)
 
 def from_secret(name):
     return {
@@ -208,10 +209,10 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
              ) + \
              gui_tests(squish_parameters, server_type) + \
              generateCustomTestReport(server_type) + \
-             uploadCustomTestReport(server_type) + \
-             uploadGuiTestLogs(server_type) + \
-             buildGithubComment(pipeline_name, server_type) + \
-             githubComment(pipeline_name, server_type)
+             uploadCustomTestReport(server_type)
+    #  uploadGuiTestLogs(server_type) + \
+    #  buildGithubComment(pipeline_name, server_type) + \
+    #  githubComment(pipeline_name, server_type)
 
     if (len(filterTags) > 0):
         tags = ",".join(filterTags)
