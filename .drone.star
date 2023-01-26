@@ -704,11 +704,12 @@ def generateCustomTestReport(server_type = "oc10"):
         "commands": [
             "node %s/drone/generate_report.js %s %s" % (dir["guiTest"], dir["guiTestReport"], server_type),
         ],
-        # enable only on cron events
-        # "events": [
-        #     "cron",
-        # ],
-        "when": {
+        "trigger": {
+            "ref": {
+                "exclude": [
+                    "refs/pull/**",
+                ],
+            },
             "status": [
                 "failure",
                 "success",
@@ -740,11 +741,12 @@ def uploadCustomTestReport(server_type = "oc10"):
                 "from_secret": "cache_public_s3_secret_key",
             },
         },
-        # enable only on cron events
-        # "events": [
-        #     "cron",
-        # ],
-        "when": {
+        "trigger": {
+            "ref": {
+                "exclude": [
+                    "refs/pull/**",
+                ],
+            },
             "status": [
                 "failure",
                 "success",
