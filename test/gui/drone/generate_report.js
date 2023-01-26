@@ -54,6 +54,7 @@ function generateReport(result) {
           if (scenario.type == 'scenariooutline') {
             for (const example of scenario.tests) {
               const result = generateResult(example)
+              result.scenario = scenario.name
               result.example = example.name
               test_case_report.push(result)
             }
