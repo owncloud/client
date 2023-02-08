@@ -52,15 +52,13 @@ notify_channels = {
     "desktop-internal": {
         "type": "channel",
     },
-    "hgemela": {
-        "type": "user",
-    },
 }
 
 def main(ctx):
     build_trigger = {
         "ref": [
             "refs/heads/master",
+            "refs/heads/3.**",
             "refs/tags/**",
             "refs/pull/**",
         ],
@@ -207,7 +205,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
                  False,
              ) + \
              gui_tests(squish_parameters, server_type) + \
-             uploadGuiTestLogs(server_type, ctx.build.event == "cron") + \
+             uploadGuiTestLogs(server_type) + \
              buildGithubComment(pipeline_name, server_type) + \
              githubComment(pipeline_name, server_type)
 
@@ -636,11 +634,7 @@ def showGuiTestResult():
         },
     }]
 
-def uploadGuiTestLogs(server_type = "oc10", is_cron_event = False):
-    status = ["failure"]
-    if is_cron_event:
-        status.append("success")
-
+def uploadGuiTestLogs(server_type = "oc10"):
     return [{
         "name": "upload-gui-test-result",
         "image": PLUGINS_S3,
@@ -665,7 +659,9 @@ def uploadGuiTestLogs(server_type = "oc10", is_cron_event = False):
             },
         },
         "when": {
-            "status": status,
+            "status": [
+                "failure",
+            ],
         },
     }]
 
