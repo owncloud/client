@@ -1,0 +1,3 @@
+Enhancement: Removed undocumented and untested .sys.admin#recall# feature
+
+https://github.com/owncloud/client/pull/10497

@@ -40,10 +40,25 @@
 
 using namespace std::chrono_literals;
 
-namespace OCC {
 
 Q_LOGGING_CATEGORY(lcGetJob, "sync.networkjob.get", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcPropagateDownload, "sync.propagator.download", QtInfoMsg)
+
+namespace {
+void preserveGroupOwnership(const QString &fileName, const QFileInfo &fi)
+{
+#ifdef Q_OS_UNIX
+    if (chown(fileName.toLocal8Bit().constData(), -1, fi.groupId()) != 0) {
+        qCWarning(lcPropagateDownload) << "Unable to chown" << fileName << "to previous group owner" << strerror(errno);
+    }
+#else
+    Q_UNUSED(fileName);
+    Q_UNUSED(fi);
+#endif
+}
+}
+
+namespace OCC {
 
 // Always coming in with forward slashes.
 // In csync_excluded_no_ctx we ignore all files with longer than 254 chars
@@ -782,80 +797,6 @@ void PropagateDownloadFile::deleteExistingFolder()
     }
 }
 
-namespace { // Anonymous namespace for the recall feature
-    static QString makeRecallFileName(const QString &fn)
-    {
-        QString recallFileName(fn);
-        // Add _recall-XXXX  before the extension.
-        int dotLocation = recallFileName.lastIndexOf(QLatin1Char('.'));
-        // If no extension, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
-        if (dotLocation <= recallFileName.lastIndexOf(QLatin1Char('/')) + 1) {
-            dotLocation = recallFileName.size();
-        }
-
-        QString timeString = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyyMMdd-hhmmss"));
-        recallFileName.insert(dotLocation, QStringLiteral("_.sys.admin#recall#-") + timeString);
-
-        return recallFileName;
-    }
-
-    void handleRecallFile(const QString &filePath, const QString &folderPath, SyncJournalDb &journal)
-    {
-        qCDebug(lcPropagateDownload) << "handleRecallFile: " << filePath;
-
-        FileSystem::setFileHidden(filePath, true);
-
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            qCWarning(lcPropagateDownload) << "Could not open recall file" << file.errorString();
-            return;
-        }
-        QFileInfo existingFile(filePath);
-        QDir baseDir = existingFile.dir();
-
-        while (!file.atEnd()) {
-            QByteArray line = file.readLine();
-            line.chop(1); // remove trailing \n
-
-            QString recalledFile = QDir::cleanPath(baseDir.filePath(QString::fromUtf8(line)));
-            if (!recalledFile.startsWith(folderPath) || !recalledFile.startsWith(baseDir.path())) {
-                qCWarning(lcPropagateDownload) << "Ignoring recall of " << recalledFile;
-                continue;
-            }
-
-            // Path of the recalled file in the local folder
-            QString localRecalledFile = recalledFile.mid(folderPath.size());
-
-            SyncJournalFileRecord record;
-            if (!journal.getFileRecord(localRecalledFile, &record) || !record.isValid()) {
-                qCWarning(lcPropagateDownload) << "No db entry for recall of" << localRecalledFile;
-                continue;
-            }
-
-            qCInfo(lcPropagateDownload) << "Recalling" << localRecalledFile << "Checksum:" << record._checksumHeader;
-
-            QString targetPath = makeRecallFileName(recalledFile);
-
-            qCDebug(lcPropagateDownload) << "Copy recall file: " << recalledFile << " -> " << targetPath;
-            // Remove the target first, QFile::copy will not overwrite it.
-            FileSystem::remove(targetPath);
-            QFile::copy(recalledFile, targetPath);
-        }
-    }
-
-    static void preserveGroupOwnership(const QString &fileName, const QFileInfo &fi)
-    {
-#ifdef Q_OS_UNIX
-        if (chown(fileName.toLocal8Bit().constData(), -1, fi.groupId()) != 0) {
-            qCWarning(lcPropagateDownload) << "Unable to chown" << fileName << "to previous group owner" << strerror(errno);
-        }
-#else
-        Q_UNUSED(fileName);
-        Q_UNUSED(fi);
-#endif
-    }
-} // end namespace
-
 void PropagateDownloadFile::transmissionChecksumValidated(CheckSums::Algorithm checksumType, const QByteArray &checksum)
 {
     const CheckSums::Algorithm theContentChecksumType = propagator()->account()->capabilities().preferredUploadChecksumType();
@@ -1021,14 +962,6 @@ void PropagateDownloadFile::updateMetadata(bool isConflict)
     propagator()->_journal->commit(QStringLiteral("download file start2"));
 
     done(isConflict ? SyncFileItem::Conflict : SyncFileItem::Success);
-
-    // handle the special recall file
-    if (!_item->_remotePerm.hasPermission(RemotePermissions::IsShared)
-        && (_item->_file == QLatin1String(".sys.admin#recall#")
-               || _item->_file.endsWith(QLatin1String("/.sys.admin#recall#")))) {
-        const QString fn = propagator()->fullLocalPath(_item->destination());
-        handleRecallFile(fn, propagator()->localPath(), *propagator()->_journal);
-    }
 
     const auto duration = std::chrono::milliseconds(_stopwatch.elapsed());
     if (isLikelyFinishedQuickly() && duration > 5s) {
