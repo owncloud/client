@@ -44,9 +44,9 @@ __TODO__:
        * [ ] in defs.sh edit `repo=` and update `platform_docker_images=`
        * [ ] RUN.sh -> paste the log/test_YYYYMMDD_hhmm.log file into the client release ticket.
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
-* [ ] QA: Create the testplan according to release type (patch release: add tests in a comment, for major/minor release: create a separate ticket), see [Testplan Templates](https://confluence.owncloud.com/display/OG/Desktop+Client+Release+Process) - add the link here
 * [ ] QA: Add the __Changelog Testing__ as a comment (to this ticket or the testplan), for changelog issues see [Client Releases](https://github.com/owncloud/client/releases/) - add the link here
 * [ ] QA: If required: create a separate test plan ticket for Windows VFS testing from [VFS Template](https://github.com/owncloud/QA/blob/master/Desktop/Test_Plan_VFS.md) - add the link here
+* [ ] QA: Regression test
 
 ### Final Rebuild after QA Approval
 
