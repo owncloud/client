@@ -9,19 +9,20 @@ from helpers.SetupClientHelper import setUpClient, startClient
 from helpers.SyncHelper import waitForInitialSyncToComplete
 from helpers.SetupClientHelper import getResourcePath
 from helpers.ConfigHelper import get_config
+import helpers.TableParser as dt_parser
 
 
 @Given(r'the user has added (the first|another) account with', regexp=True)
 def step(context, accountType):
     if accountType == 'another':
         Toolbar.openNewAccountSetup()
-    account_details = getClientDetails(context)
+    account_details = getClientDetails(dt_parser.rows_hash(context.table))
     AccountConnectionWizard.addAccount(account_details)
 
 
 @When('the user adds the following wrong user credentials:')
 def step(context):
-    account_details = getClientDetails(context)
+    account_details = getClientDetails(dt_parser.rows_hash(context.table))
     AccountConnectionWizard.addUserCreds(
         account_details['user'], account_details['password']
     )
@@ -68,13 +69,13 @@ def step(context):
 def step(context, accountType):
     if accountType == 'another':
         Toolbar.openNewAccountSetup()
-    account_details = getClientDetails(context)
+    account_details = getClientDetails(dt_parser.rows_hash(context.table))
     AccountConnectionWizard.addAccount(account_details)
 
 
 @Given('the user has added the following account information:')
 def step(context):
-    account_details = getClientDetails(context)
+    account_details = getClientDetails(dt_parser.rows_hash(context.table))
     AccountConnectionWizard.addAccountInformation(account_details)
 
 

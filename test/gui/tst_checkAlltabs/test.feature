@@ -9,6 +9,7 @@ Feature: Visually check all tabs
         Given user "Alice" has been created on the server with default attributes and without skeleton files
         And user "Alice" has set up a client with default settings
         Then the following tabs in the toolbar should match the default baseline
+            | tabname      |
             | AddAccount   |
             | Activity     |
             | Settings     |

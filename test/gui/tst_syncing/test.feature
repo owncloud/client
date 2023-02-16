@@ -282,7 +282,7 @@ Feature: Syncing files
     Scenario: various types of files can be synced from client to server
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates the following files inside the sync folder:
-            | files            |
+            | filename         |
             | /testavatar.png  |
             | /testavatar.jpg  |
             | /testavatar.jpeg |

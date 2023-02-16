@@ -18,17 +18,10 @@ def substituteInLineCodes(value):
     return value
 
 
-def getClientDetails(context):
-    clientDetails = {'server': '', 'user': '', 'password': ''}
-    for row in context.table[0:]:
-        row[1] = substituteInLineCodes(row[1])
-        if row[0] == 'server':
-            clientDetails.update({'server': row[1]})
-        elif row[0] == 'user':
-            clientDetails.update({'user': row[1]})
-        elif row[0] == 'password':
-            clientDetails.update({'password': row[1]})
-    return clientDetails
+def getClientDetails(details):
+    for key, value in details.items():
+        details[key] = substituteInLineCodes(value)
+    return details
 
 
 def createUserSyncPath(username):

@@ -1,6 +1,6 @@
 import names
 import squish
-from helpers.SetupClientHelper import getClientDetails, createUserSyncPath
+from helpers.SetupClientHelper import createUserSyncPath
 from helpers.WebUIHelper import authorize_via_webui
 from helpers.ConfigHelper import get_config
 import test

@@ -7,6 +7,7 @@ from helpers.SetupClientHelper import getResourcePath, substituteInLineCodes
 from helpers.FilesHelper import sanitizePath
 from helpers.SyncHelper import getSocketConnection
 from helpers.ConfigHelper import get_config
+import helpers.TableParser as dt_parser
 
 
 def shareResourceCommand(resource):
@@ -91,10 +92,10 @@ def step(context, resource):
     openSharingDialog(resource)
 
     # In the following loop we are trying to share resource with given permission to one user at a time given from the data table in the feature file
-    for count, row in enumerate(context.table[1:]):
-        receiver = row[0]
-        permissions = row[1]
-        SharingDialog.addCollaborator(receiver, permissions, False, count + 1)
+    for count, row in enumerate(dt_parser.hashes(context.table), start=1):
+        receiver = row['user']
+        permissions = row['permissions']
+        SharingDialog.addCollaborator(receiver, permissions, False, count)
 
     SharingDialog.closeSharingDialog()
 
@@ -204,12 +205,9 @@ def step(context, resource, expiryDate):
 
 @When('the user edits the public link named "|any|" of file "|any|" changing following')
 def step(context, publicLinkName, resource):
-    expireDate = ''
-    for row in context.table:
-        if row[0] == 'expireDate':
-            expireDate = row[1]
-            break
-    PublicLinkDialog.setExpirationDate(expireDate)
+    info = dt_parser.rows_hash(context.table)
+    if info['expireDate']:
+        PublicLinkDialog.setExpirationDate(info['expireDate'])
 
 
 @When(
@@ -228,9 +226,7 @@ def step(context, permissions, resource, password):
 
 @When('the user creates a new public link with following settings using the client-UI:')
 def step(context):
-    linkSettings = {}
-    for row in context.table:
-        linkSettings[row[0]] = row[1]
+    linkSettings = dt_parser.rows_hash(context.table)
 
     if "path" not in linkSettings:
         raise Exception("'path' is required but not given.")
@@ -249,16 +245,11 @@ def step(context):
     'the user creates a new public link for folder "|any|" using the client-UI with these details:'
 )
 def step(context, resource):
-    role = ''
-    for row in context.table:
-        if row[0] == 'role':
-            role = row[1]
-            break
-
-    if role == '':
+    info = dt_parser.rows_hash(context.table)
+    if not info['role']:
         raise Exception("No role has been found")
     else:
-        createPublicShareWithRole(resource, role)
+        createPublicShareWithRole(resource, info['role'])
 
 
 @When(
@@ -332,9 +323,9 @@ def step(context, resource):
     #     Here we are trying to verify if the user added in when step are listed in the client-UI or not
     #     We now have a variable name receiverCount which is used in collaboratorShouldBeListed function call
     receiverCount = 0
-    for row in context.table[1:]:
-        receiver = row[0]
-        permissions = row[1]
+    for row in dt_parser.hashes(context.table):
+        receiver = row['user']
+        permissions = row['permissions']
 
         collaboratorShouldBeListed(receiver, resource, permissions, receiverCount)
         receiverCount += 1
@@ -354,18 +345,18 @@ def step(context, collaborator):
 
 @Then('the following users should be listed as suggested collaborators:')
 def step(context):
-    for collaborator in context.table[1:]:
+    for row in dt_parser.hashes(context.table):
         test.compare(
-            SharingDialog.isUserInSuggestionList(collaborator[0]),
+            SharingDialog.isUserInSuggestionList(row['user']),
             True,
-            "Assert user '" + collaborator[0] + "' is listed",
+            "Assert user '" + row['user'] + "' is listed",
         )
 
 
 @Then('the collaborators should be listed in the following order:')
 def step(context):
-    for index, collaborator in enumerate(context.table[1:], start=1):
+    for index, row in enumerate(dt_parser.hashes(context.table), start=1):
         test.compare(
             SharingDialog.getCollaboratorName(index),
-            collaborator[0],
+            row['collaborator'],
         )

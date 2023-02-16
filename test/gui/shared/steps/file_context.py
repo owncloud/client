@@ -17,6 +17,7 @@ from helpers.FilesHelper import (
     can_write,
     read_file_content,
 )
+import helpers.TableParser as dt_parser
 
 
 def folderExists(folderPath, timeout=1000):
@@ -244,8 +245,8 @@ def step(context, itemType, resource):
 def step(context, username):
     waitForClientToBeReady()
 
-    for row in context.table[1:]:
-        file = getResourcePath(row[0], username)
+    for row in dt_parser.hashes(context.table):
+        file = getResourcePath(row['filename'], username)
         writeFile(file, '')
 
 

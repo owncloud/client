@@ -9,6 +9,7 @@ from helpers.SyncHelper import (
     waitForFileOrFolderToSync,
     waitForFileOrFolderToHaveSyncError,
 )
+import helpers.TableParser as dt_parser
 
 
 @Given('the user has paused the file sync')
@@ -93,15 +94,15 @@ def step(context, tabName):
 
 @Then("the following tabs in the toolbar should match the default baseline")
 def step(context):
-    for tabName in context.table:
-        test.vp(tabName[0])
+    for row in dt_parser.hashes(context.table):
+        test.vp(row['tabname'])
 
 
 @When('the user selects the following folders to sync:')
 def step(context):
     folders = []
-    for row in context.table[1:]:
-        folders.append(row[0])
+    for row in dt_parser.hashes(context.table):
+        folders.append(row['folder'])
     SyncConnectionWizard.selectFoldersToSync(folders)
     SyncConnectionWizard.addSyncConnection()
 
@@ -124,13 +125,10 @@ def step(context):
 
 @Then("the folders should be in the following order:")
 def step(context):
-    rowIndex = 0
-    for row in context.table[1:]:
-        expectedFolder = row[0]
-        actualFolder = SyncConnectionWizard.getItemNameFromRow(rowIndex)
+    for index, row in enumerate(dt_parser.hashes(context.table)):
+        expectedFolder = row['folder']
+        actualFolder = SyncConnectionWizard.getItemNameFromRow(index)
         test.compare(actualFolder, expectedFolder)
-
-        rowIndex += 1
 
 
 @Then('VFS enabled baseline image should match the default screenshot')
