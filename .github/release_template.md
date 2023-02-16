@@ -12,7 +12,7 @@ __TODO__:
 
 * [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
 * [ ] QA: Inform the docu team on rocketchat ``#documentation-internal`` about an upcoming major or minor release
-* [ ] QA: Check the translations coming from https://github.com/owncloud/client/actions/workflows/translate.yml
+* [ ] QA: Check the translations coming from transifex: https://github.com/owncloud/client/commits/ -> Filter based on a release branch/tag and search for [tx] updated client translations from transifex [skip ci]
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
