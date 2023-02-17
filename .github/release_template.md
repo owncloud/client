@@ -67,7 +67,7 @@ __TODO__:
 
 ### Communicate the Availability
 * [ ] Final [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
-   * [ ] Website links for final release (needed for the following posts)
+   * [ ] QA: Ping marketing to update links on https://owncloud.com/desktop-app/ for final release (provide links from github releases)
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] QA: Inform on ``#updates`` channel, so that marketing knows about the new release
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
