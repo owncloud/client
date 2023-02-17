@@ -24,7 +24,7 @@ __TODO__:
 ### Build
 
 * [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
-* [ ] QA: Upload linux gpg keys to key server: run the script [key_server_upload](https://gitea.owncloud.services/client/linux-docker-install/src/branch/master/key_server_upload.sh)
+* [ ] QA: [Upload](https://confluence.owncloud.com/display/OG/Upload+linux+gpg+keys+to+key+server) linux gpg keys to key server
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
@@ -69,7 +69,7 @@ __TODO__:
 
 ### Communicate the Availability
 * [ ] Final [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
-   * [ ] QA: Ping marketing to update links on https://owncloud.com/desktop-app/ for final release (provide links from github releases; needed for the following posts)
+   * [ ] QA: Ping marketing to update links on https://owncloud.com/desktop-app/ (provide links from github releases; needed for the following posts)
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] QA: Inform on ``#updates`` channel, so that marketing knows about the new release
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
