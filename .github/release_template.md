@@ -12,14 +12,13 @@ __TODO__:
 ### Prerequisites
 
 * [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
-* [ ] QA: Check the translations coming from transifex: https://github.com/owncloud/client/commits/ -> Filter based on a release branch/tag and search for [tx] updated client translations from transifex [skip ci]
+* [ ] QA: Check the translations coming from transifex: https://github.com/owncloud/client/commits/ -> Filter based on a release branch/tag and search for `[tx] updated client translations from transifex [skip ci]`
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Check [dependencies](https://confluence.owncloud.com/display/OG/Dependencies) for updates
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
   If this *is* a major or minor release:
   * [ ] DEV: Create new `X.x` version branch.
-  * [ ] QA: In drone adjust the branch to run nightly GUI tests to the next release branch @individual-it
-* [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
+  * [ ] QA: In drone adjust the branch to run nightly (GUI tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) to the next release branch @individual-it 
 * [ ] DEV: bump VERSION.cmake in master to say 3.(x+1).x unless already done.
 
 ### Build
