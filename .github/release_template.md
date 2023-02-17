@@ -41,7 +41,7 @@ __TODO__:
 
 * [Automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests):
    * [ ] QA: GUI tests passed on a tag
-   * [ ] QA: All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest) and gpg test ssh://git@gitea.owncloud.services:2222/client/linux-docker-install.git 
+   * [ ] QA: All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest)
    * [ ] [tx.pl scripts](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-tx.plscripts)
    * [ ] DEV: [Smash box test](https://drone.owncloud.com/owncloud/smashbox-testing): [Info](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-Smashbox) Make sure tests run on latest version 
 * Manual tests:
