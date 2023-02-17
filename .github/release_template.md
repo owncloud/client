@@ -39,14 +39,16 @@ __TODO__:
 ### QA
 
 * [ ] DEV: [Smash box test](https://drone.owncloud.com/owncloud/smashbox-testing): [How-to](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-Smashbox) Make sure tests run on latest version 
-* [ ] QA: Run [automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests) (includes [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-DEVSmokeTest))
-   * [ ] GUI tests passed on a tag
-   * [ ] All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest) and gpg test ssh://git@gitea.owncloud.services:2222/client/linux-docker-install.git 
+* [ ] QA: Run [automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests):
+   * [ ] QA: GUI tests passed on a tag
+   * [ ] QA: All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest) and gpg test ssh://git@gitea.owncloud.services:2222/client/linux-docker-install.git 
    * [ ] [tx.pl scripts](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-tx.plscripts)
+* [ ] Manual tests:
+   * [ ] DEV: [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-DEVSmokeTest))
+   * [ ] QA: Add the __Changelog Testing__ as a comment (to this ticket or the testplan), for changelog issues see [Client Releases](https://github.com/owncloud/client/releases/) - add the link here
+   * [ ] QA: Regression test
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
-* [ ] QA: Add the __Changelog Testing__ as a comment (to this ticket or the testplan), for changelog issues see [Client Releases](https://github.com/owncloud/client/releases/) - add the link here
 * [ ] QA: If required: create a separate test plan ticket for Windows VFS testing from [VFS Template](https://github.com/owncloud/QA/blob/master/Desktop/Test_Plan_VFS.md) - add the link here
-* [ ] QA: Regression test
 
 ### Final Rebuild after QA Approval
 
