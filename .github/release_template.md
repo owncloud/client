@@ -17,7 +17,7 @@ __TODO__:
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
   If this *is* a major or minor release:
   * [ ] DEV: Create new `X.x` version branch.
-  * [ ] Adjust branch of Cron Job `nightly-2-x` to the next release branch  @individual-it
+  * [ ] Adjust branch of Cron Job `nightly-3-x` to the next release branch  @individual-it
 * [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
 * [ ] DEV: bump VERSION.cmake in master to say 2.(x+1).x unless already done.
 
@@ -38,12 +38,11 @@ __TODO__:
 
 ### QA
 
-* [ ] DEV: [Smash box test](https://drone.owncloud.com/owncloud/smashbox-testing) Make sure tests run on latest version 
+* [ ] DEV: [Smash box test](https://drone.owncloud.com/owncloud/smashbox-testing): [How-to](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-Smashbox) Make sure tests run on latest version 
 * [ ] QA: Run [automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests) (includes [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-DEVSmokeTest))
-   * [ ] All Linux platform install and gpg test ssh://git@gitea.owncloud.services:2222/client/linux-docker-install.git
-       * [ ] manually deploy a linux download repo, or use a download repo from https://download.owncloud.com/desktop/ownCloud/testing/
-       * [ ] in defs.sh edit `repo=` and update `platform_docker_images=`
-       * [ ] RUN.sh -> paste the log/test_YYYYMMDD_hhmm.log file into the client release ticket.
+   * [ ] GUI tests passed on a tag
+   * [ ] All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest) and gpg test ssh://git@gitea.owncloud.services:2222/client/linux-docker-install.git 
+   * [ ] [tx.pl scripts](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-tx.plscripts)
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
 * [ ] QA: Add the __Changelog Testing__ as a comment (to this ticket or the testplan), for changelog issues see [Client Releases](https://github.com/owncloud/client/releases/) - add the link here
 * [ ] QA: If required: create a separate test plan ticket for Windows VFS testing from [VFS Template](https://github.com/owncloud/QA/blob/master/Desktop/Test_Plan_VFS.md) - add the link here
@@ -53,7 +52,7 @@ __TODO__:
 
 * [ ] QA: Inform on ``#documentation-internal`` that the tag for the final release will be set a day or at least half a day __before__ (only for a major/minor release). They'll merge docs PR before that.
 * [ ] DEV: Tag and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Tags) for theme 'ownCloud' and 'testpilotcloud' for final build
-* [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successful on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v2.X.x
+* [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfuly on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
 * [ ] DEV: Adjust [Linux Templates](https://confluence.owncloud.com/display/OG/Branching+Off#BranchingOff-Linuxtemplates) to support the next patch release version (e.g. 2.9.1) @dschmidt @fmoc
 * [ ] DEV: Ping ``#release-coordination`` so that marketing can do their [actions](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Marketingtasks)
 * [ ] DEV: Create [a (draft) release](https://github.com/owncloud/client/releases) with Download links - save as a draft until smoke tested
