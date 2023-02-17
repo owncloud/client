@@ -71,13 +71,14 @@ __TODO__:
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] QA: Inform on ``#updates`` channel, so that marketing knows about the new release
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Packagers) - ping @dragotin (openSUSE)
-* [ ] Inform ``#marketing`` (@bwalter, Markus Feilner) and remind to update Wikipedia + Wikidata
+* [ ] Inform ``#marketing`` (@bwalter, @mfeilner) and remind to update Wikipedia + Wikidata
   * [ ] https://de.wikipedia.org/wiki/OwnCloud
   * [ ] https://en.wikipedia.org/wiki/OwnCloud
   * [ ] https://www.wikidata.org/wiki/Q20763576
 
 ### Final Infrastructure Check
 
+* [ ] QA: Verify marketing has updated all the links (owncloud.com, wiki de, wiki en, wikidata)
 * [ ] QA/DEV: Update [stable channel](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-UpdatetheUpdater) in the owncloud hosted auto updater
 * [ ] QA: Ensure that the [client release template](https://github.com/owncloud/client/blob/master/.github/release_template.md) is up to date
 * [ ] QA: Ensure that the [testplan patch release template](https://github.com/owncloud/QA/blob/master/Desktop/Regression_Test_Plan_Patch_Release.md) is up to date.
