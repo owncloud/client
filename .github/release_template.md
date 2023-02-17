@@ -18,9 +18,9 @@ __TODO__:
 * [ ] DEV: Prepare the release in a `X.x` version branch (a patch release is maintained in the minor release branch)  
   If this *is* a major or minor release:
   * [ ] DEV: Create new `X.x` version branch.
-  * [ ] Adjust branch of Cron Job `nightly-3-x` to the next release branch  @individual-it
+  * [ ] QA: In drone adjust the branch to run nightly GUI tests to the next release branch @individual-it
 * [ ] QA: Make sure [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) are running successfully on X.x branch and on nightly builds for the current release, e.g. ``nightly-2-10`` 
-* [ ] DEV: bump VERSION.cmake in master to say 2.(x+1).x unless already done.
+* [ ] DEV: bump VERSION.cmake in master to say 3.(x+1).x unless already done.
 
 ### Build
 
