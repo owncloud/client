@@ -356,14 +356,13 @@ Feature: Syncing files
         And as user "Alice" folder "folder2" should contain "500" items on the server
 
 
-    Scenario: Skip folder configuration
+    Scenario: Skip sync folder configuration
         Given the user has started the client
         And the user has added the following account information:
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
         When the user selects manual sync folder option in advanced section
-        And the user cancels the sync connection
+        And the user cancels the sync connection wizard
         Then the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
         And the sync folder should not be added
-

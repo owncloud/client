@@ -131,7 +131,7 @@ class AccountConnectionWizard:
         "type": "QRadioButton",
         "visible": 1,
     }
-    CANCEL_FOLDER_SYNC_CONNECTION = {
+    CANCEL_FOLDER_SYNC_CONNECTION_WIZARD = {
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
         "name": "qt_wizard_cancel",
         "type": "QPushButton",
@@ -329,7 +329,9 @@ class AccountConnectionWizard:
         )
 
     @staticmethod
-    def cancelFolderSyncConnection():
+    def cancelFolderSyncConnectionWizard():
         squish.clickButton(
-            squish.waitForObject(AccountConnectionWizard.CANCEL_FOLDER_SYNC_CONNECTION)
+            squish.waitForObject(
+                AccountConnectionWizard.CANCEL_FOLDER_SYNC_CONNECTION_WIZARD
+            )
         )
