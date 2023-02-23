@@ -104,21 +104,22 @@
     </layout>
    </item>
    <item>
-    <widget class="QTreeView" name="_folderList">
+    <widget class="QQuickWidget" name="quickWidget">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
-       <verstretch>5</verstretch>
+       <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
+     <property name="resizeMode">
+      <enum>QQuickWidget::SizeRootObjectToView</enum>
      </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-     <property name="animated">
-      <bool>true</bool>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="reload">
+     <property name="text">
+      <string>PushButton</string>
      </property>
     </widget>
    </item>
@@ -297,6 +298,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QQuickWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">QtQuickWidgets/QQuickWidget</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

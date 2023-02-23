@@ -1,6 +1,6 @@
 include(ECMAddAppIcon)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Quick QuickWidgets Qml)
 
 if (WIN32)
     find_package(Qt5 REQUIRED COMPONENTS WinExtras)
@@ -114,7 +114,7 @@ add_library(owncloudCore STATIC ${final_src})
 set_target_properties(owncloudCore PROPERTIES AUTOUIC ON AUTORCC ON)
 target_link_libraries(owncloudCore
     PUBLIC
-        Qt5::Widgets Qt5::Network Qt5::Xml
+        Qt5::Widgets Qt5::Network Qt5::Xml Qt5::Quick Qt5::Qml Qt5::QuickWidgets
         qt5keychain
         newwizard folderwizard spaces loginrequireddialog
         libsync)

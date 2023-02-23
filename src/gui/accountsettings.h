@@ -15,11 +15,12 @@
 #ifndef ACCOUNTSETTINGS_H
 #define ACCOUNTSETTINGS_H
 
-#include <QWidget>
-#include <QUrl>
-#include <QPointer>
 #include <QHash>
+#include <QPointer>
+#include <QSortFilterProxyModel>
 #include <QTimer>
+#include <QUrl>
+#include <QWidget>
 
 #include "folder.h"
 #include "loginrequireddialog.h"
@@ -53,6 +54,7 @@ class AccountSettings : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(AccountStatePtr accountState MEMBER _accountState)
+    Q_PROPERTY(QSortFilterProxyModel *model MEMBER _sortModel READ model NOTIFY modelChanged);
 
 public:
     explicit AccountSettings(const AccountStatePtr &accountState, QWidget *parent = nullptr);
@@ -60,9 +62,15 @@ public:
 
     AccountStatePtr accountsState() const { return _accountState; }
 
+    QSortFilterProxyModel *model()
+    {
+        return _sortModel;
+    }
+
 signals:
     void folderChanged();
     void showIssuesList();
+    void modelChanged();
 
 public slots:
     void slotOpenOC();
