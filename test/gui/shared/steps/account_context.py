@@ -246,3 +246,11 @@ def step(context):
         account_details['user'], account_details['password']
     )
     AccountConnectionWizard.nextStep()
+@When('the user cancels the sync connection')
+def step(context):
+    AccountConnectionWizard.cancelFolderSyncConnection()
+
+
+@Then("the sync folder should not be added")
+def step(context):
+    test.vp("empty_sync_connection")
