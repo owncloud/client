@@ -45,7 +45,7 @@ dir = {
     "build": "/drone/src/build",
 }
 
-oc10_server_version = "latest"  # stable release
+oc10_server_version = "10.12.0-rc.1"
 ocis_server_version = "2.0.0"
 
 notify_channels = {
