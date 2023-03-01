@@ -157,3 +157,9 @@ def step(context):
 @When('the user selects "|any|" as a remote destination folder')
 def step(context, folderName):
     SyncConnectionWizard.selectRemoteDestinationFolder(folderName)
+
+
+@When('the user syncs the "|any|" space')
+def step(context, spaceName):
+    SyncConnectionWizard.selectSpaceToSync(spaceName)
+    SyncConnectionWizard.setSyncPathInSyncConnectionWizard(spaceName)

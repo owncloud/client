@@ -1,6 +1,9 @@
 import names
 import squish
 from helpers.SetupClientHelper import getCurrentUserSyncPath
+from helpers.ConfigHelper import get_config
+from pageObjects.AccountConnectionWizard import AccountConnectionWizard
+from helpers.SetupClientHelper import getResourcePath
 
 
 class SyncConnectionWizard:
@@ -52,15 +55,27 @@ class SyncConnectionWizard:
         "unnamed": 1,
         "visible": 1,
     }
+    SPACE_NAME_SELECTOR_SYNC_WIZARD = {
+        "column": 2,
+        "container": names.add_Folder_Sync_Connection_tableView_QTableView,
+        "type": "QModelIndex",
+    }
 
     @staticmethod
-    def setSyncPathInSyncConnectionWizard():
+    def setSyncPathInSyncConnectionWizardOc10():
         squish.waitForObject(SyncConnectionWizard.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
         squish.type(
             SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER,
             getCurrentUserSyncPath(),
         )
         SyncConnectionWizard.nextStep()
+
+    @staticmethod
+    def setSyncPathInSyncConnectionWizard(spaceName=''):
+        if get_config('ocis'):
+            SyncConnectionWizard.setSyncPathInSyncConnectionWizardOcis(spaceName)
+        else:
+            SyncConnectionWizard.setSyncPathInSyncConnectionWizardOc10()
 
     @staticmethod
     def nextStep():
@@ -132,3 +147,37 @@ class SyncConnectionWizard:
             "checkState"
         ]
         return state == "checked"
+
+    @staticmethod
+    def selectSpaceToSync(spaceName):
+        selector = SyncConnectionWizard.SPACE_NAME_SELECTOR_SYNC_WIZARD.copy()
+        selector["text"] = spaceName
+        squish.mouseClick(
+            squish.waitForObject(selector),
+            0,
+            0,
+            squish.Qt.NoModifier,
+            squish.Qt.LeftButton,
+        )
+        SyncConnectionWizard.nextStepInSpaceSelectionWizard()
+
+    @staticmethod
+    def nextStepInSpaceSelectionWizard():
+        squish.clickButton(
+            squish.waitForObject(
+                AccountConnectionWizard.NEXT_BUTTON_FOR_SPACE_SELECTION_WIZARD
+            )
+        )
+
+    @staticmethod
+    def setSyncPathInSyncConnectionWizardOcis(spaceName):
+        # select all text of text box and type resourcePath as replacement
+        squish.type(
+            squish.waitForObject(SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER),
+            "<Ctrl+A>",
+        )
+        squish.type(
+            SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER,
+            getResourcePath(space=spaceName),
+        )
+        SyncConnectionWizard.addSyncConnection()
