@@ -161,5 +161,4 @@ def step(context, folderName):
 
 @When('the user syncs the "|any|" space')
 def step(context, spaceName):
-    SyncConnectionWizard.selectSpaceToSync(spaceName)
-    SyncConnectionWizard.setSyncPathInSyncConnectionWizard(spaceName)
+    SyncConnectionWizard.syncSpace(spaceName)

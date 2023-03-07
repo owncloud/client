@@ -1,9 +1,8 @@
 import names
 import squish
+from os import path
 from helpers.SetupClientHelper import getCurrentUserSyncPath
 from helpers.ConfigHelper import get_config
-from pageObjects.AccountConnectionWizard import AccountConnectionWizard
-from helpers.SetupClientHelper import getResourcePath
 
 
 class SyncConnectionWizard:
@@ -55,7 +54,13 @@ class SyncConnectionWizard:
         "unnamed": 1,
         "visible": 1,
     }
-    SPACE_NAME_SELECTOR_SYNC_WIZARD = {
+    CANCEL_FOLDER_SYNC_CONNECTION_WIZARD = {
+        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        "name": "qt_wizard_cancel",
+        "type": "QPushButton",
+        "visible": 1,
+    }
+    SPACE_NAME_SELECTOR = {
         "column": 2,
         "container": names.add_Folder_Sync_Connection_tableView_QTableView,
         "type": "QModelIndex",
@@ -149,8 +154,16 @@ class SyncConnectionWizard:
         return state == "checked"
 
     @staticmethod
+    def cancelFolderSyncConnectionWizard():
+        squish.clickButton(
+            squish.waitForObject(
+                SyncConnectionWizard.CANCEL_FOLDER_SYNC_CONNECTION_WIZARD
+            )
+        )
+
+    @staticmethod
     def selectSpaceToSync(spaceName):
-        selector = SyncConnectionWizard.SPACE_NAME_SELECTOR_SYNC_WIZARD.copy()
+        selector = SyncConnectionWizard.SPACE_NAME_SELECTOR.copy()
         selector["text"] = spaceName
         squish.mouseClick(
             squish.waitForObject(selector),
@@ -159,25 +172,22 @@ class SyncConnectionWizard:
             squish.Qt.NoModifier,
             squish.Qt.LeftButton,
         )
-        SyncConnectionWizard.nextStepInSpaceSelectionWizard()
-
-    @staticmethod
-    def nextStepInSpaceSelectionWizard():
-        squish.clickButton(
-            squish.waitForObject(
-                AccountConnectionWizard.NEXT_BUTTON_FOR_SPACE_SELECTION_WIZARD
-            )
-        )
 
     @staticmethod
     def setSyncPathInSyncConnectionWizardOcis(spaceName):
-        # select all text of text box and type resourcePath as replacement
+        # override the default sync path
         squish.type(
             squish.waitForObject(SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER),
             "<Ctrl+A>",
         )
         squish.type(
             SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER,
-            getResourcePath(space=spaceName),
+            path.join(getCurrentUserSyncPath(), spaceName),
         )
+
+    @staticmethod
+    def syncSpace(spaceName):
+        SyncConnectionWizard.selectSpaceToSync(spaceName)
+        SyncConnectionWizard.nextStep()
+        SyncConnectionWizard.setSyncPathInSyncConnectionWizard(spaceName)
         SyncConnectionWizard.addSyncConnection()

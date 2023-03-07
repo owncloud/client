@@ -131,18 +131,6 @@ class AccountConnectionWizard:
         "type": "QRadioButton",
         "visible": 1,
     }
-    CANCEL_FOLDER_SYNC_CONNECTION_WIZARD = {
-        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
-        "name": "qt_wizard_cancel",
-        "type": "QPushButton",
-        "visible": 1,
-    }
-    NEXT_BUTTON_FOR_SPACE_SELECTION_WIZARD = {
-        "name": "__qt__passive_wizardbutton1",
-        "type": "QPushButton",
-        "visible": 1,
-        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
-    }
 
     @staticmethod
     def sanitizeFolderPath(folderPath):
@@ -332,12 +320,4 @@ class AccountConnectionWizard:
                 AccountConnectionWizard.CONF_SYNC_EVERYTHING_RADIO_BUTTON
             ).checked
             == True
-        )
-
-    @staticmethod
-    def cancelFolderSyncConnectionWizard():
-        squish.clickButton(
-            squish.waitForObject(
-                AccountConnectionWizard.CANCEL_FOLDER_SYNC_CONNECTION_WIZARD
-            )
         )
