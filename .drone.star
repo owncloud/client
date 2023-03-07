@@ -172,6 +172,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
     upload_report_trigger = {
         "status": [
             "failure",
+            "success",
         ],
     }
     if ctx.build.event == "tag":
@@ -692,6 +693,7 @@ def buildGithubComment(suite = "", server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
@@ -718,6 +720,7 @@ def githubComment(alternateSuiteName, server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
