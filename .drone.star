@@ -28,7 +28,8 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-36-amd64"
-OC_CI_SQUISH = "sawjan/squish:gnome-keyring"
+OC_CI_SQUISH = "owncloudci/squish:fedora-36-6.7-20220106-1008-qt515x-linux64"
+OC_CI_SQUISH_KEYRING = "sawjan/squish:gnome-keyring"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
@@ -110,12 +111,8 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_tests_format(build_trigger) + \
-                    check_starlark(build_trigger) + \
-                    changelog(ctx, trigger = build_trigger) + \
-                    unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, server_version = ocis_server_version, server_type = "ocis")
+                    gui_test_pipeline(ctx, trigger = build_trigger, image = OC_CI_SQUISH, name = "GUI-squish") + \
+                    gui_test_pipeline(ctx, trigger = build_trigger, image = OC_CI_SQUISH_KEYRING, name = "GUI-squish-keyring")
 
     return pipelines
 
@@ -172,13 +169,14 @@ def unit_test_pipeline(ctx, c_compiler, cxx_compiler, build_type, generator, tri
         "trigger": trigger,
     }]
 
-def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_server_version, server_type = "oc10"):
-    pipeline_name = "GUI-tests-%s" % server_type
+def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_server_version, server_type = "oc10", image = "", name = ""):
+    pipeline_name = "GUI-tests-%s-%s" % (server_type, name)
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
 
     upload_report_trigger = {
         "status": [
             "failure",
+            "success",
         ],
     }
     if ctx.build.event == "tag":
@@ -224,7 +222,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
                  OC_CI_CLIENT_FEDORA,
                  False,
              ) + \
-             gui_tests(squish_parameters, server_type) + \
+             gui_tests(squish_parameters, server_type, image, name) + \
              uploadGuiTestLogs(server_type, trigger = upload_report_trigger) + \
              buildGithubComment(pipeline_name, server_type) + \
              githubComment(pipeline_name, server_type)
@@ -281,7 +279,7 @@ def build_client(c_compiler, cxx_compiler, build_type, generator, build_command,
             },
             "commands": [
                 "cd %s" % dir["build"],
-                build_command + " -j4",
+                build_command + " -j10",
             ],
         },
     ]
@@ -301,10 +299,10 @@ def unit_tests():
         ],
     }]
 
-def gui_tests(squish_parameters = "", server_type = "oc10"):
+def gui_tests(squish_parameters = "", server_type = "oc10", image = OC_CI_SQUISH, name = ""):
     return [{
-        "name": "GUItests",
-        "image": OC_CI_SQUISH,
+        "name": name,
+        "image": image,
         "environment": {
             "LICENSEKEY": from_secret("squish_license_server"),
             "GUI_TEST_REPORT_DIR": dir["guiTestReport"],
@@ -717,6 +715,7 @@ def buildGithubComment(suite = "", server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
@@ -743,6 +742,7 @@ def githubComment(alternateSuiteName, server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
