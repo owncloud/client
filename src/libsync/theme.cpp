@@ -19,6 +19,7 @@
 #include "common/vfs.h"
 #include "config.h"
 #include "configfile.h"
+#include "overlayiconengine.h"
 
 #include <QtCore>
 #include <QtGui>
@@ -469,64 +470,76 @@ bool Theme::aboutShowCopyright() const
     return true;
 }
 
+namespace {
+    QString syncStateIconName(SyncResult result, bool sysTray, bool sysTrayMenuVisible)
+    {
+        QString statusIcon;
+
+        switch (result.status()) {
+        case SyncResult::NotYetStarted:
+            Q_FALLTHROUGH();
+        case SyncResult::SyncRunning:
+            statusIcon = QStringLiteral("state-sync");
+            break;
+        case SyncResult::SyncAbortRequested:
+            Q_FALLTHROUGH();
+        case SyncResult::Paused:
+            statusIcon = QStringLiteral("state-pause");
+            break;
+        case SyncResult::SyncPrepare:
+            Q_FALLTHROUGH();
+        case SyncResult::Success:
+            if (result.hasUnresolvedConflicts()) {
+                return syncStateIconName(SyncResult{SyncResult::Problem}, sysTray, sysTrayMenuVisible);
+            }
+            statusIcon = QStringLiteral("state-ok");
+            break;
+        case SyncResult::Offline:
+            statusIcon = QStringLiteral("state-offline");
+            break;
+        case SyncResult::Problem:
+            Q_FALLTHROUGH();
+        case SyncResult::Undefined:
+            // this can happen if no sync connections are configured.
+            statusIcon = QStringLiteral("state-information");
+            break;
+        case SyncResult::Error:
+            Q_FALLTHROUGH();
+        case SyncResult::SetupError:
+            // FIXME: Use state-problem once we have an icon.
+            statusIcon = QStringLiteral("state-error");
+        }
+
+        return statusIcon;
+    }
+}
+
 QIcon Theme::syncStateIcon(SyncResult::Status status, bool sysTray, bool sysTrayMenuVisible) const
 {
     return syncStateIcon(SyncResult { status }, sysTray, sysTrayMenuVisible);
 }
 QIcon Theme::syncStateIcon(const SyncResult &result, bool sysTray, bool sysTrayMenuVisible) const
 {
-    QString statusIcon;
+    const auto statusIconName = syncStateIconName(result, sysTray, sysTrayMenuVisible);
 
-    switch (result.status()) {
-    case SyncResult::NotYetStarted:
-        Q_FALLTHROUGH();
-    case SyncResult::SyncRunning:
-        statusIcon = QStringLiteral("state-sync");
-        break;
-    case SyncResult::SyncAbortRequested:
-        Q_FALLTHROUGH();
-    case SyncResult::Paused:
-        statusIcon = QStringLiteral("state-pause");
-        break;
-    case SyncResult::SyncPrepare:
-        Q_FALLTHROUGH();
-    case SyncResult::Success:
-        if (result.hasUnresolvedConflicts()) {
-            return syncStateIcon(SyncResult { SyncResult::Problem }, sysTray, sysTrayMenuVisible);
+    if (sysTray) {
+        auto baseIcon = themeTrayIcon(QStringLiteral("base"), sysTrayMenuVisible, Theme::IconType::BrandedIcon);
+        auto overlayIcon = themeTrayIcon(statusIconName, sysTrayMenuVisible);
+
+        if (baseIcon.isNull()) {
+            return overlayIcon;
         }
-        statusIcon = QStringLiteral("state-ok");
-        break;
-    case SyncResult::Problem:
-        Q_FALLTHROUGH();
-    case SyncResult::Undefined:
-        // this can happen if no sync connections are configured.
-        statusIcon = QStringLiteral("state-information");
-        break;
-    case SyncResult::Error:
-        Q_FALLTHROUGH();
-    case SyncResult::SetupError:
-    // FIXME: Use state-problem once we have an icon.
-        statusIcon = QStringLiteral("state-error");
-    }
-    if (sysTray) {
-        return themeTrayIcon(statusIcon, sysTrayMenuVisible);
-    } else {
-        return themeIcon(statusIcon);
-    }
-}
 
-QIcon Theme::folderDisabledIcon() const
-{
-    return themeIcon(QStringLiteral("state-pause"));
-}
-
-QIcon Theme::folderOfflineIcon(bool sysTray, bool sysTrayMenuVisible) const
-{
-    const auto statusIcon = QLatin1String("state-offline");
-    if (sysTray) {
-        return themeTrayIcon(statusIcon, sysTrayMenuVisible);
+        return QIcon(new OverlayIconEngine(baseIcon, overlayIcon));
     } else {
-        return themeIcon(statusIcon);
+        auto baseIcon = themeIcon(QStringLiteral("base"), Theme::IconType::BrandedIcon);
+        auto overlayIcon = themeIcon(statusIconName);
+
+        if (baseIcon.isNull()) {
+            return overlayIcon;
+        }
+
+        return QIcon(new OverlayIconEngine(baseIcon, overlayIcon));
     }
 }
 

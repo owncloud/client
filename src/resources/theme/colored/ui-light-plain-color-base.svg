@@ -6,7 +6,7 @@
    fill="none"
    version="1.1"
    id="svg15"
-   sodipodi:docname="ui-light-plain-color-state-offline.svg"
+   sodipodi:docname="ui-light-plain-color-base.svg"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -21,9 +21,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="true"
      showgrid="false"
-     inkscape:zoom="1.6425781"
-     inkscape:cx="240.17123"
-     inkscape:cy="256"
+     inkscape:zoom="1.1614781"
+     inkscape:cx="187.26139"
+     inkscape:cy="199.31499"
      inkscape:window-width="1920"
      inkscape:window-height="1029"
      inkscape:window-x="1920"
@@ -33,18 +33,9 @@
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="m 26.5,23.4995 c 0,4.6939 -3.8061,8.499 -8.5,8.499 -4.6939,0 -8.5,-3.8051 -8.5,-8.499 C 9.5,18.8051 13.3061,15 18,15 c 4.6939,0 8.5,3.8051 8.5,8.4995 z"
-     fill="#595959"
-     id="path4"
-     style="stroke:none;stroke-opacity:1;paint-order:stroke fill markers;stroke-width:3.125;stroke-miterlimit:4;stroke-dasharray:none" />
-  <path
-     fill-rule="evenodd"
-     clip-rule="evenodd"
-     d="m 15.125,22.1243 h -2.75 v 2.75 h 2.75 z m 4.25,0 h -2.75 v 2.75 h 2.75 z m 4.25,0 h -2.75 v 2.75 h 2.75 z"
-     fill="#ffffff"
-     stroke="#3f3f3f"
-     stroke-width="0.25"
-     id="path6" />
+     d="m 28.8055,12.498 c -0.254,-2.504 -2.315,-4.456 -4.82,-4.456 -0.026,0 -0.05,0.002 -0.074,0.002 -0.075,-2.477 -2.051,-4.462 -4.482,-4.462 -0.182,0 -0.361,0.013 -0.538,0.034 C 18.4515,1.548 16.6585,0 14.5125,0 c -1.763,0 -3.286,1.044 -4.019,2.563 -0.418,-0.341 -0.945,-0.545 -1.52,-0.545 -1.352,0 -2.448,1.126 -2.448,2.514 0,0.541 0.168,1.041 0.451,1.451 C 6.0145,6.601 5.2785,7.556 4.9255,8.687 4.7805,8.673 4.6335,8.665 4.4845,8.665 2.0075,8.665 -4.99725e-4,10.727 -4.99725e-4,13.27 -4.99725e-4,15.814 2.0075,18 4.4845,18 h 4.588 c 1.852,-2.994 5.155,-5 8.927,-5 3.772,0 7.076,2.006 8.928,5 h 2.508 c 1.416,0 2.564,-1.497 2.564,-2.951 0,-1.455 -1.148,-2.634 -2.564,-2.634 -0.218,0 -0.428,0.031 -0.63,0.083 z"
+     id="path2"
+     style="fill:#041e42;fill-opacity:1" />
   <defs
      id="defs13">
     <clipPath

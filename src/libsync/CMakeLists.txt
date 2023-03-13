@@ -26,6 +26,7 @@ set(libsync_SRCS
     configfile.cpp
     abstractnetworkjob.cpp
     networkjobs.cpp
+    overlayiconengine.cpp
     owncloudpropagator.cpp
     owncloudtheme.cpp
     platform.cpp
