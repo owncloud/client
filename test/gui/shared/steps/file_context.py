@@ -133,7 +133,6 @@ def step(context, filePath):
 @Then(r'^the (file|folder) "([^"]*)" should exist on the file system$', regexp=True)
 def step(context, resourceType, resource):
     resourcePath = getResourcePath(resource)
-    print(resourcePath)
     resourceExists = False
     if resourceType == 'file':
         resourceExists = fileExists(resourcePath, get_config('maxSyncTimeout') * 1000)
@@ -196,10 +195,8 @@ def step(context, filename):
 
 @When('the user overwrites the file "|any|" with content "|any|"')
 def step(context, resource, content):
-    print("starting file overwrite")
     resource = getResourcePath(resource)
     waitAndWriteFile(resource, content)
-    print("file has been overwritten")
 
 
 @When('the user tries to overwrite the file "|any|" with content "|any|"')
