@@ -72,15 +72,13 @@ QString OWNCLOUDSYNC_EXPORT createDownloadTmpFileName(const QString &previous)
 }
 
 // DOES NOT take ownership of the device.
-GETFileJob::GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device,
-    const QMap<QByteArray, QByteArray> &headers, const QString &expectedEtagForResume,
-    qint64 resumeStart, QObject *parent)
+GETFileJob::GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device, const QMap<QByteArray, QByteArray> &headers,
+    const QString &expectedEtagForResume, qint64 resumeStart, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
     , _device(device)
     , _headers(headers)
     , _expectedEtagForResume(expectedEtagForResume)
     , _expectedContentLength(-1)
-    , _contentLength(-1)
     , _resumeStart(resumeStart)
 {
     connect(this, &GETFileJob::networkError, this, [this] {
@@ -185,14 +183,15 @@ void GETFileJob::slotMetaDataChanged()
     }
 
     bool ok;
-    _contentLength = reply()->header(QNetworkRequest::ContentLengthHeader).toLongLong(&ok);
-    if (ok && _expectedContentLength != -1 && _contentLength != _expectedContentLength) {
-        qCWarning(lcGetJob) << "We received a different content length than expected!"
-                            << _expectedContentLength << "vs" << _contentLength;
-        _errorString = tr("We received an unexpected download Content-Length.");
-        _errorStatus = SyncFileItem::NormalError;
-        abort();
-        return;
+    auto contentLength = reply()->header(QNetworkRequest::ContentLengthHeader).toLongLong(&ok);
+    if (ok && _expectedContentLength != -1) {
+        if (contentLength != _expectedContentLength) {
+            qCWarning(lcGetJob) << "We received a different content length than expected!" << _expectedContentLength << "vs" << contentLength;
+            _errorString = tr("We received an unexpected download Content-Length.");
+            _errorStatus = SyncFileItem::NormalError;
+            abort();
+            return;
+        }
     }
 
     qint64 start = 0;
@@ -560,6 +559,8 @@ void PropagateDownloadFile::startFullDownload()
             &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
     }
     _job->setBandwidthManager(propagator()->_bandwidthManager);
+    _job->setExpectedContentLength(_item->_size);
+
     connect(_job.data(), &GETFileJob::finishedSignal, this, &PropagateDownloadFile::slotGetFinished);
     connect(qobject_cast<GETFileJob *>(_job.data()), &GETFileJob::downloadProgress,
         this, &PropagateDownloadFile::slotDownloadProgress);
