@@ -111,8 +111,8 @@ def main(ctx):
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
         pipelines = cancelPreviousBuilds() + \
-                    gui_test_pipeline(ctx, trigger = build_trigger, image = OC_CI_SQUISH, name = "GUI-squish") + \
                     gui_test_pipeline(ctx, trigger = build_trigger, image = OC_CI_SQUISH_KEYRING, name = "GUI-squish-keyring")
+        # gui_test_pipeline(ctx, trigger = build_trigger, image = OC_CI_SQUISH, name = "GUI-squish") + \
 
     return pipelines
 
