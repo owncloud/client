@@ -12,10 +12,9 @@ owncloud_add_test(ConcatUrl)
 owncloud_add_test(XmlParse)
 owncloud_add_test(ChecksumValidator)
 
-
 # TODO: we need keychain access for this test
-if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
-    owncloud_add_test(CredentialManager)
+if(NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
+  owncloud_add_test(CredentialManager)
 endif()
 
 owncloud_add_test(ExcludedFiles)
@@ -44,10 +43,9 @@ owncloud_add_test(FolderMigration)
 
 owncloud_add_test(FolderWatcher)
 
-if( UNIX AND NOT APPLE )
-    owncloud_add_test(InotifyWatcher)
+if(UNIX AND NOT APPLE)
+  owncloud_add_test(InotifyWatcher)
 endif(UNIX AND NOT APPLE)
-
 
 owncloud_add_test(LongPath)
 
@@ -56,7 +54,6 @@ owncloud_add_test(FolderMan)
 owncloud_add_test(OAuth)
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
-
 
 owncloud_add_test(JobQueue)
 

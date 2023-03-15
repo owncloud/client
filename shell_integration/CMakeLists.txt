@@ -1,11 +1,11 @@
-if (APPLE)
+if(APPLE)
   add_subdirectory(MacOSX)
 endif()
 if(BUILD_SHELL_INTEGRATION_ICONS)
   add_subdirectory(icons)
 endif()
 
-if( UNIX AND NOT APPLE )
+if(UNIX AND NOT APPLE)
   if(BUILD_SHELL_INTEGRATION_NAUTILUS)
     add_subdirectory(nautilus)
   endif()

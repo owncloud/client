@@ -12,29 +12,28 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} "${CMAKE_CURRENT_
 
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS CoreAddons KIO)
 
-set_package_properties(DolphinVcs PROPERTIES
-    DESCRIPTION "the Dolphin plugin library"
-    URL "http://dolphin.kde.org/"
-    TYPE REQUIRED
-    PURPOSE "Provides plugin interfaces for Dolphin."
-)
+set_package_properties(
+  DolphinVcs PROPERTIES
+  DESCRIPTION "the Dolphin plugin library"
+  URL "http://dolphin.kde.org/"
+  TYPE REQUIRED
+  PURPOSE "Provides plugin interfaces for Dolphin.")
 
 set(KDE_INSTALL_DIRS_NO_DEPRECATED TRUE)
 include(KDEInstallDirs)
-# kcoreaddons_add_plugin uses deprecated VAR PLUGIN_INSTALL_DIR
-# when that is fixed and you want to remove this workaround,
-# you need to _require_ the new enough kcoreaddons
+# kcoreaddons_add_plugin uses deprecated VAR PLUGIN_INSTALL_DIR when that is fixed and you want to remove this workaround, you need to _require_ the new enough
+# kcoreaddons
 set(PLUGIN_INSTALL_DIR "${KDE_INSTALL_PLUGINDIR}")
 include(KDECMakeSettings)
 include(KDECompilerSettings)
 include(ECMMarkNonGuiExecutable)
 include(GenerateExportHeader)
 
-if (NOT DEFINED APPLICATION_EXECUTABLE )
-  set ( APPLICATION_EXECUTABLE  "owncloud" )
+if(NOT DEFINED APPLICATION_EXECUTABLE)
+  set(APPLICATION_EXECUTABLE "owncloud")
 endif()
 
-#---HELPER---
+# ---HELPER---
 set(OWNCLOUDDOLPHINHELPER ${APPLICATION_EXECUTABLE}dolphinpluginhelper)
 add_library(${OWNCLOUDDOLPHINHELPER} SHARED ownclouddolphinpluginhelper.cpp)
 target_link_libraries(${OWNCLOUDDOLPHINHELPER} Qt5::Network Qt5::Gui)
@@ -42,13 +41,19 @@ generate_export_header(${OWNCLOUDDOLPHINHELPER} BASE_NAME ownclouddolphinpluginh
 install(TARGETS ${OWNCLOUDDOLPHINHELPER} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 target_compile_definitions(${OWNCLOUDDOLPHINHELPER} PRIVATE QT_USE_QSTRINGBUILDER APPLICATION_SHORTNAME="${APPLICATION_SHORTNAME}")
 
-#---OVERLAY PLUGIN---
+# ---OVERLAY PLUGIN---
 set(OWNCLOUDDOLPHINOVERLAYPLUGIN ${APPLICATION_EXECUTABLE}dolphinoverlayplugin)
-kcoreaddons_add_plugin(${OWNCLOUDDOLPHINOVERLAYPLUGIN} INSTALL_NAMESPACE "kf5/overlayicon"
-                       JSON ownclouddolphinoverlayplugin.json SOURCES ownclouddolphinoverlayplugin.cpp)
+kcoreaddons_add_plugin(
+  ${OWNCLOUDDOLPHINOVERLAYPLUGIN}
+  INSTALL_NAMESPACE
+  "kf5/overlayicon"
+  JSON
+  ownclouddolphinoverlayplugin.json
+  SOURCES
+  ownclouddolphinoverlayplugin.cpp)
 target_link_libraries(${OWNCLOUDDOLPHINOVERLAYPLUGIN} KF5::CoreAddons KF5::KIOCore KF5::KIOWidgets ${OWNCLOUDDOLPHINHELPER})
 
-#---ACTION PLUGIN---
+# ---ACTION PLUGIN---
 set(OWNCLOUDDOLPHINACTIONPLUGIN ${APPLICATION_EXECUTABLE}dolphinactionplugin)
 add_library(${OWNCLOUDDOLPHINACTIONPLUGIN} MODULE ownclouddolphinactionplugin.cpp)
 target_link_libraries(${OWNCLOUDDOLPHINACTIONPLUGIN} KF5::CoreAddons KF5::KIOCore KF5::KIOWidgets ${OWNCLOUDDOLPHINHELPER})
