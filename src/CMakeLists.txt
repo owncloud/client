@@ -1,9 +1,12 @@
-find_package(Qt5 5.15 COMPONENTS Core Concurrent Network Widgets Xml REQUIRED)
-get_target_property (QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
+find_package(
+  Qt5 5.15
+  COMPONENTS Core Concurrent Network Widgets Xml
+  REQUIRED)
+get_target_property(QT_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
 message(STATUS "Using Qt ${Qt5Core_VERSION} (${QT_QMAKE_EXECUTABLE})")
 
 if(WITH_CRASHREPORTER)
-    find_package(CrashReporterQt REQUIRED)
+  find_package(CrashReporterQt REQUIRED)
 endif()
 
 find_package(Qt5Keychain REQUIRED)
@@ -29,7 +32,7 @@ endif()
 
 if(WIN32)
   # Enable DEP & ASLR
-  if (MINGW)
+  if(MINGW)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--nxcompat -Wl,--dynamicbase")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--nxcompat -Wl,--dynamicbase")
   endif()
@@ -41,23 +44,31 @@ endif()
 add_subdirectory(resources)
 add_subdirectory(csync)
 add_subdirectory(libsync)
-if (NOT BUILD_LIBRARIES_ONLY)
-    if (BUILD_GUI)
-        add_subdirectory(gui)
-    endif()
-    add_subdirectory(cmd)
+if(NOT BUILD_LIBRARIES_ONLY)
+  if(BUILD_GUI)
+    add_subdirectory(gui)
+  endif()
+  add_subdirectory(cmd)
 
-    if (WITH_CRASHREPORTER)
-        add_subdirectory(crashreporter)
-    endif()
+  if(WITH_CRASHREPORTER)
+    add_subdirectory(crashreporter)
+  endif()
 endif(NOT BUILD_LIBRARIES_ONLY)
 
 add_subdirectory(plugins)
 
-install(EXPORT ownCloudConfig DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/ownCloud"  NAMESPACE ownCloud::)
+install(
+  EXPORT ownCloudConfig
+  DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/ownCloud"
+  NAMESPACE ownCloud::)
 
-ecm_setup_version(PROJECT VARIABLE_PREFIX ownCloud
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ownCloudConfigVersion.cmake"
-                        SOVERSION ${MIRALL_SOVERSION})
+ecm_setup_version(
+  PROJECT
+  VARIABLE_PREFIX
+  ownCloud
+  PACKAGE_VERSION_FILE
+  "${CMAKE_CURRENT_BINARY_DIR}/ownCloudConfigVersion.cmake"
+  SOVERSION
+  ${MIRALL_SOVERSION})
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ownCloudConfigVersion.cmake" DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/ownCloud")

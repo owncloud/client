@@ -12,10 +12,10 @@ set(LIBDIR ${LIB_INSTALL_DIR})
 set(SYSCONFDIR ${SYSCONF_INSTALL_DIR})
 
 # FUNCTIONS
-if (NOT LINUX)
-    # librt
-    check_library_exists(rt nanosleep "" HAVE_LIBRT)
-endif (NOT LINUX)
+if(NOT LINUX)
+  # librt
+  check_library_exists(rt nanosleep "" HAVE_LIBRT)
+endif(NOT LINUX)
 
 check_function_exists(utimes HAVE_UTIMES)
 check_function_exists(lstat HAVE_LSTAT)

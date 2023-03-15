@@ -1,14 +1,15 @@
 set(LibreGraphAPIVersion v1.0.1)
 # TODO: pass version to find_package once LibreGraphAPI provides versioned releases
 find_package(LibreGraphAPI QUIET)
-if (NOT TARGET OpenAPI::LibreGraphAPI)
-    message(WARNING "Failed to find system OpenAPI::LibreGraphAPI: fetching ${LibreGraphAPIVersion}")
-    include(FetchContent)
-    FetchContent_Populate(LibreGraphAPISrc
-                        QUIET
-                        GIT_REPOSITORY https://github.com/owncloud/libre-graph-api-cpp-qt-client.git
-                        GIT_TAG ${LibreGraphAPIVersion})
-    add_subdirectory(${libregraphapisrc_SOURCE_DIR}/client ${libregraphapisrc_BINARY_DIR}/client EXCLUDE_FROM_ALL)
+if(NOT TARGET OpenAPI::LibreGraphAPI)
+  message(WARNING "Failed to find system OpenAPI::LibreGraphAPI: fetching ${LibreGraphAPIVersion}")
+  include(FetchContent)
+  FetchContent_Populate(
+    LibreGraphAPISrc
+    QUIET
+    GIT_REPOSITORY https://github.com/owncloud/libre-graph-api-cpp-qt-client.git
+    GIT_TAG ${LibreGraphAPIVersion})
+  add_subdirectory(${libregraphapisrc_SOURCE_DIR}/client ${libregraphapisrc_BINARY_DIR}/client EXCLUDE_FROM_ALL)
 endif()
 
 set(libsync_SRCS
@@ -52,91 +53,75 @@ set(libsync_SRCS
     creds/credentialscommon.cpp
     creds/oauth.cpp
     creds/webfinger.cpp
-
     networkjobs/fetchuserinfojobfactory.cpp
     networkjobs/checkserverjobfactory.cpp
     networkjobs/jsonjob.cpp
     networkjobs/jobgroup.cpp
-
     abstractcorejob.cpp
     determineauthtypejobfactory.cpp
-
     graphapi/drives.cpp
-
-    appprovider.cpp
-)
+    appprovider.cpp)
 
 if(WIN32)
-    list(APPEND libsync_SRCS platform_win.cpp)
+  list(APPEND libsync_SRCS platform_win.cpp)
 elseif(UNIX)
-    if (APPLE)
-        list(APPEND libsync_SRCS platform_mac.mm platform_mac_deprecated.mm)
-    else()
-        list(APPEND libsync_SRCS platform_unix.cpp)
-        if(OC_PLUGIN_DIR)
-            set_source_files_properties(platform_unix.cpp PROPERTIES COMPILE_DEFINITIONS OC_PLUGIN_DIR="${OC_PLUGIN_DIR}")
-        endif()
+  if(APPLE)
+    list(APPEND libsync_SRCS platform_mac.mm platform_mac_deprecated.mm)
+  else()
+    list(APPEND libsync_SRCS platform_unix.cpp)
+    if(OC_PLUGIN_DIR)
+      set_source_files_properties(platform_unix.cpp PROPERTIES COMPILE_DEFINITIONS OC_PLUGIN_DIR="${OC_PLUGIN_DIR}")
     endif()
+  endif()
 endif()
 
 set(libsync_SRCS ${libsync_SRCS} creds/httpcredentials.cpp)
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
-INSTALL(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h
-        logger.h
-        accessmanager.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/ownCloud/libsync
-)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h logger.h accessmanager.h DESTINATION ${INCLUDE_INSTALL_DIR}/ownCloud/libsync)
 
 add_library(libsync SHARED ${libsync_SRCS})
 set_target_properties(libsync PROPERTIES EXPORT_NAME SyncCore)
 
-target_link_libraries(libsync
-    PUBLIC
-        csync
-        Qt5::Core
-        Qt5::Network
-        Qt5::Widgets
-    PRIVATE
-        Qt5::Concurrent
-        ZLIB::ZLIB
-        qt5keychain
-)
+target_link_libraries(
+  libsync
+  PUBLIC csync Qt5::Core Qt5::Network Qt5::Widgets
+  PRIVATE Qt5::Concurrent ZLIB::ZLIB qt5keychain)
 
 apply_common_target_settings(libsync)
 
 target_link_libraries(libsync PUBLIC $<BUILD_INTERFACE:OpenAPI::LibreGraphAPI>)
 add_subdirectory(graphapi)
 
-if ( APPLE )
-    target_link_libraries(libsync PUBLIC
-         /System/Library/Frameworks/CoreServices.framework
-         /System/Library/Frameworks/Foundation.framework
-         /System/Library/Frameworks/AppKit.framework
-         /System/Library/Frameworks/IOKit.framework
-    )
+if(APPLE)
+  target_link_libraries(libsync PUBLIC /System/Library/Frameworks/CoreServices.framework /System/Library/Frameworks/Foundation.framework
+                                       /System/Library/Frameworks/AppKit.framework /System/Library/Frameworks/IOKit.framework)
 endif()
 
 if(Inotify_FOUND)
-    target_include_directories(libsync PRIVATE ${Inotify_INCLUDE_DIRS})
-    target_link_libraries(libsync PUBLIC ${Inotify_LIBRARIES})
+  target_include_directories(libsync PRIVATE ${Inotify_INCLUDE_DIRS})
+  target_link_libraries(libsync PUBLIC ${Inotify_LIBRARIES})
 endif()
 
 if(NO_MSG_HANDLER)
-    target_compile_definitions(libsync PRIVATE -DNO_MSG_HANDLER=1)
+  target_compile_definitions(libsync PRIVATE -DNO_MSG_HANDLER=1)
 endif()
 
-GENERATE_EXPORT_HEADER(libsync
-        EXPORT_MACRO_NAME OWNCLOUDSYNC_EXPORT
-        EXPORT_FILE_NAME owncloudlib.h
-        STATIC_DEFINE OWNCLOUD_BUILT_AS_STATIC
-)
+generate_export_header(
+  libsync
+  EXPORT_MACRO_NAME
+  OWNCLOUDSYNC_EXPORT
+  EXPORT_FILE_NAME
+  owncloudlib.h
+  STATIC_DEFINE
+  OWNCLOUD_BUILT_AS_STATIC)
 
-set_target_properties(libsync PROPERTIES
-        OUTPUT_NAME "${synclib_NAME}"
-        VERSION ${MIRALL_VERSION}
-        SOVERSION ${MIRALL_SOVERSION}
-)
-install(TARGETS libsync EXPORT ownCloudConfig ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(
+  libsync
+  PROPERTIES OUTPUT_NAME "${synclib_NAME}"
+             VERSION ${MIRALL_VERSION}
+             SOVERSION ${MIRALL_SOVERSION})
+install(
+  TARGETS libsync
+  EXPORT ownCloudConfig
+  ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

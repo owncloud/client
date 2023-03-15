@@ -1,6 +1,5 @@
-# Just list files to build as part of the csync dynamic lib.
-# Essentially they could be in the same directory but are separate to
-# help keep track of the different code licenses.
+# Just list files to build as part of the csync dynamic lib. Essentially they could be in the same directory but are separate to help keep track of the
+# different code licenses.
 configure_file(${CMAKE_CURRENT_LIST_DIR}/version.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/version.cpp @ONLY)
 set(common_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/checksums.cpp
@@ -17,23 +16,14 @@ set(common_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/pinstate.cpp
     ${CMAKE_CURRENT_LIST_DIR}/plugin.cpp
     ${CMAKE_CURRENT_LIST_DIR}/syncfilestatus.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
-)
-
-
+    ${CMAKE_CURRENT_BINARY_DIR}/version.cpp)
 
 if(WIN32)
-    list(APPEND common_SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/utility_win.cpp
-    )
+  list(APPEND common_SOURCES ${CMAKE_CURRENT_LIST_DIR}/utility_win.cpp)
 elseif(APPLE)
-    list(APPEND common_SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/utility_mac.mm
-    )
+  list(APPEND common_SOURCES ${CMAKE_CURRENT_LIST_DIR}/utility_mac.mm)
 elseif(UNIX AND NOT APPLE)
-    list(APPEND common_SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/utility_unix.cpp
-    )
+  list(APPEND common_SOURCES ${CMAKE_CURRENT_LIST_DIR}/utility_unix.cpp)
 endif()
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/vfspluginmetadata.json.in ${CMAKE_CURRENT_BINARY_DIR}/vfspluginmetadata.json)
