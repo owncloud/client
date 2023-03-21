@@ -44,6 +44,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QIcon>
+#include <QImageReader>
 #include <QKeySequence>
 #include <QListWidgetItem>
 #include <QMessageBox>
@@ -60,6 +61,7 @@
 #include "gui/models/models.h"
 #include "loginrequireddialog.h"
 #include "oauthloginwidget.h"
+#include "servertheme.h"
 
 namespace OCC {
 
@@ -108,6 +110,47 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     , _accountState(accountState)
 {
     ui->setupUi(this);
+
+    // TODO: rename _accountState to _accountStatePtr; having to use data() occasionally is unintuitive
+    connect(_accountState.data(), &AccountState::serverThemeChanged, this, [this]() {
+        ServerTheme::Type themeType = Theme::instance()->isUsingDarkTheme() ? ServerTheme::Type::Dark : ServerTheme::Type::Light;
+
+        auto iconPath = _accountState->serverTheme().iconPath(QStringLiteral("compact"), themeType);
+
+        if (iconPath.isEmpty()) {
+            qCWarning(lcAccountSettings) << "Could not find compact icon";
+            return;
+        }
+
+        // TODO: custom icon download job
+        auto *iconJob = new SimpleNetworkJob(_accountState->account(), _accountState->account()->url(), iconPath, "GET", {}, {}, this);
+        iconJob->setStoreInCache(true);
+        connect(iconJob, &SimpleNetworkJob::finishedSignal, this, [this, iconJob]() {
+            if (iconJob->httpStatusCode() != 200) {
+                qCWarning(lcAccountSettings) << "Failed to download icon from" << iconJob->url() << "with error:" << iconJob->errorString();
+                return;
+            }
+
+            // TODO: error handling
+            // TODO: proper SVG support (otherwise, scale to some suitable high DPI size and use as pixel graphics)
+            auto *imageReader = new QImageReader(iconJob->reply());
+            _accountState->setServerThemeIcon(QIcon(QPixmap::fromImageReader(imageReader)));
+        });
+        iconJob->start();
+    });
+
+    if (!_accountState->serverTheme().isEmpty()) {
+        Q_EMIT _accountState->serverThemeChanged();
+    }
+
+    connect(_accountState.data(), &AccountState::serverThemeIconChanged, this, [this]() {
+        const auto &icon = _accountState->serverThemeIcon();
+
+        if (!icon.isNull()) {
+            // TODO: better approach
+            _accountState->account()->setAvatar(icon.pixmap(256, 256));
+        }
+    });
 
     _model = new FolderStatusModel(this);
     _model->setAccountState(_accountState);

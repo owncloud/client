@@ -17,13 +17,16 @@
 #define ACCOUNTINFO_H
 
 #include "jobqueue.h"
-
+#include "servertheme.h"
 #include "connectionvalidator.h"
 #include "creds/abstractcredentials.h"
 #include "updateurldialog.h"
+
 #include <QByteArray>
 #include <QElapsedTimer>
 #include <QPointer>
+#include <QIcon>
+
 #include <memory>
 
 class QDialog;
@@ -132,6 +135,11 @@ public:
     // weather the account was created after spaces where implemented
     bool supportsSpaces() const;
 
+    ServerTheme serverTheme() const;
+
+    QIcon serverThemeIcon() const;
+    void setServerThemeIcon(const QIcon &icon);
+
     QuotaInfo *quotaInfo();
 
     /** Returns a new settings object for this account, already in the right groups. */
@@ -162,6 +170,8 @@ signals:
     void stateChanged(State state);
     void isConnectedChanged();
     void urlUpdated();
+    void serverThemeChanged();
+    void serverThemeIconChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
@@ -181,6 +191,8 @@ private:
     QPointer<UpdateUrlDialog> _updateUrlDialog;
     QPointer<TlsErrorDialog> _tlsDialog;
     bool _supportsSpaces = true;
+    ServerTheme _serverTheme{};
+    QIcon _serverThemeIcon{};
 
     /**
      * Starts counting when the server starts being back up after 503 or

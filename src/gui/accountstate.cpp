@@ -116,6 +116,22 @@ AccountState::AccountState(AccountPtr account)
     if (FolderMan::instance()) {
         FolderMan::instance()->socketApi()->registerAccount(account);
     }
+
+    connect(this, &AccountState::stateChanged, this, [this](State state) {
+        switch (state) {
+        // TODO: more states to support? probably not
+        case Connected: {
+            auto *job = new ServerThemeJob(_account, QStringLiteral("owncloud"), this);
+            connect(job, &ServerThemeJob::finishedSignal, this, [job, this]() {
+                _serverTheme = job->serverTheme();
+                Q_EMIT serverThemeChanged();
+            });
+            job->start();
+        }
+        default:
+            break;
+        }
+    });
 }
 
 AccountState::~AccountState()
@@ -534,5 +550,22 @@ QuotaInfo *AccountState::quotaInfo()
     }
     return _quotaInfo;
 }
+
+ServerTheme AccountState::serverTheme() const
+{
+    return _serverTheme;
+}
+
+QIcon AccountState::serverThemeIcon() const
+{
+    return _serverThemeIcon;
+}
+
+void AccountState::setServerThemeIcon(const QIcon &serverThemeIcon)
+{
+    _serverThemeIcon = serverThemeIcon;
+    Q_EMIT serverThemeIconChanged();
+}
+
 
 } // namespace OCC

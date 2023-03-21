@@ -78,6 +78,7 @@ set(client_SRCS
     translations.cpp
     creds/httpcredentialsgui.cpp
     updateurldialog.cpp
+    servertheme.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp
