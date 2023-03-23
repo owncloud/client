@@ -57,6 +57,7 @@ namespace GraphApi {
     class SpacesManager;
 }
 
+class ResourcesCache;
 
 /**
  * @brief The Account class represents an account on an ownCloud Server
@@ -202,6 +203,8 @@ public:
      */
     void invalidCredentialsEncountered();
 
+    ResourcesCache *resourcesCache() const;
+
 public slots:
     /// Used when forgetting credentials
     void clearAMCache();
@@ -251,6 +254,7 @@ private:
     Capabilities _capabilities;
     QPointer<AccessManager> _am;
     QPointer<QNetworkDiskCache> _networkCache = nullptr;
+    QPointer<ResourcesCache> _resourcesCache;
     QScopedPointer<AbstractCredentials> _credentials;
     bool _http2Supported = false;
 
