@@ -21,6 +21,7 @@
 #include "creds/credentialmanager.h"
 #include "graphapi/spacesmanager.h"
 #include "networkjobs.h"
+#include "networkjobs/resources.h"
 #include "theme.h"
 
 #include <QAuthenticator>
@@ -41,6 +42,13 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccount, "sync.account", QtInfoMsg)
 
+namespace {
+    QString determineAccountCacheLocation(Account *account)
+    {
+        return QStringLiteral("%1/accounts/%2").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation), account->uuid().toString(QUuid::WithoutBraces));
+    }
+}
+
 Account::Account(const QUuid &uuid, QObject *parent)
     : QObject(parent)
     , _uuid(uuid)
@@ -50,6 +58,10 @@ Account::Account(const QUuid &uuid, QObject *parent)
     , _credentialManager(new CredentialManager(this))
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
+
+    const QString cacheDirectory = QStringLiteral("%1/resources/").arg(determineAccountCacheLocation(this));
+    QDir().mkpath(cacheDirectory);
+    _resourcesCache = new ResourcesCache(cacheDirectory, this);
 }
 
 AccountPtr Account::create(const QUuid &uuid)
@@ -164,10 +176,9 @@ void Account::setCredentials(AbstractCredentials *cred)
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
-    const QString cacheLocation =
-        QStringLiteral("%1/accounts/%2/network/").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation), _uuid.toString());
-    qCDebug(lcAccount) << "Cache location for account" << this << "set to" << cacheLocation;
-    _networkCache->setCacheDirectory(cacheLocation);
+    const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(determineAccountCacheLocation(this)));
+    qCDebug(lcAccount) << "Cache location for account" << this << "set to" << networkCacheLocation;
+    _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
 
     if (jar) {
@@ -364,6 +375,11 @@ const AppProvider &Account::appProvider() const
 void Account::invalidCredentialsEncountered()
 {
     Q_EMIT invalidCredentials(Account::QPrivateSignal());
+}
+
+ResourcesCache *Account::resourcesCache() const
+{
+    return _resourcesCache;
 }
 
 } // namespace OCC
