@@ -5,24 +5,6 @@
 #include "networkjobs/jsonjob.h"
 
 namespace OCC {
-class ServerThemeResourcesManager;
-
-//
-//class OWNCLOUDSYNC_EXPORT ServerThemeResourcesManager : public QObject
-//{
-//    Q_OBJECT
-//
-//public:
-//    explicit ServerThemeResourcesManager(AccountPtr accountPtr, QObject *parent = nullptr);
-//
-//    CoreJob *get(const QString &resourceUrlPath, QObject *parent = nullptr);
-//
-//private:
-//    AccountPtr _accountPtr;
-//    QAbstractNetworkCache *_cache;
-//    AccessManager *_accessManager;
-//};
-
 
 class OWNCLOUDSYNC_EXPORT ServerTheme
 {
@@ -71,7 +53,4 @@ public:
     [[nodiscard]] ServerTheme serverTheme() const;
 };
 
-
 } // OCC::ThemeJobs
-
-//Q_DECLARE_METATYPE(OCC::ServerTheme)

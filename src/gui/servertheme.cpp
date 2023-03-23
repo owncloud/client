@@ -43,6 +43,17 @@ namespace {
 
         Q_UNREACHABLE();
     }
+
+    QUrl getServerThemeHost(AccountPtr account)
+    {
+        QString envVar = qEnvironmentVariable("OCC_SERVER_THEME_HOST");
+
+        if (!envVar.isEmpty()) {
+            return QUrl{envVar};
+        }
+
+        return account->url();
+    }
 }
 
 QString ServerTheme::iconPath(const QString &iconName, Type themeType)
@@ -55,30 +66,9 @@ QString ServerTheme::iconPath(const QString &iconName, Type themeType)
         const QString themeSection = themeSectionToString(static_cast<ThemeSection>(themeSectionIdx));
 
         for (int themeTypeIdx = static_cast<int>(themeType); themeTypeIdx >= 0; --themeTypeIdx) {
-            const QString themeType = themeTypeToString(static_cast<Type>(themeTypeIdx));
-
-//            const auto themeSectionObject = _document.object().value(themeSection);
-//            if (themeSectionObject.isNull()) {
-//                continue;
-//            }
-//
-//            const auto themeTypeObject = themeSectionObject.toObject().value(themeType);
-//            if (themeTypeObject.isNull()) {
-//                continue;
-//            }
-//
-//            const auto iconObject = themeTypeObject.toObject().value(QStringLiteral("logo"));
-//            if (iconObject.isNull()) {
-//                continue;
-//            }
-//
-//            const auto iconPath = iconObject.toObject().value(iconName);
-//            if (iconPath.isNull()) {
-//                continue;
-//            }
-
-//            const QString iconPathStr = iconPath.toString();
-            const QString iconPathStr = _object.value(themeSection).toObject().value(themeType).toObject().value(QStringLiteral("logo")).toObject().value(iconName).toString();
+            const QString themeTypeStr = themeTypeToString(static_cast<Type>(themeTypeIdx));
+            const QString iconPathStr =
+                _object.value(themeSection).toObject().value(themeTypeStr).toObject().value(QStringLiteral("logo")).toObject().value(iconName).toString();
 
             if (!iconPathStr.isEmpty()) {
                 qCDebug(lcServerTheme) << "Found icon for theme" << themeType << "and icon name" << iconName << "at URL" << iconPathStr;
@@ -104,22 +94,8 @@ bool ServerTheme::isEmpty() const {
     return _object.isEmpty();
 }
 
-//ServerThemeResourcesManager::ServerThemeResourcesManager(AccountPtr accountPtr, QObject *parent)
-//    : QObject(parent)
-//    , _accountPtr(std::move(accountPtr))
-//    , _cache(new QNetworkDiskCache(this))
-//    , _accessManager(new AccessManager(this))
-//{
-//    // using our own access manager to cache just the server theme resources
-//    _accessManager->setCustomTrustedCaCertificates(_accountPtr->approvedCerts());
-//    _accessManager->setCache(_cache);
-//
-//    connect(_accountPtr.data(), &Account::approvedCertsChanged, _accessManager, &AccessManager::setCustomTrustedCaCertificates);
-//}
-
 ServerThemeJob::ServerThemeJob(AccountPtr account, const QString &themeName, QObject *parent)
-//    : JsonJob(account, account->url(), QStringLiteral("/themes/%1/theme.json").arg(themeName), "GET", {}, {}, parent)
-    : JsonJob(account, QUrl(QStringLiteral("http://localhost:5000")), QStringLiteral("/themes/%1/theme.json").arg(themeName), "GET", {}, {}, parent)
+    : JsonJob(account, getServerThemeHost(account), QStringLiteral("/themes/%1/theme.json").arg(themeName), "GET", {}, {}, parent)
 {
 }
 
@@ -128,8 +104,4 @@ ServerTheme ServerThemeJob::serverTheme() const
     return ServerTheme(data());
 }
 
-//ServerThemeResourceJob::ServerThemeResourceJob(AccessManager *am, const QUrl &resourceUrl, QObject *parent) {
-//
-//}
-
-} // ThemeJobs
+} // namespace OCC

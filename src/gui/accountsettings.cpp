@@ -60,6 +60,7 @@
 #include "askexperimentalvirtualfilesfeaturemessagebox.h"
 #include "gui/models/models.h"
 #include "loginrequireddialog.h"
+#include "networkjobs/resources.h"
 #include "oauthloginwidget.h"
 #include "servertheme.h"
 
@@ -122,20 +123,8 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
             return;
         }
 
-        // TODO: custom icon download job
-        auto *iconJob = new SimpleNetworkJob(_accountState->account(), _accountState->account()->url(), iconPath, "GET", {}, {}, this);
-        iconJob->setStoreInCache(true);
-        connect(iconJob, &SimpleNetworkJob::finishedSignal, this, [this, iconJob]() {
-            if (iconJob->httpStatusCode() != 200) {
-                qCWarning(lcAccountSettings) << "Failed to download icon from" << iconJob->url() << "with error:" << iconJob->errorString();
-                return;
-            }
-
-            // TODO: error handling
-            // TODO: proper SVG support (otherwise, scale to some suitable high DPI size and use as pixel graphics)
-            auto *imageReader = new QImageReader(iconJob->reply());
-            _accountState->setServerThemeIcon(QIcon(QPixmap::fromImageReader(imageReader)));
-        });
+        auto *iconJob = _accountState->account()->resourcesCache()->makeGetJob(iconPath, this);
+        connect(iconJob, &SimpleNetworkJob::finishedSignal, this, [this, iconJob]() { _accountState->setServerThemeIcon(iconJob->asIcon()); });
         iconJob->start();
     });
 
@@ -147,7 +136,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
         const auto &icon = _accountState->serverThemeIcon();
 
         if (!icon.isNull()) {
-            // TODO: better approach
+            // TODO: the round avatar calculation may work with people but not with logos
             _accountState->account()->setAvatar(icon.pixmap(256, 256));
         }
     });
