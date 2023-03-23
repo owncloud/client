@@ -35,6 +35,8 @@
 #include "account.h"
 #include "networkjobs.h"
 
+#include <cmath>
+
 
 using namespace std::chrono_literals;
 
@@ -369,7 +371,8 @@ QPixmap AvatarJob::makeCircularAvatar(const QPixmap &baseAvatar)
     path.addEllipse(0, 0, dim, dim);
     painter.setClipPath(path);
 
-    painter.drawPixmap(0, 0, baseAvatar);
+    // center picture if it is a landscape one, otherwise start at the top
+    painter.drawPixmap(0, std::max(0, (baseAvatar.width() - baseAvatar.height()) / 2), baseAvatar);
     painter.end();
 
     return avatar;
