@@ -484,15 +484,14 @@ namespace {
             break;
         case SyncResult::SyncPrepare:
             Q_FALLTHROUGH();
-        case SyncResult::Success:
-            if (result.hasUnresolvedConflicts()) {
-                return syncStateIconName(SyncResult{SyncResult::Problem}, sysTray, sysTrayMenuVisible);
-            }
-            statusIcon = QStringLiteral("state-ok");
-            break;
         case SyncResult::Offline:
             statusIcon = QStringLiteral("state-offline");
             break;
+        case SyncResult::Success:
+            if (!result.hasUnresolvedConflicts()) {
+                statusIcon = QStringLiteral("state-ok");
+            }
+            Q_FALLTHROUGH();
         case SyncResult::Problem:
             Q_FALLTHROUGH();
         case SyncResult::Undefined:
