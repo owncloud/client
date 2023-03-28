@@ -484,9 +484,6 @@ namespace {
             break;
         case SyncResult::SyncPrepare:
             Q_FALLTHROUGH();
-        case SyncResult::Offline:
-            statusIcon = QStringLiteral("state-offline");
-            break;
         case SyncResult::Success:
             if (!result.hasUnresolvedConflicts()) {
                 statusIcon = QStringLiteral("state-ok");
@@ -497,6 +494,9 @@ namespace {
         case SyncResult::Undefined:
             // this can happen if no sync connections are configured.
             statusIcon = QStringLiteral("state-information");
+            break;
+        case SyncResult::Offline:
+            statusIcon = QStringLiteral("state-offline");
             break;
         case SyncResult::Error:
             Q_FALLTHROUGH();
