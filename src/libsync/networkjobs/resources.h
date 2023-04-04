@@ -25,7 +25,6 @@ public:
 
 protected:
     explicit ResourceJob(const ResourcesCache *cache, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
-    ;
 
 private:
     const ResourcesCache *_cache;
