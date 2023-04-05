@@ -67,6 +67,9 @@ public:
 
     static void saveDynamicRegistrationDataForAccount(const AccountPtr &accountPtr, const QVariantMap &dynamicRegistrationData);
 
+    void setWebFingerAuthenticationServerUrl(const QUrl &overrideUrl);
+    QUrl webFingerAuthenticationServerUrl() const;
+
 Q_SIGNALS:
     /**
      * The state has changed.
@@ -98,6 +101,8 @@ protected:
     virtual void fetchWellKnown();
 
     QNetworkReply *postTokenRequest(const QList<QPair<QString, QString>> &queryItems);
+
+    QUrl _webFingerOverrideUrl;
 
 
 private:

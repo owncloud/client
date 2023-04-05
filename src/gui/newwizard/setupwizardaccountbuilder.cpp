@@ -74,6 +74,7 @@ OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &token,
 
 HttpCredentialsGui *OAuth2AuthenticationStrategy::makeCreds()
 {
+    Q_ASSERT(isValid());
     return new HttpCredentialsGui(_davUser, _token, _refreshToken);
 }
 
@@ -121,9 +122,9 @@ DetermineAuthTypeJob::AuthType SetupWizardAccountBuilder::authType()
     return _authType;
 }
 
-void SetupWizardAccountBuilder::setWebFingerUsername(const QString &username)
+void SetupWizardAccountBuilder::setClassicWebFingerUsername(const QString &username)
 {
-    _webFingerUsername = username;
+    _classicWebFingerUsername = username;
 }
 
 AccountPtr SetupWizardAccountBuilder::build()
@@ -132,6 +133,11 @@ AccountPtr SetupWizardAccountBuilder::build()
 
     Q_ASSERT(!_serverUrl.isEmpty() && _serverUrl.isValid());
     newAccountPtr->setUrl(_serverUrl);
+
+    if (!_modernWebFingerSelectedInstance.isEmpty()) {
+        Q_ASSERT(_serverUrl.isValid());
+        newAccountPtr->setUrl(_modernWebFingerSelectedInstance);
+    }
 
     Q_ASSERT(hasValidCredentials());
 
@@ -194,19 +200,19 @@ void SetupWizardAccountBuilder::setDefaultSyncTargetDir(const QString &syncTarge
     _defaultSyncTargetDir = syncTargetDir;
 }
 
-QString SetupWizardAccountBuilder::webFingerUsername() const
+QString SetupWizardAccountBuilder::classicWebFingerUsername() const
 {
-    return _webFingerUsername;
+    return _classicWebFingerUsername;
 }
 
-void SetupWizardAccountBuilder::setWebFingerServerUrl(const QUrl &webFingerServerUrl)
+void SetupWizardAccountBuilder::setClassicWebFingerServerUrl(const QUrl &webFingerServerUrl)
 {
-    _webFingerServerUrl = webFingerServerUrl;
+    _classicWebFingerServerUrl = webFingerServerUrl;
 }
 
-QUrl SetupWizardAccountBuilder::webFingerServerUrl() const
+QUrl SetupWizardAccountBuilder::classicWebFingerServerUrl() const
 {
-    return _webFingerServerUrl;
+    return _classicWebFingerServerUrl;
 }
 
 void SetupWizardAccountBuilder::setDynamicRegistrationData(const QVariantMap &dynamicRegistrationData)
@@ -217,5 +223,36 @@ void SetupWizardAccountBuilder::setDynamicRegistrationData(const QVariantMap &dy
 QVariantMap SetupWizardAccountBuilder::dynamicRegistrationData() const
 {
     return _dynamicRegistrationData;
+}
+
+void SetupWizardAccountBuilder::setModernWebFingerAuthenticationServerUrl(const QUrl &url)
+{
+    _modernWebFingerAuthenticationServerUrl = url;
+    _authType = DetermineAuthTypeJob::AuthType::OAuth;
+}
+
+QUrl SetupWizardAccountBuilder::modernWebFingerAuthenticationServerUrl() const
+{
+    return _modernWebFingerAuthenticationServerUrl;
+}
+
+void SetupWizardAccountBuilder::setModernWebFingerInstances(const QVector<QUrl> &instancesList)
+{
+    _modernWebFingerInstances = instancesList;
+}
+
+QVector<QUrl> SetupWizardAccountBuilder::modernWebFingerInstances() const
+{
+    return _modernWebFingerInstances;
+}
+
+void SetupWizardAccountBuilder::setModernWebFingerSelectedInstance(const QUrl &instance)
+{
+    _modernWebFingerSelectedInstance = instance;
+}
+
+QUrl SetupWizardAccountBuilder::modernWebFingerSelectedInstance() const
+{
+    return _modernWebFingerSelectedInstance;
 }
 }

@@ -118,16 +118,16 @@ public:
      * Only used when WebFinger support is enabled by the theme.
      * @param webFingerServerUrl URL to WebFinger server
      */
-    void setWebFingerServerUrl(const QUrl &webFingerServerUrl);
-    QUrl webFingerServerUrl() const;
+    void setClassicWebFingerServerUrl(const QUrl &webFingerServerUrl);
+    QUrl classicWebFingerServerUrl() const;
 
     /**
      * Set URL of WebFinger server used to look up the user's server.
      * Only used when WebFinger support is enabled by the theme.
      * @param username
      */
-    void setWebFingerUsername(const QString &username);
-    QString webFingerUsername() const;
+    void setClassicWebFingerUsername(const QString &username);
+    QString classicWebFingerUsername() const;
 
     // TODO: move this out of the class's state
     DetermineAuthTypeJob::AuthType authType();
@@ -171,11 +171,24 @@ public:
      */
     AccountPtr build();
 
+    void setModernWebFingerAuthenticationServerUrl(const QUrl &url);
+    QUrl modernWebFingerAuthenticationServerUrl() const;
+
+    void setModernWebFingerInstances(const QVector<QUrl> &instancesList);
+    QVector<QUrl> modernWebFingerInstances() const;
+
+    void setModernWebFingerSelectedInstance(const QUrl &instance);
+    QUrl modernWebFingerSelectedInstance() const;
+
 private:
     QUrl _serverUrl;
 
-    QString _webFingerUsername;
-    QUrl _webFingerServerUrl;
+    QString _classicWebFingerUsername;
+    QUrl _classicWebFingerServerUrl;
+
+    QUrl _modernWebFingerAuthenticationServerUrl;
+    QVector<QUrl> _modernWebFingerInstances;
+    QUrl _modernWebFingerSelectedInstance;
 
     DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
 

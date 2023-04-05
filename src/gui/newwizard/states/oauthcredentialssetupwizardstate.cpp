@@ -16,6 +16,7 @@
 #include <QClipboard>
 
 #include "gui/application.h"
+#include "jobs/webfingeruserinfojobfactory.h"
 #include "oauthcredentialssetupwizardstate.h"
 #include "theme.h"
 
@@ -24,11 +25,25 @@ namespace OCC::Wizard {
 OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    auto oAuthCredentialsPage = new OAuthCredentialsSetupWizardPage(_context->accountBuilder().serverUrl());
+    auto modernWebFingerAuthenticationServerUrl = _context->accountBuilder().modernWebFingerAuthenticationServerUrl();
+
+    auto oAuthCredentialsPage = [&]() {
+        if (!modernWebFingerAuthenticationServerUrl.isEmpty()) {
+            //            Q_ASSERT(_context->accountBuilder().serverUrl().isEmpty());
+            return new OAuthCredentialsSetupWizardPage(modernWebFingerAuthenticationServerUrl);
+        } else {
+            return new OAuthCredentialsSetupWizardPage(_context->accountBuilder().serverUrl());
+        }
+    }();
+
     _page = oAuthCredentialsPage;
 
-    // webFingerUsername will be empty when WebFinger is not in use
-    auto oAuth = new OAuth(_context->accountBuilder().serverUrl(), _context->accountBuilder().webFingerUsername(), _context->accessManager(), {}, this);
+    auto oAuth = new OAuth(_context->accountBuilder().serverUrl(), _context->accountBuilder().classicWebFingerUsername(), _context->accessManager(), {}, this);
+
+    QUrl authServerUrl = _context->accountBuilder().modernWebFingerAuthenticationServerUrl();
+    if (!authServerUrl.isEmpty()) {
+        oAuth->setWebFingerAuthenticationServerUrl(authServerUrl);
+    }
 
     connect(oAuth, &OAuth::result, this, [this, oAuthCredentialsPage](OAuth::Result result, const QString &token, const QString &refreshToken) {
         // the button may not be clicked anymore, since the server has been shut down right before this signal was emitted by the OAuth instance
@@ -39,21 +54,47 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
         // bring window up top again, as the browser may have been raised in front of it
         _context->window()->raise();
 
-        switch (result) {
-        case OAuth::Result::LoggedIn: {
-            _context->accountBuilder().setAuthenticationStrategy(new OAuth2AuthenticationStrategy(token, refreshToken));
-            Q_EMIT evaluationSuccessful();
-            break;
-        }
-        case OAuth::Result::Error: {
-            Q_EMIT evaluationFailed(tr("Error while trying to log in to OAuth2-enabled server."));
-            break;
-        }
-        case OAuth::Result::NotSupported: {
-            // should never happen
-            Q_EMIT evaluationFailed(tr("Server reports that OAuth2 is not supported."));
-            break;
-        }
+        auto finish = [=]() {
+            switch (result) {
+            case OAuth::Result::LoggedIn: {
+                _context->accountBuilder().setAuthenticationStrategy(new OAuth2AuthenticationStrategy(token, refreshToken));
+                Q_EMIT evaluationSuccessful();
+                break;
+            }
+            case OAuth::Result::Error: {
+                Q_EMIT evaluationFailed(tr("Error while trying to log in to OAuth2-enabled server."));
+                break;
+            }
+            case OAuth::Result::NotSupported: {
+                // should never happen
+                Q_EMIT evaluationFailed(tr("Server reports that OAuth2 is not supported."));
+                break;
+            }
+            }
+        };
+
+        // we run this job here so that it runs during the transition state
+        // sure, it's not the cleanest ever approach, but currently it's good enough
+        if (!_context->accountBuilder().modernWebFingerAuthenticationServerUrl().isEmpty()) {
+            auto *job = Jobs::WebFingerInstanceLookupJobFactory(_context->accessManager(), token).startJob(_context->accountBuilder().serverUrl(), this);
+
+            connect(job, &CoreJob::finished, this, [=]() {
+                if (!job->success()) {
+                    Q_EMIT evaluationFailed(QStringLiteral("Failed to look up instances: %1").arg(job->errorMessage()));
+                } else {
+                    const auto instanceUrls = qvariant_cast<QVector<QUrl>>(job->result());
+
+                    if (instanceUrls.isEmpty()) {
+                        Q_EMIT evaluationFailed(QStringLiteral("Server returned empty list of instances"));
+                    } else {
+                        _context->accountBuilder().setModernWebFingerInstances(instanceUrls);
+                    }
+                }
+
+                finish();
+            });
+        } else {
+            finish();
         }
     });
 
@@ -76,7 +117,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
         ocApp()->clipboard()->setText(link.toString());
     });
 
-    // moving to next page is only possible once we see a request to our embedded web server
+    // the implementation moves to the next state automatically once ready, no user interaction needed
     _context->window()->disableNextButton();
 
     oAuth->startAuthentication();

@@ -378,7 +378,7 @@ void OAuth::startAuthentication()
                         auto *job = FetchUserInfoJobFactory::fromOAuth2Credentials(_networkAccessManager, accessToken).startJob(_serverUrl, this);
 
                         connect(job, &CoreJob::finished, this, [=]() {
-                            if (!job->success()) {
+                            if (!OC_ENSURE(job->success())) {
                                 httpReplyAndClose(socket, QStringLiteral("500 Internal Server Error"), tr("Login Error"),
                                     tr("<h1>Login Error</h1><p>%1</p>").arg(job->errorMessage()));
                                 emit result(Error);
@@ -501,11 +501,19 @@ void OAuth::fetchWellKnown()
         _wellKnownFinished = true;
         Q_EMIT fetchWellKnownFinished();
     } else {
-        qCDebug(lcOauth) << "fetching" << wellKnownPathC;
-
         QNetworkRequest req;
+
+        if (!_webFingerOverrideUrl.isEmpty()) {
+            qCDebug(lcOauth) << "fetching instance information using WebFinger override URL" << _webFingerOverrideUrl;
+            req.setUrl(Utility::concatUrlPath(_webFingerOverrideUrl, wellKnownPathC));
+        } else {
+            const QUrl url = Utility::concatUrlPath(_serverUrl, wellKnownPathC);
+            qCDebug(lcOauth) << "fetching" << url;
+            req.setUrl(url);
+        }
+
         req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
-        req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
+        req.setRawHeader("Referer", _serverUrl.toString().toUtf8());
         req.setTransferTimeout(defaultTimeoutMs());
 
         auto reply = _networkAccessManager->get(req);
@@ -580,6 +588,16 @@ void OAuth::openBrowser()
         // We cannot open the browser, then we claim we don't support OAuth.
         emit result(NotSupported, QString());
     }
+}
+
+void OAuth::setWebFingerAuthenticationServerUrl(const QUrl &overrideUrl)
+{
+    _webFingerOverrideUrl = overrideUrl;
+}
+
+QUrl OAuth::webFingerAuthenticationServerUrl() const
+{
+    return _webFingerOverrideUrl;
 }
 
 AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)

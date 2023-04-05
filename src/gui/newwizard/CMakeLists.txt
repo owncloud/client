@@ -8,9 +8,9 @@ add_library(newwizard STATIC
     pages/serverurlsetupwizardpage.h
     pages/serverurlsetupwizardpage.cpp
 
-    pages/webfingersetupwizardpage.ui
-    pages/webfingersetupwizardpage.h
-    pages/webfingersetupwizardpage.cpp
+    pages/classicwebfingersetupwizardpage.ui
+    pages/classicwebfingersetupwizardpage.h
+    pages/classicwebfingersetupwizardpage.cpp
 
     pages/credentialssetupwizardpage.ui
 
@@ -43,11 +43,17 @@ add_library(newwizard STATIC
     jobs/checkbasicauthjobfactory.cpp
     jobs/checkbasicauthjobfactory.h
 
+    jobs/discoverwebfingerservicejobfactory.cpp
+    jobs/discoverwebfingerservicejobfactory.h
+
+    jobs/webfingeruserinfojobfactory.cpp
+    jobs/webfingeruserinfojobfactory.h
+
     postfixlineedit.cpp
 
     states/abstractsetupwizardstate.cpp
     states/serverurlsetupwizardstate.cpp
-    states/webfingersetupwizardstate.cpp
+    states/classicwebfingersetupwizardstate.cpp
     states/basiccredentialssetupwizardstate.cpp
     states/oauthcredentialssetupwizardstate.cpp
     states/accountconfiguredsetupwizardstate.cpp

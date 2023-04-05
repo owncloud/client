@@ -12,22 +12,22 @@
  * for more details.
  */
 
-#include "webfingersetupwizardstate.h"
+#include "classicwebfingersetupwizardstate.h"
 #include "creds/webfinger.h"
 #include "determineauthtypejobfactory.h"
-#include "pages/webfingersetupwizardpage.h"
+#include "pages/classicwebfingersetupwizardpage.h"
 
 namespace OCC::Wizard {
 
-WebFingerSetupWizardState::WebFingerSetupWizardState(SetupWizardContext *context)
+ClassicWebFingerSetupWizardState::ClassicWebFingerSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    _page = new WebFingerSetupWizardPage(_context->accountBuilder().webFingerServerUrl());
+    _page = new ClassicWebFingerSetupWizardPage(_context->accountBuilder().classicWebFingerServerUrl());
 }
 
-void WebFingerSetupWizardState::evaluatePage()
+void ClassicWebFingerSetupWizardState::evaluatePage()
 {
-    auto *webFingerSetupWizardPage = qobject_cast<WebFingerSetupWizardPage *>(_page);
+    auto *webFingerSetupWizardPage = qobject_cast<ClassicWebFingerSetupWizardPage *>(_page);
     OC_ASSERT(webFingerSetupWizardPage != nullptr);
 
     const QString resource = QStringLiteral("acct:%1").arg(webFingerSetupWizardPage->username());
@@ -58,18 +58,18 @@ void WebFingerSetupWizardState::evaluatePage()
                 return;
             }
 
-            _context->accountBuilder().setWebFingerUsername(webFingerSetupWizardPage->username());
+            _context->accountBuilder().setClassicWebFingerUsername(webFingerSetupWizardPage->username());
             _context->accountBuilder().setServerUrl(webFinger->href(), qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
             Q_EMIT evaluationSuccessful();
         });
     });
 
-    webFinger->start(_context->accountBuilder().webFingerServerUrl(), resource);
+    webFinger->start(_context->accountBuilder().classicWebFingerServerUrl(), resource);
 }
 
-SetupWizardState WebFingerSetupWizardState::state() const
+SetupWizardState ClassicWebFingerSetupWizardState::state() const
 {
-    return SetupWizardState::WebFingerState;
+    return SetupWizardState::ClassicWebFingerState;
 }
 
 } // OCC::Wizard
