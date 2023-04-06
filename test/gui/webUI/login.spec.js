@@ -48,7 +48,5 @@ test("oC10 login @oauth", async ({ page }) => {
   // authorize
   await page.click("button >> text=Authorize");
   // confirm successful login
-  await expect(page.locator("span.error")).toContainText(
-    "The application was authorized successfully"
-  );
+  await expect(page.locator("h1")).toContainText("Login Successful");
 });
