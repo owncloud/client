@@ -62,7 +62,10 @@ Account::Account(const QUuid &uuid, QObject *parent)
     _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(_commonCacheDirectory.absolutePath(), _uuid.toString(QUuid::WithoutBraces));
     QDir().mkpath(_cacheDirectory);
 
-    _resourcesCache = new ResourcesCache(QStringLiteral("%1/resources/").arg(_cacheDirectory), this);
+    // we need to make sure the directory we pass to the resources cache exists
+    const QString resourcesCacheDir = QStringLiteral("%1/resources/").arg(_cacheDirectory);
+    QDir().mkpath(resourcesCacheDir);
+    _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
 }
 
 AccountPtr Account::create(const QUuid &uuid)
