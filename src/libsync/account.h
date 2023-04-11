@@ -75,6 +75,11 @@ class OWNCLOUDSYNC_EXPORT Account : public QObject
     Q_PROPERTY(QUrl url MEMBER _url)
 
 public:
+    /**
+     * Set a custom directory which all accounts created after this call will share to store their cached files in.
+     */
+    static void setCommonCacheDirectory(const QDir &directory);
+
     static AccountPtr create(const QUuid &uuid);
     ~Account() override;
 
@@ -237,6 +242,9 @@ protected Q_SLOTS:
     void slotCredentialsAsked();
 
 private:
+    // directory all newly created accounts store their various caches in
+    static QDir _commonCacheDirectory;
+
     Account(const QUuid &uuid, QObject *parent = nullptr);
     void setSharedThis(AccountPtr sharedThis);
 
@@ -249,6 +257,7 @@ private:
     QPixmap _avatarImg;
     QMap<QString, QVariant> _settingsMap;
     QUrl _url;
+    QString _cacheDirectory;
 
     QSet<QSslCertificate> _approvedCerts;
     Capabilities _capabilities;

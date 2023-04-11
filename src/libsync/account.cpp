@@ -42,11 +42,11 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccount, "sync.account", QtInfoMsg)
 
-namespace {
-    QString determineAccountCacheLocation(Account *account)
-    {
-        return QStringLiteral("%1/accounts/%2").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation), account->uuid().toString(QUuid::WithoutBraces));
-    }
+QDir Account::_commonCacheDirectory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+
+void Account::setCommonCacheDirectory(const QDir &directory)
+{
+    _commonCacheDirectory = directory;
 }
 
 Account::Account(const QUuid &uuid, QObject *parent)
@@ -59,9 +59,10 @@ Account::Account(const QUuid &uuid, QObject *parent)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
 
-    const QString cacheDirectory = QStringLiteral("%1/resources/").arg(determineAccountCacheLocation(this));
-    QDir().mkpath(cacheDirectory);
-    _resourcesCache = new ResourcesCache(cacheDirectory, this);
+    _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(_commonCacheDirectory.absolutePath(), _uuid.toString(QUuid::WithoutBraces));
+    QDir().mkpath(_cacheDirectory);
+
+    _resourcesCache = new ResourcesCache(QStringLiteral("%1/resources/").arg(_cacheDirectory), this);
 }
 
 AccountPtr Account::create(const QUuid &uuid)
@@ -176,7 +177,7 @@ void Account::setCredentials(AbstractCredentials *cred)
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
-    const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(determineAccountCacheLocation(this)));
+    const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(_cacheDirectory));
     qCDebug(lcAccount) << "Cache location for account" << this << "set to" << networkCacheLocation;
     _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
