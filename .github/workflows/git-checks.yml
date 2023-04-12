@@ -1,0 +1,19 @@
+name: Git checks
+
+on: [pull_request]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  message-check:
+    name: Block Merge or Autosquash Commits
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Block Merge or Autosquash Commits
+        uses: nineinchnick/block-commits-action@v2.0.0
+        with:
+          action-merge: fail
+          action-fixup: request-changes
