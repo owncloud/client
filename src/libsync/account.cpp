@@ -42,11 +42,20 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccount, "sync.account", QtInfoMsg)
 
-QDir Account::_commonCacheDirectory = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+QString Account::_customCommonCacheDirectory = {};
 
-void Account::setCommonCacheDirectory(const QDir &directory)
+void Account::setCommonCacheDirectory(const QString &directory)
 {
-    _commonCacheDirectory = directory;
+    _customCommonCacheDirectory = directory;
+}
+
+QString Account::commonCacheDirectory()
+{
+    if (_customCommonCacheDirectory.isEmpty()) {
+        return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    }
+
+    return _customCommonCacheDirectory;
 }
 
 Account::Account(const QUuid &uuid, QObject *parent)
@@ -59,7 +68,7 @@ Account::Account(const QUuid &uuid, QObject *parent)
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
 
-    _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(_commonCacheDirectory.absolutePath(), _uuid.toString(QUuid::WithoutBraces));
+    _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(commonCacheDirectory(), _uuid.toString(QUuid::WithoutBraces));
     QDir().mkpath(_cacheDirectory);
 
     // we need to make sure the directory we pass to the resources cache exists

@@ -78,7 +78,8 @@ public:
     /**
      * Set a custom directory which all accounts created after this call will share to store their cached files in.
      */
-    static void setCommonCacheDirectory(const QDir &directory);
+    static void setCommonCacheDirectory(const QString &directory);
+    static QString commonCacheDirectory();
 
     static AccountPtr create(const QUuid &uuid);
     ~Account() override;
@@ -243,7 +244,7 @@ protected Q_SLOTS:
 
 private:
     // directory all newly created accounts store their various caches in
-    static QDir _commonCacheDirectory;
+    static QString _customCommonCacheDirectory;
 
     Account(const QUuid &uuid, QObject *parent = nullptr);
     void setSharedThis(AccountPtr sharedThis);
