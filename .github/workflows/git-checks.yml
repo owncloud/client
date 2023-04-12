@@ -2,8 +2,8 @@ name: Git checks
 
 on: [pull_request]
 
-#permissions:
-#  pull-requests: read
+permissions:
+  pull_requests: write
 
 jobs:
   message-check:
