@@ -320,7 +320,7 @@
         <translation>גרסאות</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="28"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="27"/>
         <source>About %1</source>
         <translation>על אודות %1</translation>
     </message>
@@ -639,47 +639,47 @@ Please authenticate using your browser.</source>
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="222"/>
+        <location filename="../src/gui/accountstate.cpp" line="223"/>
         <source>Signed out</source>
         <translation>יציאה</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="224"/>
+        <location filename="../src/gui/accountstate.cpp" line="225"/>
         <source>Disconnected</source>
         <translation>מנותק</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="226"/>
+        <location filename="../src/gui/accountstate.cpp" line="227"/>
         <source>Connected</source>
         <translation>מחובר</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="228"/>
+        <location filename="../src/gui/accountstate.cpp" line="229"/>
         <source>Service unavailable</source>
         <translation>שירות לא זמין</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="230"/>
+        <location filename="../src/gui/accountstate.cpp" line="231"/>
         <source>Maintenance mode</source>
         <translation>מצב תחזוקה</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="232"/>
+        <location filename="../src/gui/accountstate.cpp" line="233"/>
         <source>Network error</source>
         <translation>שגיאת תקשורת</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="234"/>
+        <location filename="../src/gui/accountstate.cpp" line="235"/>
         <source>Configuration error</source>
         <translation>שגיאת הגדרה</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="236"/>
+        <location filename="../src/gui/accountstate.cpp" line="237"/>
         <source>Asking Credentials</source>
         <translation>מבקש אישורי אימות</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="238"/>
+        <location filename="../src/gui/accountstate.cpp" line="239"/>
         <source>Unknown account state</source>
         <translation>מצב חשבון לא ידוע</translation>
     </message>
@@ -687,27 +687,27 @@ Please authenticate using your browser.</source>
 <context>
     <name>OCC::ActivityListModel</name>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="89"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="91"/>
         <source>%1 %2 on %3</source>
         <translation>%1 %2 ב- %3</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="115"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="117"/>
         <source>Activity</source>
         <translation>פעילות</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="117"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="119"/>
         <source>Account</source>
         <translation>חשבון</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="119"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="121"/>
         <source>Time</source>
         <translation>זמן</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="121"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="123"/>
         <source>Local path</source>
         <translation type="unfinished"/>
     </message>
@@ -789,6 +789,26 @@ Please authenticate using your browser.</source>
         <location filename="../src/gui/activitywidget.cpp" line="164"/>
         <source>&lt;br/&gt;Account %1 does not have activities enabled.</source>
         <translation>&lt;br/&gt;בחשבון %1 אין פעילויות מאופשרות.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AppImageUpdateAvailableDialog</name>
+    <message>
+        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="35"/>
+        <source>Installed version: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="36"/>
+        <source>Available update: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="37"/>
+        <source>An update is available for this AppImage of %1. Do you want to install this update?
+
+The update will be performed in the background, and overwrite the current AppImage file. You need to restart the app to complete the update.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -963,7 +983,7 @@ This is a new, experimental mode. If you decide to use it, please report any iss
         <translation>לא הוגדר חשבון ownCloud</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="318"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="320"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>יש לעדכן לשרת האחרון ולהפעיל מחדש את הלקוח.</translation>
     </message>
@@ -983,7 +1003,7 @@ This is a new, experimental mode. If you decide to use it, please report any iss
         <translation>האישורים שסופקו אינם נכונים</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="317"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="319"/>
         <source>The configured server for this client is too old.</source>
         <translation type="unfinished"/>
     </message>
@@ -1044,150 +1064,150 @@ This is a new, experimental mode. If you decide to use it, please report any iss
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="251"/>
+        <location filename="../src/gui/folder.cpp" line="252"/>
         <source>Local folder %1 does not exist.</source>
         <translation>תיקייה מקומית %1 אינה קיימת.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="253"/>
+        <location filename="../src/gui/folder.cpp" line="254"/>
         <source>%1 should be a folder but is not.</source>
         <translation>%1 אמור להיות תיקייה אבל אינו.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="255"/>
+        <location filename="../src/gui/folder.cpp" line="256"/>
         <source>%1 is not readable.</source>
         <translation>%1 אינו ניתן לקריאה.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="572"/>
+        <location filename="../src/gui/folder.cpp" line="573"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 הוסר.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="586"/>
+        <location filename="../src/gui/folder.cpp" line="587"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 עודכן.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="593"/>
+        <location filename="../src/gui/folder.cpp" line="594"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 שונה לשם %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="600"/>
+        <location filename="../src/gui/folder.cpp" line="601"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 הועבר אל %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="570"/>
+        <location filename="../src/gui/folder.cpp" line="571"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 וכן %n קובץ נוסף הוסר.</numerusform><numerusform>%1 וכן %n קבצים נוספים הוסרו.</numerusform><numerusform>%1 וכן %n קבצים נוספים הוסרו.</numerusform><numerusform>%1 וכן %n קבצים נוספים הוסרו.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="237"/>
+        <location filename="../src/gui/folder.cpp" line="238"/>
         <source>The path &apos;%1&apos; is too long. Either enable long paths in the Windows settings, or choose a different folder.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="245"/>
+        <location filename="../src/gui/folder.cpp" line="246"/>
         <source>%1 failed to open the database.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="257"/>
+        <location filename="../src/gui/folder.cpp" line="258"/>
         <source>%1 is not writable.</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="577"/>
+        <location filename="../src/gui/folder.cpp" line="578"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 וכן %n קובץ אחר נוסף.</numerusform><numerusform>%1 וכן %n קבצים נוספים נוספו.</numerusform><numerusform>%1 וכן %n קבצים נוספים נוספו.</numerusform><numerusform>%1 וכן %n קבצים נוספים נוספו.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="579"/>
+        <location filename="../src/gui/folder.cpp" line="580"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 נוסף.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="584"/>
+        <location filename="../src/gui/folder.cpp" line="585"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 וכן %n קובץ נוסף עודכן.</numerusform><numerusform>%1 וכן %n קבצים נוספים עודכנו.</numerusform><numerusform>%1 וכן %n קבצים נוספים עודכנו.</numerusform><numerusform>%1 וכן %n קבצים נוספים עודכנו.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="591"/>
+        <location filename="../src/gui/folder.cpp" line="592"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>שונה השם של מ- %1 ל- %2 כמו כן שונה השם ל- %n קובץ נוסף.</numerusform><numerusform>שונה השם של מ- %1 ל- %2 כמו כן שונה השם ל- %n קבצים נוספים.</numerusform><numerusform>שונה השם של מ- %1 ל- %2 כמו כן שונה השם ל- %n קבצים נוספים.</numerusform><numerusform>שונה השם של מ- %1 ל- %2 כמו כן שונה השם ל- %n קבצים נוספים.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="598"/>
+        <location filename="../src/gui/folder.cpp" line="599"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 הועבר ל- %2 כמו כן הועבר %n קובץ נוסף.</numerusform><numerusform>%1 הועבר ל- %2 כמו כן הועברו %n קבצים נוספים.</numerusform><numerusform>%1 הועבר ל- %2 כמו כן הועברו %n קבצים נוספים.</numerusform><numerusform>%1 הועבר ל- %2 כמו כן הועברו %n קבצים נוספים.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="605"/>
+        <location filename="../src/gui/folder.cpp" line="606"/>
         <source>%1 has and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>ל- %1 וכן ל- %n קובץ נוסף יש התנגשות סנכרון.</numerusform><numerusform>ל- %1 וכן ל- %n קבצים נוספים יש התנגשות סנכרון.</numerusform><numerusform>ל- %1 וכן ל- %n קבצים נוספים יש התנגשות סנכרון.</numerusform><numerusform>ל- %1 וכן ל- %n קבצים נוספים יש התנגשות סנכרון.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="607"/>
+        <location filename="../src/gui/folder.cpp" line="608"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>ל- %1 יש התנגשות סנכרון. יש לבדוק את הקובץ הבעייתי!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="612"/>
+        <location filename="../src/gui/folder.cpp" line="613"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>לא ניתן היה לסנכרן את %1 ו- %n קובץ נוסף בשל שגיאות. יש לבדוק את הלוג לפרטים.</numerusform><numerusform>לא ניתן היה לסנכרן את %1 ו- %n קבצים נוספים בשל שגיאות. יש לבדוק את הלוג לפרטים.</numerusform><numerusform>לא ניתן היה לסנכרן את %1 ו- %n קבצים נוספים בשל שגיאות. יש לבדוק את הלוג לפרטים.</numerusform><numerusform>לא ניתן היה לסנכרן את %1 ו- %n קבצים נוספים בשל שגיאות. יש לבדוק את הלוג לפרטים.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="614"/>
+        <location filename="../src/gui/folder.cpp" line="615"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 לא ניתן היה לסנכרנו בשל שגיאה. ניתן לצפות בלוג לפרטים.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="620"/>
+        <location filename="../src/gui/folder.cpp" line="621"/>
         <source>Sync Activity</source>
         <translation>פעילות סנכרון</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1005"/>
+        <location filename="../src/gui/folder.cpp" line="1006"/>
         <source>Could not read system exclude file</source>
         <translation>לא ניתן היה לקרוא את קובץ הלא כלולים במערכת</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1215"/>
+        <location filename="../src/gui/folder.cpp" line="1216"/>
         <source>A new folder larger than %1 MB has been added: %2.
 </source>
         <translation>תיקייה חדשה הגדולה מ- %1 MB נוספה: %2.
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1218"/>
+        <location filename="../src/gui/folder.cpp" line="1219"/>
         <source>A folder from an external storage has been added.
 </source>
         <translation>נוספה תיקייה של אחסון חיצוני.
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1219"/>
+        <location filename="../src/gui/folder.cpp" line="1220"/>
         <source>Please go in the settings to select it if you wish to download it.</source>
         <translation>יש לעבור להגדרות בכדי לבחור בו אם ברצונך להוריד אותו.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1278"/>
+        <location filename="../src/gui/folder.cpp" line="1279"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>תיקייה %1 נוצרה אבל לא נכללה בסנכרון בעבר. מידע בתיקייה לא יסונכרן.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1281"/>
+        <location filename="../src/gui/folder.cpp" line="1282"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>קובץ %1 נוצר אבל לא נכלל בסנכרון בעבר. מידע בקובץ לא יסונכרן.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1292"/>
+        <location filename="../src/gui/folder.cpp" line="1293"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1200,7 +1220,7 @@ This means that the synchronization client might not upload local changes immedi
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1345"/>
+        <location filename="../src/gui/folder.cpp" line="1346"/>
         <source>All files in the sync folder '%1' folder were deleted on the server.
 These deletes will be synchronized to your local sync folder, making such files unavailable unless you have a right to restore. 
 If you decide to keep the files, they will be re-synced with the server if you have rights to do so.
@@ -1211,7 +1231,7 @@ If you decide to delete the files, they will be unavailable to you, unless you a
 אם קבלת החלטה למחוק את הקבצים, הם לא יהיו נגישים עבורך יותר, אלא אם כן הנך הבעלים שלהם.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1350"/>
+        <location filename="../src/gui/folder.cpp" line="1351"/>
         <source>All the files in your local sync folder '%1' were deleted. These deletes will be synchronized with your server, making such files unavailable unless restored.
 Are you sure you want to sync those actions with the server?
 If this was an accident and you decide to keep your files, they will be re-synced from the server.</source>
@@ -1220,17 +1240,17 @@ If this was an accident and you decide to keep your files, they will be re-synce
 אם מדובר בטעות וקבלת החלטה לשמור את הקבצים שלך, הם יסונכרנו מחדש מהשרת.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1354"/>
+        <location filename="../src/gui/folder.cpp" line="1355"/>
         <source>Remove All Files?</source>
         <translation>הסרת כל הקבצים?</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1358"/>
+        <location filename="../src/gui/folder.cpp" line="1359"/>
         <source>Remove all files</source>
         <translation>הסרת כל הקבצים</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1359"/>
+        <location filename="../src/gui/folder.cpp" line="1360"/>
         <source>Keep files</source>
         <translation>השארת הקבצים</translation>
     </message>
@@ -1368,7 +1388,7 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderStatusDelegate</name>
     <message>
-        <location filename="../src/gui/folderstatusdelegate.cpp" line="192"/>
+        <location filename="../src/gui/folderstatusdelegate.cpp" line="194"/>
         <source>%1 of %2 in use</source>
         <translation>%1 מתוך %2 בשימוש</translation>
     </message>
@@ -1376,134 +1396,134 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderStatusModel</name>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="223"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="224"/>
         <source>Error while loading the list of folders from the server.</source>
         <translation>שגיאה בזמן טעינת רשימת התיקיות מהשרת.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="273"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="274"/>
         <source>Virtual file support is enabled.</source>
         <translation>הופעלה תמיכה בקובץ וירטואלי.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="226"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="227"/>
         <source>Fetching folder list from server...</source>
         <translation>מושך רשימת תיקיות מהשרת...</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="261"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="262"/>
         <source>There are unresolved conflicts. Click for details.</source>
         <translation>קיימות סתירות לא פתורות. ניתן ללחוץ לפרטים.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="339"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="338"/>
         <source>%1
 %2</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="341"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="340"/>
         <source>Signed out
 %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="968"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="967"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>בודק לשינויים ב- &apos;%1&apos; מרוחק</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="970"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="969"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>בודק לשינויים ב- &apos;%1&apos; מקומי</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="974"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="973"/>
         <source>Reconciling changes</source>
         <translation>מסדיר שינויים</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1009"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1008"/>
         <source>&apos;%1&apos;</source>
         <translation>&apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1030"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1029"/>
         <source>Syncing %1</source>
         <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
         <translation>מסנכרן %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1032"/>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1043"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1031"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1042"/>
         <source>, </source>
         <translation>,</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1036"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1035"/>
         <source>download %1/s</source>
         <extracomment>Example text: &quot;download 24Kb/s&quot; (%1 is replaced by 24Kb (translated))</extracomment>
         <translation>בהורדה %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1038"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1037"/>
         <source>↓ %1/s</source>
         <translation>↓ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1048"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1047"/>
         <source>↑ %1/s</source>
         <translation>↑ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1046"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1045"/>
         <source>upload %1/s</source>
         <extracomment>Example text: &quot;upload 24Kb/s&quot; (%1 is replaced by 24Kb (translated))</extracomment>
         <translation>בהעלאה %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="200"/>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="205"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="201"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="206"/>
         <source>%1 (%2)</source>
         <comment>filename (size)</comment>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="313"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="312"/>
         <source>Local folder: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1054"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1053"/>
         <source>%1 %2 (%3 of %4)</source>
         <extracomment>Example text: &quot;uploading foobar.png (2MB of 2MB)&quot;</extracomment>
         <translation>%1 %2 (%3 מתוך %4)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1058"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1057"/>
         <source>%1 %2</source>
         <extracomment>Example text: &quot;uploading foobar.png&quot;</extracomment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1075"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1074"/>
         <source>%5 left, %1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;5 minutes left, 12 MB of 345 MB, file 6 of 7&quot;</extracomment>
         <translation>%5 נשארו, %1 מתוך %2, קובץ %3 מתוך %4</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1083"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1082"/>
         <source>%1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
         <translation>%1 מתוך %2, קובץ %3 מתוך %4</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1090"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1089"/>
         <source>file %1 of %2</source>
         <translation>קובץ %1 מתוך %2</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1139"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1138"/>
         <source>Waiting for %n other folder(s)...</source>
         <translation><numerusform>ממתין ל- %n תיקייה אחרת...</numerusform><numerusform>ממתין ל- %n תיקיות אחרות...</numerusform><numerusform>ממתין ל- %n תיקיות אחרות...</numerusform><numerusform>ממתין ל- %n תיקיות אחרות...</numerusform></translation>
     </message>
@@ -1527,7 +1547,7 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="157"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>קבצים וירטואליים אינם זמינים לתיקייה הנבחרת</translation>
     </message>
@@ -1634,27 +1654,27 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="89"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="171"/>
         <source>Connection Timeout</source>
         <translation>פסק זמן חיבור</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="174"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="256"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>לא התקבל E-Tag מהשרת, יש לבדוק פרוקסי/שער כניסה</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="181"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="263"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>התקבל E-Tag אחר לחידוש. ניסיון נוסף פעם באה.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="192"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="274"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>התקבלה הורדה לא צפויה של Content-Length.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="220"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="302"/>
         <source>Server returned wrong content-range</source>
         <translation>השרת החזיר טווח-תוכן שגוי</translation>
     </message>
@@ -1707,17 +1727,17 @@ Please consider removing this folder from the account and adding it again.</sour
         <translation>עדכונים</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="270"/>
+        <location filename="../src/gui/generalsettings.cpp" line="145"/>
         <source>stable</source>
         <translation>יציב</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="275"/>
+        <location filename="../src/gui/generalsettings.cpp" line="146"/>
         <source>beta</source>
         <translation>בטא</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="370"/>
+        <location filename="../src/gui/generalsettings.ui" line="360"/>
         <source>About</source>
         <translation>על אודות</translation>
     </message>
@@ -1773,17 +1793,17 @@ Please consider removing this folder from the account and adding it again.</sour
         <translation>הצגת כותב לוגים של נפילות יישום</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="302"/>
+        <location filename="../src/gui/generalsettings.ui" line="292"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>&amp;הפעלה מחדש &amp;&amp; עדכן</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="315"/>
+        <location filename="../src/gui/generalsettings.cpp" line="321"/>
         <source>You cannot disable autostart because system-wide autostart is enabled.</source>
         <translation>לא ניתן להשבית את ההפעלה האוטומטית מכיוון שההפעלה האוטומטית של המערכת המלאה מופעלת.</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="221"/>
+        <location filename="../src/gui/generalsettings.cpp" line="224"/>
         <source>Change update channel?</source>
         <translation>שינוי ערוץ העדכון?</translation>
     </message>
@@ -1798,7 +1818,7 @@ Please consider removing this folder from the account and adding it again.</sour
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="222"/>
+        <location filename="../src/gui/generalsettings.cpp" line="225"/>
         <source>The update channel determines which client updates will be offered for installation. The &quot;stable&quot; channel contains only upgrades that are considered reliable, while the versions in the &quot;beta&quot; channel may contain newer features and bugfixes, but have not yet been tested thoroughly.
 
 Note that this selects only what pool upgrades are taken from, and that there are no downgrades: So going back from the beta channel to the stable channel usually cannot be done immediately and means waiting for a stable version that is newer than the currently installed beta version.</source>
@@ -1807,35 +1827,35 @@ Note that this selects only what pool upgrades are taken from, and that there ar
 תשומת לב לכך שזה בוחר רק שדרוגים מהמאגר, וכי אין אפשרות לשדרוג לאחור: לפיכך לחזור מערוץ ביתא לערוץ יציב בדרך כלל לא ניתן לביצוע באופן מיידי ויש להמתין לגרסה יציבה שחדשה יותר מגירסת הביתא המותקנת כרגע.</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="235"/>
+        <location filename="../src/gui/generalsettings.cpp" line="238"/>
         <source>Change update channel</source>
         <translation>שינוי ערוץ העדכון</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="236"/>
+        <location filename="../src/gui/generalsettings.cpp" line="239"/>
         <source>Cancel</source>
         <translation>ביטול</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="347"/>
+        <location filename="../src/gui/generalsettings.cpp" line="353"/>
         <source>unknown (%1)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="331"/>
+        <location filename="../src/gui/generalsettings.cpp" line="337"/>
         <source>(use default)</source>
         <translation type="unfinished"/>
     </message>
 </context>
 <context>
-    <name>OCC::GraphApi::Drives</name>
+    <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/drives.cpp" line="64"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="52"/>
         <source>Personal</source>
         <translation>אישי</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/drives.cpp" line="67"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="55"/>
         <source>Shares</source>
         <translation>שיתופים</translation>
     </message>
@@ -1843,7 +1863,7 @@ Note that this selects only what pool upgrades are taken from, and that there ar
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="116"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="113"/>
         <source>Please enter your password to log in to your account.</source>
         <translation type="unfinished"/>
     </message>
@@ -1890,27 +1910,27 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 פריטים במחיקה אפשרית בהם ימחקו אם הם מונעים הסרת תיקייה. זה משמש למסד נתונים ראשי.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="113"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="112"/>
         <source>Could not open file</source>
         <translation>לא ניתן לפתוח קובץ</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="114"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="113"/>
         <source>Cannot write changes to &apos;%1&apos;.</source>
         <translation>לא ניתן לכתוב שינויים אל &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="136"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="135"/>
         <source>Add Ignore Pattern</source>
         <translation>הוספת תבנית התעלמות</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="137"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="136"/>
         <source>Add a new ignore pattern:</source>
         <translation>הוספת תבנית התעלמות חדשה:</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="44"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="43"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translation>רשומה זו מסופקת על ידי המערכת ב- &apos;%1&apos; ולא ניתן לשנותה בתצוגה זו.</translation>
     </message>
@@ -2035,7 +2055,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>יציאה</translation>
     </message>
     <message>
-        <location filename="../src/gui/loginrequireddialog/loginrequireddialog.cpp" line="70"/>
+        <location filename="../src/gui/loginrequireddialog/loginrequireddialog.cpp" line="68"/>
         <source>Log in</source>
         <translation>כניסה</translation>
     </message>
@@ -2233,23 +2253,23 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NotificationWidget</name>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="65"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="67"/>
         <source>Created at %1</source>
         <translation>נוצר ב- %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="78"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="80"/>
         <source>Closing in a few seconds...</source>
         <translation>סגירה בעוד מספר שניות...</translation>
     </message>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="124"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="126"/>
         <source>%1 request failed at %2</source>
         <extracomment>The second parameter is a time, such as 'failed at 09:58pm'</extracomment>
         <translation>הבקשה %1 נכשלה ב- %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="130"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="132"/>
         <source>&apos;%1&apos; selected at %2</source>
         <extracomment>The second parameter is a time, such as 'selected at 09:58pm'</extracomment>
         <translation>&apos;%1&apos; נבחרה ב- %2</translation>
@@ -2296,38 +2316,38 @@ Note that using any logging command line options will override the settings.</so
         <translation>שגיאת התחברות</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="401"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="405"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
         <source>Wrong user</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="409"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="410"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
         <source>Login Successful</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="564"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="572"/>
         <source>Oauth2 Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="565"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="573"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;שגיאת התחברות&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -2400,7 +2420,7 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="759"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="765"/>
         <source>File %1 is currently in use</source>
         <translation type="unfinished"/>
     </message>
@@ -2408,137 +2428,137 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="245"/>
+        <location filename="../src/libsync/discovery.cpp" line="252"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>קישורים סמליים אינם נתמכים לסנכרון.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="254"/>
+        <location filename="../src/libsync/discovery.cpp" line="261"/>
         <source>File is listed on the ignore list.</source>
         <translation>הקובץ מופיע ברשימת הקבצים שיש להתעלם מהם.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="259"/>
+        <location filename="../src/libsync/discovery.cpp" line="266"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>שמות קבצים המסתיימים בנקודה אינם נתמכים במערכת קבצים זו.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="272"/>
+        <location filename="../src/libsync/discovery.cpp" line="279"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>שמות קבצים הכוללים את התו &apos;%1&apos; אינם נתמכים במערכת קבצים זו.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="275"/>
+        <location filename="../src/libsync/discovery.cpp" line="282"/>
         <source>File name contains at least one invalid character</source>
         <translation>שם קובץ כולל לפחות תו אחד לא חוקי</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="277"/>
+        <location filename="../src/libsync/discovery.cpp" line="284"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>שם הקובץ הנו שם שמור במערכת קבצים זו.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="286"/>
+        <location filename="../src/libsync/discovery.cpp" line="293"/>
         <source>Filename contains trailing spaces.</source>
         <translation>שם הקובץ כולל רווחים.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="289"/>
+        <location filename="../src/libsync/discovery.cpp" line="296"/>
         <source>Filename is too long.</source>
         <translation>שם הקובץ ארוך מדי.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="292"/>
+        <location filename="../src/libsync/discovery.cpp" line="299"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>המערכת התעלמה מקובץ/תיקייה כיוון שהם מוסתרים.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="296"/>
+        <location filename="../src/libsync/discovery.cpp" line="303"/>
         <source>Stat failed.</source>
         <translation>ההתחלה נכשלה.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="299"/>
+        <location filename="../src/libsync/discovery.cpp" line="306"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>סתירה: גרסת שרת הורדה, שונה השם לגרסה המקומית אך הגרסה לא נשלחה לשרת.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="303"/>
+        <location filename="../src/libsync/discovery.cpp" line="310"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>לא ניתן להצפין את שם הקובץ במערכת הקבצים שלך.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="306"/>
+        <location filename="../src/libsync/discovery.cpp" line="313"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>שם הקובץ נמצא ברשימה השחורה של השרת.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="409"/>
+        <location filename="../src/libsync/discovery.cpp" line="416"/>
         <source>size</source>
         <translation>גודל</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="411"/>
+        <location filename="../src/libsync/discovery.cpp" line="418"/>
         <source>permissions</source>
         <translation>הרשאות</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="413"/>
+        <location filename="../src/libsync/discovery.cpp" line="420"/>
         <source>etag</source>
         <translation>etag</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="415"/>
+        <location filename="../src/libsync/discovery.cpp" line="422"/>
         <source>file id</source>
         <translation>מזהה קובץ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="419"/>
+        <location filename="../src/libsync/discovery.cpp" line="426"/>
         <source>server reported no %1</source>
         <translation>שרת שמדווח ב- %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1252"/>
+        <location filename="../src/libsync/discovery.cpp" line="1259"/>
         <source>Moved to invalid target, restoring</source>
         <translation>הועבר ליעד לא חוקי, משחזר</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1265"/>
+        <location filename="../src/libsync/discovery.cpp" line="1272"/>
         <source>Not allowed to remove, restoring</source>
         <translation>לא מורשה להסיר, משחזר</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1178"/>
+        <location filename="../src/libsync/discovery.cpp" line="1185"/>
         <source>Ignored because of the &quot;choose what to sync&quot; blacklist</source>
         <translation>המערכת התעלמה בשל הרשימה השחורה של &quot;בחירה מה לסנכרן&quot;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1211"/>
+        <location filename="../src/libsync/discovery.cpp" line="1218"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>אסור כיוון שאין לך הרשאות להוספת תיקיית משנה לתיקייה זו</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1216"/>
+        <location filename="../src/libsync/discovery.cpp" line="1223"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>אסור כיוון שאין לך הרשאות להוספת קבצים לתיקייה זו</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1229"/>
+        <location filename="../src/libsync/discovery.cpp" line="1236"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>אסור להעלות קובץ זה כיוון שזה לקריאה בלבד בשרת, מאחזר</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1375"/>
+        <location filename="../src/libsync/discovery.cpp" line="1382"/>
         <source>Error while reading the database</source>
         <translation>שגיאה בזמן קריאת מסד הנתונים</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1423"/>
+        <location filename="../src/libsync/discovery.cpp" line="1430"/>
         <source>This Space is currently unavailable</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1443"/>
+        <location filename="../src/libsync/discovery.cpp" line="1450"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>השרת הגיב בשגיאה בזמן קריאת התיקייה &apos;%1&apos; : %2</translation>
     </message>
@@ -2546,12 +2566,12 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1123"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1129"/>
         <source>Error updating metadata: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1126"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1132"/>
         <source>%1 the folder is currently in use</source>
         <translation type="unfinished"/>
     </message>
@@ -2559,67 +2579,67 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="353"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="435"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="368"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="454"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="450"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="536"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="512"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="594"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>ההורדה תקטין את המקום על הזיכרון המקומי החופשי מתחת למגבלה</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="516"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="598"/>
         <source>Free space on disk is less than %1</source>
         <translation>שטח הדיסק הפנוי מתחת ל- %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="642"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="724"/>
         <source>File was deleted from server</source>
         <translation>הקובץ נמחק מהשרת</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="703"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="785"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="710"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="792"/>
         <source>The file could not be downloaded completely.</source>
         <translation>לא ניתן היה להוריד את הקובץ באופן מלא.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="717"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="799"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>הקובץ שירד ריק למרות שהשרת דיווח שהוא היה אמור להיות %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="897"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="905"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1016"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1024"/>
         <source>Error updating metadata: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="462"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="921"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="954"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1019"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="544"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="929"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="962"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1027"/>
         <source>The file %1 is currently in use</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="348"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="946"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="430"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="954"/>
         <source>File has changed since discovery</source>
         <translation>הקובץ שונה מאז גילויו</translation>
     </message>
@@ -2774,12 +2794,12 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1307"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1313"/>
         <source>Could not update file : %1</source>
         <translation>לא ניתן לעדכן קובץ : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1310"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1316"/>
         <source>The file %1 is currently in use</source>
         <translation type="unfinished"/>
     </message>
@@ -2787,34 +2807,34 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::PropagateUploadFileCommon</name>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="126"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="129"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>הקובץ %1 לא ניתן להעלאה כיוון שכבר קיים קובץ עם אותו שם, שונה רק באותיות קטנות וגדולות</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="179"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="210"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="182"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="213"/>
         <source>%1 the file is currently in use</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="245"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="248"/>
         <source>File Removed</source>
         <translation>קובץ הוסר</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="109"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="112"/>
         <source>Local file changed during sync. It will be resumed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="591"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="594"/>
         <source>Error updating metadata: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="137"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="484"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="140"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="487"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>העלאה של %1 חורגת מהמכסה של התיקייה</translation>
     </message>
@@ -3046,33 +3066,33 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="222"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="224"/>
         <source>Settings</source>
         <translation>הגדרות</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="211"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="213"/>
         <source>Activity</source>
         <translation>פעילות</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="200"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="202"/>
         <source>Add account</source>
         <translation>הוספת חשבון</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="245"/>
         <location filename="../src/gui/settingsdialog.cpp" line="248"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="251"/>
         <source>Quit %1</source>
         <translation>יציאה %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="249"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="252"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>האם ברצונך באמת לסגור %1?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="377"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="379"/>
         <source>Account</source>
         <translation>חשבון</translation>
     </message>
@@ -3105,42 +3125,42 @@ for additional privileges during the process.</source>
         <translation>נתיב ownCloud:</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="111"/>
+        <location filename="../src/gui/sharedialog.cpp" line="110"/>
         <source>%1 Sharing</source>
         <translation>%1 שיתוף</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="92"/>
+        <location filename="../src/gui/sharedialog.cpp" line="91"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="108"/>
+        <location filename="../src/gui/sharedialog.cpp" line="107"/>
         <source>Folder: %2</source>
         <translation>תיקייה: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="114"/>
+        <location filename="../src/gui/sharedialog.cpp" line="113"/>
         <source>The server does not allow sharing</source>
         <translation>השרת אינו מאפשר שיתוף</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="130"/>
+        <location filename="../src/gui/sharedialog.cpp" line="129"/>
         <source>Retrieving maximum possible sharing permissions from server...</source>
         <translation>מאחזר מהשרת כמות מירבית אפשרית של הרשאות שיתוף...</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="191"/>
+        <location filename="../src/gui/sharedialog.cpp" line="190"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>הקובץ לא ניתן לשיתוף כיוון שהוא שותף ללא הרשאות שיתוף.</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="200"/>
+        <location filename="../src/gui/sharedialog.cpp" line="199"/>
         <source>Users and Groups</source>
         <translation>משתמשים וקבוצות</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="207"/>
+        <location filename="../src/gui/sharedialog.cpp" line="206"/>
         <source>Public Links</source>
         <translation>קישורים ציבוריים</translation>
     </message>
@@ -3218,96 +3238,96 @@ for additional privileges during the process.</source>
         <translation>כל מי שיש בידיו את הקישור יכול להיכנס לקובץ/תיקייה</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="118"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="352"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="120"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="353"/>
         <source>P&amp;assword protect</source>
         <translation>הגנה בסיסמא</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="96"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="98"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>הקובץ לא ניתן לשיתוף כיוון שהוא שותף ללא הרשאות שיתוף.</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="93"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="95"/>
         <source>Link shares have been disabled</source>
         <translation>שיתופי קישור נוטרלו</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="107"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="109"/>
         <source>Create public link share</source>
         <translation>יצירת שיתוף קישור ציבורי</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="168"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="598"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="170"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="599"/>
         <source>Delete</source>
         <translation>מחיקה</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="163"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="165"/>
         <source>Open link in browser</source>
         <translation>פתיחת קישור בדפדפן</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="164"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="166"/>
         <source>Copy link to clipboard</source>
         <translation>העתקת קישור ללוח הגזירים</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="165"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="167"/>
         <source>Copy link to clipboard (direct download)</source>
         <translation>העתקת קישור ללוח הגזירים (הורדה ישירה)</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="166"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="168"/>
         <source>Send link by email</source>
         <translation>שליחת הקישור בדוא״ל</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="167"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="169"/>
         <source>Send link by email (direct download)</source>
         <translation>שליחת קישור על בסיס דואר אלקטרוני (הורדה ישירה)</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="284"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="285"/>
         <source>Create new...</source>
         <translation>יצירת חדש...</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="577"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="578"/>
         <source>I shared %1 with you</source>
         <translation>שיתפתי את %1 אתך</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="591"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="592"/>
         <source>Confirm Link Share Deletion</source>
         <translation>אישור מחיקת קישור שיתוף</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="592"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="593"/>
         <source>&lt;p&gt;Do you really want to delete the public link share &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;Note: This action cannot be undone.&lt;/p&gt;</source>
         <translation>&lt;p&gt;למחוק את הקישור הציבורי לשיתוף &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;הערה: אין אפשרות לבטל פעולה זו.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="599"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="600"/>
         <source>Cancel</source>
         <translation>ביטול</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="62"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="615"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="64"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="616"/>
         <source>Public link</source>
         <translation>קישור ציבורי</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="268"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="269"/>
         <source>Delete link share</source>
         <translation>מחיקת קישור שיתוף</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="356"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="545"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="357"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="546"/>
         <source>Please Set Password</source>
         <translation>יש להגדיר סיסמא</translation>
     </message>
@@ -3325,37 +3345,37 @@ for additional privileges during the process.</source>
         <translation>שיתוף עם משתמשים או קבוצות...</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="94"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="96"/>
         <source>You can direct people to this shared file or folder %1 by giving them a private link</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="216"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="218"/>
         <source>The item is not shared with any users or groups</source>
         <translation>הפריט לא משותף עם אף משתמש או קבוצה</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="247"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="249"/>
         <source>Open link in browser</source>
         <translation>פתיחת קישור בדפדפן</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="249"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="251"/>
         <source>Copy link to clipboard</source>
         <translation>העתקת קישור ללוח הגזירים</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="251"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="253"/>
         <source>Send link by email</source>
         <translation>שליחת הקישור בדוא״ל</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="261"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="263"/>
         <source>No results for &apos;%1&apos;</source>
         <translation>אין תוצאות עבור &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="337"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="339"/>
         <source>I shared something with you</source>
         <translation>שיתפתי משהו אתך</translation>
     </message>
@@ -3383,17 +3403,17 @@ for additional privileges during the process.</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="357"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="359"/>
         <source>create</source>
         <translation>יצירה</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="360"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="362"/>
         <source>change</source>
         <translation>שינוי</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="363"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="365"/>
         <source>delete</source>
         <translation>מחיקה</translation>
     </message>
@@ -3551,7 +3571,7 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::Spaces::SpacesDelegate</name>
     <message>
-        <location filename="../src/gui/spaces/spacesdelegate.cpp" line="162"/>
+        <location filename="../src/gui/spaces/spacesdelegate.cpp" line="164"/>
         <source>Open in Web</source>
         <translation type="unfinished"/>
     </message>
@@ -3559,42 +3579,42 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::Spaces::SpacesModel</name>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="45"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="50"/>
         <source>Sync</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="47"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="52"/>
         <source>Name</source>
         <translation>שם</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="49"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="54"/>
         <source>Subtitle</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="51"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="56"/>
         <source>Web URL</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="53"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="58"/>
         <source>Web Dav URL</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="55"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="60"/>
         <source>Image</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="57"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="62"/>
         <source>Priority</source>
         <translation>עדיפות</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="59"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="64"/>
         <source>Enabled</source>
         <translation>מופעל</translation>
     </message>
@@ -3677,7 +3697,7 @@ for additional privileges during the process.</source>
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="449"/>
+        <location filename="../src/libsync/theme.cpp" line="444"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
@@ -3700,33 +3720,13 @@ for additional privileges during the process.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/tlserrordialog.cpp" line="69"/>
+        <location filename="../src/gui/tlserrordialog.cpp" line="62"/>
         <source>&amp;lt;not specified&amp;gt;</source>
         <translation>&amp;lt;לא צויין&amp;gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/tlserrordialog.cpp" line="75"/>
+        <location filename="../src/gui/tlserrordialog.cpp" line="68"/>
         <source>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;with Certificate %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organization: %2&lt;br/&gt;Unit: %3&lt;br/&gt;Country: %4&lt;/p&gt;&lt;p&gt;Fingerprint (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effective Date: %8Expiration Date: %9&lt;/div&gt;&lt;h3&gt;Issuer: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organization: %11&lt;br/&gt;Unit: %12&lt;br/&gt;Country: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>OCC::Ui::AppImageUpdateAvailableDialog</name>
-    <message>
-        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="36"/>
-        <source>Installed version: %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="37"/>
-        <source>Available update: %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="38"/>
-        <source>An update is available for this AppImage of %1. Do you want to install this update?
-
-The update will be performed in the background, and overwrite the current AppImage file. You need to restart the app to complete the update.</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -3798,27 +3798,27 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Wizard::AccountConfiguredWizardPage</name>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="30"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="32"/>
         <source>Use &amp;virtual files instead of downloading content immediately</source>
         <translation>שימוש בקבצים וירטואליים במקום הורדה מיידית של תוכן %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="55"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="57"/>
         <source>%1 (recommended)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="73"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="75"/>
         <source>The virtual filesystem feature is not available for this installation.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="75"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="77"/>
         <source>The virtual filesystem feature is not stable yet. Use with caution.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="79"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="81"/>
         <source>Select the local folder</source>
         <translation type="unfinished"/>
     </message>
@@ -3906,12 +3906,12 @@ This is a new, experimental mode. If you decide to use it, please report any iss
 <context>
     <name>OCC::Wizard::OAuthCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="50"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="49"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="55"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="54"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation type="unfinished"/>
     </message>
@@ -3956,22 +3956,22 @@ Are you sure you want to proceed?</source>
 <context>
     <name>OCC::Wizard::SetupWizardWindow</name>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="111"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="110"/>
         <source>Finish</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="113"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="112"/>
         <source>Next &gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="158"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="157"/>
         <source>Cancel Setup</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="158"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="157"/>
         <source>Do you really want to cancel the account setup?</source>
         <translation type="unfinished"/>
     </message>
@@ -4552,7 +4552,7 @@ Are you sure you want to proceed?</source>
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="425"/>
+        <location filename="../src/libsync/theme.cpp" line="420"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7%9Using virtual files plugin: %5%7%6</source>
         <translation type="unfinished"/>
     </message>
@@ -4560,7 +4560,7 @@ Are you sure you want to proceed?</source>
 <context>
     <name>ownCloudTheme::pluginDir</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="420"/>
+        <location filename="../src/libsync/theme.cpp" line="415"/>
         <source>Plugin dir: %1%2</source>
         <translation type="unfinished"/>
     </message>
@@ -4568,7 +4568,7 @@ Are you sure you want to proceed?</source>
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="407"/>
+        <location filename="../src/libsync/theme.cpp" line="402"/>
         <source>%1 (Built against Qt %2)</source>
         <translation type="unfinished"/>
     </message>
@@ -4576,7 +4576,7 @@ Are you sure you want to proceed?</source>
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="412"/>
+        <location filename="../src/libsync/theme.cpp" line="407"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
@@ -4684,52 +4684,52 @@ Are you sure you want to proceed?</source>
 <context>
     <name>theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="93"/>
+        <location filename="../src/libsync/theme.cpp" line="95"/>
         <source>Status undefined</source>
         <translation>מצב לא מוגדר</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="96"/>
+        <location filename="../src/libsync/theme.cpp" line="98"/>
         <source>Waiting to start sync</source>
         <translation>ממתין להתחלת סנכרון</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="99"/>
+        <location filename="../src/libsync/theme.cpp" line="101"/>
         <source>Sync is running</source>
         <translation>סנכרון בפעולה</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="102"/>
+        <location filename="../src/libsync/theme.cpp" line="104"/>
         <source>Sync Success</source>
         <translation>הסנכרון הצליח</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="105"/>
+        <location filename="../src/libsync/theme.cpp" line="107"/>
         <source>Sync Success, some files were ignored.</source>
         <translation>סנכרון הצליח, התעלם ממספר קבצים.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="108"/>
+        <location filename="../src/libsync/theme.cpp" line="110"/>
         <source>Sync Error</source>
         <translation>שגיאת סנכרון</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="111"/>
+        <location filename="../src/libsync/theme.cpp" line="113"/>
         <source>Setup Error</source>
         <translation>שגיאת התקנה</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="114"/>
+        <location filename="../src/libsync/theme.cpp" line="116"/>
         <source>Preparing to sync</source>
         <translation>מכין סנכרון</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="117"/>
+        <location filename="../src/libsync/theme.cpp" line="119"/>
         <source>Aborting...</source>
         <translation>מבטל...</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="120"/>
+        <location filename="../src/libsync/theme.cpp" line="122"/>
         <source>Sync is paused</source>
         <translation>סנכרון בהשהייה</translation>
     </message>

@@ -320,7 +320,7 @@
         <translation>Versione</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="28"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="27"/>
         <source>About %1</source>
         <translation>Rreth %1</translation>
     </message>
@@ -641,47 +641,47 @@ Ju lutemi, mirëfilltësojeni duke përdorur shfletuesin tuaj.</translation>
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="222"/>
+        <location filename="../src/gui/accountstate.cpp" line="223"/>
         <source>Signed out</source>
         <translation>I dalë</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="224"/>
+        <location filename="../src/gui/accountstate.cpp" line="225"/>
         <source>Disconnected</source>
         <translation>I shkëputur</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="226"/>
+        <location filename="../src/gui/accountstate.cpp" line="227"/>
         <source>Connected</source>
         <translation>I lidhur</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="228"/>
+        <location filename="../src/gui/accountstate.cpp" line="229"/>
         <source>Service unavailable</source>
         <translation>Shërbimi nuk po punon</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="230"/>
+        <location filename="../src/gui/accountstate.cpp" line="231"/>
         <source>Maintenance mode</source>
         <translation>Mënyra mirëmbajtje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="232"/>
+        <location filename="../src/gui/accountstate.cpp" line="233"/>
         <source>Network error</source>
         <translation>Gabim rrjeti</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="234"/>
+        <location filename="../src/gui/accountstate.cpp" line="235"/>
         <source>Configuration error</source>
         <translation>Gabim formësimi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="236"/>
+        <location filename="../src/gui/accountstate.cpp" line="237"/>
         <source>Asking Credentials</source>
         <translation>Po kërkohen Kredencialet</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="238"/>
+        <location filename="../src/gui/accountstate.cpp" line="239"/>
         <source>Unknown account state</source>
         <translation>Gjendje e panjohur llogarie</translation>
     </message>
@@ -689,27 +689,27 @@ Ju lutemi, mirëfilltësojeni duke përdorur shfletuesin tuaj.</translation>
 <context>
     <name>OCC::ActivityListModel</name>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="89"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="91"/>
         <source>%1 %2 on %3</source>
         <translation>%1 %2 në %3</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="115"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="117"/>
         <source>Activity</source>
         <translation>Veprimtari</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="117"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="119"/>
         <source>Account</source>
         <translation>Llogari</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="119"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="121"/>
         <source>Time</source>
         <translation>Kohë</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="121"/>
+        <location filename="../src/gui/models/activitylistmodel.cpp" line="123"/>
         <source>Local path</source>
         <translation>Shteg vendor</translation>
     </message>
@@ -791,6 +791,28 @@ Ju lutemi, mirëfilltësojeni duke përdorur shfletuesin tuaj.</translation>
         <location filename="../src/gui/activitywidget.cpp" line="164"/>
         <source>&lt;br/&gt;Account %1 does not have activities enabled.</source>
         <translation>&lt;br/&gt;Llogaria %1 s’i ka të aktivizuara veprimtaritë.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AppImageUpdateAvailableDialog</name>
+    <message>
+        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="35"/>
+        <source>Installed version: %1</source>
+        <translation>Version i instaluar: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="36"/>
+        <source>Available update: %1</source>
+        <translation>Përditësim i gatshëm: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="37"/>
+        <source>An update is available for this AppImage of %1. Do you want to install this update?
+
+The update will be performed in the background, and overwrite the current AppImage file. You need to restart the app to complete the update.</source>
+        <translation>Për këtë AppImage të %1 ka një përditësim gati. Doni të instalohet ky përditësim?
+
+Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e tanishme AppImage. Që të plotësohet përditësimi, lypset të rinisni aplikacionin.</translation>
     </message>
 </context>
 <context>
@@ -972,7 +994,7 @@ Kjo është një mënyrë e re, eksperimentale. Nëse vendosni ta përdorni, ju 
         <translation>Nuk ka llogari ownCloud të formësuar</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="318"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="320"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Ju lutemi, përditësoni shërbyesin me versionin më të ri dhe rinisni klientin.</translation>
     </message>
@@ -992,7 +1014,7 @@ Kjo është një mënyrë e re, eksperimentale. Nëse vendosni ta përdorni, ju 
         <translation>Kredencialet e dhëna s’janë të sakta</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="317"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="319"/>
         <source>The configured server for this client is too old.</source>
         <translation>Shërbyesi i formësuar për këtë klient është shumë i vjetër.</translation>
     </message>
@@ -1053,150 +1075,150 @@ Kjo është një mënyrë e re, eksperimentale. Nëse vendosni ta përdorni, ju 
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="251"/>
+        <location filename="../src/gui/folder.cpp" line="252"/>
         <source>Local folder %1 does not exist.</source>
         <translation>Dosja vendore %1 s’ekziston.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="253"/>
+        <location filename="../src/gui/folder.cpp" line="254"/>
         <source>%1 should be a folder but is not.</source>
         <translation>%1 duhej të ishte dosje, por ja që s’është.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="255"/>
+        <location filename="../src/gui/folder.cpp" line="256"/>
         <source>%1 is not readable.</source>
         <translation>%1 s’është i lexueshëm.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="572"/>
+        <location filename="../src/gui/folder.cpp" line="573"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 u hoq.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="586"/>
+        <location filename="../src/gui/folder.cpp" line="587"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 u përditësua.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="593"/>
+        <location filename="../src/gui/folder.cpp" line="594"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 u riemërtua si %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="600"/>
+        <location filename="../src/gui/folder.cpp" line="601"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 u kalua te %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="570"/>
+        <location filename="../src/gui/folder.cpp" line="571"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>U hoqën %1 dhe %n kartelë tjetër.</numerusform><numerusform>U hoqën %1 dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="237"/>
+        <location filename="../src/gui/folder.cpp" line="238"/>
         <source>The path &apos;%1&apos; is too long. Either enable long paths in the Windows settings, or choose a different folder.</source>
         <translation>Shtegu “%1” është shumë i gjatë. Ose aktivizoni shtigje të gjatë te rregullimet e Windows-it, ose zgjidhni dosje tjetër.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="245"/>
+        <location filename="../src/gui/folder.cpp" line="246"/>
         <source>%1 failed to open the database.</source>
         <translation>%1 s’arriti të hapë bazën e të dhënave.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="257"/>
+        <location filename="../src/gui/folder.cpp" line="258"/>
         <source>%1 is not writable.</source>
         <translation>%1 s’është e shkrueshme.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="577"/>
+        <location filename="../src/gui/folder.cpp" line="578"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>Është shtuar %1 dhe %n kartelë tjetër.</numerusform><numerusform>Është shtuar %1 dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="579"/>
+        <location filename="../src/gui/folder.cpp" line="580"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>U shtua %1.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="584"/>
+        <location filename="../src/gui/folder.cpp" line="585"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>U përditësua %1 dhe %n kartelë tjetër.</numerusform><numerusform>U përditësua %1 dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="591"/>
+        <location filename="../src/gui/folder.cpp" line="592"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 u riemërtua si %2 dhe u riemërtua dhe %n kartelë tjetër.</numerusform><numerusform>%1 u riemërtua si %2 dhe u riemërtuan dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="598"/>
+        <location filename="../src/gui/folder.cpp" line="599"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 u kalua te %2 dhe u lëviz edhe %n kartelë tjetër.</numerusform><numerusform>%1 u kalua te %2 dhe u lëvizën edhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="605"/>
+        <location filename="../src/gui/folder.cpp" line="606"/>
         <source>%1 has and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 dhe %n kartelë tjetër kanë përplasje njëkohësimi.</numerusform><numerusform>%1 dhe %n kartela të tjera kanë përplasje njëkohësimi.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="607"/>
+        <location filename="../src/gui/folder.cpp" line="608"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 ka një përplasje njëkohësimi. Ju lutemi, kontrolloni kartelën e përplasjes!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="612"/>
+        <location filename="../src/gui/folder.cpp" line="613"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 dhe %n kartelë tjetër s’u njëkohësuan dot për shkak gabimesh. Për hollësi, shihni regjistrin.</numerusform><numerusform>%1 dhe %n kartela të tjera s’u njëkohësuan dot për shkak gabimesh. Për hollësi, shihni regjistrin.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="614"/>
+        <location filename="../src/gui/folder.cpp" line="615"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 s’u njëkohësua dot, për shkak gabimesh. Për hollësi, shihni regjistrin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="620"/>
+        <location filename="../src/gui/folder.cpp" line="621"/>
         <source>Sync Activity</source>
         <translation>Veprimtari Njëkohësimesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1005"/>
+        <location filename="../src/gui/folder.cpp" line="1006"/>
         <source>Could not read system exclude file</source>
         <translation>S’u lexua dot kartelë përjashtimi sistemi</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1215"/>
+        <location filename="../src/gui/folder.cpp" line="1216"/>
         <source>A new folder larger than %1 MB has been added: %2.
 </source>
         <translation>U shtua një dosje më e madhe se %1 MB: %2.
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1218"/>
+        <location filename="../src/gui/folder.cpp" line="1219"/>
         <source>A folder from an external storage has been added.
 </source>
         <translation>U shtua një dosje nga një depozitë e jashtme.
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1219"/>
+        <location filename="../src/gui/folder.cpp" line="1220"/>
         <source>Please go in the settings to select it if you wish to download it.</source>
         <translation>Ju lutemi, shkoni te rregullimet që ta përzgjidhni, nëse doni ta shkarkoni.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1278"/>
+        <location filename="../src/gui/folder.cpp" line="1279"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Dosja %1 qe krijuar, por qe përjashtuar më herët nga njëkohësimi. Të dhënat brenda saj nuk do të njëkohësohen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1281"/>
+        <location filename="../src/gui/folder.cpp" line="1282"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Dosja %1 qe krijuar, por qe përjashtuar më herët nga njëkohësimi. S’do të njëkohësohet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1292"/>
+        <location filename="../src/gui/folder.cpp" line="1293"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1209,7 +1231,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1345"/>
+        <location filename="../src/gui/folder.cpp" line="1346"/>
         <source>All files in the sync folder '%1' folder were deleted on the server.
 These deletes will be synchronized to your local sync folder, making such files unavailable unless you have a right to restore. 
 If you decide to keep the files, they will be re-synced with the server if you have rights to do so.
@@ -1220,7 +1242,7 @@ Nëse vendosni t’i mbani këto kartela, ato do të rinjëkohësohen me shërby
 Nëse vendosni t’i fshini këto kartela, s’do të mund t’i keni, veç në mos qofshi i zoti.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1350"/>
+        <location filename="../src/gui/folder.cpp" line="1351"/>
         <source>All the files in your local sync folder '%1' were deleted. These deletes will be synchronized with your server, making such files unavailable unless restored.
 Are you sure you want to sync those actions with the server?
 If this was an accident and you decide to keep your files, they will be re-synced from the server.</source>
@@ -1229,17 +1251,17 @@ Jeni i sigurt se doni të njëkohësohen këto veprime me shërbyesin?
 Nëse ky qe aksident dhe vendosni t’i mbani kartelat tuaja, ato do të rinjëkohësohen me shërbyesin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1354"/>
+        <location filename="../src/gui/folder.cpp" line="1355"/>
         <source>Remove All Files?</source>
         <translation>Të hiqen Krejt Kartelat?</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1358"/>
+        <location filename="../src/gui/folder.cpp" line="1359"/>
         <source>Remove all files</source>
         <translation>Hiqi krejt kartelat</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1359"/>
+        <location filename="../src/gui/folder.cpp" line="1360"/>
         <source>Keep files</source>
         <translation>Mbaji kartelat</translation>
     </message>
@@ -1379,7 +1401,7 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
 <context>
     <name>OCC::FolderStatusDelegate</name>
     <message>
-        <location filename="../src/gui/folderstatusdelegate.cpp" line="192"/>
+        <location filename="../src/gui/folderstatusdelegate.cpp" line="194"/>
         <source>%1 of %2 in use</source>
         <translation>%1 nga %2 në përdorim</translation>
     </message>
@@ -1387,136 +1409,136 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
 <context>
     <name>OCC::FolderStatusModel</name>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="223"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="224"/>
         <source>Error while loading the list of folders from the server.</source>
         <translation>Gabim gjatë ngarkimit të listës së dosjeve prej shërbyesit.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="273"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="274"/>
         <source>Virtual file support is enabled.</source>
         <translation>Mbulimi i kartelave virtuale është i aktivizuar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="226"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="227"/>
         <source>Fetching folder list from server...</source>
         <translation>Po sillet prej shërbyesi listë dosjesh…</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="261"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="262"/>
         <source>There are unresolved conflicts. Click for details.</source>
         <translation>Ka përplasje të pazgjidhura. Klikoni për hollës.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="339"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="338"/>
         <source>%1
 %2</source>
         <translation>%1
 %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="341"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="340"/>
         <source>Signed out
 %1</source>
         <translation>Dalë
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="968"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="967"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Po kërkohet për ndryshime te shërbyesi i largët &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="970"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="969"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Po kërkohet për ndryshime te shërbyesi vendor &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="974"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="973"/>
         <source>Reconciling changes</source>
         <translation>Po pajtohen ndryshimet mes tyre</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1009"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1008"/>
         <source>&apos;%1&apos;</source>
         <translation>&apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1030"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1029"/>
         <source>Syncing %1</source>
         <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
         <translation>Po njëkohësohet %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1032"/>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1043"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1031"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1042"/>
         <source>, </source>
         <translation>, </translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1036"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1035"/>
         <source>download %1/s</source>
         <extracomment>Example text: &quot;download 24Kb/s&quot; (%1 is replaced by 24Kb (translated))</extracomment>
         <translation>shkarko %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1038"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1037"/>
         <source>↓ %1/s</source>
         <translation>↓ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1048"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1047"/>
         <source>↑ %1/s</source>
         <translation>↑ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1046"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1045"/>
         <source>upload %1/s</source>
         <extracomment>Example text: &quot;upload 24Kb/s&quot; (%1 is replaced by 24Kb (translated))</extracomment>
         <translation>ngarko %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="200"/>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="205"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="201"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="206"/>
         <source>%1 (%2)</source>
         <comment>filename (size)</comment>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="313"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="312"/>
         <source>Local folder: %1</source>
         <translation>Dosje vendore: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1054"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1053"/>
         <source>%1 %2 (%3 of %4)</source>
         <extracomment>Example text: &quot;uploading foobar.png (2MB of 2MB)&quot;</extracomment>
         <translation>%1 %2 (%3 nga %4)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1058"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1057"/>
         <source>%1 %2</source>
         <extracomment>Example text: &quot;uploading foobar.png&quot;</extracomment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1075"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1074"/>
         <source>%5 left, %1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;5 minutes left, 12 MB of 345 MB, file 6 of 7&quot;</extracomment>
         <translation>edhe %5, %1 nga %2, kartela %3 nga %4</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1083"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1082"/>
         <source>%1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
         <translation>%1 nga %2, kartela %3 nga %4</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1090"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1089"/>
         <source>file %1 of %2</source>
         <translation>kartela %1 nga %2</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folderstatusmodel.cpp" line="1139"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="1138"/>
         <source>Waiting for %n other folder(s)...</source>
         <translation><numerusform>Po pritet për %n dosje tjetër…</numerusform><numerusform>Po pritet për %n dosje të tjera…</numerusform></translation>
     </message>
@@ -1540,7 +1562,7 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="157"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>S’ka kartela virtuale për dosjen e përzgjedhur</translation>
     </message>
@@ -1647,27 +1669,27 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="89"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="171"/>
         <source>Connection Timeout</source>
         <translation>Lidhjes i Mbaroi Koha</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="174"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="256"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>S’u mor E-Tag prej shërbyesit, kontrolloni Ndërmjetësin/Kanalin</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="181"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="263"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>Morëm një tjetër E-Tag për rimarrje të procesit. Do të provohet herës tjetër.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="192"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="274"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>Morëm një Content-Length shkarkimi të papritur.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="220"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="302"/>
         <source>Server returned wrong content-range</source>
         <translation>Shërbyesi u përgjigj me content-range të gabuar</translation>
     </message>
@@ -1720,17 +1742,17 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
         <translation>Përditësime</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="270"/>
+        <location filename="../src/gui/generalsettings.cpp" line="145"/>
         <source>stable</source>
         <translation>i qëndrueshëm</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="275"/>
+        <location filename="../src/gui/generalsettings.cpp" line="146"/>
         <source>beta</source>
         <translation>beta</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="370"/>
+        <location filename="../src/gui/generalsettings.ui" line="360"/>
         <source>About</source>
         <translation>Rreth</translation>
     </message>
@@ -1786,17 +1808,17 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
         <translation>S&amp;hfaq njoftues vithisjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.ui" line="302"/>
+        <location filename="../src/gui/generalsettings.ui" line="292"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>&amp;Rinise &amp;&amp; Përditësoje</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="315"/>
+        <location filename="../src/gui/generalsettings.cpp" line="321"/>
         <source>You cannot disable autostart because system-wide autostart is enabled.</source>
         <translation>S’mund ta çaktivizoni vetënisjen, ngaqë është e aktivizuar vetënisja për krejt sistemin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="221"/>
+        <location filename="../src/gui/generalsettings.cpp" line="224"/>
         <source>Change update channel?</source>
         <translation>Të ndryshohet kanali i përditësimit?</translation>
     </message>
@@ -1811,7 +1833,7 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
         <translation>Ndryshimet e gjuhës lypin rinisje të këtij aplikacioni, që të hyjnë në fuqi.</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="222"/>
+        <location filename="../src/gui/generalsettings.cpp" line="225"/>
         <source>The update channel determines which client updates will be offered for installation. The &quot;stable&quot; channel contains only upgrades that are considered reliable, while the versions in the &quot;beta&quot; channel may contain newer features and bugfixes, but have not yet been tested thoroughly.
 
 Note that this selects only what pool upgrades are taken from, and that there are no downgrades: So going back from the beta channel to the stable channel usually cannot be done immediately and means waiting for a stable version that is newer than the currently installed beta version.</source>
@@ -1820,35 +1842,35 @@ Note that this selects only what pool upgrades are taken from, and that there ar
 Kini parasysh që kjo përzgjedh vetëm se nga cili thes merren përmirësimet, dhe që nuk ka kthim mbrapsht: Me një fjalë, kalimi nga kanali beta te kanali i qëndrueshëm, zakonisht, s’mund të bëhet menjëherë dhe do të thotë të pritet për një version të qëndrueshëm që është më i ri se versioni beta i instaluar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="235"/>
+        <location filename="../src/gui/generalsettings.cpp" line="238"/>
         <source>Change update channel</source>
         <translation>Ndryshoje kanalin e përditësimit</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="236"/>
+        <location filename="../src/gui/generalsettings.cpp" line="239"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="347"/>
+        <location filename="../src/gui/generalsettings.cpp" line="353"/>
         <source>unknown (%1)</source>
         <translation>e panjohur (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/generalsettings.cpp" line="331"/>
+        <location filename="../src/gui/generalsettings.cpp" line="337"/>
         <source>(use default)</source>
         <translation>(përdor parazgjedhjen)</translation>
     </message>
 </context>
 <context>
-    <name>OCC::GraphApi::Drives</name>
+    <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/drives.cpp" line="64"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="52"/>
         <source>Personal</source>
         <translation>Personale</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/drives.cpp" line="67"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="55"/>
         <source>Shares</source>
         <translation>Pjesë</translation>
     </message>
@@ -1856,7 +1878,7 @@ Kini parasysh që kjo përzgjedh vetëm se nga cili thes merren përmirësimet, 
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="116"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="113"/>
         <source>Please enter your password to log in to your account.</source>
         <translation>Ju lutemi, që të hyni te llogaria juaj, jepni fjalëkalimin tuaj.</translation>
     </message>
@@ -1903,27 +1925,27 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e një drejtorie. Kjo është e dobishme për të dhëna meta.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="113"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="112"/>
         <source>Could not open file</source>
         <translation>S&apos;u hap dot kartela</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="114"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="113"/>
         <source>Cannot write changes to &apos;%1&apos;.</source>
         <translation>S’shkruhen dot ndryshimet te &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="136"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="135"/>
         <source>Add Ignore Pattern</source>
         <translation>Shtoni Mostër Shpërfilljeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="137"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="136"/>
         <source>Add a new ignore pattern:</source>
         <translation>Shtoni një mostër të re shpërfilljeje:</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="44"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="43"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translation>Ky zë sillet nga sistemi në &apos;%1&apos; dhe s’mund të modifikohet në këtë skenë.</translation>
     </message>
@@ -2049,7 +2071,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Dilni</translation>
     </message>
     <message>
-        <location filename="../src/gui/loginrequireddialog/loginrequireddialog.cpp" line="70"/>
+        <location filename="../src/gui/loginrequireddialog/loginrequireddialog.cpp" line="68"/>
         <source>Log in</source>
         <translation>Hyni</translation>
     </message>
@@ -2247,23 +2269,23 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::NotificationWidget</name>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="65"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="67"/>
         <source>Created at %1</source>
         <translation>Krijuar më %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="78"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="80"/>
         <source>Closing in a few seconds...</source>
         <translation>Do të mbyllet pas pak sekondash…</translation>
     </message>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="124"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="126"/>
         <source>%1 request failed at %2</source>
         <extracomment>The second parameter is a time, such as 'failed at 09:58pm'</extracomment>
         <translation>Kërkesa %1 dështoi në %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="130"/>
+        <location filename="../src/gui/notificationwidget.cpp" line="132"/>
         <source>&apos;%1&apos; selected at %2</source>
         <extracomment>The second parameter is a time, such as 'selected at 09:58pm'</extracomment>
         <translation>&apos;%1&apos; përzgjedhur në %2</translation>
@@ -2310,38 +2332,38 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Gabim Hyrjeje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="401"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Përdoruesi i gabuar&lt;/h1&gt;&lt;p&gt;Bëtë hyrjen si përdoruesi &lt;em&gt;%1&lt;/em&gt;, por duhet të hyni si përdoruesi &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Ju lutemi, kthehuni te klienti %3 dhe rinisni mirëfilltësimin.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="405"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
         <source>Wrong user</source>
         <translation>Përdorues i gabuar</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="409"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Hyrje e Suksesshme&lt;/h1&gt;&lt;p&gt;Mund ta mbyllni këtë dritare.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="410"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
         <source>Login Successful</source>
         <translation>Hyrje e Suksesshme</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="564"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="572"/>
         <source>Oauth2 Error</source>
         <translation>Gabim OAuth2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="565"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="573"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation>Mirëfilltësimi Oauth2 lyp një lidhje të siguruar.</translation>
     </message>
     <message>
         <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Gabim Hyrjeje&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -2414,7 +2436,7 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="759"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="765"/>
         <source>File %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
@@ -2422,137 +2444,137 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="245"/>
+        <location filename="../src/libsync/discovery.cpp" line="252"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>Njëkohësimi s’i mbulon lidhjet simbolike.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="254"/>
+        <location filename="../src/libsync/discovery.cpp" line="261"/>
         <source>File is listed on the ignore list.</source>
         <translation>Kartela bën pjesë te lista e shpërfilljeve.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="259"/>
+        <location filename="../src/libsync/discovery.cpp" line="266"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>Në këtë sistem kartelash nuk mbulohen emra kartelash që mbarojnë me një pikë.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="272"/>
+        <location filename="../src/libsync/discovery.cpp" line="279"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>Në këtë sistem kartelash nuk mbulohen emra kartelash që përmbajnë shenjën &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="275"/>
+        <location filename="../src/libsync/discovery.cpp" line="282"/>
         <source>File name contains at least one invalid character</source>
         <translation>Emri i kartelës përmban të paktën një shenjë të pavlefshme</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="277"/>
+        <location filename="../src/libsync/discovery.cpp" line="284"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>Në këtë sistem kartelash, emri i kartelës është një emër i rezervuar.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="286"/>
+        <location filename="../src/libsync/discovery.cpp" line="293"/>
         <source>Filename contains trailing spaces.</source>
         <translation>Emri i kartelës përmban shenja të zbrazëta në fund.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="289"/>
+        <location filename="../src/libsync/discovery.cpp" line="296"/>
         <source>Filename is too long.</source>
         <translation>Emri i kartelës është shumë i gjatë.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="292"/>
+        <location filename="../src/libsync/discovery.cpp" line="299"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>Kartela/Dosja është shpërfillur, ngaqë është e fshehur.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="296"/>
+        <location filename="../src/libsync/discovery.cpp" line="303"/>
         <source>Stat failed.</source>
         <translation>Statistikat dështuan.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="299"/>
+        <location filename="../src/libsync/discovery.cpp" line="306"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>Përplasje: Versioni i shërbyesit u shkarkua, kopja vendore u riemërtua dhe s’është ngarkuar.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="303"/>
+        <location filename="../src/libsync/discovery.cpp" line="310"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>Emri i kartelës s’mund të kodohet në sistemin tuaj të kartelave.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="306"/>
+        <location filename="../src/libsync/discovery.cpp" line="313"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>Emri i kartelës gjendet në listë bllokimesh te shërbyesi.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="409"/>
+        <location filename="../src/libsync/discovery.cpp" line="416"/>
         <source>size</source>
         <translation>madhësi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="411"/>
+        <location filename="../src/libsync/discovery.cpp" line="418"/>
         <source>permissions</source>
         <translation>leje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="413"/>
+        <location filename="../src/libsync/discovery.cpp" line="420"/>
         <source>etag</source>
         <translation>etag</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="415"/>
+        <location filename="../src/libsync/discovery.cpp" line="422"/>
         <source>file id</source>
         <translation>ID kartele</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="419"/>
+        <location filename="../src/libsync/discovery.cpp" line="426"/>
         <source>server reported no %1</source>
         <translation>shërbyesi s’raportoi %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1252"/>
+        <location filename="../src/libsync/discovery.cpp" line="1259"/>
         <source>Moved to invalid target, restoring</source>
         <translation>U shpu te vendmbërritje e pavlefshme, po rikthehet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1265"/>
+        <location filename="../src/libsync/discovery.cpp" line="1272"/>
         <source>Not allowed to remove, restoring</source>
         <translation>S’lejohet të hiqet, po rikthehet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1178"/>
+        <location filename="../src/libsync/discovery.cpp" line="1185"/>
         <source>Ignored because of the &quot;choose what to sync&quot; blacklist</source>
         <translation>U shpërfill për shkak të listës së bllokimeve &quot;zgjidhni ç’doni të njëkohësoni&quot;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1211"/>
+        <location filename="../src/libsync/discovery.cpp" line="1218"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>S’lejohet, ngaqë s’keni leje për shtim nëndosjesh te ajo dosje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1216"/>
+        <location filename="../src/libsync/discovery.cpp" line="1223"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>S’lejohet, ngaqë s’keni leje të shtoni kartela te ajo dosje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1229"/>
+        <location filename="../src/libsync/discovery.cpp" line="1236"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>S’lejohet të ngarkohet kjo kartelë, ngaqë është vetëm për lexim te shërbyesi, po rikthehet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1375"/>
+        <location filename="../src/libsync/discovery.cpp" line="1382"/>
         <source>Error while reading the database</source>
         <translation>Gabim gjatë leximit të bazës së të dhënave</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1423"/>
+        <location filename="../src/libsync/discovery.cpp" line="1430"/>
         <source>This Space is currently unavailable</source>
         <translation>Kjo hapësirë aktualisht është e papërdorshme</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1443"/>
+        <location filename="../src/libsync/discovery.cpp" line="1450"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>Shërbyesi u përgjigj me një gabim teksa lexohej drejtoria &apos;%1&apos; : %2</translation>
     </message>
@@ -2560,12 +2582,12 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1123"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1129"/>
         <source>Error updating metadata: %1</source>
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1126"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1132"/>
         <source>%1 the folder is currently in use</source>
         <translation type="unfinished"/>
     </message>
@@ -2573,67 +2595,67 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="353"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="435"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>S’u arrit të lirohet hapësirë, kartela %1 është aktualisht në përdorim</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="368"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="454"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="450"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="536"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Kartela %1 s’mund shkarkohet, për shkak të një përplasjeje emrash kartele vendore me %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="512"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="594"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>Shkarkimi mund të ulë nën kufi sasinë e hapësirës së lirë në disk</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="516"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="598"/>
         <source>Free space on disk is less than %1</source>
         <translation>Hapësira e lirë në disk është nën %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="642"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="724"/>
         <source>File was deleted from server</source>
         <translation>Kartela është fshirë te shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="703"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="785"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Shërbyes i dëmtuar u përgjigj me gjatësi lënde të zbrazët për kartelë jo të zbrazët, gjatë rimarrjeje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="710"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="792"/>
         <source>The file could not be downloaded completely.</source>
         <translation>Kartela s’u shkarkua plotësisht.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="717"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="799"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>Kartela e shkarkuar është e zbrazët, edhe pse shërbyesi njoftoi se duhej të ishte %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="897"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="905"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>Kartela %1 s’mund të ruhet, për shkak të një përplasjeje emrash kartele vendore me %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1016"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1024"/>
         <source>Error updating metadata: %1</source>
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="462"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="921"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="954"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1019"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="544"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="929"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="962"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1027"/>
         <source>The file %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="348"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="946"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="430"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="954"/>
         <source>File has changed since discovery</source>
         <translation>Kartela ka ndryshuar, qëkurse u zbulua</translation>
     </message>
@@ -2788,12 +2810,12 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1307"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1313"/>
         <source>Could not update file : %1</source>
         <translation>S’u përditësua dot kartela : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1310"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1316"/>
         <source>The file %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
@@ -2801,34 +2823,34 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::PropagateUploadFileCommon</name>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="126"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="129"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>Kartela %1 s’mund të ngarkohet, ngaqë ka një tjetër kartelë me të njëjtin emër, me ndryshim vetëm në shkronjë të madhe-shkronjë të vogël</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="179"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="210"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="182"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="213"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 kartela është aktualisht në përdorim</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="245"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="248"/>
         <source>File Removed</source>
         <translation>Kartela u Hoq</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="109"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="112"/>
         <source>Local file changed during sync. It will be resumed.</source>
         <translation>Kartela vendore ndryshoi gjatë njëkohësimit. Do të rimerret.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="591"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="594"/>
         <source>Error updating metadata: %1</source>
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="137"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="484"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="140"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="487"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Ngarkimi i %1 i tejkalon kuotat për dosjen</translation>
     </message>
@@ -3060,33 +3082,33 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="222"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="224"/>
         <source>Settings</source>
         <translation>Rregullime</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="211"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="213"/>
         <source>Activity</source>
         <translation>Veprimtari</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="200"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="202"/>
         <source>Add account</source>
         <translation>Shtoni llogari</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="245"/>
         <location filename="../src/gui/settingsdialog.cpp" line="248"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="251"/>
         <source>Quit %1</source>
         <translation>Dilni nga %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="249"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="252"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Jeni i sigurt se doni të dilet nga %1?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="377"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="379"/>
         <source>Account</source>
         <translation>Llogari</translation>
     </message>
@@ -3119,42 +3141,42 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
         <translation>Shteg ownCloud-i:</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="111"/>
+        <location filename="../src/gui/sharedialog.cpp" line="110"/>
         <source>%1 Sharing</source>
         <translation>Ndarje e %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="92"/>
+        <location filename="../src/gui/sharedialog.cpp" line="91"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="108"/>
+        <location filename="../src/gui/sharedialog.cpp" line="107"/>
         <source>Folder: %2</source>
         <translation>Dosje: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="114"/>
+        <location filename="../src/gui/sharedialog.cpp" line="113"/>
         <source>The server does not allow sharing</source>
         <translation>Shërbyesi nuk lejon ndarjet</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="130"/>
+        <location filename="../src/gui/sharedialog.cpp" line="129"/>
         <source>Retrieving maximum possible sharing permissions from server...</source>
         <translation>Po merren nga shërbyesi lejet maksimum të mundshme për ndarje…</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="191"/>
+        <location filename="../src/gui/sharedialog.cpp" line="190"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>Kartela s’mund të ndahet me të tjerët, ngaqë qe ndarë pa leje për ndarje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="200"/>
+        <location filename="../src/gui/sharedialog.cpp" line="199"/>
         <source>Users and Groups</source>
         <translation>Përdorues dhe Grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="207"/>
+        <location filename="../src/gui/sharedialog.cpp" line="206"/>
         <source>Public Links</source>
         <translation>Lidhje Publike</translation>
     </message>
@@ -3232,96 +3254,96 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
         <translation>Cilido që zotëron lidhjen, ka hyrje te kartela/dosja</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="118"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="352"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="120"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="353"/>
         <source>P&amp;assword protect</source>
         <translation>Mbroje me fj&amp;alëkalim</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="96"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="98"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>Kartela s’mund të ndahet me të tjerët, ngaqë qe ndarë pa leje për ndarje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="93"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="95"/>
         <source>Link shares have been disabled</source>
         <translation>Ndarjet përmes lidhjesh janë çaktivizuar</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="107"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="109"/>
         <source>Create public link share</source>
         <translation>Krijo lidhje publike ndarjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="168"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="598"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="170"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="599"/>
         <source>Delete</source>
         <translation>Fshije</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="163"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="165"/>
         <source>Open link in browser</source>
         <translation>Hape lidhjen në shfletues</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="164"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="166"/>
         <source>Copy link to clipboard</source>
         <translation>Kopjoja lidhjen në të papastër</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="165"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="167"/>
         <source>Copy link to clipboard (direct download)</source>
         <translation>Kopjoja lidhjen në të papastër (shkarkim i drejtpërdrejtë)</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="166"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="168"/>
         <source>Send link by email</source>
         <translation>Dërgoje lidhjen me email</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="167"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="169"/>
         <source>Send link by email (direct download)</source>
         <translation>Dërgoje lidhjen me email (shkarkim i drejtpërdrejt)</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="284"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="285"/>
         <source>Create new...</source>
         <translation>Krijoni të re…</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="577"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="578"/>
         <source>I shared %1 with you</source>
         <translation>Ndava %1 me ju</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="591"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="592"/>
         <source>Confirm Link Share Deletion</source>
         <translation>Ripohoni Fshirje Lidhjeje Ndarjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="592"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="593"/>
         <source>&lt;p&gt;Do you really want to delete the public link share &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;Note: This action cannot be undone.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Doni vërtet të fshihet lidhja publike e ndarjes &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;Shënim: Ky veprim s’mund të zhbëhet.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="599"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="600"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="62"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="615"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="64"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="616"/>
         <source>Public link</source>
         <translation>Lidhje publike</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="268"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="269"/>
         <source>Delete link share</source>
         <translation>Fshi lidhje ndarjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="356"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="545"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="357"/>
+        <location filename="../src/gui/sharelinkwidget.cpp" line="546"/>
         <source>Please Set Password</source>
         <translation>Ju lutemi, Caktoni Fjalëkalim</translation>
     </message>
@@ -3339,37 +3361,37 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
         <translation>Ndajeni me përdorues ose grupe …</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="94"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="96"/>
         <source>You can direct people to this shared file or folder %1 by giving them a private link</source>
         <translation>Mund t’i drejtoni njerëzit për te kjo kartelë ose dosje e përbashkët %1 duke u dhënë atyre një lidhje private</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="216"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="218"/>
         <source>The item is not shared with any users or groups</source>
         <translation>Ky objekt s’është ndarë me ndonjë përdorues apo grup</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="247"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="249"/>
         <source>Open link in browser</source>
         <translation>Hape lidhjen në shfletues</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="249"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="251"/>
         <source>Copy link to clipboard</source>
         <translation>Kopjoja lidhjen në të papastër</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="251"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="253"/>
         <source>Send link by email</source>
         <translation>Dërgoje lidhjen me email</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="261"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="263"/>
         <source>No results for &apos;%1&apos;</source>
         <translation>Pa përfundime për &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="337"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="339"/>
         <source>I shared something with you</source>
         <translation>Ndava diçka me ju</translation>
     </message>
@@ -3397,17 +3419,17 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
         <translation>…</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="357"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="359"/>
         <source>create</source>
         <translation>krijoje</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="360"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="362"/>
         <source>change</source>
         <translation>ndrysho</translation>
     </message>
     <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="363"/>
+        <location filename="../src/gui/shareusergroupwidget.cpp" line="365"/>
         <source>delete</source>
         <translation>fshi</translation>
     </message>
@@ -3565,7 +3587,7 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::Spaces::SpacesDelegate</name>
     <message>
-        <location filename="../src/gui/spaces/spacesdelegate.cpp" line="162"/>
+        <location filename="../src/gui/spaces/spacesdelegate.cpp" line="164"/>
         <source>Open in Web</source>
         <translation>Hape në Web</translation>
     </message>
@@ -3573,42 +3595,42 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::Spaces::SpacesModel</name>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="45"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="50"/>
         <source>Sync</source>
         <translation>Njëkohësim</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="47"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="52"/>
         <source>Name</source>
         <translation>Emër</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="49"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="54"/>
         <source>Subtitle</source>
         <translation>Nëntitull</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="51"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="56"/>
         <source>Web URL</source>
         <translation>URL Web</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="53"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="58"/>
         <source>Web Dav URL</source>
         <translation>URL Web Dav</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="55"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="60"/>
         <source>Image</source>
         <translation>Figurë</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="57"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="62"/>
         <source>Priority</source>
         <translation>Përparësi</translation>
     </message>
     <message>
-        <location filename="../src/gui/spaces/spacesmodel.cpp" line="59"/>
+        <location filename="../src/gui/spaces/spacesmodel.cpp" line="64"/>
         <source>Enabled</source>
         <translation>E aktivizuar</translation>
     </message>
@@ -3691,7 +3713,7 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="449"/>
+        <location filename="../src/libsync/theme.cpp" line="444"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;Version %1. Për më tepër hollësi vizitoni &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Për çështje të ditura dhe ndihmë, ju lutemi, vizitoni: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Nga Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller dhe të tjerë.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Të drejta kopjimi ownCloud GmbH&lt;/p&gt;&lt;p&gt;Shpërndarë nga %4 dhe licencuar sipas GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 dhe stema %5 janë shenja tregtare të regjistruara të %4 në Shtetet e Bashkuara, vende të tjera, ose të dy rastet.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3714,36 +3736,14 @@ Gjatë procesit përditësuesi mund të kërkojë privilegje shtesë.</translati
         <translation>S’mund të lidhet në mënyrë të parrezik te %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/tlserrordialog.cpp" line="69"/>
+        <location filename="../src/gui/tlserrordialog.cpp" line="62"/>
         <source>&amp;lt;not specified&amp;gt;</source>
         <translation>&amp;lt;e papërcaktuar&amp;gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/tlserrordialog.cpp" line="75"/>
+        <location filename="../src/gui/tlserrordialog.cpp" line="68"/>
         <source>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;with Certificate %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organization: %2&lt;br/&gt;Unit: %3&lt;br/&gt;Country: %4&lt;/p&gt;&lt;p&gt;Fingerprint (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effective Date: %8Expiration Date: %9&lt;/div&gt;&lt;h3&gt;Issuer: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organization: %11&lt;br/&gt;Unit: %12&lt;br/&gt;Country: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</source>
         <translation>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;me Dëshmi %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Ent: %2&lt;br/&gt;Njësi: %3&lt;br/&gt;Vend: %4&lt;/p&gt;&lt;p&gt;Shenja gishtash (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Shenja gishtash (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Shenja gishtash (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Datë Hyrjeje Në Fuqi: %8Datë Skadimi: %9&lt;/div&gt;&lt;h3&gt;Lëshues: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Ent: %11&lt;br/&gt;Njësi: %12&lt;br/&gt;Vend: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Ui::AppImageUpdateAvailableDialog</name>
-    <message>
-        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="36"/>
-        <source>Installed version: %1</source>
-        <translation>Version i instaluar: %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="37"/>
-        <source>Available update: %1</source>
-        <translation>Përditësim i gatshëm: %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updater/appimageupdateavailabledialog.cpp" line="38"/>
-        <source>An update is available for this AppImage of %1. Do you want to install this update?
-
-The update will be performed in the background, and overwrite the current AppImage file. You need to restart the app to complete the update.</source>
-        <translation>Për këtë AppImage të %1 ka një përditësim gati. Doni të instalohet ky përditësim?
-
-Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e tanishme AppImage. Që të plotësohet përditësimi, lypset të rinisni aplikacionin.</translation>
     </message>
 </context>
 <context>
@@ -3814,27 +3814,27 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::Wizard::AccountConfiguredWizardPage</name>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="30"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="32"/>
         <source>Use &amp;virtual files instead of downloading content immediately</source>
         <translation>Përdor kartela &amp;virtuale, në vend se shkarkim të menjëhershëm lënde</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="55"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="57"/>
         <source>%1 (recommended)</source>
         <translation>%1 (e rekomanduar)</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="73"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="75"/>
         <source>The virtual filesystem feature is not available for this installation.</source>
         <translation>Veçoria sistem kartelash virtuale s’është e passhme për këtë instalim.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="75"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="77"/>
         <source>The virtual filesystem feature is not stable yet. Use with caution.</source>
         <translation>Veçoria sistem kartelash virtual s’është ende e qëndrueshme. Përdoreni me kujdes.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="79"/>
+        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="81"/>
         <source>Select the local folder</source>
         <translation>Përzgjidhni dosjen vendore</translation>
     </message>
@@ -3928,12 +3928,12 @@ Kjo është një mënyrë e re, eksperimentale. Nëse vendosni ta përdorni, ju 
 <context>
     <name>OCC::Wizard::OAuthCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="50"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="49"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation>Gabim teksa provohej të bëhej hyrja te shërbyes me OAuth2 të aktivizuar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="55"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="54"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation>Shërbyesi njofton se OAuth2 nuk mbulohet.</translation>
     </message>
@@ -3979,22 +3979,22 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>OCC::Wizard::SetupWizardWindow</name>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="111"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="110"/>
         <source>Finish</source>
         <translation>Përfundoje</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="113"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="112"/>
         <source>Next &gt;</source>
         <translation>Pasuesi &gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="158"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="157"/>
         <source>Cancel Setup</source>
         <translation>Anuloni Ujdisjen</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="158"/>
+        <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="157"/>
         <source>Do you really want to cancel the account setup?</source>
         <translation>Doni vërtet të anuloni ujdisjen e llogarisë?</translation>
     </message>
@@ -4575,7 +4575,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="425"/>
+        <location filename="../src/libsync/theme.cpp" line="420"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7%9Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Biblioteka Qt %3, %4%7%9Me përdorim shtojce kartelash virtuale: %5%7%6</translation>
     </message>
@@ -4583,7 +4583,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::pluginDir</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="420"/>
+        <location filename="../src/libsync/theme.cpp" line="415"/>
         <source>Plugin dir: %1%2</source>
         <translation>Drejtori shtojce: %1%2</translation>
     </message>
@@ -4591,7 +4591,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="407"/>
+        <location filename="../src/libsync/theme.cpp" line="402"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (Montuar me Qt %2)</translation>
     </message>
@@ -4599,7 +4599,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="412"/>
+        <location filename="../src/libsync/theme.cpp" line="407"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
@@ -4707,52 +4707,52 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="93"/>
+        <location filename="../src/libsync/theme.cpp" line="95"/>
         <source>Status undefined</source>
         <translation>Gjendje e papërcaktuar</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="96"/>
+        <location filename="../src/libsync/theme.cpp" line="98"/>
         <source>Waiting to start sync</source>
         <translation>Po pritet të fillohet njëkohësimi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="99"/>
+        <location filename="../src/libsync/theme.cpp" line="101"/>
         <source>Sync is running</source>
         <translation>Njëkohësimi po kryhet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="102"/>
+        <location filename="../src/libsync/theme.cpp" line="104"/>
         <source>Sync Success</source>
         <translation>Sukses Njëkohësimi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="105"/>
+        <location filename="../src/libsync/theme.cpp" line="107"/>
         <source>Sync Success, some files were ignored.</source>
         <translation>Sukses njëkohësimi, disa prej kartelave u shpërfillën.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="108"/>
+        <location filename="../src/libsync/theme.cpp" line="110"/>
         <source>Sync Error</source>
         <translation>Gabim Njëkohësimi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="111"/>
+        <location filename="../src/libsync/theme.cpp" line="113"/>
         <source>Setup Error</source>
         <translation>Gabim Rregullimi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="114"/>
+        <location filename="../src/libsync/theme.cpp" line="116"/>
         <source>Preparing to sync</source>
         <translation>Po përgatitet për njëkohësim</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="117"/>
+        <location filename="../src/libsync/theme.cpp" line="119"/>
         <source>Aborting...</source>
         <translation>Po ndërpritet…</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="120"/>
+        <location filename="../src/libsync/theme.cpp" line="122"/>
         <source>Sync is paused</source>
         <translation>Njëkohësimi është ndalur</translation>
     </message>

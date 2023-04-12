@@ -15,6 +15,7 @@
 #include "setupwizardaccountbuilder.h"
 
 #include "gui/accountmanager.h"
+#include "networkjobs/fetchuserinfojobfactory.h"
 
 namespace OCC::Wizard {
 
@@ -42,6 +43,14 @@ QString HttpBasicAuthenticationStrategy::davUser()
     return _username;
 }
 
+void HttpBasicAuthenticationStrategy::setDavUser(const QString &user)
+{
+    // the fetched username should always match the one the user gave us
+    Q_ASSERT(user == _username);
+    // however, as a fallback, in production, we will overwrite our current value with the one we fetched
+    _username = user;
+}
+
 QString HttpBasicAuthenticationStrategy::username() const
 {
     return _username;
@@ -52,9 +61,13 @@ QString HttpBasicAuthenticationStrategy::password() const
     return _password;
 }
 
-OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &davUser, const QString &token, const QString &refreshToken)
-    : _davUser(davUser)
-    , _token(token)
+FetchUserInfoJobFactory HttpBasicAuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
+{
+    return FetchUserInfoJobFactory::fromBasicAuthCredentials(nam, _username, _password);
+}
+
+OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken)
+    : _token(token)
     , _refreshToken(refreshToken)
 {
 }
@@ -72,6 +85,18 @@ bool OAuth2AuthenticationStrategy::isValid()
 QString OAuth2AuthenticationStrategy::davUser()
 {
     return _davUser;
+}
+
+void OAuth2AuthenticationStrategy::setDavUser(const QString &user)
+{
+    // should be called only once
+    Q_ASSERT(_davUser.isEmpty());
+    _davUser = user;
+}
+
+FetchUserInfoJobFactory OAuth2AuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
+{
+    return FetchUserInfoJobFactory::fromOAuth2Credentials(nam, _token);
 }
 
 SetupWizardAccountBuilder::SetupWizardAccountBuilder() = default;
@@ -103,7 +128,7 @@ void SetupWizardAccountBuilder::setWebFingerUsername(const QString &username)
 
 AccountPtr SetupWizardAccountBuilder::build()
 {
-    auto newAccountPtr = Account::create();
+    auto newAccountPtr = Account::create(QUuid::createUuid());
 
     Q_ASSERT(!_serverUrl.isEmpty() && _serverUrl.isValid());
     newAccountPtr->setUrl(_serverUrl);

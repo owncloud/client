@@ -121,7 +121,7 @@ public:
 
     virtual void test() {
         fakeAm = new FakeAM({});
-        account = OCC::Account::create();
+        account = Account::create(QUuid::createUuid());
         account->setUrl(sOAuthTestServer);
         // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
         // therefore, we should never call fakeAm->setThis(...)
@@ -271,11 +271,10 @@ public:
         return jsonData.toJson();
     }
 
-    virtual void oauthResult(OAuth::Result result, const QString &user, const QString &token, const QString &refreshToken, const QString &displayName)
+    virtual void oauthResult(OAuth::Result result, const QString &token, const QString &refreshToken)
     {
         QCOMPARE(result, OAuth::LoggedIn);
         QCOMPARE(state, UserInfoFetched);
-        QCOMPARE(user, QString("admin"));
         QCOMPARE(token, QString("123"));
         QCOMPARE(refreshToken, QString("456"));
         gotAuthOk = true;
@@ -396,11 +395,11 @@ private slots:
                 return OAuthTestCase::tokenReply(op, req);
             }
 
-            void oauthResult(OAuth::Result result, const QString &user, const QString &token,
-                const QString &displayName, const QString &refreshToken) override
+            void oauthResult(OAuth::Result result, const QString &token, const QString &refreshToken) override
             {
-                if (state != CustomState)
-                    return OAuthTestCase::oauthResult(result, user, token, displayName, refreshToken);
+                if (state != CustomState) {
+                    return OAuthTestCase::oauthResult(result, token, refreshToken);
+                }
                 QCOMPARE(result, OAuth::Error);
             }
         } test;
@@ -463,10 +462,10 @@ private slots:
                 return new FakeHangingReply(op, req, fakeAm);
             }
 
-            void oauthResult(OAuth::Result result, const QString &user, const QString &token, const QString &displayName, const QString &refreshToken) override
+            void oauthResult(OAuth::Result result, const QString &token, const QString &refreshToken) override
             {
-                Q_UNUSED(user);
                 Q_UNUSED(token);
+                Q_UNUSED(refreshToken);
 
                 QCOMPARE(state, StartState);
                 QCOMPARE(result, OAuth::Error);
