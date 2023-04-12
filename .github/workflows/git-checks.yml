@@ -3,7 +3,7 @@ name: Git checks
 on: [pull_request]
 
 permissions:
-  pull_requests: write
+  pull-requests: write
 
 jobs:
   message-check:
