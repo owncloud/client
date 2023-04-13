@@ -178,8 +178,7 @@ void AccountState::setState(State state)
 {
     const State oldState = _state;
     if (_state != state) {
-        qCInfo(lcAccountState) << "AccountState state change: "
-                               << stateString(_state) << "->" << stateString(state);
+        qCInfo(lcAccountState) << "AccountState state change: " << _state << "->" << state;
         _state = state;
 
         if (_state == SignedOut) {
@@ -216,29 +215,6 @@ void AccountState::setState(State state)
     }
 }
 
-QString AccountState::stateString(State state)
-{
-    switch (state) {
-    case SignedOut:
-        return tr("Signed out");
-    case Disconnected:
-        return tr("Disconnected");
-    case Connected:
-        return tr("Connected");
-    case ServiceUnavailable:
-        return tr("Service unavailable");
-    case MaintenanceMode:
-        return tr("Maintenance mode");
-    case NetworkError:
-        return tr("Network error");
-    case ConfigurationError:
-        return tr("Configuration error");
-    case AskingCredentials:
-        return tr("Asking Credentials");
-    }
-    return tr("Unknown account state");
-}
-
 bool AccountState::isSignedOut() const
 {
     return _state == SignedOut;
@@ -249,6 +225,8 @@ void AccountState::signOutByUi()
     account()->credentials()->forgetSensitiveData();
     account()->clearCookieJar();
     setState(SignedOut);
+    // persist that we are signed out
+    Q_EMIT account()->wantsAccountSaved(account().data());
 }
 
 void AccountState::freshConnectionAttempt()
@@ -263,6 +241,8 @@ void AccountState::signIn()
     if (_state == SignedOut) {
         _waitingForNewCredentials = false;
         setState(Disconnected);
+        // persist that we are no longer signed out
+        Q_EMIT account()->wantsAccountSaved(account().data());
     }
 }
 

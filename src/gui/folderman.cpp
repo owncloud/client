@@ -460,42 +460,30 @@ void FolderMan::slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMod
   * if a folder wants to be synced, it calls this slot and is added
   * to the queue. The slot to actually start a sync is called afterwards.
   */
-void FolderMan::scheduleFolder(Folder *f)
+void FolderMan::scheduleFolder(Folder *f, bool force)
 {
     qCInfo(lcFolderMan) << "Schedule folder " << f->path() << " to sync!";
 
-    if (!_scheduledFolders.contains(f)) {
+    if (!_scheduledFolders.contains(f) || force) {
         if (!f->canSync()) {
             qCInfo(lcFolderMan) << "Folder is not ready to sync, not scheduled!";
             _socketApi->slotUpdateFolderView(f);
             return;
         }
-        f->prepareToSync();
-        emit folderSyncStateChange(f);
-        _scheduledFolders.enqueue(f);
+        // don't reset the sync result during a running sync
+        if (!f->isSyncRunning()) {
+            f->prepareToSync();
+        }
+        if (force) {
+            _scheduledFolders.removeAll(f);
+            _scheduledFolders.prepend(f);
+        } else {
+            _scheduledFolders.enqueue(f);
+        }
         emit scheduleQueueChanged();
     } else {
         qCInfo(lcFolderMan) << "Sync for folder " << f->path() << " already scheduled, do not enqueue!";
     }
-
-    startScheduledSyncSoon();
-}
-
-void FolderMan::scheduleFolderNext(Folder *f)
-{
-    qCInfo(lcFolderMan) << "Schedule folder " << f->path() << " to sync! Front-of-queue.";
-
-    if (!f->canSync()) {
-        qCInfo(lcFolderMan) << "Folder is not ready to sync, not scheduled!";
-        return;
-    }
-
-    _scheduledFolders.removeAll(f);
-
-    f->prepareToSync();
-    emit folderSyncStateChange(f);
-    _scheduledFolders.prepend(f);
-    emit scheduleQueueChanged();
 
     startScheduledSyncSoon();
 }
@@ -1131,6 +1119,9 @@ QString FolderMan::trayTooltipStatusString(
     case SyncResult::Paused:
         folderMessage = tr("Sync is paused.");
         break;
+    case SyncResult::Offline:
+        folderMessage = tr("Offline.");
+        break;
         // no default case on purpose, check compiler warnings
     }
     if (paused) {
@@ -1169,6 +1160,12 @@ QString FolderMan::checkPathValidityRecursive(const QString &path)
 
 #ifdef Q_OS_WIN
     Utility::NtfsPermissionLookupRAII ntfs_perm;
+
+    if (path.size() > MAX_PATH) {
+        if (!FileSystem::longPathsEnabledOnWindows()) {
+            return tr("The path '%1' is too long. Please enable long paths in the Windows settings or choose a different folder.").arg(path);
+        }
+    }
 #endif
     const QFileInfo selFile(path);
     if (numberOfSyncJournals(selFile.filePath()) != 0) {
@@ -1217,6 +1214,7 @@ QString FolderMan::checkPathValidityForNewFolder(const QString &path) const
                 .arg(QDir::toNativeSeparators(path));
         }
     }
+
     const auto result = checkPathValidityRecursive(path);
     if (!result.isEmpty()) {
         return tr("%1 Please pick another one!").arg(result);

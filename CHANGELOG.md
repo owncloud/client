@@ -13,7 +13,6 @@ Summary
 * Bugfix - Don't abort local folder deletions on unrelated errors: [#9311](https://github.com/owncloud/client/issues/9311)
 * Bugfix - Fix update channel dropdown: [#10251](https://github.com/owncloud/client/issues/10251)
 * Bugfix - Select keep files as default action in all files removed dialog: [#10254](https://github.com/owncloud/client/issues/10254)
-* Bugfix - Check for long paths when these are not enabled on Windows: [#10352](https://github.com/owncloud/client/pull/10352)
 * Bugfix - Undefined client state after fetching credentials failed: [#10408](https://github.com/owncloud/client/issues/10408)
 * Bugfix - Escape navigation elements from user name: [#10427](https://github.com/owncloud/client/issues/10427)
 * Bugfix - Under certain conditions the folder watcher could drop events: [#10458](https://github.com/owncloud/client/pull/10458)
@@ -21,14 +20,17 @@ Summary
 * Bugfix - Clear conflict errors after they where resolved: [#10569](https://github.com/owncloud/client/issues/10569)
 * Bugfix - Set the expected download content length in the job properly: [#10607](https://github.com/owncloud/client/pull/10607)
 * Bugfix - UI freeze when multiple modal dialogs displayed on macOS: [#10621](https://github.com/owncloud/client/issues/10621)
+* Bugfix - Ensure the account state is properly persisted: [#10648](https://github.com/owncloud/client/issues/10648)
 * Bugfix - Reconnect got stuck if the server supports app providers: [#10666](https://github.com/owncloud/client/issues/10666)
 * Change - Implement server guided migration to spaces: [#9945](https://github.com/owncloud/client/issues/9945)
 * Enhancement - Display `This space is either disabled or deleted` for gone spaces: [#9700](https://github.com/owncloud/client/issues/9700)
 * Enhancement - Sync virtual files that are locked by office etc: [#9829](https://github.com/owncloud/client/issues/9829)
 * Enhancement - Replace term (un)pause with a more suitable one: [#10231](https://github.com/owncloud/client/issues/10231)
+* Enhancement - Check for long paths when these are not enabled on Windows: [#10264](https://github.com/owncloud/client/issues/10264)
 * Enhancement - Implement a possibility to Desktop.ini icon updates on Windows: [#10361](https://github.com/owncloud/client/issues/10361)
 * Enhancement - Disable DPI scaling factor rounding on Windows: [#10406](https://github.com/owncloud/client/issues/10406)
 * Enhancement - Display quota for Spaces: [#10453](https://github.com/owncloud/client/issues/10453)
+* Enhancement - New WebFinger workflow: [#10517](https://github.com/owncloud/client/issues/10517)
 * Enhancement - Branding: Allow the addition of buttons to open a url: [#10518](https://github.com/owncloud/client/issues/10518)
 * Enhancement - Build the client without the auto updater by default: [#10537](https://github.com/owncloud/client/issues/10537)
 * Enhancement - Improve presentation of connection state: [#10557](https://github.com/owncloud/client/issues/10557)
@@ -38,6 +40,7 @@ Summary
 * Enhancement - Display the space name provided by the server: [#10602](https://github.com/owncloud/client/pull/10602)
 * Enhancement - Always point to the latest documentation: [#10634](https://github.com/owncloud/client/issues/10634)
 * Enhancement - More user friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
+* Enhancement - Don't invalidate oauth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
 
 Details
 -------
@@ -73,10 +76,6 @@ Details
 * Bugfix - Select keep files as default action in all files removed dialog: [#10254](https://github.com/owncloud/client/issues/10254)
 
    https://github.com/owncloud/client/issues/10254
-
-* Bugfix - Check for long paths when these are not enabled on Windows: [#10352](https://github.com/owncloud/client/pull/10352)
-
-   https://github.com/owncloud/client/pull/10352
 
 * Bugfix - Undefined client state after fetching credentials failed: [#10408](https://github.com/owncloud/client/issues/10408)
 
@@ -117,6 +116,12 @@ Details
 
    https://github.com/owncloud/client/issues/10621
 
+* Bugfix - Ensure the account state is properly persisted: [#10648](https://github.com/owncloud/client/issues/10648)
+
+   We didn't properly persist the login/logout state.
+
+   https://github.com/owncloud/client/issues/10648
+
 * Bugfix - Reconnect got stuck if the server supports app providers: [#10666](https://github.com/owncloud/client/issues/10666)
 
    https://github.com/owncloud/client/issues/10666
@@ -153,6 +158,13 @@ Details
    https://github.com/owncloud/client/issues/10231
    https://github.com/owncloud/client/issues/10529
 
+* Enhancement - Check for long paths when these are not enabled on Windows: [#10264](https://github.com/owncloud/client/issues/10264)
+
+   https://github.com/owncloud/client/issues/10264
+   https://github.com/owncloud/client/issues/10677
+   https://github.com/owncloud/client/pull/10352
+   https://github.com/owncloud/client/pull/10679
+
 * Enhancement - Implement a possibility to Desktop.ini icon updates on Windows: [#10361](https://github.com/owncloud/client/issues/10361)
 
    We implemented an option wich allows to disable the automatic update of the folder icon for sync
@@ -171,6 +183,19 @@ Details
    Quota is now displayed for all folders.
 
    https://github.com/owncloud/client/issues/10453
+
+* Enhancement - New WebFinger workflow: [#10517](https://github.com/owncloud/client/issues/10517)
+
+   OwnCloud Infinite Scale servers may provide a new WebFinger service which clients can use to
+   discover an actual instance they should connect to.
+
+   This is useful when a large organization operates multiple instances to distribute the load on
+   multiple servers, or single departments operate their own servers but they all use a common
+   entrypoint URL and authentication system.
+
+   https://github.com/owncloud/client/issues/10517
+   https://github.com/owncloud/client/pull/10665
+   https://owncloud.dev/services/webfinger/
 
 * Enhancement - Branding: Allow the addition of buttons to open a url: [#10518](https://github.com/owncloud/client/issues/10518)
 
@@ -224,6 +249,10 @@ Details
 * Enhancement - More user friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
 
    https://github.com/owncloud/client/pull/10637
+
+* Enhancement - Don't invalidate oauth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
+
+   https://github.com/owncloud/client/issues/10654
 
 Changelog for ownCloud Desktop Client [3.2.1] (2023-03-07)
 =======================================
