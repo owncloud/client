@@ -25,18 +25,6 @@ namespace OCC::Wizard {
 OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    auto webFingerAuthenticationServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
-
-    auto oAuthCredentialsPage = [&]() {
-        if (!webFingerAuthenticationServerUrl.isEmpty()) {
-            return new OAuthCredentialsSetupWizardPage(webFingerAuthenticationServerUrl);
-        } else {
-            return new OAuthCredentialsSetupWizardPage(_context->accountBuilder().serverUrl());
-        }
-    }();
-
-    _page = oAuthCredentialsPage;
-
     const auto authServerUrl = [this]() {
         auto authServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
         if (!authServerUrl.isEmpty()) {
@@ -44,6 +32,9 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
         }
         return _context->accountBuilder().serverUrl();
     }();
+
+    auto oAuthCredentialsPage = new OAuthCredentialsSetupWizardPage(authServerUrl);
+    _page = oAuthCredentialsPage;
 
     auto oAuth = new OAuth(authServerUrl, _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
 
