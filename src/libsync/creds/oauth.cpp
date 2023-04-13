@@ -378,7 +378,7 @@ void OAuth::startAuthentication()
                         auto *job = FetchUserInfoJobFactory::fromOAuth2Credentials(_networkAccessManager, accessToken).startJob(_serverUrl, this);
 
                         connect(job, &CoreJob::finished, this, [=]() {
-                            if (job->success()) {
+                            if (!job->success()) {
                                 httpReplyAndClose(socket, QStringLiteral("500 Internal Server Error"), tr("Login Error"),
                                     tr("<h1>Login Error</h1><p>%1</p>").arg(job->errorMessage()));
                                 emit result(Error);
@@ -501,10 +501,11 @@ void OAuth::fetchWellKnown()
         _wellKnownFinished = true;
         Q_EMIT fetchWellKnownFinished();
     } else {
+        qCDebug(lcOauth) << "fetching" << wellKnownPathC;
+
         QNetworkRequest req;
         req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
         req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
-        req.setRawHeader("Referer", _serverUrl.toString().toUtf8());
         req.setTransferTimeout(defaultTimeoutMs());
 
         auto reply = _networkAccessManager->get(req);
