@@ -120,23 +120,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Qt::DecorationRole:
         switch (column) {
         case Columns::Image: {
-            if (auto it = Utility::optionalFind(_images, space->drive().getId())) {
-                return QVariant::fromValue(it->value());
-            }
-            _images[space->drive().getId()] = Resources::getCoreIcon(QStringLiteral("th-large")).pixmap(ImageSizeC);
-            const auto imgUrl = data(index, Models::UnderlyingDataRole).toUrl();
-            if (!imgUrl.isEmpty()) {
-                auto job = new OCC::SimpleNetworkJob(_spacesManager->account()->sharedFromThis(), imgUrl, {}, "GET", {}, {}, nullptr);
-                connect(job, &OCC::SimpleNetworkJob::finishedSignal, this, [job, id = space->drive().getId(), index, this] {
-                    QPixmap img;
-                    img.loadFromData(job->reply()->readAll());
-                    img = img.scaled(ImageSizeC, Qt::KeepAspectRatio, Qt::TransformationMode::SmoothTransformation);
-                    _images[id] = img;
-                    Q_EMIT const_cast<SpacesModel *>(this)->dataChanged(index, index, { Qt::DecorationRole });
-                });
-                job->start();
-            }
-            return _images[space->drive().getId()];
+            return space->image();
         }
         default:
             return {};
@@ -152,11 +136,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Models::UnderlyingDataRole:
         switch (column) {
         case Columns::Image: {
-            const auto &special = space->drive().getSpecial();
-            const auto img = std::find_if(special.cbegin(), special.cend(), [](const OpenAPI::OAIDriveItem &it) {
-                return it.getSpecialFolder().getName() == QLatin1String("image");
-            });
-            return img == special.cend() ? QString() : img->getWebDavUrl();
+            return space->imageUrl();
         }
         default:
             return data(index, Qt::DisplayRole);
@@ -180,8 +160,19 @@ void SpacesModel::setSpacesManager(GraphApi::SpacesManager *spacesManager)
     _spacesList = _spacesManager->spaces();
     endResetModel();
     connect(_spacesManager, &GraphApi::SpacesManager::updated, this, [this] {
-        beginResetModel();
-        _spacesList = _spacesManager->spaces();
-        endResetModel();
+        const auto newSpaces = _spacesManager->spaces();
+        if (_spacesList != newSpaces) {
+            beginResetModel();
+            _spacesList = newSpaces;
+            endResetModel();
+        }
+    });
+
+    connect(_spacesManager, &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *space) {
+        const auto row = _spacesList.indexOf(space);
+        if (row != -1) {
+            const auto index = createIndex(row, 0);
+            Q_EMIT dataChanged(index, index.siblingAtColumn(static_cast<int>(SpacesModel::Columns::ColumnCount) - 1));
+        }
     });
 }

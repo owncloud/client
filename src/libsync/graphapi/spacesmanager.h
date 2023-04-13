@@ -52,6 +52,7 @@ namespace GraphApi {
         void checkReady() const;
 
     Q_SIGNALS:
+        void spaceChanged(Space *space) const;
         void updated();
         void ready() const;
 
@@ -60,7 +61,7 @@ namespace GraphApi {
 
         Account *_account;
         QTimer *_refreshTimer;
-        QHash<QString, Space *> _spacesMap;
+        QMap<QString, Space *> _spacesMap;
         bool _ready = false;
     };
 
