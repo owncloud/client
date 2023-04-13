@@ -25,12 +25,12 @@ namespace OCC::Wizard {
 OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    auto modernWebFingerAuthenticationServerUrl = _context->accountBuilder().modernWebFingerAuthenticationServerUrl();
+    auto webFingerAuthenticationServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
 
     auto oAuthCredentialsPage = [&]() {
-        if (!modernWebFingerAuthenticationServerUrl.isEmpty()) {
+        if (!webFingerAuthenticationServerUrl.isEmpty()) {
             //            Q_ASSERT(_context->accountBuilder().serverUrl().isEmpty());
-            return new OAuthCredentialsSetupWizardPage(modernWebFingerAuthenticationServerUrl);
+            return new OAuthCredentialsSetupWizardPage(webFingerAuthenticationServerUrl);
         } else {
             return new OAuthCredentialsSetupWizardPage(_context->accountBuilder().serverUrl());
         }
@@ -38,9 +38,9 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 
     _page = oAuthCredentialsPage;
 
-    auto oAuth = new OAuth(_context->accountBuilder().serverUrl(), _context->accountBuilder().classicWebFingerUsername(), _context->accessManager(), {}, this);
+    auto oAuth = new OAuth(_context->accountBuilder().serverUrl(), _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
 
-    QUrl authServerUrl = _context->accountBuilder().modernWebFingerAuthenticationServerUrl();
+    QUrl authServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
     if (!authServerUrl.isEmpty()) {
         oAuth->setWebFingerAuthenticationServerUrl(authServerUrl);
     }
@@ -75,7 +75,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 
         // we run this job here so that it runs during the transition state
         // sure, it's not the cleanest ever approach, but currently it's good enough
-        if (!_context->accountBuilder().modernWebFingerAuthenticationServerUrl().isEmpty()) {
+        if (!_context->accountBuilder().webFingerAuthenticationServerUrl().isEmpty()) {
             auto *job = Jobs::WebFingerInstanceLookupJobFactory(_context->accessManager(), token).startJob(_context->accountBuilder().serverUrl(), this);
 
             connect(job, &CoreJob::finished, this, [=]() {
@@ -87,7 +87,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
                     if (instanceUrls.isEmpty()) {
                         Q_EMIT evaluationFailed(QStringLiteral("Server returned empty list of instances"));
                     } else {
-                        _context->accountBuilder().setModernWebFingerInstances(instanceUrls);
+                        _context->accountBuilder().setWebFingerInstances(instanceUrls);
                     }
                 }
 

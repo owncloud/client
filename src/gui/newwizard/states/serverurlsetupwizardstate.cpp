@@ -37,7 +37,7 @@ ServerUrlSetupWizardState::ServerUrlSetupWizardState(SetupWizardContext *context
 {
     auto serverUrl = [this]() {
         if (Theme::instance()->wizardEnableWebfinger()) {
-            return _context->accountBuilder().classicWebFingerServerUrl();
+            return _context->accountBuilder().legacyWebFingerServerUrl();
         } else {
             return _context->accountBuilder().serverUrl();
         }
@@ -129,7 +129,7 @@ void ServerUrlSetupWizardState::evaluatePage()
                     // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
                     // step we can skip it here therefore
                     if (Theme::instance()->wizardEnableWebfinger()) {
-                        _context->accountBuilder().setClassicWebFingerServerUrl(resolvedUrl);
+                        _context->accountBuilder().setLegacyWebFingerServerUrl(resolvedUrl);
                         Q_EMIT evaluationSuccessful();
                         return;
                     }
@@ -162,7 +162,7 @@ void ServerUrlSetupWizardState::evaluatePage()
                     Qt::DirectConnection);
             } else {
                 // TODO: validation?
-                _context->accountBuilder().setModernWebFingerAuthenticationServerUrl(job->result().toUrl());
+                _context->accountBuilder().setWebFingerAuthenticationServerUrl(job->result().toUrl());
                 Q_EMIT evaluationSuccessful();
             }
         });

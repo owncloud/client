@@ -122,9 +122,9 @@ DetermineAuthTypeJob::AuthType SetupWizardAccountBuilder::authType()
     return _authType;
 }
 
-void SetupWizardAccountBuilder::setClassicWebFingerUsername(const QString &username)
+void SetupWizardAccountBuilder::setLegacyWebFingerUsername(const QString &username)
 {
-    _classicWebFingerUsername = username;
+    _legacyWebFingerUsername = username;
 }
 
 AccountPtr SetupWizardAccountBuilder::build()
@@ -134,9 +134,9 @@ AccountPtr SetupWizardAccountBuilder::build()
     Q_ASSERT(!_serverUrl.isEmpty() && _serverUrl.isValid());
     newAccountPtr->setUrl(_serverUrl);
 
-    if (!_modernWebFingerSelectedInstance.isEmpty()) {
+    if (!_webFingerSelectedInstance.isEmpty()) {
         Q_ASSERT(_serverUrl.isValid());
-        newAccountPtr->setUrl(_modernWebFingerSelectedInstance);
+        newAccountPtr->setUrl(_webFingerSelectedInstance);
     }
 
     Q_ASSERT(hasValidCredentials());
@@ -200,19 +200,19 @@ void SetupWizardAccountBuilder::setDefaultSyncTargetDir(const QString &syncTarge
     _defaultSyncTargetDir = syncTargetDir;
 }
 
-QString SetupWizardAccountBuilder::classicWebFingerUsername() const
+QString SetupWizardAccountBuilder::legacyWebFingerUsername() const
 {
-    return _classicWebFingerUsername;
+    return _legacyWebFingerUsername;
 }
 
-void SetupWizardAccountBuilder::setClassicWebFingerServerUrl(const QUrl &webFingerServerUrl)
+void SetupWizardAccountBuilder::setLegacyWebFingerServerUrl(const QUrl &webFingerServerUrl)
 {
-    _classicWebFingerServerUrl = webFingerServerUrl;
+    _legacyWebFingerServerUrl = webFingerServerUrl;
 }
 
-QUrl SetupWizardAccountBuilder::classicWebFingerServerUrl() const
+QUrl SetupWizardAccountBuilder::legacyWebFingerServerUrl() const
 {
-    return _classicWebFingerServerUrl;
+    return _legacyWebFingerServerUrl;
 }
 
 void SetupWizardAccountBuilder::setDynamicRegistrationData(const QVariantMap &dynamicRegistrationData)
@@ -225,34 +225,34 @@ QVariantMap SetupWizardAccountBuilder::dynamicRegistrationData() const
     return _dynamicRegistrationData;
 }
 
-void SetupWizardAccountBuilder::setModernWebFingerAuthenticationServerUrl(const QUrl &url)
+void SetupWizardAccountBuilder::setWebFingerAuthenticationServerUrl(const QUrl &url)
 {
-    _modernWebFingerAuthenticationServerUrl = url;
+    _webFingerAuthenticationServerUrl = url;
     _authType = DetermineAuthTypeJob::AuthType::OAuth;
 }
 
-QUrl SetupWizardAccountBuilder::modernWebFingerAuthenticationServerUrl() const
+QUrl SetupWizardAccountBuilder::webFingerAuthenticationServerUrl() const
 {
-    return _modernWebFingerAuthenticationServerUrl;
+    return _webFingerAuthenticationServerUrl;
 }
 
-void SetupWizardAccountBuilder::setModernWebFingerInstances(const QVector<QUrl> &instancesList)
+void SetupWizardAccountBuilder::setWebFingerInstances(const QVector<QUrl> &instancesList)
 {
-    _modernWebFingerInstances = instancesList;
+    _webFingerInstances = instancesList;
 }
 
-QVector<QUrl> SetupWizardAccountBuilder::modernWebFingerInstances() const
+QVector<QUrl> SetupWizardAccountBuilder::webFingerInstances() const
 {
-    return _modernWebFingerInstances;
+    return _webFingerInstances;
 }
 
-void SetupWizardAccountBuilder::setModernWebFingerSelectedInstance(const QUrl &instance)
+void SetupWizardAccountBuilder::setWebFingerSelectedInstance(const QUrl &instance)
 {
-    _modernWebFingerSelectedInstance = instance;
+    _webFingerSelectedInstance = instance;
 }
 
-QUrl SetupWizardAccountBuilder::modernWebFingerSelectedInstance() const
+QUrl SetupWizardAccountBuilder::webFingerSelectedInstance() const
 {
-    return _modernWebFingerSelectedInstance;
+    return _webFingerSelectedInstance;
 }
 }

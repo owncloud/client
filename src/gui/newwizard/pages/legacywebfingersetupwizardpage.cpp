@@ -12,15 +12,15 @@
  * for more details.
  */
 
-#include "classicwebfingersetupwizardpage.h"
-#include "ui_classicwebfingersetupwizardpage.h"
+#include "legacywebfingersetupwizardpage.h"
+#include "ui_legacywebfingersetupwizardpage.h"
 
 #include "theme.h"
 
 namespace OCC::Wizard {
 
-ClassicWebFingerSetupWizardPage::ClassicWebFingerSetupWizardPage(const QUrl &serverUrl)
-    : _ui(new ::Ui::ClassicWebFingerSetupWizardPage)
+LegacyWebFingerSetupWizardPage::LegacyWebFingerSetupWizardPage(const QUrl &serverUrl)
+    : _ui(new ::Ui::LegacyWebFingerSetupWizardPage)
 {
     _ui->setupUi(this);
 
@@ -53,17 +53,17 @@ ClassicWebFingerSetupWizardPage::ClassicWebFingerSetupWizardPage(const QUrl &ser
     connect(_ui->usernameLineEdit, &QLineEdit::textChanged, this, &AbstractSetupWizardPage::contentChanged);
 }
 
-QString ClassicWebFingerSetupWizardPage::username() const
+QString LegacyWebFingerSetupWizardPage::username() const
 {
     return _ui->usernameLineEdit->text();
 }
 
-ClassicWebFingerSetupWizardPage::~ClassicWebFingerSetupWizardPage()
+LegacyWebFingerSetupWizardPage::~LegacyWebFingerSetupWizardPage()
 {
     delete _ui;
 }
 
-bool ClassicWebFingerSetupWizardPage::validateInput()
+bool LegacyWebFingerSetupWizardPage::validateInput()
 {
     return !(username().isEmpty());
 }

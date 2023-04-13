@@ -12,22 +12,22 @@
  * for more details.
  */
 
-#include "classicwebfingersetupwizardstate.h"
+#include "legacywebfingersetupwizardstate.h"
 #include "creds/webfinger.h"
 #include "determineauthtypejobfactory.h"
-#include "pages/classicwebfingersetupwizardpage.h"
+#include "pages/legacywebfingersetupwizardpage.h"
 
 namespace OCC::Wizard {
 
-ClassicWebFingerSetupWizardState::ClassicWebFingerSetupWizardState(SetupWizardContext *context)
+LegacyWebFingerSetupWizardState::LegacyWebFingerSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    _page = new ClassicWebFingerSetupWizardPage(_context->accountBuilder().classicWebFingerServerUrl());
+    _page = new LegacyWebFingerSetupWizardPage(_context->accountBuilder().legacyWebFingerServerUrl());
 }
 
-void ClassicWebFingerSetupWizardState::evaluatePage()
+void LegacyWebFingerSetupWizardState::evaluatePage()
 {
-    auto *webFingerSetupWizardPage = qobject_cast<ClassicWebFingerSetupWizardPage *>(_page);
+    auto *webFingerSetupWizardPage = qobject_cast<LegacyWebFingerSetupWizardPage *>(_page);
     OC_ASSERT(webFingerSetupWizardPage != nullptr);
 
     const QString resource = QStringLiteral("acct:%1").arg(webFingerSetupWizardPage->username());
@@ -58,18 +58,18 @@ void ClassicWebFingerSetupWizardState::evaluatePage()
                 return;
             }
 
-            _context->accountBuilder().setClassicWebFingerUsername(webFingerSetupWizardPage->username());
+            _context->accountBuilder().setLegacyWebFingerUsername(webFingerSetupWizardPage->username());
             _context->accountBuilder().setServerUrl(webFinger->href(), qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
             Q_EMIT evaluationSuccessful();
         });
     });
 
-    webFinger->start(_context->accountBuilder().classicWebFingerServerUrl(), resource);
+    webFinger->start(_context->accountBuilder().legacyWebFingerServerUrl(), resource);
 }
 
-SetupWizardState ClassicWebFingerSetupWizardState::state() const
+SetupWizardState LegacyWebFingerSetupWizardState::state() const
 {
-    return SetupWizardState::ClassicWebFingerState;
+    return SetupWizardState::LegacyWebFingerState;
 }
 
 } // OCC::Wizard

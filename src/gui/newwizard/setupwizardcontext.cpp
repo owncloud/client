@@ -63,7 +63,7 @@ void SetupWizardContext::resetAccountBuilder()
 CoreJob *SetupWizardContext::startFetchUserInfoJob(QObject *parent) const
 {
     const QUrl serverUrl = [this]() {
-        const QUrl webFingerInstance = _accountBuilder.modernWebFingerSelectedInstance();
+        const QUrl webFingerInstance = _accountBuilder.webFingerSelectedInstance();
         if (!webFingerInstance.isEmpty()) {
             return webFingerInstance;
         } else {

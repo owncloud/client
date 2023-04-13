@@ -18,12 +18,12 @@
 
 namespace OCC::Wizard {
 
-class ClassicWebFingerSetupWizardState : public AbstractSetupWizardState
+class LegacyWebFingerSetupWizardState : public AbstractSetupWizardState
 {
     Q_OBJECT
 
 public:
-    ClassicWebFingerSetupWizardState(SetupWizardContext *context);
+    LegacyWebFingerSetupWizardState(SetupWizardContext *context);
 
     [[nodiscard]] SetupWizardState state() const override;
 

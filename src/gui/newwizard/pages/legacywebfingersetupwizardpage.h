@@ -17,25 +17,25 @@
 #include "abstractsetupwizardpage.h"
 
 namespace Ui {
-class ClassicWebFingerSetupWizardPage;
+class LegacyWebFingerSetupWizardPage;
 }
 
 namespace OCC::Wizard {
 
-class ClassicWebFingerSetupWizardPage : public AbstractSetupWizardPage
+class LegacyWebFingerSetupWizardPage : public AbstractSetupWizardPage
 {
     Q_OBJECT
 
 public:
-    ClassicWebFingerSetupWizardPage(const QUrl &serverUrl);
-    ~ClassicWebFingerSetupWizardPage() noexcept override;
+    LegacyWebFingerSetupWizardPage(const QUrl &serverUrl);
+    ~LegacyWebFingerSetupWizardPage() noexcept override;
 
     QString username() const;
 
     bool validateInput() override;
 
 private:
-    ::Ui::ClassicWebFingerSetupWizardPage *_ui;
+    ::Ui::LegacyWebFingerSetupWizardPage *_ui;
 };
 
 }

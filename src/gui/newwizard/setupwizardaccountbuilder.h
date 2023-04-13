@@ -118,16 +118,16 @@ public:
      * Only used when WebFinger support is enabled by the theme.
      * @param webFingerServerUrl URL to WebFinger server
      */
-    void setClassicWebFingerServerUrl(const QUrl &webFingerServerUrl);
-    QUrl classicWebFingerServerUrl() const;
+    void setLegacyWebFingerServerUrl(const QUrl &webFingerServerUrl);
+    QUrl legacyWebFingerServerUrl() const;
 
     /**
      * Set URL of WebFinger server used to look up the user's server.
      * Only used when WebFinger support is enabled by the theme.
      * @param username
      */
-    void setClassicWebFingerUsername(const QString &username);
-    QString classicWebFingerUsername() const;
+    void setLegacyWebFingerUsername(const QString &username);
+    QString legacyWebFingerUsername() const;
 
     // TODO: move this out of the class's state
     DetermineAuthTypeJob::AuthType authType();
@@ -171,24 +171,24 @@ public:
      */
     AccountPtr build();
 
-    void setModernWebFingerAuthenticationServerUrl(const QUrl &url);
-    QUrl modernWebFingerAuthenticationServerUrl() const;
+    void setWebFingerAuthenticationServerUrl(const QUrl &url);
+    QUrl webFingerAuthenticationServerUrl() const;
 
-    void setModernWebFingerInstances(const QVector<QUrl> &instancesList);
-    QVector<QUrl> modernWebFingerInstances() const;
+    void setWebFingerInstances(const QVector<QUrl> &instancesList);
+    QVector<QUrl> webFingerInstances() const;
 
-    void setModernWebFingerSelectedInstance(const QUrl &instance);
-    QUrl modernWebFingerSelectedInstance() const;
+    void setWebFingerSelectedInstance(const QUrl &instance);
+    QUrl webFingerSelectedInstance() const;
 
 private:
     QUrl _serverUrl;
 
-    QString _classicWebFingerUsername;
-    QUrl _classicWebFingerServerUrl;
+    QString _legacyWebFingerUsername;
+    QUrl _legacyWebFingerServerUrl;
 
-    QUrl _modernWebFingerAuthenticationServerUrl;
-    QVector<QUrl> _modernWebFingerInstances;
-    QUrl _modernWebFingerSelectedInstance;
+    QUrl _webFingerAuthenticationServerUrl;
+    QVector<QUrl> _webFingerInstances;
+    QUrl _webFingerSelectedInstance;
 
     DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
 

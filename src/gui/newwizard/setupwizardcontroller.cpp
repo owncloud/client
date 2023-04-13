@@ -9,7 +9,7 @@
 #include "states/abstractsetupwizardstate.h"
 #include "states/accountconfiguredsetupwizardstate.h"
 #include "states/basiccredentialssetupwizardstate.h"
-#include "states/classicwebfingersetupwizardstate.h"
+#include "states/legacywebfingersetupwizardstate.h"
 #include "states/oauthcredentialssetupwizardstate.h"
 #include "states/serverurlsetupwizardstate.h"
 #include "theme.h"
@@ -36,7 +36,7 @@ QList<SetupWizardState> getNavigationEntries()
     };
 
     if (Theme::instance()->wizardEnableWebfinger()) {
-        states.append(SetupWizardState::ClassicWebFingerState);
+        states.append(SetupWizardState::LegacyWebFingerState);
     }
 
     states.append({
@@ -90,7 +90,7 @@ SetupWizardController::SetupWizardController(SettingsDialog *parent)
         auto previousState = static_cast<SetupWizardState>(currentStateIdx - 1);
 
         // skip WebFinger page when WebFinger is not available
-        if (previousState == SetupWizardState::ClassicWebFingerState && !Theme::instance()->wizardEnableWebfinger()) {
+        if (previousState == SetupWizardState::LegacyWebFingerState && !Theme::instance()->wizardEnableWebfinger()) {
             previousState = SetupWizardState::ServerUrlState;
         }
 
@@ -117,8 +117,8 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState)
         _currentState = new ServerUrlSetupWizardState(_context);
         break;
     }
-    case SetupWizardState::ClassicWebFingerState: {
-        _currentState = new ClassicWebFingerSetupWizardState(_context);
+    case SetupWizardState::LegacyWebFingerState: {
+        _currentState = new LegacyWebFingerSetupWizardState(_context);
         break;
     }
     case SetupWizardState::CredentialsState: {
@@ -152,22 +152,22 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState)
         switch (_currentState->state()) {
         case SetupWizardState::ServerUrlState: {
             if (Theme::instance()->wizardEnableWebfinger()) {
-                changeStateTo(SetupWizardState::ClassicWebFingerState);
+                changeStateTo(SetupWizardState::LegacyWebFingerState);
             } else {
                 changeStateTo(SetupWizardState::CredentialsState);
             }
             return;
         }
-        case SetupWizardState::ClassicWebFingerState: {
+        case SetupWizardState::LegacyWebFingerState: {
             changeStateTo(SetupWizardState::CredentialsState);
             return;
         }
         case SetupWizardState::CredentialsState: {
             // for now, we assume there is only a single instance
-            const auto webFingerInstances = _context->accountBuilder().modernWebFingerInstances();
+            const auto webFingerInstances = _context->accountBuilder().webFingerInstances();
             if (!webFingerInstances.isEmpty()) {
                 Q_ASSERT(webFingerInstances.size() == 1);
-                _context->accountBuilder().setModernWebFingerSelectedInstance(webFingerInstances.front());
+                _context->accountBuilder().setWebFingerSelectedInstance(webFingerInstances.front());
             }
 
             // not a fan of performing this job here, should be moved into its own (headless) state IMO
