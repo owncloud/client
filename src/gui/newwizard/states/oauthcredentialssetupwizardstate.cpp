@@ -29,7 +29,6 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 
     auto oAuthCredentialsPage = [&]() {
         if (!webFingerAuthenticationServerUrl.isEmpty()) {
-            //            Q_ASSERT(_context->accountBuilder().serverUrl().isEmpty());
             return new OAuthCredentialsSetupWizardPage(webFingerAuthenticationServerUrl);
         } else {
             return new OAuthCredentialsSetupWizardPage(_context->accountBuilder().serverUrl());
