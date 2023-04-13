@@ -503,14 +503,9 @@ void OAuth::fetchWellKnown()
     } else {
         QNetworkRequest req;
 
-        if (!_webFingerOverrideUrl.isEmpty()) {
-            qCDebug(lcOauth) << "fetching instance information using WebFinger override URL" << _webFingerOverrideUrl;
-            req.setUrl(Utility::concatUrlPath(_webFingerOverrideUrl, wellKnownPathC));
-        } else {
-            const QUrl url = Utility::concatUrlPath(_serverUrl, wellKnownPathC);
-            qCDebug(lcOauth) << "fetching" << url;
-            req.setUrl(url);
-        }
+        const QUrl url = Utility::concatUrlPath(_serverUrl, wellKnownPathC);
+        qCDebug(lcOauth) << "fetching" << url;
+        req.setUrl(url);
 
         req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
         req.setRawHeader("Referer", _serverUrl.toString().toUtf8());
@@ -588,16 +583,6 @@ void OAuth::openBrowser()
         // We cannot open the browser, then we claim we don't support OAuth.
         emit result(NotSupported, QString());
     }
-}
-
-void OAuth::setWebFingerAuthenticationServerUrl(const QUrl &overrideUrl)
-{
-    _webFingerOverrideUrl = overrideUrl;
-}
-
-QUrl OAuth::webFingerAuthenticationServerUrl() const
-{
-    return _webFingerOverrideUrl;
 }
 
 AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)

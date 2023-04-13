@@ -37,12 +37,15 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 
     _page = oAuthCredentialsPage;
 
-    auto oAuth = new OAuth(_context->accountBuilder().serverUrl(), _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
+    const auto authServerUrl = [this]() {
+        auto authServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
+        if (!authServerUrl.isEmpty()) {
+            return authServerUrl;
+        }
+        return _context->accountBuilder().serverUrl();
+    }();
 
-    QUrl authServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
-    if (!authServerUrl.isEmpty()) {
-        oAuth->setWebFingerAuthenticationServerUrl(authServerUrl);
-    }
+    auto oAuth = new OAuth(authServerUrl, _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
 
     connect(oAuth, &OAuth::result, this, [this, oAuthCredentialsPage](OAuth::Result result, const QString &token, const QString &refreshToken) {
         // the button may not be clicked anymore, since the server has been shut down right before this signal was emitted by the OAuth instance

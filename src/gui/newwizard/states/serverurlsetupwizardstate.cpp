@@ -161,7 +161,6 @@ void ServerUrlSetupWizardState::evaluatePage()
                     },
                     Qt::DirectConnection);
             } else {
-                // TODO: validation?
                 _context->accountBuilder().setWebFingerAuthenticationServerUrl(job->result().toUrl());
                 Q_EMIT evaluationSuccessful();
             }

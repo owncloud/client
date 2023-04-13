@@ -102,9 +102,6 @@ protected:
 
     QNetworkReply *postTokenRequest(const QList<QPair<QString, QString>> &queryItems);
 
-    QUrl _webFingerOverrideUrl;
-
-
 private:
     void finalize(const QPointer<QTcpSocket> &socket, const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
 
