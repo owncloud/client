@@ -28,6 +28,8 @@
 
 namespace OCC::Wizard::Jobs {
 
+Q_LOGGING_CATEGORY(lcDiscoverWebFingerService, "jobs.discoverwebfinger");
+
 CoreJob *DiscoverWebFingerServiceJobFactory::startJob(const QUrl &url, QObject *parent)
 {
     // this first request needs to be done without any authentication, since our goal is to find a server to authenticate to before the actual (authenticated)
@@ -37,17 +39,23 @@ CoreJob *DiscoverWebFingerServiceJobFactory::startJob(const QUrl &url, QObject *
     auto *job = new CoreJob(nam()->get(req), parent);
 
     QObject::connect(job->reply(), &QNetworkReply::finished, job, [job, url]() {
+        auto setInvalidReplyError = [job]() {
+            setJobError(job, QApplication::translate("DiscoverWebFingerServiceJobFactory", "Invalid reply received from server"));
+        };
+
         switch (job->reply()->error()) {
         case QNetworkReply::NoError:
             // all good, perform additional checks below
             break;
         default:
-            setJobError(job, QApplication::translate("DiscoverWebFingerServiceJobFactory", "Invalid reply received from server"));
+            setInvalidReplyError();
             return;
         }
 
-        if (!job->reply()->header(QNetworkRequest::ContentTypeHeader).toString().toLower().contains(QStringLiteral("application/json"))) {
-            setJobError(job, QApplication::translate("DiscoverWebFingerServiceJobFactory", "Invalid reply received from server"));
+        const QString contentTypeHeader = job->reply()->header(QNetworkRequest::ContentTypeHeader).toString();
+        if (!contentTypeHeader.toLower().contains(QStringLiteral("application/json"))) {
+            qCWarning(lcDiscoverWebFingerService) << "server sent invalid content type:" << contentTypeHeader;
+            setInvalidReplyError();
             return;
         }
 
@@ -56,14 +64,16 @@ CoreJob *DiscoverWebFingerServiceJobFactory::startJob(const QUrl &url, QObject *
         const auto doc = QJsonDocument::fromJson(job->reply()->readAll(), &error);
         // empty or invalid response
         if (error.error != QJsonParseError::NoError || doc.isNull()) {
-            setJobError(job, QApplication::translate("DiscoverWebFingerServiceJobFactory", "Invalid reply received from server"));
+            qCWarning(lcDiscoverWebFingerService) << "could not parse JSON response from server";
+            setInvalidReplyError();
             return;
         }
 
         // make sure the reported subject matches the requested resource
         const auto subject = doc.object().value(QStringLiteral("subject"));
         if (subject != url.toString()) {
-            setJobError(job, QApplication::translate("DiscoverWebFingerServiceJobFactory", "Invalid reply received from server"));
+            qCWarning(lcDiscoverWebFingerService) << "reply sent for different subject (server):" << subject;
+            setInvalidReplyError();
             return;
         }
 
@@ -80,7 +90,8 @@ CoreJob *DiscoverWebFingerServiceJobFactory::startJob(const QUrl &url, QObject *
             }
         }
 
-        setJobError(job, QApplication::translate("DiscoverWebFingerServiceJobFactory", "Invalid reply received from server"));
+        qCWarning(lcDiscoverWebFingerService) << "could not find suitable relation in WebFinger response";
+        setInvalidReplyError();
     });
 
     return job;

@@ -111,7 +111,7 @@ void ServerUrlSetupWizardState::evaluatePage()
         auto checkWebFingerAuthJob = Jobs::DiscoverWebFingerServiceJobFactory(_context->accessManager()).startJob(serverUrl, this);
 
         connect(checkWebFingerAuthJob, &CoreJob::finished, this, [job = checkWebFingerAuthJob, serverUrl, this]() {
-            // in case any kind of error occurs, we assume the WebFinger service is not available, and we continue the classic way
+            // in case any kind of error occurs, we assume the WebFinger service is not available
             if (!job->success()) {
                 // first, we must resolve the actual server URL
                 auto resolveJob = Jobs::ResolveUrlJobFactory(_context->accessManager()).startJob(serverUrl, this);
