@@ -6,7 +6,12 @@ on:
       - master
       - '[0-9]+.*'
   pull_request:
-  
+  workflow_dispatch:
+
+concurrency: 
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 permissions: {}
 
 defaults:

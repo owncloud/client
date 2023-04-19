@@ -96,11 +96,6 @@ protected:
                     QByteArray credHash = QByteArray(_cred->user().toUtf8() + ":" + _cred->_password.toUtf8()).toBase64();
                     req.setRawHeader("Authorization", "Basic " + credHash);
                 }
-            } else if (!request.url().password().isEmpty()) {
-                // Typically the requests to get or refresh the OAuth access token. The client
-                // credentials are put in the URL from the code making the request.
-                QByteArray credHash = request.url().userInfo().toUtf8().toBase64();
-                req.setRawHeader("Authorization", "Basic " + credHash);
             }
         }
         return AccessManager::createRequest(op, req, outgoingData);
@@ -204,7 +199,7 @@ void HttpCredentials::fetchFromKeychainHelper()
 
     auto job = _account->credentialManager()->get(isUsingOAuth() ? refreshTokenKeyC() : passwordKeyC());
     connect(job, &CredentialJob::finished, this, [job, this] {
-        if (job->error() != QKeychain::NoError) {
+        auto handleError = [job, this] {
             qCWarning(lcHttpCredentials) << "Could not retrieve client password from keychain" << job->errorString();
 
             // we come here if the password is empty or any other keychain
@@ -215,6 +210,9 @@ void HttpCredentials::fetchFromKeychainHelper()
             _password.clear();
             _ready = false;
             emit fetched();
+        };
+        if (job->error() != QKeychain::NoError) {
+            handleError();
             return;
         }
         const auto data = job->data().toString();
@@ -227,6 +225,8 @@ void HttpCredentials::fetchFromKeychainHelper()
                 _ready = true;
                 emit fetched();
             }
+        } else {
+            handleError();
         }
     });
 }
@@ -300,16 +300,19 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
         case QNetworkReply::OperationCanceledError:
             [[fallthrough]];
         case QNetworkReply::TemporaryNetworkFailureError:
+            [[fallthrough]];
+        // VPN not ready?
+        case QNetworkReply::ConnectionRefusedError:
             nextTry = 0;
             [[fallthrough]];
         default:
             timeout = 30s;
         }
         if (nextTry >= TokenRefreshMaxRetries) {
-            qCWarning(lcHttpCredentials) << "Too many failed refreshs" << nextTry << "-> log out";
+            qCWarning(lcHttpCredentials) << "Too many failed refreshes" << nextTry << "-> log out";
             forgetSensitiveData();
             Q_EMIT authenticationFailed();
-            Q_EMIT _account->invalidCredentials();
+            Q_EMIT fetched();
             return;
         }
         QTimer::singleShot(timeout, this, [nextTry, this] {
@@ -323,8 +326,8 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
         if (refreshToken.isEmpty()) {
             // an error occured, log out
             forgetSensitiveData();
-            Q_EMIT _account->invalidCredentials();
             Q_EMIT authenticationFailed();
+            Q_EMIT fetched();
             return;
         }
         _refreshToken = refreshToken;
@@ -392,9 +395,14 @@ void HttpCredentials::persist()
 
     // write secrets to the keychain
     if (isUsingOAuth()) {
-        _account->credentialManager()->set(refreshTokenKeyC(), _refreshToken);
+        // _refreshToken should only be empty when we are logged out...
+        if (!_refreshToken.isEmpty()) {
+            _account->credentialManager()->set(refreshTokenKeyC(), _refreshToken);
+        }
     } else {
-        _account->credentialManager()->set(passwordKeyC(), _password);
+        if (!_password.isEmpty()) {
+            _account->credentialManager()->set(passwordKeyC(), _password);
+        }
     }
 }
 

@@ -60,4 +60,18 @@ void SetupWizardContext::resetAccountBuilder()
     _accountBuilder = {};
 }
 
+CoreJob *SetupWizardContext::startFetchUserInfoJob(QObject *parent) const
+{
+    const QUrl serverUrl = [this]() {
+        const QUrl webFingerInstance = _accountBuilder.webFingerSelectedInstance();
+        if (!webFingerInstance.isEmpty()) {
+            return webFingerInstance;
+        } else {
+            return _accountBuilder.serverUrl();
+        }
+    }();
+
+    return _accountBuilder.authenticationStrategy()->makeFetchUserInfoJobFactory(_accessManager).startJob(serverUrl, parent);
+}
+
 } // OCC::Wizard

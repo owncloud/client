@@ -63,6 +63,7 @@ public:
     bool getFileRecordsByFileId(const QByteArray &fileId, const std::function<void(const SyncJournalFileRecord &)> &rowCallback);
     bool getFilesBelowPath(const QByteArray &path, const std::function<void(const SyncJournalFileRecord&)> &rowCallback);
     bool listFilesInPath(const QByteArray &path, const std::function<void(const SyncJournalFileRecord&)> &rowCallback);
+    const QVector<SyncJournalFileRecord> getFileRecordsWithDirtyPlaceholders() const;
     Result<void, QString> setFileRecord(const SyncJournalFileRecord &record);
 
     bool deleteFileRecord(const QString &filename, bool recursively = false);
@@ -115,13 +116,21 @@ public:
         int _errorCount = 0;
         bool _valid = false;
         QByteArray _contentChecksum;
-        QByteArray _path;
+        QString _path; // stored as utf16
+        QUrl _url; // upload url (tus)
         /**
          * Returns true if this entry refers to a chunked upload that can be continued.
          * (As opposed to a small file transfer which is stored in the db so we can detect the case
          * when the upload succeeded, but the connection was dropped before we got the answer)
          */
         bool isChunked() const { return _transferid != 0; }
+
+        bool validate(qint64 size, qint64 modtime, const QByteArray &checksum) const
+        {
+            Q_ASSERT(!checksum.isEmpty());
+            Q_ASSERT(!_valid || !_contentChecksum.isEmpty());
+            return _valid && _size == size && _modtime == modtime && _contentChecksum == checksum;
+        }
     };
 
     DownloadInfo getDownloadInfo(const QString &file);
@@ -161,9 +170,9 @@ public:
     Q_ENUM(SelectiveSyncListType)
 
     /* return the specified list from the database */
-    QStringList getSelectiveSyncList(SelectiveSyncListType type, bool *ok);
+    QSet<QString> getSelectiveSyncList(SelectiveSyncListType type, bool *ok);
     /* Write the selective sync list (remove all other entries of that list */
-    void setSelectiveSyncList(SelectiveSyncListType type, const QStringList &list);
+    void setSelectiveSyncList(SelectiveSyncListType type, const QSet<QString> &list);
 
     /**
      * Make sure that on the next sync fileName and its parents are discovered from the server.
@@ -212,7 +221,7 @@ public:
     bool open();
 
     /** Returns whether the db is currently openend. */
-    bool isOpen();
+    bool isOpen() const;
 
     /** Close the database */
     void close();
@@ -379,6 +388,8 @@ private:
     QVector<QByteArray> tableColumns(const QByteArray &table);
     bool checkConnect();
 
+    bool createUploadInfo();
+
     // Same as forceRemoteDiscoveryNextSync but without acquiring the lock
     void forceRemoteDiscoveryNextSyncLocked();
 
@@ -389,7 +400,7 @@ private:
 
     SqlDatabase _db;
     QString _dbFile;
-    QMutex _mutex; // Public functions are protected with the mutex.
+    mutable QMutex _mutex; // Public functions are protected with the mutex.
     QMap<CheckSums::Algorithm, int> _checksymTypeCache;
     int _transaction;
     bool _metadataTableIsEmpty;
@@ -416,7 +427,7 @@ private:
      */
     QByteArray _journalMode;
 
-    PreparedSqlQueryManager _queryManager;
+    mutable PreparedSqlQueryManager _queryManager;
 
     /**
      * Whether the db was already closed, prevent recreation

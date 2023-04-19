@@ -13,19 +13,20 @@
  */
 
 #include "discovery.h"
-#include "common/checksums.h"
-#include "common/syncjournaldb.h"
 #include "csync.h"
 #include "csync_exclude.h"
 #include "owncloudpropagator.h"
-#include "syncengine.h"
 #include "syncfileitem.h"
+
 #include "vio/csync_vio_local.h"
 
-#include <algorithm>
-#include <set>
+#include "common/checksums.h"
+#include "common/syncjournaldb.h"
 
-#include <QDebug>
+#include "libsync/theme.h"
+
+#include <algorithm>
+
 #include <QFile>
 #include <QFileInfo>
 #include <QTextCodec>
@@ -166,7 +167,13 @@ void ProcessDirectoryJob::process()
         // For windows, the hidden state is also discovered within the vio
         // local stat function.
         // Recall file shall not be ignored (#4420)
-        bool isHidden = e.localEntry.isHidden || (f.first[0] == QLatin1Char('.') && f.first != QLatin1String(".sys.admin#recall#"));
+        const bool isHidden = [&] {
+            if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
+                return e.localEntry.isHidden || (f.first[0] == QLatin1Char('.') && f.first != QLatin1String(".sys.admin#recall#"));
+            } else {
+                return e.localEntry.isHidden || f.first[0] == QLatin1Char('.');
+            }
+        }();
         if (handleExcluded(path._target,
                 e.localEntry.name,
                 e.localEntry.isDirectory || e.serverEntry.isDirectory,
@@ -438,6 +445,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             item->_direction = SyncFileItem::Down;
             item->_instruction = CSYNC_INSTRUCTION_SYNC;
             item->_type = ItemTypeVirtualFileDownload;
+            item->_size = serverEntry.size;
         } else if (dbEntry._etag != serverEntry.etag.toUtf8()) {
             item->_direction = SyncFileItem::Down;
             item->_modtime = serverEntry.modtime;
@@ -1417,23 +1425,30 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
         } else {
             auto code = results.error().code;
             qCWarning(lcDisco) << "Server error in directory" << _currentFolder._server << code;
-            if (_dirItem && code >= 403) {
-                // In case of an HTTP error, we ignore that directory
-                // 403 Forbidden can be sent by the server if the file firewall is active.
-                // A file or directory should be ignored and sync must continue. See #3490
-                // The server usually replies with the custom "503 Storage not available"
-                // if some path is temporarily unavailable. But in some cases a standard 503
-                // is returned too. Thus we can't distinguish the two and will treat any
-                // 503 as request to ignore the folder. See #3113 #2884.
-                // Similarly, the server might also return 404 or 50x in case of bugs. #7199 #7586
-                _dirItem->_instruction = CSYNC_INSTRUCTION_IGNORE;
-                _dirItem->_errorString = results.error().message;
-                emit this->finished();
+            if (serverJob->isRootPath()) {
+                if (code == 404 && _discoveryData->isSpace()) {
+                    Q_EMIT _discoveryData->fatalError(tr("This Space is currently unavailable"));
+                    return;
+                }
             } else {
-                // Fatal for the root job since it has no SyncFileItem, or for the network errors
-                emit _discoveryData->fatalError(tr("Server replied with an error while reading directory '%1' : %2")
-                                                    .arg(_currentFolder._server.isEmpty() ? QStringLiteral("/") : _currentFolder._server, results.error().message));
+                if (code >= 403) {
+                    // In case of an HTTP error, we ignore that directory
+                    // 403 Forbidden can be sent by the server if the file firewall is active.
+                    // A file or directory should be ignored and sync must continue. See #3490
+                    // The server usually replies with the custom "503 Storage not available"
+                    // if some path is temporarily unavailable. But in some cases a standard 503
+                    // is returned too. Thus we can't distinguish the two and will treat any
+                    // 503 as request to ignore the folder. See #3113 #2884.
+                    // Similarly, the server might also return 404 or 50x in case of bugs. #7199 #7586
+                    _dirItem->_instruction = CSYNC_INSTRUCTION_IGNORE;
+                    _dirItem->_errorString = results.error().message;
+                    emit this->finished();
+                    return;
+                }
             }
+            // Fatal for the root job since it has no SyncFileItem, or for the network errors
+            emit _discoveryData->fatalError(tr("Server replied with an error while reading directory '%1' : %2")
+                                                .arg(_currentFolder._server.isEmpty() ? QStringLiteral("/") : _currentFolder._server, results.error().message));
         }
     });
     connect(serverJob, &DiscoverySingleDirectoryJob::firstDirectoryPermissions, this,

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(VERSION.cmake)
 project(client LANGUAGES CXX C VERSION ${MIRALL_VERSION_MAJOR}.${MIRALL_VERSION_MINOR}.${MIRALL_VERSION_PATCH})
@@ -37,23 +38,17 @@ include(OCConfigPluginDir)
 include(OCBundleResources)
 include(OCApplyCommonSettings)
 
-if (EXISTS "${PROJECT_SOURCE_DIR}/branding")
-    set(OEM_THEME_DIR "${PROJECT_SOURCE_DIR}/branding" CACHE STRING "The directory containing a custom theme")
-else()
-    set(OEM_THEME_DIR "${PROJECT_SOURCE_DIR}/src/resources/" CACHE STRING "Define directory containing a custom theme")
-endif()
 include("${CMAKE_CURRENT_LIST_DIR}/THEME.cmake")
 
 set(synclib_NAME "${APPLICATION_EXECUTABLE}sync")
 
-
-# disable the crashreporter if libcrashreporter-qt is not available or we're building for ARM
-if( CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/libcrashreporter-qt/CMakeLists.txt")
-    set( WITH_CRASHREPORTER OFF )
-endif()
-
 if(NOT WITH_CRASHREPORTER)
     message(STATUS "Build of crashreporter disabled.")
+else()
+    # obviously, a crash reported without the URL set is pretty pointless and won't work
+    if(CRASHREPORTER_SUBMIT_URL STREQUAL "")
+        message(FATAL_ERROR "No crash reporter submit URL provided")
+    endif()
 endif()
 
 include(GenerateExportHeader)
@@ -102,7 +97,7 @@ option(BUILD_LIBRARIES_ONLY "BUILD_LIBRARIES_ONLY" OFF)
 option(BUILD_GUI "BUILD_GUI" ON)
 
 # build the auto updater component
-option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" ON)
+option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" OFF)
 
 # build with -DQT_FORCE_ASSERTS
 option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)

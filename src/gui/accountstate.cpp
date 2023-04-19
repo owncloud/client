@@ -17,10 +17,15 @@
 #include "accountmanager.h"
 #include "application.h"
 #include "configfile.h"
-#include "creds/abstractcredentials.h"
-#include "creds/httpcredentials.h"
+
+#include "libsync/creds/abstractcredentials.h"
+#include "libsync/creds/httpcredentials.h"
+
+#include "gui/quotainfo.h"
 #include "gui/settingsdialog.h"
+#include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
+
 #include "logger.h"
 #include "settingsdialog.h"
 #include "socketapi/socketapi.h"
@@ -106,7 +111,7 @@ AccountState::AccountState(AccountPtr account)
         Qt::QueuedConnection);
 
     connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
-        _state = State::SignedOut;
+        setState(State::SignedOut);
     });
 
     if (FolderMan::instance()) {
@@ -127,7 +132,7 @@ AccountStatePtr AccountState::loadFromSettings(AccountPtr account, const QSettin
     const bool userExplicitlySignedOut = settings.value(userExplicitlySignedOutC(), false).toBool();
     if (userExplicitlySignedOut) {
         // see writeToSettings below
-        accountState->_state = SignedOut;
+        accountState->setState(SignedOut);
     }
     accountState->_supportsSpaces = settings.value(supportsSpacesC(), false).toBool();
     return accountState;
@@ -173,8 +178,7 @@ void AccountState::setState(State state)
 {
     const State oldState = _state;
     if (_state != state) {
-        qCInfo(lcAccountState) << "AccountState state change: "
-                               << stateString(_state) << "->" << stateString(state);
+        qCInfo(lcAccountState) << "AccountState state change: " << _state << "->" << state;
         _state = state;
 
         if (_state == SignedOut) {
@@ -211,29 +215,6 @@ void AccountState::setState(State state)
     }
 }
 
-QString AccountState::stateString(State state)
-{
-    switch (state) {
-    case SignedOut:
-        return tr("Signed out");
-    case Disconnected:
-        return tr("Disconnected");
-    case Connected:
-        return tr("Connected");
-    case ServiceUnavailable:
-        return tr("Service unavailable");
-    case MaintenanceMode:
-        return tr("Maintenance mode");
-    case NetworkError:
-        return tr("Network error");
-    case ConfigurationError:
-        return tr("Configuration error");
-    case AskingCredentials:
-        return tr("Asking Credentials");
-    }
-    return tr("Unknown account state");
-}
-
 bool AccountState::isSignedOut() const
 {
     return _state == SignedOut;
@@ -244,6 +225,8 @@ void AccountState::signOutByUi()
     account()->credentials()->forgetSensitiveData();
     account()->clearCookieJar();
     setState(SignedOut);
+    // persist that we are signed out
+    Q_EMIT account()->wantsAccountSaved(account().data());
 }
 
 void AccountState::freshConnectionAttempt()
@@ -258,6 +241,8 @@ void AccountState::signIn()
     if (_state == SignedOut) {
         _waitingForNewCredentials = false;
         setState(Disconnected);
+        // persist that we are no longer signed out
+        Q_EMIT account()->wantsAccountSaved(account().data());
     }
 }
 
@@ -273,6 +258,9 @@ void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)
 
 void AccountState::checkConnectivity(bool blockJobs)
 {
+    if (_state != Connected) {
+        setState(Connecting);
+    }
     qCWarning(lcAccountState) << "checkConnectivity blocking:" << blockJobs;
     if (isSignedOut() || _waitingForNewCredentials) {
         return;
@@ -340,7 +328,7 @@ void AccountState::checkConnectivity(bool blockJobs)
                     setState(SignedOut);
                 });
 
-                _tlsDialog->show();
+                _tlsDialog->open();
             }
         }
         if (_tlsDialog) {
@@ -412,6 +400,21 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
     }
     _connectionErrors = errors;
 
+    if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
+        if (status == ConnectionValidator::Connected) {
+            Q_ASSERT(_account->hasCapabilities());
+            if (_account->capabilities().migration().space_migration.enabled) {
+                auto statePtr = AccountManager::instance()->account(_account->uuid());
+                auto migration = new SpaceMigration(statePtr, _account->capabilities().migration().space_migration.endpoint, this);
+                connect(migration, &SpaceMigration::finished, this, [migration, this] {
+                    migration->deleteLater();
+                    setState(Connected);
+                });
+                migration->start();
+                return;
+            }
+        }
+    }
     switch (status) {
     case ConnectionValidator::Connected:
         setState(Connected);
@@ -516,6 +519,16 @@ std::unique_ptr<QSettings> AccountState::settings()
 bool AccountState::supportsSpaces() const
 {
     return _supportsSpaces && _account->hasCapabilities() && _account->capabilities().spacesSupport().enabled;
+}
+
+QuotaInfo *AccountState::quotaInfo()
+{
+    // QuotaInfo should not be used with spaces
+    Q_ASSERT(!supportsSpaces());
+    if (!_quotaInfo) {
+        _quotaInfo = new QuotaInfo(this);
+    }
+    return _quotaInfo;
 }
 
 } // namespace OCC

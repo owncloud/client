@@ -65,16 +65,6 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountSettings, "gui.account.settings", QtInfoMsg)
 
-static const char progressBarStyleC[] =
-    "QProgressBar {"
-    "border: 1px solid grey;"
-    "border-radius: 5px;"
-    "text-align: center;"
-    "}"
-    "QProgressBar::chunk {"
-    "background-color: %1; width: 1px;"
-    "}";
-
 /**
  * Adjusts the mouse cursor based on the region it is on over the folder tree view.
  *
@@ -91,6 +81,7 @@ public:
     }
 
     QTreeView *folderList;
+    FolderStatusDelegate *delegate;
     QAbstractItemModel *model;
 
 protected:
@@ -100,9 +91,10 @@ protected:
             Qt::CursorShape shape = Qt::ArrowCursor;
             auto pos = folderList->mapFromGlobal(QCursor::pos());
             auto index = folderList->indexAt(pos);
-            if (index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>() == FolderStatusModel::RootFolder
-                && (FolderStatusDelegate::errorsListRect(folderList->visualRect(index), index).contains(pos)
-                    || FolderStatusDelegate::optionsButtonRect(folderList->visualRect(index), folderList->layoutDirection()).contains(pos))) {
+            if (index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>()
+                    == FolderStatusModel::RootFolder
+                && (delegate->errorsListRect(folderList->visualRect(index), index).contains(pos)
+                    || delegate->optionsButtonRect(folderList->visualRect(index), folderList->layoutDirection()).contains(pos))) {
                 shape = Qt::PointingHandCursor;
             }
             folderList->setCursor(shape);
@@ -116,6 +108,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     , ui(new Ui::AccountSettings)
     , _wasDisabledBefore(false)
     , _accountState(accountState)
+    , _delegate(new FolderStatusDelegate(this))
 {
     ui->setupUi(this);
 
@@ -130,7 +123,8 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     _sortModel = weightedModel;
 
     ui->_folderList->setModel(_sortModel);
-    ui->_folderList->setItemDelegate(new FolderStatusDelegate(this));
+
+    ui->_folderList->setItemDelegate(_delegate);
 
     for (int i = 1; i <= _sortModel->columnCount(); ++i) {
         ui->_folderList->header()->hideSection(i);
@@ -149,6 +143,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 
     auto mouseCursorChanger = new MouseCursorChanger(this);
     mouseCursorChanger->folderList = ui->_folderList;
+    mouseCursorChanger->delegate = _delegate;
     mouseCursorChanger->model = _sortModel;
     ui->_folderList->setMouseTracking(true);
     ui->_folderList->setAttribute(Qt::WA_Hover, true);
@@ -196,17 +191,17 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
     slotAccountStateChanged();
 
-    if (_accountState->supportsSpaces()) {
-        ui->quotaProgressBar->setVisible(false);
-        ui->quotaInfoLabel->setVisible(false);
-    } else {
-        QColor color = palette().highlight().color();
-        ui->quotaProgressBar->setStyleSheet(QString::fromLatin1(progressBarStyleC).arg(color.name()));
+    connect(ui->addButton, &QPushButton::clicked, this, &AccountSettings::slotAddFolder);
 
-        _quotaInfo = new QuotaInfo(_accountState, this);
-        connect(_quotaInfo, &QuotaInfo::quotaUpdated,
-            this, &AccountSettings::slotUpdateQuota);
+    if (_accountState->supportsSpaces()) {
+        ui->addButton->setText(tr("Add Space"));
+    } else {
+        ui->addButton->setText(tr("Add Folder"));
     }
+
+    connect(_model, &FolderStatusModel::dataChanged, [this]() {
+        ui->addButton->setVisible(!Theme::instance()->singleSyncFolder() || _model->rowCount() == 0);
+    });
 }
 
 
@@ -267,7 +262,7 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     }
 
     const auto isDeployed = index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::IsDeployed)).data().toBool();
-    const auto removeFolderAction = [isDeployed, this](QMenu *menu) {
+    const auto addRemoveFolderAction = [isDeployed, this](QMenu *menu) {
         Q_ASSERT(!isDeployed);
         return menu->addAction(tr("Remove folder sync connection"), this, &AccountSettings::slotRemoveCurrentFolder);
     };
@@ -281,7 +276,7 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     if (classification == FolderStatusModel::RootFolder && !index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::IsReady)).data().toBool() && !isDeployed) {
         QMenu *menu = new QMenu(tv);
         menu->setAttribute(Qt::WA_DeleteOnClose);
-        removeFolderAction(menu);
+        addRemoveFolderAction(menu);
         menu->popup(QCursor::pos());
         return;
     }
@@ -369,19 +364,21 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
         connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableCurrentFolder);
 
         if (!isDeployed) {
-            removeFolderAction(menu);
+            addRemoveFolderAction(menu);
 
-            if (folder->virtualFilesEnabled() && !Theme::instance()->forceVirtualFilesOption()) {
-                menu->addAction(tr("Disable virtual file support..."), this, &AccountSettings::slotDisableVfsCurrentFolder);
-            }
-
-            if (Theme::instance()->showVirtualFilesOption()
-                && !folder->virtualFilesEnabled() && FolderMan::instance()->checkVfsAvailability(folder->path())) {
-                const auto mode = bestAvailableVfsMode();
-
-                if (mode == Vfs::WindowsCfApi || (Theme::instance()->enableExperimentalFeatures() && mode != Vfs::Off)) {
-                    ac = menu->addAction(tr("Enable virtual file support%1...").arg(mode == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
-                    connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableVfsCurrentFolder);
+            if (Theme::instance()->showVirtualFilesOption()) {
+                if (folder->virtualFilesEnabled()) {
+                    if (!Theme::instance()->forceVirtualFilesOption()) {
+                        menu->addAction(tr("Disable virtual file support..."), this, &AccountSettings::slotDisableVfsCurrentFolder);
+                    }
+                } else {
+                    const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
+                    if (FolderMan::instance()->checkVfsAvailability(folder->path(), mode)) {
+                        if (mode == Vfs::WindowsCfApi || (Theme::instance()->enableExperimentalFeatures() && mode != Vfs::Off)) {
+                            ac = menu->addAction(tr("Enable virtual file support%1...").arg(mode == Vfs::WindowsCfApi ? QString() : tr(" (experimental)")));
+                            connect(ac, &QAction::triggered, this, &AccountSettings::slotEnableVfsCurrentFolder);
+                        }
+                    }
                 }
             }
         }
@@ -394,37 +391,15 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 void AccountSettings::slotFolderListClicked(const QModelIndex &indx)
 {
     const auto itemType = indx.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>();
-    if (itemType == FolderStatusModel::AddButton) {
-        // "Add Folder Sync Connection"
-        QTreeView *tv = ui->_folderList;
-        auto pos = tv->mapFromGlobal(QCursor::pos());
-        QStyleOptionViewItem opt;
-        opt.initFrom(tv);
-        auto btnRect = tv->visualRect(indx);
-        auto btnSize = tv->itemDelegate(indx)->sizeHint(opt, indx);
-        auto actual = QStyle::visualRect(opt.direction, btnRect, QRect(btnRect.topLeft(), btnSize));
-        if (!actual.contains(pos))
-            return;
-
-        if (indx.flags() & Qt::ItemIsEnabled) {
-            slotAddFolder();
-        } else {
-            QToolTip::showText(
-                QCursor::pos(),
-                _sortModel->data(indx, Qt::ToolTipRole).toString(),
-                this);
-        }
-        return;
-    }
     if (itemType == FolderStatusModel::RootFolder) {
         // tries to find if we clicked on the '...' button.
         QTreeView *tv = ui->_folderList;
         auto pos = tv->mapFromGlobal(QCursor::pos());
-        if (FolderStatusDelegate::optionsButtonRect(tv->visualRect(indx), layoutDirection()).contains(pos)) {
+        if (_delegate->optionsButtonRect(tv->visualRect(indx), layoutDirection()).contains(pos)) {
             slotCustomContextMenuRequested(pos);
             return;
         }
-        if (FolderStatusDelegate::errorsListRect(tv->visualRect(indx), indx).contains(pos)) {
+        if (_delegate->errorsListRect(tv->visualRect(indx), indx).contains(pos)) {
             emit showIssuesList();
             return;
         }
@@ -571,7 +546,7 @@ void AccountSettings::slotEnableVfsCurrentFolder()
 
     // no need to show the message box on Windows
     // as a little shortcut, we just re-use the message box's accept handler
-    if (bestAvailableVfsMode() == Vfs::WindowsCfApi) {
+    if (VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
         Q_EMIT messageBox->accepted();
     } else {
         messageBox->show();
@@ -671,7 +646,7 @@ void AccountSettings::slotEnableCurrentFolder(bool terminate)
             // check if a sync is still running and if so, ask if we should terminate.
             if (folder->isSyncRunning()) { // its still running
                 auto msgbox = new QMessageBox(QMessageBox::Question, tr("Sync Running"),
-                    tr("The syncing operation is running.<br/>Do you want to terminate it?"),
+                    tr("The sync operation is running.<br/>Do you want to stop it?"),
                     QMessageBox::Yes | QMessageBox::No, this);
                 msgbox->setAttribute(Qt::WA_DeleteOnClose);
                 msgbox->setDefaultButton(QMessageBox::Yes);
@@ -730,205 +705,162 @@ void AccountSettings::slotForceSyncCurrentFolder()
         selectedFolder->slotWipeErrorBlacklist(); // issue #6757
         selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
         // Insert the selected folder at the front of the queue
-        FolderMan::instance()->scheduleFolderNext(selectedFolder);
-    }
-}
-
-void AccountSettings::slotOpenOC()
-{
-    if (_OCUrl.isValid())
-        QDesktopServices::openUrl(_OCUrl);
-}
-
-void AccountSettings::slotUpdateQuota(qint64 total, qint64 used)
-{
-    if (total > 0) {
-        ui->quotaProgressBar->setVisible(true);
-        ui->quotaProgressBar->setEnabled(true);
-        // workaround the label only accepting ints (which may be only 32 bit wide)
-        const double percent = used / (double)total * 100;
-        const int percentInt = qMin(qRound(percent), 100);
-        ui->quotaProgressBar->setValue(percentInt);
-        QString usedStr = Utility::octetsToString(used);
-        QString totalStr = Utility::octetsToString(total);
-        QString percentStr = Utility::compactFormatDouble(percent, 1);
-        QString toolTip = tr("%1 (%3%) of %2 in use. Some folders, including network mounted or shared folders, might have different limits.").arg(usedStr, totalStr, percentStr);
-        ui->quotaInfoLabel->setText(tr("%1 of %2 in use").arg(usedStr, totalStr));
-        ui->quotaInfoLabel->setToolTip(toolTip);
-        ui->quotaProgressBar->setToolTip(toolTip);
-    } else {
-        ui->quotaProgressBar->setVisible(false);
-        ui->quotaInfoLabel->setToolTip(QString());
-
-        /* -1 means not computed; -2 means unknown; -3 means unlimited  (#3940)*/
-        if (total == 0 || total == -1) {
-            ui->quotaInfoLabel->setText(tr("Currently there is no storage usage information available."));
-        } else {
-            QString usedStr = Utility::octetsToString(used);
-            ui->quotaInfoLabel->setText(tr("%1 in use").arg(usedStr));
-        }
+        FolderMan::instance()->scheduleFolder(selectedFolder, true);
     }
 }
 
 void AccountSettings::slotAccountStateChanged()
 {
-    const AccountState::State state = _accountState ? _accountState->state() : AccountState::Disconnected;
-    if (state != AccountState::Disconnected) {
-        AccountPtr account = _accountState->account();
-        QUrl safeUrl(account->url());
-        safeUrl.setPassword(QString()); // Remove the password from the URL to avoid showing it in the UI
-        FolderMan *folderMan = FolderMan::instance();
-        for (auto *folder : folderMan->folders()) {
-            _model->slotUpdateFolderState(folder);
-        }
+    const AccountState::State state = _accountState->state();
+    const AccountPtr account = _accountState->account();
 
-        const QString server = QStringLiteral("<a href=\"%1\">%2</a>")
-                                   .arg(Utility::escape(account->url().toString()),
-                                       Utility::escape(safeUrl.toString()));
-        QString serverWithUser = server;
-        if (AbstractCredentials *cred = account->credentials()) {
-            QString user = account->davDisplayName();
-            if (user.isEmpty()) {
-                user = cred->user();
-            }
-            serverWithUser = tr("%1 as <i>%2</i>").arg(server, Utility::escape(user));
-        }
+    // in 2023 there should never be credentials encoded in the url, but we never know...
+    const auto safeUrl = account->url().adjusted(QUrl::RemoveUserInfo);
 
-        switch (state) {
-        case AccountState::Connected: {
-            QStringList errors;
-            if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
-                errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->capabilities().status().versionString());
-            }
-            showConnectionLabel(tr("Connected to %1.").arg(serverWithUser), errors);
-            if (_askForOAuthLoginDialog != nullptr) {
-                _askForOAuthLoginDialog->accept();
-            }
-            break;
-        }
-        case AccountState::ServiceUnavailable:
-            showConnectionLabel(tr("Server %1 is temporarily unavailable.").arg(server));
-            break;
-        case AccountState::MaintenanceMode:
-            showConnectionLabel(tr("Server %1 is currently in maintenance mode.").arg(server));
-            break;
-        case AccountState::SignedOut:
-            showConnectionLabel(tr("Signed out from %1.").arg(serverWithUser));
-            break;
-        case AccountState::AskingCredentials: {
-            auto cred = qobject_cast<HttpCredentialsGui *>(account->credentials());
-            if (cred && cred->isUsingOAuth()) {
-                if (_askForOAuthLoginDialog != nullptr) {
-                    qCDebug(lcAccountSettings) << "ask for OAuth login dialog is shown already";
-                    return;
-                }
-
-                qCDebug(lcAccountSettings) << "showing modal dialog asking user to log in again via OAuth2";
-
-                _askForOAuthLoginDialog = new LoginRequiredDialog(LoginRequiredDialog::Mode::OAuth, ocApp()->gui()->settingsDialog());
-
-                // make sure it's cleaned up since it's not owned by the account settings (also prevents memory leaks)
-                _askForOAuthLoginDialog->setAttribute(Qt::WA_DeleteOnClose);
-
-                _askForOAuthLoginDialog->setTopLabelText(tr("The account %1 is currently logged out.\n\nPlease authenticate using your browser.").arg(account->displayName()));
-
-                auto *contentWidget = qobject_cast<OAuthLoginWidget *>(_askForOAuthLoginDialog->contentWidget());
-
-                connect(contentWidget, &OAuthLoginWidget::copyUrlToClipboardButtonClicked, _askForOAuthLoginDialog, [account]() {
-                    // TODO: use authorisationLinkAsync
-                    auto link = qobject_cast<HttpCredentialsGui *>(account->credentials())->authorisationLink().toString();
-                    ocApp()->clipboard()->setText(link);
-                });
-
-                connect(contentWidget, &OAuthLoginWidget::openBrowserButtonClicked, _askForOAuthLoginDialog, [cred]() {
-                    cred->openBrowser();
-                });
-
-                contentWidget->setEnabled(false);
-                connect(cred, &HttpCredentialsGui::authorisationLinkChanged, contentWidget, [contentWidget]() {
-                    contentWidget->setEnabled(true);
-                });
-
-                connect(
-                    cred, &HttpCredentialsGui::authorisationLinkChanged,
-                    this, &AccountSettings::slotAccountStateChanged,
-                    Qt::UniqueConnection);
-
-                connect(_askForOAuthLoginDialog, &LoginRequiredDialog::rejected, this, [this]() {
-                    // if a user dismisses the dialog, we have no choice but signing them out
-                    _accountState->signOutByUi();
-                });
-
-                connect(contentWidget, &OAuthLoginWidget::retryButtonClicked, _askForOAuthLoginDialog, [contentWidget, accountPtr = account]() {
-                    auto creds = qobject_cast<HttpCredentialsGui *>(accountPtr->credentials());
-                    creds->restartOAuth();
-                    contentWidget->hideRetryFrame();
-                });
-
-                connect(cred, &HttpCredentialsGui::oAuthErrorOccurred, _askForOAuthLoginDialog, [loginDialog = _askForOAuthLoginDialog, contentWidget, cred]() {
-                    Q_ASSERT(!cred->ready());
-
-                    ocApp()->gui()->raiseDialog(loginDialog);
-                    contentWidget->showRetryFrame();
-                });
-
-                showConnectionLabel(tr("Reauthorization required."));
-
-                _askForOAuthLoginDialog->show();
-                ocApp()->gui()->raiseDialog(_askForOAuthLoginDialog);
-
-                QTimer::singleShot(0, [contentWidget]() {
-                    contentWidget->setFocus(Qt::OtherFocusReason);
-                });
-            } else {
-                showConnectionLabel(tr("Connecting to %1...").arg(serverWithUser));
-            }
-            break;
-        }
-        case AccountState::NetworkError:
-            // don't display the error to the user, https://github.com/owncloud/client/issues/9790
-            showConnectionLabel(tr("No connection to %1.")
-                                    .arg(server));
-            break;
-        case AccountState::ConfigurationError:
-            showConnectionLabel(tr("Server configuration error: %1.")
-                                    .arg(server),
-                _accountState->connectionErrors());
-            break;
-        case AccountState::Disconnected:
-            // we can't end up here as the whole block is ifdeffed
-            Q_UNREACHABLE();
-            break;
-        }
-    } else {
-        // ownCloud is not yet configured.
-        showConnectionLabel(tr("No connection configured."));
+    FolderMan *folderMan = FolderMan::instance();
+    for (auto *folder : folderMan->folders()) {
+        _model->slotUpdateFolderState(folder);
     }
 
-    /* Allow to expand the item if the account is connected. */
-    ui->_folderList->setItemsExpandable(state == AccountState::Connected);
+    const QString server = QStringLiteral("<a href=\"%1\">%1</a>")
+                               .arg(Utility::escape(safeUrl.toString()));
 
-    if (state != AccountState::Connected) {
-        /* check if there are expanded root items, if so, close them */
-        int i;
-        for (i = 0; i < _sortModel->rowCount(); ++i) {
-            if (ui->_folderList->isExpanded(_sortModel->index(i, 0)))
-                ui->_folderList->setExpanded(_sortModel->index(i, 0), false);
+    switch (state) {
+    case AccountState::Connected: {
+        QStringList errors;
+        if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
+            errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->capabilities().status().versionString());
         }
+        showConnectionLabel(tr("Connected to %1.").arg(server), errors);
+        if (_askForOAuthLoginDialog != nullptr) {
+            _askForOAuthLoginDialog->accept();
+        }
+        break;
+    }
+    case AccountState::ServiceUnavailable:
+        showConnectionLabel(tr("Server %1 is temporarily unavailable.").arg(server));
+        break;
+    case AccountState::MaintenanceMode:
+        showConnectionLabel(tr("Server %1 is currently in maintenance mode.").arg(server));
+        break;
+    case AccountState::SignedOut:
+        showConnectionLabel(tr("Signed out from %1.").arg(server));
+        break;
+    case AccountState::AskingCredentials: {
+        auto cred = qobject_cast<HttpCredentialsGui *>(account->credentials());
+        if (cred && cred->isUsingOAuth()) {
+            if (_askForOAuthLoginDialog != nullptr) {
+                qCDebug(lcAccountSettings) << "ask for OAuth login dialog is shown already";
+                return;
+            }
+
+            qCDebug(lcAccountSettings) << "showing modal dialog asking user to log in again via OAuth2";
+
+            _askForOAuthLoginDialog = new LoginRequiredDialog(LoginRequiredDialog::Mode::OAuth, ocApp()->gui()->settingsDialog());
+
+            // make sure it's cleaned up since it's not owned by the account settings (also prevents memory leaks)
+            _askForOAuthLoginDialog->setAttribute(Qt::WA_DeleteOnClose);
+
+            _askForOAuthLoginDialog->setTopLabelText(tr("The account %1 is currently logged out.\n\nPlease authenticate using your browser.").arg(account->displayName()));
+
+            auto *contentWidget = qobject_cast<OAuthLoginWidget *>(_askForOAuthLoginDialog->contentWidget());
+
+            connect(contentWidget, &OAuthLoginWidget::copyUrlToClipboardButtonClicked, _askForOAuthLoginDialog, [account]() {
+                // TODO: use authorisationLinkAsync
+                auto link = qobject_cast<HttpCredentialsGui *>(account->credentials())->authorisationLink().toString();
+                ocApp()->clipboard()->setText(link);
+            });
+
+            connect(contentWidget, &OAuthLoginWidget::openBrowserButtonClicked, _askForOAuthLoginDialog, [cred]() {
+                cred->openBrowser();
+            });
+
+            contentWidget->setEnabled(false);
+            connect(cred, &HttpCredentialsGui::authorisationLinkChanged, contentWidget, [contentWidget]() {
+                contentWidget->setEnabled(true);
+            });
+
+            connect(
+                cred, &HttpCredentialsGui::authorisationLinkChanged,
+                this, &AccountSettings::slotAccountStateChanged,
+                Qt::UniqueConnection);
+
+            connect(_askForOAuthLoginDialog, &LoginRequiredDialog::rejected, this, [this]() {
+                // if a user dismisses the dialog, we have no choice but signing them out
+                _accountState->signOutByUi();
+            });
+
+            connect(contentWidget, &OAuthLoginWidget::retryButtonClicked, _askForOAuthLoginDialog, [contentWidget, accountPtr = account]() {
+                auto creds = qobject_cast<HttpCredentialsGui *>(accountPtr->credentials());
+                creds->restartOAuth();
+                contentWidget->hideRetryFrame();
+            });
+
+            connect(cred, &HttpCredentialsGui::oAuthErrorOccurred, _askForOAuthLoginDialog, [loginDialog = _askForOAuthLoginDialog, contentWidget, cred]() {
+                Q_ASSERT(!cred->ready());
+
+                ocApp()->gui()->raiseDialog(loginDialog);
+                contentWidget->showRetryFrame();
+            });
+
+            showConnectionLabel(tr("Reauthorization required."));
+
+            _askForOAuthLoginDialog->open();
+            ocApp()->gui()->raiseDialog(_askForOAuthLoginDialog);
+
+            QTimer::singleShot(0, [contentWidget]() {
+                contentWidget->setFocus(Qt::OtherFocusReason);
+            });
+        } else {
+            showConnectionLabel(tr("Connecting to %1...").arg(server));
+        }
+        break;
+    }
+    case AccountState::Connecting:
+        showConnectionLabel(tr("Connecting to: %1.").arg(server));
+        break;
+    case AccountState::ConfigurationError:
+        showConnectionLabel(tr("Server configuration error: %1.")
+                                .arg(server),
+            _accountState->connectionErrors());
+        break;
+    case AccountState::NetworkError:
+        // don't display the error to the user, https://github.com/owncloud/client/issues/9790
+        [[fallthrough]];
+    case AccountState::Disconnected:
+        showConnectionLabel(tr("Disconnected from: %1.").arg(server));
+        break;
     }
 
     // Disabling expansion of folders might require hiding the selective
     // sync user interface buttons.
     refreshSelectiveSyncStatus();
 
-    if (_accountState) {
-        _toggleReconnect->setEnabled(!_accountState->isConnected());
-        // set the correct label for the Account toolbox button
-        if (_accountState->isSignedOut()) {
-            _toggleSignInOutAction->setText(tr("Log in"));
+    _toggleReconnect->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
+    // set the correct label for the Account toolbox button
+    if (_accountState->isSignedOut()) {
+        _toggleSignInOutAction->setText(tr("Log in"));
+    } else {
+        _toggleSignInOutAction->setText(tr("Log out"));
+    }
+
+    ui->addButton->setEnabled(state == AccountState::Connected);
+    if (state == AccountState::Connected) {
+        ui->_folderList->setItemsExpandable(true);
+        if (_accountState->supportsSpaces()) {
+            ui->addButton->setText(tr("Add Space"));
+            ui->addButton->setToolTip(tr("Click this button to add a Space."));
         } else {
-            _toggleSignInOutAction->setText(tr("Log out"));
+            ui->addButton->setText(tr("Add Folder"));
+            ui->addButton->setToolTip(tr("Click this button to add a folder to synchronize."));
         }
+    } else {
+        ui->_folderList->setItemsExpandable(false);
+        ui->addButton->setText(tr("Add Folder"));
+        ui->addButton->setToolTip(tr("You need to be connected to add a folder."));
+
+        /* check if there are expanded root items, if so, close them */
+        ui->_folderList->collapseAll();
     }
 }
 
@@ -1080,8 +1012,8 @@ void AccountSettings::slotDeleteAccount()
 bool AccountSettings::event(QEvent *e)
 {
     if (e->type() == QEvent::Hide || e->type() == QEvent::Show) {
-        if (_quotaInfo) {
-            _quotaInfo->setActive(isVisible());
+        if (!_accountState->supportsSpaces()) {
+            _accountState->quotaInfo()->setActive(isVisible());
         }
     }
     if (e->type() == QEvent::Show) {

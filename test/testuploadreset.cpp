@@ -26,7 +26,7 @@ private slots:
 
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
-        if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
+        if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
             QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
 
             // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
@@ -65,6 +65,7 @@ private slots:
         uploadInfo._valid = true;
         uploadInfo._modtime = Utility::qDateTimeToTime_t(modTime);
         uploadInfo._size = size;
+        uploadInfo._contentChecksum = "DUMMY_FOR_TESTS:0x1";
         fakeFolder.syncEngine().journal()->setUploadInfo(QStringLiteral("A/a0"), uploadInfo);
 
         fakeFolder.uploadState().mkdir(QStringLiteral("1"));

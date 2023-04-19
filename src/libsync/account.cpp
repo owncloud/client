@@ -13,46 +13,73 @@
  */
 
 #include "account.h"
-#include "cookiejar.h"
-#include "networkjobs.h"
 #include "accessmanager.h"
+#include "capabilities.h"
+#include "common/asserts.h"
+#include "cookiejar.h"
 #include "creds/abstractcredentials.h"
 #include "creds/credentialmanager.h"
-#include "capabilities.h"
+#include "graphapi/spacesmanager.h"
+#include "networkjobs.h"
+#include "networkjobs/resources.h"
 #include "theme.h"
-#include "common/asserts.h"
 
-#include <QSettings>
+#include <QAuthenticator>
+#include <QDir>
+#include <QFileInfo>
 #include <QLoggingCategory>
 #include <QMutex>
-#include <QNetworkReply>
 #include <QNetworkAccessManager>
-#include <QSslSocket>
 #include <QNetworkCookieJar>
-#include <QFileInfo>
-#include <QDir>
+#include <QNetworkDiskCache>
+#include <QNetworkReply>
+#include <QSettings>
 #include <QSslKey>
-#include <QAuthenticator>
+#include <QSslSocket>
 #include <QStandardPaths>
 
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccount, "sync.account", QtInfoMsg)
 
-Account::Account(QObject *parent)
+QString Account::_customCommonCacheDirectory = {};
+
+void Account::setCommonCacheDirectory(const QString &directory)
+{
+    _customCommonCacheDirectory = directory;
+}
+
+QString Account::commonCacheDirectory()
+{
+    if (_customCommonCacheDirectory.isEmpty()) {
+        return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    }
+
+    return _customCommonCacheDirectory;
+}
+
+Account::Account(const QUuid &uuid, QObject *parent)
     : QObject(parent)
-    , _uuid(QUuid::createUuid())
+    , _uuid(uuid)
     , _capabilities(QVariantMap())
     , _jobQueue(this)
     , _queueGuard(&_jobQueue)
     , _credentialManager(new CredentialManager(this))
 {
     qRegisterMetaType<AccountPtr>("AccountPtr");
+
+    _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(commonCacheDirectory(), _uuid.toString(QUuid::WithoutBraces));
+    QDir().mkpath(_cacheDirectory);
+
+    // we need to make sure the directory we pass to the resources cache exists
+    const QString resourcesCacheDir = QStringLiteral("%1/resources/").arg(_cacheDirectory);
+    QDir().mkpath(resourcesCacheDir);
+    _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
 }
 
-AccountPtr Account::create()
+AccountPtr Account::create(const QUuid &uuid)
 {
-    AccountPtr acc = AccountPtr(new Account);
+    AccountPtr acc = AccountPtr(new Account(uuid));
     acc->setSharedThis(acc);
     return acc;
 }
@@ -159,6 +186,13 @@ void Account::setCredentials(AbstractCredentials *cred)
     cred->setAccount(this);
 
     _am = _credentials->createAM();
+
+    // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
+    _networkCache = new QNetworkDiskCache(this);
+    const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(_cacheDirectory));
+    qCDebug(lcAccount) << "Cache location for account" << this << "set to" << networkCacheLocation;
+    _networkCache->setCacheDirectory(networkCacheLocation);
+    _am->setCache(_networkCache);
 
     if (jar) {
         _am->setCookieJar(jar);
@@ -293,6 +327,9 @@ void Account::setCapabilities(const Capabilities &caps)
     if (versionChanged) {
         Q_EMIT serverVersionChanged();
     }
+    if (!_spacesManager && _capabilities.spacesSupport().enabled) {
+        _spacesManager = new GraphApi::SpacesManager(this);
+    }
 }
 
 Account::ServerSupportLevel Account::serverSupportLevel() const
@@ -346,6 +383,16 @@ void Account::setAppProvider(AppProvider &&p)
 const AppProvider &Account::appProvider() const
 {
     return _appProvider;
+}
+
+void Account::invalidCredentialsEncountered()
+{
+    Q_EMIT invalidCredentials(Account::QPrivateSignal());
+}
+
+ResourcesCache *Account::resourcesCache() const
+{
+    return _resourcesCache;
 }
 
 } // namespace OCC

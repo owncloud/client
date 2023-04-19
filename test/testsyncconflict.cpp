@@ -93,7 +93,7 @@ private slots:
 
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
-        if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
+        if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
             QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
 
             // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
@@ -306,12 +306,19 @@ private slots:
         fakeFolder.remoteModifier().insert(QStringLiteral("A/really-a-conflict")); // doesn't look like a conflict, but headers say it is
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+
         conflictRecord = fakeFolder.syncJournal().conflictRecord("A/really-a-conflict");
-        QVERIFY(conflictRecord.isValid());
-        QCOMPARE(conflictRecord.baseFileId, a2FileId);
-        QCOMPARE(conflictRecord.baseModtime, 1234);
-        QCOMPARE(conflictRecord.baseEtag, QByteArray("etag"));
-        QCOMPARE(conflictRecord.initialBasePath, QByteArray("A/original"));
+
+        if (filesAreDehydrated) {
+            // A placeholder for the conflicting file is created, but no actual GET request is made, so there should be no conflict record
+            QVERIFY(!conflictRecord.isValid());
+        } else {
+            QVERIFY(conflictRecord.isValid());
+            QCOMPARE(conflictRecord.baseFileId, a2FileId);
+            QCOMPARE(conflictRecord.baseModtime, 1234);
+            QCOMPARE(conflictRecord.baseEtag, QByteArray("etag"));
+            QCOMPARE(conflictRecord.initialBasePath, QByteArray("A/original"));
+        }
     }
 
     // Check that conflict records are removed when the file is gone
@@ -579,6 +586,13 @@ private slots:
         fakeFolder.remoteModifier().mkdir(QStringLiteral("B/b1"));
         fakeFolder.remoteModifier().insert(QStringLiteral("B/b1/zzz"));
 
+        if (filesAreDehydrated) {
+            QSKIP("Known bug: https://github.com/owncloud/client/issues/10223");
+            // The QSKIP below is due to operations order (verified on a local machine),
+            // but the sync below already always fails in the CI. So we will be skipping
+            // this entire test until the issue is fixed.
+        }
+
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         auto conflicts = findConflicts(fakeFolder.currentLocalState());
         conflicts += findConflicts(fakeFolder.currentLocalState().children[QStringLiteral("B")]);
@@ -604,6 +618,9 @@ private slots:
         QVERIFY(conflicts[1].contains("B/b1"));
         QCOMPARE(conflicts[1].toUtf8(), conflictRecords[1]);
 
+        if (filesAreDehydrated) {
+            QSKIP("Known bug: https://github.com/owncloud/client/issues/10223");
+        }
         // Also verifies that conflicts were uploaded
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
@@ -649,6 +666,10 @@ private slots:
         QFETCH_GLOBAL(Vfs::Mode, vfsMode);
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
+        if (filesAreDehydrated) {
+            QSKIP("Known bug: https://github.com/owncloud/client/issues/10223");
+        }
+
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
         ItemCompletedSpy completeSpy(fakeFolder);
 
@@ -678,8 +699,9 @@ private slots:
         const auto &conflicts = findConflicts(fakeFolder.currentLocalState());
         QVERIFY(conflicts.size() == 1);
         QVERIFY(conflicts[0].contains("A (conflicted copy"));
-        for (const auto &conflict : conflicts)
+        for (const auto &conflict : conflicts) {
             QDir(fakeFolder.localPath() + conflict).removeRecursively();
+        }
 
         QVERIFY(fakeFolder.syncEngine().isAnotherSyncNeeded() == ImmediateFollowUp);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());

@@ -21,6 +21,7 @@
 #include "gui/updateurldialog.h"
 #include "theme.h"
 
+#include <QApplication>
 #include <QNetworkReply>
 
 namespace OCC::Wizard::Jobs {
@@ -31,12 +32,12 @@ CoreJob *CheckBasicAuthJobFactory::startJob(const QUrl &url, QObject *parent)
 
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
-    QString authorizationHeader = QStringLiteral("Basic %1").arg(QString::fromLocal8Bit(QStringLiteral("%1:%2").arg(_username, _password).toLocal8Bit().toBase64()));
-    req.setRawHeader("Authorization", authorizationHeader.toLocal8Bit());
+    QString authorizationHeader = QStringLiteral("Basic %1").arg(QString::fromUtf8(QStringLiteral("%1:%2").arg(_username, _password).toUtf8().toBase64()));
+    req.setRawHeader("Authorization", authorizationHeader.toUtf8());
 
     auto *job = new CoreJob(nam()->sendCustomRequest(req, "PROPFIND"), parent);
 
-    connect(job->reply(), &QNetworkReply::finished, job, [job]() {
+    QObject::connect(job->reply(), &QNetworkReply::finished, job, [job]() {
         switch (job->reply()->error()) {
         case QNetworkReply::NoError:
             setJobResult(job, true);
@@ -48,7 +49,7 @@ CoreJob *CheckBasicAuthJobFactory::startJob(const QUrl &url, QObject *parent)
             }
             Q_FALLTHROUGH();
         default:
-            setJobError(job, tr("Invalid reply received from server"));
+            setJobError(job, QApplication::translate("CheckBasicAuthJobFactory", "Invalid reply received from server"));
             return;
         }
     });

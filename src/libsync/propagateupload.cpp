@@ -12,20 +12,23 @@
  * for more details.
  */
 
-#include "config.h"
 #include "propagateupload.h"
-#include "owncloudpropagator_p.h"
-#include "networkjobs.h"
 #include "account.h"
+#include "config.h"
+#include "filesystem.h"
+#include "networkjobs.h"
+#include "owncloudpropagator_p.h"
+#include "propagateremotedelete.h"
+#include "propagatorjobs.h"
+#include "syncengine.h"
+
+#include "common/asserts.h"
+#include "common/checksums.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/utility.h"
-#include "filesystem.h"
-#include "propagatorjobs.h"
-#include "common/checksums.h"
-#include "syncengine.h"
-#include "propagateremotedelete.h"
-#include "common/asserts.h"
+
+#include "libsync/theme.h"
 
 #include <QNetworkAccessManager>
 #include <QFileInfo>
@@ -173,6 +176,13 @@ void PropagateUploadFileCommon::slotComputeContentChecksum()
         return;
     }
 
+    // we must be able to read the file
+    if (FileSystem::isFileLocked(filePath, FileSystem::LockMode::SharedRead)) {
+        emit propagator()->seenLockedFile(filePath, FileSystem::LockMode::SharedRead);
+        abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(filePath));
+        return;
+    }
+
     // Compute the content checksum.
     auto computeChecksum = new ComputeChecksum(this);
     computeChecksum->setChecksumType(checksumType);
@@ -196,6 +206,14 @@ void PropagateUploadFileCommon::slotComputeTransmissionChecksum(CheckSums::Algor
         return;
     }
 
+    const QString filePath = propagator()->fullLocalPath(_item->_file);
+    // we must be able to read the file
+    if (FileSystem::isFileLocked(filePath, FileSystem::LockMode::SharedRead)) {
+        emit propagator()->seenLockedFile(filePath, FileSystem::LockMode::SharedRead);
+        abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(filePath));
+        return;
+    }
+
     // Compute the transmission checksum.
     auto computeChecksum = new ComputeChecksum(this);
     if (uploadChecksumEnabled()) {
@@ -208,7 +226,6 @@ void PropagateUploadFileCommon::slotComputeTransmissionChecksum(CheckSums::Algor
         this, &PropagateUploadFileCommon::slotStartUpload);
     connect(computeChecksum, &ComputeChecksum::done,
         computeChecksum, &QObject::deleteLater);
-    const QString filePath = propagator()->fullLocalPath(_item->_file);
     computeChecksum->start(filePath);
 }
 
@@ -510,7 +527,7 @@ QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
     headers[QByteArrayLiteral("Content-Type")] = QByteArrayLiteral("application/octet-stream");
     headers[QByteArrayLiteral("X-OC-Mtime")] = QByteArray::number(qint64(_item->_modtime));
 
-    if (_item->_file.contains(QLatin1String(".sys.admin#recall#"))) {
+    if (Q_UNLIKELY(Theme::instance()->enableCernBranding() && _item->_file.contains(QLatin1String(".sys.admin#recall#")))) {
         // This is a file recall triggered by the admin.  Note: the
         // recall list file created by the admin and downloaded by the
         // client (.sys.admin#recall#) also falls into this category
@@ -571,17 +588,10 @@ void PropagateUploadFileCommon::finalize()
         return;
     }
 
-
-#ifdef Q_OS_WIN
-    m_fileLock.close();
-#endif
     // Update the database entry
     const auto result = propagator()->updateMetadata(*_item);
     if (!result) {
         done(SyncFileItem::FatalError, tr("Error updating metadata: %1").arg(result.error()));
-        return;
-    } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
-        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->_file));
         return;
     }
 
@@ -644,7 +654,7 @@ void PropagateUploadFileCommon::abortNetworkJobs(
             // Connect to finished signal of job reply to asynchonously finish the abort
             connect(reply, &QNetworkReply::finished, this, oneAbortFinished);
         }
-        reply->abort();
+        job->abort();
     }
 
     if (*runningCount == 0 && abortType == AbortType::Asynchronous)

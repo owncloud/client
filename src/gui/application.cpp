@@ -261,7 +261,7 @@ Application::Application(int &argc, char **argv, Platform *platform)
             reporter.append(QLatin1String(".exe"));
         }
 #endif
-        _crashHandler.reset(new CrashReporter::Handler(QDir::tempPath(), true, reporter));
+        connect(qApp, &QApplication::aboutToQuit, this, [crashHandler = new CrashReporter::Handler(QDir::tempPath(), true, reporter)] { delete crashHandler; });
     }
 #endif
 
@@ -271,12 +271,12 @@ Application::Application(int &argc, char **argv, Platform *platform)
     qCInfo(lcApplication) << "Plugin search paths:" << libraryPaths();
 
     // Check vfs plugins
-    if (Theme::instance()->showVirtualFilesOption() && bestAvailableVfsMode() == Vfs::Off) {
+    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::Off) {
         qCWarning(lcApplication) << "Theme wants to show vfs mode, but no vfs plugins are available";
     }
-    if (isVfsPluginAvailable(Vfs::WindowsCfApi))
+    if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi))
         qCInfo(lcApplication) << "VFS windows plugin is available";
-    if (isVfsPluginAvailable(Vfs::WithSuffix))
+    if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WithSuffix))
         qCInfo(lcApplication) << "VFS suffix plugin is available";
 
     if (!configVersionMigration()) {
@@ -294,12 +294,12 @@ Application::Application(int &argc, char **argv, Platform *platform)
     }
 
     // Check vfs plugins
-    if (Theme::instance()->showVirtualFilesOption() && bestAvailableVfsMode() == Vfs::Off) {
+    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::Off) {
         qCWarning(lcApplication) << "Theme wants to show vfs mode, but no vfs plugins are available";
     }
-    if (isVfsPluginAvailable(Vfs::WindowsCfApi))
+    if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi))
         qCInfo(lcApplication) << "VFS windows plugin is available";
-    if (isVfsPluginAvailable(Vfs::WithSuffix))
+    if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WithSuffix))
         qCInfo(lcApplication) << "VFS suffix plugin is available";
 
     if (_quitInstance) {
@@ -617,7 +617,7 @@ void Application::parseOptions(const QStringList &arguments)
     auto logFlushOption = addOption({ QStringLiteral("logflush"), tr("Flush the log file after every write.") });
     auto logDebugOption = addOption({ QStringLiteral("logdebug"), tr("Output debug-level messages in the log.") });
     auto languageOption = addOption({ QStringLiteral("language"), tr("Override UI language."), QStringLiteral("language") });
-    auto listLanguagesOption = addOption({ QStringLiteral("list-languages"), tr("Override UI language.") });
+    auto listLanguagesOption = addOption({QStringLiteral("list-languages"), tr("Lists available translations, see --language.")});
     auto confDirOption = addOption({ QStringLiteral("confdir"), tr("Use the given configuration folder."), QStringLiteral("dirname") });
     auto debugOption = addOption({ QStringLiteral("debug"), tr("Enable debug mode.") });
 

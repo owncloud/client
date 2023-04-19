@@ -30,18 +30,23 @@ BasicLoginWidget::BasicLoginWidget(QWidget *parent)
 {
     _ui->setupUi(this);
 
-    const QString usernameLabelText = Utility::enumToDisplayName(Theme::instance()->userIDType());
+    const QString usernameLabelText = []() {
+        const auto userIdType = Theme::instance()->userIDType();
+
+        switch (userIdType) {
+        case Theme::UserIDCustom:
+            return Theme::instance()->customUserID();
+        default:
+            return Utility::enumToDisplayName(Theme::instance()->userIDType());
+        }
+    }();
+
     _ui->usernameLabel->setText(usernameLabelText);
     _ui->usernameLineEdit->setPlaceholderText(usernameLabelText);
 
     if (!Theme::instance()->userIDHint().isEmpty()) {
         _ui->usernameLineEdit->setPlaceholderText(Theme::instance()->userIDHint());
     }
-
-    qDebug() << _ui->usernameLabel->isEnabled();
-    qDebug() << _ui->usernameLineEdit->isEnabled();
-
-    Utility::setModal(this);
 
     setFocusProxy(_ui->usernameLineEdit);
 

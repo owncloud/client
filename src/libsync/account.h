@@ -25,7 +25,9 @@
 #include <QByteArray>
 #include <QNetworkAccessManager>
 #include <QNetworkCookie>
+#include <QNetworkDiskCache>
 #include <QNetworkRequest>
+#include <QPixmap>
 #include <QSharedPointer>
 #include <QSslCertificate>
 #include <QSslCipher>
@@ -34,7 +36,6 @@
 #include <QSslSocket>
 #include <QUrl>
 #include <QUuid>
-#include <QPixmap>
 
 #include <memory>
 
@@ -49,10 +50,14 @@ class CredentialManager;
 class AbstractCredentials;
 class Account;
 typedef QSharedPointer<Account> AccountPtr;
-class QuotaInfo;
 class AccessManager;
 class SimpleNetworkJob;
 
+namespace GraphApi {
+    class SpacesManager;
+}
+
+class ResourcesCache;
 
 /**
  * @brief The Account class represents an account on an ownCloud Server
@@ -70,7 +75,13 @@ class OWNCLOUDSYNC_EXPORT Account : public QObject
     Q_PROPERTY(QUrl url MEMBER _url)
 
 public:
-    static AccountPtr create();
+    /**
+     * Set a custom directory which all accounts created after this call will share to store their cached files in.
+     */
+    static void setCommonCacheDirectory(const QString &directory);
+    static QString commonCacheDirectory();
+
+    static AccountPtr create(const QUuid &uuid);
     ~Account() override;
 
     AccountPtr sharedFromThis();
@@ -191,13 +202,23 @@ public:
 
     CredentialManager *credentialManager() const;
 
+    GraphApi::SpacesManager *spacesManager() const { return _spacesManager; }
+
+    /**
+     * We encountered an authentication error.
+     */
+    void invalidCredentialsEncountered();
+
+    ResourcesCache *resourcesCache() const;
+
 public slots:
     /// Used when forgetting credentials
     void clearAMCache();
 
 signals:
-    /// Triggered by handleInvalidCredentials()
-    void invalidCredentials();
+    /// Triggered by invalidCredentialsEncountered()
+    // this signal is emited when a network job failed due to invalid credentials
+    void invalidCredentials(QPrivateSignal);
 
     void credentialsFetched(AbstractCredentials *credentials);
     void credentialsAsked(AbstractCredentials *credentials);
@@ -222,7 +243,10 @@ protected Q_SLOTS:
     void slotCredentialsAsked();
 
 private:
-    Account(QObject *parent = nullptr);
+    // directory all newly created accounts store their various caches in
+    static QString _customCommonCacheDirectory;
+
+    Account(const QUuid &uuid, QObject *parent = nullptr);
     void setSharedThis(AccountPtr sharedThis);
 
     QWeakPointer<Account> _sharedThis;
@@ -234,11 +258,13 @@ private:
     QPixmap _avatarImg;
     QMap<QString, QVariant> _settingsMap;
     QUrl _url;
+    QString _cacheDirectory;
 
     QSet<QSslCertificate> _approvedCerts;
     Capabilities _capabilities;
-    QuotaInfo *_quotaInfo;
     QPointer<AccessManager> _am;
+    QPointer<QNetworkDiskCache> _networkCache = nullptr;
+    QPointer<ResourcesCache> _resourcesCache;
     QScopedPointer<AbstractCredentials> _credentials;
     bool _http2Supported = false;
 
@@ -246,6 +272,8 @@ private:
     JobQueueGuard _queueGuard;
     CredentialManager *_credentialManager;
     AppProvider _appProvider;
+
+    GraphApi::SpacesManager *_spacesManager = nullptr;
     friend class AccountManager;
 };
 }

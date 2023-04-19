@@ -13,22 +13,21 @@
  */
 
 #include "appimageupdateavailabledialog.h"
-#include <QStyle>
-
-#include "guiutility.h"
-#include "theme.h"
 #include "ui_appimageupdateavailabledialog.h"
 
-namespace OCC::Ui {
+#include "theme.h"
+
+#include "resources/resources.h"
+
+#include <QStyle>
+
+namespace OCC {
 
 AppImageUpdateAvailableDialog::AppImageUpdateAvailableDialog(const QVersionNumber &currentVersion, const QVersionNumber &newVersion, QWidget *parent)
     : QDialog(parent)
-    , _ui(new ::Ui::AppImageUpdateAvailableDialogUi)
+    , _ui(new Ui::AppImageUpdateAvailableDialogUi)
 {
     _ui->setupUi(this);
-
-    // we want an immediate response from the user
-    setModal(true);
 
     const auto *theme = Theme::instance();
 
@@ -40,9 +39,9 @@ AppImageUpdateAvailableDialog::AppImageUpdateAvailableDialog(const QVersionNumbe
     _ui->appIconLabel->setPixmap(theme->aboutIcon().pixmap(QSize(128, 128)));
 
     // we use custom icons to ensure a unified look on all platforms
-    _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(Utility::getCoreIcon(QStringLiteral("check")));
-    _ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(Utility::getCoreIcon(QStringLiteral("ban")));
-    _ui->skipButton->setIcon(Utility::getCoreIcon(QStringLiteral("step-forward")));
+    _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(Resources::getCoreIcon(QStringLiteral("check")));
+    _ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(Resources::getCoreIcon(QStringLiteral("ban")));
+    _ui->skipButton->setIcon(Resources::getCoreIcon(QStringLiteral("step-forward")));
 
     // the minimum size of the info label (and a few other labels) depends on their contents
     // we can't persuade the dialog to resize automatically to the recommended size in Qt Designer, so we do it manually

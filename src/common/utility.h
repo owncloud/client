@@ -128,11 +128,11 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
     OCSYNC_EXPORT bool hasDarkSystray();
 
     // convenience OS detection methods
-    inline bool isWindows();
-    inline bool isMac();
-    inline bool isUnix();
-    inline bool isLinux(); // use with care
-    inline bool isBSD(); // use with care, does not match OS X
+    constexpr bool isWindows();
+    constexpr bool isMac();
+    constexpr bool isUnix();
+    constexpr bool isLinux(); // use with care
+    constexpr bool isBSD(); // use with care, does not match OS X
 
     OCSYNC_EXPORT QString platformName();
     // crash helper for --debug
@@ -272,7 +272,7 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
     {
     public:
         /**
-         * NTFS permissions lookup is diabled by default for performance reasons
+         * NTFS permissions lookup is disabled by default for performance reasons
          * Enable it and disable it again once we leave the scope
          * https://doc.qt.io/Qt-5/qfileinfo.html#ntfs-permissions
          */
@@ -363,6 +363,24 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
         Q_UNREACHABLE();
     }
 
+    template <typename T>
+    class asKeyValueRange
+    {
+        // https://www.kdab.com/qt-range-based-for-loops-and-structured-bindings/
+    public:
+        asKeyValueRange(const T &data)
+            : _data{data}
+        {
+        }
+
+        auto begin() { return _data.constKeyValueBegin(); }
+
+        auto end() { return _data.constKeyValueEnd(); }
+
+    private:
+        const T &_data;
+    };
+
     /**
      * Replace all occurances of @{} values in template with the values from values
      */
@@ -381,14 +399,12 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
     }
 
 
-#ifdef Q_OS_LINUX
     OCSYNC_EXPORT QString appImageLocation();
     OCSYNC_EXPORT bool runningInAppImage();
-#endif
 } // Utility namespace
 /** @} */ // \addtogroup
 
-inline bool Utility::isWindows()
+constexpr bool Utility::isWindows()
 {
 #ifdef Q_OS_WIN
     return true;
@@ -397,7 +413,7 @@ inline bool Utility::isWindows()
 #endif
 }
 
-inline bool Utility::isMac()
+constexpr bool Utility::isMac()
 {
 #ifdef Q_OS_MAC
     return true;
@@ -406,7 +422,7 @@ inline bool Utility::isMac()
 #endif
 }
 
-inline bool Utility::isUnix()
+constexpr bool Utility::isUnix()
 {
 #ifdef Q_OS_UNIX
     return true;
@@ -415,7 +431,7 @@ inline bool Utility::isUnix()
 #endif
 }
 
-inline bool Utility::isLinux()
+constexpr bool Utility::isLinux()
 {
 #if defined(Q_OS_LINUX)
     return true;
@@ -424,7 +440,7 @@ inline bool Utility::isLinux()
 #endif
 }
 
-inline bool Utility::isBSD()
+constexpr bool Utility::isBSD()
 {
 #if defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD) || defined(Q_OS_OPENBSD)
     return true;

@@ -102,11 +102,11 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, const AccountStatePtr 
 
 QString FolderWizardPrivate::initialLocalPath() const
 {
-    QString defaultPath = defaultSyncRoot();
     if (_account->supportsSpaces()) {
-        defaultPath += QLatin1Char('/') + _spacesPage->selectedSpace(Spaces::SpacesModel::Columns::Name).toString();
-    };
-    return FolderMan::instance()->findGoodPathForNewSyncFolder(defaultPath);
+        return FolderMan::instance()->findGoodPathForNewSyncFolder(
+            defaultSyncRoot(), _spacesPage->selectedSpace(Spaces::SpacesModel::Columns::Name).toString());
+    }
+    return defaultSyncRoot();
 }
 
 QString FolderWizardPrivate::remotePath() const
@@ -117,7 +117,7 @@ QString FolderWizardPrivate::remotePath() const
 uint32_t FolderWizardPrivate::priority() const
 {
     if (_account->supportsSpaces()) {
-        _spacesPage->selectedSpace(Spaces::SpacesModel::Columns::Priority).toInt();
+        return _spacesPage->selectedSpace(Spaces::SpacesModel::Columns::Priority).toInt();
     };
     return 0;
 }
@@ -149,7 +149,7 @@ const AccountStatePtr &FolderWizardPrivate::accountState()
 
 bool FolderWizardPrivate::useVirtualFiles() const
 {
-    const auto mode = bestAvailableVfsMode();
+    const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
     const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode == Vfs::WindowsCfApi) || (_folderWizardSelectiveSyncPage->useVirtualFiles());
     if (useVirtualFiles) {
         const auto availability = Vfs::checkAvailability(initialLocalPath(), mode);
@@ -167,7 +167,6 @@ FolderWizard::FolderWizard(const AccountStatePtr &account, QWidget *parent)
     : QWizard(parent)
     , d_ptr(new FolderWizardPrivate(this, account))
 {
-    Utility::setModal(this);
     setWindowTitle(tr("Add Folder Sync Connection"));
     setOptions(QWizard::CancelButtonOnLeft);
     setButtonText(QWizard::FinishButton, tr("Add Sync Connection"));
@@ -213,13 +212,13 @@ FolderWizard::Result FolderWizard::result()
     }
 
     return {
-        d->davUrl(),
-        localPath,
-        d->remotePath(),
-        d->displayName(),
-        d->useVirtualFiles(),
-        d->priority(),
-        d->_folderWizardSelectiveSyncPage ? d->_folderWizardSelectiveSyncPage->selectiveSyncBlackList() : QStringList()
+        d->davUrl(), //
+        localPath, //
+        d->remotePath(), //
+        d->displayName(), //
+        d->useVirtualFiles(), //
+        d->priority(), //
+        d->_folderWizardSelectiveSyncPage ? d->_folderWizardSelectiveSyncPage->selectiveSyncBlackList() : QSet<QString>{} //
     };
 }
 

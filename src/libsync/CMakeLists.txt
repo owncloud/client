@@ -1,4 +1,4 @@
-set(LibreGraphAPIVersion v0.13.2)
+set(LibreGraphAPIVersion v1.0.1)
 # TODO: pass version to find_package once LibreGraphAPI provides versioned releases
 find_package(LibreGraphAPI QUIET)
 if (NOT TARGET OpenAPI::LibreGraphAPI)
@@ -57,11 +57,10 @@ set(libsync_SRCS
     networkjobs/checkserverjobfactory.cpp
     networkjobs/jsonjob.cpp
     networkjobs/jobgroup.cpp
+    networkjobs/resources.cpp
 
     abstractcorejob.cpp
     determineauthtypejobfactory.cpp
-
-    graphapi/drives.cpp
 
     appprovider.cpp
 )
@@ -100,6 +99,7 @@ target_link_libraries(libsync
         Qt5::Network
         Qt5::Widgets
     PRIVATE
+        owncloudResources
         Qt5::Concurrent
         ZLIB::ZLIB
         qt5keychain
@@ -115,6 +115,7 @@ if ( APPLE )
          /System/Library/Frameworks/CoreServices.framework
          /System/Library/Frameworks/Foundation.framework
          /System/Library/Frameworks/AppKit.framework
+         /System/Library/Frameworks/IOKit.framework
     )
 endif()
 

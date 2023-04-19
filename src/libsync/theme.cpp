@@ -20,6 +20,8 @@
 #include "config.h"
 #include "configfile.h"
 
+#include "resources/resources.h"
+
 #include <QtCore>
 #include <QtGui>
 #include <QStyle>
@@ -119,6 +121,9 @@ QString Theme::statusHeaderText(SyncResult::Status status) const
     case SyncResult::Paused:
         resultStr = QCoreApplication::translate("theme", "Sync is paused");
         break;
+    case SyncResult::Offline:
+        resultStr = QCoreApplication::translate("theme", "Offline");
+        break;
     }
     return resultStr;
 }
@@ -148,13 +153,6 @@ QIcon Theme::aboutIcon() const
     return applicationIcon();
 }
 
-bool Theme::isUsingDarkTheme() const
-{
-    //TODO: replace by a command line switch
-    static bool forceDark = qEnvironmentVariableIntValue("OWNCLOUD_FORCE_DARK_MODE") != 0;
-    return forceDark || QPalette().base().color().lightnessF() <= 0.5;
-}
-
 bool Theme::allowDarkTheme() const
 {
     return _hasBrandedColored == _hasBrandedDark;
@@ -179,7 +177,7 @@ QIcon Theme::themeTrayIcon(const QString &name, bool sysTrayMenuVisible, IconTyp
 
 QIcon Theme::themeIcon(const QString &name, Theme::IconType iconType) const
 {
-    return loadIcon((isUsingDarkTheme() && allowDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
+    return loadIcon((Resources::isUsingDarkTheme() && allowDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
 }
 /*
  * helper to load a icon from either the icon theme the desktop provides or from
@@ -284,7 +282,7 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::helpUrl() const
 {
-    return QStringLiteral("https://doc.owncloud.org/desktop/%1.%2/").arg(OCC::Version::version().majorVersion()).arg(OCC::Version::version().microVersion());
+    return QStringLiteral("https://doc.owncloud.com/desktop/latest/");
 }
 
 QString Theme::conflictHelpUrl() const
@@ -414,20 +412,30 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
             gitUrl = gitSHA1(format) + br;
         }
     }
+
+
+#if defined(OC_PLUGIN_DIR)
+    const QString pluginDirComment = QCoreApplication::translate("ownCloudTheme::pluginDir", "Plugin dir: %1%2").arg(QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral(OC_PLUGIN_DIR)), br);
+#else
+    const QString pluginDirComment = QString();
+#endif
+
     return QCoreApplication::translate("ownCloudTheme::aboutVersions()",
         "%1 %2%7"
         "%8"
         "Libraries Qt %3, %4%7"
+        "%9"
         "Using virtual files plugin: %5%7"
         "%6")
         .arg(appName(),
             _version,
             qtVersionString,
             QSslSocket::sslLibraryVersionString(),
-            Vfs::modeToString(bestAvailableVfsMode()),
+            Vfs::modeToString(VfsPluginManager::instance().bestAvailableVfsMode()),
             QSysInfo::productType() % QLatin1Char('-') % QSysInfo::kernelVersion(),
             br,
-            gitUrl);
+            gitUrl,
+            pluginDirComment);
 }
 
 
@@ -437,7 +445,7 @@ QString Theme::about() const
     // changing the location of the settings and other registery keys.
     const QString vendor = isVanilla() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
-              "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
+              "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.com/c/desktop-client\">https://central.owncloud.com</a></p>"
               "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
               " Jan-Christoph Borchardt, Thomas Müller,<br>"
               "Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.</small></p>"
@@ -446,11 +454,8 @@ QString Theme::about() const
               "%5 and the %5 logo are registered trademarks of %4 in the "
               "United States, other countries, or both.</p>"
               "<p><small>%6</small></p>")
-        .arg(Utility::escape(Version::displayString()),
-            Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
-            Utility::escape(QStringLiteral(APPLICATION_DOMAIN)),
-            Utility::escape(vendor),
-            Utility::escape(appNameGUI()),
+        .arg(Utility::escape(Version::displayString()), Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
+            Utility::escape(QStringLiteral(APPLICATION_DOMAIN)), Utility::escape(vendor), Utility::escape(appNameGUI()),
             aboutVersions(Theme::VersionFormat::RichText));
 }
 
@@ -459,64 +464,56 @@ bool Theme::aboutShowCopyright() const
     return true;
 }
 
-QIcon Theme::syncStateIcon(SyncResult::Status status, bool sysTray, bool sysTrayMenuVisible) const
+QString Theme::syncStateIconName(const SyncResult &result) const
 {
-    return syncStateIcon(SyncResult { status }, sysTray, sysTrayMenuVisible);
-}
-QIcon Theme::syncStateIcon(const SyncResult &result, bool sysTray, bool sysTrayMenuVisible) const
-{
-    QString statusIcon;
-
     switch (result.status()) {
     case SyncResult::NotYetStarted:
-        Q_FALLTHROUGH();
+        [[fallthrough]];
     case SyncResult::SyncRunning:
-        statusIcon = QStringLiteral("state-sync");
-        break;
+        return QStringLiteral("sync");
     case SyncResult::SyncAbortRequested:
-        Q_FALLTHROUGH();
+        [[fallthrough]];
     case SyncResult::Paused:
-        statusIcon = QStringLiteral("state-pause");
-        break;
+        return QStringLiteral("pause");
     case SyncResult::SyncPrepare:
-        Q_FALLTHROUGH();
+        [[fallthrough]];
     case SyncResult::Success:
-        if (result.hasUnresolvedConflicts()) {
-            return syncStateIcon(SyncResult { SyncResult::Problem }, sysTray, sysTrayMenuVisible);
+        if (!result.hasUnresolvedConflicts()) {
+            return QStringLiteral("ok");
         }
-        statusIcon = QStringLiteral("state-ok");
-        break;
+        [[fallthrough]];
     case SyncResult::Problem:
-        Q_FALLTHROUGH();
+        [[fallthrough]];
     case SyncResult::Undefined:
         // this can happen if no sync connections are configured.
-        statusIcon = QStringLiteral("state-information");
-        break;
+        return QStringLiteral("information");
+    case SyncResult::Offline:
+        return QStringLiteral("offline");
     case SyncResult::Error:
-        Q_FALLTHROUGH();
+        [[fallthrough]];
     case SyncResult::SetupError:
-    // FIXME: Use state-problem once we have an icon.
-        statusIcon = QStringLiteral("state-error");
+        // FIXME: Use problem once we have an icon.
+        return QStringLiteral("error");
     }
-    if (sysTray) {
-        return themeTrayIcon(statusIcon, sysTrayMenuVisible);
-    } else {
-        return themeIcon(statusIcon);
-    }
+    Q_UNREACHABLE();
 }
 
-QIcon Theme::folderDisabledIcon() const
+QIcon Theme::syncStateIcon(SyncResult::Status status, bool sysTray, bool sysTrayMenuVisible) const
 {
-    return themeIcon(QStringLiteral("state-pause"));
+    return syncStateIcon(SyncResult{status}, sysTray, sysTrayMenuVisible);
 }
 
-QIcon Theme::folderOfflineIcon(bool sysTray, bool sysTrayMenuVisible) const
+QIcon Theme::syncStateIcon(const SyncResult &result, bool sysTray, bool sysTrayMenuVisible) const
 {
-    const auto statusIcon = QLatin1String("state-offline");
+    return syncStateIcon(QStringLiteral("state-%1").arg(syncStateIconName(result)), sysTray, sysTrayMenuVisible);
+}
+
+QIcon Theme::syncStateIcon(const QString &iconName, bool sysTray, bool sysTrayMenuVisible) const
+{
     if (sysTray) {
-        return themeTrayIcon(statusIcon, sysTrayMenuVisible);
+        return themeTrayIcon(iconName, sysTrayMenuVisible);
     } else {
-        return themeIcon(statusIcon);
+        return themeIcon(iconName);
     }
 }
 
@@ -677,6 +674,16 @@ bool Theme::allowDuplicatedFolderSyncPair() const
 }
 
 bool Theme::wizardEnableWebfinger() const
+{
+    return false;
+}
+
+QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
+{
+    return {};
+}
+
+bool Theme::enableCernBranding() const
 {
     return false;
 }

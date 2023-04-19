@@ -17,6 +17,8 @@
 #include "socketapi.h"
 #include "socketapi_p.h"
 
+#include "gui/commonstrings.h"
+
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
@@ -396,6 +398,8 @@ void SocketApi::slotUpdateFolderView(Folder *f)
         case OCC::SyncResult::SyncRunning:
             Q_FALLTHROUGH();
         case OCC::SyncResult::SyncAbortRequested:
+            [[fallthrough]];
+        case OCC::SyncResult::Offline:
             qCDebug(lcSocketApi) << "Not sending UPDATE_VIEW for" << f->path() << "because status() is" << f->syncResult().status();
         }
     }
@@ -624,9 +628,11 @@ void SocketApi::fetchPrivateLinkUrlHelper(const QString &localFile, const std::f
         return;
     }
 
-    auto record = fileData.journalRecord();
-    if (!record.isValid())
-        return;
+    if (!fileData.isSyncFolder()) {
+        auto record = fileData.journalRecord();
+        if (!record.isValid())
+            return;
+    }
 
     fetchPrivateLinkUrl(
         fileData.folder->accountState()->account(),
@@ -957,6 +963,11 @@ SocketApi::FileData SocketApi::FileData::parentFolder() const
     return FileData::get(QFileInfo(localPath).dir().path());
 }
 
+bool SocketApi::FileData::isValid() const
+{
+    return folder;
+}
+
 void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListener *listener)
 {
     listener->sendMessage(QStringLiteral("GET_MENU_ITEMS:BEGIN"));
@@ -965,28 +976,25 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
     // Some options only show for single files
     if (files.size() == 1) {
         const FileData fileData = FileData::get(files.first());
-        if (!fileData.isSyncFolder()) {
-            const auto record = fileData.journalRecord();
-            const bool isOnTheServer = record.isValid();
-            const auto flagString = isOnTheServer ? QLatin1String("::") : QLatin1String(":d:");
+        if (fileData.isValid() && fileData.folder->accountState()->isConnected()) {
+            const auto &capabilities = fileData.folder->accountState()->account()->capabilities();
+            if (!fileData.isSyncFolder()) {
+                const auto record = fileData.journalRecord();
+                const bool isOnTheServer = record.isValid();
+                const auto flagString = isOnTheServer ? QLatin1String("::") : QLatin1String(":d:");
 
-            const auto app = fileData.folder->accountState()->account()->appProvider().app(fileData.localPath);
-            if (!app.defaultApplication.isEmpty()) {
-                listener->sendMessage(QStringLiteral("MENU_ITEM:OPEN_APP_LINK") + flagString + tr("Open in %1").arg(app.defaultApplication));
-            }
+                const auto app = fileData.folder->accountState()->account()->appProvider().app(fileData.localPath);
+                if (!app.defaultApplication.isEmpty()) {
+                    listener->sendMessage(QStringLiteral("MENU_ITEM:OPEN_APP_LINK") + flagString + tr("Open in %1").arg(app.defaultApplication));
+                }
 
-            if (fileData.folder->accountState()->isConnected()) {
                 sendSharingContextMenuOptions(fileData, listener);
 
-                const auto &capabilities = fileData.folder->accountState()->account()->capabilities();
                 if (capabilities.privateLinkPropertyAvailable()) {
-                    listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_PRIVATE_LINK") + flagString + tr("Open in browser"));
+                    listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_PRIVATE_LINK") + flagString + CommonStrings::showInWebBrowser());
                 }
                 // Add link to versions pane if possible
-                if (capabilities.versioningEnabled()
-                    && capabilities.privateLinkDetailsParamAvailable()
-                    && isOnTheServer
-                    && !record.isDirectory()) {
+                if (capabilities.versioningEnabled() && capabilities.privateLinkDetailsParamAvailable() && isOnTheServer && !record.isDirectory()) {
                     listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_PRIVATE_LINK_VERSIONS") + flagString + tr("Show file versions in browser"));
                 }
 
@@ -1000,10 +1008,8 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
                     const bool canAddToDir = !parentRecord._remotePerm.isNull()
                         && ((fileInfo.isFile() && parentRecord._remotePerm.hasPermission(RemotePermissions::CanAddFile))
                             || (fileInfo.isDir() && parentRecord._remotePerm.hasPermission(RemotePermissions::CanAddSubDirectories)));
-                    const bool canChangeFile =
-                        !isOnTheServer
-                        || (record._remotePerm.hasPermission(RemotePermissions::CanDelete)
-                            && record._remotePerm.hasPermission(RemotePermissions::CanMove)
+                    const bool canChangeFile = !isOnTheServer
+                        || (record._remotePerm.hasPermission(RemotePermissions::CanDelete) && record._remotePerm.hasPermission(RemotePermissions::CanMove)
                             && record._remotePerm.hasPermission(RemotePermissions::CanRename));
 
                     if (isConflict && canChangeFile) {
@@ -1037,6 +1043,11 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
                             listener->sendMessage(QLatin1String("MENU_ITEM:DELETE_ITEM::") + tr("Delete"));
                         }
                     }
+                }
+            } else {
+                // we are a sync root
+                if (capabilities.privateLinkPropertyAvailable()) {
+                    listener->sendMessage(QLatin1String("MENU_ITEM:OPEN_PRIVATE_LINK::") + CommonStrings::showInWebBrowser());
                 }
             }
         }

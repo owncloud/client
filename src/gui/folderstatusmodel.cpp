@@ -18,7 +18,13 @@
 #include "common/asserts.h"
 #include "folderman.h"
 #include "folderstatusdelegate.h"
+#include "gui/quotainfo.h"
 #include "theme.h"
+
+#include "resources/resources.h"
+
+#include "libsync/graphapi/space.h"
+#include "libsync/graphapi/spacesmanager.h"
 
 #include <QDir>
 #include <QFileIconProvider>
@@ -40,6 +46,38 @@ namespace {
 
     const char propertyParentIndexC[] = "oc_parentIndex";
     const char propertyPermissionMap[] = "oc_permissionMap";
+
+    int64_t getQuota(const AccountStatePtr &accountState, const QUrl &davUrl, FolderStatusModel::Columns type)
+    {
+        if (accountState->supportsSpaces()) {
+            if (auto spacesManager = accountState->account()->spacesManager()) {
+                const auto *space = spacesManager->spaceByUrl(davUrl);
+                if (space) {
+                    const auto quota = space->drive().getQuota();
+                    if (quota.isValid()) {
+                        switch (type) {
+                        case FolderStatusModel::Columns::QuotaTotal:
+                            return quota.getTotal();
+                        case FolderStatusModel::Columns::QuotaUsed:
+                            return quota.getUsed();
+                        default:
+                            Q_UNREACHABLE();
+                        }
+                    }
+                }
+            }
+        } else {
+            switch (type) {
+            case FolderStatusModel::Columns::QuotaTotal:
+                return accountState->quotaInfo()->lastQuotaTotalBytes();
+            case FolderStatusModel::Columns::QuotaUsed:
+                return accountState->quotaInfo()->lastQuotaUsedBytes();
+            default:
+                Q_UNREACHABLE();
+            }
+        }
+        return {};
+    }
 }
 
 FolderStatusModel::FolderStatusModel(QObject *parent)
@@ -59,13 +97,20 @@ void FolderStatusModel::setAccountState(const AccountStatePtr &accountState)
     beginResetModel();
     _dirty = false;
     _folders.clear();
-    _accountState = accountState;
+    if (_accountState != accountState) {
+        Q_ASSERT(!_accountState);
+        _accountState = accountState;
 
-    connect(FolderMan::instance(), &FolderMan::folderSyncStateChange,
-        this, &FolderStatusModel::slotFolderSyncStateChange, Qt::UniqueConnection);
-    connect(FolderMan::instance(), &FolderMan::scheduleQueueChanged,
-        this, &FolderStatusModel::slotFolderScheduleQueueChanged, Qt::UniqueConnection);
+        connect(FolderMan::instance(), &FolderMan::folderSyncStateChange, this, &FolderStatusModel::slotFolderSyncStateChange);
+        connect(FolderMan::instance(), &FolderMan::scheduleQueueChanged, this, &FolderStatusModel::slotFolderScheduleQueueChanged);
 
+        if (accountState->supportsSpaces()) {
+            connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, [this] {
+                beginResetModel();
+                endResetModel();
+            });
+        }
+    }
     for (const auto &f : FolderMan::instance()->folders()) {
         if (!accountState)
             break;
@@ -110,14 +155,6 @@ Qt::ItemFlags FolderStatusModel::flags(const QModelIndex &index) const
     const auto flags = Qt::ItemIsEnabled;
 
     switch (classify(index)) {
-    case AddButton: {
-        Qt::ItemFlags ret;
-        ret = Qt::ItemNeverHasChildren;
-        if (!_accountState->isConnected()) {
-            return ret;
-        }
-        return flags | ret;
-    }
     case FetchLabel:
         return flags | Qt::ItemNeverHasChildren;
     case RootFolder:
@@ -148,15 +185,6 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     }
 
     switch (itemType) {
-    case AddButton: {
-        if (role == Qt::ToolTipRole) {
-            if (!_accountState->isConnected()) {
-                return tr("You need to be connected to add a folder");
-            }
-            return _accountState->supportsSpaces() ? tr("Click this button to add a space.") : tr("Click this button to add a folder to synchronize.");
-        }
-        return QVariant();
-    }
     case SubFolder: {
         const auto &x = static_cast<SubFolderInfo *>(index.internalPointer())->_subs.at(index.row());
 
@@ -172,13 +200,12 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             case Columns::IsReady:
                 return x._folder->isReady();
             case Columns::HeaderRole:
-                //: Example text: "File.txt (23KB)"
-                return x._size < 0 ? x._name : tr("%1 (%2)").arg(x._name, Utility::octetsToString(x._size));
+                return x._size < 0 ? x._name : tr("%1 (%2)", "filename (size)").arg(x._name, Utility::octetsToString(x._size));
             default:
                 return {};
             }
         case Qt::ToolTipRole:
-            return QString(QLatin1String("<qt>") + Utility::escape(x._size < 0 ? x._name : tr("%1 (%2)").arg(x._name, Utility::octetsToString(x._size))) + QLatin1String("</qt>"));
+            return QString(QLatin1String("<qt>") + Utility::escape(x._size < 0 ? x._name : tr("%1 (%2)", "filename (size)").arg(x._name, Utility::octetsToString(x._size))) + QLatin1String("</qt>"));
         case Qt::CheckStateRole:
             return x._checked;
         case Qt::DecorationRole:
@@ -218,6 +245,13 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     const SubFolderInfo::Progress &progress = folderInfo._progress;
     const bool accountConnected = _accountState->isConnected();
 
+    const auto getSpace = [&]() -> GraphApi::Space * {
+        if (_accountState->supportsSpaces()) {
+            return _accountState->account()->spacesManager()->spaceByUrl(f->webDavUrl());
+        }
+        return nullptr;
+    };
+
     switch (role) {
     case Qt::DisplayRole:
         switch (column) {
@@ -239,28 +273,34 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             return errors;
         }
         case Columns::FolderInfoMsg:
-            return f->isReady() && f->virtualFilesEnabled() && f->vfs().mode() != Vfs::Mode::WindowsCfApi
-                ? QStringList(tr("Virtual file support is enabled."))
-                : QStringList();
+            return f->isReady() && f->virtualFilesEnabled() && f->vfs().mode() != Vfs::Mode::WindowsCfApi ? QStringList(tr("Virtual file support is enabled."))
+                                                                                                          : QStringList();
         case Columns::SyncRunning:
             return f->syncResult().status() == SyncResult::SyncRunning;
-        case Columns::HeaderRole:
+        case Columns::HeaderRole: {
+            if (auto *space = getSpace()) {
+                return space->displayName();
+            }
             return f->displayName();
+        }
+        case Columns::FolderImage:
+            if (auto *space = getSpace()) {
+                return space->image();
+            }
+            return Resources::getCoreIcon(QStringLiteral("folder-sync"));
         case Columns::FolderSyncPaused:
             return f->syncPaused();
         case Columns::FolderAccountConnected:
             return accountConnected;
-        case Columns::FolderStatusIconRole:
-            if (accountConnected) {
-                auto theme = Theme::instance();
-                if (f->syncPaused()) {
-                    return theme->folderDisabledIcon();
-                } else {
-                    return theme->syncStateIcon(f->syncResult().status());
-                }
-            } else {
-                return Theme::instance()->folderOfflineIcon();
+        case Columns::FolderStatusIconRole: {
+            auto status = f->syncResult();
+            if (!accountConnected) {
+                status.setStatus(SyncResult::Status::Offline);
+            } else if (f->syncPaused()) {
+                status.setStatus(SyncResult::Status::Paused);
             }
+            return Theme::instance()->syncStateIconName(status);
+        }
         case Columns::SyncProgressItemString:
             return progress._progressString;
         case Columns::WarningCount:
@@ -269,14 +309,24 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             return progress._overallPercent;
         case Columns::SyncProgressOverallString:
             return progress._overallSyncString;
-        case Columns::FolderSyncText:
+        case Columns::FolderSyncText: {
+            if (auto *space = getSpace()) {
+                if (!space->drive().getDescription().isEmpty()) {
+                    return space->drive().getDescription();
+                }
+            }
             return tr("Local folder: %1").arg(f->shortGuiLocalPath());
+        }
         case Columns::IsReady:
             return f->isReady();
         case Columns::IsDeployed:
             return f->isDeployed();
         case Columns::Priority:
-            return f->priority() + 1; // add one to have a higher prio than the hacked add button
+            return f->priority();
+        case Columns::QuotaTotal:
+            return QVariant::fromValue(getQuota(_accountState, f->webDavUrl(), Columns::QuotaTotal));
+        case Columns::QuotaUsed:
+            return QVariant::fromValue(getQuota(_accountState, f->webDavUrl(), Columns::QuotaUsed));
         case Columns::IsUsingSpaces: // handled before
             [[fallthrough]];
         case Columns::ItemType: // handled before
@@ -381,11 +431,7 @@ int FolderStatusModel::columnCount(const QModelIndex &) const
 int FolderStatusModel::rowCount(const QModelIndex &parent) const
 {
     if (!parent.isValid()) {
-        if (Theme::instance()->singleSyncFolder() && _folders.count() != 0) {
-            // "Add folder" button not visible in the singleSyncFolder configuration.
-            return _folders.count();
-        }
-        return _folders.count() + 1; // +1 for the "add folder" button
+        return _folders.count();
     }
     auto info = infoForIndex(parent);
     if (!info)
@@ -404,10 +450,8 @@ FolderStatusModel::ItemType FolderStatusModel::classify(const QModelIndex &index
             return SubFolder;
         }
     }
-    if (index.row() < _folders.count()) {
-        return RootFolder;
-    }
-    return AddButton;
+
+    return RootFolder;
 }
 
 FolderStatusModel::SubFolderInfo *FolderStatusModel::infoForIndex(const QModelIndex &index) const
@@ -486,7 +530,6 @@ QModelIndex FolderStatusModel::index(int row, int column, const QModelIndex &par
         return createIndex(row, column /*, nullptr*/);
     }
     switch (classify(parent)) {
-    case AddButton:
     case FetchLabel:
         return QModelIndex();
     case RootFolder:
@@ -514,9 +557,9 @@ QModelIndex FolderStatusModel::parent(const QModelIndex &child) const
     }
     switch (classify(child)) {
     case RootFolder:
-    case AddButton:
         return QModelIndex();
     case SubFolder:
+        [[fallthrough]];
     case FetchLabel:
         break;
     }
@@ -675,13 +718,17 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list)
     if (!pathToRemove.endsWith(QLatin1Char('/')))
         pathToRemove += QLatin1Char('/');
 
-    QStringList selectiveSyncBlackList;
+    QSet<QString> selectiveSyncBlackList;
     bool ok1 = true;
     bool ok2 = true;
     if (parentInfo->_checked == Qt::PartiallyChecked) {
         selectiveSyncBlackList = parentInfo->_folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok1);
     }
-    auto selectiveSyncUndecidedList = parentInfo->_folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, &ok2);
+    // qlist for historic reasons
+    QStringList selectiveSyncUndecidedList = [&] {
+        const auto list = parentInfo->_folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, &ok2);
+        return QStringList{list.cbegin(), list.cend()};
+    }();
 
     if (!(ok1 && ok2)) {
         qCWarning(lcFolderStatus) << "Could not retrieve selective sync info from journal";
@@ -770,8 +817,9 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list)
         [&](const QString &s) { return selectiveSyncUndecidedSet.count(s); });
     if (it != selectiveSyncUndecidedList.end()) {
         selectiveSyncUndecidedList.erase(it, selectiveSyncUndecidedList.end());
+
         parentInfo->_folder->journalDb()->setSelectiveSyncList(
-            SyncJournalDb::SelectiveSyncUndecidedList, selectiveSyncUndecidedList);
+            SyncJournalDb::SelectiveSyncUndecidedList, {selectiveSyncUndecidedList.cbegin(), selectiveSyncUndecidedList.cend()});
         emit dirtyChanged();
     }
 }
@@ -803,19 +851,18 @@ void FolderStatusModel::slotLscolFinishedWithError(QNetworkReply *r)
     }
 }
 
-QStringList FolderStatusModel::createBlackList(const FolderStatusModel::SubFolderInfo &root,
-    const QStringList &oldBlackList) const
+QSet<QString> FolderStatusModel::createBlackList(const FolderStatusModel::SubFolderInfo &root, const QSet<QString> &oldBlackList) const
 {
     switch (root._checked) {
     case Qt::Unchecked:
-        return QStringList(root._path);
+        return {root._path};
     case Qt::Checked:
-        return QStringList();
+        return {};
     case Qt::PartiallyChecked:
         break;
     }
 
-    QStringList result;
+    QSet<QString> result;
     if (root._fetched) {
         for (int i = 0; i < root._subs.count(); ++i) {
             result += createBlackList(root._subs.at(i), oldBlackList);
@@ -846,26 +893,25 @@ void FolderStatusModel::slotApplySelectiveSync()
 {
     for (const auto &folderInfo : qAsConst(_folders)) {
         if (!folderInfo._fetched) {
-            folderInfo._folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, QStringList());
+            folderInfo._folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, {});
             continue;
         }
         const auto folder = folderInfo._folder;
 
         bool ok;
-        auto oldBlackList = folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+        auto oldBlackListSet = folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
         if (!ok) {
             qCWarning(lcFolderStatus) << "Could not read selective sync list from db.";
             continue;
         }
-        QStringList blackList = createBlackList(folderInfo, oldBlackList);
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blackList);
+        auto blackListSet = createBlackList(folderInfo, oldBlackListSet);
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blackListSet);
 
-        auto blackListSet = blackList.toSet();
-        auto oldBlackListSet = oldBlackList.toSet();
 
         // The folders that were undecided or blacklisted and that are now checked should go on the white list.
         // The user confirmed them already just now.
-        QStringList toAddToWhiteList = ((oldBlackListSet + folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, &ok).toSet()) - blackListSet).toList();
+        QSet<QString> toAddToWhiteList =
+            ((oldBlackListSet + folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, &ok)) - blackListSet);
 
         if (!toAddToWhiteList.isEmpty()) {
             auto whiteList = folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, &ok);
@@ -875,7 +921,7 @@ void FolderStatusModel::slotApplySelectiveSync()
             }
         }
         // clear the undecided list
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, QStringList());
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, {});
 
         // do the sync if there were changes
         const auto changes = (oldBlackListSet - blackListSet) + (blackListSet - oldBlackListSet);
@@ -1138,7 +1184,7 @@ void FolderStatusModel::slotSyncAllPendingBigFolders()
 {
     for (int i = 0; i < _folders.count(); ++i) {
         if (!_folders[i]._fetched) {
-            _folders[i]._folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, QStringList());
+            _folders[i]._folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, {});
             continue;
         }
         auto folder = _folders.at(i)._folder;
@@ -1161,9 +1207,7 @@ void FolderStatusModel::slotSyncAllPendingBigFolders()
             qCWarning(lcFolderStatus) << "Could not read selective sync list from db.";
             return;
         }
-        for (const auto &undecidedFolder : undecidedList) {
-            blackList.removeAll(undecidedFolder);
-        }
+        blackList -= undecidedList;
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blackList);
 
         // Add all undecided folders to the white list
@@ -1176,7 +1220,7 @@ void FolderStatusModel::slotSyncAllPendingBigFolders()
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, whiteList);
 
         // Clear the undecided list
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, QStringList());
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, {});
 
         // Trigger a sync
         if (folder->isSyncRunning()) {
@@ -1202,7 +1246,7 @@ void FolderStatusModel::slotSyncNoPendingBigFolders()
         auto folder = _folders.at(i)._folder;
 
         // clear the undecided list
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, QStringList());
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncUndecidedList, {});
     }
 
     resetFolders();

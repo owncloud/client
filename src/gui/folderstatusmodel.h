@@ -50,6 +50,7 @@ public:
         FolderSyncPaused,
         FolderStatusIconRole,
         FolderAccountConnected,
+        FolderImage,
 
         SyncProgressOverallPercent,
         SyncProgressOverallString,
@@ -64,6 +65,9 @@ public:
         ItemType, // ItemType
         Priority, // uint32_t
         IsDeployed, // bool
+
+        QuotaUsed,
+        QuotaTotal,
 
         ColumnCount
     };
@@ -155,7 +159,6 @@ public:
     enum ItemType {
         RootFolder,
         SubFolder,
-        AddButton,
         FetchLabel
     };
     Q_ENUM(ItemType);
@@ -194,8 +197,7 @@ private slots:
     void slotShowFetchProgress();
 
 private:
-    QStringList createBlackList(const OCC::FolderStatusModel::SubFolderInfo &root,
-        const QStringList &oldBlackList) const;
+    QSet<QString> createBlackList(const OCC::FolderStatusModel::SubFolderInfo &root, const QSet<QString> &oldBlackList) const;
     void computeProgress(const ProgressInfo &progress, SubFolderInfo::Progress *pi);
     int indexOf(Folder *f) const;
 

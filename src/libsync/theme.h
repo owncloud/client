@@ -101,22 +101,21 @@ public:
     Q_ENUM(IconType)
 
     /**
-      * get an sync state icon
-      */
-    QIcon syncStateIcon(const SyncResult &status, bool sysTray = false, bool sysTrayMenuVisible = false) const;
+     * get an sync state icon
+     */
     QIcon syncStateIcon(SyncResult::Status result, bool sysTray = false, bool sysTrayMenuVisible = false) const;
+    QIcon syncStateIcon(const SyncResult &status, bool sysTray = false, bool sysTrayMenuVisible = false) const;
+    QIcon syncStateIcon(const QString &iconName, bool sysTray = false, bool sysTrayMenuVisible = false) const;
 
-
-    virtual QIcon folderDisabledIcon() const;
-    virtual QIcon folderOfflineIcon(bool sysTray = false, bool sysTrayMenuVisible = false) const;
-    virtual QIcon applicationIcon() const;
-    virtual QIcon aboutIcon() const;
+    QString syncStateIconName(const SyncResult &result) const;
 
     /**
-     * Whether use the dark icon theme
-     * The function also ensures the theme supports the dark theme
+     * Returns a universal (non color schema aware) icon.
      */
-    bool isUsingDarkTheme() const;
+    QIcon themeUniversalIcon(const QString &name, IconType iconType = IconType::BrandedIcon) const;
+
+    virtual QIcon applicationIcon() const;
+    virtual QIcon aboutIcon() const;
 
     /**
     * Whether the branding allows the dark theme
@@ -461,10 +460,26 @@ public:
      */
     virtual bool wizardEnableWebfinger() const;
 
-protected:
-    QIcon themeUniversalIcon(const QString &name, IconType iconType = IconType::BrandedIcon) const;
-    QIcon themeTrayIcon(const QString &name, bool sysTrayMenuVisible = false, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;
+    /**
+     * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.
+     * For each url there must be an icon provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
+     * */
+    virtual QVector<std::tuple<QString, QString, QUrl>> urlButtons() const;
+
+
+    /**
+     * Whether to enable the special code for cernbox
+     * This includes:
+     * - spaces migration
+     * - support for .sys.admin#recall#
+     */
+    bool enableCernBranding() const;
+
+
     QIcon themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;
+
+protected:
+    QIcon themeTrayIcon(const QString &name, bool sysTrayMenuVisible = false, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;
 
     Theme();
 

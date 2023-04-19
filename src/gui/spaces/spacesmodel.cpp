@@ -15,9 +15,14 @@
 
 #include "common/utility.h"
 // TODO: move models out from core
-#include "gui/guiutility.h"
 #include "gui/models/models.h"
 #include "networkjobs.h"
+
+#include "libsync/account.h"
+
+#include "libsync/graphapi/spacesmanager.h"
+
+#include "resources/resources.h"
 
 #include <QIcon>
 #include <QPixmap>
@@ -71,7 +76,7 @@ int SpacesModel::rowCount(const QModelIndex &parent) const
     Q_ASSERT(checkIndex(parent));
     if (parent.isValid())
         return 0;
-    return static_cast<int>(_data.size());
+    return static_cast<int>(_spacesList.size());
 }
 
 int SpacesModel::columnCount(const QModelIndex &parent) const
@@ -88,7 +93,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     Q_ASSERT(checkIndex(index, QAbstractItemModel::CheckIndexOption::IndexIsValid));
 
     const auto column = static_cast<Columns>(index.column());
-    const auto &item = _data.at(index.row());
+    const auto *space = _spacesList.at(index.row());
     switch (role) {
     case Qt::DisplayRole:
         switch (column) {
@@ -96,17 +101,17 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
             // TODO: return true if we alreaddy sync the space
             return false;
         case Columns::Name:
-            return GraphApi::Drives::getDriveDisplayName(item);
+            return space->displayName();
         case Columns::Subtitle:
-            return item.getDescription();
+            return space->drive().getDescription();
         case Columns::WebUrl:
-            return item.getWebUrl();
+            return space->drive().getWebUrl();
         case Columns::WebDavUrl:
-            return item.getRoot().getWebDavUrl();
+            return space->drive().getRoot().getWebDavUrl();
         case Columns::Image:
             return {};
         case Columns::Priority:
-            return GraphApi::Drives::getDrivePriority(item);
+            return space->priority();
         default:
             Q_UNREACHABLE();
             break;
@@ -115,23 +120,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Qt::DecorationRole:
         switch (column) {
         case Columns::Image: {
-            if (auto it = Utility::optionalFind(_images, item.getId())) {
-                return QVariant::fromValue(it->value());
-            }
-            _images[item.getId()] = OCC::Utility::getCoreIcon(QStringLiteral("th-large")).pixmap(ImageSizeC);
-            const auto imgUrl = data(index, Models::UnderlyingDataRole).toUrl();
-            if (!imgUrl.isEmpty()) {
-                auto job = new OCC::SimpleNetworkJob(_acc, imgUrl, {}, "GET", {}, {}, nullptr);
-                connect(job, &OCC::SimpleNetworkJob::finishedSignal, this, [job, id = item.getId(), index, this] {
-                    QPixmap img;
-                    img.loadFromData(job->reply()->readAll());
-                    img = img.scaled(ImageSizeC, Qt::KeepAspectRatio, Qt::TransformationMode::SmoothTransformation);
-                    _images[id] = img;
-                    Q_EMIT const_cast<SpacesModel *>(this)->dataChanged(index, index, { Qt::DecorationRole });
-                });
-                job->start();
-            }
-            return _images[item.getId()];
+            return space->image();
         }
         default:
             return {};
@@ -147,11 +136,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Models::UnderlyingDataRole:
         switch (column) {
         case Columns::Image: {
-            const auto &special = item.getSpecial();
-            const auto img = std::find_if(special.cbegin(), special.cend(), [](const OpenAPI::OAIDriveItem &it) {
-                return it.getSpecialFolder().getName() == QLatin1String("image");
-            });
-            return img == special.cend() ? QString() : img->getWebDavUrl();
+            return space->imageUrl();
         }
         default:
             return data(index, Qt::DisplayRole);
@@ -159,7 +144,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Models::FilterRole:
         switch (column) {
         case Columns::Enabled:
-            return !GraphApi::isDriveDisabled(item);
+            return !space->disabled();
         default:
             Q_UNREACHABLE();
         }
@@ -167,10 +152,27 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     return {};
 }
 
-void SpacesModel::setDriveData(OCC::AccountPtr acc, const QList<OpenAPI::OAIDrive> &data)
+void SpacesModel::setSpacesManager(GraphApi::SpacesManager *spacesManager)
 {
+    Q_ASSERT(!_spacesManager);
+    _spacesManager = spacesManager;
     beginResetModel();
-    _acc = acc;
-    _data = data;
+    _spacesList = _spacesManager->spaces();
     endResetModel();
+    connect(_spacesManager, &GraphApi::SpacesManager::updated, this, [this] {
+        const auto newSpaces = _spacesManager->spaces();
+        if (_spacesList != newSpaces) {
+            beginResetModel();
+            _spacesList = newSpaces;
+            endResetModel();
+        }
+    });
+
+    connect(_spacesManager, &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *space) {
+        const auto row = _spacesList.indexOf(space);
+        if (row != -1) {
+            const auto index = createIndex(row, 0);
+            Q_EMIT dataChanged(index, index.siblingAtColumn(static_cast<int>(SpacesModel::Columns::ColumnCount) - 1));
+        }
+    });
 }

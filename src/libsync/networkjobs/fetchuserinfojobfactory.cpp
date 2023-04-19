@@ -16,6 +16,7 @@
 #include "common/utility.h"
 #include "creds/httpcredentials.h"
 
+#include <QApplication>
 #include <QJsonParseError>
 #include <QNetworkReply>
 #include <QStringLiteral>
@@ -26,7 +27,7 @@ namespace OCC {
 
 FetchUserInfoJobFactory FetchUserInfoJobFactory::fromBasicAuthCredentials(QNetworkAccessManager *nam, const QString &username, const QString &password)
 {
-    QString authorizationHeader = QStringLiteral("Basic %1").arg(QString::fromLocal8Bit(QStringLiteral("%1:%2").arg(username, password).toLocal8Bit().toBase64()));
+    QString authorizationHeader = QStringLiteral("Basic %1").arg(QString::fromUtf8(QStringLiteral("%1:%2").arg(username, password).toUtf8().toBase64()));
     return { nam, authorizationHeader };
 }
 
@@ -58,12 +59,12 @@ CoreJob *FetchUserInfoJobFactory::startJob(const QUrl &url, QObject *parent)
 
     auto *job = new CoreJob(nam()->get(req), parent);
 
-    connect(job->reply(), &QNetworkReply::finished, job, [job] {
+    QObject::connect(job->reply(), &QNetworkReply::finished, job, [job] {
         const auto data = job->reply()->readAll();
         const auto statusCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         if (job->reply()->error() != QNetworkReply::NoError || statusCode != 200) {
-            setJobError(job, tr("Failed to retrieve user info"));
+            setJobError(job, QApplication::translate("FetchUserInfoJobFactory", "Failed to retrieve user info"));
         } else {
             qCDebug(lcFetchUserInfoJob) << data;
 

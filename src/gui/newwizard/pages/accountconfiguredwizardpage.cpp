@@ -6,6 +6,8 @@
 #include "gui/settingsdialog.h"
 #include "libsync/theme.h"
 
+#include "resources/resources.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -29,7 +31,7 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
 
     _ui->useVfsRadioButton->setText(tr("Use &virtual files instead of downloading content immediately"));
     if (vfsModeIsExperimental) {
-        _ui->useVfsRadioButton->setIcon(Utility::getCoreIcon(QStringLiteral("warning")));
+        _ui->useVfsRadioButton->setIcon(Resources::getCoreIcon(QStringLiteral("warning")));
 
         // when a feature is experimental and experimental features are disabled globally, it should be hidden
         if (!Theme::instance()->enableExperimentalFeatures()) {
@@ -44,7 +46,7 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
 
     if (!Theme::instance()->showVirtualFilesOption()) {
         _ui->useVfsRadioButton->setVisible(false);
-        vfsIsAvailable = false;
+        enableVfsByDefault = false;
     }
 
     if (!vfsIsAvailable) {
@@ -76,8 +78,7 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
     }
 
     connect(_ui->chooseLocalDirectoryButton, &QToolButton::clicked, this, [=]() {
-        auto dialog = new QFileDialog(ocApp()->gui()->settingsDialog(), tr("Select the local folder"), defaultSyncTargetDir);
-        Utility::setModal(dialog);
+        auto dialog = new QFileDialog(this, tr("Select the local folder"), defaultSyncTargetDir);
         dialog->setFileMode(QFileDialog::Directory);
         dialog->setOption(QFileDialog::ShowDirsOnly);
 
@@ -87,8 +88,7 @@ AccountConfiguredWizardPage::AccountConfiguredWizardPage(const QString &defaultS
 
             _ui->localDirectoryLineEdit->setText(QDir::toNativeSeparators(directory));
         });
-
-        ocApp()->gui()->raiseDialog(dialog);
+        dialog->open();
     });
 
     // this should be handled on application startup, too

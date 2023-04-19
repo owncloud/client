@@ -25,7 +25,6 @@
 #include "loginrequireddialog.h"
 #include "owncloudgui.h"
 #include "progressdispatcher.h"
-#include "quotainfo.h"
 
 class QModelIndex;
 class QNetworkReply;
@@ -44,6 +43,7 @@ class FolderMan;
 class Account;
 class AccountState;
 class FolderStatusModel;
+class FolderStatusDelegate;
 
 /**
  * @brief The AccountSettings class
@@ -65,8 +65,6 @@ signals:
     void showIssuesList();
 
 public slots:
-    void slotOpenOC();
-    void slotUpdateQuota(qint64, qint64);
     void slotAccountStateChanged();
 
 protected slots:
@@ -99,11 +97,10 @@ private:
     Ui::AccountSettings *ui;
 
     FolderStatusModel *_model;
+    FolderStatusDelegate *_delegate;
     QSortFilterProxyModel *_sortModel;
-    QUrl _OCUrl;
     bool _wasDisabledBefore;
     AccountStatePtr _accountState;
-    QuotaInfo *_quotaInfo = nullptr;
     QAction *_toggleSignInOutAction;
     QAction *_toggleReconnect;
 

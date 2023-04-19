@@ -20,11 +20,12 @@
 #include "utility.h"
 #include "common/asserts.h"
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
-#include <QUrl>
 #include <QFile>
-#include <QCoreApplication>
+#include <QSettings>
+#include <QUrl>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -383,6 +384,21 @@ QString FileSystem::fileSystemForPath(const QString &path)
     }
     return QString::fromUtf16(reinterpret_cast<const ushort *>(fileSystemBuffer));
 }
+
+bool FileSystem::longPathsEnabledOnWindows()
+{
+    static std::optional<bool> longPathsEnabledCached = {};
+
+    if (!longPathsEnabledCached.has_value()) {
+        // https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry#enable-long-paths-in-windows-10-version-1607-and-later
+        QSettings fsSettings(QStringLiteral("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem"), QSettings::NativeFormat);
+        QVariant longPathsEnabled = fsSettings.value(QStringLiteral("LongPathsEnabled"));
+        qCDebug(lcFileSystem) << "LongPathsEnabled:" << longPathsEnabled;
+        longPathsEnabledCached = longPathsEnabled.value<uint32_t>() == 1;
+    }
+
+    return longPathsEnabledCached.value();
+}
 #endif
 
 bool FileSystem::remove(const QString &fileName, QString *errorString)
@@ -485,18 +501,46 @@ bool FileSystem::moveToTrash(const QString &fileName, QString *errorString)
 Utility::Handle FileSystem::lockFile(const QString &fileName, LockMode mode)
 {
     const QString fName = longWinPath(fileName);
-    auto accessMode = mode == LockMode::Exclusive ? 0 : FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+    int shareMode = 0;
+    int accessMode = GENERIC_READ | GENERIC_WRITE;
+    switch (mode) {
+    case LockMode::Exclusive:
+        shareMode = 0;
+        break;
+    case LockMode::Shared:
+        shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+        break;
+    case LockMode::SharedRead:
+        shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+        accessMode = GENERIC_READ;
+        break;
+    }
     // Check if file exists
     DWORD attr = GetFileAttributesW(reinterpret_cast<const wchar_t *>(fName.utf16()));
     if (attr != INVALID_FILE_ATTRIBUTES) {
         // Try to open the file with as much access as possible..
-        return Utility::Handle { CreateFileW(
+        auto out = Utility::Handle { CreateFileW(
             reinterpret_cast<const wchar_t *>(fName.utf16()),
-            GENERIC_READ | GENERIC_WRITE,
             accessMode,
-            nullptr, OPEN_EXISTING,
+            shareMode,
+            nullptr,
+            OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS,
             nullptr) };
+
+        if (out) {
+            LARGE_INTEGER start;
+            start.QuadPart = 0;
+            LARGE_INTEGER end;
+            end.QuadPart = -1;
+            if (LockFile(out.handle(), start.LowPart, start.HighPart, end.LowPart, end.HighPart)) {
+                OC_ENSURE(UnlockFile(out.handle(), start.LowPart, start.HighPart, end.LowPart, end.HighPart));
+                return out;
+            } else {
+                return {};
+            }
+        }
+        return out;
     }
     return {};
 }
@@ -509,7 +553,7 @@ bool FileSystem::isFileLocked(const QString &fileName, LockMode mode)
     const auto handle = lockFile(fileName, mode);
     if (!handle) {
         const auto error = GetLastError();
-        if (error == ERROR_SHARING_VIOLATION) {
+        if (error == ERROR_SHARING_VIOLATION || error == ERROR_LOCK_VIOLATION) {
             return true;
         } else if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND) {
             qCWarning(lcFileSystem()) << Q_FUNC_INFO << Utility::formatWinError(error);
@@ -549,25 +593,69 @@ bool FileSystem::isChildPathOf(const QString &child, const QString &parent)
 {
     // if it is a relative path assume a local file, resolve it based on root
     const auto sensitivity = Utility::fsCaseSensitivity();
-    return (child.startsWith(parent.endsWith(QLatin1Char('/')) ? parent : parent + QLatin1Char('/'), sensitivity)
-        // clear trailing slashes etc
-        || QString::compare(QDir::cleanPath(parent), QDir::cleanPath(child), sensitivity) == 0);
+
+    // Fast-path the 3 common cases in this if-else statement:
+    if (parent.isEmpty()) {
+        // The empty parent is often used as the sync root, as (child) items do not start with a `/`
+        return true;
+    } else if (parent.endsWith(QLatin1Char('/'))) {
+        // Here we can do a normal prefix check, because the parent is "terminated" with a slash,
+        // and we can't walk into the case in the else below.
+        if (child.startsWith(parent, sensitivity)) {
+            return true;
+        }
+        // else: do the `cleanPath` version below
+    } else {
+        // Here we fast-path for the case the child is "Documents/a" and the parent is "Documents",
+        // and *not* the case where the child is "Documents/a" and the parent is "Document". In
+        // the latter case, the does start with the name of the parent, but there is an extra 's',
+        // and not a slash.
+
+        // Prevent a string concatenation like in `child.startsWith(parent + QLatin1Char('/'))`:
+        // first check if the child string starts with the parent string
+        if (child.startsWith(parent, sensitivity)) {
+            // ok, now check if the character after the parent is a '/'
+            if (child.length() >= parent.length() + 1 && child.at(parent.length()) == QLatin1Char('/')) {
+                return true;
+            }
+            // else: do the `cleanPath` version below
+        }
+    }
+
+    // Slow path (`QDir::cleanPath` does lots of string operations):
+    return QString::compare(QDir::cleanPath(parent), QDir::cleanPath(child), sensitivity) == 0;
 }
 
-QString OCSYNC_EXPORT FileSystem::createPortableFileName(const QFileInfo &path, int reservedSize)
+QString OCSYNC_EXPORT FileSystem::createPortableFileName(const QString &path, const QString &fileName, int reservedSize)
 {
     // remove leading and trailing whitespace
-    QString tmp = path.fileName().trimmed();
+    QString tmp = pathEscape(fileName);
     // limit size to fileNameMaxC
     tmp.resize(std::min(tmp.size(), fileNameMaxC - reservedSize));
     // remove eventual trailing whitespace after the resize
     tmp = tmp.trimmed();
+
+    return QDir::cleanPath(path + QLatin1Char('/') + tmp);
+}
+
+QString OCSYNC_EXPORT FileSystem::pathEscape(const QString &s)
+{
+    QString tmp = s;
+    tmp.replace(QLatin1String("../"), QString(replacementCharC));
+#ifdef Q_OS_WIN
+    tmp.replace(QLatin1String("..\\"), QString(replacementCharC));
+#endif
+
+    // escape the folder separator, "\" is handled in IllegalFilenameCharsWindows
+    tmp.replace(QLatin1Char('/'), replacementCharC);
+
     // replace non portable characters
     for (auto c : IllegalFilenameCharsWindows) {
         tmp.replace(c, replacementCharC);
     }
-    return path.dir().filePath(tmp);
+    return tmp.trimmed();
 }
+
 } // namespace OCC
 
 #include "moc_filesystembase.cpp"

@@ -34,7 +34,6 @@
 #include <QDir>
 
 #include <cmath>
-#include <cstring>
 #include <memory>
 
 namespace {
@@ -59,9 +58,8 @@ UploadDevice *PropagateUploadFileTUS::prepareDevice(const quint64 &chunkSize)
     const QString localFileName = propagator()->fullLocalPath(_item->_file);
     // If the file is currently locked, we want to retry the sync
     // when it becomes available again.
-    const auto lockMode = propagator()->syncOptions().requiredLockMode();
-    if (FileSystem::isFileLocked(localFileName, lockMode)) {
-        emit propagator()->seenLockedFile(localFileName, lockMode);
+    if (FileSystem::isFileLocked(localFileName, FileSystem::LockMode::SharedRead)) {
+        emit propagator()->seenLockedFile(localFileName, FileSystem::LockMode::SharedRead);
         abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(localFileName));
         return nullptr;
     }
@@ -113,15 +111,30 @@ PropagateUploadFileTUS::PropagateUploadFileTUS(OwncloudPropagator *propagator, c
 
 void PropagateUploadFileTUS::doStartUpload()
 {
+    if (_transmissionChecksumHeader.isEmpty()) {
+        abortWithError(SyncFileItem::SoftError, tr("Checksum computation failed"));
+        return;
+    }
     propagator()->reportProgress(*_item, 0);
-    startNextChunk();
     propagator()->_activeJobList.append(this);
+
+    const auto info = propagator()->_journal->getUploadInfo(_item->_file);
+    if (info.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
+        _location = info._url;
+        Q_ASSERT(_location.isValid());
+        auto job = new SimpleNetworkJob(propagator()->account(), _location, {}, "HEAD", nullptr, {}, this);
+        connect(job, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileTUS::slotChunkFinished);
+        job->start();
+    } else {
+        startNextChunk();
+    }
 }
 
 void PropagateUploadFileTUS::startNextChunk()
 {
     if (propagator()->_abortRequested)
         return;
+
     const quint64 chunkSize = [&] {
         auto chunkSize = _item->_size - _currentOffset;
         if (propagator()->account()->capabilities().tusSupport().max_chunk_size) {
@@ -141,7 +154,7 @@ void PropagateUploadFileTUS::startNextChunk()
         qCDebug(lcPropagateUploadTUS) << "Starting to patch upload:" << propagator()->fullRemotePath(_item->_file);
         job = new SimpleNetworkJob(propagator()->account(), _location, {}, "PATCH", device, req, this);
     } else {
-        OC_ASSERT(_location.isEmpty());
+        Q_ASSERT(_location.isEmpty());
         qCDebug(lcPropagateUploadTUS) << "Starting creation with upload:" << propagator()->fullRemotePath(_item->_file);
         job = makeCreationWithUploadJob(&req, device);
     }
@@ -164,7 +177,7 @@ void PropagateUploadFileTUS::startNextChunk()
 void PropagateUploadFileTUS::slotChunkFinished()
 {
     SimpleNetworkJob *job = qobject_cast<SimpleNetworkJob *>(sender());
-    OC_ASSERT(job);
+    Q_ASSERT(job);
     qCDebug(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->_file) << HttpLogger::requestVerb(*job->reply());
 
     _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -223,6 +236,13 @@ void PropagateUploadFileTUS::slotChunkFinished()
         }
     }
     if (!_finished) {
+        // we just started the upload
+        if (HttpLogger::requestVerb(*job->reply()) == QByteArrayLiteral("POST")) {
+            // add the new location
+            auto info = _item->toUploadInfo();
+            info._url = _location;
+            propagator()->_journal->setUploadInfo(_item->_file, info);
+        }
         startNextChunk();
         return;
     }
@@ -257,7 +277,6 @@ void PropagateUploadFileTUS::slotChunkFinished()
 void PropagateUploadFileTUS::finalize(const QString &etag, const QByteArray &fileId)
 {
     OC_ASSERT(_finished);
-    qCDebug(lcPropagateUploadTUS) << _item->_etag << etag << fileId;
     _item->_etag = etag;
     if (!fileId.isEmpty()) {
         if (!_item->_fileId.isEmpty() && _item->_fileId != fileId) {

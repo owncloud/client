@@ -12,20 +12,18 @@
  * for more details.
  */
 
-#include "config.h"
-#include "propagateupload.h"
-#include "owncloudpropagator_p.h"
-#include "networkjobs.h"
 #include "account.h"
+#include "common/asserts.h"
 #include "common/syncjournaldb.h"
-#include "common/syncjournalfilerecord.h"
 #include "common/utility.h"
 #include "filesystem.h"
+#include "networkjobs.h"
+#include "owncloudpropagator_p.h"
+#include "propagateremotedelete.h"
+#include "propagateremotemove.h"
+#include "propagateupload.h"
 #include "propagatorjobs.h"
 #include "syncengine.h"
-#include "propagateremotemove.h"
-#include "propagateremotedelete.h"
-#include "common/asserts.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -92,9 +90,8 @@ void PropagateUploadFileNG::doStartUpload()
     const QString fileName = propagator()->fullLocalPath(_item->_file);
     // If the file is currently locked, we want to retry the sync
     // when it becomes available again.
-    const auto lockMode = propagator()->syncOptions().requiredLockMode();
-    if (FileSystem::isFileLocked(fileName, lockMode)) {
-        emit propagator()->seenLockedFile(fileName, lockMode);
+    if (FileSystem::isFileLocked(fileName, FileSystem::LockMode::SharedRead)) {
+        emit propagator()->seenLockedFile(fileName, FileSystem::LockMode::SharedRead);
         abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(QDir::toNativeSeparators(fileName)));
         return;
     }
@@ -111,8 +108,7 @@ void PropagateUploadFileNG::doStartUpload()
 void PropagateUploadFileNG::doStartUploadNext()
 {
     const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->_file);
-    if (progressInfo._valid && progressInfo.isChunked() && progressInfo._modtime == _item->_modtime
-            && progressInfo._size == _item->_size) {
+    if (progressInfo.isChunked() && progressInfo.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
         _transferId = progressInfo._transferid;
         auto job = new PropfindJob(propagator()->account(), propagator()->account()->url(), chunkPath(), PropfindJob::Depth::One, this);
         addChildJob(job);
@@ -292,12 +288,8 @@ void PropagateUploadFileNG::startNewUpload()
 
     propagator()->reportProgress(*_item, 0);
 
-    SyncJournalDb::UploadInfo pi;
-    pi._valid = true;
+    auto pi = _item->toUploadInfo();
     pi._transferid = _transferId;
-    pi._modtime = _item->_modtime;
-    pi._contentChecksum = _item->_checksumHeader;
-    pi._size = _item->_size;
     propagator()->_journal->setUploadInfo(_item->_file, pi);
     propagator()->_journal->commit(QStringLiteral("Upload info"));
     QMap<QByteArray, QByteArray> headers;
@@ -356,19 +348,6 @@ void PropagateUploadFileNG::doFinalMove()
     headers[QByteArrayLiteral("OC-Total-File-Length")] = QByteArray::number(_item->_size);
 
     const QString source = chunkPath() + QStringLiteral("/.file");
-
-#ifdef Q_OS_WIN
-    // Try to accuire a lock on the file and keep it until we done.
-    // If the file is locked, abort before we perform the move on the server
-    const QString fileName = propagator()->fullLocalPath(_item->_file);
-    const auto lockMode = propagator()->syncOptions().requiredLockMode();
-    m_fileLock = FileSystem::lockFile(fileName, lockMode);
-    if (!m_fileLock) {
-        emit propagator()->seenLockedFile(fileName, lockMode);
-        abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(QDir::toNativeSeparators(fileName)));
-        return;
-    }
-#endif
 
     auto job = new MoveJob(propagator()->account(), propagator()->account()->url(), source, destination, headers, this);
     addChildJob(job);

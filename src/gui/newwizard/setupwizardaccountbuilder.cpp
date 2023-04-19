@@ -15,6 +15,7 @@
 #include "setupwizardaccountbuilder.h"
 
 #include "gui/accountmanager.h"
+#include "networkjobs/fetchuserinfojobfactory.h"
 
 namespace OCC::Wizard {
 
@@ -42,6 +43,14 @@ QString HttpBasicAuthenticationStrategy::davUser()
     return _username;
 }
 
+void HttpBasicAuthenticationStrategy::setDavUser(const QString &user)
+{
+    // the fetched username should always match the one the user gave us
+    Q_ASSERT(user == _username);
+    // however, as a fallback, in production, we will overwrite our current value with the one we fetched
+    _username = user;
+}
+
 QString HttpBasicAuthenticationStrategy::username() const
 {
     return _username;
@@ -52,15 +61,20 @@ QString HttpBasicAuthenticationStrategy::password() const
     return _password;
 }
 
-OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &davUser, const QString &token, const QString &refreshToken)
-    : _davUser(davUser)
-    , _token(token)
+FetchUserInfoJobFactory HttpBasicAuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
+{
+    return FetchUserInfoJobFactory::fromBasicAuthCredentials(nam, _username, _password);
+}
+
+OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken)
+    : _token(token)
     , _refreshToken(refreshToken)
 {
 }
 
 HttpCredentialsGui *OAuth2AuthenticationStrategy::makeCreds()
 {
+    Q_ASSERT(isValid());
     return new HttpCredentialsGui(_davUser, _token, _refreshToken);
 }
 
@@ -72,6 +86,18 @@ bool OAuth2AuthenticationStrategy::isValid()
 QString OAuth2AuthenticationStrategy::davUser()
 {
     return _davUser;
+}
+
+void OAuth2AuthenticationStrategy::setDavUser(const QString &user)
+{
+    // should be called only once
+    Q_ASSERT(_davUser.isEmpty());
+    _davUser = user;
+}
+
+FetchUserInfoJobFactory OAuth2AuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
+{
+    return FetchUserInfoJobFactory::fromOAuth2Credentials(nam, _token);
 }
 
 SetupWizardAccountBuilder::SetupWizardAccountBuilder() = default;
@@ -96,17 +122,22 @@ DetermineAuthTypeJob::AuthType SetupWizardAccountBuilder::authType()
     return _authType;
 }
 
-void SetupWizardAccountBuilder::setWebFingerUsername(const QString &username)
+void SetupWizardAccountBuilder::setLegacyWebFingerUsername(const QString &username)
 {
-    _webFingerUsername = username;
+    _legacyWebFingerUsername = username;
 }
 
 AccountPtr SetupWizardAccountBuilder::build()
 {
-    auto newAccountPtr = Account::create();
+    auto newAccountPtr = Account::create(QUuid::createUuid());
 
     Q_ASSERT(!_serverUrl.isEmpty() && _serverUrl.isValid());
     newAccountPtr->setUrl(_serverUrl);
+
+    if (!_webFingerSelectedInstance.isEmpty()) {
+        Q_ASSERT(_serverUrl.isValid());
+        newAccountPtr->setUrl(_webFingerSelectedInstance);
+    }
 
     Q_ASSERT(hasValidCredentials());
 
@@ -169,19 +200,19 @@ void SetupWizardAccountBuilder::setDefaultSyncTargetDir(const QString &syncTarge
     _defaultSyncTargetDir = syncTargetDir;
 }
 
-QString SetupWizardAccountBuilder::webFingerUsername() const
+QString SetupWizardAccountBuilder::legacyWebFingerUsername() const
 {
-    return _webFingerUsername;
+    return _legacyWebFingerUsername;
 }
 
-void SetupWizardAccountBuilder::setWebFingerServerUrl(const QUrl &webFingerServerUrl)
+void SetupWizardAccountBuilder::setLegacyWebFingerServerUrl(const QUrl &webFingerServerUrl)
 {
-    _webFingerServerUrl = webFingerServerUrl;
+    _legacyWebFingerServerUrl = webFingerServerUrl;
 }
 
-QUrl SetupWizardAccountBuilder::webFingerServerUrl() const
+QUrl SetupWizardAccountBuilder::legacyWebFingerServerUrl() const
 {
-    return _webFingerServerUrl;
+    return _legacyWebFingerServerUrl;
 }
 
 void SetupWizardAccountBuilder::setDynamicRegistrationData(const QVariantMap &dynamicRegistrationData)
@@ -192,5 +223,36 @@ void SetupWizardAccountBuilder::setDynamicRegistrationData(const QVariantMap &dy
 QVariantMap SetupWizardAccountBuilder::dynamicRegistrationData() const
 {
     return _dynamicRegistrationData;
+}
+
+void SetupWizardAccountBuilder::setWebFingerAuthenticationServerUrl(const QUrl &url)
+{
+    _webFingerAuthenticationServerUrl = url;
+    _authType = DetermineAuthTypeJob::AuthType::OAuth;
+}
+
+QUrl SetupWizardAccountBuilder::webFingerAuthenticationServerUrl() const
+{
+    return _webFingerAuthenticationServerUrl;
+}
+
+void SetupWizardAccountBuilder::setWebFingerInstances(const QVector<QUrl> &instancesList)
+{
+    _webFingerInstances = instancesList;
+}
+
+QVector<QUrl> SetupWizardAccountBuilder::webFingerInstances() const
+{
+    return _webFingerInstances;
+}
+
+void SetupWizardAccountBuilder::setWebFingerSelectedInstance(const QUrl &instance)
+{
+    _webFingerSelectedInstance = instance;
+}
+
+QUrl SetupWizardAccountBuilder::webFingerSelectedInstance() const
+{
+    return _webFingerSelectedInstance;
 }
 }

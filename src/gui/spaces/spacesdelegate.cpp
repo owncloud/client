@@ -20,6 +20,8 @@
 #include "gui/guiutility.h"
 #include "spacesmodel.h"
 
+#include "resources/resources.h"
+
 #include <QApplication>
 #include <QDesktopServices>
 #include <QMouseEvent>
@@ -33,7 +35,11 @@ Q_LOGGING_CATEGORY(lcSpacesDelegate, "spaces.delegate")
 void SpacesDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     const auto *style = option.widget->style();
-    if (index.column() == static_cast<int>(SpacesModel::Columns::Sync)) {
+    if (option.state & QStyle::State_Selected) {
+        painter->fillRect(option.rect, option.palette.highlight());
+    }
+    switch (static_cast<SpacesModel::Columns>(index.column())) {
+    case SpacesModel::Columns::Sync: {
         QStyleOptionButton opt;
         static_cast<QStyleOption &>(opt) = static_cast<const QStyleOption &>(option);
 
@@ -42,10 +48,14 @@ void SpacesDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         opt.rect = QStyle::visualRect(option.direction, option.rect, opt.rect);
 
         if (opt.state & QStyle::State_Selected) {
-            opt.state |= QStyle::State_On;
+            opt.state = QStyle::State_On;
+        } else {
+            opt.state = QStyle::State_Off;
         }
         style->drawPrimitive(QStyle::PE_IndicatorRadioButton, &opt, painter, option.widget);
-    } else if (index.column() == static_cast<int>(SpacesModel::Columns::WebUrl)) {
+        break;
+    }
+    case SpacesModel::Columns::WebUrl: {
         // only display the button if we have a valid url
         if (index.data().toUrl().isValid()) {
             auto opt = openBrowserButtonRect(option);
@@ -56,7 +66,9 @@ void SpacesDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
             style->drawControl(QStyle::CE_PushButton, &opt, painter, option.widget);
         }
-    } else if (index.column() == static_cast<int>(SpacesModel::Columns::Name)) {
+        break;
+    }
+    case SpacesModel::Columns::Name: {
         const QString subTitle =
             option.fontMetrics.elidedText(index.siblingAtColumn(static_cast<int>(SpacesModel::Columns::Subtitle)).data(Qt::DisplayRole).toString(), Qt::ElideRight, option.rect.width());
 
@@ -108,7 +120,16 @@ void SpacesDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
             subtitleRect.moveTop(nameBoundingRect.bottom());
             painter->drawText(QStyle::visualRect(option.direction, option.rect, subtitleRect), subTitleTextFlags, subTitle);
         }
-    } else {
+        break;
+    }
+    case SpacesModel::Columns::Image: {
+        const auto hmargin = QApplication::style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
+        const auto vmargin = QApplication::style()->pixelMetric(QStyle::PM_LayoutVerticalSpacing);
+        const auto iconRect = option.rect.marginsRemoved({hmargin, vmargin, hmargin, vmargin});
+        index.data(Qt::DecorationRole).value<QIcon>().paint(painter, QStyle::visualRect(option.direction, option.rect, iconRect), Qt::AlignCenter);
+        break;
+    }
+    default:
         QStyledItemDelegate::paint(painter, option, index);
     }
 }
@@ -161,7 +182,7 @@ QStyleOptionButton SpacesDelegate::openBrowserButtonRect(const QStyleOptionViewI
 
     opt.text = tr("Open in Web");
 
-    opt.icon = Utility::getCoreIcon(QStringLiteral("arrow-up-right-from-square"));
+    opt.icon = Resources::getCoreIcon(QStringLiteral("arrow-up-right-from-square"));
     const auto px = QApplication::style()->pixelMetric(QStyle::PM_ButtonIconSize);
     opt.iconSize = QSize { px, px };
 

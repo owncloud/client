@@ -14,6 +14,7 @@
  */
 
 #include "application.h"
+#include "config.h"
 #include "guiutility.h"
 
 #include <QProcess>
@@ -21,10 +22,6 @@
 #import <Foundation/NSBundle.h>
 
 namespace OCC {
-
-void Utility::tweakUIStyle()
-{
-}
 
 void Utility::startShellIntegration()
 {

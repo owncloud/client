@@ -23,7 +23,6 @@
 #include "creds/abstractcredentials.h"
 #include "folderman.h"
 #include "folderwizard/folderwizard.h"
-#include "graphapi/drives.h"
 #include "gui/accountsettings.h"
 #include "guiutility.h"
 #include "logbrowser.h"
@@ -34,6 +33,11 @@
 #include "setupwizardcontroller.h"
 #include "sharedialog.h"
 #include "theme.h"
+
+#include "libsync/graphapi/space.h"
+#include "libsync/graphapi/spacesmanager.h"
+
+#include "resources/resources.h"
 
 #include <QDesktopServices>
 #include <QDir>
@@ -69,36 +73,32 @@ void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
     };
 
     if (accountStatePtr->supportsSpaces()) {
-        auto *drive = new GraphApi::Drives(accountStatePtr->account());
-
-        QObject::connect(drive, &GraphApi::Drives::finishedSignal, [accountStatePtr, drive, addFolder, finalize] {
-            if (drive->parseError().error == QJsonParseError::NoError) {
-                auto drives = drive->drives();
-
+        // Qt6: Qt::SingleShotConnection
+        auto *singleShotConnection = new QObject();
+        QObject::connect(accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, singleShotConnection,
+            [accountStatePtr, addFolder, finalize, singleShotConnection] {
+                delete singleShotConnection;
+                auto spaces = accountStatePtr->account()->spacesManager()->spaces();
                 // we do not want to set up folder sync connections for disabled spaces (#10173)
-                drives.erase(std::remove_if(drives.begin(), drives.end(), &GraphApi::isDriveDisabled), drives.end());
+                spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
 
-                if (!drives.isEmpty()) {
-                    const QDir localDir(accountStatePtr->account()->defaultSyncRoot());
-                    FileSystem::setFolderMinimumPermissions(localDir.path());
-                    Folder::prepareFolder(localDir.path());
-                    Utility::setupFavLink(localDir.path());
-                    for (const auto &d : drives) {
-                        const QString name = GraphApi::Drives::getDriveDisplayName(d);
-                        const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(localDir.filePath(name));
-                        auto folder = addFolder(folderName, {}, QUrl::fromEncoded(d.getRoot().getWebDavUrl().toUtf8()), name);
-                        folder->setPriority(GraphApi::Drives::getDrivePriority(d));
+                if (!spaces.isEmpty()) {
+                    const QString localDir(accountStatePtr->account()->defaultSyncRoot());
+                    FileSystem::setFolderMinimumPermissions(localDir);
+                    Folder::prepareFolder(localDir);
+                    Utility::setupFavLink(localDir);
+                    for (const auto *space : spaces) {
+                        const QString name = space->displayName();
+                        const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(localDir, name);
+                        auto folder = addFolder(folderName, {}, QUrl(space->drive().getRoot().getWebDavUrl()), name);
+                        folder->setPriority(space->priority());
                         // save the new priority
                         folder->saveToSettings();
                     }
                     finalize();
                 }
-            }
-        });
-
-        drive->start();
-
-        return;
+            });
+        accountStatePtr->account()->spacesManager()->checkReady();
     } else {
         addFolder(accountStatePtr->account()->defaultSyncRoot(), Theme::instance()->defaultServerFolder(), accountStatePtr->account()->davUrl());
         finalize();
@@ -118,7 +118,7 @@ ownCloudGui::ownCloudGui(Application *parent)
     , _app(parent)
 {
     // for the beginning, set the offline icon until the account was verified
-    _tray->setIcon(Theme::instance()->folderOfflineIcon(/*systray?*/ true, /*currently visible?*/ false));
+    _tray->setIcon(Theme::instance()->syncStateIcon(SyncResult::Status::Offline, true, false));
 
     connect(_tray, &QSystemTrayIcon::activated,
         this, &ownCloudGui::slotTrayClicked);
@@ -275,7 +275,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     }
 
     if (!problemAccounts.empty()) {
-        _tray->setIcon(Theme::instance()->folderOfflineIcon(true, contextMenuVisible()));
+        _tray->setIcon(Theme::instance()->syncStateIcon(SyncResult::Status::Offline, true, contextMenuVisible()));
         if (allDisconnected) {
             setStatusText(tr("Disconnected"));
         } else {
@@ -292,10 +292,9 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         QStringList messages;
         messages.append(tr("Disconnected from accounts:"));
         for (const auto &a : qAsConst(problemAccounts)) {
-            QString message = tr("Account %1: %2").arg(a->account()->displayName(), a->stateString(a->state()));
+            QString message = tr("Account %1").arg(a->account()->displayName());
             if (!a->connectionErrors().empty()) {
-                message += QLatin1String("\n");
-                message += a->connectionErrors().join(QLatin1String("\n"));
+                message += QLatin1String("\n") + a->connectionErrors().join(QLatin1String("\n"));
             }
             messages.append(message);
         }
@@ -305,7 +304,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     }
 
     if (allSignedOut) {
-        _tray->setIcon(Theme::instance()->folderOfflineIcon(true, contextMenuVisible()));
+        _tray->setIcon(Theme::instance()->syncStateIcon(SyncResult::Status::Offline, true, contextMenuVisible()));
         _tray->setToolTip(tr("Please sign in"));
         setStatusText(tr("Signed out"));
         return;
@@ -344,10 +343,12 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     case SyncResult::Problem:
         if (trayOverallStatusResult.overallStatus().hasUnresolvedConflicts()) {
             setStatusText(tr("Unresolved %1 conflicts").arg(QString::number(trayOverallStatusResult.overallStatus().numNewConflictItems())));
+            break;
         } else if (trayOverallStatusResult.overallStatus().numBlacklistErrors() != 0) {
             setStatusText(tr("Ignored errors %1").arg(QString::number(trayOverallStatusResult.overallStatus().numBlacklistErrors())));
+            break;
         }
-        break;
+        [[fallthrough]];
     case SyncResult::Success: {
         QString lastSyncDoneString;
         // display only the time in case the last sync was today
@@ -361,6 +362,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     case SyncResult::Undefined:
         _tray->setToolTip(tr("There are no sync folders configured."));
         setStatusText(tr("No sync folders configured"));
+        break;
     default:
         setStatusText(FolderMan::instance()->trayTooltipStatusString(trayOverallStatusResult.overallStatus(), false));
     }
@@ -714,9 +716,9 @@ void ownCloudGui::updateContextMenu()
     if (atLeastOnePaused) {
         QString text;
         if (accountList.count() > 1) {
-            text = tr("Unpause all synchronization");
+            text = tr("Restart all synchronization");
         } else {
-            text = tr("Unpause synchronization");
+            text = tr("Restart synchronization");
         }
         QAction *action = _contextMenu->addAction(text);
         connect(action, &QAction::triggered, this, &ownCloudGui::slotUnpauseAllFolders);
@@ -724,9 +726,9 @@ void ownCloudGui::updateContextMenu()
     if (atLeastOneNotPaused) {
         QString text;
         if (accountList.count() > 1) {
-            text = tr("Pause all synchronization");
+            text = tr("Stop all synchronization");
         } else {
-            text = tr("Pause synchronization");
+            text = tr("Stop synchronization");
         }
         QAction *action = _contextMenu->addAction(text);
         connect(action, &QAction::triggered, this, &ownCloudGui::slotPauseAllFolders);
@@ -931,7 +933,7 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
         && shouldShowInRecentsMenu(progress._lastCompletedItem)) {
         if (Progress::isWarningKind(progress._lastCompletedItem._status)) {
             // display a warn icon if warnings happened.
-            _actionRecent->setIcon(Utility::getCoreIcon(QStringLiteral("warning")));
+            _actionRecent->setIcon(Resources::getCoreIcon(QStringLiteral("warning")));
         }
 
         QString kindStr = Progress::asResultString(progress._lastCompletedItem);
@@ -1092,7 +1094,7 @@ void ownCloudGui::runNewAccountWizard()
             });
 
         // all we have to do is show the dialog...
-        _wizardController->window()->show();
+        _wizardController->window()->open();
         // ... and bring it to the front
         raiseDialog(_wizardController->window());
     }
@@ -1174,15 +1176,20 @@ void ownCloudGui::slotHelp()
 void ownCloudGui::raiseDialog(QWidget *raiseWidget)
 {
     auto window = ocApp()->gui()->settingsDialog();
+    auto *dialog = qobject_cast<QDialog *>(raiseWidget);
     OC_ASSERT(window);
-    OC_ASSERT_X(!qobject_cast<QDialog *>(raiseWidget) || raiseWidget->parentWidget() == window, "raiseDialog should only be called with modal dialogs");
+    OC_ASSERT_X(!dialog || raiseWidget->parentWidget() == window, "raiseDialog should only be called with modal dialogs");
     if (!window) {
         return;
     }
     window->showNormal();
     window->raise();
-    raiseWidget->showNormal();
-    raiseWidget->raise();
+    if (dialog && !dialog->isVisible()) {
+        dialog->open();
+    } else {
+        raiseWidget->showNormal();
+        raiseWidget->raise();
+    }
     window->activateWindow();
     raiseWidget->activateWindow();
 
@@ -1215,7 +1222,8 @@ void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &l
     }
     if (folder->accountState()->account()->capabilities().filesSharing().sharing_roles) {
         fetchPrivateLinkUrl(folder->accountState()->account(), folder->webDavUrl(), sharePath, this, [](const QUrl &url) {
-            Utility::openBrowser(url, nullptr);
+            const auto queryUrl = Utility::concatUrlPath(url, QString(), {{QStringLiteral("details"), QStringLiteral("sharing")}});
+            Utility::openBrowser(queryUrl, nullptr);
         });
     } else {
         const auto accountState = folder->accountState();

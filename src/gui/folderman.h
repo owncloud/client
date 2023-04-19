@@ -70,7 +70,7 @@ private:
  *   (_timeScheduler and slotScheduleFolderByTime())
  *
  * - A folder watcher receives a notification about a file change
- *   (_folderWatchers and Folder::slotWatchedPathChanged())
+ *   (_folderWatchers and Folder::slotWatchedPathsChanged())
  *
  * - The folder etag on the server has changed
  *   (_etagPollTimer)
@@ -196,7 +196,7 @@ public:
      * subfolder of ~ would be a good candidate. When that happens \a basePath
      * is returned.
      */
-    QString findGoodPathForNewSyncFolder(const QString &basePath) const;
+    QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder) const;
 
     /**
      * While ignoring hidden files can theoretically be switched per folder,
@@ -239,11 +239,11 @@ public:
      */
     void setSyncEnabled(bool);
 
-    /** Queues a folder for syncing. */
-    void scheduleFolder(Folder *);
-
-    /** Puts a folder in the very front of the queue. */
-    void scheduleFolderNext(Folder *);
+    /**
+     * Queues a folder for syncing.
+     * When force is true it will be performed asap.
+     */
+    void scheduleFolder(Folder *folder, bool force = false);
 
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
@@ -252,7 +252,7 @@ public:
     void setDirtyNetworkLimits();
 
     /** Whether or not vfs is supported in the location. */
-    bool checkVfsAvailability(const QString &path, Vfs::Mode mode = bestAvailableVfsMode()) const;
+    bool checkVfsAvailability(const QString &path, Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode()) const;
 
     /** If the folder configuration is no longer supported this will return an error string */
     Result<void, QString> unsupportedConfiguration(const QString &path) const;
@@ -314,19 +314,7 @@ private slots:
 
     void slotRemoveFoldersForAccount(const AccountStatePtr &accountState);
 
-    // Wraps the Folder::syncStateChange() signal into the
-    // FolderMan::folderSyncStateChange(Folder*) signal.
-    void slotForwardFolderSyncStateChange();
-
     void slotServerVersionChanged(Account *account);
-
-    /**
-     * A file whose locks were being monitored has become unlocked.
-     *
-     * This schedules the folder for synchronization that contains
-     * the file with the given path.
-     */
-    void slotWatchedFileUnlocked(const QString &path);
 
     /**
      * Schedules folders whose time to sync has come.

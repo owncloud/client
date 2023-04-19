@@ -21,7 +21,7 @@ OC_CI_PHP = "owncloudci/php:%s"
 OC_CI_TRANSIFEX = "owncloudci/transifex:latest"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_OCIS = "owncloud/ocis:%s"
-OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.2"
+OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.3"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 
 # Eventually, we have to use image built on ubuntu
@@ -46,13 +46,26 @@ dir = {
 }
 
 oc10_server_version = "latest"  # stable release
-ocis_server_version = "2.0.0-rc.2"
+ocis_server_version = "2.0.0"
+
+notify_channels = {
+    "desktop-internal": {
+        "type": "channel",
+    },
+}
+
+oc_extra_apps = {
+    "oauth2": {
+        "enabled": False,
+        "command": "make dist",
+    },
+}
 
 def main(ctx):
     build_trigger = {
         "ref": [
             "refs/heads/master",
-            "refs/heads/2.**",
+            "refs/heads/3.**",
             "refs/tags/**",
             "refs/pull/**",
         ],
@@ -65,7 +78,11 @@ def main(ctx):
 
     pipelines = []
 
-    if ctx.build.event == "cron":
+    if ctx.build.event == "cron" or ctx.build.event == "tag":
+        trigger = cron_trigger
+        if ctx.build.event == "tag":
+            trigger = build_trigger
+
         # cron job pipelines
         unit_tests = unit_test_pipeline(
             ctx,
@@ -73,22 +90,22 @@ def main(ctx):
             "g++",
             "Release",
             "Unix Makefiles",
-            trigger = cron_trigger,
+            trigger = trigger,
         ) + unit_test_pipeline(
             ctx,
             "clang",
             "clang++",
             "Debug",
             "Ninja",
-            trigger = cron_trigger,
+            trigger = trigger,
         )
 
-        gui_tests = gui_test_pipeline(ctx, trigger = cron_trigger) + \
-                    gui_test_pipeline(ctx, trigger = cron_trigger, server_version = ocis_server_version, server_type = "ocis")
+        gui_tests = gui_test_pipeline(ctx, trigger = trigger) + \
+                    gui_test_pipeline(ctx, trigger = trigger, server_version = ocis_server_version, server_type = "ocis")
 
         notify = notification(
-            name = "build",
-            trigger = cron_trigger,
+            name = "nightly" if ctx.build.event == "cron" else "tag",
+            trigger = trigger,
         )
         pipelines = unit_tests + gui_tests + pipelinesDependsOn(notify, unit_tests + gui_tests)
     else:
@@ -97,8 +114,11 @@ def main(ctx):
                     check_starlark(build_trigger) + \
                     changelog(ctx, trigger = build_trigger) + \
                     unit_test_pipeline(ctx, "clang", "clang++", "Debug", "Ninja", trigger = build_trigger) + \
-                    gui_test_pipeline(ctx, trigger = build_trigger) + \
                     gui_test_pipeline(ctx, trigger = build_trigger, server_version = ocis_server_version, server_type = "ocis")
+
+        # run gui tests against oc10 server only if the build title contains "gui-tests"
+        if "oc10-gui-tests" in ctx.build.title.lower():
+            pipelines += gui_test_pipeline(ctx, trigger = build_trigger, server_version = oc10_server_version, server_type = "oc10")
 
     return pipelines
 
@@ -159,6 +179,14 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
     pipeline_name = "GUI-tests-%s" % server_type
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false" % dir["guiTestReport"]
 
+    upload_report_trigger = {
+        "status": [
+            "failure",
+        ],
+    }
+    if ctx.build.event == "tag":
+        upload_report_trigger["status"].append("success")
+
     build_config = {
         "c_compiler": "gcc",
         "cxx_compiler": "g++",
@@ -177,6 +205,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
 
         steps += installCore(server_version) + \
                  setupServerAndApp() + \
+                 installExtraApps(oc_extra_apps) + \
                  fixPermissions() + \
                  owncloudLog()
         services += owncloudService() + \
@@ -184,11 +213,11 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
     else:
         squish_parameters += " --tags ~@skip --tags ~@skipOnOCIS"
 
-        steps += installPnpm() + \
-                 ocisService(server_version) + \
+        steps += ocisService(server_version) + \
                  waitForOcisService()
 
-    steps += setGuiTestReportDir() + \
+    steps += installPnpm() + \
+             setGuiTestReportDir() + \
              build_client(
                  build_config["c_compiler"],
                  build_config["cxx_compiler"],
@@ -199,7 +228,7 @@ def gui_test_pipeline(ctx, trigger = {}, filterTags = [], server_version = oc10_
                  False,
              ) + \
              gui_tests(squish_parameters, server_type) + \
-             uploadGuiTestLogs(server_type) + \
+             uploadGuiTestLogs(server_type, trigger = upload_report_trigger) + \
              buildGithubComment(pipeline_name, server_type) + \
              githubComment(pipeline_name, server_type)
 
@@ -397,6 +426,40 @@ def notification(name, trigger = {}):
     trigger["status"].append("success")
     trigger["status"].append("failure")
 
+    steps = [{
+        "name": "create-template",
+        "image": OC_CI_ALPINE,
+        "environment": {
+            "CACHE_ENDPOINT": {
+                "from_secret": "cache_public_s3_server",
+            },
+            "CACHE_BUCKET": {
+                "from_secret": "cache_public_s3_bucket",
+            },
+        },
+        "commands": [
+            "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
+        ],
+    }]
+
+    for channel, params in notify_channels.items():
+        settings = {
+            "webhook": from_secret("private_rocketchat"),
+            "template": "file:%s/template.md" % dir["base"],
+        }
+        if params["type"] == "user":
+            settings["recipient"] = channel
+        else:
+            settings["channel"] = channel
+
+        steps.append(
+            {
+                "name": "notification-%s" % channel,
+                "image": PLUGINS_SLACK,
+                "settings": settings,
+            },
+        )
+
     return [{
         "kind": "pipeline",
         "name": "notifications-" + name,
@@ -404,32 +467,7 @@ def notification(name, trigger = {}):
             "os": "linux",
             "arch": "amd64",
         },
-        "steps": [
-            {
-                "name": "create-template",
-                "image": OC_CI_ALPINE,
-                "environment": {
-                    "CACHE_ENDPOINT": {
-                        "from_secret": "cache_public_s3_server",
-                    },
-                    "CACHE_BUCKET": {
-                        "from_secret": "cache_public_s3_bucket",
-                    },
-                },
-                "commands": [
-                    "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
-                ],
-            },
-            {
-                "name": "notification",
-                "image": PLUGINS_SLACK,
-                "settings": {
-                    "webhook": from_secret("private_rocketchat"),
-                    "channel": "desktop-internal",
-                    "template": "file:%s/template.md" % dir["base"],
-                },
-            },
-        ],
+        "steps": steps,
         "trigger": trigger,
     }]
 
@@ -474,6 +512,23 @@ def setupServerAndApp(logLevel = 2):
             "php occ config:system:set skeletondirectory --value=/var/www/owncloud/server/apps/testing/data/tinySkeleton",
             "php occ config:system:set sharing.federation.allowHttpFallback --value=true --type=bool",
         ],
+    }]
+
+def installExtraApps(extra_apps = {}):
+    commands = []
+    for app, param in extra_apps.items():
+        commands.append("ls %s/apps/%s || git clone --depth 1 https://github.com/owncloud/%s.git %s/apps/%s" % (dir["server"], app, app, dir["server"], app))
+        if (param["command"] != ""):
+            commands.append("cd %s/apps/%s" % (dir["server"], app))
+            commands.append(param["command"])
+        if param["enabled"]:
+            commands.append("cd %s" % dir["server"])
+            commands.append("php occ a:e %s" % app)
+
+    return [{
+        "name": "install-extra-apps",
+        "image": OC_CI_PHP % DEFAULT_PHP_VERSION,
+        "commands": commands,
     }]
 
 def owncloudService():
@@ -619,7 +674,7 @@ def showGuiTestResult():
         },
     }]
 
-def uploadGuiTestLogs(server_type = "oc10"):
+def uploadGuiTestLogs(server_type = "oc10", trigger = {}):
     return [{
         "name": "upload-gui-test-result",
         "image": PLUGINS_S3,
@@ -643,11 +698,7 @@ def uploadGuiTestLogs(server_type = "oc10"):
                 "from_secret": "cache_public_s3_secret_key",
             },
         },
-        "when": {
-            "status": [
-                "failure",
-            ],
-        },
+        "when": trigger,
     }]
 
 def buildGithubComment(suite = "", server_type = "oc10"):

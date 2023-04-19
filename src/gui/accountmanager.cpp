@@ -13,13 +13,15 @@
  */
 
 #include "accountmanager.h"
+#include "account.h"
+#include "common/asserts.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "proxyauthhandler.h"
-#include "common/asserts.h"
-#include <theme.h>
-#include <creds/httpcredentialsgui.h>
 #include <cookiejar.h>
+#include <creds/httpcredentialsgui.h>
+#include <theme.h>
+
 #include <QSettings>
 #include <QDir>
 #include <QNetworkAccessManager>
@@ -227,25 +229,64 @@ bool AccountManager::restoreFromLegacySettings()
 
 void AccountManager::save(bool saveCredentials)
 {
-    auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->setValue(versionC(), maxAccountsVersion);
     for (const auto &acc : qAsConst(_accounts)) {
-        settings->beginGroup(acc->account()->id());
-        saveAccountHelper(acc->account().data(), *settings, saveCredentials);
-        acc->writeToSettings(*settings);
-        settings->endGroup();
+        saveAccount(acc->account().data(), saveCredentials);
     }
 
-    settings->sync();
-    qCInfo(lcAccountManager) << "Saved all account settings, status:" << settings->status();
+    qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
-void AccountManager::saveAccount(Account *a)
+void AccountManager::saveAccount(Account *account, bool saveCredentials)
 {
-    qCDebug(lcAccountManager) << "Saving account" << a->url().toString();
+    qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->beginGroup(a->id());
-    saveAccountHelper(a, *settings, false); // don't save credentials they might not have been loaded yet
+    settings->setValue(versionC(), maxAccountsVersion);
+    settings->beginGroup(account->id());
+
+    settings->setValue(versionC(), maxAccountVersion);
+    settings->setValue(urlC(), account->_url.toString());
+    settings->setValue(davUserC(), account->_davUser);
+    settings->setValue(davUserDisplyNameC(), account->_displayName);
+    settings->setValue(userUUIDC(), account->uuid());
+    if (account->hasCapabilities()) {
+        settings->setValue(capabilitesC(), account->capabilities().raw());
+    }
+    if (account->hasDefaultSyncRoot()) {
+        settings->setValue(defaultSyncRootC(), account->defaultSyncRoot());
+    }
+    if (account->_credentials) {
+        if (saveCredentials) {
+            // Only persist the credentials if the parameter is set, on migration from 1.8.x
+            // we want to save the accounts but not overwrite the credentials
+            // (This is easier than asynchronously fetching the credentials from keychain and then
+            // re-persisting them)
+            account->_credentials->persist();
+        }
+
+        for (auto it = account->_settingsMap.constBegin(); it != account->_settingsMap.constEnd(); ++it) {
+            settings->setValue(it.key(), it.value());
+        }
+
+        // HACK: Save http_user also as user
+        if (account->_settingsMap.contains(httpUserC()))
+            settings->setValue(userC(), account->_settingsMap.value(httpUserC()));
+    }
+
+    // Save accepted certificates.
+    settings->beginGroup(QStringLiteral("General"));
+    qCInfo(lcAccountManager) << "Saving " << account->approvedCerts().count() << " unknown certs.";
+    const auto approvedCerts = account->approvedCerts();
+    QByteArray certs;
+    for (const auto &cert : approvedCerts) {
+        certs += cert.toPem() + '\n';
+    }
+    if (!certs.isEmpty()) {
+        settings->setValue(caCertsKeyC(), certs);
+    }
+    settings->endGroup();
+
+    // save the account state
+    this->account(account->uuid())->writeToSettings(*settings);
     settings->endGroup();
 
     settings->sync();
@@ -263,51 +304,6 @@ QStringList AccountManager::accountNames() const
     return accounts;
 }
 
-void AccountManager::saveAccountHelper(Account *acc, QSettings &settings, bool saveCredentials)
-{
-    settings.setValue(versionC(), maxAccountVersion);
-    settings.setValue(urlC(), acc->_url.toString());
-    settings.setValue(davUserC(), acc->_davUser);
-    settings.setValue(davUserDisplyNameC(), acc->_displayName);
-    settings.setValue(userUUIDC(), acc->uuid());
-    if (acc->hasCapabilities()) {
-        settings.setValue(capabilitesC(), acc->capabilities().raw());
-    }
-    if (acc->hasDefaultSyncRoot()) {
-        settings.setValue(defaultSyncRootC(), acc->defaultSyncRoot());
-    }
-    if (acc->_credentials) {
-        if (saveCredentials) {
-            // Only persist the credentials if the parameter is set, on migration from 1.8.x
-            // we want to save the accounts but not overwrite the credentials
-            // (This is easier than asynchronously fetching the credentials from keychain and then
-            // re-persisting them)
-            acc->_credentials->persist();
-        }
-
-        for (auto it = acc->_settingsMap.constBegin(); it != acc->_settingsMap.constEnd(); ++it) {
-            settings.setValue(it.key(), it.value());
-        }
-
-        // HACK: Save http_user also as user
-        if (acc->_settingsMap.contains(httpUserC()))
-            settings.setValue(userC(), acc->_settingsMap.value(httpUserC()));
-    }
-
-    // Save accepted certificates.
-    settings.beginGroup(QStringLiteral("General"));
-    qCInfo(lcAccountManager) << "Saving " << acc->approvedCerts().count() << " unknown certs.";
-    const auto approvedCerts = acc->approvedCerts();
-    QByteArray certs;
-    for (const auto &cert : approvedCerts) {
-        certs += cert.toPem() + '\n';
-    }
-    if (!certs.isEmpty()) {
-        settings.setValue(caCertsKeyC(), certs);
-    }
-    settings.endGroup();
-}
-
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
     auto urlConfig = settings.value(urlC());
@@ -317,13 +313,12 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
         return AccountPtr();
     }
 
-    auto acc = createAccount();
+    auto acc = createAccount(settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid());
 
     acc->setUrl(urlConfig.toUrl());
 
     acc->_davUser = settings.value(davUserC()).toString();
     acc->_displayName = settings.value(davUserDisplyNameC()).toString();
-    acc->_uuid = settings.value(userUUIDC(), acc->_uuid).toUuid();
     acc->setCapabilities(settings.value(capabilitesC()).value<QVariantMap>());
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
@@ -395,9 +390,9 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     emit accountRemoved(account);
 }
 
-AccountPtr AccountManager::createAccount()
+AccountPtr AccountManager::createAccount(const QUuid &uuid)
 {
-    AccountPtr acc = Account::create();
+    AccountPtr acc = Account::create(uuid);
     connect(acc.data(), &Account::proxyAuthenticationRequired,
         ProxyAuthHandler::instance(), &ProxyAuthHandler::handleProxyAuthenticationRequired);
     return acc;
@@ -437,9 +432,11 @@ QString AccountManager::generateFreeAccountId() const
 
 void AccountManager::addAccountState(AccountStatePtr accountState)
 {
-    QObject::connect(accountState->account().data(),
-        &Account::wantsAccountSaved,
-        this, &AccountManager::saveAccount);
+    auto *rawAccount = accountState->account().data();
+    connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
+        // persis the account, not the credentials, we don't know whether they are ready yet
+        saveAccount(rawAccount, false);
+    });
 
     _accounts.insert(accountState->account()->uuid(), accountState);
     emit accountAdded(accountState);

@@ -63,7 +63,7 @@ class PropagatorJob : public QObject
     Q_OBJECT
 
 public:
-    explicit PropagatorJob(OwncloudPropagator *propagator);
+    explicit PropagatorJob(OwncloudPropagator *propagator, const QString &path);
 
     enum AbortType {
         Synchronous,
@@ -114,6 +114,8 @@ public:
      */
     void setAssociatedComposite(PropagatorCompositeJob *job) { _associatedComposite = job; }
 
+    const QString path() { return _path; }
+
 public slots:
     /*
      * Asynchronous abort requires emit of abortFinished() signal,
@@ -150,6 +152,9 @@ protected:
      * becoming composite jobs themselves.
      */
     PropagatorCompositeJob *_associatedComposite = nullptr;
+
+private:
+    QString _path;
 };
 
 /*
@@ -166,12 +171,14 @@ protected:
 
 public:
     PropagateItemJob(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
-        : PropagatorJob(propagator)
+        : PropagatorJob(propagator, item->destination())
         , _item(item)
     {
     }
     ~PropagateItemJob() override;
     bool scheduleSelfOrChild() override;
+
+    const SyncFileItem &item() const { return *_item.data(); }
 public slots:
     virtual void start() = 0;
 };
@@ -184,17 +191,7 @@ class PropagatorCompositeJob : public PropagatorJob
 {
     Q_OBJECT
 public:
-    QVector<PropagatorJob *> _jobsToDo;
-    SyncFileItemSet _tasksToDo;
-    QVector<PropagatorJob *> _runningJobs;
-    SyncFileItem::Status _hasError; // NoStatus,  or NormalError / SoftError if there was an error
-    quint64 _abortsCount;
-
-    explicit PropagatorCompositeJob(OwncloudPropagator *propagator)
-        : PropagatorJob(propagator)
-        , _hasError(SyncFileItem::NoStatus), _abortsCount(0)
-    {
-    }
+    explicit PropagatorCompositeJob(OwncloudPropagator *propagator, const QString &path);
 
     ~PropagatorCompositeJob() override
     {
@@ -235,6 +232,11 @@ public:
 
     qint64 committedDiskSpace() const override;
 
+    QMap<QString, SyncFileItem::Status> errorPaths() const { return _errorPaths; }
+
+    const QVector<PropagatorJob *> &jobsToDo() { return _jobsToDo; }
+    void setJobsToDo(const QVector<PropagatorJob *> &todo) { _jobsToDo = todo; }
+
 private slots:
     void slotSubJobAbortFinished();
     bool possiblyRunNextJob(PropagatorJob *next)
@@ -247,6 +249,13 @@ private slots:
 
     void slotSubJobFinished(SyncFileItem::Status status);
     void finalize();
+
+private:
+    QVector<PropagatorJob *> _jobsToDo;
+    SyncFileItemSet _tasksToDo;
+    QVector<PropagatorJob *> _runningJobs;
+    QMap<QString, SyncFileItem::Status> _errorPaths; // NoStatus,  or NormalError / SoftError if there was an error
+    quint64 _abortsCount = 0;
 };
 
 /**
@@ -321,8 +330,6 @@ class OWNCLOUDSYNC_EXPORT PropagateRootDirectory : public PropagateDirectory
 {
     Q_OBJECT
 public:
-    PropagatorCompositeJob _dirDeletionJobs;
-
     explicit PropagateRootDirectory(OwncloudPropagator *propagator);
 
     bool scheduleSelfOrChild() override;
@@ -331,9 +338,15 @@ public:
 
     qint64 committedDiskSpace() const override;
 
+    void addDeleteJob(PropagatorJob *job);
+
 private slots:
     void slotSubJobsFinished(SyncFileItem::Status status) override;
     void slotDirDeletionJobsFinished(SyncFileItem::Status status);
+
+private:
+    PropagatorCompositeJob _dirDeletionJobs;
+    SyncFileItem::Status _status = SyncFileItem::NoStatus;
 };
 
 /**

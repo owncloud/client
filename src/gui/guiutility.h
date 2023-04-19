@@ -53,21 +53,9 @@ namespace Utility {
     /** Translated text for "free up local space" (and unpinning the item) */
     QString vfsFreeSpaceActionText();
 
-    QIcon getCoreIcon(const QString &icon_name);
-
-    void tweakUIStyle();
-
     void startShellIntegration();
 
     QString socketApiSocketPath();
-
-#ifdef Q_OS_WIN
-    // utility thread that takes care of proper Windows logout handling
-    void startShutdownWatcher();
-#endif
-
-    // applies window flags and modality
-    void setModal(QWidget *w);
 
 } // namespace Utility
 } // namespace OCC

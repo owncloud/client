@@ -758,6 +758,12 @@ void SyncEngine::slotPropagationFinished(bool success)
 
     conflictRecordMaintenance();
 
+    // update placeholders for files that where marked as dirty in a previous run
+    qCInfo(lcEngine) << "Updating files marked as dirty";
+    for (const auto &record : _journal->getFileRecordsWithDirtyPlaceholders()) {
+        _propagator->updateMetadata(*SyncFileItem::fromSyncJournalFileRecord(record));
+    }
+
     _journal->deleteStaleFlagsEntries();
     _journal->commit(QStringLiteral("All Finished."), false);
 
@@ -893,7 +899,7 @@ void SyncEngine::setLocalDiscoveryOptions(LocalDiscoveryStyle style, std::set<QS
     // add running upload to the local discovery
     const auto info = _journal->getUploadInfos();
     for (const auto &i : info) {
-        _localDiscoveryPaths.insert(QString::fromUtf8(i._path));
+        _localDiscoveryPaths.insert(i._path);
     }
 
     // Normalize to make sure that no path is a contained in another.

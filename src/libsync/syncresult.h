@@ -37,15 +37,16 @@ public:
     // overall status
     enum Status {
         Undefined,
-        NotYetStarted,
         Success,
+        NotYetStarted,
         SyncPrepare,
         SyncRunning,
         SyncAbortRequested,
         Paused,
+        Offline,
         Problem,
         Error,
-        SetupError
+        SetupError,
     };
     Q_ENUM(Status);
 

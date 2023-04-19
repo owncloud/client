@@ -117,6 +117,7 @@ public:
     explicit DiscoverySingleDirectoryJob(const AccountPtr &account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
     // Specify that this is the root and we need to check the data-fingerprint
     void setIsRootPath() { _isRootPath = true; }
+    bool isRootPath() const { return _isRootPath; }
     void start();
     void abort();
 
@@ -205,8 +206,8 @@ class DiscoveryPhase : public QObject
     int _currentlyActiveJobs = 0;
 
     // both must contain a sorted list
-    QStringList _selectiveSyncBlackList;
-    QStringList _selectiveSyncWhiteList;
+    std::set<QString> _selectiveSyncBlackList;
+    std::set<QString> _selectiveSyncWhiteList;
 
     void scheduleMoreJobs();
 
@@ -260,12 +261,17 @@ public:
 
     void startJob(ProcessDirectoryJob *);
 
-    void setSelectiveSyncBlackList(const QStringList &list);
-    void setSelectiveSyncWhiteList(const QStringList &list);
+    void setSelectiveSyncBlackList(const QSet<QString> &list);
+    void setSelectiveSyncWhiteList(const QSet<QString> &list);
 
     // output
     QByteArray _dataFingerprint;
     bool _anotherSyncNeeded = false;
+
+    /**
+     * @return whether we are syncing to a ocis space or not
+     */
+    bool isSpace() const;
 
 signals:
     void fatalError(const QString &errorString);

@@ -9,13 +9,24 @@ Feature: adding accounts
         Given user "Alice" has been created on the server with default attributes and without skeleton files
 
 
+    Scenario: Check default options in advanced configuration
+        Given the user has started the client
+        When the user adds the following account information:
+            | server   | %local_server% |
+            | user     | Alice          |
+            | password | 1234           |
+        And the user opens the advanced configuration
+        Then the download everything option should be selected by default
+        And the user should be able to choose the local download directory
+
+
     Scenario: Adding normal Account
         Given the user has started the client
         When the user adds the first account with
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
-        Then an account should be displayed with the displayname Alice Hansen and host %local_server_hostname%
+        Then the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
 
 
     Scenario: Adding multiple accounts
@@ -25,15 +36,14 @@ Feature: adding accounts
             | server   | %local_server% |
             | user     | Brian          |
             | password | AaBb2Cc3Dd4    |
-        Then an account should be displayed with the displayname Alice Hansen and host %local_server_hostname%
-        And an account should be displayed with the displayname Brian Murphy and host %local_server_hostname%
+        Then the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
+        And the account with displayname "Brian Murphy" and host "%local_server_hostname%" should be displayed
 
 
     @skipOnOCIS
     Scenario: Adding account with wrong credentials
         Given the user has started the client
-        And the user has added the following server address:
-            | server | %local_server% |
+        And the user has added the server "%local_server%"
         When the user adds the following wrong user credentials:
             | user     | Alice |
             | password | 12345 |
@@ -42,8 +52,7 @@ Feature: adding accounts
 
     Scenario: Adding account with self signed certificate for the first time
         Given the user has started the client
-        When the user adds the following server address:
-            | server | %secure_local_server% |
+        When the user adds the server "%secure_local_server%"
         And the user accepts the certificate
         Then credentials wizard should be visible
 
@@ -67,5 +76,18 @@ Feature: adding accounts
             | password | 1234           |
         When the user selects vfs option in advanced section
         And the user cancels the enable experimental vfs option
-        Then an account should be displayed with the displayname Alice Hansen and host %local_server_hostname%
+        Then the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
         And VFS enabled baseline image should not match the default screenshot
+
+    @skipOnOC10
+    Scenario: Add space manually from sync connection window
+        Given user "Alice" has created folder "simple-folder" on the server
+        And the user has started the client
+        And the user has added the following account information:
+            | server   | %local_server% |
+            | user     | Alice          |
+            | password | 1234           |
+        When the user selects manual sync folder option in advanced section
+        And the user syncs the "Personal" space
+        Then the folder "simple-folder" should exist on the file system
+

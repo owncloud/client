@@ -146,7 +146,8 @@ namespace FileSystem {
 
     enum class LockMode {
         Shared,
-        Exclusive
+        Exclusive,
+        SharedRead
     };
     Q_ENUM_NS(LockMode);
     /**
@@ -155,6 +156,9 @@ namespace FileSystem {
     bool OCSYNC_EXPORT isFileLocked(const QString &fileName, LockMode mode);
 
 #ifdef Q_OS_WIN
+
+    bool OCSYNC_EXPORT longPathsEnabledOnWindows();
+
     /**
      * Returns the file system used at the given path.
      */
@@ -185,7 +189,12 @@ namespace FileSystem {
      * Ensures the file name length is allowed on all platforms and the file name does not contain illegal characters
      * reservedSize: The resulting path will be reservedSize < MAX and allows appending.
      */
-    QString OCSYNC_EXPORT createPortableFileName(const QFileInfo &path, int reservedSize = 0);
+    QString OCSYNC_EXPORT createPortableFileName(const QString &path, const QString &fileName, int reservedSize = 0);
+
+    /*
+     * Replace path navigation elements from the string
+     */
+    QString OCSYNC_EXPORT pathEscape(const QString &s);
 
     namespace SizeLiterals {
         constexpr unsigned long long operator"" _b(unsigned long long sz)

@@ -22,7 +22,7 @@ namespace Ui {
 class AppImageUpdateAvailableDialogUi;
 }
 
-namespace OCC::Ui {
+namespace OCC {
 
 /**
  * @brief Dialog shown when updates for the running AppImage are available

@@ -16,24 +16,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <QCryptographicHash>
+#include "common/syncjournaldb.h"
+
+#include "common/asserts.h"
+#include "common/c_jhash.h"
+#include "common/checksums.h"
+#include "common/filesystembase.h"
+#include "common/preparedsqlquerymanager.h"
+#include "common/version.h"
+
+#include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QStringList>
-#include <QElapsedTimer>
 #include <QUrl>
-#include <QDir>
+
 #include <sqlite3.h>
+
 #include <cstring>
 
-#include "common/asserts.h"
-#include "common/checksums.h"
-#include "common/preparedsqlquerymanager.h"
-#include "common/syncjournaldb.h"
-#include "common/version.h"
-#include "filesystembase.h"
-
-#include "common/c_jhash.h"
+Q_LOGGING_CATEGORY(lcDb, "sync.database", QtInfoMsg)
 
 // SQL expression to check whether path.startswith(prefix + '/')
 // Note: '/' + 1 == '0'
@@ -42,17 +45,16 @@
 #define IS_PREFIX_PATH_OR_EQUAL(prefix, path) \
     "(" path " == " prefix " OR " IS_PREFIX_PATH_OF(prefix, path) ")"
 
-namespace OCC {
+namespace {
+// base query used to select file record objects, used in combination with WHERE statements.
+const auto getFileRecordQueryC = QByteArrayLiteral("SELECT path, inode, modtime, type, md5, fileid, remotePerm, filesize,"
+                                                   " ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum,"
+                                                   " hasDirtyPlaceholder"
+                                                   " FROM metadata"
+                                                   " LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id ");
 
-Q_LOGGING_CATEGORY(lcDb, "sync.database", QtInfoMsg)
 
-#define GET_FILE_RECORD_QUERY \
-        "SELECT path, inode, modtime, type, md5, fileid, remotePerm, filesize," \
-        "  ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum" \
-        " FROM metadata" \
-        "  LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id"
-
-static void fillFileRecordFromGetQuery(SyncJournalFileRecord &rec, SqlQuery &query)
+void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, OCC::SqlQuery &query)
 {
     rec._path = query.baValue(0);
     rec._inode = query.int64Value(1);
@@ -60,18 +62,18 @@ static void fillFileRecordFromGetQuery(SyncJournalFileRecord &rec, SqlQuery &que
     rec._type = static_cast<ItemType>(query.intValue(3));
     rec._etag = query.baValue(4);
     rec._fileId = query.baValue(5);
-    rec._remotePerm = RemotePermissions::fromDbValue(query.baValue(6));
+    rec._remotePerm = OCC::RemotePermissions::fromDbValue(query.baValue(6));
     rec._fileSize = query.int64Value(7);
     rec._serverHasIgnoredFiles = (query.intValue(8) > 0);
     rec._checksumHeader = query.baValue(9);
 }
 
-static QByteArray defaultJournalMode(const QString &dbPath)
+QByteArray defaultJournalMode(const QString &dbPath)
 {
 #if defined(Q_OS_WIN)
     // See #2693: Some exFAT file systems seem unable to cope with the
     // WAL journaling mode. They work fine with DELETE.
-    QString fileSystem = FileSystem::fileSystemForPath(dbPath);
+    QString fileSystem = OCC::FileSystem::fileSystemForPath(dbPath);
     qCInfo(lcDb) << "Detected filesystem" << fileSystem << "for" << dbPath;
     if (fileSystem.contains(QLatin1String("FAT"))) {
         qCInfo(lcDb) << "Filesystem contains FAT - using DELETE journal mode";
@@ -87,6 +89,9 @@ static QByteArray defaultJournalMode(const QString &dbPath)
 #endif
     return "WAL";
 }
+}
+
+namespace OCC {
 
 SyncJournalDb::SyncJournalDb(const QString &dbFilePath, QObject *parent)
     : QObject(parent)
@@ -382,6 +387,7 @@ bool SyncJournalDb::checkConnect()
                         // ignoredChildrenRemote
                         // contentChecksum
                         // contentChecksumTypeId
+                        // hasDirtyPlaceholder
                         "PRIMARY KEY(phash)"
                         ");");
 
@@ -419,19 +425,9 @@ bool SyncJournalDb::checkConnect()
         return sqlFail(QStringLiteral("Create table downloadinfo"), createQuery);
     }
 
-    createQuery.prepare("CREATE TABLE IF NOT EXISTS uploadinfo("
-                        "path VARCHAR(4096),"
-                        "chunk INTEGER,"
-                        "transferid INTEGER,"
-                        "errorcount INTEGER,"
-                        "size INTEGER(8),"
-                        "modtime INTEGER(8),"
-                        "contentChecksum TEXT,"
-                        "PRIMARY KEY(path)"
-                        ");");
 
-    if (!createQuery.exec()) {
-        return sqlFail(QStringLiteral("Create table uploadinfo"), createQuery);
+    if (!createUploadInfo()) {
+        return false;
     }
 
     // create the blacklist table.
@@ -684,7 +680,7 @@ bool SyncJournalDb::updateMetadataTableStructure()
         commitInternal(QStringLiteral("update database structure: add filesize col"));
     }
 
-    if (1) {
+    {
         SqlQuery query(_db);
         query.prepare("CREATE INDEX IF NOT EXISTS metadata_inode ON metadata(inode);");
         if (!query.exec()) {
@@ -694,7 +690,7 @@ bool SyncJournalDb::updateMetadataTableStructure()
         commitInternal(QStringLiteral("update database structure: add inode index"));
     }
 
-    if (1) {
+    {
         SqlQuery query(_db);
         query.prepare("CREATE INDEX IF NOT EXISTS metadata_path ON metadata(path);");
         if (!query.exec()) {
@@ -704,7 +700,7 @@ bool SyncJournalDb::updateMetadataTableStructure()
         commitInternal(QStringLiteral("update database structure: add path index"));
     }
 
-    if (1) {
+    {
         SqlQuery query(_db);
         query.prepare("CREATE INDEX IF NOT EXISTS metadata_parent ON metadata(parent_hash(path));");
         if (!query.exec()) {
@@ -741,6 +737,22 @@ bool SyncJournalDb::updateMetadataTableStructure()
             re = false;
         }
         commitInternal(QStringLiteral("update database structure: add contentChecksumTypeId col"));
+    }
+
+    if (columns.indexOf("hasDirtyPlaceholder") == -1) {
+        SqlQuery addDirtyQuery(_db);
+        addDirtyQuery.prepare("ALTER TABLE metadata ADD COLUMN hasDirtyPlaceholder BOOLEAN;");
+        if (!addDirtyQuery.exec()) {
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add hasDirtyPlaceholder column"), addDirtyQuery);
+            re = false;
+        }
+        SqlQuery dirtyIndex(_db);
+        dirtyIndex.prepare("CREATE INDEX hasDirtyPlaceholderIndex ON metadata(path) WHERE hasDirtyPlaceholder=TRUE;");
+        if (!dirtyIndex.exec()) {
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add index on hasDirtyPlaceholder column"), dirtyIndex);
+            re = false;
+        }
+        commitInternal(QStringLiteral("update database structure: add hasDirtyPlaceholder col"));
     }
 
     auto uploadInfoColumns = tableColumns("uploadinfo");
@@ -880,7 +892,7 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
     qCInfo(lcDb) << "Updating file record for path:" << record._path << "inode:" << record._inode
                  << "modtime:" << record._modtime << "type:" << record._type
                  << "etag:" << record._etag << "fileId:" << record._fileId << "remotePerm:" << record._remotePerm.toString()
-                 << "fileSize:" << record._fileSize << "checksum:" << record._checksumHeader;
+                 << "fileSize:" << record._fileSize << "checksum:" << record._checksumHeader << "hasDirtyPlaceholder:" << record._hasDirtyPlaceholder;
 
     const qint64 phash = getPHash(record._path);
     if (checkConnect()) {
@@ -897,8 +909,8 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
         const auto checksumHeader = ChecksumHeader::parseChecksumHeader(record._checksumHeader);
         int contentChecksumTypeId = mapChecksumType(checksumHeader.type());
         const auto query = _queryManager.get(PreparedSqlQueryManager::SetFileRecordQuery, QByteArrayLiteral("INSERT OR REPLACE INTO metadata "
-                                                                                                            "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId) "
-                                                                                                            "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16);"),
+                                                                                                            "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId, hasDirtyPlaceholder) "
+                                                                                                            "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);"),
             _db);
         if (!query) {
             return query->error();
@@ -920,6 +932,7 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
         query->bindValue(14, record._serverHasIgnoredFiles ? 1 : 0);
         query->bindValue(15, checksumHeader.checksum());
         query->bindValue(16, contentChecksumTypeId);
+        query->bindValue(17, record._hasDirtyPlaceholder);
 
         if (!query->exec()) {
             return query->error();
@@ -991,7 +1004,7 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
         return false;
 
     if (!filename.isEmpty()) {
-        const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileRecordQuery, QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE phash=?1"), _db);
+        const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileRecordQuery, getFileRecordQueryC + QByteArrayLiteral("WHERE phash=?1"), _db);
         if (!query) {
             return false;
         }
@@ -1031,7 +1044,7 @@ bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *r
 
     if (!checkConnect())
         return false;
-    const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileRecordQueryByInode, QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE inode=?1"), _db);
+    const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileRecordQueryByInode, getFileRecordQueryC + QByteArrayLiteral("WHERE inode=?1"), _db);
     if (!query)
         return false;
 
@@ -1059,7 +1072,7 @@ bool SyncJournalDb::getFileRecordsByFileId(const QByteArray &fileId, const std::
     if (!checkConnect())
         return false;
 
-    const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileRecordQueryByFileId, QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE fileid=?1"), _db);
+    const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileRecordQueryByFileId, getFileRecordQueryC + QByteArrayLiteral("WHERE fileid=?1"), _db);
     if (!query) {
         return false;
     }
@@ -1119,7 +1132,7 @@ bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::functio
         // and find nothing. So, unfortunately, we have to use a different query for
         // retrieving the whole tree.
 
-        const auto query = _queryManager.get(PreparedSqlQueryManager::GetAllFilesQuery, QByteArrayLiteral(GET_FILE_RECORD_QUERY " ORDER BY path||'/' ASC"), _db);
+        const auto query = _queryManager.get(PreparedSqlQueryManager::GetAllFilesQuery, getFileRecordQueryC + QByteArrayLiteral("ORDER BY path||'/' ASC"), _db);
         if (!query) {
             return false;
         }
@@ -1127,7 +1140,7 @@ bool SyncJournalDb::getFilesBelowPath(const QByteArray &path, const std::functio
     } else {
         // This query is used to skip discovery and fill the tree from the
         // database instead
-        const auto query = _queryManager.get(PreparedSqlQueryManager::GetFilesBelowPathQuery, QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE " IS_PREFIX_PATH_OF("?1", "path")
+        const auto query = _queryManager.get(PreparedSqlQueryManager::GetFilesBelowPathQuery, getFileRecordQueryC + QByteArrayLiteral("WHERE " IS_PREFIX_PATH_OF("?1", "path")
                                                                                                   // We want to ensure that the contents of a directory are sorted
                                                                                                   // directly behind the directory itself. Without this ORDER BY
                                                                                                   // an ordering like foo, foo-2, foo/file would be returned.
@@ -1154,7 +1167,7 @@ bool SyncJournalDb::listFilesInPath(const QByteArray& path,
     if (!checkConnect())
         return false;
 
-    const auto query = _queryManager.get(PreparedSqlQueryManager::ListFilesInPathQuery, QByteArrayLiteral(GET_FILE_RECORD_QUERY " WHERE parent_hash(path) = ?1 ORDER BY path||'/' ASC"), _db);
+    const auto query = _queryManager.get(PreparedSqlQueryManager::ListFilesInPathQuery, getFileRecordQueryC + QByteArrayLiteral("WHERE parent_hash(path) = ?1 ORDER BY path||'/' ASC"), _db);
     if (!query) {
         return false;
     }
@@ -1413,7 +1426,7 @@ SyncJournalDb::UploadInfo SyncJournalDb::getUploadInfo(const QString &file)
     }
 
     const auto query = _queryManager.get(PreparedSqlQueryManager::GetUploadInfoQuery,
-        QByteArrayLiteral("SELECT chunk, transferid, errorcount, size, modtime, contentChecksum FROM uploadinfo WHERE path=?1"),
+        QByteArrayLiteral("SELECT chunk, transferid, errorcount, size, modtime, contentChecksum, url FROM uploadinfo WHERE path=?1"),
         _db);
     if (!query) {
         return {};
@@ -1426,12 +1439,14 @@ SyncJournalDb::UploadInfo SyncJournalDb::getUploadInfo(const QString &file)
 
     UploadInfo res;
     if (query->next().hasData) {
+        res._path = file;
         res._chunk = query->intValue(0);
         res._transferid = query->intValue(1);
         res._errorCount = query->intValue(2);
         res._size = query->int64Value(3);
         res._modtime = query->int64Value(4);
         res._contentChecksum = query->baValue(5);
+        res._url = QUrl::fromEncoded(query->baValue(6));
         res._valid = true;
     }
     return res;
@@ -1442,7 +1457,7 @@ std::vector<SyncJournalDb::UploadInfo> SyncJournalDb::getUploadInfos()
     QMutexLocker locker(&_mutex);
 
     const auto query = _queryManager.get(PreparedSqlQueryManager::GetAllUploadInfoQuery,
-        QByteArrayLiteral("SELECT chunk, transferid, errorcount, size, modtime, contentChecksum, path FROM uploadinfo"),
+        QByteArrayLiteral("SELECT chunk, transferid, errorcount, size, modtime, contentChecksum, path, url FROM uploadinfo"),
         _db);
     if (!query) {
         return {};
@@ -1461,7 +1476,8 @@ std::vector<SyncJournalDb::UploadInfo> SyncJournalDb::getUploadInfos()
         info._size = query->int64Value(3);
         info._modtime = query->int64Value(4);
         info._contentChecksum = query->baValue(5);
-        info._path = query->baValue(6);
+        info._path = query->stringValue(6);
+        info._url = QUrl::fromEncoded(query->baValue(7));
         info._valid = true;
         res.push_back(std::move(info));
     }
@@ -1478,8 +1494,8 @@ void SyncJournalDb::setUploadInfo(const QString &file, const SyncJournalDb::Uplo
 
     if (i._valid) {
         const auto query = _queryManager.get(PreparedSqlQueryManager::SetUploadInfoQuery, QByteArrayLiteral("INSERT OR REPLACE INTO uploadinfo "
-                                                                                                            "(path, chunk, transferid, errorcount, size, modtime, contentChecksum) "
-                                                                                                            "VALUES ( ?1 , ?2, ?3 , ?4 ,  ?5, ?6 , ?7 )"),
+                                                                                                            "(path, chunk, transferid, errorcount, size, modtime, contentChecksum, url) "
+                                                                                                            "VALUES ( ?1 , ?2, ?3 , ?4 ,  ?5, ?6 , ?7, ?8 )"),
             _db);
         if (!query) {
             return;
@@ -1492,6 +1508,7 @@ void SyncJournalDb::setUploadInfo(const QString &file, const SyncJournalDb::Uplo
         query->bindValue(5, i._size);
         query->bindValue(6, i._modtime);
         query->bindValue(7, i._contentChecksum);
+        query->bindValue(8, i._url.toEncoded());
 
         if (!query->exec()) {
             return;
@@ -1729,9 +1746,9 @@ void SyncJournalDb::setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord
     query->exec();
 }
 
-QStringList SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, bool *ok)
+QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, bool *ok)
 {
-    QStringList result;
+    QSet<QString> result;
     OC_ASSERT(ok);
 
     QMutexLocker locker(&_mutex);
@@ -1764,14 +1781,14 @@ QStringList SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncList
         if (!entry.endsWith(QLatin1Char('/'))) {
             entry.append(QLatin1Char('/'));
         }
-        result.append(entry);
+        result.insert(entry);
     }
     *ok = true;
 
     return result;
 }
 
-void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, const QStringList &list)
+void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, const QSet<QString> &list)
 {
     QMutexLocker locker(&_mutex);
     if (!checkConnect()) {
@@ -2266,7 +2283,7 @@ bool SyncJournalDb::open()
     return checkConnect();
 }
 
-bool SyncJournalDb::isOpen()
+bool SyncJournalDb::isOpen() const
 {
     QMutexLocker lock(&_mutex);
     return _db.isOpen();
@@ -2287,6 +2304,58 @@ SyncJournalDb::~SyncJournalDb()
     close();
 }
 
+const QVector<SyncJournalFileRecord> SyncJournalDb::getFileRecordsWithDirtyPlaceholders() const
+{
+    QMutexLocker locker(&_mutex);
+
+    if (OC_ENSURE(isOpen())) {
+        const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileReocrdsWithDirtyPlaceholdersQuery, getFileRecordQueryC + QByteArrayLiteral("WHERE hasDirtyPlaceholder=TRUE"), const_cast<SyncJournalDb *>(this)->_db);
+        if (!OC_ENSURE(query)) {
+            return {};
+        }
+        if (!OC_ENSURE(query->exec())) {
+            return {};
+        }
+        QVector<SyncJournalFileRecord> out;
+        while (query->next().hasData) {
+            SyncJournalFileRecord rec;
+            fillFileRecordFromGetQuery(rec, *query);
+            out.append(rec);
+        }
+        return out;
+    }
+    return {};
+}
+
+bool SyncJournalDb::createUploadInfo()
+{
+    SqlQuery createQuery(QByteArrayLiteral("CREATE TABLE IF NOT EXISTS uploadinfo("
+                                           "path VARCHAR(4096),"
+                                           "chunk INTEGER,"
+                                           "transferid INTEGER,"
+                                           "errorcount INTEGER,"
+                                           "size INTEGER(8),"
+                                           "modtime INTEGER(8),"
+                                           "contentChecksum TEXT,"
+                                           // uploadUrl TEXT
+                                           "PRIMARY KEY(path)"
+                                           ");"),
+        _db);
+
+    if (!createQuery.exec()) {
+        return sqlFail(QStringLiteral("Create table uploadinfo"), createQuery);
+    }
+
+    const auto columns = tableColumns("uploadinfo");
+
+    if (columns.indexOf(QByteArrayLiteral("url")) == -1) {
+        SqlQuery query(QByteArrayLiteral("ALTER TABLE uploadinfo ADD COLUMN url TEXT;"), _db);
+        if (!query.exec()) {
+            return sqlFail(QStringLiteral("Add column url"), query);
+        }
+    }
+    return true;
+}
 
 bool operator==(const SyncJournalDb::DownloadInfo &lhs,
     const SyncJournalDb::DownloadInfo &rhs)
@@ -2308,5 +2377,4 @@ bool operator==(const SyncJournalDb::UploadInfo &lhs,
         && lhs._transferid == rhs._transferid
         && lhs._contentChecksum == rhs._contentChecksum;
 }
-
 } // namespace OCC

@@ -166,8 +166,7 @@ void FileInfo::remove(const QString &relativePath)
     const PathComponents pathComponents { relativePath };
     FileInfo *parent = findInvalidatingEtags(pathComponents.parentDirComponents());
     Q_ASSERT(parent);
-    parent->children.erase(std::find_if(parent->children.begin(), parent->children.end(),
-        [&pathComponents](const FileInfo &fi) { return fi.name == pathComponents.fileName(); }));
+    parent->children.remove(pathComponents.fileName());
 }
 
 void FileInfo::insert(const QString &relativePath, quint64 size, char contentChar)
@@ -616,6 +615,7 @@ void FakeGetReply::respond()
         emit metaDataChanged();
         break;
     case State::FileNotFound:
+        setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 404);
         setError(ContentNotFoundError, QStringLiteral("File Not Found"));
         emit metaDataChanged();
         break;
@@ -943,7 +943,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     // TODO: davUrl
 
     _syncEngine.reset(new OCC::SyncEngine(_account, _account->davUrl(), localPath(), QString(), _journalDb.get()));
-    _syncEngine->setSyncOptions(OCC::SyncOptions { QSharedPointer<OCC::Vfs>(OCC::createVfsFromPlugin(vfsMode).release()) });
+    _syncEngine->setSyncOptions(OCC::SyncOptions { QSharedPointer<OCC::Vfs>(OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode).release()) });
 
     // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
     _syncEngine->excludedFiles().addManualExclude(QStringLiteral("]*.~*"));
@@ -957,7 +957,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
 
     auto vfs = _syncEngine->syncOptions()._vfs;
     if (vfsMode != vfs->mode()) {
-        vfs.reset(createVfsFromPlugin(vfsMode).release());
+        vfs.reset(OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode).release());
         Q_ASSERT(vfs);
     }
 
@@ -1091,6 +1091,11 @@ void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
 {
     const auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
     for (const auto &diskChild : infoList) {
+        if (diskChild.isHidden() || diskChild.fileName().startsWith(QStringLiteral(".sync_"))) {
+            // Skip system files, sqlite db files, sync log, etc.
+            continue;
+        }
+
         if (diskChild.isDir()) {
             QDir subDir = dir;
             subDir.cd(diskChild.fileName());
@@ -1112,9 +1117,10 @@ void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
                 auto content = f.read(1);
                 if (content.size() == 0) {
                     qWarning() << "Empty file at:" << diskChild.filePath();
-                    continue;
+                    fi.contentChar = FileInfo::DefaultContentChar;
+                } else {
+                    fi.contentChar = content.at(0);
                 }
-                fi.contentChar = content.at(0);
                 fi.contentSize = fi.fileSize;
             }
 

@@ -43,9 +43,8 @@ void PropagateUploadFileV1::doStartUpload()
     const QString fileName = propagator()->fullLocalPath(_item->_file);
     // If the file is currently locked, we want to retry the sync
     // when it becomes available again.
-    const auto lockMode = propagator()->syncOptions().requiredLockMode();
-    if (FileSystem::isFileLocked(fileName, lockMode)) {
-        emit propagator()->seenLockedFile(fileName, lockMode);
+    if (FileSystem::isFileLocked(fileName, FileSystem::LockMode::SharedRead)) {
+        emit propagator()->seenLockedFile(fileName, FileSystem::LockMode::SharedRead);
         abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(QDir::toNativeSeparators(fileName)));
         return;
     }
@@ -60,8 +59,7 @@ void PropagateUploadFileV1::doStartUpload()
 
     const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->_file);
 
-    if (progressInfo._valid && progressInfo.isChunked() && progressInfo._modtime == _item->_modtime && progressInfo._size == _item->_size
-        && (progressInfo._contentChecksum == _item->_checksumHeader || progressInfo._contentChecksum.isEmpty() || _item->_checksumHeader.isEmpty())) {
+    if (progressInfo.isChunked() && progressInfo.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
         _startChunk = progressInfo._chunk;
         _transferId = progressInfo._transferid;
         qCInfo(lcPropagateUploadV1) << _item->_file << ": Resuming from chunk " << _startChunk;
@@ -69,14 +67,10 @@ void PropagateUploadFileV1::doStartUpload()
         // If there is only one chunk, write the checksum in the database, so if the PUT is sent
         // to the server, but the connection drops before we get the etag, we can check the checksum
         // in reconcile (issue #5106)
-        SyncJournalDb::UploadInfo pi;
-        pi._valid = true;
+        auto pi = _item->toUploadInfo();
         pi._chunk = 0;
         pi._transferid = 0; // We set a null transfer id because it is not chunked.
-        pi._modtime = _item->_modtime;
         pi._errorCount = 0;
-        pi._contentChecksum = _item->_checksumHeader;
-        pi._size = _item->_size;
         propagator()->_journal->setUploadInfo(_item->_file, pi);
         propagator()->_journal->commit(QStringLiteral("Upload info"));
     }

@@ -66,7 +66,6 @@ set(client_SRCS
     thumbnailjob.cpp
     quotainfo.cpp
     accountstate.cpp
-    authenticationdialog.cpp
     proxyauthhandler.cpp
     proxyauthdialog.cpp
     tooltipupdater.cpp
@@ -83,6 +82,8 @@ set(client_SRCS
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
+
+    spacemigration.cpp
 )
 
 set(3rdparty_SRC
@@ -168,7 +169,7 @@ endif()
 
 
 if(WITH_CRASHREPORTER)
-    target_link_libraries(owncloudCore PUBLIC crashreporter-handler)
+    target_link_libraries(owncloudCore PRIVATE CrashReporterQt::Handler)
 
     if(UNIX AND NOT MAC)
         find_package(Threads REQUIRED)
@@ -192,11 +193,7 @@ target_sources(owncloud PRIVATE ${appIcons})
 
 if(NOT APPLE)
     if(WIN32)
-        configure_file(
-          ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in
-          ${CMAKE_CURRENT_BINARY_DIR}/version.rc
-          @ONLY)
-        target_sources(owncloud PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc ${CMAKE_CURRENT_SOURCE_DIR}/owncloud.exe.manifest)
+        target_sources(owncloud PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/owncloud.exe.manifest)
     else()
         file(GLOB _icons "${OEM_THEME_DIR}/theme/colored/*-${APPLICATION_ICON_NAME}-icon.png")
         foreach(_file ${_icons})

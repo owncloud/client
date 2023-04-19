@@ -28,6 +28,8 @@
 #include "models.h"
 #include "networkjobs/jsonjob.h"
 
+#include "resources/resources.h"
+
 #include "activitydata.h"
 #include "activitylistmodel.h"
 
@@ -48,7 +50,7 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
     }
 
     const auto &a = _finalList.at(index.row());
-    const AccountStatePtr accountState = AccountManager::instance()->account(a.uuid());
+    const AccountStatePtr accountState = AccountManager::instance()->account(a.accountUuid());
     if (!accountState) {
         return {};
     }
@@ -93,7 +95,7 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
             if (!accountState->account()->avatar().isNull()) {
                 return QIcon(accountState->account()->avatar());
             } else {
-                return Utility::getCoreIcon(QStringLiteral("account"));
+                return Resources::getCoreIcon(QStringLiteral("account"));
             }
         default:
             return {};
@@ -210,14 +212,10 @@ void ActivityListModel::startFetchJob(AccountStatePtr ast)
             list.reserve(activities.size());
             for (const auto &activ : activities) {
                 const auto json = activ.toObject();
-                list.append(Activity { Activity::ActivityType,
-                    json.value(QStringLiteral("id")).toVariant().value<Activity::Identifier>(),
-                    ast->account(),
-                    json.value(QStringLiteral("subject")).toString(),
-                    json.value(QStringLiteral("message")).toString(),
-                    json.value(QStringLiteral("file")).toString(),
-                    QUrl(json.value(QStringLiteral("link")).toString()),
-                    QDateTime::fromString(json.value(QStringLiteral("date")).toString(), Qt::ISODate) });
+                list.append(Activity{Activity::ActivityType, json.value(QStringLiteral("id")).toString(), ast->account(),
+                    json.value(QStringLiteral("subject")).toString(), json.value(QStringLiteral("message")).toString(),
+                    json.value(QStringLiteral("file")).toString(), QUrl(json.value(QStringLiteral("link")).toString()),
+                    QDateTime::fromString(json.value(QStringLiteral("date")).toString(), Qt::ISODate)});
             }
 
             _activityLists[ast] = std::move(list);
@@ -277,7 +275,7 @@ void ActivityListModel::slotRemoveAccount(AccountStatePtr ast)
         int i = 0;
         while (it.hasNext()) {
             Activity activity = it.next();
-            if (activity.uuid() == accountToRemove) {
+            if (activity.accountUuid() == accountToRemove) {
                 beginRemoveRows(QModelIndex(), i, i);
                 it.remove();
                 endRemoveRows();

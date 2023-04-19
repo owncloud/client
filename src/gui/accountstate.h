@@ -34,6 +34,7 @@ namespace OCC {
 
 class AccountState;
 class Account;
+class QuotaInfo;
 class TlsErrorDialog;
 
 /**
@@ -74,7 +75,9 @@ public:
         ConfigurationError,
 
         /// We are currently asking the user for credentials
-        AskingCredentials
+        AskingCredentials,
+
+        Connecting
     };
     Q_ENUM(State)
 
@@ -103,7 +106,6 @@ public:
     QStringList connectionErrors() const;
 
     State state() const;
-    static QString stateString(State state);
 
     bool isSignedOut() const;
 
@@ -128,6 +130,8 @@ public:
 
     // weather the account was created after spaces where implemented
     bool supportsSpaces() const;
+
+    QuotaInfo *quotaInfo();
 
     /** Returns a new settings object for this account, already in the right groups. */
     std::unique_ptr<QSettings> settings();
@@ -188,6 +192,10 @@ private:
      * Milliseconds for which to delay reconnection after 503/maintenance.
      */
     std::chrono::milliseconds _maintenanceToConnectedDelay;
+
+    QuotaInfo *_quotaInfo = nullptr;
+
+    friend class SpaceMigration;
 };
 }
 

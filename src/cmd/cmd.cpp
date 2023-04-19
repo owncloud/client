@@ -84,7 +84,7 @@ struct SyncCTX
 /* If the selective sync list is different from before, we need to disable the read from db
   (The normal client does it in SelectiveSyncDialog::accept*)
  */
-void selectiveSyncFixup(OCC::SyncJournalDb *journal, const QStringList &newList)
+void selectiveSyncFixup(OCC::SyncJournalDb *journal, const QSet<QString> &newListSet)
 {
     SqlDatabase db;
     if (!db.openOrCreateReadWrite(journal->databaseFilePath())) {
@@ -93,37 +93,40 @@ void selectiveSyncFixup(OCC::SyncJournalDb *journal, const QStringList &newList)
 
     bool ok;
 
-    auto oldBlackListSet = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok).toSet();
+    const auto oldBlackListSet = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
     if (ok) {
-        auto blackListSet = newList.toSet();
-        const auto changes = (oldBlackListSet - blackListSet) + (blackListSet - oldBlackListSet);
+        const auto changes = (oldBlackListSet - newListSet) + (newListSet - oldBlackListSet);
         for (const auto &it : changes) {
             journal->schedulePathForRemoteDiscovery(it);
         }
 
-        journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, newList);
+        journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, newListSet);
     }
 }
 
 
 void sync(const SyncCTX &ctx)
 {
-    QStringList selectiveSyncList;
-    if (!ctx.options.unsyncedfolders.isEmpty()) {
-        QFile f(ctx.options.unsyncedfolders);
-        if (!f.open(QFile::ReadOnly)) {
-            qCritical() << "Could not open file containing the list of unsynced folders: " << ctx.options.unsyncedfolders;
-        } else {
-            // filter out empty lines and comments
-            selectiveSyncList = QString::fromUtf8(f.readAll()).split(QLatin1Char('\n')).filter(QRegExp(QStringLiteral("\\S+"))).filter(QRegExp(QStringLiteral("^[^#]")));
+    const auto selectiveSyncList = [&]() -> QSet<QString> {
+        if (!ctx.options.unsyncedfolders.isEmpty()) {
+            QFile f(ctx.options.unsyncedfolders);
+            if (!f.open(QFile::ReadOnly)) {
+                qCritical() << "Could not open file containing the list of unsynced folders: " << ctx.options.unsyncedfolders;
+            } else {
+                // filter out empty lines and comments
+                auto selectiveSyncList =
+                    QString::fromUtf8(f.readAll()).split(QLatin1Char('\n')).filter(QRegExp(QStringLiteral("\\S+"))).filter(QRegExp(QStringLiteral("^[^#]")));
 
-            for (int i = 0; i < selectiveSyncList.count(); ++i) {
-                if (!selectiveSyncList.at(i).endsWith(QLatin1Char('/'))) {
-                    selectiveSyncList[i].append(QLatin1Char('/'));
+                for (int i = 0; i < selectiveSyncList.count(); ++i) {
+                    if (!selectiveSyncList.at(i).endsWith(QLatin1Char('/'))) {
+                        selectiveSyncList[i].append(QLatin1Char('/'));
+                    }
                 }
+                return {selectiveSyncList.cbegin(), selectiveSyncList.cend()};
             }
         }
-    }
+        return {};
+    }();
 
     const QString dbPath = ctx.options.source_dir + SyncJournalDb::makeDbName(ctx.options.source_dir);
     auto db = new SyncJournalDb(dbPath, qApp);
@@ -131,7 +134,7 @@ void sync(const SyncCTX &ctx)
         selectiveSyncFixup(db, selectiveSyncList);
     }
 
-    SyncOptions opt { QSharedPointer<Vfs>(createVfsFromPlugin(Vfs::Off).release()) };
+    SyncOptions opt { QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off).release()) };
     opt.fillFromEnvironmentVariables();
     opt.verifyChunkSizes();
     auto engine = new SyncEngine(
@@ -162,24 +165,22 @@ void sync(const SyncCTX &ctx)
             abort(false);
         } else {
             if (dir == SyncFileItem::Down) {
-                std::cout << "All files in the sync folder '" << qPrintable(ctx.options.remoteFolder) << "' folder were deleted on the server.\n"
-                          << "These deletes will be synchronized to your local sync folder, making such files "
-                          << "unavailable unless you have a right to restore. \n"
-                          << "If you decide to keep the files, they will be re-synced with the server if you have rights to do so.\n"
-                          << "If you decide to delete the files, they will be unavailable to you, unless you are the owner."
-                          << std::endl;
+                qInfo() << "All files in the sync folder '" << ctx.options.remoteFolder << "' folder were deleted on the server.";
+                qInfo() << "These deletes will be synchronized to your local sync folder, making such files "
+                        << "unavailable unless you have a right to restore.";
+                qInfo() << "If you decide to keep the files, they will be re-synced with the server if you have rights to do so.";
+                qInfo() << "If you decide to delete the files, they will be unavailable to you, unless you are the owner.";
 
 
             } else {
-                std::cout << "All the files in your local sync folder '" << qPrintable(ctx.options.source_dir) << "' were deleted. These deletes will be "
-                          << "synchronized with your server, making such files unavailable unless restored.\n"
-                          << "Are you sure you want to sync those actions with the server?\n"
-                          << "If this was an accident and you decide to keep your files, they will be re-synced from the server."
-                          << std::endl;
+                qInfo() << "All the files in your local sync folder '" << ctx.options.source_dir << "' were deleted. These deletes will be "
+                        << "synchronized with your server, making such files unavailable unless restored.";
+                qInfo() << "Are you sure you want to sync those actions with the server?";
+                qInfo() << "If this was an accident and you decide to keep your files, they will be re-synced from the server.";
             }
             std::string s;
             while (true) {
-                std::cout << "Remove all files?[y,n]";
+                qInfo() << "Remove all files? [y,n]";
                 std::getline(std::cin, s);
                 if (s == "y") {
                     abort(false);
@@ -213,7 +214,8 @@ void sync(const SyncCTX &ctx)
     }
 
     if (!engine->excludedFiles().reloadExcludeFiles()) {
-        qFatal("Cannot load system exclude list or list supplied via --exclude");
+        qCritical() << "Cannot load system exclude list or list supplied via --exclude";
+        qApp->exit(EXIT_FAILURE);
     }
     engine->startSync();
 }
@@ -262,13 +264,15 @@ void setupCredentials(SyncCTX &ctx)
 
             port = pList.at(2).toUInt(&ok);
             if (!ok || port > std::numeric_limits<uint16_t>::max()) {
-                qFatal("Invalid port number");
+                qCritical() << "Invalid port number";
+                qApp->exit(EXIT_FAILURE);
             }
 
             QNetworkProxyFactory::setUseSystemConfiguration(false);
             QNetworkProxy::setApplicationProxy(QNetworkProxy(QNetworkProxy::HttpProxy, host, static_cast<uint16_t>(port)));
         } else {
-            qFatal("Could not read httpproxy. The proxy should have the format \"http://hostname:port\".");
+            qCritical() << "Could not read httpproxy. The proxy should have the format \"http://hostname:port\".";
+            qApp->exit(EXIT_FAILURE);
         }
     }
 
@@ -278,9 +282,8 @@ void setupCredentials(SyncCTX &ctx)
         // also fail
         QFile f(ctx.options.unsyncedfolders);
         if (!f.open(QFile::ReadOnly)) {
-            qFatal("Cannot read unsyncedfolders file '%s': %s",
-                qPrintable(ctx.options.unsyncedfolders),
-                qPrintable(f.errorString()));
+            qCritical() << "Cannot read unsyncedfolders file '" << ctx.options.unsyncedfolders << "': " << f.errorString();
+            qApp->exit(EXIT_FAILURE);
         }
         f.close();
     }
@@ -298,7 +301,8 @@ void setupCredentials(SyncCTX &ctx)
             for (const auto &e : errors) {
                 qCritical() << e.errorString();
             }
-            qFatal("If you trust the certificate and want to ignore the errors, use the --trust option.");
+            qCritical() << "If you trust the certificate and want to ignore the errors, use the --trust option.";
+            qApp->exit(EXIT_FAILURE);
         });
     }
 }
@@ -331,6 +335,7 @@ CmdOptions parseOptions(const QStringList &app_args)
     auto maxRetriesOption = addOption({ { QStringLiteral("max-sync-retries") }, QStringLiteral("Retries maximum n times (default to 3)"), QStringLiteral("n") });
     auto uploadLimitOption = addOption({ { QStringLiteral("uplimit") }, QStringLiteral("Limit the upload speed of files to n KB/s"), QStringLiteral("n") });
     auto downloadLimitption = addOption({ { QStringLiteral("downlimit") }, QStringLiteral("Limit the download speed of files to n KB/s"), QStringLiteral("n") });
+    auto syncHiddenFilesOption = addOption({ { QStringLiteral("sync-hidden-files") }, QStringLiteral("Enables synchronization of hidden files") });
 
     auto logdebugOption = addOption({ { QStringLiteral("logdebug") }, QStringLiteral("More verbose logging") });
 
@@ -347,14 +352,14 @@ CmdOptions parseOptions(const QStringList &app_args)
     const QStringList args = parser.positionalArguments();
     if (args.size() < 2 || args.size() > 3) {
         parser.showHelp();
-        exit(1);
+        qApp->exit(EXIT_FAILURE);
     }
 
     options.source_dir = [arg = args[0]] {
         QFileInfo fi(arg);
         if (!fi.exists()) {
-            std::cerr << "Source dir '" << qPrintable(arg) << "' does not exist." << std::endl;
-            exit(1);
+            qCritical() << "Source dir '" << arg << "' does not exist.";
+            qApp->exit(EXIT_FAILURE);
         }
         QString sourceDir = fi.absoluteFilePath();
         if (!sourceDir.endsWith(QLatin1Char('/'))) {
@@ -406,6 +411,9 @@ CmdOptions parseOptions(const QStringList &app_args)
     if (parser.isSet(downloadLimitption)) {
         options.downlimit = parser.value(downloadLimitption).toInt() * 1000;
     }
+    if (parser.isSet(syncHiddenFilesOption)) {
+        options.ignoreHiddenFiles = false;
+    }
     if (parser.isSet(logdebugOption)) {
         Logger::instance()->setLogFile(QStringLiteral("-"));
         Logger::instance()->setLogDebug(true);
@@ -432,10 +440,11 @@ int main(int argc, char **argv)
         qSetMessagePattern(Logger::loggerPattern());
     }
 
-    ctx.account = Account::create();
+    ctx.account = Account::create(QUuid::createUuid());
 
     if (!ctx.account) {
-        qFatal("Could not initialize account!");
+        qCritical() << "Could not initialize account!";
+        qApp->exit(EXIT_FAILURE);
     }
 
     setupCredentials(ctx);
@@ -471,6 +480,10 @@ int main(int argc, char **argv)
             // Perform a call to get the capabilities.
             auto *capabilitiesJob = new JsonApiJob(ctx.account, QStringLiteral("ocs/v1.php/cloud/capabilities"), {}, {}, nullptr);
             QObject::connect(capabilitiesJob, &JsonApiJob::finishedSignal, qApp, [capabilitiesJob, ctx] {
+                if (capabilitiesJob->reply()->error() != QNetworkReply::NoError || capabilitiesJob->httpStatusCode() != 200) {
+                    qCritical() << "Error connecting to server";
+                    qApp->exit(EXIT_FAILURE);
+                }
                 auto caps = capabilitiesJob->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("capabilities")).toObject();
                 qDebug() << "Server capabilities" << caps;
                 ctx.account->setCapabilities(caps.toVariantMap());
@@ -482,11 +495,8 @@ int main(int argc, char **argv)
                     qWarning() << "Failed to detect server version";
                     break;
                 case Account::ServerSupportLevel::Unsupported:
-                    qFatal("Error unsupported server");
-                }
-
-                if (capabilitiesJob->reply()->error() != QNetworkReply::NoError) {
-                    qFatal("Error connecting to server");
+                    qCritical() << "Error unsupported server";
+                    qApp->exit(EXIT_FAILURE);
                 }
 
                 auto userJob = new JsonApiJob(ctx.account, QStringLiteral("ocs/v1.php/cloud/user"), {}, {}, nullptr);
@@ -505,11 +515,11 @@ int main(int argc, char **argv)
         } else {
             switch (checkServerJob->reply()->error()) {
             case QNetworkReply::OperationCanceledError:
-                qFatal("Looking up %s timed out.", qPrintable(ctx.account->url().toString()));
-                break;
+                qCritical() << "Looking up " << ctx.account->url().toString() << " timed out.";
             default:
-                qFatal("Failed to resolve %s Error: %s.", qPrintable(ctx.account->url().toString()), qPrintable(checkServerJob->reply()->errorString()));
+                qCritical() << "Failed to resolve " << ctx.account->url().toString() << " Error: " << checkServerJob->reply()->errorString();
             }
+            qApp->exit(EXIT_FAILURE);
         }
     });
 
