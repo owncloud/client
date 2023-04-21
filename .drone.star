@@ -82,18 +82,19 @@ config = {
                         "command": "make dist",
                     },
                 },
-                "skip_in_pr": True,
+                # "skip_in_pr": True,
             },
-            "ocis": {
-                "version": "2.0.0",
-                # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
-                "tags": "~@skipOnOCIS",
-            },
+            # "ocis": {
+            #     "version": "2.0.0",
+            #     # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
+            #     "tags": "~@skipOnOCIS",
+            # },
         },
     },
 }
 
 def main(ctx):
+    return cancelPreviousBuilds() + gui_test_pipeline(ctx)
     pipelines = cancelPreviousBuilds() + \
                 check_starlark() + \
                 gui_tests_format() + \
@@ -175,7 +176,7 @@ def gui_test_pipeline(ctx):
         pipeline_name = "GUI-tests-%s" % server
 
         if params["tags"]:
-            squish_parameters += " --tags %s" % params["tags"]
+            squish_parameters += " --tags %s --tags @only" % params["tags"]
 
         steps = skipIfUnchanged(ctx, "gui-tests") + \
                 build_client(OC_CI_CLIENT_FEDORA, False)
