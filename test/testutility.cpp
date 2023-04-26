@@ -10,6 +10,7 @@
 #include "common/filesystembase.h"
 #include "common/utility.h"
 #include "config.h"
+#include "qregularexpression.h"
 
 using namespace OCC::Utility;
 

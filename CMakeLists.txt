@@ -43,6 +43,15 @@ include(ECMSetupVersion)
 
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
+
+if(APPLE AND NOT BUNDLE_INSTALL_DIR)
+    # workaround for https://invent.kde.org/frameworks/extra-cmake-modules/-/issues/9
+    # in ECM 5.240.0
+    set(KDE_INSTALL_TARGETS_DEFAULT_ARGS  ${KDE_INSTALL_TARGETS_DEFAULT_ARGS}
+                                          BUNDLE DESTINATION "/Applications/KDE" )
+endif()
+
+
 if(UNIT_TESTING)
     message(DEPRECATION "Setting UNIT_TESTING is deprecated please use BUILD_TESTING")
     set(BUILD_TESTING TRUE)

@@ -750,12 +750,14 @@ private slots:
 
     void testNoLocalEncoding()
     {
+#if 0
         const auto utf8Locale = QTextCodec::codecForLocale();
         if (!Utility::isWindows()) {
             if (utf8Locale->mibEnum() != 106) {
                 QSKIP(qUtf8Printable(QStringLiteral("Test only works for UTF8 locale, but current locale is %1").arg(QString::fromUtf8(utf8Locale->name()))));
             }
         }
+#endif
 
         QFETCH_GLOBAL(Vfs::Mode, vfsMode);
         QFETCH_GLOBAL(bool, filesAreDehydrated);

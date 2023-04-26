@@ -180,7 +180,7 @@ qint64 Utility::freeDiskSpace(const QString &path)
 QString Utility::compactFormatDouble(double value, int prec, const QString &unit)
 {
     QLocale locale = QLocale::system();
-    QChar decPoint = locale.decimalPoint();
+    const QString decPoint = locale.decimalPoint();
     QString str = locale.toString(value, 'f', prec);
     while (str.endsWith(QLatin1Char('0')) || str.endsWith(decPoint)) {
         if (str.endsWith(decPoint)) {
@@ -542,7 +542,7 @@ QString Utility::makeConflictFileName(
     return conflictFileName;
 }
 
-bool Utility::isConflictFile(const QStringRef &name)
+bool Utility::isConflictFile(QStringView name)
 {
     auto bname = name.mid(name.lastIndexOf(QLatin1Char('/')) + 1);
 

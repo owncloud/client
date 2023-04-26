@@ -22,13 +22,13 @@
 #include <csync_exclude.h>
 #include "vio/csync_vio_local.h"
 
-#include <QLoggingCategory>
-#include <QUrl>
+#include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
+#include <QLoggingCategory>
 #include <QTextCodec>
+#include <QUrl>
 #include <cstring>
-#include <QDateTime>
 
 
 namespace OCC {

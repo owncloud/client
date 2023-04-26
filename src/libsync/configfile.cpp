@@ -595,9 +595,8 @@ QVariant ConfigFile::getValue(const QString &param, const QString &group,
         }
         systemSetting = systemSettings.value(param, defaultValue);
     } else { // Windows
-        QSettings systemSettings(QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\" APPLICATION_VENDOR "\\%1")
-                                     .arg(Theme::instance()->appNameGUI()),
-            QSettings::NativeFormat);
+        QSettings systemSettings(
+            QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\" APPLICATION_VENDOR "\\%1").arg(Theme::instance()->appNameGUI()), QSettings::NativeFormat);
         if (!group.isEmpty()) {
             systemSettings.beginGroup(group);
         }
