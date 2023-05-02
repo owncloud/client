@@ -11,8 +11,12 @@ if (NOT TARGET OpenAPI::LibreGraphAPI)
     FetchContent_Populate(LibreGraphAPISrc
                         QUIET
                         GIT_REPOSITORY https://github.com/owncloud/libre-graph-api-cpp-qt-client.git
-                        GIT_TAG v${LibreGraphAPIVersion})
+                        GIT_TAG v${LibreGraphAPIVersion}
+    )
+    set(BUILD_SHARED_LIBS_OLD ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF)
     add_subdirectory(${libregraphapisrc_SOURCE_DIR}/client ${libregraphapisrc_BINARY_DIR}/client EXCLUDE_FROM_ALL)
+    set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_OLD})
 endif()
 
 set(libsync_SRCS
