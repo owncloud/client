@@ -1,5 +1,4 @@
-set(LibreGraphAPIVersion 1.0.4)
-find_package(LibreGraphAPI ${LibreGraphAPIVersion} QUIET)
+find_package(LibreGraphAPI 1.0.4 REQUIRED)
 set_package_properties(LibreGraphAPI PROPERTIES
         URL https://github.com/owncloud/libre-graph-api-cpp-qt-client.git
         DESCRIPTION "Libre Graph is a free API for cloud collaboration inspired by the MS Graph API."
