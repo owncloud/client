@@ -1,4 +1,4 @@
-set(LibreGraphAPIVersion 1.0.1)
+set(LibreGraphAPIVersion 1.0.3)
 find_package(LibreGraphAPI ${LibreGraphAPIVersion} QUIET)
 set_package_properties(LibreGraphAPI PROPERTIES
         URL https://github.com/owncloud/libre-graph-api-cpp-qt-client.git
