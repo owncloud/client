@@ -85,7 +85,7 @@ config = {
                 "skip_in_pr": True,
             },
             "ocis": {
-                "version": "3.0.0-rc.1",
+                "version": "3.0.0-rc.2",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
             },
@@ -641,6 +641,7 @@ def uploadGuiTestLogs(ctx, server_type = "oc10"):
     trigger = {
         "status": [
             "failure",
+            "success",
         ],
     }
     if ctx.build.event == "tag":
@@ -691,6 +692,7 @@ def buildGithubComment(suite = "", server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
@@ -717,6 +719,7 @@ def githubComment(alternateSuiteName, server_type = "oc10"):
         "when": {
             "status": [
                 "failure",
+                "success",
             ],
             "event": [
                 "pull_request",
