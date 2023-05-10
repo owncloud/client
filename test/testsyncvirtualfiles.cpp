@@ -599,7 +599,7 @@ private slots:
         // file isn't made virtual the first sync run.
         fakeFolder.localModifier().rename(QStringLiteral("A/a2"), QStringLiteral("A/rand") + DVSUFFIX);
         // dangling virtual files are removed
-        fakeFolder.localModifier().insert(QStringLiteral("A/dangling") + DVSUFFIX), 1_b, QLatin1Char(' ');
+        fakeFolder.localModifier().insert(QStringLiteral("A/dangling") + DVSUFFIX, 1_b, ' ');
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
         QVERIFY(!fakeFolder.currentLocalState().find(QStringLiteral("A/a1")));

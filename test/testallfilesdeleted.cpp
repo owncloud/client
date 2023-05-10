@@ -261,26 +261,27 @@ private slots:
 
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(fingerprintRequests, 2);
+        auto currentState = fakeFolder.currentLocalState();
         // Altough the local file is kept as a conflict, the server file is downloaded
-        QCOMPARE(fakeFolder.currentLocalState().find(QStringLiteral("A/a1"))->contentChar, 'O');
-        auto conflict = findConflict(fakeFolder.currentLocalState(), QStringLiteral("A/a1"));
+        QCOMPARE(currentState.find(QStringLiteral("A/a1"))->contentChar, 'O');
+        auto conflict = findConflict(currentState, QStringLiteral("A/a1"));
         QVERIFY(conflict);
         QCOMPARE(conflict->contentChar, 'W');
         fakeFolder.localModifier().remove(conflict->path());
         // b1 was restored (re-uploaded)
-        QVERIFY(fakeFolder.currentLocalState().find(QStringLiteral("B/b1")));
+        QVERIFY(currentState.find(QStringLiteral("B/b1")));
 
         // b2 has the new content (was not restored), since its mode time goes forward in time
-        QCOMPARE(fakeFolder.currentLocalState().find(QStringLiteral("B/b2"))->contentChar, 'N');
-        conflict = findConflict(fakeFolder.currentLocalState(), QStringLiteral("B/b2"));
+        QCOMPARE(currentState.find(QStringLiteral("B/b2"))->contentChar, 'N');
+        conflict = findConflict(currentState, QStringLiteral("B/b2"));
         QVERIFY(conflict); // Just to be sure, we kept the old file in a conflict
         QCOMPARE(conflict->contentChar, 'W');
         fakeFolder.localModifier().remove(conflict->path());
         QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
 
         // We actually do not remove files that technically should have been removed (we don't want data-loss)
-        QVERIFY(fakeFolder.currentLocalState().find(QStringLiteral("C/c3_removed")));
-        QVERIFY(fakeFolder.currentLocalState().find(QStringLiteral("C/old_a2_location")));
+        QVERIFY(currentState.find(QStringLiteral("C/c3_removed")));
+        QVERIFY(currentState.find(QStringLiteral("C/old_a2_location")));
 
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }

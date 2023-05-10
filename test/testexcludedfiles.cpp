@@ -486,54 +486,46 @@ private slots:
     void check_csync_regex_translation()
     {
         setup();
-        QByteArray storage;
-        auto translate = [&storage](const char *pattern) {
-            storage = ExcludedFiles::convertToRegexpSyntax(QString::fromLatin1(pattern), false).toUtf8();
-            return storage.constData();
-        };
+        auto translate = [](const QString &pattern) { return ExcludedFiles::convertToRegexpSyntax(pattern, false).toUtf8(); };
 
-        QCOMPARE(translate(""), "");
-        QCOMPARE(translate("abc"), "abc");
-        QCOMPARE(translate("a*c"), "a[^/]*c");
-        QCOMPARE(translate("a?c"), "a[^/]c");
-        QCOMPARE(translate("a[xyz]c"), "a[xyz]c");
-        QCOMPARE(translate("a[xyzc"), "a\\[xyzc");
-        QCOMPARE(translate("a[!xyz]c"), "a[^xyz]c");
-        QCOMPARE(translate("a\\*b\\?c\\[d\\\\e"), "a\\*b\\?c\\[d\\\\e");
-        QCOMPARE(translate("a.c"), "a\\.c");
-        QCOMPARE(translate("?𠜎?"), "[^/]\\𠜎[^/]"); // 𠜎 is 4-byte utf8
+        QCOMPARE(translate(QString()), "");
+        QCOMPARE(translate(QStringLiteral("abc")), "abc");
+        QCOMPARE(translate(QStringLiteral("a*c")), "a[^/]*c");
+        QCOMPARE(translate(QStringLiteral("a?c")), "a[^/]c");
+        QCOMPARE(translate(QStringLiteral("a[xyz]c")), "a[xyz]c");
+        QCOMPARE(translate(QStringLiteral("a[xyzc")), "a\\[xyzc");
+        QCOMPARE(translate(QStringLiteral("a[!xyz]c")), "a[^xyz]c");
+        QCOMPARE(translate(QStringLiteral("a\\*b\\?c\\[d\\\\e")), "a\\*b\\?c\\[d\\\\e");
+        QCOMPARE(translate(QStringLiteral("a.c")), "a\\.c");
+        QCOMPARE(translate(QStringLiteral("?𠜎?")), "[^/]\\𠜎[^/]"); // 𠜎 is 4-byte utf8
     }
 
     void check_csync_bname_trigger()
     {
         setup();
         bool wildcardsMatchSlash = false;
-        QByteArray storage;
-        auto translate = [&storage, &wildcardsMatchSlash](const char *pattern) {
-            storage = ExcludedFiles::extractBnameTrigger(QString::fromLatin1(pattern), wildcardsMatchSlash).toUtf8();
-            return storage.constData();
-        };
+        auto translate = [&wildcardsMatchSlash](const QString &pattern) { return ExcludedFiles::extractBnameTrigger(pattern, wildcardsMatchSlash).toUtf8(); };
 
-        QCOMPARE(translate(""), "");
-        QCOMPARE(translate("a/b/"), "");
-        QCOMPARE(translate("a/b/c"), "c");
-        QCOMPARE(translate("c"), "c");
-        QCOMPARE(translate("a/foo*"), "foo*");
-        QCOMPARE(translate("a/abc*foo*"), "abc*foo*");
+        QCOMPARE(translate(QString()), "");
+        QCOMPARE(translate(QStringLiteral("a/b/")), "");
+        QCOMPARE(translate(QStringLiteral("a/b/c")), "c");
+        QCOMPARE(translate(QStringLiteral("c")), "c");
+        QCOMPARE(translate(QStringLiteral("a/foo*")), "foo*");
+        QCOMPARE(translate(QStringLiteral("a/abc*foo*")), "abc*foo*");
 
         wildcardsMatchSlash = true;
 
-        QCOMPARE(translate(""), "");
-        QCOMPARE(translate("a/b/"), "");
-        QCOMPARE(translate("a/b/c"), "c");
-        QCOMPARE(translate("c"), "c");
-        QCOMPARE(translate("*"), "*");
-        QCOMPARE(translate("a/foo*"), "foo*");
-        QCOMPARE(translate("a/abc?foo*"), "*foo*");
-        QCOMPARE(translate("a/abc*foo*"), "*foo*");
-        QCOMPARE(translate("a/abc?foo?"), "*foo?");
-        QCOMPARE(translate("a/abc*foo?*"), "*foo?*");
-        QCOMPARE(translate("a/abc*/foo*"), "foo*");
+        QCOMPARE(translate(QString()), "");
+        QCOMPARE(translate(QStringLiteral("a/b/")), "");
+        QCOMPARE(translate(QStringLiteral("a/b/c")), "c");
+        QCOMPARE(translate(QStringLiteral("c")), "c");
+        QCOMPARE(translate(QStringLiteral("*")), "*");
+        QCOMPARE(translate(QStringLiteral("a/foo*")), "foo*");
+        QCOMPARE(translate(QStringLiteral("a/abc?foo*")), "*foo*");
+        QCOMPARE(translate(QStringLiteral("a/abc*foo*")), "*foo*");
+        QCOMPARE(translate(QStringLiteral("a/abc?foo?")), "*foo?");
+        QCOMPARE(translate(QStringLiteral("a/abc*foo?*")), "*foo?*");
+        QCOMPARE(translate(QStringLiteral("a/abc*/foo*")), "foo*");
     }
 
     void check_csync_is_windows_reserved_word()
