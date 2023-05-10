@@ -802,7 +802,7 @@ private slots:
         QCOMPARE(QFileInfo(fakeFolder.localPath() + QStringLiteral("A/a2")).permissions(), perm);
 
         auto conflictName = fakeFolder.syncJournal().conflictRecord(fakeFolder.syncJournal().conflictRecordPaths().first()).path;
-        QVERIFY(conflictName.contains(QStringLiteral("A/a2")));
+        QVERIFY(conflictName.contains("A/a2"));
         QCOMPARE(QFileInfo(fakeFolder.localPath() + conflictName).permissions(), perm);
     }
 #endif
