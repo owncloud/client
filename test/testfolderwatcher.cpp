@@ -19,7 +19,7 @@ void touch(const QString &file)
     QString cmd;
     cmd = QStringLiteral("touch %1").arg(file);
     qDebug() << "Command: " << cmd;
-    system(cmd.toLocal8Bit());
+    system(cmd.toLocal8Bit().constData());
 #endif
 }
 
@@ -31,7 +31,7 @@ void mkdir(const QString &file)
 #else
     QString cmd = QStringLiteral("mkdir %1").arg(file);
     qDebug() << "Command: " << cmd;
-    system(cmd.toLocal8Bit());
+    system(cmd.toLocal8Bit().constData());
 #endif
 }
 
@@ -43,7 +43,7 @@ void rmdir(const QString &file)
 #else
     QString cmd = QStringLiteral("rmdir %1").arg(file);
     qDebug() << "Command: " << cmd;
-    system(cmd.toLocal8Bit());
+    system(cmd.toLocal8Bit().constData());
 #endif
 }
 
@@ -54,7 +54,7 @@ void rm(const QString &file)
 #else
     QString cmd = QStringLiteral("rm %1").arg(file);
     qDebug() << "Command: " << cmd;
-    system(cmd.toLocal8Bit());
+    system(cmd.toLocal8Bit().constData());
 #endif
 }
 
@@ -65,7 +65,7 @@ void mv(const QString &file1, const QString &file2)
 #else
     QString cmd = QStringLiteral("mv %1 %2").arg(file1, file2);
     qDebug() << "Command: " << cmd;
-    system(cmd.toLocal8Bit());
+    system(cmd.toLocal8Bit().constData());
 #endif
 }
 
