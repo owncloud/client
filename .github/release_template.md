@@ -27,16 +27,13 @@ __TODO__:
 * [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
 * [ ] QA: [Upload](https://confluence.owncloud.com/display/OG/Upload+linux+gpg+keys+to+key+server) linux gpg keys to key server
+* [ ] DEV: Prepare the update server for new version (AppImages included)
+   * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
+* [ ] Inform ``#updates`` that we have Beta/RC 
+* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
-* [ ] DEV: Prepare the update server for new version (AppImages included)
-   * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
-* [ ] Beta/RC [Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
-   * [ ] Website links for beta (needed for the following posts)
-   * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
-   * [ ] All other stakeholders
-* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
 
 ### QA
 
@@ -47,7 +44,6 @@ __TODO__:
 * Manual tests:
    * [ ] QA: [Changelog](https://github.com/owncloud/client/blob/master/CHANGELOG.md) test
    * [ ] QA: Regression test
-* [ ] QA: If required: create a separate test plan ticket for Windows VFS testing from [VFS Template](https://github.com/owncloud/QA/blob/master/Desktop/Test_Plan_VFS.md) - add the link here
 
 ### Final Rebuild after QA Approval
 
@@ -55,9 +51,7 @@ __TODO__:
 * [ ] DEV: Create final release tag (e.g., `v4.5.6`)
 * [ ] DEV: Create [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Tags) for themes 'ownCloud' and 'testpilotcloud' for final release tag
 * [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfuly on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
-* [ ] DEV: Ping `#marketing` to do their [actions](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Marketingtasks)
 * [ ] DEV: Create [a (draft) release](https://github.com/owncloud/client/releases) with Download links - save as a draft until smoke tested
-* [ ] QA: Give [heads-up](https://confluence.owncloud.com/display/OG/Marketing+and+Communication#MarketingandCommunication-Heads-upbeforethefinalrelease) in `#release-coordination` before the final release 
 * [ ] QA: Create a new release issue for a branded release if needed [Branded Client Release Template](https://confluence.owncloud.com/pages/viewpage.action?spaceKey=OG&title=Desktop+Client+Release+Process)
 
 ### Final QA
@@ -70,7 +64,7 @@ __TODO__:
 * [ ] Final [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    * [ ] QA: Ping marketing to update links on https://owncloud.com/desktop-app/ (provide links from github releases; needed for the following posts)
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
-   * [ ] QA: Inform on ``#updates`` channel, so that marketing knows about the new release
+   * [ ] QA: Inform on ``#updates`` channel
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
 * [ ] Inform ``#marketing`` (@bwalter, @mfeilner) and remind to update Wikipedia + Wikidata
   * [ ] https://de.wikipedia.org/wiki/OwnCloud
