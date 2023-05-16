@@ -66,14 +66,11 @@ __TODO__:
    * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
    * [ ] QA: Inform on ``#updates`` channel
    * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
-* [ ] Inform ``#marketing`` (@bwalter, @mfeilner) and remind to update Wikipedia + Wikidata
-  * [ ] https://de.wikipedia.org/wiki/OwnCloud
-  * [ ] https://en.wikipedia.org/wiki/OwnCloud
-  * [ ] https://www.wikidata.org/wiki/Q20763576
+* [ ] Inform ``#marketing`` (@bwalter, @mfeilner) to remind them to update Wikipedia + Wikidata
 
 ### Final Infrastructure Check
 
-* [ ] QA: Verify marketing has updated all the links (owncloud.com, wiki de, wiki en, wikidata)
+* [ ] QA: Verify marketing has updated all the links ([owncloud.com](https://owncloud.com/desktop-app), [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576))
 * [ ] QA/DEV: Update [stable channel](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-UpdatetheUpdater) in the owncloud hosted auto updater
 * [ ] QA: Ensure that the [client release template](https://github.com/owncloud/client/blob/master/.github/release_template.md) is up to date
 
