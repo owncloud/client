@@ -12,7 +12,7 @@ target_link_libraries(OCContextMenu
                       crypt32
                       gdiplus
                       nlohmann_json::nlohmann_json
-        )
+)
 target_compile_definitions(OCContextMenu PRIVATE JSON_NOEXCEPTION)
 add_windows_version_info(OCContextMenu)
 
