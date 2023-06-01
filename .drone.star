@@ -162,7 +162,7 @@ def unit_test_pipeline(ctx):
     }]
 
 def gui_test_pipeline(ctx):
-    squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip" % dir["guiTestReport"]
+    squish_parameters = "--testcase=%s/test/gui/tst_editFiles --reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip" % (dir["base"], dir["guiTestReport"])
     pipelines = []
     for server, params in config["gui-tests"]["servers"].items():
         if ctx.build.event == "pull_request" and params.get("skip_in_pr", False) and not "full-ci" in ctx.build.title.lower():
