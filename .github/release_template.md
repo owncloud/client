@@ -26,7 +26,10 @@ __TODO__:
 
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning)
 * [ ] QA: [Upload](https://confluence.owncloud.com/display/OG/Upload+linux+gpg+keys+to+key+server) linux gpg keys to key server
-* [ ] QA: Check Crash reporter (WIN/Mac/Linux Appimage: start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
+* [ ] QA: Check Crash reporter:  start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
+  * [ ] WIN  
+  * [ ] Mac  
+  * [ ] Linux Appimage
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
