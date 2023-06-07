@@ -47,7 +47,7 @@ __TODO__:
 
 ### QA
 
-* [Automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests) (copy for each beta/RC):
+* [Automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests) (copy for the first beta and the last RC):
    * [ ] QA: GUI tests passed on a tag
    * [ ] QA: All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest)
    * [ ] DEV: [Smash box test](https://drone.owncloud.com/owncloud/smashbox-testing): [Info](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-Smashbox) Make sure tests run on latest version 
