@@ -36,9 +36,9 @@
 #include <QStandardPaths>
 #include <QSysInfo>
 #include <QTextStream>
+#include <QTimeZone>
 #include <QThread>
 #include <QUrl>
-#include <QTimeZone>
 
 #ifdef Q_OS_UNIX
 #include <sys/statvfs.h>
