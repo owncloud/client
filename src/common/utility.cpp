@@ -38,6 +38,7 @@
 #include <QTextStream>
 #include <QThread>
 #include <QUrl>
+#include <QTimeZone>
 
 #ifdef Q_OS_UNIX
 #include <sys/statvfs.h>
@@ -656,8 +657,9 @@ bool Utility::runningInAppImage()
 QDateTime Utility::parseRFC1123Date(const QString &date)
 {
     if (!date.isEmpty()) {
-        const auto out = QDateTime::fromString(date, RFC1123PatternC());
+        auto out = QDateTime::fromString(date, RFC1123PatternC());
         Q_ASSERT(out.isValid());
+        out.setTimeZone(QTimeZone::utc());
         return out;
     }
     return {};
@@ -665,7 +667,7 @@ QDateTime Utility::parseRFC1123Date(const QString &date)
 
 QString Utility::formatRFC1123Date(const QDateTime &date)
 {
-    return date.toString(RFC1123PatternC());
+    return date.toUTC().toString(RFC1123PatternC());
 }
 
 } // namespace OCC
