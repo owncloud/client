@@ -36,8 +36,8 @@
 #include <QStandardPaths>
 #include <QSysInfo>
 #include <QTextStream>
-#include <QTimeZone>
 #include <QThread>
+#include <QTimeZone>
 #include <QUrl>
 
 #ifdef Q_OS_UNIX
