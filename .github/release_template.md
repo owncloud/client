@@ -33,14 +33,15 @@ __TODO__:
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
+* [ ] Decide if the prerelease stage will be public or internat @michaelstingl 
 
 ### Copy for each build (Beta/RC)
 
 * [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
 * [ ] Beta/RC [Communication](https://confluence.owncloud.com/x/loJK)
-    * [ ] Inform ``#updates`` that we have Beta/RC 
-    * [ ] Ping ``#marketing`` to update website links for beta (needed for the following posts)
-    * [ ] Central post https://central.owncloud.org/tags/c/news/desktop
+    * [ ] Inform ``#updates`` and ``#marketing`` that we have Beta/RC    
+    * [ ] For public prerelease: Tell marketing to send email to beta testers
+    * [ ] For public prerelease: Write Central post https://central.owncloud.org/tags/c/news/desktop with link to github release 
 * [ ] DEV: Prepare the update server for new version (AppImages included)
    * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
 
