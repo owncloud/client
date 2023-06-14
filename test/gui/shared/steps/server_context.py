@@ -112,3 +112,50 @@ def step(context, user_name, resource_name):
     test.compare(
         has_link_share, False, f"Resource '{resource_name}' have public link share"
     )
+
+
+@Then(
+    r'the public should be able to download the (?:file|folder) "([^"].*)" without password from the last created public link by "([^"].*)" in the server',
+    regexp=True,
+)
+def step(context, resource_name, link_creator):
+    file_download = sharing_helper.download_last_public_link_resource(
+        link_creator, resource_name
+    )
+    test.compare(file_download, True, "Could not download public share")
+
+
+@Then(
+    r'the public should not be able to download the (?:file|folder) "([^"].*)" from the last created public link by "([^"].*)" in the server',
+    regexp=True,
+)
+def step(context, resource_name, link_creator):
+    file_download = sharing_helper.download_last_public_link_resource(
+        link_creator, resource_name
+    )
+    test.compare(file_download, False, "Could download public share")
+
+
+@Then(
+    r'the public should be able to download the (?:file|folder) "([^"].*)" with password "([^"].*)" from the last created public link by "([^"].*)" in the server',
+    regexp=True,
+)
+def step(context, resource_name, public_link_password, link_creator):
+    file_download = sharing_helper.download_last_public_link_resource(
+        link_creator, resource_name, public_link_password
+    )
+    test.compare(file_download, True, "Could not download public share")
+
+
+@Then(
+    r'the last public link share response of user "([^"].*)" should include the following fields in the server',
+    regexp=True,
+)
+def step(context, link_creator):
+    field_name = context.table[0][0]
+    field_value = context.table[0][1]
+    test.compare(
+        sharing_helper.check_share_field(link_creator, field_name, field_value),
+        True,
+        "Could not find given field name and field value",
+    )
