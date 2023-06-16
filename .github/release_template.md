@@ -63,20 +63,20 @@ __TODO__:
 * [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfuly on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
 * [ ] QA: Create a new release issue for a branded release if needed [Branded Client Release Template](https://github.com/owncloud/enterprise/blob/master/internal_release_templates/internal_client_release_template.md)
 
-### Final QA
+### Final steps
 
 * [ ] QA: [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-SmokeTest)
 * [ ] DEV: Publish the release in GitHub
 * [ ] QA: Check that [documentation](https://doc.owncloud.com/desktop/next/) offers the new version
 
-### Final [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
+### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
 * [ ] QA: Ping ``#marketing`` (@bwalter, @mfeilner) to update links on https://owncloud.com/desktop-app/ (provide links from github releases; needed for the following posts) and remind them to update Wikipedia + Wikidata
 * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
 * [ ] QA: Inform on ``#updates`` channel
 * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
 
-### Final Infrastructure Check
+### Infrastructure Check
 
 * [ ] QA: Verify marketing has updated all the links ([owncloud.com](https://owncloud.com/desktop-app), [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576))
 * [ ] QA/DEV: Update [stable channel](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-UpdatetheUpdater) in the owncloud hosted auto updater
