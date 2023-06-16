@@ -17,27 +17,18 @@
 
 #include "account.h"
 #include "accountmanager.h"
-#include "accountstate.h"
-#include "common/syncjournalfilerecord.h"
 #include "commonstrings.h"
-#include "configfile.h"
-#include "elidedlabel.h"
 #include "folder.h"
 #include "folderman.h"
 #include "issueswidget.h"
-#include "logger.h"
+#include "libsync/configfile.h"
 #include "models/models.h"
-#include "openfilemanager.h"
 #include "protocolwidget.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
-#include "syncresult.h"
 #include "theme.h"
 
-
 #include "ui_issueswidget.h"
-
-#include <climits>
 
 namespace {
 bool persistsUntilLocalDiscovery(const OCC::ProtocolItem &data)
@@ -58,7 +49,7 @@ public:
     explicit SyncFileItemStatusSetSortFilterProxyModel(QObject *parent = nullptr)
         : Models::SignalledQSortFilterProxyModel(parent)
     {
-        resetFilter();
+        restoreFilter();
     }
 
     ~SyncFileItemStatusSetSortFilterProxyModel() override
@@ -70,10 +61,13 @@ public:
         return _filter;
     }
 
-    void setFilter(const StatusSet &newFilter)
+    void setFilter(const StatusSet &newFilter, bool save = true)
     {
         if (_filter != newFilter) {
             _filter = newFilter;
+            if (save) {
+                saveFilter();
+            }
             invalidateFilter();
             emit filterChanged();
         }
@@ -136,6 +130,44 @@ private:
         defaultSet[SyncFileItem::NoStatus] = false;
         defaultSet[SyncFileItem::Success] = false;
         return defaultSet;
+    }
+
+    void saveFilter()
+    {
+        QStringList checked;
+        for (uint8_t s = SyncFileItem::NoStatus; s < SyncFileItem::StatusCount; ++s) {
+            if (_filter[s]) {
+                checked.append(Utility::enumToString(static_cast<SyncFileItem::Status>(s)));
+            }
+        }
+        ConfigFile().setIssuesWidgetFilter(checked);
+    }
+
+    void restoreFilter()
+    {
+        StatusSet filter;
+        bool filterNeedsReset = true; // If there is no filter, the `true` value will cause a reset.
+        QStringList checked = ConfigFile().issuesWidgetFilter();
+
+        for (const QString &s : checked) {
+            auto status = Utility::stringToEnum<SyncFileItem::Status>(s);
+            if (static_cast<int8_t>(status) == -1) {
+                // The string value is not a valid enum value, so stop processing, and queue a reset.
+                filterNeedsReset = true;
+                break;
+            } else {
+                filter[status] = true;
+                filterNeedsReset = false;
+            }
+        }
+
+        if (filterNeedsReset) {
+            // If there was no filter in the config file, or if one of the values is invalid, reset the filter.
+            resetFilter();
+        } else {
+            // There is a valid filter, so apply it. Also don't save it, because we just loaded it successfully
+            setFilter(filter, false);
+        }
     }
 
 private:
