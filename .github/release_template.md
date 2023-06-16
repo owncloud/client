@@ -35,7 +35,7 @@ __TODO__:
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
 * [ ] Decide if the prerelease stage will be public or internat @michaelstingl 
 
-### Copy for each build (Beta/RC)
+### Copy for Each Build (Beta/RC)
 
 * [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
 * [ ] Beta/RC [Communication](https://confluence.owncloud.com/x/loJK)
@@ -63,7 +63,7 @@ __TODO__:
 * [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfuly on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
 * [ ] QA: Create a new release issue for a branded release if needed [Branded Client Release Template](https://github.com/owncloud/enterprise/blob/master/internal_release_templates/internal_client_release_template.md)
 
-### Final steps
+### Final Steps
 
 * [ ] QA: [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-SmokeTest)
 * [ ] DEV: Publish the release in GitHub
