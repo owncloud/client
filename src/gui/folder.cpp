@@ -715,22 +715,6 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         // extra sure to not miss relevant changes.
         _localDiscoveryTracker->addTouchedPath(relativePath);
 
-// The folder watcher fires a lot of bogus notifications during
-// a sync operation, both for actual user files and the database
-// and log. Therefore we check notifications against operations
-// the sync is doing to filter out our own changes.
-#ifdef Q_OS_MAC
-// On OSX the folder watcher does not report changes done by our
-// own process. Therefore nothing needs to be done here!
-#else
-        // Use the path to figure out whether it was our own change
-        if (_engine->wasFileTouched(path)) {
-            qCDebug(lcFolder) << "Changed path was touched by SyncEngine, ignoring:" << path;
-            return;
-        }
-#endif
-
-
         SyncJournalFileRecord record;
         _journal.getFileRecord(relativePath.toUtf8(), &record);
         if (reason != ChangeReason::UnLock) {
@@ -750,8 +734,9 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
             if (spurious) {
                 qCInfo(lcFolder) << "Ignoring spurious notification for file" << relativePath;
                 Q_ASSERT([&] {
+                    Q_ASSERT(record.isValid());
                     // we don't intend to burn to many cpu cycles so limit this check on small files
-                    if (record._fileSize < 1_mb) {
+                    if (!record.isVirtualFile() && record._fileSize < 1_mb) {
                         const auto header = ChecksumHeader::parseChecksumHeader(record._checksumHeader);
                         auto *compute = new ComputeChecksum(this);
                         compute->setChecksumType(header.type());

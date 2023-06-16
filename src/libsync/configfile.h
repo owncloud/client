@@ -158,6 +158,9 @@ public:
     bool showInExplorerNavigationPane() const;
     void setShowInExplorerNavigationPane(bool show);
 
+    QStringList issuesWidgetFilter() const;
+    void setIssuesWidgetFilter(const QStringList &checked);
+
     std::chrono::seconds timeout() const;
     qint64 chunkSize() const;
     qint64 maxChunkSize() const;
@@ -184,8 +187,8 @@ public:
 
     /** The client version that last used this settings file.
         Updated by configVersionMigration() at client startup. */
-    QString clientVersionString() const;
-    void setClientVersionString(const QString &version);
+    QString clientVersionWithBuildNumberString() const;
+    void setClientVersionWithBuildNumberString(const QString &version);
 
     /**  Returns a new settings pre-set in a specific group. */
     static std::unique_ptr<QSettings> settingsWithGroup(const QString &group);
