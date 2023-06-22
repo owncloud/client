@@ -13,6 +13,7 @@
  */
 
 #include "settingsdialog_mac.h"
+#include "common/utility.h"
 
 #import <AppKit/AppKit.h>
 #include <QDebug>
@@ -34,7 +35,7 @@ void setActivationPolicy(ActivationPolicy policy)
 
     if (mode != NSApp.activationPolicy) {
         if (![NSApp setActivationPolicy:mode]) {
-            qWarning() << "setActivationPolicy" << static_cast<int>(policy) << "failed";
+            qWarning() << "setActivationPolicy" << OCC::Utility::enumToString > (policy) << "failed";
         }
     }
 }

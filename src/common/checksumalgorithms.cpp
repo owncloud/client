@@ -26,7 +26,7 @@ CheckSums::Algorithm CheckSums::fromByteArray(const QByteArray &s)
         // ensure to run the check only once
         static bool once = [] {
             for (const auto &a : All) {
-                const QString s = CheckSums::toQString(a.first);
+                const QString s = Utility::enumToString(a.first);
                 if (s != s.toUpper()) {
                     return false;
                 }
@@ -36,6 +36,17 @@ CheckSums::Algorithm CheckSums::fromByteArray(const QByteArray &s)
         return once;
     }());
     return fromName(s.toUpper().constData());
+}
+
+template <>
+QString Utility::enumToString(CheckSums::Algorithm algo)
+{
+    const auto n = toString(algo);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    return QString::fromUtf8(n.data(), static_cast<int>(n.size()));
+#else
+    return QString::fromUtf8(n.data(), n.size());
+#endif
 }
 
 #include "moc_checksumalgorithms.cpp"

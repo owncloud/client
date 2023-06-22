@@ -12,8 +12,8 @@
  * for more details.
  */
 
-#include <cloudproviders/cloudprovidersaccountexporter.h>
-#include <cloudproviders/cloudprovidersproviderexporter.h>
+#include <cloudprovidersaccountexporter.h>
+#include <cloudprovidersproviderexporter.h>
 #include <gio/gio.h>
 #include <glib.h>
 

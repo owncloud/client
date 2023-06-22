@@ -424,8 +424,8 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
         "Using virtual files plugin: %5%7"
         "%6")
         .arg(appName(), _version, qtVersionString, QSslSocket::sslLibraryVersionString(),
-            Vfs::modeToString(VfsPluginManager::instance().bestAvailableVfsMode()), QSysInfo::productType() % QLatin1Char('-') % QSysInfo::kernelVersion(), br,
-            gitUrl);
+            Utility::enumToString(VfsPluginManager::instance().bestAvailableVfsMode()), QSysInfo::productType() % QLatin1Char('-') % QSysInfo::kernelVersion(),
+            br, gitUrl);
 }
 
 

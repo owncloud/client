@@ -748,10 +748,9 @@ void FolderMan::slotScheduleFolderByTime()
         if (f->consecutiveFailingSyncs() > 1)
             syncAgainDelay = std::chrono::seconds(60); // 60s for each further attempt
         if (syncAgain && msecsSinceSync > syncAgainDelay) {
-            qCInfo(lcFolderMan) << "Scheduling folder" << f->path()
-                                << ", the last" << f->consecutiveFailingSyncs() << "syncs failed"
+            qCInfo(lcFolderMan) << "Scheduling folder" << f->path() << ", the last" << f->consecutiveFailingSyncs() << "syncs failed"
                                 << ", anotherSyncNeeded" << f->syncEngine().isAnotherSyncNeeded()
-                                << ", last status:" << f->syncResult().statusString()
+                                << ", last status:" << Utility::enumToDisplayName(f->syncResult().status())
                                 << ", time since last sync:" << msecsSinceSync.count();
 
             scheduleFolder(f);

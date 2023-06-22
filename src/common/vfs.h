@@ -19,6 +19,7 @@
 #include "pinstate.h"
 #include "result.h"
 #include "syncfilestatus.h"
+#include "utility.h"
 
 #include <QObject>
 #include <QScopedPointer>
@@ -125,7 +126,6 @@ public:
     };
     Q_ENUM(ConvertToPlaceholderResult)
 
-    static QString modeToString(Mode mode);
     static Optional<Mode> modeFromString(const QString &str);
 
     static Result<void, QString> checkAvailability(const QString &path, OCC::Vfs::Mode mode);
@@ -297,5 +297,10 @@ private:
 
     mutable QMap<Vfs::Mode, bool> _pluginCache;
 };
+
+namespace Utility {
+    template <>
+    OCSYNC_EXPORT QString enumToString(Vfs::Mode mode);
+} // namespace Utility
 
 } // namespace OCC

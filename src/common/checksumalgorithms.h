@@ -19,6 +19,7 @@
 
 #include "constexpr_list.h"
 #include "ocsynclib.h"
+#include "utility.h"
 
 #include <QCryptographicHash>
 #include <QString>
@@ -110,5 +111,11 @@ namespace CheckSums {
     }
 
     OCSYNC_EXPORT Algorithm fromByteArray(const QByteArray &s);
+} // namespace CheckSums
+
+namespace Utility {
+    template <>
+    OCSYNC_EXPORT QString enumToString(CheckSums::Algorithm algo);
 }
-}
+
+} // namespace OCC
