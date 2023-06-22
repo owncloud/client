@@ -30,10 +30,17 @@ def get_public_endpoint():
     return path.join(get_config('localBackendUrl'), 'remote.php', 'dav', 'public-files')
 
 
-def get_public_link_shares(user):
-    public_shares_list = []
+def get_all_shares(user):
+    print(get_share_url())
+
     response = request.get(get_share_url(), user=user)
     provisioning.checkSuccessOcsStatus(response)
+    return response
+
+
+def get_public_link_shares(user):
+    public_shares_list = []
+    response = get_all_shares(user)
     shares = json.loads(response.text)['ocs']['data']
 
     for share in shares:

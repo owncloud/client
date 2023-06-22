@@ -547,7 +547,7 @@ Feature: Sharing
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for folder "simple-folder" using the client-UI with these details:
             | role | <role> |
-        Then user "Alice" on the server should have a share with these details:
+        Then user "Alice" in the server should have a share with these details:
             | field       | value          |
             | share_type  | public_link    |
             | uid_owner   | Alice          |
@@ -567,7 +567,7 @@ Feature: Sharing
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for folder "simple-folder" using the client-UI with these details:
             | role | Contributor |
-        Then user "Alice" on the server should have a share with these details:
+        Then user "Alice" in the server should have a share with these details:
             | field       | value          |
             | share_type  | public_link    |
             | uid_owner   | Alice          |
@@ -590,7 +590,7 @@ Feature: Sharing
         When the user closes the sharing dialog
         And the user removes permissions "<permissions>" for user "Brian Murphy" of resource "lorem.txt" using the client-UI
         Then "<permissions>" permissions should not be displayed for user "Brian Murphy" for resource "lorem.txt" on the client-UI
-        And user "Alice" on the server should have a share with these details:
+        And user "Alice" in the server should have a share with these details:
             | field       | value                        |
             | uid_owner   | Alice                        |
             | share_with  | Brian                        |
@@ -598,7 +598,7 @@ Feature: Sharing
             | file_target | /Shares/simple-folder        |
             | item_type   | folder                       |
             | permissions | <expected-folder-permission> |
-        And user "Alice" on the server should have a share with these details:
+        And user "Alice" in the server should have a share with these details:
             | field       | value                      |
             | uid_owner   | Alice                      |
             | share_with  | Brian                      |

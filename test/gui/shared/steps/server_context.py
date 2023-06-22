@@ -159,3 +159,16 @@ def step(context, link_creator):
         True,
         "Could not find given field name and field value",
     )
+
+
+@Then(
+    r'user "([^"].*)" in the server should have a share with these details:',
+    regexp=True,
+)
+def step(context, user):
+    res = sharing_helper.get_all_shares(user)
+    print(res.content)
+
+    print(context.table[1:])
+    for field in context.table[1:]:
+        print(field)
