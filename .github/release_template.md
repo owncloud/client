@@ -72,7 +72,7 @@ __TODO__:
 
 ### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
-* [ ] QA: Ping ``#marketing`` (@bwalter, @mfeilner) to update links on https://owncloud.com/desktop-app/ (provide links from github releases; needed for the following posts) and remind them to update Wikipedia + Wikidata
+* [ ] QA: Ping ``#marketing``: @bwalter to update links on https://owncloud.com/desktop-app/ (provide links from github releases) and @mfeilner to update Wikipedia and Wikidata
 * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
 * [ ] QA: Inform on ``#updates`` channel
 * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
