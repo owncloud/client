@@ -512,7 +512,7 @@ Feature: Sharing
             | expireDate | 2031-10-14 |
         And the public should be able to download the file "textfile.txt" with password "pass123" from the last created public link by "Alice" on the server
 
-    @skip @issue-9321
+    @issue-9321
     Scenario: user changes the expiration date of an already existing public link for file using client-UI
         Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
         And user "Alice" has created a public link on the server with following settings
@@ -526,7 +526,7 @@ Feature: Sharing
         Then the last public link share response of user "Alice" should include the following fields on the server
             | expireDate | 2038-07-21 |
 
-    @skip @issue-9321
+    @issue-9321
     Scenario: user changes the expiration date of an already existing public link for folder using client-UI
         Given user "Alice" has created folder "simple-folder" on the server
         And user "Alice" has created a public link on the server with following settings
