@@ -115,7 +115,7 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
     }
     auto timer = std::make_unique<Utility::ChronoElapsedTimer>();
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
     // device should still exist, lets still use a qpointer to ensure we have valid data
     QObject::connect(
         reply, &QNetworkReply::requestSent, reply, [timer = timer.get(), operation, reply, device = QPointer<QIODevice>(device), deviceRaw = device] {
