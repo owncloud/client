@@ -75,14 +75,13 @@ __TODO__:
 
 ### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
-* [ ] QA: Ping ``#marketing``: @bwalter to update links on https://owncloud.com/desktop-app/ (provide links from github releases) and @mfeilner to update Wikipedia and Wikidata
+* [ ] QA: Ping ``#marketing``: @bwalter to update links on https://owncloud.com/desktop-app/ (provide links from github releases) and @mfeilner to update [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576))
 * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
 * [ ] QA: Inform on ``#updates`` channel
 * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
 
 ### Infrastructure Check
 
-* [ ] QA: Verify marketing has updated all the links ([owncloud.com](https://owncloud.com/desktop-app), [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576))
 * [ ] QA/DEV: Update [stable channel](https://confluence.owncloud.com/display/OG/Online+Updater%2C+Crash+reporter%2C+Transifex#OnlineUpdater,Crashreporter,Transifex-UpdatetheUpdater) in the owncloud hosted auto updater
 * [ ] QA: Ensure that the [client release template](https://github.com/owncloud/client/blob/master/.github/release_template.md) is up to date
 
