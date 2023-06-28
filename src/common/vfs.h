@@ -298,9 +298,7 @@ private:
     mutable QMap<Vfs::Mode, bool> _pluginCache;
 };
 
-namespace Utility {
-    template <>
-    OCSYNC_EXPORT QString enumToString(Vfs::Mode mode);
-} // namespace Utility
+template <>
+OCSYNC_EXPORT QString Utility::enumToString(Vfs::Mode mode);
 
 } // namespace OCC

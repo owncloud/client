@@ -113,9 +113,7 @@ namespace CheckSums {
     OCSYNC_EXPORT Algorithm fromByteArray(const QByteArray &s);
 } // namespace CheckSums
 
-namespace Utility {
-    template <>
-    OCSYNC_EXPORT QString enumToString(CheckSums::Algorithm algo);
-}
+template <>
+OCSYNC_EXPORT QString Utility::enumToString(CheckSums::Algorithm algo);
 
 } // namespace OCC

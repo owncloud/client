@@ -255,8 +255,8 @@ QString Utility::enumToString(Vfs::Mode mode)
         return QStringLiteral("suffix");
     case Vfs::Mode::WindowsCfApi:
         return QStringLiteral("wincfapi");
-    default:
-        [[fallthrough]];
+    case Vfs::Mode::Off:
+        return QStringLiteral("off");
     }
-    return QStringLiteral("off");
+    Q_UNREACHABLE();
 }
