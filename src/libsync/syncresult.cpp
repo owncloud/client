@@ -37,44 +37,31 @@ void SyncResult::reset()
 template <>
 QString Utility::enumToDisplayName(SyncResult::Status status)
 {
-    QString re;
-
     switch (status) {
     case SyncResult::Status::Undefined:
-        re = QStringLiteral("Undefined");
-        break;
+        return QStringLiteral("Undefined");
     case SyncResult::Status::NotYetStarted:
-        re = QStringLiteral("Not yet Started");
-        break;
+        return QStringLiteral("Awaiting sync");
     case SyncResult::Status::SyncRunning:
-        re = QStringLiteral("Sync Running");
-        break;
+        return QStringLiteral("Sync running");
     case SyncResult::Status::Success:
-        re = QStringLiteral("Success");
-        break;
+        return QStringLiteral("Success");
     case SyncResult::Status::Error:
-        re = QStringLiteral("Error");
-        break;
+        return QStringLiteral("Error");
     case SyncResult::Status::SetupError:
-        re = QStringLiteral("SetupError");
-        break;
+        return QStringLiteral("Setup error");
     case SyncResult::Status::SyncPrepare:
-        re = QStringLiteral("SyncPrepare");
-        break;
+        return QStringLiteral("Preparing to sync");
     case SyncResult::Status::Problem:
-        re = QStringLiteral("Success, some files were ignored.");
-        break;
+        return QStringLiteral("Success, some files were ignored.");
     case SyncResult::Status::SyncAbortRequested:
-        re = QStringLiteral("Sync Request aborted by user");
-        break;
+        return QStringLiteral("Aborting sync");
     case SyncResult::Status::Paused:
-        re = QStringLiteral("Sync Paused");
-        break;
+        return QStringLiteral("Sync paused");
     case SyncResult::Status::Offline:
-        re = QStringLiteral("Offline");
-        break;
+        return QStringLiteral("Offline");
     }
-    return re;
+    Q_UNREACHABLE();
 }
 
 void SyncResult::setStatus(Status stat)
