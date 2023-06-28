@@ -35,7 +35,7 @@ void setActivationPolicy(ActivationPolicy policy)
 
     if (mode != NSApp.activationPolicy) {
         if (![NSApp setActivationPolicy:mode]) {
-            qWarning() << "setActivationPolicy" << OCC::Utility::enumToString > (policy) << "failed";
+            qWarning() << "setActivationPolicy" << static_cast<int>(policy) << "failed";
         }
     }
 }
