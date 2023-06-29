@@ -30,6 +30,7 @@ QString Utility::enumToDisplayName(VfsItemAvailability availability)
     case VfsItemAvailability::Mixed:
         return QCoreApplication::translate("pinstate", "Some available online only");
     case VfsItemAvailability::AllDehydrated:
+        [[fallthrough]];
     case VfsItemAvailability::OnlineOnly:
         return QCoreApplication::translate("pinstate", "Available online only");
     }
