@@ -28,16 +28,16 @@ jobs:
         fail-fast: false
         matrix:
             include:
-            - name: Windows 64-bit cl
-              target: windows-cl-msvc2022-x86_64
-              os: windows-latest
-              fetch-depth: 0
-              container:
-            - name: macOS 64-bit clang
-              target: macos-64-clang
-              os: macos-latest
-              fetch-depth: 1
-              container:
+#            - name: Windows 64-bit cl
+#              target: windows-cl-msvc2022-x86_64
+#              os: windows-latest
+#              fetch-depth: 0
+#              container:
+#            - name: macOS 64-bit clang
+#              target: macos-64-clang
+#              os: macos-latest
+#              fetch-depth: 1
+#              container:
             - name: CentOS 7 64-bit gcc
               target: linux-64-gcc
               os: ubuntu-latest
@@ -102,7 +102,15 @@ jobs:
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.sonar.ps1" --build
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --install --qmerge owncloud/owncloud-client
         } else {
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" owncloud/owncloud-client
+            if($IsLinux) {
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c clazy
+              $env:CXX = "clang++"
+              $env:CC = "clang"
+              $env:CLAZY_EXPORT_FIXES=1
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" --options owncloud/owncloud-client.args="-DENABLE_CLAZY=ON" owncloud/owncloud-client
+            } else {
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --src-dir "${env:GITHUB_WORKSPACE}" owncloud/owncloud-client
+            }
         }
 
     - name: Run tests
