@@ -92,7 +92,7 @@ private slots:
         AccountManager::instance()->restore();
 
         settings->beginGroup(QStringLiteral("0/Folders"));
-        TestUtils::folderMan()->setupFoldersHelper(*settings.get(), AccountManager::instance()->accounts().first(), {}, true, false);
+        TestUtils::folderMan()->setupFoldersHelper(*settings.get(), AccountManager::instance()->accounts().front().get(), {}, true, false);
         settings->endGroup();
 
         QCOMPARE(journalPaths.first(), settings->value(QStringLiteral("0/Folders/1/journalPath")));

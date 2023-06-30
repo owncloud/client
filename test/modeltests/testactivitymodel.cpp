@@ -46,7 +46,7 @@ private Q_SLOTS:
             Activity{Activity::ActivityType, QStringLiteral("021ad48a-80ae-4af6-b878-aeb836bd367d"), acc2, QStringLiteral("test"), QStringLiteral("test"),
                 QStringLiteral("foo.cpp"), QUrl(QStringLiteral("https://owncloud.com")), QDateTime::currentDateTime()},
         });
-        model->slotRemoveAccount(AccountManager::instance()->accounts().first());
+        model->slotRemoveAccount(AccountManager::instance()->accounts().front().get());
     }
 };
 }

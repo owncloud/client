@@ -795,7 +795,7 @@ Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile,
 void SocketApi::command_V2_LIST_ACCOUNTS(const QSharedPointer<SocketApiJobV2> &job) const
 {
     QJsonArray out;
-    for (auto acc : AccountManager::instance()->accounts()) {
+    for (const auto &acc : AccountManager::instance()->accounts()) {
         out << QJsonObject({ { QStringLiteral("name"), acc->account()->displayName() },
             { QStringLiteral("id"), acc->account()->id() },
             { QStringLiteral("uuid"), acc->account()->uuid().toString(QUuid::WithoutBraces) } });

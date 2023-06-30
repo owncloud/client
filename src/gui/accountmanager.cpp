@@ -346,14 +346,15 @@ AccountStatePtr AccountManager::account(const QString &name)
 {
     for (const auto &acc : qAsConst(_accounts)) {
         if (acc->account()->displayName() == name) {
-            return acc;
+            return acc.get();
         }
     }
     return AccountStatePtr();
 }
 
 AccountStatePtr AccountManager::account(const QUuid uuid) {
-    return _accounts.value(uuid);
+    // assumes we always find one
+    return std::find_if(_accounts.cbegin(), _accounts.cend(), [uuid](const auto &accountState) { return accountState->account()->uuid() == uuid; })->get();
 }
 
 AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
@@ -369,12 +370,13 @@ AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
 
 void AccountManager::deleteAccount(AccountStatePtr account)
 {
-    auto it = std::find(_accounts.begin(), _accounts.end(), account);
-    if (it == _accounts.end()) {
+    auto it = std::find_if(_accounts.cbegin(), _accounts.cend(), [&](const auto &accountState) { return account.get() == accountState.get(); });
+    if (it == _accounts.cend()) {
         return;
     }
-    // The argument keeps a strong reference to the AccountState, so we can safely remove other
-    // AccountStatePtr occurrences:
+
+    // this unique ptr will delete the object once we leave the scope
+    auto accountStateToBeRemoved = std::move(_accounts.at(std::distance(_accounts.cbegin(), it)));
     _accounts.erase(it);
 
     // Forget account credentials, cookies
@@ -385,7 +387,6 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     settings->remove(account->account()->id());
 
     emit accountRemoved(account);
-    account->deleteLater();
 }
 
 AccountPtr AccountManager::createAccount(const QUuid &uuid)
@@ -398,7 +399,7 @@ void AccountManager::shutdown()
 {
     const auto accounts = std::move(_accounts);
     for (const auto &acc : accounts) {
-        emit accountRemoved(acc);
+        emit accountRemoved(acc.get());
     }
 }
 
@@ -434,9 +435,8 @@ AccountStatePtr AccountManager::addAccountState(std::unique_ptr<AccountState> &&
         saveAccount(rawAccount, false);
     });
 
-    AccountStatePtr statePtr = accountState.release();
-    _accounts.insert(statePtr->account()->uuid(), statePtr);
-    emit accountAdded(statePtr);
-    return statePtr;
+    _accounts.push_back(std::move(accountState));
+    emit accountAdded(_accounts.back().get());
+    return _accounts.back().get();
 }
 }

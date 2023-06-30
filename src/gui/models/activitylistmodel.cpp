@@ -172,11 +172,9 @@ bool ActivityListModel::canFetchMore(const QModelIndex &) const
     if (_activityLists.isEmpty())
         return true;
 
-    for (auto i = _activityLists.begin(); i != _activityLists.end(); ++i) {
-        AccountStatePtr accountState = i.key();
+    for (const auto &[accountState, activityList] : Utility::asKeyValueRange(_activityLists)) {
         if (accountState && accountState->isConnected()) {
-            ActivityList activities = i.value();
-            if (activities.count() == 0 && !_currentlyFetching.contains(accountState)) {
+            if (activityList.count() == 0 && !_currentlyFetching.contains(accountState)) {
                 return true;
             }
         }
@@ -218,7 +216,7 @@ void ActivityListModel::startFetchJob(AccountStatePtr ast)
                     QDateTime::fromString(json.value(QStringLiteral("date")).toString(), Qt::ISODate)});
             }
 
-            _activityLists[ast] = std::move(list);
+            _activityLists[ast.get()] = std::move(list);
 
             emit activityJobStatusCode(ast, job->ocsStatus());
 
@@ -249,25 +247,25 @@ void ActivityListModel::setActivityList(const ActivityList &&resultList)
 
 void ActivityListModel::fetchMore(const QModelIndex &)
 {
-    for (const AccountStatePtr &asp : AccountManager::instance()->accounts()) {
-        if (!_activityLists.contains(asp) && asp->isConnected()) {
-            _activityLists[asp] = ActivityList();
-            startFetchJob(asp);
+    for (const auto &accountState : AccountManager::instance()->accounts()) {
+        if (!_activityLists.contains(accountState.get()) && accountState->isConnected()) {
+            _activityLists[accountState.get()] = ActivityList();
+            startFetchJob(accountState.get());
         }
     }
 }
 
 void ActivityListModel::slotRefreshActivity(const AccountStatePtr &ast)
 {
-    if (ast && _activityLists.contains(ast)) {
-        _activityLists.remove(ast);
+    if (ast && _activityLists.contains(ast.get())) {
+        _activityLists.remove(ast.get());
     }
     startFetchJob(ast);
 }
 
 void ActivityListModel::slotRemoveAccount(AccountStatePtr ast)
 {
-    if (_activityLists.contains(ast)) {
+    if (_activityLists.contains(ast.get())) {
         const auto accountToRemove = ast->account()->uuid();
 
         QMutableListIterator<Activity> it(_finalList);
@@ -283,7 +281,7 @@ void ActivityListModel::slotRemoveAccount(AccountStatePtr ast)
                 ++i;
             }
         }
-        _activityLists.remove(ast);
+        _activityLists.remove(ast.get());
         _currentlyFetching.remove(ast);
     }
 }

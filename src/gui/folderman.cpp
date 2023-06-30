@@ -237,7 +237,7 @@ int FolderMan::setupFolders()
                 // Should not happen: bad container keys should have been deleted
                 qCWarning(lcFolderMan) << "Folder structure" << groupName << "is too new, ignoring";
             } else {
-                setupFoldersHelper(*settings, account, skipSettingsKeys, backwardsCompatible, foldersWithPlaceholders);
+                setupFoldersHelper(*settings, account.get(), skipSettingsKeys, backwardsCompatible, foldersWithPlaceholders);
             }
             settings->endGroup();
         };

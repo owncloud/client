@@ -202,7 +202,7 @@ void NetworkSettings::saveProxySettings()
     // start the sync.
     FolderMan::instance()->setDirtyProxy();
 
-    for (auto account : AccountManager::instance()->accounts()) {
+    for (auto &account : AccountManager::instance()->accounts()) {
         account->freshConnectionAttempt();
     }
 }

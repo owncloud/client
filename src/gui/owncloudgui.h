@@ -114,7 +114,6 @@ public slots:
     void slotRemoveDestroyedShareDialogs();
 
 private:
-    void setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accounts, bool pause);
     void setupActions();
     void addAccountContextMenu(AccountStatePtr accountState, QMenu *menu);
 

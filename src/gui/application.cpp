@@ -229,7 +229,7 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &Application::slotAccountStateRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai);
+        slotAccountStateAdded(ai.get());
     }
 
     connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareDialog);
@@ -255,7 +255,7 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
     }
 #endif
 
-    if (AccountManager::instance()->accounts().isEmpty()) {
+    if (AccountManager::instance()->accounts().empty()) {
         // display the wizard if we don't have an account yet
         QTimer::singleShot(0, gui(), &ownCloudGui::runNewAccountWizard);
     }
@@ -273,7 +273,7 @@ Application::~Application()
 void Application::slotAccountStateRemoved() const
 {
     // if there is no more account, show the wizard.
-    if (_gui && AccountManager::instance()->accounts().isEmpty()) {
+    if (_gui && AccountManager::instance()->accounts().empty()) {
         // allow to add a new account if there is non any more. Always think
         // about single account theming!
         gui()->runNewAccountWizard();

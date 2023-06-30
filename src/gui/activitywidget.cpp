@@ -178,7 +178,7 @@ void ActivityWidget::slotAccountActivityStatus(AccountStatePtr ast, int statusCo
 
 void ActivityWidget::checkActivityTabVisibility()
 {
-    int accountCount = AccountManager::instance()->accounts().count();
+    int accountCount = AccountManager::instance()->accounts().size();
     bool hasAccountsWithActivity =
         _accountsWithoutActivities.count() != accountCount;
     bool hasNotifications = !_widgetForNotifId.isEmpty();
@@ -568,7 +568,7 @@ void ActivitySettings::slotRefresh(AccountStatePtr ptr)
 void ActivitySettings::slotRegularNotificationCheck()
 {
     for (const auto &a : AccountManager::instance()->accounts()) {
-        slotRefresh(a);
+        slotRefresh(a.get());
     }
 }
 

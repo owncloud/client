@@ -58,7 +58,7 @@ public:
      * Return a map of all accounts.
      * (this is a map of QSharedPointer for internal reasons, one should normally not keep a copy of them)
      */
-    const QMap<QUuid, AccountStatePtr> &accounts() { return _accounts; }
+    const auto &accounts() { return _accounts; }
 
     /**
      * Return the account state pointer for an account identified by its display name
@@ -116,7 +116,7 @@ Q_SIGNALS:
 
 private:
     AccountManager() {}
-    QMap<QUuid, AccountStatePtr> _accounts;
+    std::vector<std::unique_ptr<AccountState>> _accounts;
     /// Account ids from settings that weren't read
     QSet<QString> _additionalBlockedAccountIds;
 };

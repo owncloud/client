@@ -262,7 +262,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &SettingsDialog::accountRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
-        accountAdded(ai);
+        accountAdded(ai.get());
     }
 
     QTimer::singleShot(0, this, &SettingsDialog::showFirstPage);

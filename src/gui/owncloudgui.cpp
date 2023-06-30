@@ -54,9 +54,23 @@
 
 using namespace std::chrono_literals;
 
+using namespace OCC;
+
 namespace {
 
-using namespace OCC;
+template <typename T>
+void setPauseOnAllFoldersHelper(const std::vector<T> &accounts, bool pause)
+{
+    for (auto *f : FolderMan::instance()->folders()) {
+        auto it = std::find_if(accounts.cbegin(), accounts.cend(), [f](const auto &accountState) { return accountState.get() == f->accountState(); });
+        if (it != accounts.cend()) {
+            f->setSyncPaused(pause);
+            if (pause) {
+                f->slotTerminateSync();
+            }
+        }
+    }
+}
 
 void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
 {
@@ -156,7 +170,7 @@ ownCloudGui::~ownCloudGui()
 void ownCloudGui::slotOpenSettingsDialog()
 {
     // if account is set up, start the configuration wizard.
-    if (!AccountManager::instance()->accounts().isEmpty()) {
+    if (!AccountManager::instance()->accounts().empty()) {
         if (QApplication::activeWindow() != _settingsDialog) {
             slotShowSettings();
         } else {
@@ -260,7 +274,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             allSignedOut = false;
         }
         if (!a->isConnected()) {
-            problemAccounts.append(a);
+            problemAccounts.append(a.get());
         } else {
             allDisconnected = false;
         }
@@ -387,9 +401,9 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
 
     menu->addSeparator();
     if (onePaused) {
-        menu->addAction(tr("Resume synchronization"), this, [accountState, this] { setPauseOnAllFoldersHelper({accountState}, false); });
+        menu->addAction(tr("Resume synchronization"), this, [accountState, this] { setPauseOnAllFoldersHelper<AccountStatePtr>({accountState}, false); });
     } else {
-        menu->addAction(tr("Stop synchronization"), this, [accountState, this] { setPauseOnAllFoldersHelper({accountState}, true); });
+        menu->addAction(tr("Stop synchronization"), this, [accountState, this] { setPauseOnAllFoldersHelper<AccountStatePtr>({accountState}, true); });
     }
 
     if (accountState->isSignedOut()) {
@@ -596,7 +610,7 @@ void ownCloudGui::updateContextMenu()
 
     const auto &accountList = AccountManager::instance()->accounts();
 
-    bool isConfigured = (!accountList.isEmpty());
+    bool isConfigured = (!accountList.empty());
     bool atLeastOneConnected = false;
     bool atLeastOnePaused = false;
     bool atLeastOneNotPaused = false;
@@ -617,15 +631,13 @@ void ownCloudGui::updateContextMenu()
     _contextMenu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotShowSettings);
     _contextMenu->addSeparator();
     if (atLeastOnePaused) {
-        _contextMenu->addAction(
-            tr("Resume synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts().values(), false); });
+        _contextMenu->addAction(tr("Resume synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts(), false); });
     } else {
-        _contextMenu->addAction(
-            tr("Stop synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts().values(), true); });
+        _contextMenu->addAction(tr("Stop synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts(), true); });
     }
     _contextMenu->addSeparator();
 
-    if (accountList.isEmpty()) {
+    if (accountList.empty()) {
         _contextMenu->addAction(tr("Create a new account"), this, &ownCloudGui::runNewAccountWizard);
     } else {
         // submenus for accounts
@@ -634,7 +646,7 @@ void ownCloudGui::updateContextMenu()
             _accountMenus.append(accountMenu);
             _contextMenu->addMenu(accountMenu);
 
-            addAccountContextMenu(account, accountMenu);
+            addAccountContextMenu(account.get(), accountMenu);
         }
     }
 
@@ -935,18 +947,6 @@ void ownCloudGui::runNewAccountWizard()
         _wizardController->window()->open();
         // ... and bring it to the front
         raiseDialog(_wizardController->window());
-    }
-}
-
-void ownCloudGui::setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accounts, bool pause)
-{
-    for (auto *f : FolderMan::instance()->folders()) {
-        if (accounts.contains(f->accountState())) {
-            f->setSyncPaused(pause);
-            if (pause) {
-                f->slotTerminateSync();
-            }
-        }
     }
 }
 
