@@ -1,0 +1,6 @@
+Enhancement: We enabled the crash reporter in the cmd app
+
+The crash reporter is still a gui app so it will only work when ui is available but it will allows
+users to report crashes of the cmd much more easily.
+
+https://github.com/owncloud/client/issues/8991
