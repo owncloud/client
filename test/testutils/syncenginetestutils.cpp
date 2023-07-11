@@ -884,8 +884,10 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
             reply = _reply;
         }
     }
+    qDebug() << newRequest.url();
     const bool isStatusPhp = newRequest.url().path().endsWith("status.php");
-    if (!reply && !isStatusPhp) {
+    const bool isCapailities = newRequest.url().path().endsWith("capabilities");
+    if (!reply && !isStatusPhp && !isCapailities) {
         const QString fileName = getFilePathFromUrl(newRequest.url());
         Q_ASSERT(!fileName.isNull()); // we only expect webdav request for which we might get an empty sting but  not a null string
         if (_errorPaths.contains(fileName)) {
@@ -902,13 +904,17 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
             // Ignore outgoingData always returning somethign good enough, works for now.
             reply = new FakePropfindReply { info, op, newRequest, this };
         else if (verb == QByteArrayLiteral("GET") || op == QNetworkAccessManager::GetOperation) {
-         if (isStatusPhp){
+            if (isStatusPhp) {
                 QByteArray payload = QJsonDocument(
                     QJsonObject{{QStringLiteral("installed"), true}, {QStringLiteral("maintenance"), false}, {QStringLiteral("needsDbUpgrade"), false},
                         {QStringLiteral("version"), QStringLiteral("10.5.0.10")}, {QStringLiteral("versionstring"), QStringLiteral("10.5.0")},
-                        {QStringLiteral("edition"), QStringLiteral("Enterprise")}, {QStringLiteral("productname"), QStringLiteral("ownCloud")}}).toJson();
-                reply =  new FakePayloadReply(op, newRequest, payload, this);
-         } else {
+                        {QStringLiteral("edition"), QStringLiteral("Enterprise")}, {QStringLiteral("productname"), QStringLiteral("ownCloud")}})
+                                         .toJson();
+                reply = new FakePayloadReply(op, newRequest, payload, this);
+            } else if (isCapailities) {
+                // TODO: echo the capabilities of the account
+                reply = new FakePayloadReply(op, newRequest, QByteArrayLiteral("{}"), this);
+            } else {
                 reply = new FakeGetReply{info, op, newRequest, this};
             }
         } else if (verb == QByteArrayLiteral("PUT") || op == QNetworkAccessManager::PutOperation)
