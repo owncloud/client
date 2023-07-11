@@ -1,6 +1,7 @@
-Enhancement: We enabled the crash reporter in the cmd app
+Enhancement: Enable crash reporter in commandline client
 
-The crash reporter is still a gui app so it will only work when ui is available but it will allows
-users to report crashes of the cmd much more easily.
+While the crash reporter still requires a graphical user interface to work, this
+change nevertheless simplifies reporting crashes from the commandline client
+a lot.
 
 https://github.com/owncloud/client/issues/8991
