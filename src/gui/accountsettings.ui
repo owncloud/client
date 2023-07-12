@@ -72,7 +72,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Getting ready</string>
+          <string>Preparing the account</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
