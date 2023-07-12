@@ -38,7 +38,7 @@ namespace OcsShareJob {
      *
      * @param path Path to request shares for (default all shares)
      */
-    JsonApiJob *getShares(AccountPtr account, QObject *parent, const QString &path);
+    JsonApiJob *getShares(AccountPtr account, QObject *parent, const QString &path, const QString &spaceRef);
 
     /**
      * Delete the current Share
@@ -90,11 +90,8 @@ namespace OcsShareJob {
      * @param expireDate Target expire data (may be null)
      * @param permissions Desired permissions (SharePermissionDefault leaves to server)
      */
-    JsonApiJob *createLinkShare(AccountPtr account, QObject *parent, const QString &path,
-        const QString &name,
-        const QString &password,
-        const QDate &expireDate,
-        const Share::Permissions permissions);
+    JsonApiJob *createLinkShare(AccountPtr account, QObject *parent, const QString &path, const QString &name, const QString &password, const QDate &expireDate,
+        const Share::Permissions permissions, const QString &spaceRef);
 
     /**
      * Create a new share

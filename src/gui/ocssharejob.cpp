@@ -33,9 +33,18 @@ OCC::JsonApiJob *createJob(OCC::AccountPtr account, const QString &path, const Q
 namespace OCC {
 
 
-JsonApiJob *OcsShareJob::getShares(AccountPtr account, QObject *parent, const QString &path)
+JsonApiJob *OcsShareJob::getShares(AccountPtr account, QObject *parent, const QString &path, const QString &spaceRef)
 {
-    return createJob(account, {}, "GET", { { QStringLiteral("path"), path }, { QStringLiteral("reshares"), QStringLiteral("true") } }, parent);
+    OCC::JsonApiJob::UrlQuery arguments = {
+        {QStringLiteral("path"), path}, //
+        {QStringLiteral("reshares"), QStringLiteral("true")}, //
+    };
+
+    if (!spaceRef.isEmpty()) {
+        arguments.append({QStringLiteral("space_ref"), spaceRef});
+    }
+
+    return createJob(account, {}, "GET", arguments, parent);
 }
 
 JsonApiJob *OcsShareJob::deleteShare(AccountPtr account, QObject *parent, const QString &shareId)
@@ -69,15 +78,12 @@ JsonApiJob *OcsShareJob::setPermissions(AccountPtr account, QObject *parent, con
     return createJob(account, shareId, "PUT", { { QStringLiteral("permissions"), QString::number(permissions) } }, parent);
 }
 
-JsonApiJob *OcsShareJob::createLinkShare(AccountPtr account, QObject *parent, const QString &path,
-    const QString &name,
-    const QString &password,
-    const QDate &expireDate,
-    const Share::Permissions permissions)
+JsonApiJob *OcsShareJob::createLinkShare(AccountPtr account, QObject *parent, const QString &path, const QString &name, const QString &password,
+    const QDate &expireDate, const Share::Permissions permissions, const QString &spaceRef)
 {
-    JsonApiJob::UrlQuery args {
-        { QStringLiteral("path"), path },
-        { QStringLiteral("shareType"), QString::number(Share::TypeLink) },
+    JsonApiJob::UrlQuery args{
+        {QStringLiteral("path"), path},
+        {QStringLiteral("shareType"), QString::number(Share::TypeLink)},
     };
 
     if (!name.isEmpty()) {
@@ -91,6 +97,9 @@ JsonApiJob *OcsShareJob::createLinkShare(AccountPtr account, QObject *parent, co
     }
     if (permissions != SharePermissionDefault) {
         args.append({ QStringLiteral("permissions"), QString::number(permissions) });
+    }
+    if (!spaceRef.isEmpty()) {
+        args.append({QStringLiteral("space_ref"), spaceRef});
     }
     return createJob(account, {}, "POST", args, parent);
 }

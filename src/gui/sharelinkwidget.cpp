@@ -505,12 +505,12 @@ void ShareLinkWidget::slotShareNameEntered()
         return;
     }
     _pi_create->startAnimation();
-    _manager->createLinkShare(
-            _sharePath,
-            _ui->nameLineEdit->text(),
-            _ui->checkBox_password->isChecked() ? _ui->lineEdit_password->text() : QString(),
-            _ui->checkBox_expire->isChecked() ? _ui->calendar->date() : QDate(),
-            uiPermissionState());
+    _manager->createLinkShare(_sharePath, //
+        _ui->nameLineEdit->text(), //
+        _ui->checkBox_password->isChecked() ? _ui->lineEdit_password->text() : QString(), //
+        _ui->checkBox_expire->isChecked() ? _ui->calendar->date() : QDate(), //
+        {}, //
+        uiPermissionState()); //
 }
 
 void ShareLinkWidget::slotDeleteShareFetched()

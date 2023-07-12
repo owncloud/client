@@ -238,13 +238,10 @@ ShareManager::ShareManager(AccountPtr account, QObject *parent)
 {
 }
 
-void ShareManager::createLinkShare(const QString &path,
-    const QString &name,
-    const QString &password,
-    const QDate &expireDate,
-    const Share::Permissions permissions)
+void ShareManager::createLinkShare(
+    const QString &path, const QString &name, const QString &password, const QDate &expireDate, const QString &spaceRef, const Share::Permissions permissions)
 {
-    auto *job = OcsShareJob::createLinkShare(_account, this, path, name, password, expireDate, permissions);
+    auto *job = OcsShareJob::createLinkShare(_account, this, path, name, password, expireDate, permissions, spaceRef);
     connect(job, &JsonApiJob::finishedSignal, this, [job, password, this] {
         if (job->ocsStatus() == 403) {
             // A 403 generally means some of the settings for the share are not allowed.
@@ -321,10 +318,10 @@ void ShareManager::createShare(const QString &path,
     job->start();
 }
 
-void ShareManager::fetchShares(const QString &path)
+void ShareManager::fetchShares(const QString &path, const QString &spaceRef)
 {
-    auto *job = OcsShareJob::getShares(_account, this, path);
-    connect(job, &JsonApiJob::finishedSignal, this, [job, path, this] {
+    auto *job = OcsShareJob::getShares(_account, this, path, spaceRef);
+    connect(job, &JsonApiJob::finishedSignal, this, [job, path, spaceRef, this] {
         // 404 seems to be ok according to refactored code
         if (job->ocsStatus() == 404) {
             emit sharesFetched({});
@@ -336,7 +333,7 @@ void ShareManager::fetchShares(const QString &path)
 
             QList<QSharedPointer<Share>> shares;
 
-            for (const auto &share : tmpShares) {
+            for (QJsonValueConstRef share : tmpShares) {
                 auto data = share.toObject();
 
                 auto shareType = data.value(QStringLiteral("share_type")).toInt();
@@ -348,6 +345,7 @@ void ShareManager::fetchShares(const QString &path)
                 } else {
                     newShare = parseShare(data);
                 }
+                newShare->setSpaceRef(spaceRef);
                 shares.append(QSharedPointer<Share>(newShare));
             }
             qCDebug(lcSharing) << "Sending " << shares.count() << "shares";

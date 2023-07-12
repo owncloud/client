@@ -96,6 +96,9 @@ public:
      */
     void setPermissions(Permissions permissions);
 
+    void setSpaceRef(const QString &spaceRef) { _spaceRef = spaceRef; }
+    QString spaceRef() const { return _spaceRef; }
+
     /**
      * Deletes a share
      *
@@ -116,6 +119,7 @@ protected:
     QString _path;
     ShareType _shareType;
     Permissions _permissions;
+    QString _spaceRef;
     QSharedPointer<Sharee> _shareWith;
 };
 
@@ -239,11 +243,8 @@ public:
      * On 403 error the linkShareCreationForbidden error is emitted (if params forbid creation)
      * In case of a server error the serverError signal is emitted
      */
-    void createLinkShare(const QString &path,
-        const QString &name,
-        const QString &password = QString(),
-        const QDate &expireDate = QDate(),
-        const Share::Permissions permissions = SharePermissionDefault);
+    void createLinkShare(const QString &path, const QString &name, const QString &password = QString(), const QDate &expireDate = QDate(),
+        const QString &spaceRef = {}, const Share::Permissions permissions = SharePermissionDefault);
 
     /**
      * Tell the manager to create a new share
@@ -268,7 +269,7 @@ public:
      * On success the sharesFetched signal is emitted
      * In case of a server error the serverError signal is emitted
      */
-    void fetchShares(const QString &path);
+    void fetchShares(const QString &path, const QString &spaceRef = {});
 
 signals:
     void shareCreated(const QSharedPointer<Share> &share);

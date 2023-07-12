@@ -30,7 +30,9 @@
 #include "filesystem.h"
 #include "folder.h"
 #include "folderman.h"
+#include "graphapi/spacesmanager.h"
 #include "guiutility.h"
+#include "networkjobs/jsonjob.h"
 #include "sharemanager.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
@@ -516,11 +518,11 @@ class GetOrCreatePublicLinkShare : public QObject
 {
     Q_OBJECT
 public:
-    GetOrCreatePublicLinkShare(const AccountPtr &account,
-        const QString &serverPath, QObject *parent)
+    GetOrCreatePublicLinkShare(const AccountPtr &account, const QString &serverPath, QString spaceRef, QObject *parent)
         : QObject(parent)
         , _account(account)
         , _shareManager(account)
+        , _spaceRef(spaceRef)
         , _serverPath(serverPath)
     {
         connect(&_shareManager, &ShareManager::sharesFetched,
@@ -536,7 +538,7 @@ public:
     void run()
     {
         qCDebug(lcPublicLink) << "Fetching shares";
-        _shareManager.fetchShares(_serverPath);
+        _shareManager.fetchShares(_serverPath, _spaceRef);
     }
 
 private slots:
@@ -558,7 +560,7 @@ private slots:
             if (!linkShare)
                 continue;
 
-            if (linkShare->getName() == shareName) {
+            if (linkShare->getName() == shareName && linkShare->spaceRef() == _spaceRef) {
                 qCDebug(lcPublicLink) << "Found existing share, reusing";
                 return success(linkShare->getLink().toString());
             }
@@ -567,7 +569,7 @@ private slots:
         // otherwise create a new one
         qCDebug(lcPublicLink) << "Creating new share";
         QString noPassword;
-        _shareManager.createLinkShare(_serverPath, shareName, noPassword, expireDate);
+        _shareManager.createLinkShare(_serverPath, shareName, noPassword, expireDate, _spaceRef);
     }
 
     void linkShareCreated(const QSharedPointer<LinkShare> &share)
@@ -603,6 +605,7 @@ private:
 
     AccountPtr _account;
     ShareManager _shareManager;
+    QString _spaceRef;
     QString _serverPath;
 };
 
@@ -613,7 +616,53 @@ void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListene
         return;
 
     AccountPtr account = fileData.folder->accountState()->account();
-    auto job = new GetOrCreatePublicLinkShare(account, fileData.serverRelativePath, this);
+
+    if (false && fileData.folder->accountState()->supportsSpaces()) {
+        auto url = account->spacesManager()->spaceByUrl(fileData.folder->webDavUrl());
+        if (!url) {
+            // Open the share page in the web browser.
+            emit shareCommandReceived(fileData.serverRelativePath, fileData.localPath, ShareDialogStartPage::PublicLinks);
+            return;
+        }
+
+        const QString path = QStringLiteral("ocs/v1.php/apps/files_sharing/api/v1/shares");
+        const OCC::JsonApiJob::UrlQuery arguments = {
+            {QStringLiteral("path"), fileData.serverRelativePath}, //
+            {QStringLiteral("reshares"), QStringLiteral("true")}, //
+            {QStringLiteral("space_ref"), url->drive().getId()}, //
+        };
+        auto job = new JsonApiJob(account, path, "GET", arguments, {}, this);
+        connect(job, &JsonApiJob::finishedSignal, this, [job, fileData, account, this] {
+            if (job->ocsSuccess()) {
+                // Parse share
+                auto data = job->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject();
+                auto url = QUrl(data.value(QStringLiteral("url")).toString());
+                if (url.isValid()) {
+                    copyUrlToClipboard(url);
+                    return;
+                }
+            }
+
+            // If the job wasn't successful or if the url was invalid, we open the share page in the web browser.
+            emit shareCommandReceived(fileData.serverRelativePath, fileData.localPath, ShareDialogStartPage::PublicLinks);
+        });
+        job->start();
+        return;
+    }
+
+    QString spaceRef;
+    if (fileData.folder->accountState()->supportsSpaces()) {
+        auto url = account->spacesManager()->spaceByUrl(fileData.folder->webDavUrl());
+        if (url) {
+            spaceRef = url->drive().getId();
+        } else {
+            // Open the share page in the web browser.
+            emit shareCommandReceived(fileData.serverRelativePath, fileData.localPath, ShareDialogStartPage::PublicLinks);
+            return;
+        }
+    }
+
+    auto job = new GetOrCreatePublicLinkShare(account, fileData.serverRelativePath, spaceRef, this);
     connect(job, &GetOrCreatePublicLinkShare::done, this,
         [](const QString &url) { copyUrlToClipboard(QUrl(url)); });
     connect(job, &GetOrCreatePublicLinkShare::error, this,
