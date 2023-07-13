@@ -531,7 +531,7 @@ public:
 
     QHash<QString, int> &errorPaths() { return _errorPaths; }
 
-    void setOverride(const Override &override) { _override = override; }
+    void setOverride(Override &&override) { _override = override; }
 
 protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request,
@@ -598,7 +598,7 @@ public:
         void clear() { _qnam->errorPaths().clear(); }
     };
     ErrorList serverErrorPaths() { return { _fakeAm }; }
-    void setServerOverride(const FakeAM::Override &override) { _fakeAm->setOverride(override); }
+    void setServerOverride(FakeAM::Override &&override) { _fakeAm->setOverride(std::move(override)); }
 
     QString localPath() const;
 
@@ -758,14 +758,11 @@ struct OperationCounter
         }
         return nullptr;
     }
-    auto functor()
-    {
-        return [this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) { return serverOverride(op, req, device); };
-    }
 
     OperationCounter(FakeFolder &fakeFolder)
     {
-        fakeFolder.setServerOverride(functor());
+        fakeFolder.setServerOverride(
+            [this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) { return serverOverride(op, req, device); });
     }
 
     friend inline QDebug operator<<(QDebug dbg, const OperationCounter &oc)
