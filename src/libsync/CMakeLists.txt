@@ -48,7 +48,6 @@ set(libsync_SRCS
     networkjobs/fetchuserinfojobfactory.cpp
     networkjobs/checkserverjobfactory.cpp
     networkjobs/jsonjob.cpp
-    networkjobs/jobgroup.cpp
     networkjobs/resources.cpp
 
     abstractcorejob.cpp
@@ -75,7 +74,7 @@ INSTALL(
         ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h
         logger.h
         accessmanager.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/ownCloud/libsync
+    DESTINATION ${INCLUDE_INSTALL_DIR}/${APPLICATION_SHORTNAME}/libsync
 )
 
 add_library(libsync SHARED ${libsync_SRCS})
@@ -91,7 +90,7 @@ target_link_libraries(libsync
         owncloudResources
         Qt::Concurrent
         ZLIB::ZLIB
-        Qt${QT_VERSION_MAJOR}Keychain::Qt${QT_VERSION_MAJOR}Keychain
+        Qt6Keychain::Qt6Keychain
 )
 
 apply_common_target_settings(libsync)
@@ -128,4 +127,16 @@ set_target_properties(libsync PROPERTIES
         VERSION ${MIRALL_VERSION}
         SOVERSION ${MIRALL_SOVERSION}
 )
-install(TARGETS libsync EXPORT ownCloudConfig ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+
+if(WITH_CRASHREPORTER)
+    set_source_files_properties(platform.cpp PROPERTIES COMPILE_DEFINITIONS CRASHREPORTER_EXECUTABLE="${CRASHREPORTER_EXECUTABLE}")
+    target_link_libraries(libsync PRIVATE CrashReporterQt::Handler)
+
+    if(UNIX AND NOT MAC)
+        find_package(Threads REQUIRED)
+        target_link_libraries(libsync PUBLIC Threads::Threads)
+    endif()
+endif()
+
+
+install(TARGETS libsync EXPORT ${APPLICATION_SHORTNAME}Config ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

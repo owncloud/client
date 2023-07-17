@@ -19,6 +19,7 @@
 
 #include "constexpr_list.h"
 #include "ocsynclib.h"
+#include "utility.h"
 
 #include <QCryptographicHash>
 #include <QString>
@@ -68,11 +69,7 @@ namespace CheckSums {
     inline QString toQString(Algorithm algo)
     {
         const auto n = toString(algo);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        return QString::fromUtf8(n.data(), static_cast<int>(n.size()));
-#else
         return QString::fromUtf8(n.data(), n.size());
-#endif
     }
 
     constexpr auto pair(Algorithm a)
@@ -114,5 +111,9 @@ namespace CheckSums {
     }
 
     OCSYNC_EXPORT Algorithm fromByteArray(const QByteArray &s);
-}
-}
+} // namespace CheckSums
+
+template <>
+OCSYNC_EXPORT QString Utility::enumToString(CheckSums::Algorithm algo);
+
+} // namespace OCC

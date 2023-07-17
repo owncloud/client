@@ -102,7 +102,6 @@ void FolderStatusModel::setAccountState(const AccountStatePtr &accountState)
         _accountState = accountState;
 
         connect(FolderMan::instance(), &FolderMan::folderSyncStateChange, this, &FolderStatusModel::slotFolderSyncStateChange);
-        connect(FolderMan::instance(), &FolderMan::scheduleQueueChanged, this, &FolderStatusModel::slotFolderScheduleQueueChanged);
 
         if (accountState->supportsSpaces()) {
             connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, [this] {
@@ -341,7 +340,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             return progress._progressString;
         }
         if (accountConnected) {
-            return tr("%1\n%2").arg(Theme::instance()->statusHeaderText(f->syncResult().status()), QDir::toNativeSeparators(folderInfo._folder->path()));
+            return tr("%1\n%2").arg(Utility::enumToDisplayName(f->syncResult().status()), QDir::toNativeSeparators(folderInfo._folder->path()));
         } else {
             return tr("Signed out\n%1").arg(QDir::toNativeSeparators(folderInfo._folder->path()));
         }
@@ -937,7 +936,7 @@ void FolderStatusModel::slotApplySelectiveSync()
             }
             // Also make sure we see the local file that had been ignored before
             folder->slotNextSyncFullLocalDiscovery();
-            FolderMan::instance()->scheduleFolder(folder);
+            FolderMan::instance()->scheduler()->enqueueFolder(folder);
         }
     }
 
@@ -1137,19 +1136,11 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
         // Reset progress info.
         pi = SubFolderInfo::Progress();
     } else if (state == SyncResult::NotYetStarted) {
-        FolderMan *folderMan = FolderMan::instance();
-        int pos = folderMan->scheduleQueue().indexOf(f);
-        for (auto other : folderMan->folders()) {
-            if (other != f && other->isSyncRunning())
-                pos += 1;
-        }
-        if (pos > 0) {
-            pi._overallSyncString = tr("Waiting for %n other folder(s)...", "", pos);
-        }
+        pi._overallSyncString = tr("Queued");
         pi = SubFolderInfo::Progress();
     } else if (state == SyncResult::SyncPrepare) {
         pi = SubFolderInfo::Progress();
-        pi._overallSyncString = Theme::instance()->statusHeaderText(SyncResult::SyncPrepare);
+        pi._overallSyncString = Utility::enumToDisplayName(SyncResult::SyncPrepare);
     } else if (state == SyncResult::Problem || state == SyncResult::Success) {
         // Reset the progress info after a sync.
         pi = SubFolderInfo::Progress();
@@ -1164,14 +1155,6 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
         && (state == SyncResult::Success || state == SyncResult::Problem)) {
         // There is a new or a removed folder. reset all data
         resetAndFetch(index(folderIndex));
-    }
-}
-
-void FolderStatusModel::slotFolderScheduleQueueChanged()
-{
-    // Update messages on waiting folders.
-    for (auto *f : FolderMan::instance()->folders()) {
-        slotFolderSyncStateChange(f);
     }
 }
 
@@ -1234,7 +1217,7 @@ void FolderStatusModel::slotSyncAllPendingBigFolders()
         }
         // Also make sure we see the local file that had been ignored before
         folder->slotNextSyncFullLocalDiscovery();
-        FolderMan::instance()->scheduleFolder(folder);
+        FolderMan::instance()->scheduler()->enqueueFolder(folder);
     }
 
     resetFolders();

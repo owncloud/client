@@ -40,14 +40,6 @@
 #include "updater/ocupdater.h"
 #endif
 
-#if defined(Q_OS_WIN)
-#include <windows.h>
-#endif
-
-#if defined(WITH_CRASHREPORTER)
-#include <libcrashreporter-handler/Handler.h>
-#endif
-
 #include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
@@ -64,66 +56,6 @@
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcApplication, "gui.application", QtInfoMsg)
-
-bool Application::configVersionMigration()
-{
-    QStringList deleteKeys, ignoreKeys;
-    AccountManager::backwardMigrationSettingsKeys(&deleteKeys, &ignoreKeys);
-    FolderMan::backwardMigrationSettingsKeys(&deleteKeys, &ignoreKeys);
-
-    ConfigFile configFile;
-
-    // Did the client version change?
-    // (The client version is adjusted further down)
-    const bool versionChanged = QVersionNumber::fromString(configFile.clientVersionWithBuildNumberString()) != OCC::Version::versionWithBuildNumber();
-
-    // We want to message the user either for destructive changes,
-    // or if we're ignoring something and the client version changed.
-    bool warningMessage = !deleteKeys.isEmpty() || (!ignoreKeys.isEmpty() && versionChanged);
-
-    if (!versionChanged && !warningMessage)
-        return true;
-
-    const auto backupFile = configFile.backup();
-
-    if (warningMessage) {
-        QString boldMessage;
-        if (!deleteKeys.isEmpty()) {
-            boldMessage = tr("Continuing will mean <b>deleting these settings</b>.");
-        } else {
-            boldMessage = tr("Continuing will mean <b>ignoring these settings</b>.");
-        }
-
-        QMessageBox box(
-            QMessageBox::Warning,
-            Theme::instance()->appNameGUI(),
-            tr("Some settings were configured in newer versions of this client and "
-               "use features that are not available in this version.<br>"
-               "<br>"
-               "%1<br>"
-               "<br>"
-               "The current configuration file was already backed up to <i>%2</i>.")
-                .arg(boldMessage, backupFile));
-        box.addButton(tr("Quit"), QMessageBox::AcceptRole);
-        auto continueBtn = box.addButton(tr("Continue"), QMessageBox::DestructiveRole);
-
-        box.exec();
-        if (box.clickedButton() != continueBtn) {
-            QTimer::singleShot(0, qApp, &QApplication::quit);
-            return false;
-        }
-
-        auto settings = ConfigFile::settingsWithGroup(QStringLiteral("foo"));
-        settings->endGroup();
-
-        // Wipe confusing keys from the future, ignore the others
-        for (const auto &badKey : qAsConst(deleteKeys))
-            settings->remove(badKey);
-    }
-
-    configFile.setClientVersionWithBuildNumberString(OCC::Version::versionWithBuildNumber().toString());
-    return true;
-}
 
 QString Application::displayLanguage() const
 {
@@ -146,18 +78,6 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
 
     platform->migrate();
 
-#if defined(WITH_CRASHREPORTER)
-    if (ConfigFile().crashReporter()) {
-        auto reporter = QStringLiteral(CRASHREPORTER_EXECUTABLE);
-#ifdef Q_OS_WIN
-        if (!reporter.endsWith(QLatin1String(".exe"))) {
-            reporter.append(QLatin1String(".exe"));
-        }
-#endif
-        connect(qApp, &QApplication::aboutToQuit, this, [crashHandler = new CrashReporter::Handler(QDir::tempPath(), true, reporter)] { delete crashHandler; });
-    }
-#endif
-
     setupTranslations();
 
     qCInfo(lcApplication) << "Plugin search paths:" << qApp->libraryPaths();
@@ -170,10 +90,6 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
         qCInfo(lcApplication) << "VFS windows plugin is available";
     if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WithSuffix))
         qCInfo(lcApplication) << "VFS suffix plugin is available";
-
-    if (!configVersionMigration()) {
-        return;
-    }
 
     ConfigFile cfg;
 
@@ -203,13 +119,11 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
         Utility::sleep(5);
         if (!AccountManager::instance()->restore()) {
             qCCritical(lcApplication) << "Could not read the account settings, quitting";
-            QMessageBox::critical(
-                nullptr,
-                tr("Error accessing the configuration file"),
+            QMessageBox::critical(nullptr, tr("Error accessing the configuration file"),
                 tr("There was an error while accessing the configuration "
                    "file at %1.")
                     .arg(ConfigFile::configFile()),
-                tr("Quit %1").arg(Theme::instance()->appNameGUI()));
+                QMessageBox::Close);
             QTimer::singleShot(0, qApp, &QApplication::quit);
             return;
         }
@@ -424,7 +338,7 @@ void Application::setupTranslations()
             qCInfo(lcApplication) << "Using" << lang << "translation";
             _displayLanguage = lang;
 
-            const QString qtTrPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+            const QString qtTrPath = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
             qCDebug(lcApplication) << "qtTrPath:" << qtTrPath;
             const QString qtTrFile = QLatin1String("qt_") + lang;
             qCDebug(lcApplication) << "qtTrFile:" << qtTrFile;
@@ -467,10 +381,6 @@ void Application::setupTranslations()
                 QLocale newLocale(lang);
                 qCDebug(lcApplication) << "language" << lang << "was enforced, changing default locale to" << newLocale;
                 QLocale::setDefault(newLocale);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                // setting the layout direction directly only appears to be needed on mac
-                setLayoutDirection(newLocale.textDirection());
-#endif
             }
 
             break;

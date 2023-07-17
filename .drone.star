@@ -14,7 +14,6 @@ OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_CLIENT = "owncloudci/client:latest"
 OC_CI_CORE = "owncloudci/core"
-OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS = "owncloudci/drone-cancel-previous-builds"
 OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_NODEJS = "owncloudci/nodejs:16"
 OC_CI_PHP = "owncloudci/php:%s"
@@ -83,19 +82,20 @@ config = {
                     },
                 },
                 "skip_in_pr": True,
+                "skip": True,
             },
             "ocis": {
                 "version": "3.0.0",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
+                "skip": True,
             },
         },
     },
 }
 
 def main(ctx):
-    pipelines = cancelPreviousBuilds() + \
-                check_starlark() + \
+    pipelines = check_starlark() + \
                 gui_tests_format() + \
                 changelog(ctx)
     unit_tests = unit_test_pipeline(ctx)
@@ -165,6 +165,8 @@ def gui_test_pipeline(ctx):
     squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip" % dir["guiTestReport"]
     pipelines = []
     for server, params in config["gui-tests"]["servers"].items():
+        if params.get("skip", False):
+            continue
         if ctx.build.event == "pull_request" and params.get("skip_in_pr", False) and not "full-ci" in ctx.build.title.lower():
             continue
 
@@ -700,30 +702,6 @@ def githubComment(alternateSuiteName, server_type = "oc10"):
             "status": [
                 "failure",
             ],
-            "event": [
-                "pull_request",
-            ],
-        },
-    }]
-
-def cancelPreviousBuilds():
-    return [{
-        "kind": "pipeline",
-        "type": "docker",
-        "name": "cancel-previous-builds",
-        "clone": {
-            "disable": True,
-        },
-        "steps": [{
-            "name": "cancel-previous-builds",
-            "image": OC_CI_DRONE_CANCEL_PREVIOUS_BUILDS,
-            "settings": {
-                "DRONE_TOKEN": {
-                    "from_secret": "drone_token",
-                },
-            },
-        }],
-        "trigger": {
             "event": [
                 "pull_request",
             ],

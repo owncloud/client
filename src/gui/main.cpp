@@ -78,7 +78,7 @@ void displayHelpText(const QString &t, std::ostream &stream = std::cout)
 
 struct CommandLineOptions
 {
-    bool showSettings = false;
+    bool show = false;
     bool quitInstance = false;
 
     QString logDir;
@@ -122,7 +122,12 @@ CommandLineOptions parseOptions(const QStringList &arguments)
         return option;
     };
 
-    auto showSettingsOption = addOption({{QStringLiteral("s"), QStringLiteral("showsettings")}, QStringLiteral("Show the settings dialog while starting.")});
+    auto showSettingsLegacyOption = QCommandLineOption{{QStringLiteral("showsettings")}, QStringLiteral("Hidden legacy option")};
+    showSettingsLegacyOption.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(showSettingsLegacyOption);
+
+    auto showOption =
+        addOption({{QStringLiteral("s"), QStringLiteral("show")}, QStringLiteral("Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.")});
     auto quitInstanceOption = addOption({{QStringLiteral("q"), QStringLiteral("quit")}, QStringLiteral("Quit the running instance.")});
     auto logFileOption = addOption({QStringLiteral("logfile"), QStringLiteral("Write log to file (use - to write to stdout)."), QStringLiteral("filename")});
     auto logDirOption = addOption({QStringLiteral("logdir"), QStringLiteral("Write each sync log output in a new file in folder."), QStringLiteral("name")});
@@ -140,9 +145,8 @@ CommandLineOptions parseOptions(const QStringList &arguments)
     parser.process(arguments);
 
     CommandLineOptions out;
-    // TODO: rename this option (see #8234 for more information)
-    if (parser.isSet(showSettingsOption)) {
-        out.showSettings = true;
+    if (parser.isSet(showOption) || parser.isSet(showSettingsLegacyOption)) {
+        out.show = true;
     }
     if (parser.isSet(quitInstanceOption)) {
         out.quitInstance = true;
@@ -203,6 +207,45 @@ CommandLineOptions parseOptions(const QStringList &arguments)
     return out;
 }
 
+/**
+ * Check if the last version used to write the config file differs from the current version.
+ * If the current version is newer, update the config file with our current version. If the
+ * current version is older, refuse to do anything: this is a downgrade, and it is too risky to
+ * assume that things might work "just fine".
+ */
+bool checkClientVersion()
+{
+    ConfigFile configFile;
+
+    // Did the client version change?
+    // (The client version is adjusted further down)
+    auto configVersion = QVersionNumber::fromString(configFile.clientVersionWithBuildNumberString());
+    auto clientVersion = OCC::Version::versionWithBuildNumber();
+
+    if (configVersion.majorVersion() == clientVersion.majorVersion()) {
+        // no migration needed
+        return true;
+    }
+
+    if (clientVersion.majorVersion() < configVersion.majorVersion()) {
+        // We refuse to downgrade, too much can go wrong.
+        QMessageBox box(QMessageBox::Warning, Theme::instance()->appNameGUI(),
+            QCoreApplication::translate("version check",
+                "Some settings were configured in newer versions of this client "
+                "and use features that are not available in this version"));
+        box.addButton(OCC::Application::tr("Quit"), QMessageBox::AcceptRole);
+        box.exec();
+        QTimer::singleShot(0, qApp, &QApplication::quit);
+        return false;
+    }
+
+    // We're okay to continue. The settings will be updated in other parts, but here we bump the
+    // version we store in the config file.
+    configFile.backup();
+    configFile.setClientVersionWithBuildNumberString(OCC::Version::versionWithBuildNumber().toString());
+    return true;
+}
+
 void setupLogging(const CommandLineOptions &options)
 {
     // might be called from second instance
@@ -233,7 +276,6 @@ int main(int argc, char **argv)
 {
     // load the resources
     const OCC::ResourcesLoader resource;
-    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
 
     // Create a `Platform` instance so it can set-up/tear-down stuff for us, and do any
     // initialisation that needs to be done before creating a QApplication
@@ -252,6 +294,12 @@ int main(int argc, char **argv)
     KDSingleApplication singleApplication;
 
     if (singleApplication.isPrimaryInstance()) {
+        // Check if the user upgraded or downgraded. We do this as early as possible, to detect
+        // a possible downgrade.
+        if (!checkClientVersion()) {
+            return -1;
+        }
+
         const auto options = parseOptions(app.arguments());
 
         setupLogging(options);
@@ -267,7 +315,7 @@ int main(int argc, char **argv)
             if (msg.startsWith(msgParseOptionsC())) {
                 const QStringList optionsStrings = msg.mid(msgParseOptionsC().size()).split(QLatin1Char('|'));
                 CommandLineOptions options = parseOptions(optionsStrings);
-                if (options.showSettings) {
+                if (options.show) {
                     ocApp->gui()->slotShowSettings();
                 }
                 if (options.quitInstance) {
@@ -279,7 +327,7 @@ int main(int argc, char **argv)
             }
         });
 
-        if (options.showSettings) {
+        if (options.show) {
             ocApp->gui()->slotShowSettings();
         }
         if (!options.fileToOpen.isEmpty()) {

@@ -65,8 +65,6 @@ public:
     bool ignoreHiddenFiles = true;
     /// Which virtual files setting the folder uses
     Vfs::Mode virtualFilesMode = Vfs::Off;
-    /// The CLSID where this folder appears in registry for the Explorer navigation pane entry.
-    QUuid navigationPaneClsid;
 
     /// Whether the vfs mode shall silently be updated if possible
     bool upgradeVfsMode = false;
@@ -76,17 +74,6 @@ public:
 
     /// Reads a folder definition from the current settings group.
     static FolderDefinition load(QSettings &settings, const QByteArray &id);
-
-    /** The highest version in the settings that load() can read
-     *
-     * Version 1: initial version (default if value absent in settings)
-     * Version 2: introduction of metadata_parent hash in 2.6.0
-     *            (version remains readable by 2.5.1)
-     * Version 3: introduction of new windows vfs mode in 2.6.0
-     * Version 4: until 2.9.1 windows vfs tried to unregister folders with a different id from windows.
-     * Version 5: 3.0.0 Introduced spaces, the profiles are not downwards compatible
-     */
-    static int maxSettingsVersion();
 
     /// Ensure / as separator and trailing /.
     void setLocalPath(const QString &path);
@@ -213,9 +200,6 @@ public:
      */
     QString remotePathTrailingSlash() const;
 
-    void setNavigationPaneClsid(const QUuid &clsid);
-    QUuid navigationPaneClsid() const { return _definition.navigationPaneClsid; }
-
     /**
      * remote folder path with server url
      */
@@ -242,12 +226,6 @@ public:
     {
         return _syncResult.status() == SyncResult::SetupError;
     }
-
-    /**
-     *  Returns true if the folder needs sync poll interval wise, and can
-     *  sync due to its internal state
-     */
-    bool dueToSync() const;
 
     void prepareToSync();
 
@@ -295,7 +273,6 @@ public:
         return *_vfs;
     }
 
-    RequestEtagJob *etagJob() const { return _requestEtagJob; }
     auto lastSyncTime() const { return QDateTime::currentDateTime().addMSecs(-msecSinceLastSync().count()); }
     std::chrono::milliseconds msecSinceLastSync() const { return std::chrono::milliseconds(_timeSinceLastSyncDone.elapsed()); }
     std::chrono::milliseconds msecLastSyncDuration() const { return _lastSyncDuration; }
@@ -318,31 +295,19 @@ public:
     bool isFileExcludedRelative(const QString &relativePath) const;
 
     /** Calls schedules this folder on the FolderMan after a short delay.
-      *
-      * This should be used in situations where a sync should be triggered
-      * because a local file was modified. Syncs don't upload files that were
-      * modified too recently, and this delay ensures the modification is
-      * far enough in the past.
-      *
-      * The delay doesn't reset with subsequent calls.
-      */
+     *
+     * This should be used in situations where a sync should be triggered
+     * because a local file was modified. Syncs don't upload files that were
+     * modified too recently, and this delay ensures the modification is
+     * far enough in the past.
+     *
+     * The delay doesn't reset with subsequent calls.
+     */
     void scheduleThisFolderSoon();
-
-    /**
-      * Migration: When this flag is true, this folder will save to
-      * the backwards-compatible 'Folders' section in the config file.
-      */
-    void setSaveBackwardsCompatible(bool save);
 
     /** Used to have placeholders: save in placeholder config section */
     void setSaveInFoldersWithPlaceholders() { _saveInFoldersWithPlaceholders = true; }
 
-    /**
-     * Sets up this folder's folderWatcher if possible.
-     *
-     * May be called several times.
-     */
-    void registerFolderWatcher();
 
     /** virtual files of some kind are enabled
      *
@@ -392,6 +357,7 @@ signals:
     void syncPausedChanged(Folder *, bool paused);
     void canSyncChanged();
 
+
     /**
      * Fires for each change inside this folder that wasn't caused
      * by sync activity.
@@ -399,16 +365,13 @@ signals:
     void watchedFileChangedExternally(const QString &path);
 
 public slots:
-
-    void slotRunEtagJob();
-
     /**
        * terminate the current sync run
        */
     void slotTerminateSync();
 
     // connected to the corresponding signals in the SyncEngine
-    void slotAboutToRemoveAllFiles(SyncFileItem::Direction, const std::function<void(bool)> &abort);
+    void slotAboutToRemoveAllFiles(SyncFileItem::Direction);
 
     /**
       * Starts a sync operation
@@ -470,16 +433,9 @@ private slots:
 
     void slotItemCompleted(const SyncFileItemPtr &);
 
-    void slotEmitFinishedDelayed();
-
     void slotNewBigFolderDiscovered(const QString &, bool isExternal);
 
     void slotLogPropagationStart();
-
-    /** Adds this folder to the list of scheduled folders in the
-     *  FolderMan.
-     */
-    void slotScheduleThisFolder();
 
     /** Adjust sync result based on conflict data from IssuesWidget.
      *
@@ -500,6 +456,13 @@ private:
     bool checkLocalPath();
 
     SyncOptions loadSyncOptions();
+
+    /**
+     * Sets up this folder's folderWatcher if possible.
+     *
+     * May be called several times.
+     */
+    void registerFolderWatcher();
 
     enum LogStatus {
         LogStatusRemove,
@@ -522,9 +485,6 @@ private:
 
     SyncResult _syncResult;
     QScopedPointer<SyncEngine> _engine;
-    QPointer<RequestEtagJob> _requestEtagJob;
-    QString _lastEtag;
-    QElapsedTimer _timeSinceLastEtagCheckDone;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;
     QElapsedTimer _timeSinceLastFullLocalDiscovery;
@@ -543,16 +503,6 @@ private:
     QScopedPointer<SyncRunFileLog> _fileLog;
 
     QTimer _scheduleSelfTimer;
-
-    /**
-     * When the same local path is synced to multiple accounts, only one
-     * of them can be stored in the settings in a way that's compatible
-     * with old clients that don't support it. This flag marks folders
-     * that shall be written in a backwards-compatible way, by being set
-     * on the *first* Folder instance that was configured for each local
-     * path.
-     */
-    bool _saveBackwardsCompatible = false;
 
     /** Whether the folder should be saved in that settings group
      *
@@ -592,6 +542,9 @@ private:
      * The vfs mode instance (created by plugin) to use. Never null.
      */
     QSharedPointer<Vfs> _vfs;
+
+    // allow that all files are removed in the next run
+    bool _allowRemoveAllOnce = false;
 
     friend class SpaceMigration;
 };

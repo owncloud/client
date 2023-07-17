@@ -27,6 +27,7 @@ set(client_SRCS
     accountsettings.cpp
     application.cpp
     askexperimentalvirtualfilesfeaturemessagebox.cpp
+    fetchserversettings.cpp
     clientproxy.cpp
     commonstrings.cpp
     connectionvalidator.cpp
@@ -77,6 +78,9 @@ set(client_SRCS
     models/protocolitemmodel.cpp
 
     spacemigration.cpp
+
+    scheduling/syncscheduler.cpp
+    scheduling/etagwatcher.cpp
 )
 
 set(3rdparty_SRC
@@ -101,7 +105,7 @@ target_link_libraries(owncloudCore
         Qt::Widgets Qt::Network Qt::Xml
         newwizard folderwizard spaces loginrequireddialog
         libsync
-        Qt${QT_VERSION_MAJOR}Keychain::Qt${QT_VERSION_MAJOR}Keychain
+        Qt6Keychain::Qt6Keychain
 )
 
 apply_common_target_settings(owncloudCore)
@@ -120,10 +124,6 @@ target_include_directories(owncloudCore PUBLIC
 )
 
 IF( APPLE )
-    if (TARGET Qt::MacExtras)
-        target_link_libraries(owncloudCore PUBLIC Qt::MacExtras)
-    endif()
-
     target_sources(owncloudCore PRIVATE
             systray.mm
             settingsdialog_mac.mm
@@ -133,11 +133,7 @@ IF( APPLE )
 elseif( WIN32 )
     target_sources(owncloudCore PRIVATE
             guiutility_win.cpp
-            folderwatcher_win.cpp
-            navigationpanehelper.cpp)
-    if(TARGET Qt::WinExtras)
-        target_link_libraries(owncloudCore PUBLIC Qt::WinExtras)
-    endif()
+            folderwatcher_win.cpp)
 elseif(UNIX AND NOT APPLE)
     ## handle DBUS for Fdo notifications
     if (TARGET Qt::DBus)
@@ -152,16 +148,6 @@ endif()
 if(WITH_AUTO_UPDATER)
     add_subdirectory(updater)
     target_compile_definitions(owncloudCore PRIVATE WITH_AUTO_UPDATER)
-endif()
-
-
-if(WITH_CRASHREPORTER)
-    target_link_libraries(owncloudCore PRIVATE CrashReporterQt::Handler)
-
-    if(UNIX AND NOT MAC)
-        find_package(Threads REQUIRED)
-        target_link_libraries(owncloudCore PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-    endif()
 endif()
 
 add_executable(owncloud main.cpp)

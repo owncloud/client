@@ -149,7 +149,7 @@ ownCloudGui::ownCloudGui(Application *parent)
 
 ownCloudGui::~ownCloudGui()
 {
-    _settingsDialog->deleteLater();
+    delete _settingsDialog;
 }
 
 // This should rather be in application.... or rather in ConfigFile?
@@ -206,11 +206,7 @@ void ownCloudGui::slotSyncStateChange(Folder *folder)
 
     auto result = folder->syncResult();
 
-    qCInfo(lcApplication) << "Sync state changed for folder " << folder->remoteUrl().toString() << ": " << result.statusString();
-
-    if (result.status() == SyncResult::NotYetStarted) {
-        _settingsDialog->slotRefreshActivity(folder->accountState());
-    }
+    qCInfo(lcApplication) << "Sync state changed for folder " << folder->remoteUrl().toString() << ": " << Utility::enumToDisplayName(result.status());
 }
 
 void ownCloudGui::slotFoldersChanged()
@@ -599,7 +595,6 @@ void ownCloudGui::updateContextMenu()
     bool isConfigured = (!accountList.isEmpty());
     bool atLeastOneConnected = false;
     bool atLeastOnePaused = false;
-    bool atLeastOneNotPaused = false;
     for (const auto &a : accountList) {
         if (a->isConnected()) {
             atLeastOneConnected = true;
@@ -609,25 +604,24 @@ void ownCloudGui::updateContextMenu()
     for (auto *f : FolderMan::instance()->folders()) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
-        } else {
-            atLeastOneNotPaused = true;
         }
     }
 
     _contextMenu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotShowSettings);
     _contextMenu->addSeparator();
-    if (atLeastOnePaused) {
-        _contextMenu->addAction(
-            tr("Resume synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts().values(), false); });
-    } else {
-        _contextMenu->addAction(
-            tr("Stop synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts().values(), true); });
-    }
-    _contextMenu->addSeparator();
 
     if (accountList.isEmpty()) {
         _contextMenu->addAction(tr("Create a new account"), this, &ownCloudGui::runNewAccountWizard);
     } else {
+        if (atLeastOnePaused) {
+            _contextMenu->addAction(
+                tr("Resume synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts().values(), false); });
+        } else {
+            _contextMenu->addAction(
+                tr("Stop synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts().values(), true); });
+        }
+        _contextMenu->addSeparator();
+
         // submenus for accounts
         for (const auto &account : accountList) {
             QMenu *accountMenu = new QMenu(account->account()->displayName(), _contextMenu.data());
@@ -850,6 +844,7 @@ void ownCloudGui::runNewAccountWizard()
                 if (!newAccount.isNull()) {
                     // finally, call the slot that finalizes the setup
                     auto accountStatePtr = ocApp()->addNewAccount(newAccount);
+                    accountStatePtr->setSettingUp(true);
 
                     // ensure we are connected and fetch the capabilities
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
@@ -874,7 +869,7 @@ void ownCloudGui::runNewAccountWizard()
                             case Wizard::SyncMode::UseVfs: {
                                 bool useVfs = syncMode == Wizard::SyncMode::UseVfs;
                                 setUpInitialSyncFolder(accountStatePtr, useVfs);
-
+                                accountStatePtr->setSettingUp(false);
                                 break;
                             }
                             case Wizard::SyncMode::ConfigureUsingFolderWizard: {
@@ -903,11 +898,13 @@ void ownCloudGui::runNewAccountWizard()
 
                                     folderMan->setSyncEnabled(true);
                                     folderMan->scheduleAllFolders();
+                                    accountStatePtr->setSettingUp(false);
                                 });
 
-                                connect(folderWizard, &QDialog::rejected, []() {
+                                connect(folderWizard, &QDialog::rejected, [accountStatePtr]() {
                                     qCInfo(lcApplication) << "Folder wizard cancelled";
                                     FolderMan::instance()->setSyncEnabled(true);
+                                    accountStatePtr->setSettingUp(false);
                                 });
 
                                 folderWizard->open();
@@ -915,7 +912,7 @@ void ownCloudGui::runNewAccountWizard()
 
                                 break;
                             }
-                            default:
+                            case OCC::Wizard::SyncMode::Invalid:
                                 Q_UNREACHABLE();
                             }
                         }

@@ -71,10 +71,12 @@ struct CmdOptions
 struct SyncCTX
 {
     explicit SyncCTX(const CmdOptions &cmdOptions)
-        : options { cmdOptions }
+        : options{cmdOptions}
+        , promptRemoveAllFiles(cmdOptions.interactive)
     {
     }
     CmdOptions options;
+    bool promptRemoveAllFiles;
     AccountPtr account;
     QString user;
 };
@@ -141,11 +143,12 @@ void sync(const SyncCTX &ctx)
         ctx.account, ctx.options.target_url, ctx.options.source_dir, ctx.options.remoteFolder, db);
     engine->setSyncOptions(opt);
     engine->setParent(db);
+    engine->setPromtRemoveAllFiles(ctx.options.interactive);
 
     QObject::connect(engine, &SyncEngine::finished, engine, [engine, ctx, restartCount = std::make_shared<int>(0)](bool result) {
         if (!result) {
             qWarning() << "Failed to sync";
-            qApp->exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         } else {
             if (engine->isAnotherSyncNeeded() != NoFollowUpSync) {
                 if (*restartCount < ctx.options.restartTimes) {
@@ -160,10 +163,8 @@ void sync(const SyncCTX &ctx)
             }
         }
     });
-    QObject::connect(engine, &SyncEngine::aboutToRemoveAllFiles, engine, [ctx](OCC::SyncFileItem::Direction dir, const std::function<void(bool)> &abort) {
-        if (!ctx.options.interactive) {
-            abort(false);
-        } else {
+    QObject::connect(
+        engine, &SyncEngine::aboutToRemoveAllFiles, engine, [ctx = ctx](OCC::SyncFileItem::Direction dir) mutable {
             if (dir == SyncFileItem::Down) {
                 qInfo() << "All files in the sync folder '" << ctx.options.remoteFolder << "' folder were deleted on the server.";
                 qInfo() << "These deletes will be synchronized to your local sync folder, making such files "
@@ -183,16 +184,16 @@ void sync(const SyncCTX &ctx)
                 qInfo() << "Remove all files? [y,n]";
                 std::getline(std::cin, s);
                 if (s == "y") {
-                    abort(false);
+                    ctx.promptRemoveAllFiles = true;
+                    sync(ctx);
                 } else if (s == "n") {
-                    abort(true);
+                    return;
                 } else {
                     continue;
                 }
                 return;
             }
-        }
-    });
+        });
     QObject::connect(engine, &SyncEngine::syncError, engine,
         [](const QString &error) { qWarning() << "Sync error:" << error; });
     engine->setIgnoreHiddenFiles(ctx.options.ignoreHiddenFiles);
@@ -215,7 +216,7 @@ void sync(const SyncCTX &ctx)
 
     if (!engine->excludedFiles().reloadExcludeFiles()) {
         qCritical() << "Cannot load system exclude list or list supplied via --exclude";
-        qApp->exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
     engine->startSync();
 }
@@ -255,14 +256,14 @@ void setupCredentials(SyncCTX &ctx)
             port = pList.at(2).toUInt(&ok);
             if (!ok || port > std::numeric_limits<uint16_t>::max()) {
                 qCritical() << "Invalid port number";
-                qApp->exit(EXIT_FAILURE);
+                exit(EXIT_FAILURE);
             }
 
             QNetworkProxyFactory::setUseSystemConfiguration(false);
             QNetworkProxy::setApplicationProxy(QNetworkProxy(QNetworkProxy::HttpProxy, host, static_cast<uint16_t>(port)));
         } else {
             qCritical() << "Could not read httpproxy. The proxy should have the format \"http://hostname:port\".";
-            qApp->exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -273,7 +274,7 @@ void setupCredentials(SyncCTX &ctx)
         QFile f(ctx.options.unsyncedfolders);
         if (!f.open(QFile::ReadOnly)) {
             qCritical() << "Cannot read unsyncedfolders file '" << ctx.options.unsyncedfolders << "': " << f.errorString();
-            qApp->exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
         f.close();
     }
@@ -292,7 +293,7 @@ void setupCredentials(SyncCTX &ctx)
                 qCritical() << e.errorString();
             }
             qCritical() << "If you trust the certificate and want to ignore the errors, use the --trust option.";
-            qApp->exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         });
     }
 }
@@ -305,7 +306,10 @@ CmdOptions parseOptions(const QStringList &app_args)
     parser.setApplicationDescription(QStringLiteral("%1 version %2 - command line client tool").arg(QCoreApplication::instance()->applicationName(), OCC::Version::displayString()));
 
     // this little snippet saves a few lines below
-    auto addOption = [&parser](const QCommandLineOption &option) {
+    auto addOption = [&parser](QCommandLineOption &&option, std::optional<QCommandLineOption::Flag> &&flags = {}) {
+        if (flags.has_value()) {
+            option.setFlags(flags.value());
+        }
         parser.addOption(option);
         return option;
     };
@@ -328,6 +332,9 @@ CmdOptions parseOptions(const QStringList &app_args)
 
     auto logdebugOption = addOption({ { QStringLiteral("logdebug") }, QStringLiteral("More verbose logging") });
 
+    const auto testCrashReporter =
+        addOption({{QStringLiteral("crash")}, QStringLiteral("Crash the client to test the crash reporter")}, QCommandLineOption::HiddenFromHelp);
+
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -340,15 +347,14 @@ CmdOptions parseOptions(const QStringList &app_args)
 
     const QStringList args = parser.positionalArguments();
     if (args.size() < 2 || args.size() > 3) {
-        parser.showHelp();
-        qApp->exit(EXIT_FAILURE);
+        parser.showHelp(EXIT_FAILURE);
     }
 
     options.source_dir = [arg = args[0]] {
-        QFileInfo fi(arg);
+        const QFileInfo fi(arg);
         if (!fi.exists()) {
-            qCritical() << "Source dir '" << arg << "' does not exist.";
-            qApp->exit(EXIT_FAILURE);
+            qCritical() << "Source dir" << arg << "does not exist.";
+            exit(EXIT_FAILURE);
         }
         QString sourceDir = fi.absoluteFilePath();
         if (!sourceDir.endsWith(QLatin1Char('/'))) {
@@ -406,6 +412,11 @@ CmdOptions parseOptions(const QStringList &app_args)
         Logger::instance()->setLogFile(QStringLiteral("-"));
         Logger::instance()->setLogDebug(true);
     }
+    if (parser.isSet(testCrashReporter)) {
+        // crash onc ethe main loop was started
+        qCritical() << "We'll soon crash on purpose";
+        QTimer::singleShot(0, qApp, &Utility::crash);
+    }
     return options;
 }
 
@@ -422,91 +433,100 @@ int main(int argc, char **argv)
 
     SyncCTX ctx { parseOptions(app.arguments()) };
 
-    if (ctx.options.silent) {
-        qInstallMessageHandler([](QtMsgType, const QMessageLogContext &, const QString &) {});
-    } else {
-        qSetMessagePattern(Logger::loggerPattern());
-    }
+    // start the main loop before we ask for the username etc
+    QTimer::singleShot(0, &app, [&] {
+        if (ctx.options.silent) {
+            qInstallMessageHandler([](QtMsgType, const QMessageLogContext &, const QString &) {});
+        } else {
+            qSetMessagePattern(Logger::loggerPattern());
+        }
 
-    ctx.account = Account::create(QUuid::createUuid());
+        ctx.account = Account::create(QUuid::createUuid());
 
-    if (!ctx.account) {
-        qCritical() << "Could not initialize account!";
-        qApp->exit(EXIT_FAILURE);
-    }
+        if (!ctx.account) {
+            qCritical() << "Could not initialize account!";
+            exit(EXIT_FAILURE);
+        }
 
-    setupCredentials(ctx);
+        setupCredentials(ctx);
 
-    // don't leak credentials more than needed
-    ctx.options.server_url = ctx.options.server_url.adjusted(QUrl::RemoveUserInfo);
-    ctx.options.target_url = ctx.options.target_url.adjusted(QUrl::RemoveUserInfo);
+        // don't leak credentials more than needed
+        ctx.options.server_url = ctx.options.server_url.adjusted(QUrl::RemoveUserInfo);
+        ctx.options.target_url = ctx.options.target_url.adjusted(QUrl::RemoveUserInfo);
 
-    const QUrl baseUrl = [&ctx] {
-        auto tmp = ctx.options.server_url;
-        // Find the folder and the original owncloud url
-        QStringList splitted = tmp.path().split(ctx.account->davPath());
-        tmp.setPath(splitted.value(0));
-        tmp.setScheme(tmp.scheme().replace(QLatin1String("owncloud"), QLatin1String("http")));
-        return tmp;
-    }();
+        const QUrl baseUrl = [&ctx] {
+            auto tmp = ctx.options.server_url;
+            // Find the folder and the original owncloud url
+            QStringList splitted = tmp.path().split(ctx.account->davPath());
+            tmp.setPath(splitted.value(0));
+            tmp.setScheme(tmp.scheme().replace(QLatin1String("owncloud"), QLatin1String("http")));
+            return tmp;
+        }();
 
 
-    ctx.account->setUrl(baseUrl);
+        ctx.account->setUrl(baseUrl);
 
-    auto *checkServerJob = CheckServerJobFactory(ctx.account->accessManager()).startJob(ctx.account->url(), qApp);
+        auto *checkServerJob = CheckServerJobFactory(ctx.account->accessManager()).startJob(ctx.account->url(), qApp);
 
-    QObject::connect(checkServerJob, &CoreJob::finished, [ctx, checkServerJob] {
-        if (checkServerJob->success()) {
-            // Perform a call to get the capabilities.
-            auto *capabilitiesJob = new JsonApiJob(ctx.account, QStringLiteral("ocs/v1.php/cloud/capabilities"), {}, {}, nullptr);
-            QObject::connect(capabilitiesJob, &JsonApiJob::finishedSignal, qApp, [capabilitiesJob, ctx] {
-                if (capabilitiesJob->reply()->error() != QNetworkReply::NoError || capabilitiesJob->httpStatusCode() != 200) {
-                    qCritical() << "Error connecting to server";
-                    qApp->exit(EXIT_FAILURE);
-                }
-                auto caps = capabilitiesJob->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("capabilities")).toObject();
-                qDebug() << "Server capabilities" << caps;
-                ctx.account->setCapabilities(caps.toVariantMap());
+        QObject::connect(checkServerJob, &CoreJob::finished, [ctx, checkServerJob] {
+            if (checkServerJob->success()) {
+                // Perform a call to get the capabilities.
+                auto *capabilitiesJob = new JsonApiJob(ctx.account, QStringLiteral("ocs/v1.php/cloud/capabilities"), {}, {}, nullptr);
+                QObject::connect(capabilitiesJob, &JsonApiJob::finishedSignal, qApp, [capabilitiesJob, ctx] {
+                    if (capabilitiesJob->reply()->error() != QNetworkReply::NoError || capabilitiesJob->httpStatusCode() != 200) {
+                        qCritical() << "Error connecting to server";
+                        exit(EXIT_FAILURE);
+                    }
+                    auto caps = capabilitiesJob->data()
+                                    .value(QStringLiteral("ocs"))
+                                    .toObject()
+                                    .value(QStringLiteral("data"))
+                                    .toObject()
+                                    .value(QStringLiteral("capabilities"))
+                                    .toObject();
+                    qDebug() << "Server capabilities" << caps;
+                    ctx.account->setCapabilities(caps.toVariantMap());
 
-                switch (ctx.account->serverSupportLevel()) {
-                case Account::ServerSupportLevel::Supported:
-                    break;
-                case Account::ServerSupportLevel::Unknown:
-                    qWarning() << "Failed to detect server version";
-                    break;
-                case Account::ServerSupportLevel::Unsupported:
-                    qCritical() << "Error unsupported server";
-                    qApp->exit(EXIT_FAILURE);
-                }
-
-                auto userJob = new JsonApiJob(ctx.account, QStringLiteral("ocs/v1.php/cloud/user"), {}, {}, nullptr);
-                QObject::connect(userJob, &JsonApiJob::finishedSignal, qApp, [userJob, ctx = ctx]() mutable {
-                    const QJsonObject data = userJob->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject();
-                    ctx.account->setDavUser(data.value(QStringLiteral("id")).toString());
-                    ctx.account->setDavDisplayName(data.value(QStringLiteral("display-name")).toString());
-
-                    if (ctx.options.server_url == ctx.options.target_url) {
-                        // guess dav path
-                        if (!ctx.options.target_url.path().contains(ctx.account->davPath())) {
-                            ctx.options.target_url = OCC::Utility::concatUrlPath(ctx.options.target_url, ctx.account->davPath());
-                        }
+                    switch (ctx.account->serverSupportLevel()) {
+                    case Account::ServerSupportLevel::Supported:
+                        break;
+                    case Account::ServerSupportLevel::Unknown:
+                        qWarning() << "Failed to detect server version";
+                        break;
+                    case Account::ServerSupportLevel::Unsupported:
+                        qCritical() << "Error unsupported server";
+                        exit(EXIT_FAILURE);
                     }
 
-                    // much lower age than the default since this utility is usually made to be run right after a change in the tests
-                    SyncEngine::minimumFileAgeForUpload = std::chrono::seconds(0);
-                    sync(ctx);
+                    auto userJob = new JsonApiJob(ctx.account, QStringLiteral("ocs/v1.php/cloud/user"), {}, {}, nullptr);
+                    QObject::connect(userJob, &JsonApiJob::finishedSignal, qApp, [userJob, ctx = ctx]() mutable {
+                        const QJsonObject data = userJob->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject();
+                        ctx.account->setDavUser(data.value(QStringLiteral("id")).toString());
+                        ctx.account->setDavDisplayName(data.value(QStringLiteral("display-name")).toString());
+
+                        if (ctx.options.server_url == ctx.options.target_url) {
+                            // guess dav path
+                            if (!ctx.options.target_url.path().contains(ctx.account->davPath())) {
+                                ctx.options.target_url = OCC::Utility::concatUrlPath(ctx.options.target_url, ctx.account->davPath());
+                            }
+                        }
+
+                        // much lower age than the default since this utility is usually made to be run right after a change in the tests
+                        SyncEngine::minimumFileAgeForUpload = std::chrono::seconds(0);
+                        sync(ctx);
+                    });
+                    userJob->start();
                 });
-                userJob->start();
-            });
-            capabilitiesJob->start();
-        } else {
-            if (checkServerJob->reply()->error() == QNetworkReply::OperationCanceledError) {
-                qCritical() << "Looking up " << ctx.account->url().toString() << " timed out.";
+                capabilitiesJob->start();
             } else {
-                qCritical() << "Failed to resolve " << ctx.account->url().toString() << " Error: " << checkServerJob->reply()->errorString();
+                if (checkServerJob->reply()->error() == QNetworkReply::OperationCanceledError) {
+                    qCritical() << "Looking up " << ctx.account->url().toString() << " timed out.";
+                } else {
+                    qCritical() << "Failed to resolve " << ctx.account->url().toString() << " Error: " << checkServerJob->reply()->errorString();
+                }
+                exit(EXIT_FAILURE);
             }
-            qApp->exit(EXIT_FAILURE);
-        }
+        });
     });
 
     return app.exec();

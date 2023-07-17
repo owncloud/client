@@ -14,6 +14,7 @@
 
 
 #include "accountsettings.h"
+#include "scheduling/syncscheduler.h"
 #include "ui_accountsettings.h"
 
 #include "account.h"
@@ -167,7 +168,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     addAction(syncNowAction);
 
     QAction *syncNowWithRemoteDiscovery = new QAction(this);
-    syncNowWithRemoteDiscovery->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F6));
+    syncNowWithRemoteDiscovery->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_F6));
     connect(syncNowWithRemoteDiscovery, &QAction::triggered, this, &AccountSettings::slotScheduleCurrentFolderForceFullDiscovery);
     addAction(syncNowWithRemoteDiscovery);
 
@@ -203,6 +204,17 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     connect(_model, &FolderStatusModel::dataChanged, [this]() {
         ui->addButton->setVisible(!Theme::instance()->singleSyncFolder() || _model->rowCount() == 0);
     });
+
+    connect(_accountState.get(), &AccountState::isSettingUpChanged, this, [this] {
+        if (_accountState->isSettingUp()) {
+            ui->spinner->startAnimation();
+            ui->stackedWidget->setCurrentWidget(ui->loadingPage);
+        } else {
+            ui->spinner->stopAnimation();
+            ui->stackedWidget->setCurrentWidget(ui->folderListPage);
+        }
+    });
+    ui->stackedWidget->setCurrentWidget(ui->folderListPage);
 }
 
 
@@ -502,11 +514,6 @@ void AccountSettings::slotEnableVfsCurrentFolder()
             return;
         }
 
-#ifdef Q_OS_WIN
-        // we might need to add or remove the panel entry as cfapi brings this feature out of the box
-        FolderMan::instance()->navigationPaneHelper().scheduleUpdateCloudStorageRegistry();
-#endif
-
         // It is unsafe to switch on vfs while a sync is running - wait if necessary.
         auto connection = std::make_shared<QMetaObject::Connection>();
         auto switchVfsOn = [folder, connection, this]() {
@@ -530,7 +537,7 @@ void AccountSettings::slotEnableVfsCurrentFolder()
             }
             folder->slotNextSyncFullLocalDiscovery();
 
-            FolderMan::instance()->scheduleFolder(folder);
+            FolderMan::instance()->scheduler()->enqueueFolder(folder);
 
             ui->_folderList->doItemsLayout();
             ui->selectiveSyncStatus->setVisible(false);
@@ -580,11 +587,6 @@ void AccountSettings::slotDisableVfsCurrentFolder()
         msgBox->deleteLater();
         if (msgBox->clickedButton() != acceptButton|| !folder)
             return;
-
-#ifdef Q_OS_WIN
-         // we might need to add or remove the panel entry as cfapi brings this feature out of the box
-        FolderMan::instance()->navigationPaneHelper().scheduleUpdateCloudStorageRegistry();
-#endif
 
         // It is unsafe to switch off vfs while a sync is running - wait if necessary.
         auto connection = std::make_shared<QMetaObject::Connection>();
@@ -679,7 +681,7 @@ void AccountSettings::slotEnableCurrentFolder(bool terminate)
 void AccountSettings::slotScheduleCurrentFolder()
 {
     if (auto folder = selectedFolder()) {
-        FolderMan::instance()->scheduleFolder(folder);
+        FolderMan::instance()->scheduler()->enqueueFolder(folder);
     }
 }
 
@@ -689,7 +691,7 @@ void AccountSettings::slotScheduleCurrentFolderForceFullDiscovery()
         folder->slotWipeErrorBlacklist();
         folder->slotNextSyncFullLocalDiscovery();
         folder->journalDb()->forceRemoteDiscoveryNextSync();
-        FolderMan::instance()->scheduleFolder(folder);
+        FolderMan::instance()->scheduler()->enqueueFolder(folder);
     }
 }
 
@@ -700,14 +702,14 @@ void AccountSettings::slotForceSyncCurrentFolder()
         for (auto *folder : FolderMan::instance()->folders()) {
             if (folder->isSyncRunning()) {
                 folder->slotTerminateSync();
-                FolderMan::instance()->scheduleFolder(folder);
+                FolderMan::instance()->scheduler()->enqueueFolder(folder);
             }
         }
 
         selectedFolder->slotWipeErrorBlacklist(); // issue #6757
         selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
         // Insert the selected folder at the front of the queue
-        FolderMan::instance()->scheduleFolder(selectedFolder, true);
+        FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High);
     }
 }
 

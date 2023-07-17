@@ -80,10 +80,6 @@ auto capabilitesC()
 {
     return QStringLiteral("capabilities");
 }
-
-// The maximum versions that this client can read
-static const int maxAccountsVersion = 2;
-static const int maxAccountVersion = 1;
 }
 
 
@@ -99,20 +95,11 @@ AccountManager *AccountManager::instance()
 
 bool AccountManager::restore()
 {
-    QStringList skipSettingsKeys;
-    backwardMigrationSettingsKeys(&skipSettingsKeys, &skipSettingsKeys);
-
     auto settings = ConfigFile::settingsWithGroup(accountsC());
     if (settings->status() != QSettings::NoError) {
         qCWarning(lcAccountManager) << "Could not read settings from" << settings->fileName()
                                     << settings->status();
         return false;
-    }
-
-    if (skipSettingsKeys.contains(settings->group())) {
-        // Should not happen: bad container keys should have been deleted
-        qCWarning(lcAccountManager) << "Accounts structure is too new, ignoring";
-        return true;
     }
 
     // If there are no accounts, check the old format.
@@ -125,40 +112,16 @@ bool AccountManager::restore()
 
     for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
-        if (!skipSettingsKeys.contains(settings->group())) {
-            if (auto acc = loadAccountHelper(*settings)) {
-                acc->_id = accountId;
-                if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
-                    addAccountState(accState);
-                }
+        if (auto acc = loadAccountHelper(*settings)) {
+            acc->_id = accountId;
+            if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
+                addAccountState(std::move(accState));
             }
-        } else {
-            qCInfo(lcAccountManager) << "Account" << accountId << "is too new, ignoring";
-            _additionalBlockedAccountIds.insert(accountId);
         }
         settings->endGroup();
     }
 
     return true;
-}
-
-void AccountManager::backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringList *ignoreKeys)
-{
-    auto settings = ConfigFile::settingsWithGroup(accountsC());
-    const int accountsVersion = settings->value(versionC()).toInt();
-    if (accountsVersion <= maxAccountsVersion) {
-        const auto &childGroups = settings->childGroups();
-        for (const auto &accountId : childGroups) {
-            settings->beginGroup(accountId);
-            const int accountVersion = settings->value(versionC(), 1).toInt();
-            if (accountVersion > maxAccountVersion) {
-                ignoreKeys->append(settings->group());
-            }
-            settings->endGroup();
-        }
-    } else {
-        deleteKeys->append(settings->group());
-    }
 }
 
 bool AccountManager::restoreFromLegacySettings()
@@ -239,10 +202,10 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->setValue(versionC(), maxAccountsVersion);
+    settings->setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
     settings->beginGroup(account->id());
 
-    settings->setValue(versionC(), maxAccountVersion);
+    settings->setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
     settings->setValue(urlC(), account->_url.toString());
     settings->setValue(davUserC(), account->_davUser);
     settings->setValue(davUserDisplyNameC(), account->_displayName);
@@ -364,9 +327,7 @@ AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
     }
     newAccount->_id = id;
 
-    AccountStatePtr newAccountState(AccountState::fromNewAccount(newAccount));
-    addAccountState(newAccountState);
-    return newAccountState;
+    return addAccountState(AccountState::fromNewAccount(newAccount));
 }
 
 void AccountManager::deleteAccount(AccountStatePtr account)
@@ -387,6 +348,7 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     settings->remove(account->account()->id());
 
     emit accountRemoved(account);
+    account->deleteLater();
 }
 
 AccountPtr AccountManager::createAccount(const QUuid &uuid)
@@ -427,7 +389,7 @@ QString AccountManager::generateFreeAccountId() const
     }
 }
 
-void AccountManager::addAccountState(AccountStatePtr accountState)
+AccountStatePtr AccountManager::addAccountState(std::unique_ptr<AccountState> &&accountState)
 {
     auto *rawAccount = accountState->account().data();
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
@@ -435,7 +397,9 @@ void AccountManager::addAccountState(AccountStatePtr accountState)
         saveAccount(rawAccount, false);
     });
 
-    _accounts.insert(accountState->account()->uuid(), accountState);
-    emit accountAdded(accountState);
+    AccountStatePtr statePtr = accountState.release();
+    _accounts.insert(statePtr->account()->uuid(), statePtr);
+    emit accountAdded(statePtr);
+    return statePtr;
 }
 }

@@ -17,6 +17,7 @@
 #include "accountmanager.h"
 #include "application.h"
 #include "configfile.h"
+#include "fetchserversettings.h"
 
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/creds/httpcredentials.h"
@@ -154,16 +155,11 @@ AccountState::AccountState(AccountPtr account)
     });
 }
 
-AccountState::~AccountState()
-{
-    if (FolderMan::instance()) {
-        FolderMan::instance()->socketApi()->unregisterAccount(account());
-    }
-}
+AccountState::~AccountState() { }
 
-AccountStatePtr AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
+std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
 {
-    auto accountState = AccountStatePtr(new AccountState(account));
+    auto accountState = std::unique_ptr<AccountState>(new AccountState(account));
     const bool userExplicitlySignedOut = settings.value(userExplicitlySignedOutC(), false).toBool();
     if (userExplicitlySignedOut) {
         // see writeToSettings below
@@ -173,9 +169,9 @@ AccountStatePtr AccountState::loadFromSettings(AccountPtr account, const QSettin
     return accountState;
 }
 
-AccountStatePtr AccountState::fromNewAccount(AccountPtr account)
+std::unique_ptr<AccountState> AccountState::fromNewAccount(AccountPtr account)
 {
-    return AccountStatePtr(new AccountState(account));
+    return std::unique_ptr<AccountState>(new AccountState(account));
 }
 
 void AccountState::writeToSettings(QSettings &settings) const
@@ -241,6 +237,9 @@ void AccountState::setState(State state)
         QTimer::singleShot(0, this, [this] {
             // ensure the connection validator is done
             _queueGuard.unblock();
+            // update capabilites and fetch relevant settings
+            auto updateJob = new FetchServerSettingsJob(account(), this);
+            updateJob->start();
         });
     }
     // don't anounce a state change from connected to connected
@@ -324,6 +323,7 @@ void AccountState::checkConnectivity(bool blockJobs)
     if (account()->hasCapabilities()) {
         // IF the account is connected the connection check can be skipped
         // if the last successful etag check job is not so long ago.
+        // TODO: https://github.com/owncloud/client/issues/10935
         const auto pta = account()->capabilities().remotePollInterval();
         const auto polltime = duration_cast<seconds>(ConfigFile().remotePollInterval(pta));
         const auto elapsed = _timeOfLastETagCheck.secsTo(QDateTime::currentDateTimeUtc());
@@ -563,6 +563,19 @@ QuotaInfo *AccountState::quotaInfo()
         _quotaInfo = new QuotaInfo(this);
     }
     return _quotaInfo;
+}
+
+bool AccountState::isSettingUp() const
+{
+    return _settingUp;
+}
+
+void AccountState::setSettingUp(bool settingUp)
+{
+    if (_settingUp != settingUp) {
+        _settingUp = settingUp;
+        Q_EMIT isSettingUpChanged();
+    }
 }
 
 } // namespace OCC

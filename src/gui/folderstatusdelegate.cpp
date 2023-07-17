@@ -217,9 +217,6 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         pBarOpt.minimum = 0;
         pBarOpt.maximum = 100;
         pBarOpt.progress = overallPercent;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        pBarOpt.orientation = Qt::Horizontal;
-#endif
         pBarOpt.rect = QStyle::visualRect(option.direction, option.rect, pBRect.toRect());
         QApplication::style()->drawControl(QStyle::CE_ProgressBar, &pBarOpt, painter, option.widget);
 
@@ -294,7 +291,7 @@ QRectF FolderStatusDelegate::computeOptionsButtonRect(QRectF within) const
     opt.rect.setSize(QSize(e,e));
     QSizeF size = QApplication::style()->sizeFromContents(QStyle::CT_ToolButton, &opt, opt.rect.size());
 
-    return {{within.right() - size.width() - QApplication::style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing),
+    return {{within.right() - size.width() - QApplication::style()->pixelMetric(QStyle::PM_LayoutRightMargin),
                 within.top() + within.height() / 2 - size.height() / 2},
         size};
 }

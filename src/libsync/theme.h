@@ -129,8 +129,6 @@ public:
     */
     bool allowDarkTheme() const;
 
-    virtual QString statusHeaderText(SyncResult::Status) const;
-
     /**
      * Characteristics: bool if more than one sync folder is allowed
      */
@@ -447,6 +445,8 @@ public:
 
 
     QIcon themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;
+
+    bool withCrashReporter() const;
 
 protected:
     QIcon themeTrayIcon(const QString &name, bool sysTrayMenuVisible = false, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon) const;

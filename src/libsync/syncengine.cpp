@@ -15,19 +15,19 @@
 
 #include "syncengine.h"
 #include "account.h"
-#include "owncloudpropagator.h"
+#include "common/asserts.h"
+#include "common/syncfilestatus.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
-#include "discoveryphase.h"
-#include "creds/abstractcredentials.h"
-#include "common/syncfilestatus.h"
-#include "csync_exclude.h"
-#include "filesystem.h"
-#include "propagateremotedelete.h"
-#include "propagatedownload.h"
-#include "common/asserts.h"
-#include "discovery.h"
 #include "common/vfs.h"
+#include "creds/abstractcredentials.h"
+#include "csync_exclude.h"
+#include "discovery.h"
+#include "discoveryphase.h"
+#include "filesystem.h"
+#include "owncloudpropagator.h"
+#include "propagatedownload.h"
+#include "propagateremotedelete.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -467,22 +467,18 @@ void SyncEngine::startSync()
     _discoveryPhase->_serverBlacklistedFiles = _account->capabilities().blacklistedFiles();
     _discoveryPhase->_ignoreHiddenFiles = ignoreHiddenFiles();
 
-    connect(_discoveryPhase.data(), &DiscoveryPhase::itemDiscovered, this, &SyncEngine::slotItemDiscovered);
-    connect(_discoveryPhase.data(), &DiscoveryPhase::newBigFolder, this, &SyncEngine::newBigFolder);
-    connect(_discoveryPhase.data(), &DiscoveryPhase::fatalError, this, [this](const QString &errorString) {
+    connect(_discoveryPhase.get(), &DiscoveryPhase::itemDiscovered, this, &SyncEngine::slotItemDiscovered);
+    connect(_discoveryPhase.get(), &DiscoveryPhase::newBigFolder, this, &SyncEngine::newBigFolder);
+    connect(_discoveryPhase.get(), &DiscoveryPhase::fatalError, this, [this](const QString &errorString) {
         Q_EMIT syncError(errorString);
         finalize(false);
     });
-    connect(_discoveryPhase.data(), &DiscoveryPhase::finished, this, &SyncEngine::slotDiscoveryFinished);
-    connect(_discoveryPhase.data(), &DiscoveryPhase::silentlyExcluded,
-        _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
-    connect(_discoveryPhase.data(), &DiscoveryPhase::excluded,
-        _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
-    connect(_discoveryPhase.data(), &DiscoveryPhase::excluded,
-        this, &SyncEngine::excluded);
+    connect(_discoveryPhase.get(), &DiscoveryPhase::finished, this, &SyncEngine::slotDiscoveryFinished);
+    connect(_discoveryPhase.get(), &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase.get(), &DiscoveryPhase::excluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase.get(), &DiscoveryPhase::excluded, this, &SyncEngine::excluded);
 
-    auto discoveryJob = new ProcessDirectoryJob(
-        _discoveryPhase.data(), PinState::AlwaysLocal, _discoveryPhase.data());
+    auto discoveryJob = new ProcessDirectoryJob(_discoveryPhase.get(), PinState::AlwaysLocal, _discoveryPhase.get());
     _discoveryPhase->startJob(discoveryJob);
     connect(discoveryJob, &ProcessDirectoryJob::etag, this, &SyncEngine::slotRootEtagReceived);
 }
@@ -657,32 +653,18 @@ void SyncEngine::slotDiscoveryFinished()
 
     if (!_hasNoneFiles && _hasRemoveFile) {
         qCInfo(lcEngine) << "All the files are going to be changed, asking the user";
-        int side = 0; // > 0 means more deleted on the server.  < 0 means more deleted on the client
-        for (const auto &it : qAsConst(_syncItems)) {
-            if (it->_instruction == CSYNC_INSTRUCTION_REMOVE) {
-                side += it->_direction == SyncFileItem::Down ? 1 : -1;
-            }
-        }
 
-        QPointer<QObject> guard = new QObject();
-        QPointer<QObject> self = this;
-        auto callback = [this, self, finish, guard](bool cancel) -> void {
-            // use a guard to ensure its only called once...
-            // qpointer to self to ensure we still exist
-            if (!guard || !self) {
-                return;
+        if (_promptRemoveAllFiles) {
+            int side = 0; // > 0 means more deleted on the server.  < 0 means more deleted on the client
+            for (const auto &it : qAsConst(_syncItems)) {
+                if (it->_instruction == CSYNC_INSTRUCTION_REMOVE) {
+                    side += it->_direction == SyncFileItem::Down ? 1 : -1;
+                }
             }
-            guard->deleteLater();
-            if (cancel) {
-                qCInfo(lcEngine) << "User aborted sync";
-                finalize(false);
-                return;
-            } else {
-                finish();
-            }
-        };
-        emit aboutToRemoveAllFiles(side >= 0 ? SyncFileItem::Down : SyncFileItem::Up, callback);
-        return;
+            emit aboutToRemoveAllFiles(side >= 0 ? SyncFileItem::Down : SyncFileItem::Up);
+            finalize(false);
+            return;
+        }
     }
     finish();
 }
@@ -759,7 +741,7 @@ void SyncEngine::finalize(bool success)
     _stopWatch.stop();
 
     if (_discoveryPhase) {
-        _discoveryPhase.take()->deleteLater();
+        _discoveryPhase.release()->deleteLater();
     }
     _syncRunning = false;
     emit finished(success);
@@ -925,8 +907,8 @@ void SyncEngine::abort()
     } else if (_discoveryPhase) {
         // Delete the discovery and all child jobs after ensuring
         // it can't finish and start the propagator
-        disconnect(_discoveryPhase.data(), nullptr, this, nullptr);
-        _discoveryPhase.take()->deleteLater();
+        disconnect(_discoveryPhase.get(), nullptr, this, nullptr);
+        _discoveryPhase.release()->deleteLater();
 
         if (!_goingDown) {
             Q_EMIT syncError(tr("Aborted"));
@@ -960,6 +942,16 @@ void SyncEngine::slotInsufficientRemoteStorage()
 
     _uniqueErrors.insert(msg);
     emit syncError(msg, ErrorCategory::InsufficientRemoteStorage);
+}
+
+bool SyncEngine::isPromtRemoveAllFiles() const
+{
+    return _promptRemoveAllFiles;
+}
+
+void SyncEngine::setPromtRemoveAllFiles(bool promtRemoveAllFiles)
+{
+    _promptRemoveAllFiles = promtRemoveAllFiles;
 }
 
 } // namespace OCC

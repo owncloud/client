@@ -2,7 +2,7 @@ if(WITH_CRASHREPORTER)
     find_package(CrashReporterQt REQUIRED)
 endif()
 
-find_package(Qt${QT_VERSION_MAJOR}Keychain 0.13 REQUIRED)
+find_package(Qt6Keychain 0.13 REQUIRED)
 
 # TODO: Mingw64 7.3 might also need to be excluded here as it seems to not automatically link libssp
 if(NOT WIN32)
@@ -48,10 +48,12 @@ endif()
 
 add_subdirectory(plugins)
 
-install(EXPORT ownCloudConfig DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/ownCloud"  NAMESPACE ownCloud::)
+install(EXPORT ${APPLICATION_SHORTNAME}Config DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/${APPLICATION_SHORTNAME}" NAMESPACE ownCloud::)
 
-ecm_setup_version(PROJECT VARIABLE_PREFIX ownCloud
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ownCloudConfigVersion.cmake"
-                        SOVERSION ${MIRALL_SOVERSION})
+ecm_setup_version(PROJECT
+    VARIABLE_PREFIX ${APPLICATION_SHORTNAME}
+    PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/${APPLICATION_SHORTNAME}ConfigVersion.cmake"
+    SOVERSION ${MIRALL_SOVERSION}
+)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ownCloudConfigVersion.cmake" DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/ownCloud")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${APPLICATION_SHORTNAME}ConfigVersion.cmake" DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/${APPLICATION_SHORTNAME}")

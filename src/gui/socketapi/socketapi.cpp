@@ -15,6 +15,7 @@
  */
 
 #include "socketapi.h"
+#include "scheduling/syncscheduler.h"
 #include "socketapi_p.h"
 
 #include "gui/commonstrings.h"
@@ -176,6 +177,12 @@ SocketApi::SocketApi(QObject *parent)
 
     // Now we're ready to start the native shell integration:
     Utility::startShellIntegration();
+
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](const auto &accountState) {
+        if (_registeredAccounts.contains(accountState->account())) {
+            unregisterAccount(accountState->account());
+        }
+    });
 }
 
 SocketApi::~SocketApi()
@@ -686,7 +693,7 @@ void SocketApi::command_MAKE_AVAILABLE_LOCALLY(const QString &filesArg, SocketLi
 
         // Trigger sync
         data.folder->schedulePathForLocalDiscovery(data.folderRelativePath);
-        data.folder->scheduleThisFolderSoon();
+        FolderMan::instance()->scheduler()->enqueueFolder(data.folder, SyncScheduler::Priority::Medium);
     }
 }
 
@@ -705,7 +712,7 @@ void SocketApi::command_MAKE_ONLINE_ONLY(const QString &filesArg, SocketListener
 
         // Trigger sync
         data.folder->schedulePathForLocalDiscovery(data.folderRelativePath);
-        data.folder->scheduleThisFolderSoon();
+        FolderMan::instance()->scheduler()->enqueueFolder(data.folder, SyncScheduler::Priority::Medium);
     }
 }
 
@@ -1108,8 +1115,7 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
         // TODO: Should be a submenu, should use icons
         auto makePinContextMenu = [&](bool makeAvailableLocally, bool freeSpace) {
             listener->sendMessage(QStringLiteral("MENU_SEPARATOR:d::"));
-            listener->sendMessage(QStringLiteral("MENU_ITEM:CURRENT_PIN:d:")
-                + Utility::vfsCurrentAvailabilityText(*combined));
+            listener->sendMessage(QStringLiteral("MENU_ITEM:CURRENT_PIN:d:") + Utility::enumToDisplayName(combined.get()));
             listener->sendMessage(QStringLiteral("MENU_ITEM:MAKE_AVAILABLE_LOCALLY:")
                 + (makeAvailableLocally ? QStringLiteral(":") : QStringLiteral("d:"))
                 + Utility::vfsPinActionText());

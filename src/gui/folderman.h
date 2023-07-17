@@ -21,16 +21,14 @@
 #include <QList>
 
 #include "folder.h"
-#include "navigationpanehelper.h"
-
 #include "folderwizard/folderwizard.h"
+#include "scheduling/syncscheduler.h"
 
 class TestFolderMigration;
 
 namespace OCC {
 
 class FolderMan;
-
 namespace TestUtils {
     // prototype for test friend
     FolderMan *folderMan();
@@ -99,7 +97,7 @@ public:
     // TODO: use acces throug ocApp and remove that instance pointer
     static FolderMan *instance();
 
-    int setupFolders();
+    qsizetype setupFolders();
 
     /** Find folder setting keys that need to be ignored or deleted for being too new.
      *
@@ -118,8 +116,6 @@ public:
      * future configurations (possibly with user confirmation for deletions) and in
      * FolderMan::setupFolders() to know which too-new folder configurations to skip.
      */
-    static void backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringList *ignoreKeys);
-
     const QVector<Folder *> &folders() const;
 
     /** Adds a folder for an account, ensures the journal is gone and saves it in the settings.
@@ -171,9 +167,6 @@ public:
     static TrayOverallStatusResult trayOverallStatus(const QVector<Folder *> &folders);
 
     SocketApi *socketApi();
-#ifdef Q_OS_WIN
-    NavigationPaneHelper &navigationPaneHelper() { return _navigationPaneHelper; }
-#endif
 
     /**
      * Check if @a path is a valid path for a new folder considering the already sync'ed items.
@@ -204,21 +197,6 @@ public:
     void setIgnoreHiddenFiles(bool ignore);
 
     /**
-     * Access to the current queue of scheduled folders.
-     */
-    QQueue<Folder *> scheduleQueue() const;
-
-    /**
-     * Access to the currently syncing folder.
-     *
-     * Note: This is only the folder that's currently syncing *as-scheduled*. There
-     * may be externally-managed syncs such as from placeholder hydrations.
-     *
-     * See also isAnySyncRunning()
-     */
-    Folder *currentSyncFolder() const;
-
-    /**
      * Returns true if any folder is currently syncing.
      *
      * This might be a FolderMan-scheduled sync, or a externally
@@ -235,11 +213,8 @@ public:
      */
     void setSyncEnabled(bool);
 
-    /**
-     * Queues a folder for syncing.
-     * When force is true it will be performed asap.
-     */
-    void scheduleFolder(Folder *folder, bool force = false);
+    SyncScheduler *scheduler() { return _scheduler; }
+
 
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
@@ -252,6 +227,7 @@ public:
 
     /** If the folder configuration is no longer supported this will return an error string */
     Result<void, QString> unsupportedConfiguration(const QString &path) const;
+
 signals:
     /**
       * signal to indicate a folder has changed its sync state.
@@ -259,11 +235,6 @@ signals:
       * Attention: The folder may be zero. Do a general update of the state then.
       */
     void folderSyncStateChange(Folder *);
-
-    /**
-     * Indicates when the schedule queue changes.
-     */
-    void scheduleQueueChanged();
 
     /**
      * Emitted whenever the list of configured folders changes.
@@ -292,33 +263,15 @@ public slots:
      */
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
 
-    // slot to schedule an ETag job
-    void slotScheduleETagJob(RequestEtagJob *job);
-
 private slots:
     void slotFolderSyncPaused(Folder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
     void slotFolderSyncFinished(const SyncResult &);
 
-    void slotRunOneEtagJob();
-    void slotEtagJobDestroyed(QObject *);
-
-    // slot to take the next folder from queue and start syncing.
-    void slotStartScheduledFolderSync();
-    void slotEtagPollTimerTimeout();
-
     void slotRemoveFoldersForAccount(const AccountStatePtr &accountState);
 
     void slotServerVersionChanged(Account *account);
-
-    /**
-     * Schedules folders whose time to sync has come.
-     *
-     * Either because a long time has passed since the last sync or
-     * because of previous failures.
-     */
-    void slotScheduleFolderByTime();
 
 private:
     /** Adds a new folder, does not add it to the account settings and
@@ -330,9 +283,6 @@ private:
     /* unloads a folder object, does not delete it */
     void unloadFolder(Folder *);
 
-    /** Will start a sync after a bit of delay. */
-    void startScheduledSyncSoon();
-
     // finds all folder configuration files
     // and create the folders
     QString getBackupName(QString fullPathName) const;
@@ -343,39 +293,22 @@ private:
     // restarts the application (Linux only)
     void restartApplication();
 
-    void setupFoldersHelper(QSettings &settings, AccountStatePtr account, const QStringList &ignoreKeys, bool backwardsCompatible, bool foldersWithPlaceholders);
+    void setupFoldersHelper(QSettings &settings, AccountStatePtr account, bool foldersWithPlaceholders);
 
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;
     QString _folderConfigPath;
-    QPointer<Folder> _currentSyncFolder;
-    QPointer<Folder> _lastSyncFolder;
-    bool _syncEnabled;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;
 
-    /// Starts regular etag query jobs
-    QTimer _etagPollTimer;
-    /// The currently running etag query
-    QPointer<RequestEtagJob> _currentEtagJob;
-
     /// Watches files that couldn't be synced due to locks
     QScopedPointer<LockWatcher> _lockWatcher;
 
-    /// Occasionally schedules folders
-    QTimer _timeScheduler;
-
     /// Scheduled folders that should be synced as soon as possible
-    QQueue<Folder *> _scheduledFolders;
-
-    /// Picks the next scheduled folder and starts the sync
-    QTimer _startScheduledSyncTimer;
+    SyncScheduler *_scheduler;
 
     QScopedPointer<SocketApi> _socketApi;
-#ifdef Q_OS_WIN
-    NavigationPaneHelper _navigationPaneHelper;
-#endif
 
     bool _appRestartRequired;
 

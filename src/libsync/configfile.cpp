@@ -53,8 +53,10 @@ const QString notificationRefreshIntervalC() { return QStringLiteral("notificati
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
-const QString optionalDesktopNoficationsC() { return QStringLiteral("optionalDesktopNotifications"); }
-const QString showInExplorerNavigationPaneC() { return QStringLiteral("showInExplorerNavigationPane"); }
+const QString optionalDesktopNoficationsC()
+{
+    return QStringLiteral("optionalDesktopNotifications");
+}
 const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
 const QString updateChannelC() { return QStringLiteral("updateChannel"); }
@@ -138,23 +140,14 @@ bool ConfigFile::optionalDesktopNotifications() const
     return settings.value(optionalDesktopNoficationsC(), true).toBool();
 }
 
-bool ConfigFile::showInExplorerNavigationPane() const
+std::optional<QStringList> ConfigFile::issuesWidgetFilter() const
 {
     auto settings = makeQSettings();
-    return settings.value(showInExplorerNavigationPaneC(), QOperatingSystemVersion::current() >= QOperatingSystemVersion::Windows10).toBool();
-}
+    if (settings.contains(issuesWidgetFilterC())) {
+        return settings.value(issuesWidgetFilterC()).toStringList();
+    }
 
-void ConfigFile::setShowInExplorerNavigationPane(bool show)
-{
-    auto settings = makeQSettings();
-    settings.setValue(showInExplorerNavigationPaneC(), show);
-    settings.sync();
-}
-
-QStringList ConfigFile::issuesWidgetFilter() const
-{
-    auto settings = makeQSettings();
-    return settings.value(issuesWidgetFilterC()).toStringList();
+    return {};
 }
 
 void ConfigFile::setIssuesWidgetFilter(const QStringList &checked)
@@ -479,7 +472,7 @@ chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const
 {
     auto settings = makeQSettings();
     settings.beginGroup(defaultConnection());
-    return millisecondsValue(settings, fullLocalDiscoveryIntervalC(), chrono::hours(1));
+    return millisecondsValue(settings, fullLocalDiscoveryIntervalC(), 1h);
 }
 
 chrono::milliseconds ConfigFile::notificationRefreshInterval(const QString &connection) const

@@ -59,11 +59,6 @@ target_link_libraries(csync
         ZLIB::ZLIB
 )
 
-# For platform_win.cpp
-if (WIN32 AND TARGET Qt::WinExtras)
-    target_link_libraries(csync PUBLIC Qt::WinExtras)
-endif()
-
 # For src/common/utility_mac.cpp
 if (APPLE)
     find_library(FOUNDATION_LIBRARY NAMES Foundation)
@@ -90,10 +85,10 @@ INSTALL(
         ../common/filesystembase.h
         ../common/utility.h
     DESTINATION
-        ${INCLUDE_INSTALL_DIR}/ownCloud/common
+        ${INCLUDE_INSTALL_DIR}/${APPLICATION_SHORTNAME}/common
 )
 
-INSTALL(TARGETS csync EXPORT ownCloudConfig ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+INSTALL(TARGETS csync EXPORT ${APPLICATION_SHORTNAME}Config ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 configure_file(config_csync.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config_csync.h)
 

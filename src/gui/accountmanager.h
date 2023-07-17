@@ -83,12 +83,6 @@ public:
     static AccountPtr createAccount(const QUuid &uuid);
 
     /**
-     * Returns the list of settings keys that can't be read because
-     * they are from the future.
-     */
-    static void backwardMigrationSettingsKeys(QStringList *deleteKeys, QStringList *ignoreKeys);
-
-    /**
      * Returns a sorted list of displayNames
      */
     QStringList accountNames() const;
@@ -104,7 +98,7 @@ private:
     QString generateFreeAccountId() const;
 
     // Adds an account to the tracked list, emitting accountAdded()
-    void addAccountState(AccountStatePtr accountState);
+    AccountStatePtr addAccountState(std::unique_ptr<AccountState> &&accountState);
 
 public slots:
     /// Saves account data, not including the credentials

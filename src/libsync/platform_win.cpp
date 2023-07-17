@@ -19,9 +19,6 @@
 #include <QIcon>
 #include <QMetaMethod>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QtWinExtras/qwinfunctions.h>
-#endif
 #include <qt_windows.h>
 
 #include <chrono>
@@ -51,10 +48,6 @@ Q_LOGGING_CATEGORY(lcPlatform, "platform.windows")
 
 WinPlatform::WinPlatform()
 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-    QCoreApplication::setAttribute(Qt::AA_DisableWindowContextHelpButton, true);
-#endif
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 }
 
@@ -64,6 +57,7 @@ WinPlatform::~WinPlatform()
 
 void WinPlatform::setApplication(QCoreApplication *application)
 {
+    Platform::setApplication(application);
     // Ensure OpenSSL config file is only loaded from app directory
     const QString opensslConf = QCoreApplication::applicationDirPath() + QStringLiteral("/openssl.cnf");
     qputenv("OPENSSL_CONF", opensslConf.toLocal8Bit());
@@ -99,11 +93,7 @@ void WinPlatform::startShutdownWatcher()
     // ensure to initialise the icon in the main thread
     HICON icon = {};
     if (qobject_cast<QGuiApplication *>(qApp)) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        icon = QtWin::toHICON(Theme::instance()->applicationIcon().pixmap(64, 64));
-#else
         icon = Theme::instance()->applicationIcon().pixmap(64, 64).toImage().toHICON();
-#endif
     }
     watchWMCtx.watcherThread = new std::thread([icon] {
         WNDCLASS wc = {};
