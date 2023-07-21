@@ -14,6 +14,7 @@ Summary
 * Bugfix - Update capabilites and other info after connect: [#10978](https://github.com/owncloud/client/issues/10978)
 * Bugfix - Account activity and crash after an account was removed: [#10990](https://github.com/owncloud/client/issues/10990)
 * Bugfix - Crash during application shutdown: [#11016](https://github.com/owncloud/client/issues/11016)
+* Bugfix - Hide hidden folders again in the selective sync view: [#11047](https://github.com/owncloud/client/issues/11047)
 * Change - Remove support for sidebar entries for non-vfs setups on Windows: [#10788](https://github.com/owncloud/client/issues/10788)
 * Change - Remove support for client side system proxy credentials: [#10866](https://github.com/owncloud/client/pull/10866)
 * Change - Modernize systray menu: [#10939](https://github.com/owncloud/client/issues/10939)
@@ -23,7 +24,9 @@ Summary
 * Enhancement - Enable crash reporter in commandline client: [#8991](https://github.com/owncloud/client/issues/8991)
 * Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 * Enhancement - Log http request when it is send: [#10313](https://github.com/owncloud/client/issues/10313)
+* Enhancement - Allow selective sync of spaces in folder wizard: [#10596](https://github.com/owncloud/client/issues/10596)
 * Enhancement - Send a language header in all http requests: [#10619](https://github.com/owncloud/client/issues/10619)
+* Enhancement - Help user fix problems on the last setup wizard page: [#10680](https://github.com/owncloud/client/issues/10680)
 * Enhancement - Display a progress spinner during the initial setup: [#10751](https://github.com/owncloud/client/issues/10751)
 * Enhancement - Reduce how often file changes are handled: [#10825](https://github.com/owncloud/client/pull/10825)
 * Enhancement - Persist filter settings for Not Synced tab: [#10928](https://github.com/owncloud/client/pull/10928)
@@ -70,6 +73,10 @@ Details
    We fixed a where the main instance was accessed after it was destroyed.
 
    https://github.com/owncloud/client/issues/11016
+
+* Bugfix - Hide hidden folders again in the selective sync view: [#11047](https://github.com/owncloud/client/issues/11047)
+
+   https://github.com/owncloud/client/issues/11047
 
 * Change - Remove support for sidebar entries for non-vfs setups on Windows: [#10788](https://github.com/owncloud/client/issues/10788)
 
@@ -133,6 +140,17 @@ Details
 
    https://github.com/owncloud/client/issues/10313
 
+* Enhancement - Allow selective sync of spaces in folder wizard: [#10596](https://github.com/owncloud/client/issues/10596)
+
+   When manually configuring the synchronization of spaces, we now show the selective sync page
+   again to allow users to selectively disable the synchronization of remote directories.
+
+   This prevents the unnecessary synchronization of files until the user can use the account
+   settings dialog to configure selective sync.
+
+   https://github.com/owncloud/client/issues/10596
+   https://github.com/owncloud/client/pull/11044
+
 * Enhancement - Send a language header in all http requests: [#10619](https://github.com/owncloud/client/issues/10619)
 
    All http requests to the server will now contain the language for the client. This can be used by
@@ -140,6 +158,15 @@ Details
 
    https://github.com/owncloud/client/issues/10619
    https://github.com/owncloud/client/pull/11020
+
+* Enhancement - Help user fix problems on the last setup wizard page: [#10680](https://github.com/owncloud/client/issues/10680)
+
+   When there are problems within the advanced configuration on the last setup wizard page, we no
+   longer just show an error message but also "unhide" those settings to give the user a chance of
+   fixing the problem.
+
+   https://github.com/owncloud/client/issues/10680
+   https://github.com/owncloud/client/pull/11029
 
 * Enhancement - Display a progress spinner during the initial setup: [#10751](https://github.com/owncloud/client/issues/10751)
 
