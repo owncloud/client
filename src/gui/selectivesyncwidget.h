@@ -65,6 +65,7 @@ private slots:
 private:
     void refreshFolders();
     void recursiveInsert(QTreeWidgetItem *parent, QStringList pathTrail, QString path, qint64 size);
+    QUrl getDavUrl() const;
 
 private:
     AccountPtr _account;
