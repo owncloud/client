@@ -765,21 +765,21 @@ private slots:
         cap.remove(QStringLiteral("dav"));
         fakeFolder.account()->setCapabilities(cap);
 
-        QObject parent;
-        int nPUT = 0;
-        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
-            if (op == QNetworkAccessManager::PutOperation) {
-                ++nPUT;
-                return new FakeHangingReply(op, request, &parent);
-            }
-            return nullptr;
-        });
+        auto counter = std::make_unique<OperationCounter>();
+        fakeFolder.setServerOverride(
+            [counter = counter.get(), this](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *device) -> QNetworkReply * {
+                counter->serverOverride(op, request, device);
+                if (op == QNetworkAccessManager::PutOperation) {
+                    return new FakeHangingReply(op, request, this);
+                }
+                return nullptr;
+            });
 
         fakeFolder.localModifier().insert(QStringLiteral("file"), 100_b, 'W');
         QTimer::singleShot(400ms, &fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine().abort(); });
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
-        QCOMPARE(nPUT, 3);
+        QCOMPARE(counter->nPUT, 3);
     }
 
 #ifndef Q_OS_WIN
