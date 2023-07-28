@@ -775,8 +775,11 @@ private slots:
             return nullptr;
         });
 
-        fakeFolder.localModifier().insert(QStringLiteral("file"), 100_b, 'W');
-        QTimer::singleShot(400ms, &fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine().abort(); });
+        fakeFolder.localModifier().insert(QStringLiteral("file"), 1_mb, 'W');
+        // wait until the sync engine is ready
+        // wait a second and abort
+        connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, &fakeFolder.syncEngine(),
+            [&]() { QTimer::singleShot(1s, &fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine().abort(); }); });
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
         QCOMPARE(counter->nPUT, 3);
