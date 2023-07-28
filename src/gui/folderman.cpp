@@ -37,7 +37,6 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 namespace {
-
 int numberOfSyncJournals(const QString &path)
 {
     return QDir(path).entryList({ QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db") }, QDir::Hidden | QDir::Files).size();
