@@ -119,6 +119,11 @@ bool AccountManager::restore()
         if (auto acc = loadAccountHelper(*settings)) {
             acc->_id = accountId;
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
+                // If we never fetched credentials, do that now - otherwise connection attempts
+                // make little sense.
+                if (!accState->account()->credentials()) {
+                    accState->account()->setCredentials(HttpCredentialsGui::fromSettings(accState.get()));
+                }
                 addAccountState(std::move(accState));
             }
         }
@@ -297,8 +302,6 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
             continue;
         acc->_settingsMap.insert(key, settings.value(key));
     }
-    acc->setCredentials(new HttpCredentialsGui);
-
     // now the server cert, it is in the general group
     settings.beginGroup(QStringLiteral("General"));
     const auto certs = QSslCertificate::fromData(settings.value(caCertsKeyC()).toByteArray());

@@ -14,6 +14,7 @@
  */
 
 #include "creds/httpcredentialsgui.h"
+
 #include "account.h"
 #include "application.h"
 #include "basicloginwidget.h"
@@ -29,10 +30,27 @@
 #include <QNetworkReply>
 #include <QTimer>
 
+namespace {
+auto isOAuthC()
+{
+    return QStringLiteral("oauth");
+}
+
+const QString userC()
+{
+    return QStringLiteral("user");
+}
+}
+
 
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcHttpCredentialsGui, "sync.credentials.http.gui", QtInfoMsg)
+
+HttpCredentialsGui::HttpCredentialsGui(Account *account)
+    : HttpCredentials(account)
+{
+}
 
 void HttpCredentialsGui::openBrowser()
 {
@@ -58,11 +76,13 @@ void HttpCredentialsGui::askFromUser()
 
 void HttpCredentialsGui::askFromUserAsync()
 {
+    // TODO are we logged out
+    //_account
     if (isUsingOAuth()) {
         restartOAuth();
     } else {
         // First, we will check what kind of auth we need.
-        auto job = new DetermineAuthTypeJob(_account->sharedFromThis(), this);
+        auto job = new DetermineAuthTypeJob(account()->sharedFromThis(), this);
         QObject::connect(job, &DetermineAuthTypeJob::authType, this, [this](DetermineAuthTypeJob::AuthType type) {
             _authType = type;
             if (type == DetermineAuthTypeJob::AuthType::OAuth) {
@@ -114,7 +134,7 @@ void HttpCredentialsGui::showDialog()
     // make sure it's cleaned up since it's not owned by the account settings (also prevents memory leaks)
     dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    dialog->setTopLabelText(tr("Please enter your password to log in to the account %1.").arg(_account->displayName()));
+    dialog->setTopLabelText(tr("Please enter your password to log in to the account %1.").arg(account()->displayName()));
 
     auto *contentWidget = qobject_cast<BasicLoginWidget *>(dialog->contentWidget());
     contentWidget->forceUsername(user());
@@ -160,7 +180,7 @@ QUrl HttpCredentialsGui::authorisationLink() const
 
 void HttpCredentialsGui::restartOAuth()
 {
-    _asyncAuth.reset(new AccountBasedOAuth(_account->sharedFromThis(), this));
+    _asyncAuth.reset(new AccountBasedOAuth(account()->sharedFromThis(), this));
     connect(_asyncAuth.data(), &OAuth::result,
         this, &HttpCredentialsGui::asyncAuthResult);
     connect(_asyncAuth.data(), &OAuth::destroyed,
@@ -169,4 +189,33 @@ void HttpCredentialsGui::restartOAuth()
     emit authorisationLinkChanged();
 }
 
+HttpCredentialsGui::HttpCredentialsGui(AccountState *accountState, const QString &loginUser, const QString &password)
+    : HttpCredentials(accountState->account().get(), DetermineAuthTypeJob::AuthType::Basic, loginUser, password)
+{
+}
+
+HttpCredentialsGui::HttpCredentialsGui(AccountState *accountState, const QString &davUser, const QString &password, const QString &refreshToken)
+    : HttpCredentials(accountState->account().get(), DetermineAuthTypeJob::AuthType::OAuth, davUser, password)
+{
+    _refreshToken = refreshToken;
+}
+
+HttpCredentialsGui *HttpCredentialsGui::fromSettings(AccountState *accountState)
+{
+    auto *out = new HttpCredentialsGui(accountState->account().get());
+    out->_user = accountState->account()->credentialSetting(out, userC()).toString();
+    Q_ASSERT(!out->_user.isEmpty());
+
+    const auto isOauth = accountState->account()->credentialSetting(out, isOAuthC()).toBool();
+    out->_authType = isOauth ? DetermineAuthTypeJob::AuthType::OAuth : DetermineAuthTypeJob::AuthType::Basic;
+
+    out->fetchFromKeychain();
+    return out;
+}
+void HttpCredentialsGui::persist()
+{
+    account()->setCredentialSetting(this, userC(), _user);
+    account()->setCredentialSetting(this, isOAuthC(), isUsingOAuth());
+    HttpCredentials::persist();
+}
 } // namespace OCC

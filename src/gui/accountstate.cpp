@@ -27,6 +27,7 @@
 #include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
 
+#include "creds/httpcredentialsgui.h"
 #include "logger.h"
 #include "settingsdialog.h"
 #include "socketapi/socketapi.h"
@@ -88,7 +89,6 @@ AccountState::AccountState(AccountPtr account)
     , _queueGuard(_account->jobQueue())
     , _state(AccountState::Disconnected)
     , _connectionStatus(ConnectionValidator::Undefined)
-    , _waitingForNewCredentials(false)
     , _maintenanceToConnectedDelay(1min + minutes(QRandomGenerator::global()->generate() % 4)) // 1-5min delay
 {
     qRegisterMetaType<AccountState *>("AccountState*");
@@ -166,6 +166,7 @@ std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account,
         accountState->setState(SignedOut);
     }
     accountState->_supportsSpaces = settings.value(supportsSpacesC(), false).toBool();
+    // accountState->account()->setCredentials(new HttpCredentialsGui(accountState.get(), l));
     return accountState;
 }
 
@@ -273,7 +274,6 @@ void AccountState::freshConnectionAttempt()
 void AccountState::signIn()
 {
     if (_state == SignedOut) {
-        _waitingForNewCredentials = false;
         setState(Disconnected);
         // persist that we are no longer signed out
         Q_EMIT account()->wantsAccountSaved(account().data());
@@ -296,7 +296,7 @@ void AccountState::checkConnectivity(bool blockJobs)
         setState(Connecting);
     }
     qCWarning(lcAccountState) << "checkConnectivity blocking:" << blockJobs;
-    if (isSignedOut() || _waitingForNewCredentials) {
+    if (isSignedOut()) {
         return;
     }
     if (_tlsDialog) {
@@ -314,12 +314,6 @@ void AccountState::checkConnectivity(bool blockJobs)
         return;
     }
 
-    // If we never fetched credentials, do that now - otherwise connection attempts
-    // make little sense.
-    if (!account()->credentials()->wasFetched()) {
-        _waitingForNewCredentials = true;
-        account()->credentials()->fetchFromKeychain();
-    }
     if (account()->hasCapabilities()) {
         // IF the account is connected the connection check can be skipped
         // if the last successful etag check job is not so long ago.
@@ -356,7 +350,6 @@ void AccountState::checkConnectivity(bool blockJobs)
                 connect(_tlsDialog, &TlsErrorDialog::accepted, _tlsDialog, [certs, blockJobs, this]() {
                     _account->addApprovedCerts(certs);
                     _tlsDialog.clear();
-                    _waitingForNewCredentials = false;
                     checkConnectivity(blockJobs);
                 });
                 connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() {
@@ -382,7 +375,8 @@ void AccountState::checkConnectivity(bool blockJobs)
         }
     } else {
         // Check the server and then the auth.
-        if (_waitingForNewCredentials) {
+        // TODO
+        if (false) {
             mode = ConnectionValidator::ValidationMode::ValidateServer;
         } else {
             _connectionValidator->setClearCookies(true);

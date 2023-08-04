@@ -541,8 +541,9 @@ protected:
 class FakeCredentials : public OCC::AbstractCredentials
 {
 public:
-    FakeCredentials(OCC::AccessManager *am)
-        : _am { am }
+    FakeCredentials(OCC::Account *account, OCC::AccessManager *am)
+        : OCC::AbstractCredentials(account)
+        ,_am { am }
     {
     }
 

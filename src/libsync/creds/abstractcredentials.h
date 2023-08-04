@@ -33,16 +33,8 @@ class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
     Q_OBJECT
 
 public:
-    AbstractCredentials();
+    AbstractCredentials(Account *account);
     // No need for virtual destructor - QObject already has one.
-
-    /** The bound account for the credentials instance.
-     *
-     * Credentials are always used in conjunction with an account.
-     * Calling Account::setCredentials() will call this function.
-     * Credentials only live as long as the underlying account object.
-     */
-    virtual void setAccount(Account *account);
 
     virtual QString authType() const = 0;
     virtual QString user() const = 0;
@@ -53,12 +45,6 @@ public:
 
     /** Whether fetchFromKeychain() was called before. */
     bool wasFetched() const { return _wasFetched; }
-
-    /** Trigger (async) fetching of credential information
-     *
-     * Should set _wasFetched = true, and later emit fetched() when done.
-     */
-    virtual void fetchFromKeychain() = 0;
 
     /** Ask credentials from the user (typically async)
      *
@@ -88,6 +74,8 @@ public:
      */
     virtual void forgetSensitiveData() = 0;
 
+    Account *account() const { return _account; }
+
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.
      *
@@ -108,8 +96,16 @@ Q_SIGNALS:
     void requestLogout();
 
 protected:
-    Account *_account;
+    /** Trigger (async) fetching of credential information
+     *
+     * Should set _wasFetched = true, and later emit fetched() when done.
+     */
+    virtual void fetchFromKeychain() = 0;
+
     bool _wasFetched;
+
+private:
+    Account *_account = nullptr;
 };
 
 } // namespace OCC

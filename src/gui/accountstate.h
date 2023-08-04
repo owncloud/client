@@ -181,7 +181,7 @@ private:
     State _state;
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
-    bool _waitingForNewCredentials;
+    bool _waitingForNewCredentials = false;
     QDateTime _timeOfLastETagCheck;
     QPointer<ConnectionValidator> _connectionValidator;
     QPointer<UpdateUrlDialog> _updateUrlDialog;

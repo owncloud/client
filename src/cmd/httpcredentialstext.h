@@ -17,16 +17,17 @@
  */
 #pragma once
 
+#include "accountfwd.h"
 #include "creds/httpcredentials.h"
 
 class HttpCredentialsText : public OCC::HttpCredentials
 {
     Q_OBJECT
 public:
-    static HttpCredentialsText *create(bool interactive, const QString &user, const QString &password);
+    static HttpCredentialsText *create(OCC::Account *account, bool interactive, const QString &user, const QString &password);
 
     void askFromUser() override;
 
 private:
-    HttpCredentialsText(const QString &user, const QString &password);
+    HttpCredentialsText(OCC::Account *account, const QString &user, const QString &password);
 };

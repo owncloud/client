@@ -183,7 +183,6 @@ void Account::setCredentials(AbstractCredentials *cred)
     // The order for these two is important! Reading the credential's
     // settings accesses the account as well as account->_credentials,
     _credentials.reset(cred);
-    cred->setAccount(this);
 
     _am = _credentials->createAM();
 
@@ -248,13 +247,17 @@ QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, 
 void Account::setApprovedCerts(const QList<QSslCertificate> &certs)
 {
     _approvedCerts = { certs.begin(), certs.end() };
-    _am->setCustomTrustedCaCertificates(_approvedCerts);
+    if (_am) {
+        _am->setCustomTrustedCaCertificates(_approvedCerts);
+    }
 }
 
 void Account::addApprovedCerts(const QSet<QSslCertificate> &certs)
 {
     _approvedCerts.unite(certs);
-    _am->setCustomTrustedCaCertificates(_approvedCerts);
+    if (_am) {
+        _am->setCustomTrustedCaCertificates(_approvedCerts);
+    }
     Q_EMIT wantsAccountSaved(this);
 }
 
@@ -263,25 +266,19 @@ void Account::setUrl(const QUrl &url)
     _url = url;
 }
 
-QVariant Account::credentialSetting(const QString &key) const
+QVariant Account::credentialSetting(AbstractCredentials *credentials, const QString &key) const
 {
-    if (_credentials) {
-        QString prefix = _credentials->authType();
-        QVariant value = _settingsMap.value(prefix + QLatin1Char('_') + key);
-        if (value.isNull()) {
-            value = _settingsMap.value(key);
-        }
-        return value;
+    QVariant value = _settingsMap.value(credentials->authType() + QLatin1Char('_') + key);
+    qDebug() << value << credentials->authType() + QLatin1Char('_') + key;
+    if (value.isNull()) {
+        value = _settingsMap.value(key);
     }
-    return QVariant();
+    return value;
 }
 
-void Account::setCredentialSetting(const QString &key, const QVariant &value)
+void Account::setCredentialSetting(AbstractCredentials *credentials, const QString &key, const QVariant &value)
 {
-    if (_credentials) {
-        QString prefix = _credentials->authType();
-        _settingsMap.insert(prefix + QLatin1Char('_') + key, value);
-    }
+    _settingsMap.insert(credentials->authType() + QLatin1Char('_') + key, value);
 }
 
 JobQueue *Account::jobQueue()

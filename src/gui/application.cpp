@@ -213,11 +213,8 @@ void Application::slotAccountStateAdded(AccountStatePtr accountState) const
     // Hook up the folder manager slots to the account state's signals:
     connect(accountState.data(), &AccountState::stateChanged,
         _folderManager.data(), &FolderMan::slotAccountStateChanged);
-    connect(accountState->account().data(), &Account::serverVersionChanged,
-        _folderManager.data(), [account = accountState->account().data()] {
-            FolderMan::instance()->slotServerVersionChanged(account);
-        });
-    accountState->checkConnectivity();
+    connect(accountState->account().data(), &Account::serverVersionChanged, _folderManager.data(),
+        [account = accountState->account().data()] { FolderMan::instance()->slotServerVersionChanged(account); });
 }
 
 void Application::slotCleanup()

@@ -74,8 +74,8 @@ QString queryPassword(const QString &user)
 }
 }
 
-HttpCredentialsText::HttpCredentialsText(const QString &user, const QString &password)
-    : OCC::HttpCredentials(OCC::DetermineAuthTypeJob::AuthType::Basic, user, password)
+HttpCredentialsText::HttpCredentialsText(OCC::Account *account, const QString &user, const QString &password)
+    : OCC::HttpCredentials(account, OCC::DetermineAuthTypeJob::AuthType::Basic, user, password)
 {
     if (user.isEmpty()) {
         qFatal("Invalid credentials: Username is empty");
@@ -85,7 +85,7 @@ HttpCredentialsText::HttpCredentialsText(const QString &user, const QString &pas
     }
 }
 
-HttpCredentialsText *HttpCredentialsText::create(bool interactive, const QString &_user, const QString &_password)
+HttpCredentialsText *HttpCredentialsText::create(OCC::Account *account, bool interactive, const QString &_user, const QString &_password)
 {
     QString user = _user;
     QString password = _password;
@@ -101,7 +101,7 @@ HttpCredentialsText *HttpCredentialsText::create(bool interactive, const QString
             password = queryPassword(user);
         }
     }
-    return new HttpCredentialsText(user, password);
+    return new HttpCredentialsText(account, user, password);
 }
 
 void HttpCredentialsText::askFromUser()

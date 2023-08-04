@@ -51,7 +51,7 @@ Q_SIGNALS:
     /**
      * Emitted when the wizard has finished. It passes the built account object.
      */
-    void finished(AccountPtr newAccount, SyncMode syncMode, const QVariantMap &dynamicRegistrationData);
+    void finished(AccountStatePtr newAccountState, SyncMode syncMode, const QVariantMap &dynamicRegistrationData);
 
 private:
     void changeStateTo(SetupWizardState nextState, SetupWizardControllerPrivate::ChangeReason reason = SetupWizardControllerPrivate::ChangeReason::Default);

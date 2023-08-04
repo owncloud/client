@@ -40,11 +40,6 @@ constexpr int TokenRefreshMaxRetries = 3;
 constexpr int CredentialVersion = 1;
 const char authenticationFailedC[] = "owncloud-authentication-failed";
 
-auto isOAuthC()
-{
-    return QStringLiteral("oauth");
-}
-
 auto passwordKeyC()
 {
     return QStringLiteral("http/password");
@@ -58,11 +53,6 @@ auto refreshTokenKeyC()
 auto CredentialVersionKey()
 {
     return QStringLiteral("CredentialVersion");
-}
-
-const QString userC()
-{
-    return QStringLiteral("user");
 }
 }
 
@@ -101,8 +91,14 @@ private:
     QPointer<const HttpCredentials> _cred;
 };
 
-HttpCredentials::HttpCredentials(DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password)
-    : _user(user)
+HttpCredentials::HttpCredentials(Account *account)
+    : AbstractCredentials(account)
+{
+}
+
+HttpCredentials::HttpCredentials(Account *account, DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password)
+    : AbstractCredentials(account)
+    , _user(user)
     , _password(password)
     , _ready(true)
     , _authType(authType)
@@ -117,18 +113,6 @@ QString HttpCredentials::authType() const
 QString HttpCredentials::user() const
 {
     return _user;
-}
-
-void HttpCredentials::setAccount(Account *account)
-{
-    AbstractCredentials::setAccount(account);
-    if (_user.isEmpty()) {
-        fetchUser();
-    }
-    const auto isOauth = account->credentialSetting(isOAuthC());
-    if (isOauth.isValid()) {
-        _authType = isOauth.toBool() ? DetermineAuthTypeJob::AuthType::OAuth : DetermineAuthTypeJob::AuthType::Basic;
-    }
 }
 
 AccessManager *HttpCredentials::createAM() const
@@ -146,24 +130,9 @@ bool HttpCredentials::ready() const
     return _ready;
 }
 
-QString HttpCredentials::fetchUser()
-{
-    // it makes no sense to overwrite an existing username with a config file value
-    if (_user.isEmpty()) {
-        qCDebug(lcHttpCredentials) << "user not set, populating from settings";
-        _user = _account->credentialSetting(userC()).toString();
-    } else {
-        qCDebug(lcHttpCredentials) << "user already set, no need to fetch from settings";
-    }
-    return _user;
-}
-
 void HttpCredentials::fetchFromKeychain()
 {
     _wasFetched = true;
-
-    // User must be fetched from config file
-    fetchUser();
 
     if (!_ready && !_refreshToken.isEmpty()) {
         // This happens if the credentials are still loaded from the keychain, bur we are called
@@ -182,7 +151,7 @@ void HttpCredentials::fetchFromKeychain()
 void HttpCredentials::fetchFromKeychainHelper()
 {
     Q_ASSERT(!_user.isEmpty());
-    auto job = _account->credentialManager()->get(isUsingOAuth() ? refreshTokenKeyC() : passwordKeyC());
+    auto job = account()->credentialManager()->get(isUsingOAuth() ? refreshTokenKeyC() : passwordKeyC());
     connect(job, &CredentialJob::finished, this, [job, this] {
         auto handleError = [job, this] {
             qCWarning(lcHttpCredentials) << "Could not retrieve client password from keychain" << job->errorString();
@@ -267,7 +236,7 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
     // _ready = false;
 
     // parent with nam to ensure we reset when the nam is reset
-    _oAuthJob = new AccountBasedOAuth(_account->sharedFromThis(), _account->accessManager());
+    _oAuthJob = new AccountBasedOAuth(account()->sharedFromThis(), account()->accessManager());
     connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, [tokenRefreshRetriesCount, this](QNetworkReply::NetworkError error, const QString &) {
         _oAuthJob->deleteLater();
         int nextTry = tokenRefreshRetriesCount + 1;
@@ -337,11 +306,8 @@ void HttpCredentials::invalidateToken()
     _password = QString();
     _ready = false;
 
-    // User must be fetched from config file to generate a valid key
-    fetchUser();
-
     // clear the session cookie.
-    _account->clearCookieJar();
+    account()->clearCookieJar();
 
     if (!_refreshToken.isEmpty()) {
         // Only invalidate the access_token (_password) but keep the _refreshToken in the keychain
@@ -349,13 +315,13 @@ void HttpCredentials::invalidateToken()
         return;
     }
 
-    _account->credentialManager()->clear(QStringLiteral("http"));
+    account()->credentialManager()->clear(QStringLiteral("http"));
     // let QNAM forget about the password
     // This needs to be done later in the event loop because we might be called (directly or
     // indirectly) from QNetworkAccessManagerPrivate::authenticationRequired, which itself
     // is a called from a BlockingQueuedConnection from the Qt HTTP thread. And clearing the
     // cache needs to synchronize again with the HTTP thread.
-    QTimer::singleShot(0, _account, &Account::clearAMCache);
+    QTimer::singleShot(0, account(), &Account::clearAMCache);
 }
 
 void HttpCredentials::forgetSensitiveData()
@@ -373,20 +339,18 @@ void HttpCredentials::persist()
         // We never connected or fetched the user, there is nothing to save.
         return;
     }
-    _account->setCredentialSetting(CredentialVersionKey(), CredentialVersion);
-    _account->setCredentialSetting(userC(), _user);
-    _account->setCredentialSetting(isOAuthC(), isUsingOAuth());
-    Q_EMIT _account->wantsAccountSaved(_account);
+    account()->setCredentialSetting(this, CredentialVersionKey(), CredentialVersion);
+    Q_EMIT account()->wantsAccountSaved(account());
 
     // write secrets to the keychain
     if (isUsingOAuth()) {
         // _refreshToken should only be empty when we are logged out...
         if (!_refreshToken.isEmpty()) {
-            _account->credentialManager()->set(refreshTokenKeyC(), _refreshToken);
+            account()->credentialManager()->set(refreshTokenKeyC(), _refreshToken);
         }
     } else {
         if (!_password.isEmpty()) {
-            _account->credentialManager()->set(passwordKeyC(), _password);
+            account()->credentialManager()->set(passwordKeyC(), _password);
         }
     }
 }

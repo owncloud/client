@@ -29,22 +29,16 @@ class HttpCredentialsGui : public HttpCredentials
 {
     Q_OBJECT
 public:
-    HttpCredentialsGui()
-        : HttpCredentials()
-    {
-    }
-    HttpCredentialsGui(const QString &loginUser, const QString &password)
-        : HttpCredentials(DetermineAuthTypeJob::AuthType::Basic, loginUser, password)
-    {
-    }
+    static HttpCredentialsGui *fromSettings(AccountState *accountState);
 
-    HttpCredentialsGui(const QString &davUser, const QString &password, const QString &refreshToken)
-        : HttpCredentials(DetermineAuthTypeJob::AuthType::OAuth, davUser, password)
-    {
-        _refreshToken = refreshToken;
-    }
+    HttpCredentialsGui(AccountState *accountState, const QString &loginUser, const QString &password);
+
+    HttpCredentialsGui(AccountState *accountState, const QString &davUser, const QString &password, const QString &refreshToken);
 
     void openBrowser();
+
+
+    void persist() override;
 
     QUrl authorisationLink() const;
 
@@ -68,6 +62,10 @@ signals:
     void authorisationLinkChanged();
 
     void oAuthErrorOccurred();
+
+protected:
+    HttpCredentialsGui(Account *account);
+    ;
 
 private:
     QScopedPointer<AccountBasedOAuth, QScopedPointerObjectDeleteLater<AccountBasedOAuth>> _asyncAuth;

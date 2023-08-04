@@ -37,9 +37,9 @@ HttpBasicAuthenticationStrategy::HttpBasicAuthenticationStrategy(const QString &
 {
 }
 
-HttpCredentialsGui *HttpBasicAuthenticationStrategy::makeCreds()
+HttpCredentialsGui *HttpBasicAuthenticationStrategy::makeCreds(AccountState *accountState)
 {
-    return new HttpCredentialsGui(loginUser(), _password);
+    return new HttpCredentialsGui(accountState, loginUser(), _password);
 }
 
 bool HttpBasicAuthenticationStrategy::isValid()
@@ -68,10 +68,10 @@ OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &token,
 {
 }
 
-HttpCredentialsGui *OAuth2AuthenticationStrategy::makeCreds()
+HttpCredentialsGui *OAuth2AuthenticationStrategy::makeCreds(AccountState *accountState)
 {
     Q_ASSERT(isValid());
-    return new HttpCredentialsGui(davUser(), _token, _refreshToken);
+    return new HttpCredentialsGui(accountState, davUser(), _token, _refreshToken);
 }
 
 bool OAuth2AuthenticationStrategy::isValid()
@@ -111,7 +111,7 @@ void SetupWizardAccountBuilder::setLegacyWebFingerUsername(const QString &userna
     _legacyWebFingerUsername = username;
 }
 
-AccountPtr SetupWizardAccountBuilder::build()
+AccountStatePtr SetupWizardAccountBuilder::build()
 {
     auto newAccountPtr = Account::create(QUuid::createUuid());
 
@@ -127,8 +127,6 @@ AccountPtr SetupWizardAccountBuilder::build()
 
     // TODO: perhaps _authenticationStrategy->setUpAccountPtr(...) would be more elegant? no need for getters then
     newAccountPtr->setDavUser(_authenticationStrategy->davUser());
-    newAccountPtr->setCredentials(_authenticationStrategy->makeCreds());
-
     newAccountPtr->setDavDisplayName(_displayName);
 
     newAccountPtr->addApprovedCerts({ _customTrustedCaCertificates.begin(), _customTrustedCaCertificates.end() });
@@ -137,7 +135,10 @@ AccountPtr SetupWizardAccountBuilder::build()
         newAccountPtr->setDefaultSyncRoot(_defaultSyncTargetDir);
     }
 
-    return newAccountPtr;
+    auto accountState = AccountManager::instance()->addAccount(newAccountPtr);
+    newAccountPtr->setCredentials(_authenticationStrategy->makeCreds(accountState));
+
+    return accountState;
 }
 
 bool SetupWizardAccountBuilder::hasValidCredentials() const

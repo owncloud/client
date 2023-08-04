@@ -24,16 +24,11 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcCredentials, "sync.credentials", QtInfoMsg)
 
-AbstractCredentials::AbstractCredentials()
-    : _account(nullptr)
+AbstractCredentials::AbstractCredentials(Account *account)
+    : QObject(account)
+    , _account(account)
     , _wasFetched(false)
 {
-}
-
-void AbstractCredentials::setAccount(Account *account)
-{
-    OC_ENFORCE_X(!_account, "should only setAccount once");
-    _account = account;
 }
 
 } // namespace OCC

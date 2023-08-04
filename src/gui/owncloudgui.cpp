@@ -839,16 +839,15 @@ void ownCloudGui::runNewAccountWizard()
         FolderMan::instance()->setSyncEnabled(false);
 
         connect(_wizardController, &Wizard::SetupWizardController::finished, ocApp(),
-            [this](AccountPtr newAccount, Wizard::SyncMode syncMode, const QVariantMap &dynamicRegistrationData) {
+            [this](AccountStatePtr accountStatePtr, Wizard::SyncMode syncMode, const QVariantMap &dynamicRegistrationData) {
                 // note: while the wizard is shown, we disable the folder synchronization
                 // previously we could perform this just here, but now we have to postpone this depending on whether selective sync was chosen
                 // see also #9497
 
                 // when the dialog is closed before it has finished, there won't be a new account to set up
                 // the wizard controller signalizes this by passing a null pointer
-                if (!newAccount.isNull()) {
+                if (!accountStatePtr.isNull()) {
                     // finally, call the slot that finalizes the setup
-                    auto accountStatePtr = ocApp()->addNewAccount(newAccount);
                     accountStatePtr->setSettingUp(true);
 
                     // ensure we are connected and fetch the capabilities

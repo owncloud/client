@@ -168,8 +168,9 @@ public:
     void addApprovedCerts(const QSet<QSslCertificate> &certs);
 
     // To be called by credentials only, for storing username and the like
-    QVariant credentialSetting(const QString &key) const;
-    void setCredentialSetting(const QString &key, const QVariant &value);
+    // TODO: hndle this sanely
+    QVariant credentialSetting(AbstractCredentials *credentials, const QString &key) const;
+    void setCredentialSetting(AbstractCredentials *credentials, const QString &key, const QVariant &value);
 
     /** Access the server capabilities */
     const Capabilities &capabilities() const;

@@ -51,7 +51,7 @@ public:
     /// Don't add credentials if this is set on a QNetworkRequest
     static constexpr QNetworkRequest::Attribute DontAddCredentialsAttribute = QNetworkRequest::User;
 
-    explicit HttpCredentials(DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password);
+    explicit HttpCredentials(Account *account, DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password);
 
     QString authType() const override;
     AccessManager *createAM() const override;
@@ -62,20 +62,17 @@ public:
     QString user() const override;
     void invalidateToken() override;
     void forgetSensitiveData() override;
-    QString fetchUser();
 
     /* If we still have a valid refresh token, try to refresh it assynchronously and emit fetched()
      * otherwise return false
      */
     bool refreshAccessToken();
 
-    // To fetch the user name as early as possible
-    void setAccount(Account *account) override;
-
     // Whether we are using OAuth
     bool isUsingOAuth() const { return _authType == DetermineAuthTypeJob::AuthType::OAuth; }
+
 protected:
-    HttpCredentials() = default;
+    HttpCredentials(Account *account);
 
     void slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);
     void fetchFromKeychainHelper();

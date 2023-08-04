@@ -11,8 +11,8 @@ namespace {
 class HttpCredentialsTest : public OCC::HttpCredentials
 {
 public:
-    HttpCredentialsTest(const QString &user, const QString &password)
-        : HttpCredentials(OCC::DetermineAuthTypeJob::AuthType::Basic, user, password)
+    HttpCredentialsTest(OCC::Account *account, const QString &user, const QString &password)
+        : HttpCredentials(account, OCC::DetermineAuthTypeJob::AuthType::Basic, user, password)
     {
     }
 
@@ -29,7 +29,7 @@ namespace TestUtils {
     {
         // don't use the account manager to create the account, it would try to use widgets
         auto acc = Account::create(QUuid::createUuid());
-        HttpCredentialsTest *cred = new HttpCredentialsTest(QStringLiteral("testuser"), QStringLiteral("secret"));
+        HttpCredentialsTest *cred = new HttpCredentialsTest(acc.get(), QStringLiteral("testuser"), QStringLiteral("secret"));
         acc->setCredentials(cred);
         acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
         acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));

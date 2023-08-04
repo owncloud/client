@@ -35,7 +35,7 @@ public:
      * Create credentials object for use in the account.
      * @return credentials
      */
-    virtual HttpCredentialsGui *makeCreds() = 0;
+    virtual HttpCredentialsGui *makeCreds(AccountState *accountState) = 0;
 
     /**
      * Checks whether the passed credentials are valid.
@@ -60,7 +60,7 @@ class HttpBasicAuthenticationStrategy : public AbstractAuthenticationStrategy
 public:
     explicit HttpBasicAuthenticationStrategy(const QString &username, const QString &password);
 
-    HttpCredentialsGui *makeCreds() override;
+    HttpCredentialsGui *makeCreds(AccountState *accountState) override;
 
     bool isValid() override;
 
@@ -84,7 +84,7 @@ class OAuth2AuthenticationStrategy : public AbstractAuthenticationStrategy
 public:
     explicit OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken);
 
-    HttpCredentialsGui *makeCreds() override;
+    HttpCredentialsGui *makeCreds(AccountState *accountState) override;
 
     bool isValid() override;
 
@@ -168,7 +168,7 @@ public:
      * Attempt to build an account from the previously entered information.
      * @return built account or null if information is still missing
      */
-    AccountPtr build();
+    AccountStatePtr build();
 
     void setWebFingerAuthenticationServerUrl(const QUrl &url);
     QUrl webFingerAuthenticationServerUrl() const;

@@ -279,7 +279,7 @@ void setupCredentials(SyncCTX &ctx)
         f.close();
     }
 
-    ctx.account->setCredentials(HttpCredentialsText::create(ctx.options.interactive, ctx.user, password));
+    ctx.account->setCredentials(HttpCredentialsText::create(ctx.account.get(), ctx.options.interactive, ctx.user, password));
     if (ctx.options.trustSSL) {
         QObject::connect(ctx.account->accessManager(), &QNetworkAccessManager::sslErrors, [](QNetworkReply *reply, const QList<QSslError> &errors) {
             reply->ignoreSslErrors(errors);
