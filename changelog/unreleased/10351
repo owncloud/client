@@ -1,0 +1,3 @@
+Bugfix: Authenticaiton dialog appears again and again
+
+https://github.com/owncloud/client/issues/10351
