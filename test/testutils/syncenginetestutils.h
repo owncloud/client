@@ -543,7 +543,7 @@ class FakeCredentials : public OCC::AbstractCredentials
 public:
     FakeCredentials(OCC::Account *account, OCC::AccessManager *am)
         : OCC::AbstractCredentials(account)
-        ,_am { am }
+        , _am{am}
     {
     }
 

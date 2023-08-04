@@ -292,12 +292,12 @@ void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)
 
 void AccountState::checkConnectivity(bool blockJobs)
 {
-    if (_state != Connected) {
-        setState(Connecting);
-    }
-    qCWarning(lcAccountState) << "checkConnectivity blocking:" << blockJobs;
     if (isSignedOut()) {
         return;
+    }
+    qCWarning(lcAccountState) << "checkConnectivity blocking:" << blockJobs;
+    if (_state != Connected) {
+        setState(Connecting);
     }
     if (_tlsDialog) {
         qCDebug(lcAccountState) << "Skip checkConnectivity, waiting for tls dialog";
@@ -512,7 +512,9 @@ void AccountState::slotCredentialsFetched()
     qCInfo(lcAccountState) << "Fetched credentials for" << _account->url().toString()
                            << "attempting to connect";
     _waitingForNewCredentials = false;
-    checkConnectivity();
+    if (!isSignedOut()) {
+        checkConnectivity();
+    }
 }
 
 void AccountState::slotCredentialsAsked()
