@@ -24,8 +24,8 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
-OC_CI_CLIENT_FEDORA = "sawjan/client:qt6.4.3"
-OC_CI_SQUISH = "sawjan/squish:qt6.4.3"
+OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-38-amd64"
+OC_CI_SQUISH = "owncloudci/squish:fedora-38-7.1.1-qt64x-linux64"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
