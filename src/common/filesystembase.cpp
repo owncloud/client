@@ -628,7 +628,7 @@ bool FileSystem::isChildPathOf(QStringView child, QStringView parent)
     const QString cleanParent = QDir::cleanPath(parent.toString());
     const QString cleanChild = QDir::cleanPath(child.toString());
     // cleanPath removes trailing slashes, add one to parent to be sure we handle a child path
-    // root/foo/bar is not  a child of /root/fo, therefor the trailing slash is important
+    // /root/foo/bar is not  a child of /root/fo, therefor the trailing slash is important
     if (cleanChild.startsWith(cleanParent + QLatin1Char('/'), sensitivity)) {
         return true;
     }
