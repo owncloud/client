@@ -3,6 +3,7 @@
 # or less arbitrarily chosen. We just want to check that both compilers and both
 # CMake generators work. It's unlikely that a specific generator only breaks
 # with a specific compiler.
+# test
 #
 
 DEFAULT_PHP_VERSION = "7.4"
