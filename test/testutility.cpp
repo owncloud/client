@@ -198,6 +198,8 @@ private slots:
         add(QStringLiteral("https://foo/bar"), QStringLiteral("https://foo"), true);
         add(QStringLiteral("https://foo/bar"), QStringLiteral("http://foo"), false);
         add(QStringLiteral("https://foo/bar"), QStringLiteral("http://foo/foo"), false);
+        add(QStringLiteral("C:/Program Files/test)"), QStringLiteral("C:/Program Files"), true);
+        add(QStringLiteral(R"(C:\Program Files\test)"), QStringLiteral("C:/Program Files"), true);
     }
 
     void testIsChildOf()
