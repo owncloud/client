@@ -685,8 +685,9 @@ inline void addFiles(QStringList &dest, const FileInfo &fi)
 {
     if (fi.isDir) {
         dest += QStringLiteral("%1 - dir").arg(fi.path());
-        for (const auto &fi : fi.children)
-            addFiles(dest, fi);
+        for (const auto &child : fi.children) {
+            addFiles(dest, child);
+        }
     } else {
         dest += QStringLiteral("%1 - %2 %3-bytes (%4)").arg(fi.path(), QString::number(fi.contentSize), QChar::fromLatin1(fi.contentChar), fi.lastModifiedInUtc().toString());
     }
