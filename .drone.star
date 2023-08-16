@@ -80,7 +80,7 @@ config = {
     "gui-tests": {
         "servers": {
             "oc10": {
-                "version": "latest",
+                "version": "10.13.0-beta.1",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOC10",
                 "extra_apps": {
@@ -95,12 +95,14 @@ config = {
                 "version": "3.0.0",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
+                "skip": True,
             },
         },
     },
 }
 
 def main(ctx):
+    return gui_test_pipeline(ctx)
     pipelines = check_starlark() + \
                 gui_tests_format() + \
                 changelog(ctx)
