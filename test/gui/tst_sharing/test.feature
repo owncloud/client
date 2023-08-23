@@ -117,7 +117,7 @@ Feature: Sharing
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
         And the user searches for collaborator with autocomplete characters "Adm" using the client-UI
         Then the following users should be listed as suggested collaborators:
-            | user  |
+            | user          |
             | admin         |
             | admin (group) |
 
