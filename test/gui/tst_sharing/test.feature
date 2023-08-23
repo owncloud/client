@@ -13,8 +13,8 @@ Feature: Sharing
     @smokeTest
     Scenario: simple sharing with user
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "simple-folder" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        And user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user adds "Brian Murphy" as collaborator of resource "textfile0.txt" with permissions "edit,share" using the client-UI
         And the user adds "Brian Murphy" as collaborator of resource "simple-folder" with permissions "edit,share" using the client-UI
@@ -26,10 +26,10 @@ Feature: Sharing
 
     Scenario: sharing file and folder with user who has some other shares
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "shared" on the server
-        And user "Alice" has created folder "simple-folder" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
-        And user "Alice" has uploaded file with content "shared file" to "sharedfile.txt" on the server
+        And user "Alice" has created folder "shared" in the server
+        And user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
+        And user "Alice" has uploaded file with content "shared file" to "sharedfile.txt" in the server
         And user "Alice" has shared folder "shared" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "sharedfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has set up a client with default settings
@@ -45,8 +45,8 @@ Feature: Sharing
 
     Scenario: sharing file/folder with a user that has special characters as username
         Given user "Speci@l_Name-.+" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "FOLDER" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        And user "Alice" has created folder "FOLDER" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
         And the user adds "Speci@l_Name-.+" as collaborator of resource "textfile.txt" with permissions "edit,share" using the client-UI
@@ -59,8 +59,8 @@ Feature: Sharing
 
     Scenario: Share files/folders with special characters in their name
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "SampleFolder,With,$pecial?Characters" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/$ample1?.txt" on the server
+        And user "Alice" has created folder "SampleFolder,With,$pecial?Characters" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/$ample1?.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user adds "Brian Murphy" as collaborator of resource "SampleFolder,With,$pecial?Characters" with permissions "edit,share" using the client-UI
         And the user adds "Brian Murphy" as collaborator of resource "$ample1?.txt" with permissions "edit,share" using the client-UI
@@ -72,8 +72,8 @@ Feature: Sharing
 
     Scenario: try to share a file/folder with a user to whom the file has already been shared
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "SharedFolder" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        And user "Alice" has created folder "SharedFolder" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
         And user "Alice" has shared folder "SharedFolder" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has set up a client with default settings
@@ -87,8 +87,8 @@ Feature: Sharing
 
 
     Scenario: try to self share a file/folder
-        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
-        And user "Alice" has created folder "OwnFolder" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
+        And user "Alice" has created folder "OwnFolder" in the server
         And user "Alice" has set up a client with default settings
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
         And the user selects "Alice Hansen" as collaborator of resource "textfile.txt" using the client-UI
@@ -102,7 +102,7 @@ Feature: Sharing
     Scenario: search for users with minimum autocomplete characters
         Given user "TestUser1" has been created on the server with default attributes and without skeleton files
         And user "TestUser2" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
         And the user searches for collaborator with autocomplete characters "Tes" using the client-UI
@@ -127,7 +127,7 @@ Feature: Sharing
         And user "TestUser1" has been created on the server with default attributes and without skeleton files
         And user "TestUser2" has been created on the server with default attributes and without skeleton files
         And user "TestUser3" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Alice" has shared file "textfile.txt" on the server with user "Carol" with "all" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "TestUser1" with "all" permissions
@@ -145,7 +145,7 @@ Feature: Sharing
 
     @issue-7459
     Scenario: Progress indicator should not be visible after unselecting the password protection checkbox while sharing through public link
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user opens the public links dialog of "textfile0.txt" using the client-UI
         And the user toggles the password protection using the client-UI
@@ -155,8 +155,8 @@ Feature: Sharing
 
     Scenario: Collaborator should not see to whom a file/folder is shared.
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
-        And user "Alice" has created folder "Folder" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
+        And user "Alice" has created folder "Folder" in the server
         And user "Alice" has shared file "/textfile0.txt" on the server with user "Brian" with "read, share" permission
         And user "Alice" has shared folder "Folder" on the server with user "Brian" with "read, share" permission
         And user "Brian" has set up a client with default settings
@@ -171,8 +171,8 @@ Feature: Sharing
         Given group "grp1" has been created on the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Brian" has been added to group "grp1" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
-        And user "Alice" has created folder "simple-folder" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
+        And user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has set up a client with default settings
         When the user adds group "grp1" as collaborator of resource "textfile0.txt" with permissions "edit,share" using the client-UI
         Then group "grp1" should be listed in the collaborators list for file "textfile0.txt" with permissions "edit,share" on the client-UI
@@ -186,8 +186,8 @@ Feature: Sharing
         Given user "Brian" has been created on the server with default attributes and without skeleton files
         And group "grp1" has been created on the server
         And user "Brian" on the server has been added to group "grp1"
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
-        And user "Alice" has created folder "Folder" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
+        And user "Alice" has created folder "Folder" in the server
         And user "Alice" has shared file "/textfile0.txt" on the server with user "Brian" with "read, share, update" permission
         And user "Alice" has shared folder "Folder" on the server with user "Brian" with "read, share, update" permission
         And user "Alice" has shared file "/textfile0.txt" on the server with group "grp1" with "read, share, update" permission
@@ -201,9 +201,9 @@ Feature: Sharing
 
 
     Scenario: sharee edits content of files shared by sharer
-        Given user "Alice" has created folder "simple-folder" on the server
-        And user "Alice" has uploaded file with content "file inside a folder" to "simple-folder/textfile.txt" on the server
-        And user "Alice" has uploaded file with content "file in the root" to "textfile.txt" on the server
+        Given user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has uploaded file with content "file inside a folder" to "simple-folder/textfile.txt" in the server
+        And user "Alice" has uploaded file with content "file in the root" to "textfile.txt" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared folder "simple-folder" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
@@ -219,9 +219,9 @@ Feature: Sharing
 
 
     Scenario: sharee tries to edit content of files shared without write permission
-        Given user "Alice" has created folder "Parent" on the server
-        And user "Alice" has uploaded file with content "file inside a folder" to "Parent/textfile.txt" on the server
-        And user "Alice" has uploaded file with content "file in the root" to "textfile.txt" on the server
+        Given user "Alice" has created folder "Parent" in the server
+        And user "Alice" has uploaded file with content "file inside a folder" to "Parent/textfile.txt" in the server
+        And user "Alice" has uploaded file with content "file in the root" to "textfile.txt" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared folder "Parent" on the server with user "Brian" with "read" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "read" permissions
@@ -236,9 +236,9 @@ Feature: Sharing
 
 
     Scenario: sharee edits shared files and again try to edit after write permission is revoked
-        Given user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
-        And user "Alice" has created folder "FOLDER" on the server
-        And user "Alice" has uploaded file with content "some content" to "FOLDER/simple.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
+        And user "Alice" has created folder "FOLDER" in the server
+        And user "Alice" has uploaded file with content "some content" to "FOLDER/simple.txt" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared folder "FOLDER" on the server with user "Brian" with "all" permissions
@@ -260,7 +260,7 @@ Feature: Sharing
 
 
     Scenario: sharee creates a file and a folder inside a shared folder
-        Given user "Alice" has created folder "Parent" on the server
+        Given user "Alice" has created folder "Parent" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared folder "Parent" on the server with user "Brian" with "all" permissions
         And user "Brian" has set up a client with default settings
@@ -278,7 +278,7 @@ Feature: Sharing
 
 
     Scenario: sharee tries to create a file and a folder inside a shared folder without write permission
-        Given user "Alice" has created folder "Parent" on the server
+        Given user "Alice" has created folder "Parent" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared folder "Parent" on the server with user "Brian" with "read" permissions
         And user "Brian" has set up a client with default settings
@@ -296,8 +296,8 @@ Feature: Sharing
 
 
     Scenario: sharee renames the shared file and folder
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
-        And user "Alice" has created folder "FOLDER" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" in the server
+        And user "Alice" has created folder "FOLDER" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "FOLDER" on the server with user "Brian" with "all" permissions
@@ -316,10 +316,10 @@ Feature: Sharing
         And as "Alice" folder "PARENT" should not exist in the server
         And as "Alice" file "lorem.txt" should not exist in the server
 
-    @issue-9439
+    @issue-9439 @issue-11102 @skip
     Scenario: sharee deletes a file and folder shared by sharer
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
-        And user "Alice" has created folder "Folder" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" in the server
+        And user "Alice" has created folder "Folder" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "Folder" on the server with user "Brian" with "all" permissions
@@ -332,10 +332,10 @@ Feature: Sharing
         And as "Alice" file "textfile.txt" on the server should exist
         And as "Alice" folder "Folder" on the server should exist
 
-
+    @issue-11102 @skip
     Scenario: sharee tries to delete shared file and folder without permissions
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" on the server
-        And user "Alice" has created folder "Folder" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile.txt" in the server
+        And user "Alice" has created folder "Folder" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "read" permissions
         And user "Alice" has shared file "Folder" on the server with user "Brian" with "read" permissions
@@ -353,8 +353,8 @@ Feature: Sharing
     Scenario: reshare a file/folder
         Given user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Carol" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "FOLDER" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        And user "Alice" has created folder "FOLDER" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Alice" has shared file "FOLDER" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "all" permissions
         And user "Brian" has set up a client with default settings
@@ -369,8 +369,8 @@ Feature: Sharing
     Scenario: try to reshare a file/folder shared without share permission
         Given user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Carol" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has created folder "FOLDER" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        And user "Alice" has created folder "FOLDER" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Alice" has shared file "FOLDER" on the server with user "Brian" with "read" permissions
         And user "Alice" has shared file "textfile.txt" on the server with user "Brian" with "read" permissions
         And user "Brian" has set up a client with default settings
@@ -382,8 +382,8 @@ Feature: Sharing
 
     Scenario: unshare a shared file and folder
         Given user "Brian" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile0.txt" on the server
-        And user "Alice" has created folder "simple-folder" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile0.txt" in the server
+        And user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has shared file "textfile0.txt" on the server with user "Brian" with "all" permissions
         And user "Alice" has shared folder "simple-folder" on the server with user "Brian" with "all" permissions
         And user "Alice" has set up a client with default settings
@@ -400,7 +400,7 @@ Feature: Sharing
         Given user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Carol" has been created on the server with default attributes and without skeleton files
         And user "David" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user adds following collaborators of resource "textfile0.txt" using the client-UI
             | user         | permissions |
@@ -415,7 +415,7 @@ Feature: Sharing
 
     @issue-7423
     Scenario: unshare a reshared file
-        Given user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Carol" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared folder "textfile.txt" on the server with user "Brian"
@@ -426,9 +426,9 @@ Feature: Sharing
 
     @smokeTest
     Scenario: simple sharing of file and folder by public link without password
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
-        And user "Alice" has created folder "simple-folder" on the server
-        And user "Alice" has created folder "simple-folder/child" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
+        And user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has created folder "simple-folder/child" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for file "textfile0.txt" without password using the client-UI
         And the user closes the sharing dialog
@@ -440,8 +440,8 @@ Feature: Sharing
 
 
     Scenario Outline: simple sharing of file and folder by public link with password
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
-        And user "Alice" has created folder "simple-folder" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
+        And user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for file "textfile0.txt" with password "<password>" using the client-UI
         And the user closes the sharing dialog
@@ -457,7 +457,7 @@ Feature: Sharing
 
 
     Scenario: sharing of a file by public link and deleting the link
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has created a public link on the server with following settings
             | path     | textfile0.txt |
             | name     | Public-link   |
@@ -467,7 +467,7 @@ Feature: Sharing
 
 
     Scenario: sharing of a file by public link with password and changing the password
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has created a public link on the server with following settings
             | path     | textfile0.txt |
             | name     | Public-link   |
@@ -480,7 +480,7 @@ Feature: Sharing
 
 
     Scenario: simple sharing of a file by public link with default expiration date
-        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
@@ -491,8 +491,8 @@ Feature: Sharing
 
     @issue-9321
     Scenario: simple sharing of file and folder by public link with expiration date
-        Given user "Alice" has created folder "FOLDER" on the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        Given user "Alice" has created folder "FOLDER" in the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
@@ -510,7 +510,7 @@ Feature: Sharing
 
     @issue-9321
     Scenario: simple sharing of a file by public link with password and expiration date
-        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
@@ -523,7 +523,7 @@ Feature: Sharing
 
     @skip @issue-9321
     Scenario: user changes the expiration date of an already existing public link for file using client-UI
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" on the server
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has created a public link on the server with following settings
             | path       | textfile0.txt |
             | name       | Public link   |
@@ -537,7 +537,7 @@ Feature: Sharing
 
     @skip @issue-9321
     Scenario: user changes the expiration date of an already existing public link for folder using client-UI
-        Given user "Alice" has created folder "simple-folder" on the server
+        Given user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has created a public link on the server with following settings
             | path        | simple-folder                |
             | name        | Public link                  |
@@ -552,7 +552,7 @@ Feature: Sharing
 
 
     Scenario Outline: simple sharing of folder by public link with different roles
-        Given user "Alice" has created folder "simple-folder" on the server
+        Given user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for folder "simple-folder" using the client-UI with these details:
             | role | <role> |
@@ -571,7 +571,7 @@ Feature: Sharing
 
 
     Scenario: sharing a folder by public link with "Uploader" role and check if file can be downloaded
-        Given user "Alice" has created folder "simple-folder" on the server
+        Given user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has created file "simple-folder/lorem.txt" on the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for folder "simple-folder" using the client-UI with these details:
@@ -588,7 +588,7 @@ Feature: Sharing
 
     Scenario Outline: change collaborator permissions of a file & folder
         Given the administrator on the server has set the default folder for received shares to "Shares"
-        And user "Alice" has created folder "simple-folder" on the server
+        And user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has created file "lorem.txt" on the server
         And user "Brian" has been created on the server with default attributes and without skeleton files
         And user "Alice" has shared folder "simple-folder" on the server with user "Brian" with "all" permissions

@@ -17,6 +17,7 @@
 #include "gui/folderman.h"
 #include "gui/scheduling/etagwatcher.h"
 #include "libsync/configfile.h"
+#include "libsync/syncengine.h"
 
 using namespace std::chrono_literals;
 
@@ -111,6 +112,7 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
             }
         }
     });
+    fullLocalDiscoveryTimer->start();
 }
 
 
@@ -132,11 +134,22 @@ void SyncScheduler::startNext()
     if (!_running || !_currentSync.isNull()) {
         return;
     }
-    _currentSync = _queue->pop();
+    auto nextSync = _queue->pop();
+    while (nextSync && !nextSync->isReady()) {
+        nextSync = _queue->pop();
+    }
+    _currentSync = nextSync;
     if (!_currentSync.isNull()) {
         connect(
             _currentSync, &Folder::syncFinished, this,
-            [this] {
+            [this](const SyncResult &result) {
+                if (result.status() != SyncResult::Success) {
+                    // Retry a couple of times after failure; or regularly if requested
+                    if ((_currentSync->consecutiveFailingSyncs() > 0 && _currentSync->consecutiveFailingSyncs() < 3)
+                        || _currentSync->syncEngine().isAnotherSyncNeeded() == AnotherSyncNeeded::DelayedFollowUp) {
+                        QTimer::singleShot(SyncEngine::minimumFileAgeForUpload, this, [folder = _currentSync, this] { enqueueFolder(folder); });
+                    }
+                }
                 _currentSync = nullptr;
                 startNext();
             },

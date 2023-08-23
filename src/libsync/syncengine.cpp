@@ -20,6 +20,7 @@
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/vfs.h"
+#include "configfile.h"
 #include "creds/abstractcredentials.h"
 #include "csync_exclude.h"
 #include "discovery.h"
@@ -50,8 +51,7 @@ Q_LOGGING_CATEGORY(lcEngine, "sync.engine", QtInfoMsg)
 // doc in header
 std::chrono::seconds SyncEngine::minimumFileAgeForUpload(2s);
 
-SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath,
-    const QString &remotePath, OCC::SyncJournalDb *journal)
+SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
     : _account(account)
     , _baseUrl(baseUrl)
     , _needsUpdate(false)
@@ -64,7 +64,7 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _hasRemoveFile(false)
     , _uploadLimit(0)
     , _downloadLimit(0)
-    , _anotherSyncNeeded(NoFollowUpSync)
+    , _anotherSyncNeeded(AnotherSyncNeeded::NoFollowUpSync)
 {
     qRegisterMetaType<SyncFileItem>("SyncFileItem");
     qRegisterMetaType<SyncFileItemPtr>("SyncFileItemPtr");
@@ -334,7 +334,7 @@ void SyncEngine::startSync()
     }
 
     _syncRunning = true;
-    _anotherSyncNeeded = NoFollowUpSync;
+    _anotherSyncNeeded = AnotherSyncNeeded::NoFollowUpSync;
 
     _hasNoneFiles = false;
     _hasRemoveFile = false;
@@ -343,7 +343,7 @@ void SyncEngine::startSync()
     _progressInfo->reset();
 
     if (!QFileInfo::exists(_localPath)) {
-        _anotherSyncNeeded = DelayedFollowUp;
+        _anotherSyncNeeded = AnotherSyncNeeded::DelayedFollowUp;
         // No _tr, it should only occur in non-mirall
         Q_EMIT syncError(QStringLiteral("Unable to find local sync folder."));
         finalize(false);
@@ -357,7 +357,7 @@ void SyncEngine::startSync()
         if (freeBytes < minFree) {
             qCWarning(lcEngine()) << "Too little space available at" << _localPath << ". Have"
                                   << freeBytes << "bytes and require at least" << minFree << "bytes";
-            _anotherSyncNeeded = DelayedFollowUp;
+            _anotherSyncNeeded = AnotherSyncNeeded::DelayedFollowUp;
             Q_EMIT syncError(tr("Only %1 are available, need at least %2 to start",
                 "Placeholders are postfixed with file sizes using Utility::octetsToString()")
                                  .arg(
@@ -430,7 +430,7 @@ void SyncEngine::startSync()
     // TODO: add a constructor to DiscoveryPhase
     // pass a syncEngine object rather than copying everyhting to another object
     _discoveryPhase.reset(new DiscoveryPhase(_account, syncOptions(), _baseUrl));
-    _discoveryPhase->_excludes = _excludedFiles.data();
+    _discoveryPhase->_excludes = _excludedFiles.get();
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
     if (!_discoveryPhase->_localDir.endsWith(QLatin1Char('/')))
@@ -544,8 +544,8 @@ void SyncEngine::slotDiscoveryFinished()
             restoreOldFiles(_syncItems);
         }
 
-        if (_discoveryPhase->_anotherSyncNeeded && _anotherSyncNeeded == NoFollowUpSync) {
-            _anotherSyncNeeded = ImmediateFollowUp;
+        if (_discoveryPhase->_anotherSyncNeeded && _anotherSyncNeeded == AnotherSyncNeeded::NoFollowUpSync) {
+            _anotherSyncNeeded = AnotherSyncNeeded::ImmediateFollowUp;
         }
 
         Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end()));
@@ -694,8 +694,8 @@ void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
 
 void SyncEngine::slotPropagationFinished(bool success)
 {
-    if (_propagator->_anotherSyncNeeded && _anotherSyncNeeded == NoFollowUpSync) {
-        _anotherSyncNeeded = ImmediateFollowUp;
+    if (_propagator->_anotherSyncNeeded && _anotherSyncNeeded == AnotherSyncNeeded::NoFollowUpSync) {
+        _anotherSyncNeeded = AnotherSyncNeeded::ImmediateFollowUp;
     }
 
     if (success && _discoveryPhase) {
@@ -940,6 +940,38 @@ bool SyncEngine::isPromtRemoveAllFiles() const
 void SyncEngine::setPromtRemoveAllFiles(bool promtRemoveAllFiles)
 {
     _promptRemoveAllFiles = promtRemoveAllFiles;
+}
+
+bool SyncEngine::isExcluded(QStringView filePath) const
+{
+    Q_ASSERT(QDir::isAbsolutePath(filePath.toString()));
+    return _excludedFiles->isExcluded(filePath, localPath(), ignoreHiddenFiles());
+}
+
+bool SyncEngine::loadDefaultExcludes()
+{
+    ConfigFile::setupDefaultExcludeFilePaths(*_excludedFiles);
+    return _excludedFiles->reloadExcludeFiles();
+}
+
+void SyncEngine::clearManualExcludes()
+{
+    _excludedFiles->clearManualExcludes();
+}
+
+bool SyncEngine::reloadExcludes()
+{
+    return _excludedFiles->reloadExcludeFiles();
+}
+
+void SyncEngine::addExcludeList(const QString &filePath)
+{
+    _excludedFiles->addExcludeFilePath(filePath);
+}
+
+void SyncEngine::addManualExclude(const QString &filePath)
+{
+    _excludedFiles->addManualExclude(filePath);
 }
 
 } // namespace OCC

@@ -20,11 +20,9 @@
 
 #include "gui/commonstrings.h"
 
-#include "account.h"
 #include "accountmanager.h"
-#include "accountstate.h"
-#include "capabilities.h"
 #include "common/asserts.h"
+#include "common/depreaction.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
 #include "filesystem.h"
@@ -459,7 +457,7 @@ void SocketApi::broadcastStatusPushMessage(const QString &systemPath, SyncFileSt
 {
     QString msg = buildMessage(QStringLiteral("STATUS"), systemPath, fileStatus.toSocketAPIString());
     Q_ASSERT(!systemPath.endsWith(QLatin1Char('/')));
-    uint directoryHash = qHash(systemPath.left(systemPath.lastIndexOf(QLatin1Char('/'))));
+    auto directoryHash = qHash(systemPath.left(systemPath.lastIndexOf(QLatin1Char('/'))));
     for (const auto &listener : qAsConst(_listeners)) {
         listener->sendMessageIfDirectoryMonitored(msg, directoryHash);
     }
@@ -689,7 +687,7 @@ void SocketApi::command_MAKE_AVAILABLE_LOCALLY(const QString &filesArg, SocketLi
             continue;
 
         // Update the pin state on all items
-        data.folder->vfs().setPinState(data.folderRelativePath, PinState::AlwaysLocal);
+        std::ignore = data.folder->vfs().setPinState(data.folderRelativePath, PinState::AlwaysLocal);
 
         // Trigger sync
         data.folder->schedulePathForLocalDiscovery(data.folderRelativePath);
@@ -708,7 +706,7 @@ void SocketApi::command_MAKE_ONLINE_ONLY(const QString &filesArg, SocketListener
             continue;
 
         // Update the pin state on all items
-        data.folder->vfs().setPinState(data.folderRelativePath, PinState::OnlineOnly);
+        std::ignore = data.folder->vfs().setPinState(data.folderRelativePath, PinState::OnlineOnly);
 
         // Trigger sync
         data.folder->schedulePathForLocalDiscovery(data.folderRelativePath);
@@ -781,7 +779,7 @@ void SocketApi::command_MOVE_ITEM(const QString &localFile, SocketListener *)
     }
 }
 
-Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile, SocketListener *listener)
+Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile, [[maybe_unused]] SocketListener *listener)
 {
     const auto data = FileData::get(localFile);
     if (OC_ENSURE(data.folder)) {
@@ -797,9 +795,10 @@ void SocketApi::command_V2_LIST_ACCOUNTS(const QSharedPointer<SocketApiJobV2> &j
 {
     QJsonArray out;
     for (auto acc : AccountManager::instance()->accounts()) {
-        out << QJsonObject({ { QStringLiteral("name"), acc->account()->displayName() },
-            { QStringLiteral("id"), acc->account()->id() },
-            { QStringLiteral("uuid"), acc->account()->uuid().toString(QUuid::WithoutBraces) } });
+        OC_DISABLE_DEPRECATED_WARNING; // allow use of id
+        out << QJsonObject({{QStringLiteral("name"), acc->account()->displayName()}, {QStringLiteral("id"), acc->account()->id()},
+            {QStringLiteral("uuid"), acc->account()->uuid().toString(QUuid::WithoutBraces)}});
+        OC_ENABLE_DEPRECATED_WARNING
     }
     job->success({ { QStringLiteral("accounts"), out } });
 }
@@ -904,7 +903,12 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
             && !capabilities.sharePublicLinkEnforcePasswordForReadOnly();
 
         if (canCreateDefaultPublicLink) {
-            listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + tr("Create and copy public link to clipboard"));
+            if (fileData.folder->accountState()->supportsSpaces()) {
+                // TODO: See https://github.com/owncloud/client/issues/10845 : oCIS is getting a new sharing API, waiting for that before implementing a
+                // temporary solution.
+            } else {
+                listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + tr("Create and copy public link to clipboard"));
+            }
         } else if (publicLinksEnabled) {
             listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Copy public link to clipboard"));
         }

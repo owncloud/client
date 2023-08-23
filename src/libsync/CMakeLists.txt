@@ -74,7 +74,7 @@ INSTALL(
         ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h
         logger.h
         accessmanager.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/${APPLICATION_SHORTNAME}/libsync
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR}/${APPLICATION_SHORTNAME}/libsync
 )
 
 add_library(libsync SHARED ${libsync_SRCS})
@@ -94,6 +94,11 @@ target_link_libraries(libsync
 )
 
 apply_common_target_settings(libsync)
+
+set_source_files_properties(configfile.cpp
+    PROPERTIES
+        COMPILE_DEFINITIONS EXCLUDE_FILE_NAME="${EXCLUDE_FILE_NAME}"
+)
 
 target_link_libraries(libsync PUBLIC $<BUILD_INTERFACE:OpenAPI::LibreGraphAPI>)
 add_subdirectory(graphapi)

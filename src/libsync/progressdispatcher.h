@@ -25,8 +25,6 @@
 
 #include "syncfileitem.h"
 
-#include "csync/csync_exclude.h"
-
 namespace OCC {
 class Folder;
 /**
@@ -268,15 +266,23 @@ namespace Progress {
     OWNCLOUDSYNC_EXPORT bool isIgnoredKind(SyncFileItem::Status);
 }
 
-/** Type of error
- *
- * Used for ProgressDispatcher::syncError. May trigger error interactivity
- * in IssuesWidget.
- */
-enum class ErrorCategory {
-    Normal,
-    InsufficientRemoteStorage,
-};
+// work around for only having one namespace OCC, and this enum not beeing in a QObject
+namespace ErrorCategoryPrivate {
+    OWNCLOUDSYNC_EXPORT Q_NAMESPACE;
+
+    /** Type of error
+     *
+     * Used for ProgressDispatcher::syncError. May trigger error interactivity
+     * in IssuesWidget.
+     */
+    enum class ErrorCategory {
+        Normal,
+        InsufficientRemoteStorage,
+    };
+
+    Q_ENUM_NS(ErrorCategory);
+}
+using ErrorCategoryPrivate::ErrorCategory;
 
 /**
  * @file progressdispatcher.h
@@ -313,7 +319,7 @@ signals:
      */
     void syncError(Folder *folder, const QString &message, ErrorCategory category);
 
-    void excluded(Folder *folder, const QString &path, CSYNC_EXCLUDE_TYPE reason);
+    void excluded(Folder *folder, const QString &path);
 
 
     /**

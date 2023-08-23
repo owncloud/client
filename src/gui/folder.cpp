@@ -21,15 +21,16 @@
 #include "accountstate.h"
 #include "application.h"
 #include "common/checksums.h"
+#include "common/depreaction.h"
 #include "common/filesystembase.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
 #include "common/vfs.h"
 #include "configfile.h"
-#include "csync_exclude.h"
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
+#include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "networkjobs.h"
 #include "scheduling/syncscheduler.h"
@@ -69,8 +70,14 @@ auto versionC()
 
 auto davUrlC()
 {
-    return QLatin1String("davUrl");
+    return QStringLiteral("davUrl");
 }
+
+auto spaceIdC()
+{
+    return QStringLiteral("spaceId");
+}
+
 auto displayNameC()
 {
     return QLatin1String("displayString");
@@ -123,8 +130,7 @@ Folder::Folder(const FolderDefinition &definition,
         // pass the setting if hidden files are to be ignored, will be read in csync_update
         _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles);
 
-        ConfigFile::setupDefaultExcludeFilePaths(_engine->excludedFiles());
-        if (!reloadExcludes()) {
+        if (!_engine->loadDefaultExcludes()) {
             qCWarning(lcFolder, "Could not read system exclude file");
         }
 
@@ -149,9 +155,7 @@ Folder::Folder(const FolderDefinition &definition,
 
         connect(ProgressDispatcher::instance(), &ProgressDispatcher::folderConflicts,
             this, &Folder::slotFolderConflicts);
-        connect(_engine.data(), &SyncEngine::excluded, this, [this](const QString &path, CSYNC_EXCLUDE_TYPE reason) {
-            Q_EMIT ProgressDispatcher::instance()->excluded(this, path, reason);
-        });
+        connect(_engine.data(), &SyncEngine::excluded, this, [this](const QString &path) { Q_EMIT ProgressDispatcher::instance()->excluded(this, path); });
 
         _localDiscoveryTracker.reset(new LocalDiscoveryTracker);
         connect(_engine.data(), &SyncEngine::finished,
@@ -368,6 +372,12 @@ QString Folder::remotePath() const
 
 QUrl Folder::webDavUrl() const
 {
+    const QString spaceId = _definition.spaceId();
+    if (!spaceId.isEmpty()) {
+        if (auto *space = _accountState->account()->spacesManager()->space(spaceId)) {
+            return QUrl(space->drive().getRoot().getWebDavUrl());
+        }
+    }
     return _definition.webDavUrl();
 }
 
@@ -551,7 +561,7 @@ void Folder::startVfs()
         return;
     }
 
-    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), groupInSidebar());
+    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), groupInSidebar(), _engine.get());
     vfsParams.filesystemPath = path();
     vfsParams.remotePath = remotePathTrailingSlash();
     vfsParams.journal = &_journal;
@@ -622,6 +632,7 @@ int Folder::slotWipeErrorBlacklist()
 void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason reason)
 {
     Q_ASSERT(isReady());
+    bool needSync = false;
     for (const auto &path : paths) {
         Q_ASSERT(FileSystem::isChildPathOf(path, this->path()));
 
@@ -672,13 +683,13 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
                 Q_ASSERT([&] {
                     Q_ASSERT(record.isValid());
                     // we don't intend to burn to many cpu cycles so limit this check on small files
-                    if (!record.isVirtualFile() && record._fileSize < 1_mb) {
+                    if (!record.isVirtualFile() && record._fileSize < static_cast<qint64>(1_mb)) {
                         const auto header = ChecksumHeader::parseChecksumHeader(record._checksumHeader);
                         auto *compute = new ComputeChecksum(this);
                         compute->setChecksumType(header.type());
                         quint64 inode = 0;
                         FileSystem::getInode(path, &inode);
-                        connect(compute, &ComputeChecksum::done, this, [=](CheckSums::Algorithm checksumType, const QByteArray &checksum) {
+                        connect(compute, &ComputeChecksum::done, this, [=](CheckSums::Algorithm, const QByteArray &checksum) {
                             compute->deleteLater();
                             qWarning() << "Spurious notification:" << path << (checksum == header.checksum()) << checksum << header.checksum()
                                        << "Inode:" << record._inode << inode;
@@ -696,10 +707,10 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         warnOnNewExcludedItem(record, relativePath);
 
         emit watchedFileChangedExternally(path);
-
-        // Also schedule this folder for a sync, but only after some delay:
-        // The sync will not upload files that were changed too recently.
-        QTimer::singleShot(SyncEngine::minimumFileAgeForUpload, this, [this] { FolderMan::instance()->scheduler()->enqueueFolder(this); });
+        needSync = true;
+    }
+    if (needSync) {
+        FolderMan::instance()->scheduler()->enqueueFolder(this);
     }
 }
 
@@ -725,7 +736,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
     // (suffix-virtual file's pin state is stored at the hydrated path)
     const auto pin = _vfs->pinState(relativepath);
     if (pin && *pin == PinState::OnlineOnly) {
-        _vfs->setPinState(relativepath, PinState::Unspecified);
+        std::ignore = _vfs->setPinState(relativepath, PinState::Unspecified);
     }
 
     // Add to local discovery
@@ -754,9 +765,6 @@ void Folder::setVirtualFilesEnabled(bool enabled)
 
         _definition.virtualFilesMode = newMode;
         startVfs();
-        if (newMode != Vfs::Off) {
-            _saveInFoldersWithPlaceholders = true;
-        }
         saveToSettings();
     }
 }
@@ -777,25 +785,29 @@ void Folder::saveToSettings() const
     removeFromSettings();
 
     auto settings = _accountState->settings();
+    settings->beginGroup(QStringLiteral("Folders"));
 
-    QString settingsGroup;
-    if (virtualFilesEnabled() || _saveInFoldersWithPlaceholders) {
-        // If virtual files are enabled or even were enabled at some point,
-        // save the folder to a group that will not be read by older (<2.5.0) clients.
-        // The name is from when virtual files were called placeholders.
-        settingsGroup = QStringLiteral("FoldersWithPlaceholders");
-    } else {
-        settingsGroup = QStringLiteral("Folders");
+    auto definitionToSave = _definition;
+
+    // migration
+    if (accountState()->supportsSpaces() && _definition.spaceId().isEmpty()) {
+        OC_DISABLE_DEPRECATED_WARNING
+        if (auto *space = accountState()->account()->spacesManager()->spaceByUrl(webDavUrl())) {
+            OC_ENABLE_DEPRECATED_WARNING
+            definitionToSave.setSpaceId(space->drive().getRoot().getId());
+        }
     }
+    // with spaces we rely on the space id
+    // we save the dav url nevertheless to have it available during startup
+    definitionToSave.setWebDavUrl(webDavUrl());
 
-    settings->beginGroup(settingsGroup);
     // Note: Each of these groups might have a "version" tag, but that's
     //       currently unused.
-    settings->beginGroup(QString::fromUtf8(_definition.id()));
-    FolderDefinition::save(*settings, _definition);
+    settings->beginGroup(QString::fromUtf8(definitionToSave.id()));
+    FolderDefinition::save(*settings, definitionToSave);
 
     settings->sync();
-    qCInfo(lcFolder) << "Saved folder" << _definition.localPath() << "to settings, status" << settings->status();
+    qCInfo(lcFolder) << "Saved folder" << definitionToSave.localPath() << "to settings, status" << settings->status();
 }
 
 void Folder::removeFromSettings() const
@@ -814,10 +826,10 @@ void Folder::removeFromSettings() const
 
 bool Folder::isFileExcludedAbsolute(const QString &fullPath) const
 {
-    if (!_engine) {
-        return true;
+    if (OC_ENSURE_NOT(_engine.isNull())) {
+        return _engine->isExcluded(fullPath);
     }
-    return _engine->excludedFiles().isExcluded(fullPath, path(), _definition.ignoreHiddenFiles);
+    return true;
 }
 
 bool Folder::isFileExcludedRelative(const QString &relativePath) const
@@ -886,7 +898,7 @@ bool Folder::reloadExcludes()
     if (!_engine) {
         return true;
     }
-    return _engine->excludedFiles().reloadExcludeFiles();
+    return _engine->reloadExcludes();
 }
 
 void Folder::startSync()
@@ -1046,7 +1058,7 @@ void Folder::slotSyncFinished(bool success)
     _timeSinceLastSyncDone.start();
 
     // Increment the follow-up sync counter if necessary.
-    if (anotherSyncNeeded == ImmediateFollowUp) {
+    if (anotherSyncNeeded == AnotherSyncNeeded::ImmediateFollowUp) {
         _consecutiveFollowUpSyncs++;
         qCInfo(lcFolder) << "another sync was requested by the finished sync, this has"
                          << "happened" << _consecutiveFollowUpSyncs << "times";
@@ -1055,7 +1067,7 @@ void Folder::slotSyncFinished(bool success)
     }
 
     // Maybe force a follow-up sync to take place, but only a couple of times.
-    if (anotherSyncNeeded == ImmediateFollowUp && _consecutiveFollowUpSyncs <= 3) {
+    if (anotherSyncNeeded == AnotherSyncNeeded::ImmediateFollowUp && _consecutiveFollowUpSyncs <= 3) {
         // Sometimes another sync is requested because a local file is still
         // changing, so wait at least a small amount of time before syncing
         // the folder again.
@@ -1191,13 +1203,6 @@ void Folder::slotWatcherUnreliable(const QString &message)
     ocApp()->gui()->raiseDialog(msgBox);
 }
 
-void Folder::scheduleThisFolderSoon()
-{
-    if (!_scheduleSelfTimer.isActive()) {
-        _scheduleSelfTimer.start();
-    }
-}
-
 void Folder::registerFolderWatcher()
 {
     if (!_folderWatcher.isNull()) {
@@ -1264,8 +1269,9 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction)
     ownCloudGui::raiseDialog(msgBox);
 }
 
-FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &displayName)
+FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName)
     : _webDavUrl(davUrl)
+    , _spaceId(spaceId)
     , _id(id)
     , _displayName(displayName)
 {
@@ -1286,6 +1292,9 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
     settings.setValue(QStringLiteral("localPath"), folder.localPath());
     settings.setValue(QStringLiteral("journalPath"), folder.journalPath);
     settings.setValue(QStringLiteral("targetPath"), folder.targetPath());
+    if (!folder.spaceId().isEmpty()) {
+        settings.setValue(spaceIdC(), folder.spaceId());
+    }
     settings.setValue(davUrlC(), folder.webDavUrl());
     settings.setValue(displayNameC(), folder.displayName());
     settings.setValue(QStringLiteral("paused"), folder.paused);
@@ -1301,7 +1310,7 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &folder)
 
 FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &id)
 {
-    FolderDefinition folder(id, settings.value(davUrlC()).toUrl(), settings.value(displayNameC()).toString());
+    FolderDefinition folder{id, settings.value(davUrlC()).toUrl(), settings.value(spaceIdC()).toString(), settings.value(displayNameC()).toString()};
     folder.setLocalPath(settings.value(QStringLiteral("localPath")).toString());
     folder.journalPath = settings.value(QStringLiteral("journalPath")).toString();
     folder.setTargetPath(settings.value(QStringLiteral("targetPath")).toString());
@@ -1383,8 +1392,37 @@ bool Folder::groupInSidebar() const
     return false;
 }
 
+QString Folder::spaceId() const
+{
+    return _definition.spaceId();
+}
+
 bool FolderDefinition::isDeployed() const
 {
     return _deployed;
+}
+
+QUrl FolderDefinition::webDavUrl() const
+{
+    Q_ASSERT(_webDavUrl.isValid());
+    return _webDavUrl;
+}
+
+QString FolderDefinition::targetPath() const
+{
+    return _targetPath;
+}
+
+QString FolderDefinition::localPath() const
+{
+    return _localPath;
+}
+
+QString FolderDefinition::spaceId() const
+{
+    // we might call the function to check for the id
+    // anyhow one of the conditions needs to be true
+    Q_ASSERT(_webDavUrl.isValid() || !_spaceId.isEmpty());
+    return _spaceId;
 }
 } // namespace OCC

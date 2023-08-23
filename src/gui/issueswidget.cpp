@@ -201,8 +201,7 @@ IssuesWidget::IssuesWidget(QWidget *parent)
             _model->addProtocolItem(ProtocolItem { folder, item });
         });
 
-    connect(ProgressDispatcher::instance(), &ProgressDispatcher::excluded, this, [this](Folder *f, const QString &file, CSYNC_EXCLUDE_TYPE reason) {
-        Q_ASSERT(reason == CSYNC_FILE_EXCLUDE_RESERVED);
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::excluded, this, [this](Folder *f, const QString &file) {
         auto item = SyncFileItemPtr::create();
         item->_status = SyncFileItem::FilenameReserved;
         item->_file = file;
@@ -332,10 +331,9 @@ void IssuesWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progress
         // We keep track very well of pending conflicts.
         // Inform other components about them.
         QStringList conflicts;
-        for (const auto &data : _model->rawData()) {
-            if (data.folder() == folder
-                && data.status() == SyncFileItem::Conflict) {
-                conflicts.append(data.path());
+        for (const auto &rawData : _model->rawData()) {
+            if (rawData.folder() == folder && rawData.status() == SyncFileItem::Conflict) {
+                conflicts.append(rawData.path());
             }
         }
         emit ProgressDispatcher::instance()->folderConflicts(folder, conflicts);
@@ -384,47 +382,30 @@ std::function<void(void)> IssuesWidget::addStatusFilter(QMenu *menu)
     const auto initialFilter = _statusSortModel->filter();
 
     { // Add all errors under 1 action:
-        const std::vector<SyncFileItem::Status> ErrorStatusItems = {
-            SyncFileItem::Status::FatalError,
-            SyncFileItem::Status::NormalError,
-            SyncFileItem::Status::SoftError,
-            SyncFileItem::Status::DetailError,
-        };
-
-        auto action = menu->addAction(Utility::enumToDisplayName(SyncFileItem::NormalError), this, [this, ErrorStatusItems](bool checked) {
+        auto action = menu->addAction(Utility::enumToDisplayName(SyncFileItem::NormalError), this, [this](bool checked) {
             auto currentFilter = _statusSortModel->filter();
-            for (const auto &item : ErrorStatusItems) {
+            for (const auto &item : SyncFileItem::ErrorStatusItems) {
                 currentFilter[item] = checked;
             }
             _statusSortModel->setFilter(currentFilter);
         });
         action->setCheckable(true);
-        action->setChecked(initialFilter[ErrorStatusItems[0]]);
+        action->setChecked(initialFilter[SyncFileItem::ErrorStatusItems[0]]);
         statusFilterGroup->addAction(action);
     }
     menu->addSeparator();
 
-    // Add the other non-error items:
-    const std::vector<SyncFileItem::Status> OtherStatusItems = {
-        SyncFileItem::Status::Conflict, //
-        SyncFileItem::Status::FileIgnored, //
-        SyncFileItem::Status::Restoration, //
-        SyncFileItem::Status::BlacklistedError, //
-        SyncFileItem::Status::Excluded, //
-        SyncFileItem::Status::Message, //
-        SyncFileItem::Status::FilenameReserved, //
-    };
-    // list of OtherStatusItems with the localised name
+    // list of OtherDisplayableStatusItems with the localised name
     std::vector<std::pair<QString, SyncFileItem::Status>> otherStatusItems;
-    otherStatusItems.reserve(OtherStatusItems.size());
-    for (const auto &item : OtherStatusItems) {
+    otherStatusItems.reserve(SyncFileItem::OtherDisplayableStatusItems.size());
+    for (const auto &item : SyncFileItem::OtherDisplayableStatusItems) {
         otherStatusItems.emplace_back(Utility::enumToDisplayName(item), item);
     }
     std::sort(otherStatusItems.begin(), otherStatusItems.end(), [](const auto &a, const auto &b) {
         return a.first < b.first;
     });
     for (const auto &item : otherStatusItems) {
-        auto action = menu->addAction(item.first, this, [this, item](bool checked) {
+        auto action = menu->addAction(item.first, menu, [this, item](bool checked) {
             auto currentFilter = _statusSortModel->filter();
             currentFilter[item.second] = checked;
             _statusSortModel->setFilter(currentFilter);

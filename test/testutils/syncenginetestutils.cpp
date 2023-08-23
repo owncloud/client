@@ -16,6 +16,7 @@
 #include <thread>
 
 using namespace std::chrono_literals;
+using namespace std::chrono;
 
 namespace {
 inline auto chunkingNgUploadPathC()
@@ -888,8 +889,12 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
     }
     if (!reply) {
         const QString fileName = getFilePathFromUrl(newRequest.url());
-        Q_ASSERT(!fileName.isNull()); // we only expect webdav request for which we might get an empty sting but  not a null string
-        if (_errorPaths.contains(fileName)) {
+        if (fileName.isNull()) {
+            // we don't actually handle this case but thats ok for now
+            newRequest.setTransferTimeout(duration_cast<milliseconds>(5min).count());
+            qWarning() << "Ignoring request to" << newRequest.url();
+            reply = new FakeHangingReply(op, newRequest, this);
+        } else if (_errorPaths.contains(fileName)) {
             reply = new FakeErrorReply { op, newRequest, this, _errorPaths[fileName] };
         }
     }
@@ -950,7 +955,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     _syncEngine->setSyncOptions(OCC::SyncOptions { QSharedPointer<OCC::Vfs>(OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode).release()) });
 
     // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
-    _syncEngine->excludedFiles().addManualExclude(QStringLiteral("]*.~*"));
+    _syncEngine->addManualExclude(QStringLiteral("]*.~*"));
 
     auto vfs = _syncEngine->syncOptions()._vfs;
     if (vfsMode != vfs->mode()) {
@@ -985,7 +990,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
     opts._vfs = vfs;
     _syncEngine->setSyncOptions(opts);
 
-    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), false);
+    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), false, &syncEngine());
     vfsParams.filesystemPath = localPath();
     vfsParams.remotePath = QLatin1Char('/');
     vfsParams.journal = _journalDb.get();

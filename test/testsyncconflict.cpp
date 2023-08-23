@@ -59,7 +59,7 @@ bool expectAndWipeConflict(FakeFolder &fFolder, const QString &path)
     for (const auto &item : qAsConst(base->children)) {
         if (item.name.startsWith(pathComponents.fileName()) && item.name.contains(QLatin1String("(conflicted copy"))) {
             fFolder.localModifier().remove(item.path());
-            fFolder.applyLocalModificationsWithoutSync();
+            OC_ASSERT(fFolder.applyLocalModificationsWithoutSync());
             return true;
         }
     }
@@ -542,7 +542,7 @@ private slots:
 
         // The contents of the conflict directories will only be uploaded after
         // another sync.
-        QVERIFY(fakeFolder.syncEngine().isAnotherSyncNeeded() == ImmediateFollowUp);
+        QVERIFY(fakeFolder.syncEngine().isAnotherSyncNeeded() == AnotherSyncNeeded::ImmediateFollowUp);
         cleanup();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
@@ -698,7 +698,7 @@ private slots:
             QDir(fakeFolder.localPath() + conflict).removeRecursively();
         }
 
-        QVERIFY(fakeFolder.syncEngine().isAnotherSyncNeeded() == ImmediateFollowUp);
+        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), AnotherSyncNeeded::ImmediateFollowUp);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }

@@ -24,9 +24,7 @@
 #include "common/utility.h"
 #include "commonstrings.h"
 #include "configfile.h"
-#include "creds/abstractcredentials.h"
 #include "creds/httpcredentialsgui.h"
-#include "filesystem.h"
 #include "folderman.h"
 #include "folderstatusdelegate.h"
 #include "folderstatusmodel.h"
@@ -38,25 +36,18 @@
 
 #include "folderwizard/folderwizard.h"
 
-#include <math.h>
-
 #include <QAction>
 #include <QClipboard>
 #include <QDesktopServices>
 #include <QDir>
 #include <QIcon>
 #include <QKeySequence>
-#include <QListWidgetItem>
 #include <QMessageBox>
 #include <QPropertyAnimation>
 #include <QSortFilterProxyModel>
 #include <QToolTip>
 #include <QTreeView>
-#include <QVBoxLayout>
-#include <QVariant>
 
-
-#include "account.h"
 #include "askexperimentalvirtualfilesfeaturemessagebox.h"
 #include "gui/models/models.h"
 #include "loginrequireddialog.h"
@@ -532,11 +523,12 @@ void AccountSettings::slotEnableVfsCurrentFolder()
 
             for (const auto &entry : oldBlacklist) {
                 folder->journalDb()->schedulePathForRemoteDiscovery(entry);
-                folder->vfs().setPinState(entry, PinState::OnlineOnly);
+                std::ignore = folder->vfs().setPinState(entry, PinState::OnlineOnly);
             }
             folder->slotNextSyncFullLocalDiscovery();
 
-            FolderMan::instance()->scheduler()->enqueueFolder(folder);
+            // don't schedule the folder, it might not be ready yet.
+            // it will schedule its self once set up
 
             ui->_folderList->doItemsLayout();
             ui->selectiveSyncStatus->setVisible(false);

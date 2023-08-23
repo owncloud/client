@@ -8,10 +8,9 @@
 
 #include "testutils/syncenginetestutils.h"
 
+#include "common/depreaction.h"
 #include "gui/spacemigration.h"
 
-
-#include <QJsonArray>
 #include <QJsonObject>
 
 using namespace OCC;
@@ -24,7 +23,7 @@ private:
 
     auto addFolder(AccountStatePtr accountState, const QString &localPath, const QString &remotePath)
     {
-        auto d = OCC::FolderDefinition::createNewFolderDefinition(accountState->account()->davUrl());
+        auto d = OCC::FolderDefinition::createNewFolderDefinition(accountState->account()->davUrl(), {});
         Q_ASSERT(localPath.startsWith(QLatin1Char('/')));
         d.setLocalPath(_tmp.path() + localPath);
         d.setTargetPath(remotePath);
@@ -99,10 +98,14 @@ private slots:
         FolderMan::instance()->unloadAndDeleteAllFolders();
         QVERIFY(FolderMan::instance()->folders().isEmpty());
         // reload the folders from the settings
-        QCOMPARE(FolderMan::instance()->setupFolders(), expectedSize);
+        auto count = FolderMan::instance()->setupFolders();
+        QVERIFY(count.has_value());
+        QCOMPARE(count.value(), expectedSize);
 
         // was the folder correctly persisted
+        OC_DISABLE_DEPRECATED_WARNING
         const auto folder = FolderMan::instance()->folder(folder1Uuid);
+        OC_ENABLE_DEPRECATED_WARNING
         QVERIFY(folder);
         QCOMPARE(folder->webDavUrl(), personalUrl);
         QCOMPARE(folder->remotePath(), QStringLiteral("/"));

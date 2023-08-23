@@ -97,7 +97,9 @@ public:
     // TODO: use acces throug ocApp and remove that instance pointer
     static FolderMan *instance();
 
-    qsizetype setupFolders();
+    /// \returns empty if a downgrade of a folder was detected, otherwise it will return the number
+    ///          of folders that were set up (note: this can be zero when no folders were configured).
+    std::optional<qsizetype> setupFolders();
 
     /** Find folder setting keys that need to be ignored or deleted for being too new.
      *
@@ -126,7 +128,7 @@ public:
      * Adds a folder for an account. Used to be part of the wizard code base. Constructs the folder definition from the parameters.
      * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
      */
-    Folder *addFolderFromWizard(const AccountStatePtr &accountStatePtr, const QString &localFolder, const QString &remotePath, const QUrl &webDavUrl, const QString &displayName, bool useVfs);
+    Folder *addFolderFromWizard(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
     Folder *addFolderFromFolderWizardResult(const AccountStatePtr &accountStatePtr, const FolderWizard::Result &config);
 
     /** Removes a folder */
@@ -293,7 +295,8 @@ private:
     // restarts the application (Linux only)
     void restartApplication();
 
-    void setupFoldersHelper(QSettings &settings, AccountStatePtr account, bool foldersWithPlaceholders);
+    /// \returns false when a downgrade of the database is detected, true otherwise.
+    bool setupFoldersHelper(QSettings &settings, AccountStatePtr account);
 
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;

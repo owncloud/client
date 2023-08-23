@@ -68,8 +68,12 @@ void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
     auto folderMan = FolderMan::instance();
 
     // saves a bit of duplicate code
-    auto addFolder = [folderMan, accountStatePtr, useVfs](const QString &localFolder, const QString &remotePath, const QUrl &webDavUrl, const QString &displayName = {}) {
-        return folderMan->addFolderFromWizard(accountStatePtr, localFolder, remotePath, webDavUrl, displayName, useVfs);
+    auto addFolder = [folderMan, accountStatePtr, useVfs](const QString &localFolder, const QString &remotePath, const QUrl &davUrl,
+                         const QString &spaceId = {}, const QString &displayName = {}) {
+        auto def = FolderDefinition::createNewFolderDefinition(davUrl, spaceId, displayName);
+        def.setLocalPath(localFolder);
+        def.setTargetPath(remotePath);
+        return folderMan->addFolderFromWizard(accountStatePtr, std::move(def), useVfs);
     };
 
     auto finalize = [accountStatePtr] {
@@ -79,11 +83,9 @@ void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
     };
 
     if (accountStatePtr->supportsSpaces()) {
-        // Qt6: Qt::SingleShotConnection
-        auto *singleShotConnection = new QObject();
-        QObject::connect(accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, singleShotConnection,
-            [accountStatePtr, addFolder, finalize, singleShotConnection] {
-                delete singleShotConnection;
+        QObject::connect(
+            accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, accountStatePtr,
+            [accountStatePtr, addFolder, finalize] {
                 auto spaces = accountStatePtr->account()->spacesManager()->spaces();
                 // we do not want to set up folder sync connections for disabled spaces (#10173)
                 spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
@@ -96,14 +98,15 @@ void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
                     for (const auto *space : spaces) {
                         const QString name = space->displayName();
                         const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(localDir, name);
-                        auto folder = addFolder(folderName, {}, QUrl(space->drive().getRoot().getWebDavUrl()), name);
+                        auto folder = addFolder(folderName, {}, QUrl(space->drive().getRoot().getWebDavUrl()), space->drive().getRoot().getId(), name);
                         folder->setPriority(space->priority());
                         // save the new priority
                         folder->saveToSettings();
                     }
                     finalize();
                 }
-            });
+            },
+            Qt::SingleShotConnection);
         accountStatePtr->account()->spacesManager()->checkReady();
     } else {
         addFolder(accountStatePtr->account()->defaultSyncRoot(), Theme::instance()->defaultServerFolder(), accountStatePtr->account()->davUrl());
@@ -753,9 +756,7 @@ void ownCloudGui::slotRebuildRecentMenus()
 /// 'Recent Activity' menu
 static bool shouldShowInRecentsMenu(const SyncFileItem &item)
 {
-    return !Progress::isIgnoredKind(item._status)
-        && item._instruction != CSYNC_INSTRUCTION_EVAL
-        && item._instruction != CSYNC_INSTRUCTION_NONE;
+    return !Progress::isIgnoredKind(item._status) && item._instruction != CSYNC_INSTRUCTION_NONE;
 }
 
 void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progress)
@@ -854,74 +855,75 @@ void ownCloudGui::runNewAccountWizard()
                     // ensure we are connected and fetch the capabilities
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
 
-                    QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(), [accountStatePtr, syncMode, dynamicRegistrationData](ConnectionValidator::Status status, const QStringList &errors) {
-                        if (OC_ENSURE(status == ConnectionValidator::Connected || status == ConnectionValidator::ServerVersionMismatch)) {
-                            // saving once after adding makes sure the account is stored in the config in a working state
-                            // this is needed to ensure a consistent state in the config file upon unexpected terminations of the client
-                            // (for instance, when running from a debugger and stopping the process from there)
-                            AccountManager::instance()->save(true);
+                    QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(),
+                        [accountStatePtr, syncMode, dynamicRegistrationData](ConnectionValidator::Status status, const QStringList &) {
+                            if (OC_ENSURE(status == ConnectionValidator::Connected || status == ConnectionValidator::ServerVersionMismatch)) {
+                                // saving once after adding makes sure the account is stored in the config in a working state
+                                // this is needed to ensure a consistent state in the config file upon unexpected terminations of the client
+                                // (for instance, when running from a debugger and stopping the process from there)
+                                AccountManager::instance()->save(true);
 
-                            // only now, we can store the dynamic registration data in the keychain
-                            if (!dynamicRegistrationData.isEmpty()) {
-                                OAuth::saveDynamicRegistrationDataForAccount(accountStatePtr->account(), dynamicRegistrationData);
-                            }
+                                // only now, we can store the dynamic registration data in the keychain
+                                if (!dynamicRegistrationData.isEmpty()) {
+                                    OAuth::saveDynamicRegistrationDataForAccount(accountStatePtr->account(), dynamicRegistrationData);
+                                }
 
-                            // the account is now ready, emulate a normal account loading and emit that the credentials are ready
-                            Q_EMIT accountStatePtr->account()->credentialsFetched();
+                                // the account is now ready, emulate a normal account loading and emit that the credentials are ready
+                                Q_EMIT accountStatePtr->account()->credentialsFetched();
 
-                            switch (syncMode) {
-                            case Wizard::SyncMode::SyncEverything:
-                            case Wizard::SyncMode::UseVfs: {
-                                bool useVfs = syncMode == Wizard::SyncMode::UseVfs;
-                                setUpInitialSyncFolder(accountStatePtr, useVfs);
-                                accountStatePtr->setSettingUp(false);
-                                break;
-                            }
-                            case Wizard::SyncMode::ConfigureUsingFolderWizard: {
-                                Q_ASSERT(!accountStatePtr->account()->hasDefaultSyncRoot());
-
-                                auto *folderWizard = new FolderWizard(accountStatePtr, ocApp()->gui()->settingsDialog());
-                                folderWizard->resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
-                                folderWizard->setAttribute(Qt::WA_DeleteOnClose);
-
-                                // TODO: duplication of AccountSettings
-                                // adapted from AccountSettings::slotFolderWizardAccepted()
-                                connect(folderWizard, &QDialog::accepted, [accountStatePtr, folderWizard]() {
-                                    FolderMan *folderMan = FolderMan::instance();
-
-                                    qCInfo(lcApplication) << "Folder wizard completed";
-                                    const auto config = folderWizard->result();
-
-                                    auto folder = folderMan->addFolderFromFolderWizardResult(accountStatePtr, config);
-
-                                    if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
-                                        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
-
-                                        // The user already accepted the selective sync dialog. everything is in the white list
-                                        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, { QLatin1String("/") });
-                                    }
-
-                                    folderMan->setSyncEnabled(true);
-                                    folderMan->scheduleAllFolders();
+                                switch (syncMode) {
+                                case Wizard::SyncMode::SyncEverything:
+                                case Wizard::SyncMode::UseVfs: {
+                                    bool useVfs = syncMode == Wizard::SyncMode::UseVfs;
+                                    setUpInitialSyncFolder(accountStatePtr, useVfs);
                                     accountStatePtr->setSettingUp(false);
-                                });
+                                    break;
+                                }
+                                case Wizard::SyncMode::ConfigureUsingFolderWizard: {
+                                    Q_ASSERT(!accountStatePtr->account()->hasDefaultSyncRoot());
 
-                                connect(folderWizard, &QDialog::rejected, [accountStatePtr]() {
-                                    qCInfo(lcApplication) << "Folder wizard cancelled";
-                                    FolderMan::instance()->setSyncEnabled(true);
-                                    accountStatePtr->setSettingUp(false);
-                                });
+                                    auto *folderWizard = new FolderWizard(accountStatePtr, ocApp()->gui()->settingsDialog());
+                                    folderWizard->resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
+                                    folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
-                                folderWizard->open();
-                                ocApp()->gui()->raiseDialog(folderWizard);
+                                    // TODO: duplication of AccountSettings
+                                    // adapted from AccountSettings::slotFolderWizardAccepted()
+                                    connect(folderWizard, &QDialog::accepted, [accountStatePtr, folderWizard]() {
+                                        FolderMan *folderMan = FolderMan::instance();
 
-                                break;
+                                        qCInfo(lcApplication) << "Folder wizard completed";
+                                        const auto config = folderWizard->result();
+
+                                        auto folder = folderMan->addFolderFromFolderWizardResult(accountStatePtr, config);
+
+                                        if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
+                                            folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
+
+                                            // The user already accepted the selective sync dialog. everything is in the white list
+                                            folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
+                                        }
+
+                                        folderMan->setSyncEnabled(true);
+                                        folderMan->scheduleAllFolders();
+                                        accountStatePtr->setSettingUp(false);
+                                    });
+
+                                    connect(folderWizard, &QDialog::rejected, [accountStatePtr]() {
+                                        qCInfo(lcApplication) << "Folder wizard cancelled";
+                                        FolderMan::instance()->setSyncEnabled(true);
+                                        accountStatePtr->setSettingUp(false);
+                                    });
+
+                                    folderWizard->open();
+                                    ocApp()->gui()->raiseDialog(folderWizard);
+
+                                    break;
+                                }
+                                case OCC::Wizard::SyncMode::Invalid:
+                                    Q_UNREACHABLE();
+                                }
                             }
-                            case OCC::Wizard::SyncMode::Invalid:
-                                Q_UNREACHABLE();
-                            }
-                        }
-                    });
+                        });
 
 
                     validator->checkServer();

@@ -29,7 +29,7 @@ void partialUpload(FakeFolder &fakeFolder, const QString &name, quint64 size)
     QVERIFY(fakeFolder.applyLocalModificationsWithoutSync()); // non-vfs test, so force modifications to disk immediately
 
     // Abort when the upload is at 1/3
-    qint64 sizeWhenAbort = -1;
+    std::optional<quint64> sizeWhenAbort;
     auto con = QObject::connect(&fakeFolder.syncEngine(),  &SyncEngine::transmissionProgress,
                                     [&](const ProgressInfo &progress) {
                 if (progress.completedSize() > (progress.totalSize() /3 )) {
@@ -40,7 +40,7 @@ void partialUpload(FakeFolder &fakeFolder, const QString &name, quint64 size)
 
     QVERIFY(!fakeFolder.applyLocalModificationsAndSync()); // there should have been an error
     QObject::disconnect(con);
-    QVERIFY(sizeWhenAbort > 0);
+    QVERIFY(sizeWhenAbort.has_value());
     QVERIFY(sizeWhenAbort < size);
 
     QCOMPARE(fakeFolder.uploadState().children.count(), 1); // the transfer was done with chunking
@@ -427,7 +427,7 @@ private slots:
 
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
         // There was a precondition failed error, this means wen need to sync again
-        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), ImmediateFollowUp);
+        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), AnotherSyncNeeded::ImmediateFollowUp);
 
         QCOMPARE(fakeFolder.uploadState().children.count(), 1); // We did not clean the chunks at this point
 
@@ -483,7 +483,7 @@ private slots:
         QThread::sleep(1);
 
         // There should be a followup sync
-        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), ImmediateFollowUp);
+        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), AnotherSyncNeeded::ImmediateFollowUp);
 
         QCOMPARE(fakeFolder.uploadState().children.count(), 1); // We did not clean the chunks at this point
         auto chunkingId = fakeFolder.uploadState().children.first().name;
@@ -664,7 +664,7 @@ private slots:
         QCOMPARE(counter.nPUT, 0);
         QCOMPARE(counter.nMOVE, 1);
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
-        QVERIFY(!fakeFolder.syncEngine().isAnotherSyncNeeded());
+        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), AnotherSyncNeeded::NoFollowUpSync);
     }
 };
 

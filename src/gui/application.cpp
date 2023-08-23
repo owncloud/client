@@ -21,13 +21,10 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "clientproxy.h"
 #include "common/asserts.h"
 #include "common/version.h"
 #include "common/vfs.h"
 #include "configfile.h"
-#include "connectionvalidator.h"
-#include "csync_exclude.h"
 #include "folder.h"
 #include "folderman.h"
 #include "settingsdialog.h"
@@ -144,8 +141,6 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
     // setup that follows, like folder setup
     _gui = new ownCloudGui(this);
 
-    FolderMan::instance()->setupFolders();
-
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &Application::slotAccountStateRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
@@ -174,11 +169,6 @@ Application::Application(Platform *platform, bool debugMode, QObject *parent)
             [this](QNetworkInformation::Reachability reachability) { qCInfo(lcApplication) << "Connection Status changed to:" << reachability; });
     }
 #endif
-
-    if (AccountManager::instance()->accounts().isEmpty()) {
-        // display the wizard if we don't have an account yet
-        QTimer::singleShot(0, gui(), &ownCloudGui::runNewAccountWizard);
-    }
 }
 
 Application::~Application()
