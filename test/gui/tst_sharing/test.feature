@@ -118,8 +118,8 @@ Feature: Sharing
         And the user searches for collaborator with autocomplete characters "Adm" using the client-UI
         Then the following users should be listed as suggested collaborators:
             | user  |
-            | Admin |
-            | Admin |
+            | admin         |
+            | admin (group) |
 
     Scenario: collaborators are listed in chronological order
         Given user "Brian" has been created on the server with default attributes and without skeleton files
