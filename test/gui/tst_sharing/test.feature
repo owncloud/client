@@ -112,7 +112,7 @@ Feature: Sharing
             | TestUser2 |
 
     Scenario: autocomplete offers a list of users followed by a list of groups
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
         And the user searches for collaborator with autocomplete characters "Adm" using the client-UI
