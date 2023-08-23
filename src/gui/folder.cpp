@@ -683,13 +683,13 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
                 Q_ASSERT([&] {
                     Q_ASSERT(record.isValid());
                     // we don't intend to burn to many cpu cycles so limit this check on small files
-                    if (!record.isVirtualFile() && record._fileSize < 1_mb) {
+                    if (!record.isVirtualFile() && record._fileSize < static_cast<qint64>(1_mb)) {
                         const auto header = ChecksumHeader::parseChecksumHeader(record._checksumHeader);
                         auto *compute = new ComputeChecksum(this);
                         compute->setChecksumType(header.type());
                         quint64 inode = 0;
                         FileSystem::getInode(path, &inode);
-                        connect(compute, &ComputeChecksum::done, this, [=](CheckSums::Algorithm checksumType, const QByteArray &checksum) {
+                        connect(compute, &ComputeChecksum::done, this, [=](CheckSums::Algorithm, const QByteArray &checksum) {
                             compute->deleteLater();
                             qWarning() << "Spurious notification:" << path << (checksum == header.checksum()) << checksum << header.checksum()
                                        << "Inode:" << record._inode << inode;
@@ -736,7 +736,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
     // (suffix-virtual file's pin state is stored at the hydrated path)
     const auto pin = _vfs->pinState(relativepath);
     if (pin && *pin == PinState::OnlineOnly) {
-        _vfs->setPinState(relativepath, PinState::Unspecified);
+        std::ignore = _vfs->setPinState(relativepath, PinState::Unspecified);
     }
 
     // Add to local discovery
