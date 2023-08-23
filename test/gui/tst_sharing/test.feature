@@ -112,7 +112,6 @@ Feature: Sharing
             | TestUser2 |
 
     Scenario: autocomplete offers a list of users followed by a list of groups
-        Given user "admin" has been created on the server with default attributes and without skeleton files
         And user "Alice" has uploaded file with content "ownCloud test text file" to "textfile.txt" on the server
         And user "Alice" has set up a client with default settings
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
