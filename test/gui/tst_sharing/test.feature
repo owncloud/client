@@ -5,7 +5,6 @@ Feature: Sharing
     I want to share files and folders with other users
     So that those users can access the files and folders
 
-
     Background:
         Given user "Alice" has been created on the server with default attributes and without skeleton files
         And the setting "shareapi_auto_accept_share" on the server of app "core" has been set to "yes"
