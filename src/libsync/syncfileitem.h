@@ -323,7 +323,6 @@ public:
         return out;
     }
 
-
     SyncInstruction instruction() const;
     void setInstruction(SyncInstruction instruction);
 
