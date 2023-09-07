@@ -14,7 +14,7 @@ version = 5
 
 [craft/craft-core]
 version = master
-revision =  ce2e15674e781b64f9c34b97425e81591ae86768
+revision =  c728afb57cf09cd8d6c57777781cb9260de87536
 
 [dev-utils/clazy]
 version = 1.11
