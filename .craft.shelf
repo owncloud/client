@@ -14,7 +14,7 @@ version = 5
 
 [craft/craft-core]
 version = master
-revision =  4be809853bfc637dc43f5b73f478e41e822a18bc
+revision =  ce2e15674e781b64f9c34b97425e81591ae86768
 
 [dev-utils/clazy]
 version = 1.11
@@ -106,7 +106,6 @@ version = 10.42
 
 [libs/qt6/qtbase]
 version = 6.4.3
-patchLevel = 5
 
 [libs/qt6/qtdeclarative]
 version = 6.4.3
