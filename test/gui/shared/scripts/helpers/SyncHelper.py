@@ -52,7 +52,7 @@ SYNC_PATTERNS = {
     # the pattern can be of TWO types depending on the available resources (files/folders)
     'initial': [
         # when syncing empty account (hidden files are ignored)
-        [SYNC_STATUS['UPDATE'], SYNC_STATUS['OK']],
+        [SYNC_STATUS['OK'], SYNC_STATUS['REGISTER']],
         # when syncing an account that has some files/folders
         [SYNC_STATUS['SYNC'], SYNC_STATUS['OK']],
     ],
