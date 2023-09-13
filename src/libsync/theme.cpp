@@ -375,6 +375,7 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
         }
     }
     QStringList sysInfo = {QStringLiteral("OS: %1-%2").arg(QSysInfo::productType(), QSysInfo::kernelVersion())};
+    // may be called by both GUI and CLI, but we can display QPA only for the former
     if (auto guiApp = qobject_cast<QGuiApplication *>(qApp)) {
         sysInfo << QStringLiteral("QPA: %1").arg(guiApp->platformName());
     }
