@@ -55,7 +55,7 @@ void SpacesManager::refresh()
     if (!_account->credentials()->ready()) {
         return;
     }
-    // leak the job until we fixed the onwership https://github.com/owncloud/client/issues/11203
+    // TODO: leak the job until we fixed the onwership https://github.com/owncloud/client/issues/11203
     auto drivesJob = new Drives(_account->sharedFromThis(), nullptr);
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {
