@@ -76,10 +76,27 @@ def step(context):
     AccountConnectionWizard.addAccount(account_details)
 
 
+@When('the user starts the client')
+def step(context):
+    squish.snooze(2)
+    startClient()
+
+
+@When(r'^the user adds (the first|another) account with$', regexp=True)
+def step(context, accountType):
+    if accountType == 'another':
+        Toolbar.openNewAccountSetup()
+
+
 @Given('the user has entered the following account information:')
 def step(context):
     account_details = getClientDetails(context)
     AccountConnectionWizard.addAccountInformation(account_details)
+
+
+@Given('the user "|any|" has logged out of the client-UI')
+def step(context, username):
+    AccountSetting.logout()
 
 
 @When('the user "|any|" logs out of the client-UI')
@@ -230,14 +247,15 @@ def step(context):
     test.compare(True, AccountSetting.isLogDialogVisible(), "Log dialog is opened")
 
 
+@Given('the user has added the following account with oauth2 enabled:')
+def step(context):
+    AccountConnectionWizard.addAccountWithOauth2(context)
+    # squish.snooze(1)
+
+
 @When('the user adds the following account with oauth2 enabled:')
 def step(context):
-    account_details = getClientDetails(context)
-    AccountConnectionWizard.addServer(account_details['server'])
-    AccountConnectionWizard.oauthLogin(
-        account_details['user'], account_details['password']
-    )
-    AccountConnectionWizard.nextStep()
+    AccountConnectionWizard.addAccountWithOauth2(context)
 
 
 @When('the user cancels the sync connection wizard')
@@ -253,3 +271,19 @@ def step(context):
 @When('user "|any|" logs out from the login required dialog')
 def step(context, username):
     AccountSetting.logoutFromLoginRequiredDialog()
+
+
+@When('user "|any|" logs in with oauth2 to the client-UI')
+def step(context, username):
+    AccountSetting.login()
+    if AccountSetting.is_login_required_dialog_visible():
+        EnterPassword.oidcReLogin(
+            username, getPasswordForUser(username), login_type='oauth'
+        )
+    else:
+        raise Exception("oidc re-login failed")
+
+
+@Given("the user has quitted the client")
+def step(context):
+    Toolbar.quitOwncloud()

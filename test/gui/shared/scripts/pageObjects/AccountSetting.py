@@ -47,6 +47,11 @@ class AccountSetting:
         "visible": 1,
         "window": names.loginRequiredDialog_OCC_LoginRequiredDialog,
     }
+    LOGIN_REQUIRED_DIALOG = {
+        "name": "LoginRequiredDialog",
+        "type": "OCC::LoginRequiredDialog",
+        "visible": 1,
+    }
 
     @staticmethod
     def accountAction(action):
@@ -157,3 +162,9 @@ class AccountSetting:
         except:
             pass
         return visible
+
+    @staticmethod
+    def is_login_required_dialog_visible():
+        if squish.waitForObjectExists(AccountSetting.LOGIN_REQUIRED_DIALOG):
+            return True
+        return False

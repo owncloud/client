@@ -1,7 +1,16 @@
 import squish
+import names
 
 
 class Toolbar:
+    QUIT_OWNCLOUD_YES_QPUSHBUTTON = {
+        "text": "Yes",
+        "type": "QPushButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.quit_ownCloud_QMessageBox,
+    }
+
     @staticmethod
     def getItemSelector(item_name):
         return {
@@ -35,3 +44,10 @@ class Toolbar:
     @staticmethod
     def open_settings_tab():
         squish.clickButton(squish.waitForObject(Toolbar.getItemSelector("Settings")))
+
+    @staticmethod
+    def quitOwncloud():
+        squish.clickButton(
+            squish.waitForObject(Toolbar.getItemSelector("Quit ownCloud"))
+        )
+        squish.clickButton(squish.waitForObject(Toolbar.QUIT_OWNCLOUD_YES_QPUSHBUTTON))

@@ -6,6 +6,7 @@ from helpers.SetupClientHelper import (
     createUserSyncPath,
     getTempResourcePath,
     setCurrentUserSyncPath,
+    getClientDetails,
 )
 import test
 
@@ -351,3 +352,12 @@ class AccountConnectionWizard:
             ).checked
             == True
         )
+
+    @staticmethod
+    def addAccountWithOauth2(context):
+        account_details = getClientDetails(context)
+        AccountConnectionWizard.addServer(account_details['server'])
+        AccountConnectionWizard.oauthLogin(
+            account_details['user'], account_details['password']
+        )
+        AccountConnectionWizard.nextStep()
