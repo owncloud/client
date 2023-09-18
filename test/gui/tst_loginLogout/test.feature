@@ -33,19 +33,19 @@ Feature:  Logout users
   Scenario: login after loggin out with oauth2 enabled
       Given app "oauth2" has been "enabled" in the server
       And the user has started the client
-      And the user adds the following account with oauth2 enabled:
+      And the user has added the following account with oauth2 enabled:
           | server   | %local_server% |
           | user     | Alice          |
           | password | 1234           |
-      When user "Alice" has logged out of the client-UI
-      And user "Alice" logs in with oauth2 to the client-UI
+      And the user "Alice" has logged out of the client-UI
+      When user "Alice" logs in with oauth2 to the client-UI
       Then user "Alice" should be connect to the client-UI
 
   @skipOnOCIS
   Scenario: the client re-auths after restarting
       Given app "oauth2" has been "enabled" in the server
       And the user has started the client
-      And the user adds the following account with oauth2 enabled:
+      And the user has added the following account with oauth2 enabled:
           | server   | %local_server% |
           | user     | Alice          |
           | password | 1234           |

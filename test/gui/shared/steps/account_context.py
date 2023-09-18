@@ -241,12 +241,7 @@ def step(context):
 
 @When('the user adds the following account with oauth2 enabled:')
 def step(context):
-    account_details = getClientDetails(context)
-    AccountConnectionWizard.addServer(account_details['server'])
-    AccountConnectionWizard.oauthLogin(
-        account_details['user'], account_details['password']
-    )
-    AccountConnectionWizard.nextStep()
+    AccountConnectionWizard.addAccountWithOauth2(context)
 
 
 @When('the user cancels the sync connection wizard')
@@ -257,3 +252,22 @@ def step(context):
 @Then("the sync folder should not be added")
 def step(context):
     test.vp("empty_sync_connection")
+
+
+@Given('the user has added the following account with oauth2 enabled:')
+def step(context):
+    AccountConnectionWizard.addAccountWithOauth2(context)
+    squish.snooze(1)
+
+
+@Given('the user "|any|" has logged out of the client-UI')
+def step(context, username):
+    AccountSetting.logout()
+
+
+@When('user "|any|" logs in with oauth2 to the client-UI')
+def step(context, username):
+    AccountSetting.login()
+    EnterPassword.oidcReLogin(
+        username, getPasswordForUser(username), login_type='oauth'
+    )
