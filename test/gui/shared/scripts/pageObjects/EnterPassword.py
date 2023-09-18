@@ -35,7 +35,7 @@ class EnterPassword:
         squish.clickButton(squish.waitForObject(EnterPassword.LOGIN_BUTTON))
 
     @staticmethod
-    def oidcReLogin(username, password, login_type=None):
+    def oidcReLogin(username, password, login_type='oidc'):
         # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
         squish.clickButton(

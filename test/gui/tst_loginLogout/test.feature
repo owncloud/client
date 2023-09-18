@@ -49,6 +49,6 @@ Feature:  Logout users
           | server   | %local_server% |
           | user     | Alice          |
           | password | 1234           |
-      When user quits the client
-      And user starts the client
+      And the user has quitted the client
+      When the user starts the client
       Then user "Alice" should be connect to the client-UI
