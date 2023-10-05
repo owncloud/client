@@ -54,14 +54,21 @@
     // the OS doesn't seem to put any restriction on the port name, so we just follow what
     // the sandboxed App Extension needs.
     // https://developer.apple.com/library/mac/documentation/Security/Conceptual/AppSandboxDesignGuide/AppSandboxInDepth/AppSandboxInDepth.html#//apple_ref/doc/uid/TP40011183-CH3-SW24
-    NSString *serverName = [socketApiPrefix stringByAppendingString:@".socketApi"];
-    // NSLog(@"FinderSync serverName %@", serverName);
 
-    _syncClientProxy = [[SyncClientProxy alloc] initWithDelegate:self serverName:serverName];
+    NSURL *container = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:socketApiPrefix];
+    NSURL *socketPath = [container URLByAppendingPathComponent:@"GUI.socket" isDirectory:false];
+
+    if (socketPath.path) {
+        self.v1LineProcessor = [[LineProcessorV1 alloc] initWithDelegate:self];
+        self.localSocketClient = [[LocalSocketClient alloc] initWithSocketPath:socketPath.path lineProcessor:self.v1LineProcessor];
+        [self.localSocketClient start];
+    } else {
+        self.localSocketClient = nil;
+    }
     _registeredDirectories = [[NSMutableSet alloc] init];
     _strings = [[NSMutableDictionary alloc] init];
+    _menuIsComplete = [[NSCondition alloc] init];
 
-    [_syncClientProxy start];
     return self;
 }
 
@@ -69,14 +76,14 @@
 
 - (void)requestBadgeIdentifierForURL:(NSURL *)url
 {
-    BOOL isDir;
+    BOOL isDir = NO;
     if ([[NSFileManager defaultManager] fileExistsAtPath:[url path] isDirectory:&isDir] == NO) {
         NSLog(@"ERROR: Could not determine file type of %@", [url path]);
         isDir = NO;
     }
 
     NSString *normalizedPath = [[url path] decomposedStringWithCanonicalMapping];
-    [_syncClientProxy askForIcon:normalizedPath isDirectory:isDir];
+    [self.localSocketClient askForIcon:normalizedPath isDirectory:isDir];
 }
 
 #pragma mark - Menu and toolbar item support
@@ -97,16 +104,35 @@
 
 - (NSMenu *)menuForMenuKind:(FIMenuKind)whichMenu
 {
+    if (!self.localSocketClient.isConnected) {
+        return nil;
+    }
+
     FIFinderSyncController *syncController = [FIFinderSyncController defaultController];
     NSMutableSet *rootPaths = [[NSMutableSet alloc] init];
     [syncController.directoryURLs enumerateObjectsUsingBlock:^(id obj, BOOL *stop) { [rootPaths addObject:[obj path]]; }];
 
+    // The server doesn't support sharing a root directory so do not show the option in this case.
+    // It is still possible to get a problematic sharing by selecting both the root and a child,
+    // but this is so complicated to do and meaningless that it's not worth putting this check
+    // also in shareMenuAction.
+    __block BOOL onlyRootsSelected = YES;
+    [syncController.selectedItemURLs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (![rootPaths member:[obj path]]) {
+            onlyRootsSelected = NO;
+            *stop = YES;
+        }
+    }];
+
     NSString *paths = [self selectedPathsSeparatedByRecordSeparator];
-    // calling this IPC calls us back from client with several MENU_ITEM entries and then our askOnSocket returns again
-    [_syncClientProxy askOnSocket:paths query:@"GET_MENU_ITEMS"];
+    [self.localSocketClient askOnSocket:paths query:@"GET_MENU_ITEMS"];
+
+    // The LocalSocketClient uses asynchronous communication, so we have to wait here until the menu items have
+    // delivered by another thread.
+    [self waitForMenuToArrive];
 
     id contextMenuTitle = [_strings objectForKey:@"CONTEXT_MENU_TITLE"];
-    if (contextMenuTitle && _menuItems.count != 0) {
+    if (contextMenuTitle && !onlyRootsSelected) {
         NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
         NSMenu *subMenu = [[NSMenu alloc] initWithTitle:@""];
         NSMenuItem *subMenuItem = [menu addItemWithTitle:contextMenuTitle action:nil keyEquivalent:@""];
@@ -126,20 +152,28 @@
             }
             idx++;
         }
+
         return menu;
     }
+
     return nil;
 }
 
-- (void)subMenuActionClicked:(id)sender
+- (void)waitForMenuToArrive
 {
+    [self->_menuIsComplete lock];
+    [self->_menuIsComplete wait];
+    [self->_menuIsComplete unlock];
+}
+
+- (void)subMenuActionClicked:(id)sender {
     long idx = [(NSMenuItem *)sender tag];
     NSString *command = [[_menuItems objectAtIndex:idx] valueForKey:@"command"];
     NSString *paths = [self selectedPathsSeparatedByRecordSeparator];
-    [_syncClientProxy askOnSocket:paths query:command];
+    [self.localSocketClient askOnSocket:paths query:command];
 }
 
-#pragma mark - SyncClientProxyDelegate implementation
+#pragma mark - SyncClientDelegate implementation
 
 - (void)setResultForPath:(NSString *)path result:(NSString *)result
 {
@@ -173,9 +207,14 @@
 {
     _menuItems = [[NSMutableArray alloc] init];
 }
-- (void)addMenuItem:(NSDictionary *)item
-{
+
+- (void)addMenuItem:(NSDictionary *)item {
     [_menuItems addObject:item];
+}
+
+- (void)menuHasCompleted
+{
+    [self->_menuIsComplete signal];
 }
 
 - (void)connectionDidDie
@@ -192,3 +231,4 @@
 }
 
 @end
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Jocelyn Turcotte <jturcotte@woboq.com>
+ * Copyright (C) by Erik Verbruggen <erik@verbruggen.consulting>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,10 +12,12 @@
  * for more details.
  */
 
+#ifndef SyncClient_h
+#define SyncClient_h
+
 #import <Foundation/Foundation.h>
 
-
-@protocol SyncClientProxyDelegate <NSObject>
+@protocol SyncClientDelegate <NSObject>
 - (void)setResultForPath:(NSString *)path result:(NSString *)result;
 - (void)reFetchFileNameCacheForPath:(NSString *)path;
 - (void)registerPath:(NSString *)path;
@@ -23,22 +25,8 @@
 - (void)setString:(NSString *)key value:(NSString *)value;
 - (void)resetMenuItems;
 - (void)addMenuItem:(NSDictionary *)item;
+- (void)menuHasCompleted;
 - (void)connectionDidDie;
 @end
 
-@protocol ChannelProtocol <NSObject>
-- (void)sendMessage:(NSData *)msg;
-@end
-
-@interface SyncClientProxy : NSObject <ChannelProtocol> {
-    NSString *_serverName;
-    NSDistantObject<ChannelProtocol> *_remoteEnd;
-}
-
-@property (weak) id<SyncClientProxyDelegate> delegate;
-
-- (instancetype)initWithDelegate:(id)arg1 serverName:(NSString *)serverName;
-- (void)start;
-- (void)askOnSocket:(NSString *)path query:(NSString *)verb;
-- (void)askForIcon:(NSString *)path isDirectory:(BOOL)isDir;
-@end
+#endif /* SyncClient_h */
