@@ -62,10 +62,6 @@
 #include <QProcess>
 #include <QStandardPaths>
 
-#ifdef Q_OS_MAC
-#include <CoreFoundation/CoreFoundation.h>
-#endif
-
 
 // This is the version that is returned when the client asks for the VERSION.
 // The first number should be changed if there is an incompatible change that breaks old clients.

@@ -12,18 +12,21 @@
  * for more details.
  */
 
-
 #import <Cocoa/Cocoa.h>
 #import <FinderSync/FinderSync.h>
-#import "SyncClientProxy.h"
 
-@interface FinderSync : FIFinderSync <SyncClientProxyDelegate>
-{
-	SyncClientProxy *_syncClientProxy;
-	NSMutableSet *_registeredDirectories;
-	NSString *_shareMenuTitle;
-	NSMutableDictionary *_strings;
-	NSMutableArray *_menuItems;
+#import "FinderSyncExt-Swift.h"
+#import "SyncClient.h"
+
+@interface FinderSync : FIFinderSync <SyncClientDelegate> {
+    NSMutableSet *_registeredDirectories;
+    NSString *_shareMenuTitle;
+    NSMutableDictionary *_strings;
+    NSMutableArray *_menuItems;
+    NSCondition *_menuIsComplete;
 }
+
+@property LineProcessorV1 *v1LineProcessor;
+@property LocalSocketClient *localSocketClient;
 
 @end

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03DFDAA72ACF10DC00171480 /* LocalSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DFDAA62ACF10DC00171480 /* LocalSocketClient.swift */; };
+		03DFDAA92ACF113F00171480 /* LineProcessorV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DFDAA82ACF113F00171480 /* LineProcessorV1.swift */; };
 		C2B573BA1B1CD91E00303B36 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2B573B91B1CD91E00303B36 /* main.m */; };
 		C2B573D21B1CD94B00303B36 /* main.m in Resources */ = {isa = PBXBuildFile; fileRef = C2B573B91B1CD91E00303B36 /* main.m */; };
 		C2B573DE1B1CD9CE00303B36 /* FinderSync.m in Sources */ = {isa = PBXBuildFile; fileRef = C2B573DD1B1CD9CE00303B36 /* FinderSync.m */; };
@@ -16,7 +18,6 @@
 		C2B573F51B1DAD6400303B36 /* ok.iconset in Resources */ = {isa = PBXBuildFile; fileRef = C2B573ED1B1DAD6400303B36 /* ok.iconset */; };
 		C2B573F71B1DAD6400303B36 /* sync.iconset in Resources */ = {isa = PBXBuildFile; fileRef = C2B573EF1B1DAD6400303B36 /* sync.iconset */; };
 		C2B573F91B1DAD6400303B36 /* warning.iconset in Resources */ = {isa = PBXBuildFile; fileRef = C2B573F11B1DAD6400303B36 /* warning.iconset */; };
-		C2C932F01F0BFC6700C8BCB3 /* SyncClientProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = C2C932EF1F0BFC6700C8BCB3 /* SyncClientProxy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		03DFDAA42ACF0F2B00171480 /* SyncClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SyncClient.h; sourceTree = "<group>"; };
+		03DFDAA52ACF10DC00171480 /* FinderSyncExt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FinderSyncExt-Bridging-Header.h"; sourceTree = "<group>"; };
+		03DFDAA62ACF10DC00171480 /* LocalSocketClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSocketClient.swift; sourceTree = "<group>"; };
+		03DFDAA82ACF113F00171480 /* LineProcessorV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineProcessorV1.swift; sourceTree = "<group>"; };
 		C2B573B11B1CD91E00303B36 /* desktopclient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = desktopclient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2B573B51B1CD91E00303B36 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C2B573B91B1CD91E00303B36 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -57,8 +62,6 @@
 		C2B573ED1B1DAD6400303B36 /* ok.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = ok.iconset; path = ../../icons/nopadding/ok.iconset; sourceTree = SOURCE_ROOT; };
 		C2B573EF1B1DAD6400303B36 /* sync.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = sync.iconset; path = ../../icons/nopadding/sync.iconset; sourceTree = SOURCE_ROOT; };
 		C2B573F11B1DAD6400303B36 /* warning.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = warning.iconset; path = ../../icons/nopadding/warning.iconset; sourceTree = SOURCE_ROOT; };
-		C2C932EE1F0BFC6700C8BCB3 /* SyncClientProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncClientProxy.h; sourceTree = "<group>"; };
-		C2C932EF1F0BFC6700C8BCB3 /* SyncClientProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncClientProxy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,10 +120,12 @@
 		C2B573D81B1CD9CE00303B36 /* FinderSyncExt */ = {
 			isa = PBXGroup;
 			children = (
-				C2C932EE1F0BFC6700C8BCB3 /* SyncClientProxy.h */,
-				C2C932EF1F0BFC6700C8BCB3 /* SyncClientProxy.m */,
 				C2B573DC1B1CD9CE00303B36 /* FinderSync.h */,
 				C2B573DD1B1CD9CE00303B36 /* FinderSync.m */,
+				03DFDAA52ACF10DC00171480 /* FinderSyncExt-Bridging-Header.h */,
+				03DFDAA82ACF113F00171480 /* LineProcessorV1.swift */,
+				03DFDAA62ACF10DC00171480 /* LocalSocketClient.swift */,
+				03DFDAA42ACF0F2B00171480 /* SyncClient.h */,
 				C2B573D91B1CD9CE00303B36 /* Supporting Files */,
 			);
 			path = FinderSyncExt;
@@ -195,6 +200,7 @@
 					C2B573D61B1CD9CE00303B36 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = 9B5WD74GWJ;
+						LastSwiftMigration = 1430;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.Mac = {
 								enabled = 1;
@@ -208,6 +214,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -275,8 +282,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C2C932F01F0BFC6700C8BCB3 /* SyncClientProxy.m in Sources */,
 				C2B573DE1B1CD9CE00303B36 /* FinderSync.m in Sources */,
+				03DFDAA92ACF113F00171480 /* LineProcessorV1.swift in Sources */,
+				03DFDAA72ACF10DC00171480 /* LocalSocketClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,18 +302,21 @@
 		C2B573991B1CD88000303B36 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		C2B5739A1B1CD88000303B36 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 		C2B573CD1B1CD91E00303B36 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -355,6 +366,7 @@
 		C2B573CE1B1CD91E00303B36 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -445,6 +457,9 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "FinderSyncExt/FinderSyncExt-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -493,6 +508,8 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "FinderSyncExt/FinderSyncExt-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

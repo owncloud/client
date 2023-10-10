@@ -20,13 +20,9 @@
 #include "sharedialog.h" // for the ShareDialogStartPage
 #include "common/syncjournalfilerecord.h"
 
-#if defined(Q_OS_MAC)
-#include "socketapisocket_mac.h"
-#else
 #include <QLocalServer>
 using SocketApiServer = QLocalServer;
 using SocketApiSocket = QLocalSocket;
-#endif
 
 class QUrl;
 class QLocalSocket;
