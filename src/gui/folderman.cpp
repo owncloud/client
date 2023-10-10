@@ -16,10 +16,8 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "application.h"
 #include "common/asserts.h"
 #include "configfile.h"
-#include "filesystem.h"
 #include "folder.h"
 #include "libsync/syncengine.h"
 #include "lockwatcher.h"
@@ -41,7 +39,7 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 namespace {
-int numberOfSyncJournals(const QString &path)
+qsizetype numberOfSyncJournals(const QString &path)
 {
     return QDir(path).entryList({ QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db") }, QDir::Hidden | QDir::Files).size();
 }
@@ -92,8 +90,8 @@ FolderMan *FolderMan::_instance = nullptr;
 FolderMan::FolderMan()
     : _lockWatcher(new LockWatcher)
     , _scheduler(new SyncScheduler(this))
-    , _appRestartRequired(false)
     , _socketApi(new SocketApi)
+    , _appRestartRequired(false)
 {
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &FolderMan::slotRemoveFoldersForAccount);

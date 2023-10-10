@@ -23,18 +23,12 @@
 
 #include "account.h"
 #include "common/asserts.h"
-#include "configfile.h"
-#include "creds/abstractcredentials.h"
 #include "gui/application.h"
-#include "gui/askexperimentalvirtualfilesfeaturemessagebox.h"
-#include "gui/guiutility.h"
 #include "gui/settingsdialog.h"
-#include "networkjobs.h"
 #include "theme.h"
 
 #include "gui/accountstate.h"
 #include "gui/folderman.h"
-#include "gui/selectivesyncwidget.h"
 #include "gui/spaces/spacesmodel.h"
 
 #include <QDesktopServices>
@@ -118,8 +112,8 @@ QString FolderWizardPrivate::remotePath() const
 uint32_t FolderWizardPrivate::priority() const
 {
     if (_account->supportsSpaces()) {
-        return _spacesPage->selectedSpaceData(Spaces::SpacesModel::Columns::Priority).toInt();
-    };
+        return _spacesPage->selectedSpaceData(Spaces::SpacesModel::Columns::Priority).toUInt();
+    }
     return 0;
 }
 
@@ -147,7 +141,7 @@ QString FolderWizardPrivate::displayName() const
 {
     if (_account->supportsSpaces()) {
         return _spacesPage->selectedSpaceData(Spaces::SpacesModel::Columns::Name).toString();
-    };
+    }
     return QString();
 }
 

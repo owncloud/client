@@ -12,10 +12,8 @@
  * for more details.
  */
 
-#include "gui/application.h"
-#include "jobs/webfingeruserinfojobfactory.h"
 #include "oauthcredentialssetupwizardstate.h"
-#include "theme.h"
+#include "jobs/webfingeruserinfojobfactory.h"
 
 namespace OCC::Wizard {
 
@@ -35,7 +33,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 
     auto oAuth = new OAuth(authServerUrl, _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
 
-    connect(oAuth, &OAuth::result, this, [this, oAuthCredentialsPage](OAuth::Result result, const QString &token, const QString &refreshToken) {
+    connect(oAuth, &OAuth::result, this, [this](OAuth::Result result, const QString &token, const QString &refreshToken) {
         _context->window()->slotStartTransition();
 
         // bring window up top again, as the browser may have been raised in front of it
