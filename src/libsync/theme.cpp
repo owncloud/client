@@ -547,7 +547,7 @@ QString Theme::oauthClientSecret() const
 
 QString Theme::oauthLocalhost() const
 {
-    return QStringLiteral("http://localhost");
+    return QStringLiteral("http://127.0.0.1");
 }
 
 QPair<QString, QString> Theme::oauthOverrideAuthUrl() const

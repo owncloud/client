@@ -249,7 +249,7 @@ void OAuth::startAuthentication()
     qCDebug(lcOauth) << "starting authentication";
 
     // Listen on the socket to get a port which will be used in the redirect_uri
-    if (!_server.listen(QHostAddress::LocalHost)) {
+    if (!_server.listen(QHostAddress::LocalHost, 51015)) {
         qCDebug(lcOauth) << "server is not listening";
         emit result(NotSupported, QString());
         return;
