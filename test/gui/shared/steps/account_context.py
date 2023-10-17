@@ -67,7 +67,7 @@ def step(context):
 
 @When('the user starts the client')
 def step(context):
-    squish.snooze(1)
+    squish.snooze(5)
     startClient()
 
 
