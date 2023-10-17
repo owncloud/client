@@ -278,6 +278,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
     return [{
         "name": "GUItests",
         "image": OC_CI_SQUISH,
+        "pull": "always",
         "environment": {
             "LICENSEKEY": from_secret("SQUISH_LICENSEKEY"),
             "GUI_TEST_REPORT_DIR": dir["guiTestReport"],
