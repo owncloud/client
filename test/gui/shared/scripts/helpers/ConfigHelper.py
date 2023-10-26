@@ -30,7 +30,7 @@ CONFIG = {
     'clientLogFile': '-',
     'clientRootSyncPath': '/tmp/client-bdd/',
     'tempFolderPath': gettempdir() + '/client-bdd/temp/',
-    'clientConfigDir': '/tmp/owncloud-client/',
+    'clientConfigDir': os.path.expanduser("~/.config/ownCloud"),
     'guiTestReportDir': os.path.abspath('../reports/'),
     'ocis': False,
     'custom_lib': os.path.abspath('../shared/scripts/custom_lib'),
