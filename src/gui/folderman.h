@@ -266,6 +266,9 @@ public slots:
      */
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
 
+    /// This slot will tell all sync engines to reload the sync options.
+    void slotReloadSyncOptions();
+
 private slots:
     void slotFolderSyncPaused(Folder *, bool paused);
     void slotFolderCanSyncChanged();

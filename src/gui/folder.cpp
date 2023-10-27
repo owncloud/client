@@ -1011,6 +1011,11 @@ void Folder::setDirtyNetworkLimits()
     _engine->setNetworkLimits(uploadLimit, downloadLimit);
 }
 
+void Folder::reloadSyncOptions()
+{
+    _engine->setSyncOptions(loadSyncOptions());
+}
+
 void Folder::slotSyncError(const QString &message, ErrorCategory category)
 {
     _syncResult.appendErrorString(message);
