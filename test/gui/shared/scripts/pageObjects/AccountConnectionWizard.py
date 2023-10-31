@@ -251,19 +251,21 @@ class AccountConnectionWizard:
 
     @staticmethod
     def addAccountInformation(account_details):
-        AccountConnectionWizard.addServer(account_details['server'])
-        if get_config('ocis'):
-            AccountConnectionWizard.acceptCertificate()
-        AccountConnectionWizard.addUserCreds(
-            account_details['user'], account_details['password']
-        )
+        if account_details['server']:
+            AccountConnectionWizard.addServer(account_details['server'])
+            if get_config('ocis'):
+                AccountConnectionWizard.acceptCertificate()
+        if account_details['user']:
+            AccountConnectionWizard.addUserCreds(
+                account_details['user'], account_details['password']
+            )
 
         if account_details['sync_folder']:
             AccountConnectionWizard.selectAdvancedConfig()
             AccountConnectionWizard.set_temp_folder_as_sync_folder(
                 account_details['sync_folder']
             )
-        else:
+        elif account_details['user']:
             AccountConnectionWizard.selectSyncFolder(account_details['user'])
 
     @staticmethod
