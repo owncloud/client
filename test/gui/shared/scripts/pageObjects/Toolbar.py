@@ -1,14 +1,20 @@
 import squish
-import names
+from helpers.SetupClientHelper import wait_until_app_killed
 
 
 class Toolbar:
-    QUIT_OWNCLOUD_YES_QPUSHBUTTON = {
+    QUIT_CONFIRMATION_DIALOG = {
+        "type": "QMessageBox",
+        "unnamed": 1,
+        "visible": 1,
+        "windowTitle": "Quit ownCloud",
+    }
+    CONFIRM_QUIT_BUTTON = {
         "text": "Yes",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
-        "window": names.quit_ownCloud_QMessageBox,
+        "window": QUIT_CONFIRMATION_DIALOG,
     }
 
     @staticmethod
@@ -50,4 +56,8 @@ class Toolbar:
         squish.clickButton(
             squish.waitForObject(Toolbar.getItemSelector("Quit ownCloud"))
         )
-        squish.clickButton(squish.waitForObject(Toolbar.QUIT_OWNCLOUD_YES_QPUSHBUTTON))
+        squish.clickButton(squish.waitForObject(Toolbar.CONFIRM_QUIT_BUTTON))
+        for ctx in squish.applicationContextList():
+            pid = ctx.pid
+            ctx.detach()
+            wait_until_app_killed(pid)

@@ -65,6 +65,11 @@ def step(context):
     startClient()
 
 
+@When('the user starts the client')
+def step(context):
+    startClient()
+
+
 @When('the user opens the add-account dialog')
 def step(context):
     Toolbar.openNewAccountSetup()
@@ -74,12 +79,6 @@ def step(context):
 def step(context):
     account_details = getClientDetails(context)
     AccountConnectionWizard.addAccount(account_details)
-
-
-@When('the user starts the client')
-def step(context):
-    squish.snooze(2)
-    startClient()
 
 
 @When(r'^the user adds (the first|another) account with$', regexp=True)
@@ -148,11 +147,8 @@ def step(context, username, password):
 def step(context, username):
     displayname = getDisplaynameForUser(username)
     server = get_config('localBackendUrl')
-    test.compare(
-        AccountSetting.waitUntilAccountIsConnected(displayname, server),
-        True,
-        "User '%s' is connected" % username,
-    )
+    AccountSetting.waitUntilAccountIsConnected(displayname, server)
+    AccountSetting.wait_until_sync_folder_is_configured()
 
 
 @When('the user removes the connection for user "|any|" and host |any|')
@@ -247,12 +243,6 @@ def step(context):
     test.compare(True, AccountSetting.isLogDialogVisible(), "Log dialog is opened")
 
 
-@Given('the user has added the following account with oauth2 enabled:')
-def step(context):
-    AccountConnectionWizard.addAccountWithOauth2(context)
-    # squish.snooze(1)
-
-
 @When('the user adds the following account with oauth2 enabled:')
 def step(context):
     AccountConnectionWizard.addAccountWithOauth2(context)
@@ -284,6 +274,6 @@ def step(context, username):
         raise Exception("oidc re-login failed")
 
 
-@Given("the user has quitted the client")
+@When("the user quits the client")
 def step(context):
     Toolbar.quitOwncloud()
