@@ -79,23 +79,14 @@ def step(context):
 def step(context):
     account_details = getClientDetails(context)
     AccountConnectionWizard.addAccount(account_details)
-
-
-@When(r'^the user adds (the first|another) account with$', regexp=True)
-def step(context, accountType):
-    if accountType == 'another':
-        Toolbar.openNewAccountSetup()
+    # wait for files to sync
+    waitForInitialSyncToComplete(getResourcePath('/', account_details["user"]))
 
 
 @Given('the user has entered the following account information:')
 def step(context):
     account_details = getClientDetails(context)
     AccountConnectionWizard.addAccountInformation(account_details)
-
-
-@Given('the user "|any|" has logged out of the client-UI')
-def step(context, username):
-    AccountSetting.logout()
 
 
 @When('the user "|any|" logs out of the client-UI')
@@ -243,9 +234,13 @@ def step(context):
     test.compare(True, AccountSetting.isLogDialogVisible(), "Log dialog is opened")
 
 
-@When('the user adds the following account with oauth2 enabled:')
+@When('the user adds the following oauth2 account:')
 def step(context):
-    AccountConnectionWizard.addAccountWithOauth2(context)
+    account_details = getClientDetails(context)
+    account_details.update({'auth_type': "oauth2"})
+    AccountConnectionWizard.addAccount(account_details)
+    # wait for files to sync
+    waitForInitialSyncToComplete(getResourcePath('/', account_details["user"]))
 
 
 @When('the user cancels the sync connection wizard')
@@ -263,7 +258,7 @@ def step(context, username):
     AccountSetting.logoutFromLoginRequiredDialog()
 
 
-@When('user "|any|" logs in with oauth2 to the client-UI')
+@When('user "|any|" logs in to the client-UI with oauth2')
 def step(context, username):
     AccountSetting.login()
     if AccountSetting.is_login_required_dialog_visible():
@@ -276,4 +271,4 @@ def step(context, username):
 
 @When("the user quits the client")
 def step(context):
-    Toolbar.quitOwncloud()
+    Toolbar.quit_owncloud()

@@ -52,7 +52,7 @@ class Toolbar:
         squish.clickButton(squish.waitForObject(Toolbar.getItemSelector("Settings")))
 
     @staticmethod
-    def quitOwncloud():
+    def quit_owncloud():
         squish.clickButton(
             squish.waitForObject(Toolbar.getItemSelector("Quit ownCloud"))
         )

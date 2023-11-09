@@ -20,7 +20,13 @@ def substituteInLineCodes(value):
 
 
 def getClientDetails(context):
-    clientDetails = {'server': '', 'user': '', 'password': '', 'sync_folder': ''}
+    clientDetails = {
+        'server': '',
+        'user': '',
+        'password': '',
+        'sync_folder': '',
+        'auth_type': 'basic',  # basic, oauth2 or oidc (used to determine the auth method)
+    }
     for row in context.table[0:]:
         row[1] = substituteInLineCodes(row[1])
         if row[0] == 'server':

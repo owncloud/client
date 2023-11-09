@@ -35,13 +35,13 @@ class EnterPassword:
         squish.clickButton(squish.waitForObject(EnterPassword.LOGIN_BUTTON))
 
     @staticmethod
-    def oidcReLogin(username, password, login_type='oidc'):
+    def oidcReLogin(username, password):
         # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
         squish.clickButton(
             squish.waitForObject(EnterPassword.COPY_URL_TO_CLIPBOARD_BUTTON)
         )
-        authorize_via_webui(username, password, login_type)
+        authorize_via_webui(username, password)
 
     @staticmethod
     def reLogin(username, password):
