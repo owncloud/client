@@ -169,17 +169,30 @@ Folder::Folder(const FolderDefinition &definition,
             if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
                 if (auto winvfs = VfsPluginManager::instance().createVfsFromPlugin(Vfs::WindowsCfApi)) {
                     // Wipe the existing suffix files from fs and journal
-                    _vfs->wipeDehydratedVirtualFiles();
+                    // therefore we need to initialise the plugin first
+                    const bool isPaused = _definition.paused;
+                    if (!isPaused) {
+                        setSyncPaused(true);
+                    }
+                    startVfs();
+                    connect(_vfs.get(), &Vfs::started, this, [isPaused, winvfs = std::move(winvfs), this] mutable {
+                        _vfs->wipeDehydratedVirtualFiles();
 
-                    // Then switch to winvfs mode
-                    _vfs.reset(winvfs.release());
-                    _definition.virtualFilesMode = Vfs::WindowsCfApi;
+                        // Then switch to winvfs mode
+                        _vfs.reset(winvfs.release());
+                        _definition.virtualFilesMode = Vfs::WindowsCfApi;
+                        if (!isPaused) {
+                            setSyncPaused(isPaused);
+                        }
+                        startVfs();
+                        saveToSettings();
+                    });
                 }
             }
-            saveToSettings();
+        } else {
+            // Initialize the vfs plugin
+            startVfs();
         }
-        // Initialize the vfs plugin
-        startVfs();
     }
 }
 
