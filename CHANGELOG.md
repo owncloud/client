@@ -1,9 +1,80 @@
-Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+Changelog for ownCloud Desktop Client [5.1.1] (2023-11-09)
 =======================================
-The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+The following sections list the changes in ownCloud Desktop Client 5.1.1 relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v4.2.0...master
+[5.1.1]: https://github.com/owncloud/client/compare/v5.1.0...v5.1.1
+
+Summary
+-------
+
+* Bugfix - Prevent permanent deletion of files when disabling VFS: [#11331](https://github.com/owncloud/client/issues/11331)
+
+Details
+-------
+
+* Bugfix - Prevent permanent deletion of files when disabling VFS: [#11331](https://github.com/owncloud/client/issues/11331)
+
+   When a user disabled the virtual files feature on Windows, all currently dehydrated files were
+   deleted accidentally. On the server those files where still available in the trash bin. This
+   regression was introduced in the previous release 5.0.0.
+
+   https://github.com/owncloud/client/issues/11331
+
+Changelog for ownCloud Desktop Client [5.1.0] (2023-11-02)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 5.1.0 relevant to
+ownCloud admins and users.
+
+[5.1.0]: https://github.com/owncloud/client/compare/v5.0.0...v5.1.0
+
+Summary
+-------
+
+* Bugfix - Crash when accepting a notification: [#11226](https://github.com/owncloud/client/issues/11226)
+* Bugfix - Fix crash on start-up when starting shell integration: [#11280](https://github.com/owncloud/client/issues/11280)
+* Bugfix - Properly schedule the sync after an account was added: [#11308](https://github.com/owncloud/client/issues/11308)
+* Bugfix - Don't start credentials save jobs during shutdown: [#11313](https://github.com/owncloud/client/pull/11313)
+
+Details
+-------
+
+* Bugfix - Crash when accepting a notification: [#11226](https://github.com/owncloud/client/issues/11226)
+
+   We fixed a potential crash when clicking on a notification.
+
+   https://github.com/owncloud/client/issues/11226
+
+* Bugfix - Fix crash on start-up when starting shell integration: [#11280](https://github.com/owncloud/client/issues/11280)
+
+   A possible crash has been fixed that could occur during start-up, when the shell integration
+   started doing requests before the client itself completed starting up.
+
+   https://github.com/owncloud/client/issues/11280
+   https://github.com/owncloud/client/pull/11288
+
+* Bugfix - Properly schedule the sync after an account was added: [#11308](https://github.com/owncloud/client/issues/11308)
+
+   We fixed a bug where a folder was scheduled to be synced before the account reported it was ready.
+   This resulted in the sync having no effect and the folder was then only synced once we polled the
+   etag.
+
+   https://github.com/owncloud/client/issues/11308
+
+* Bugfix - Don't start credentials save jobs during shutdown: [#11313](https://github.com/owncloud/client/pull/11313)
+
+   Due to a bug we "re saved" the credentials during application shutdown. As the application was
+   quitting while the jobs where running we might have encountered corruped credentials or
+   crashes.
+
+   https://github.com/owncloud/client/pull/11313
+
+Changelog for ownCloud Desktop Client [5.0.0] (2023-10-05)
+=======================================
+The following sections list the changes in ownCloud Desktop Client 5.0.0 relevant to
+ownCloud admins and users.
+
+[5.0.0]: https://github.com/owncloud/client/compare/v4.2.0...v5.0.0
 
 Summary
 -------
@@ -18,11 +89,21 @@ Summary
 * Bugfix - Crash during application shutdown: [#11016](https://github.com/owncloud/client/issues/11016)
 * Bugfix - Hide hidden folders again in the selective sync view: [#11047](https://github.com/owncloud/client/issues/11047)
 * Bugfix - Fix check if a file is a placeholder: [#11107](https://github.com/owncloud/client/issues/11107)
+* Bugfix - Hydration state of file after a directory was replaced with a file: [#11162](https://github.com/owncloud/client/pull/11162)
+* Bugfix - Only syncronize after the server settings where refreshed: [#11168](https://github.com/owncloud/client/issues/11168)
+* Bugfix - Consitently use the same icon for folders: [#11190](https://github.com/owncloud/client/pull/11190)
+* Bugfix - Branding of folder status overlay: [#11192](https://github.com/owncloud/client/pull/11192)
+* Bugfix - Creation of folder on the server: [#11232](https://github.com/owncloud/client/issues/11232)
+* Bugfix - Selective sync when not the remote root is synced: [#11233](https://github.com/owncloud/client/issues/11233)
+* Change - Extract Nautilus: [#8991](https://github.com/owncloud/client/issues/8991)
 * Change - Remove support for sidebar entries for non-vfs setups on Windows: [#10788](https://github.com/owncloud/client/issues/10788)
 * Change - Remove support for client side system proxy credentials: [#10866](https://github.com/owncloud/client/pull/10866)
 * Change - Modernize systray menu: [#10939](https://github.com/owncloud/client/issues/10939)
 * Change - We removed the pre 2.9 credentials migration: [#11081](https://github.com/owncloud/client/pull/11081)
+* Change - Remove libcloudproviders integration: [#11148](https://github.com/owncloud/client/issues/11148)
+* Change - Disable context menu item to get a public link for a space: [#11242](https://github.com/owncloud/client/issues/11242)
 * Enhancement - Store proxy password securely: [#261](https://github.com/owncloud/client/issues/261)
+* Enhancement - Windows VFS: Prevent rename to ignored file name: [#8216](https://github.com/owncloud/client/issues/8216)
 * Enhancement - Change how all files deleted is handled: [#8360](https://github.com/owncloud/client/issues/8360)
 * Enhancement - Port from QtSingleApplication to KDSingleApplication: [#8432](https://github.com/owncloud/client/issues/8432)
 * Enhancement - Enable crash reporter in commandline client: [#8991](https://github.com/owncloud/client/issues/8991)
@@ -103,6 +184,50 @@ Details
 
    https://github.com/owncloud/client/issues/11107
 
+* Bugfix - Hydration state of file after a directory was replaced with a file: [#11162](https://github.com/owncloud/client/pull/11162)
+
+   If a synced directory was replaced with a file on the server, we downloaded it instead of
+   replacing the folder with a VirtualFile placeholder.
+
+   https://github.com/owncloud/client/pull/11162
+
+* Bugfix - Only syncronize after the server settings where refreshed: [#11168](https://github.com/owncloud/client/issues/11168)
+
+   We fixed an issue where the sync was started on outdated server settings.
+
+   https://github.com/owncloud/client/issues/11168
+
+* Bugfix - Consitently use the same icon for folders: [#11190](https://github.com/owncloud/client/pull/11190)
+
+   In 4.0 we introduced a new icon for sync connections. In some places however we continued to use
+   the system provided icon for folders, this resulted in an inconsitent applicaiton look.
+
+   https://github.com/owncloud/client/pull/11190
+
+* Bugfix - Branding of folder status overlay: [#11192](https://github.com/owncloud/client/pull/11192)
+
+   We fixed a bug where branded overlay icons for the display of the sync status where not used.
+
+   https://github.com/owncloud/client/pull/11192
+
+* Bugfix - Creation of folder on the server: [#11232](https://github.com/owncloud/client/issues/11232)
+
+   We fixed an issue in the FolderSyncWizard when the user provided a path with multiple slashes
+   (//folder).
+
+   https://github.com/owncloud/client/issues/11232
+
+* Bugfix - Selective sync when not the remote root is synced: [#11233](https://github.com/owncloud/client/issues/11233)
+
+   https://github.com/owncloud/client/issues/11233
+
+* Change - Extract Nautilus: [#8991](https://github.com/owncloud/client/issues/8991)
+
+   While the crash reporter still requires a graphical user interface to work, this change
+   nevertheless simplifies reporting crashes from the commandline client a lot.
+
+   https://github.com/owncloud/client/issues/8991
+
 * Change - Remove support for sidebar entries for non-vfs setups on Windows: [#10788](https://github.com/owncloud/client/issues/10788)
 
    For vfs setups, this is handled by Windows itself.
@@ -130,9 +255,34 @@ Details
 
    https://github.com/owncloud/client/pull/11081
 
+* Change - Remove libcloudproviders integration: [#11148](https://github.com/owncloud/client/issues/11148)
+
+   Since its implementation in 2019 our support our for it was 'limited'. Additionally as far as we
+   can tell it was not picked up by any major Linux distribution.
+
+   https://github.com/owncloud/client/issues/11148
+   https://github.com/owncloud/client/pull/11157
+
+* Change - Disable context menu item to get a public link for a space: [#11242](https://github.com/owncloud/client/issues/11242)
+
+   The context menu item "Create and copy public link to clipboard" didn't work correctly when
+   used with Spaces: users were always redirected to the web frontend. This menu item is now
+   disabled, waiting for a server-side changes.
+
+   https://github.com/owncloud/client/issues/11242
+   https://github.com/owncloud/client/pull/11079
+
 * Enhancement - Store proxy password securely: [#261](https://github.com/owncloud/client/issues/261)
 
    https://github.com/owncloud/client/issues/261
+
+* Enhancement - Windows VFS: Prevent rename to ignored file name: [#8216](https://github.com/owncloud/client/issues/8216)
+
+   We now prevent ranems of virtual files to ignored file names. This basically resulted in a delte
+   on the server and a local placeholder that pointed to a non existing file.
+
+   https://github.com/owncloud/client/issues/8216
+   https://github.com/owncloud/client-desktop-vfs-win/pull/63
 
 * Enhancement - Change how all files deleted is handled: [#8360](https://github.com/owncloud/client/issues/8360)
 
