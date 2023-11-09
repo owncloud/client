@@ -266,7 +266,7 @@ class AccountConnectionWizard:
                 account_details['password'],
                 account_details['auth_type'],
             )
-
+        sync_path = ''
         if account_details['sync_folder']:
             AccountConnectionWizard.selectAdvancedConfig()
             sync_path = AccountConnectionWizard.set_temp_folder_as_sync_folder(
@@ -276,8 +276,9 @@ class AccountConnectionWizard:
             sync_path = AccountConnectionWizard.selectSyncFolder(
                 account_details['user']
             )
-        # listen for sync status
-        listenSyncStatusForItem(sync_path)
+        if sync_path:
+            # listen for sync status
+            listenSyncStatusForItem(sync_path)
 
     @staticmethod
     def selectManualSyncFolderOption():
