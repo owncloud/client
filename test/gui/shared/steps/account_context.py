@@ -124,6 +124,16 @@ def step(context, username):
     waitForInitialSyncToComplete(getResourcePath('/', username))
 
 
+@When('user "|any|" logs in to the client-UI with oauth2')
+def step(context, username):
+    AccountSetting.login()
+    password = getPasswordForUser(username)
+    EnterPassword.reLogin(username, password, True)
+
+    # wait for files to sync
+    waitForInitialSyncToComplete(getResourcePath('/', username))
+
+
 @When('user "|any|" opens login dialog')
 def step(context, username):
     AccountSetting.login()
@@ -256,17 +266,6 @@ def step(context):
 @When('user "|any|" logs out from the login required dialog')
 def step(context, username):
     AccountSetting.logoutFromLoginRequiredDialog()
-
-
-@When('user "|any|" logs in to the client-UI with oauth2')
-def step(context, username):
-    AccountSetting.login()
-    if AccountSetting.is_login_required_dialog_visible():
-        EnterPassword.oidcReLogin(
-            username, getPasswordForUser(username), login_type='oauth'
-        )
-    else:
-        raise Exception("oidc re-login failed")
 
 
 @When("the user quits the client")
