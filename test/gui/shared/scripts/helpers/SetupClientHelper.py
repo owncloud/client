@@ -25,7 +25,7 @@ def getClientDetails(context):
         'user': '',
         'password': '',
         'sync_folder': '',
-        'auth_type': 'basic',  # basic, oauth2 or oidc (used to determine the auth method)
+        'oauth': False,
     }
     for row in context.table[0:]:
         row[1] = substituteInLineCodes(row[1])

@@ -247,7 +247,7 @@ def step(context):
 @When('the user adds the following oauth2 account:')
 def step(context):
     account_details = getClientDetails(context)
-    account_details.update({'auth_type': "oauth2"})
+    account_details.update({'oauth': True})
     AccountConnectionWizard.addAccount(account_details)
     # wait for files to sync
     waitForInitialSyncToComplete(getResourcePath('/', account_details["user"]))

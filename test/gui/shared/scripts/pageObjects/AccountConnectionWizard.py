@@ -170,10 +170,10 @@ class AccountConnectionWizard:
         )
 
     @staticmethod
-    def addUserCreds(username, password, auth_type=None):
+    def addUserCreds(username, password, oauth=False):
         if get_config('ocis'):
             AccountConnectionWizard.oidcLogin(username, password)
-        elif auth_type == 'oauth2':
+        elif oauth:
             AccountConnectionWizard.oauthLogin(username, password)
         else:
             AccountConnectionWizard.basicLogin(username, password)
@@ -264,7 +264,7 @@ class AccountConnectionWizard:
             AccountConnectionWizard.addUserCreds(
                 account_details['user'],
                 account_details['password'],
-                account_details['auth_type'],
+                account_details['oauth'],
             )
         sync_path = ''
         if account_details['sync_folder']:
