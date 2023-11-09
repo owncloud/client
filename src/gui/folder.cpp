@@ -175,7 +175,7 @@ Folder::Folder(const FolderDefinition &definition,
                         setSyncPaused(true);
                     }
                     startVfs();
-                    connect(_vfs.get(), &Vfs::started, this, [isPaused, winvfs = std::move(winvfs), this] mutable {
+                    connect(_vfs.get(), &Vfs::started, this, [isPaused, winvfs = std::move(winvfs), this] () mutable {
                         _vfs->wipeDehydratedVirtualFiles();
 
                         // Then switch to winvfs mode
