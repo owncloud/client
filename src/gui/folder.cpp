@@ -164,20 +164,6 @@ Folder::Folder(const FolderDefinition &definition,
 
         // Potentially upgrade suffix vfs to windows vfs
         OC_ENFORCE(_vfs);
-        if (_definition.virtualFilesMode == Vfs::WithSuffix
-            && _definition.upgradeVfsMode) {
-            if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-                if (auto winvfs = VfsPluginManager::instance().createVfsFromPlugin(Vfs::WindowsCfApi)) {
-                    // Wipe the existing suffix files from fs and journal
-                    _vfs->wipeDehydratedVirtualFiles();
-
-                    // Then switch to winvfs mode
-                    _vfs.reset(winvfs.release());
-                    _definition.virtualFilesMode = Vfs::WindowsCfApi;
-                }
-            }
-            saveToSettings();
-        }
         // Initialize the vfs plugin
         startVfs();
     }
@@ -701,7 +687,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
                 Q_ASSERT([&] {
                     Q_ASSERT(record.isValid());
                     // we don't intend to burn to many cpu cycles so limit this check on small files
-                    if (!record.isVirtualFile() && record._fileSize < static_cast<qint64>(1_mb)) {
+                    if (!record.isVirtualFile() && record._fileSize < static_cast<qint64>(1_mb) && !record._checksumHeader.isEmpty()) {
                         const auto header = ChecksumHeader::parseChecksumHeader(record._checksumHeader);
                         auto *compute = new ComputeChecksum(this);
                         compute->setChecksumType(header.type());
@@ -773,9 +759,13 @@ void Folder::setVirtualFilesEnabled(bool enabled)
 
     if (newMode != _definition.virtualFilesMode) {
         // This is tested in TestSyncVirtualFiles::testWipeVirtualSuffixFiles, so for changes here, have them reflected in that test.
-
-        // TODO: Must wait for current sync to finish!
-        OC_ENFORCE(!isSyncRunning());
+        if (isSyncRunning()) {
+            slotTerminateSync();
+        }
+        const bool isPaused = _definition.paused;
+        if (!isPaused) {
+            setSyncPaused(true);
+        }
 
         // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
         // are in the DB but not on disk, so the client assumes they are deleted, and removes them from the remote.
@@ -794,6 +784,9 @@ void Folder::setVirtualFilesEnabled(bool enabled)
         // Restart VFS.
         _definition.virtualFilesMode = newMode;
         startVfs();
+        if (!isPaused) {
+            setSyncPaused(isPaused);
+        }
         saveToSettings();
     }
 }

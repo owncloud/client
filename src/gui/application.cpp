@@ -192,22 +192,6 @@ void Application::slotCleanup()
     AccountManager::instance()->shutdown();
 }
 
-void Application::slotCrash()
-{
-    Utility::crash();
-}
-
-void Application::slotCrashEnforce()
-{
-    OC_ENFORCE(1 == 0);
-}
-
-
-void Application::slotCrashFatal()
-{
-    qFatal("la Qt fatale");
-}
-
 AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
 {
     auto *accountMan = AccountManager::instance();
@@ -265,13 +249,6 @@ void Application::openVirtualFile(const QString &filename)
             QDesktopServices::openUrl(QUrl::fromLocalFile(normalName));
         }
     });
-}
-
-void Application::tryTrayAgain()
-{
-    qCInfo(lcApplication) << "Trying tray icon, tray available:" << QSystemTrayIcon::isSystemTrayAvailable();
-    if (!_gui->contextMenuVisible())
-        _gui->hideAndShowTray();
 }
 
 bool Application::eventFilter(QObject *obj, QEvent *event)

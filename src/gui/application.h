@@ -59,17 +59,11 @@ public:
     AccountStatePtr addNewAccount(AccountPtr newAccount);
 
 public slots:
-    void slotCrash();
-    void slotCrashEnforce();
-    void slotCrashFatal();
     /**
      * Will download a virtual file, and open the result.
      * The argument is the filename of the virtual file (including the extension)
      */
     void openVirtualFile(const QString &filename);
-
-    /// Attempt to show() the tray icon again. Used if no systray was available initially.
-    void tryTrayAgain();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;

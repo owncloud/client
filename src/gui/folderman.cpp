@@ -260,8 +260,6 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
             folderDefinition.journalPath = defaultJournalPath;
         }
 
-        // Migration: If an old .csync_journal.db is found, move it to the new name.
-        SyncJournalDb::maybeMigrateDb(folderDefinition.localPath(), folderDefinition.absoluteJournalPath());
         if (SyncJournalDb::dbIsTooNewForClient(folderDefinition.absoluteJournalPath())) {
             return false;
         }
@@ -315,7 +313,9 @@ void FolderMan::slotFolderSyncPaused(Folder *f, bool paused)
 
     if (!paused) {
         _disabledFolders.remove(f);
-        scheduler()->enqueueFolder(f);
+        if (f->canSync()) {
+            scheduler()->enqueueFolder(f);
+        }
     } else {
         _disabledFolders.insert(f);
     }
