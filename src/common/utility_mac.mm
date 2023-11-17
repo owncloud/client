@@ -259,17 +259,21 @@ bool Utility::hasDarkSystray()
 
 QString Utility::currentCpuArch()
 {
-    int ret = 0;
-    size_t size = sizeof(ret);
+    static const QString rv = []() {
+        int ret = 0;
+        size_t size = sizeof(ret);
 
-    // ret will be 1 if the process is translated (most likely with rosetta2)
-    if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) != -1) {
-        if (errno != ENOENT) {
-            return QStringLiteral("arm64");
+        // ret will be 1 if the process is translated (most likely with rosetta2)
+        if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) != -1) {
+            if (errno != ENOENT) {
+                return QStringLiteral("arm64");
+            }
         }
-    }
 
-    return QSysInfo::currentCpuArchitecture();
+        return QSysInfo::currentCpuArchitecture();
+    }();
+
+    return rv;
 }
 
 } // namespace OCC
