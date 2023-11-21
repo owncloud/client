@@ -72,6 +72,7 @@ __TODO__:
 ### Final Steps
 
 * [ ] QA: [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-SmokeTest)
+* [ ] QA: Check the linux download pages whether the URLs are correct (e.g. contain stable, not testing)
 * [ ] DEV: Publish the release in GitHub
 * [ ] QA: Update lines 4 and 5 of [install docs](https://github.com/owncloud/docs-client-desktop/blob/master/modules/ROOT/pages/installing.adoc) with the final build number. Merge into master and backport to the respective branch
 * [ ] QA: Check that [documentation](https://doc.owncloud.com/desktop/next/) offers the new version
