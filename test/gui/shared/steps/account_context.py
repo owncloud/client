@@ -4,20 +4,17 @@ from pageObjects.EnterPassword import EnterPassword
 from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
 
-from helpers.SetupClientHelper import substituteInLineCodes, getClientDetails
+from helpers.SetupClientHelper import (
+    setUpClient,
+    startClient,
+    substituteInLineCodes,
+    getClientDetails,
+    generate_account_config,
+    getResourcePath,
+)
 from helpers.UserHelper import getDisplaynameForUser, getPasswordForUser
-from helpers.SetupClientHelper import setUpClient, startClient
-from helpers.SyncHelper import waitForInitialSyncToComplete
-from helpers.SetupClientHelper import getResourcePath
+from helpers.SyncHelper import waitForInitialSyncToComplete, listenSyncStatusForItem
 from helpers.ConfigHelper import get_config
-
-
-@Given(r'the user has added (the first|another) account with', regexp=True)
-def step(context, accountType):
-    if accountType == 'another':
-        Toolbar.openNewAccountSetup()
-    account_details = getClientDetails(context)
-    AccountConnectionWizard.addAccount(account_details)
 
 
 @When('the user adds the following wrong user credentials:')
@@ -52,12 +49,28 @@ def step(context, displayname, host):
 @Given('user "|any|" has set up a client with default settings')
 def step(context, username):
     password = getPasswordForUser(username)
-    displayName = getDisplaynameForUser(username)
-    setUpClient(username, displayName)
-    EnterPassword.loginAfterSetup(username, password)
+    setUpClient(username)
+    enter_password = EnterPassword()
+    enter_password.loginAfterSetup(username, password)
 
     # wait for files to sync
     waitForInitialSyncToComplete(getResourcePath('/', username))
+
+
+@Given('the user has set up the following accounts with default settings:')
+def step(context):
+    users = []
+    for row in context.table:
+        users.append(row[0])
+    sync_paths = generate_account_config(users)
+    startClient()
+    for idx, sync_path in enumerate(sync_paths):
+        listenSyncStatusForItem(sync_path)
+        # login from last dialog
+        enter_password = EnterPassword(len(sync_paths) - idx)
+        enter_password.loginAfterSetup()
+        # wait for files to sync
+        waitForInitialSyncToComplete(sync_path)
 
 
 @Given('the user has started the client')
@@ -111,7 +124,8 @@ def step(context, username):
 def step(context, username):
     AccountSetting.login()
     password = getPasswordForUser(username)
-    EnterPassword.reLogin(username, password)
+    enter_password = EnterPassword()
+    enter_password.reLogin(username, password)
 
     # wait for files to sync
     waitForInitialSyncToComplete(getResourcePath('/', username))
@@ -124,7 +138,8 @@ def step(context, username):
 
 @When('user "|any|" enters the password "|any|"')
 def step(context, username, password):
-    EnterPassword.reLogin(username, password)
+    enter_password = EnterPassword()
+    enter_password.reLogin(username, password)
 
 
 @Then('user "|any|" should be connect to the client-UI')

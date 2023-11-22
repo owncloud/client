@@ -1,10 +1,12 @@
 from urllib.parse import urlparse
 import squish
+import uuid
 from os import makedirs
 from os.path import exists, join
 from helpers.SpaceHelper import get_space_id
 from helpers.ConfigHelper import get_config, set_config
 from helpers.SyncHelper import listenSyncStatusForItem
+from helpers.UserHelper import getDisplaynameForUser
 
 
 def substituteInLineCodes(value):
@@ -90,65 +92,83 @@ def startClient():
 
 
 def getPollingInterval():
-    pollingInterval = '''[ownCloud]
-    remotePollInterval={pollingInterval}
-    '''
+    pollingInterval = '''
+[ownCloud]
+remotePollInterval={pollingInterval}
+'''
     args = {'pollingInterval': 5000}
     pollingInterval = pollingInterval.format(**args)
     return pollingInterval
 
 
-def setUpClient(username, displayName, space="Personal"):
-    userSetting = '''
-    [Accounts]
-    0/Folders/1/davUrl={url}
-    0/Folders/1/ignoreHiddenFiles=true
-    0/Folders/1/localPath={client_sync_path}
-    0/Folders/1/displayString={displayString}
-    0/Folders/1/paused=false
-    0/Folders/1/targetPath=/
-    0/Folders/1/version=2
-    0/Folders/1/virtualFilesMode=off
-    0/dav_user={davUserName}
-    0/display-name={displayUserName}
-    0/http_CredentialVersion=1
-    0/http_oauth={oauth}
-    0/http_user={davUserName}
-    0/url={local_server}
-    0/user={displayUserFirstName}
-    0/version=1
-    version=2
-    '''
+def generate_account_config(users, space="Personal"):
+    sync_paths = []
+    user_setting = ''
+    for idx, username in enumerate(users):
+        user_setting += '''
+{user_index}/Folders/{uuid_v4}/davUrl={url}
+{user_index}/Folders/{uuid_v4}/ignoreHiddenFiles=true
+{user_index}/Folders/{uuid_v4}/localPath={client_sync_path}
+{user_index}/Folders/{uuid_v4}/displayString={displayString}
+{user_index}/Folders/{uuid_v4}/paused=false
+{user_index}/Folders/{uuid_v4}/targetPath=/
+{user_index}/Folders/{uuid_v4}/version=13
+{user_index}/Folders/{uuid_v4}/virtualFilesMode=off
+{user_index}/dav_user={davUserName}
+{user_index}/display-name={displayUserName}
+{user_index}/http_CredentialVersion=1
+{user_index}/http_oauth={oauth}
+{user_index}/http_user={davUserName}
+{user_index}/url={local_server}
+{user_index}/user={displayUserFirstName}
+{user_index}/version=13
+'''
 
-    userSetting = userSetting + getPollingInterval()
+        if not idx:
+            user_setting = "[Accounts]" + user_setting
 
-    syncPath = createUserSyncPath(username)
-    dav_endpoint = join("remote.php/dav/files", username)
+        sync_path = createUserSyncPath(username)
+        dav_endpoint = join("remote.php/dav/files", username)
 
-    server_url = get_config('localBackendUrl')
-    is_ocis = get_config('ocis')
-    if is_ocis:
-        set_config('syncConnectionName', space)
-        syncPath = createSpacePath(space)
-        if space == "Personal":
-            space = displayName
-        dav_endpoint = join("dav/spaces", get_space_id(space, username))
+        server_url = get_config('localBackendUrl')
+        is_ocis = get_config('ocis')
+        if is_ocis:
+            set_config('syncConnectionName', space)
+            sync_path = createSpacePath(space)
+            if space == "Personal":
+                space = getDisplaynameForUser(username)
+            dav_endpoint = join("dav/spaces", get_space_id(space, username))
 
-    args = {
-        'url': join(server_url, dav_endpoint, ''),
-        'displayString': get_config('syncConnectionName'),
-        'displayUserName': displayName,
-        'davUserName': username if is_ocis else username.lower(),
-        'displayUserFirstName': displayName.split()[0],
-        'client_sync_path': syncPath,
-        'local_server': server_url,
-        'oauth': 'true' if is_ocis else 'false',
-    }
-    userSetting = userSetting.format(**args)
+        args = {
+            'url': join(server_url, dav_endpoint, ''),
+            'displayString': get_config('syncConnectionName'),
+            'displayUserName': getDisplaynameForUser(username),
+            'davUserName': username if is_ocis else username.lower(),
+            'displayUserFirstName': getDisplaynameForUser(username).split()[0],
+            'client_sync_path': sync_path,
+            'local_server': server_url,
+            'oauth': 'true' if is_ocis else 'false',
+            'user_index': idx,
+            'uuid_v4': generate_UUIDV4(),
+        }
+        user_setting = user_setting.format(**args)
+        sync_paths.append(sync_path)
+    # append extra configs
+    user_setting += "version=13"
+    user_setting = user_setting + getPollingInterval()
 
-    configFile = open(get_config('clientConfigFile'), "w")
-    configFile.write(userSetting)
-    configFile.close()
+    config_file = open(get_config('clientConfigFile'), "a+", encoding="utf-8")
+    config_file.write(user_setting)
+    config_file.close()
 
+    return sync_paths
+
+
+def setUpClient(username, space="Personal"):
+    sync_path = generate_account_config([username], space)
     startClient()
-    listenSyncStatusForItem(syncPath)
+    listenSyncStatusForItem(sync_path[0])
+
+
+def generate_UUIDV4():
+    return str(uuid.uuid4())
