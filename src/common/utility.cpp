@@ -84,44 +84,20 @@ QString Utility::formatFingerprint(const QByteArray &fmhash, bool colonSeparated
 
 QString Utility::octetsToString(qint64 octets)
 {
-#define THE_FACTOR 1024
-    static const qint64 kb = THE_FACTOR;
-    static const qint64 mb = THE_FACTOR * kb;
-    static const qint64 gb = THE_FACTOR * mb;
+    OC_ASSERT(octets >= 0)
 
-    QString s;
-    qreal value = octets;
+    using namespace FileSystem::SizeLiterals;
 
-    // Whether we care about decimals: only for GB/MB and only
-    // if it's less than 10 units.
-    bool round = true;
-
-    // do not display terra byte with the current units, as when
-    // the MB, GB and KB units were made, there was no TB,
-    // see the JEDEC standard
-    // https://en.wikipedia.org/wiki/JEDEC_memory_standards
-    if (octets >= gb) {
-        s = QCoreApplication::translate("Utility", "%L1 GB");
-        value /= gb;
-        round = false;
-    } else if (octets >= mb) {
-        s = QCoreApplication::translate("Utility", "%L1 MB");
-        value /= mb;
-        round = false;
-    } else if (octets >= kb) {
-        s = QCoreApplication::translate("Utility", "%L1 KB");
-        value /= kb;
-    } else {
-        s = QCoreApplication::translate("Utility", "%L1 B");
+    // We do what macOS 10.8 and above do: 0 fraction digits for bytes and KB; 1 fraction digits for MB; 2 for GB and above.
+    // See also https://developer.apple.com/documentation/foundation/nsbytecountformatter/1417887-adaptive
+    int precision = 0;
+    if (quint64(octets) >= 1_gb) {
+        precision = 2;
+    } else if (quint64(octets) >= 1_mb) {
+        precision = 1;
     }
 
-    if (value > 9.95)
-        round = true;
-
-    if (round)
-        return s.arg(qRound(value));
-
-    return s.arg(value, 0, 'g', 2);
+    return QLocale().formattedDataSize(octets, precision, QLocale::DataSizeTraditionalFormat);
 }
 
 // Qtified version of get_platforms() in csync_owncloud.c
@@ -151,15 +127,10 @@ static QLatin1String platform()
 QByteArray Utility::userAgentString()
 {
     return QStringLiteral("Mozilla/5.0 (%1) mirall/%2 (%3, %4-%5 ClientArchitecture: %6 OsArchitecture: %7)")
-        .arg(platform(),
-            OCC::Version::displayString(),
+        .arg(platform(), OCC::Version::displayString(),
             // accessing the theme to fetch the string is rather difficult
             // since this is only needed server-side to identify clients, the app name (as of 2.9, the short name) is good enough
-            qApp->applicationName(),
-            QSysInfo::productType(),
-            QSysInfo::kernelVersion(),
-            QSysInfo::buildCpuArchitecture(),
-            QSysInfo::currentCpuArchitecture())
+            qApp->applicationName(), QSysInfo::productType(), QSysInfo::kernelVersion(), QSysInfo::buildCpuArchitecture(), Utility::currentCpuArch())
         .toLatin1();
 }
 
@@ -389,62 +360,6 @@ QString Utility::timeAgoInWords(const QDateTime &dt, const QDateTime &from)
     return QObject::tr("Some time ago");
 }
 
-/* --------------------------------------------------------------------------- */
-
-static const char STOPWATCH_END_TAG[] = "_STOPWATCH_END";
-
-void Utility::StopWatch::start()
-{
-    _startTime = QDateTime::currentDateTimeUtc();
-    _timer.start();
-}
-
-quint64 Utility::StopWatch::stop()
-{
-    addLapTime(QLatin1String(STOPWATCH_END_TAG));
-    quint64 duration = _timer.elapsed();
-    _timer.invalidate();
-    return duration;
-}
-
-void Utility::StopWatch::reset()
-{
-    _timer.invalidate();
-    _startTime.setMSecsSinceEpoch(0);
-    _lapTimes.clear();
-}
-
-quint64 Utility::StopWatch::addLapTime(const QString &lapName)
-{
-    if (!_timer.isValid()) {
-        start();
-    }
-    quint64 re = _timer.elapsed();
-    _lapTimes[lapName] = re;
-    return re;
-}
-
-QDateTime Utility::StopWatch::startTime() const
-{
-    return _startTime;
-}
-
-QDateTime Utility::StopWatch::timeOfLap(const QString &lapName) const
-{
-    quint64 t = durationOfLap(lapName);
-    if (t) {
-        QDateTime re(_startTime);
-        return re.addMSecs(t);
-    }
-
-    return QDateTime();
-}
-
-quint64 Utility::StopWatch::durationOfLap(const QString &lapName) const
-{
-    return _lapTimes.value(lapName, 0);
-}
-
 void Utility::sortFilenames(QStringList &fileNames)
 {
     QCollator collator;
@@ -645,6 +560,13 @@ QString Utility::formatRFC1123Date(const QDateTime &date)
 {
     return date.toUTC().toString(RFC1123PatternC());
 }
+
+#ifndef Q_OS_MAC
+QString Utility::currentCpuArch()
+{
+    return QSysInfo::currentCpuArchitecture();
+}
+#endif
 
 } // namespace OCC
 

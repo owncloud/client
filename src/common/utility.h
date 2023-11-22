@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+#pragma once
 
 #include "ocsynclib.h"
 
@@ -184,25 +183,6 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
      */
     OCSYNC_EXPORT QString timeAgoInWords(const QDateTime &dt, const QDateTime &from = QDateTime());
 
-    class OCSYNC_EXPORT StopWatch
-    {
-    private:
-        QMap<QString, quint64> _lapTimes;
-        QDateTime _startTime;
-        QElapsedTimer _timer;
-
-    public:
-        void start();
-        quint64 stop();
-        quint64 addLapTime(const QString &lapName);
-        void reset();
-
-        // out helpers, return the measured times.
-        QDateTime startTime() const;
-        QDateTime timeOfLap(const QString &lapName) const;
-        quint64 durationOfLap(const QString &lapName) const;
-    };
-
     /**
      * @brief Sort a QStringList in a way that's appropriate for filenames
      */
@@ -323,6 +303,9 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
 
     OCSYNC_EXPORT QDateTime parseRFC1123Date(const QString &date);
     OCSYNC_EXPORT QString formatRFC1123Date(const QDateTime &date);
+
+    // replacement for QSysInfo::currentCpuArchitecture() that respects macOS's rosetta2
+    OCSYNC_EXPORT QString currentCpuArch();
 } // Utility namespace
 /** @} */ // \addtogroup
 
@@ -371,7 +354,5 @@ constexpr bool Utility::isBSD()
 #endif
 }
 } // OCC namespace
-
-#endif // UTILITY_H
 
 OCSYNC_EXPORT QDebug operator<<(QDebug debug, std::chrono::nanoseconds in);
