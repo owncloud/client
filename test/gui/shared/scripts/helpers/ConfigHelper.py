@@ -1,4 +1,6 @@
 import os
+import platform
+from os import path
 import builtins
 from tempfile import gettempdir
 from configparser import ConfigParser
@@ -6,8 +8,8 @@ from configparser import ConfigParser
 
 def read_env_file():
     envs = {}
-    script_path = os.path.dirname(os.path.realpath(__file__))
-    env_path = os.path.abspath(os.path.join(script_path, '..', '..', '..', 'envs.txt'))
+    script_path = path.dirname(path.realpath(__file__))
+    env_path = path.abspath(path.join(script_path, '..', '..', '..', 'envs.txt'))
     with open(env_path, "rt", encoding="UTF-8") as f:
         for line in f:
             if line.startswith('#'):
@@ -22,6 +24,39 @@ def get_config_from_env_file(env):
     if env in envs:
         return envs[env]
     raise Exception('Environment "%s" not found in envs.txt' % env)
+
+
+def isWindows():
+    return platform.system() == "Windows"
+
+
+def isLinux():
+    return platform.system() == "Linux"
+
+
+def getWinUserHome():
+    return os.environ.get("UserProfile")
+
+
+def getClientRootPath():
+    if isWindows():
+        return path.join(getWinUserHome(), 'owncloudtest')
+    return path.join(gettempdir(), 'owncloudtest')
+
+
+def getConfigHome():
+    if isWindows():
+        # There is no way to set custom config path in windows
+        # TODO: set to different path if option is available
+        return path.join(
+            getWinUserHome(),
+            "AppData",
+            "Roaming",
+            "ownCloud"
+        )
+    return path.join(
+        get_config_from_env_file("XDG_CONFIG_HOME"), "ownCloud"
+    )
 
 
 # map environment variables to config keys
@@ -49,14 +84,12 @@ CONFIG = {
     'lowestSyncTimeout': 1,
     'middlewareUrl': 'http://localhost:3000/',
     'clientLogFile': '-',
-    'clientRootSyncPath': '/tmp/client-bdd/',
-    'tempFolderPath': gettempdir() + '/client-bdd/temp/',
-    'clientConfigDir': os.path.join(
-        get_config_from_env_file("XDG_CONFIG_HOME"), "ownCloud"
-    ),
-    'guiTestReportDir': os.path.abspath('../reports/'),
+    'clientRootSyncPath':  getClientRootPath(),
+    'tempFolderPath':  path.join(getClientRootPath(), 'temp'),
+    'clientConfigDir': getConfigHome(),
+    'guiTestReportDir': path.abspath(path.join('..', 'reports')),
     'ocis': False,
-    'custom_lib': os.path.abspath('../shared/scripts/custom_lib'),
+    'custom_lib': path.abspath(path.join('..', 'shared', 'scripts', 'custom_lib')),
 }
 
 READONLY_CONFIG = list(CONFIG_ENV_MAP.keys())
@@ -67,9 +100,9 @@ def init_config():
     # try reading configs from config.ini
     cfg = ConfigParser()
     try:
-        script_path = os.path.dirname(os.path.realpath(__file__))
-        config_path = os.path.abspath(
-            os.path.join(script_path, '..', '..', '..', 'config.ini')
+        script_path = path.dirname(path.realpath(__file__))
+        config_path = path.abspath(
+            path.join(script_path, '..', '..', '..', 'config.ini')
         )
         if cfg.read(config_path):
             for key, _ in CONFIG.items():
@@ -96,15 +129,24 @@ def init_config():
         if key == 'maxSyncTimeout' or key == 'minSyncTimeout':
             CONFIG[key] = builtins.int(value)
         elif (
+            key == 'localBackendUrl'
+            or key == 'middlewareUrl'
+            or key == 'secureLocalBackendUrl'
+        ):
+            # make sure there is always one trailing slash
+            CONFIG[key] = value.rstrip('/') + '/'
+        elif (
             key == 'clientRootSyncPath'
             or key == 'tempFolderPath'
             or key == 'clientConfigDir'
             or key == 'guiTestReportDir'
-            or key == 'localBackendUrl'
-            or key == 'middlewareUrl'
         ):
             # make sure there is always one trailing slash
-            CONFIG[key] = value.rstrip('/') + '/'
+            if isWindows():
+                value = value.replace('/', '\\')
+                CONFIG[key] = value.rstrip('\\') + '\\'
+            else:
+                CONFIG[key] = value.rstrip('/') + '/'
 
 
 def get_config(key=None):

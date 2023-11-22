@@ -70,7 +70,7 @@ def getResourcePath(resource='', user='', space=''):
         space = space or get_config('syncConnectionName')
         sync_path = join(sync_path, space)
     sync_path = join(get_config('clientRootSyncPath'), sync_path)
-    resource = resource.replace(sync_path, '').strip('/')
+    resource = resource.replace(sync_path, '').strip('/').strip('\\')
     return join(
         sync_path,
         resource,
