@@ -6,7 +6,7 @@ import urllib
 from squish import waitFor, snooze
 
 from helpers.FilesHelper import sanitizePath
-from helpers.ConfigHelper import get_config, isLinux
+from helpers.ConfigHelper import get_config, isLinux, isWindows
 
 
 if isLinux():
@@ -28,7 +28,8 @@ if isLinux():
     # add the folder in Edit->Preferences->PyDev->Interpreters->Libraries
     sys.path.append(custom_lib)
     from syncstate import SocketConnect
-
+elif isWindows():
+    from helpers.WinPipeHelper import WinPipeConnect as SocketConnect
 
 # socket messages
 socket_messages = []
@@ -113,7 +114,10 @@ def closeSocketConnection():
     socket_messages.clear()
     if socketConnect:
         socketConnect.connected = False
-        socketConnect._sock.close()
+        if isWindows():
+            socketConnect.close_conn()
+        elif isLinux():
+            socketConnect._sock.close()
 
 
 def getInitialSyncPatterns():
