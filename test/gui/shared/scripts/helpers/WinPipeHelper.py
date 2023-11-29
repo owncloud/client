@@ -2,6 +2,9 @@ import os
 import time
 import win32pipe, win32file, winerror, pywintypes, win32event
 
+TIMEOUT = 100
+DEFAULT_BUFLEN = 4096
+
 
 def get_pipe_path():
     pipename = r"\\.\\pipe\\"
@@ -14,6 +17,8 @@ class WinPipeConnect():
         self.connected = False
         self._pipe = None
         self._remainder = ''.encode('utf-8')
+        self._overlapped = pywintypes.OVERLAPPED()
+        self._overlapped.hEvent = win32event.CreateEvent(None, 1, 0, None)
         self.connectToPipeServer()
 
 
@@ -46,12 +51,19 @@ class WinPipeConnect():
 
     def sendCommand(self, cmd):
         if self.connected:
-            try:
-                win32file.WriteFile(self._pipe, cmd.encode('utf-8'))
-            except Exception as e:
-                print(str(e))
+            w_res, _ = win32file.WriteFile(self._pipe, cmd.encode('utf-8'), self._overlapped)
+            if w_res == winerror.ERROR_IO_PENDING:
+                res = win32event.WaitForSingleObject(self._overlapped.hEvent, TIMEOUT)
+                if res !=  win32event.WAIT_OBJECT_0:
+                    print("Sending timed out!")
+                    return False
+                if not win32file.GetOverlappedResult(self._pipe, self._overlapped, False):
+                    print("GetOverlappedResult failed")
+                    return False
         else:
             print("Cannot send, not connected!")
+            return False
+        return True
 
 
     # Reads data that becomes available.
@@ -64,26 +76,21 @@ class WinPipeConnect():
                 self._remainder += messages
                 break
 
-            overlapped = pywintypes.OVERLAPPED()
-            buffer = win32file.AllocateReadBuffer(1024)
-            # Enable asynchronous reading
-            try:
-                result, data = win32file.ReadFile(self._pipe, buffer, overlapped)
+            peek_bytes = win32pipe.PeekNamedPipe(self._pipe, DEFAULT_BUFLEN)[1]
+            if isinstance(peek_bytes, int) and peek_bytes > 0:
+                _, message = win32file.ReadFile(self._pipe, DEFAULT_BUFLEN, self._overlapped)
+                if message:
+                    if b'\n' in bytes(message):
+                        messages += bytes(message).split(b'\n', 1)[0] + b'\n'
 
-                if result == winerror.ERROR_IO_PENDING:
-                    # Wait for read completion or timeout
-                    res = win32event.WaitForSingleObject(self._pipe, int(timeout * 1000))
-                    if res == win32event.WAIT_OBJECT_0:
-                        num_bytes = win32file.GetOverlappedResult(self._pipe, overlapped, True)
-                        messages += bytes(buffer[:num_bytes])
-                else:
-                    # store decodable messages
-                    bytes(data).decode('utf-8')
-                    messages += bytes(data)
-            except UnicodeDecodeError as e:
-                pass
-            except Exception as e:
-                print(str(e))
+            else:
+                res = win32event.WaitForSingleObject(self._overlapped.hEvent, int(timeout * 1000))
+                if res !=  win32event.WAIT_OBJECT_0:
+                    print("Reading timed out!")
+                    return False
+                if not win32file.GetOverlappedResult(self._pipe,self._overlapped, False):
+                    return False
+        return True
 
 
     # Parses response lines out of collected data, returns list of strings
