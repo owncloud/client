@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 import squish, test
 from os import makedirs, path
 from os.path import exists, join
+from urllib.parse import urljoin
 from helpers.SpaceHelper import get_space_id
 from helpers.ConfigHelper import get_config, set_config, isWindows
 from helpers.SyncHelper import listenSyncStatusForItem
@@ -45,7 +46,7 @@ def createUserSyncPath(username):
     userSyncPath = join(get_config('clientRootSyncPath'), username, '')
 
     if not exists(userSyncPath):
-        makedirs(userSyncPath)
+        makedirs(userSyncPath, 0o0755)
 
     setCurrentUserSyncPath(userSyncPath)
     return userSyncPath
@@ -107,29 +108,29 @@ def getPollingInterval():
 def setUpClient(username, displayName, space="Personal"):
     userSetting = '''
     [Accounts]
-    0/Folders/1/davUrl={url}
-    0/Folders/1/ignoreHiddenFiles=true
-    0/Folders/1/localPath={client_sync_path}
-    0/Folders/1/displayString={displayString}
-    0/Folders/1/paused=false
-    0/Folders/1/targetPath=/
-    0/Folders/1/version=2
-    0/Folders/1/virtualFilesMode=off
-    0/dav_user={davUserName}
-    0/display-name={displayUserName}
-    0/http_CredentialVersion=1
-    0/http_oauth={oauth}
-    0/http_user={davUserName}
-    0/url={local_server}
-    0/user={displayUserFirstName}
-    0/version=1
+    0{path_sep}Folders{path_sep}1{path_sep}davUrl={url}
+    0{path_sep}Folders{path_sep}1{path_sep}ignoreHiddenFiles=true
+    0{path_sep}Folders{path_sep}1{path_sep}localPath={client_sync_path}
+    0{path_sep}Folders{path_sep}1{path_sep}displayString={displayString}
+    0{path_sep}Folders{path_sep}1{path_sep}paused=false
+    0{path_sep}Folders{path_sep}1{path_sep}targetPath=/
+    0{path_sep}Folders{path_sep}1{path_sep}version=2
+    0{path_sep}Folders{path_sep}1{path_sep}virtualFilesMode={vfs}
+    0{path_sep}dav_user={davUserName}
+    0{path_sep}display-name={displayUserName}
+    0{path_sep}http_CredentialVersion=1
+    0{path_sep}http_oauth={oauth}
+    0{path_sep}http_user={davUserName}
+    0{path_sep}url={local_server}
+    0{path_sep}user={displayUserFirstName}
+    0{path_sep}version=1
     version=2
     '''
 
     userSetting = userSetting + getPollingInterval()
 
     syncPath = createUserSyncPath(username)
-    dav_endpoint = join("remote.php/dav/files", username)
+    dav_endpoint = urljoin("remote.php/dav/files", username)
 
     server_url = get_config('localBackendUrl')
     is_ocis = get_config('ocis')
@@ -141,14 +142,16 @@ def setUpClient(username, displayName, space="Personal"):
         dav_endpoint = join("dav/spaces", get_space_id(space, username))
 
     args = {
-        'url': join(server_url, dav_endpoint, ''),
+        'url': urljoin(server_url, dav_endpoint, ''),
         'displayString': get_config('syncConnectionName'),
         'displayUserName': displayName,
         'davUserName': username if is_ocis else username.lower(),
         'displayUserFirstName': displayName.split()[0],
-        'client_sync_path': syncPath,
+        'client_sync_path': syncPath.replace('\\', '/'),
         'local_server': server_url,
         'oauth': 'true' if is_ocis else 'false',
+        'vfs': 'wincfapi' if isWindows() else 'off',
+        'path_sep': '\\' if isWindows() else '/'
     }
     userSetting = userSetting.format(**args)
 
