@@ -139,10 +139,12 @@ def generateSyncPatternFromMessages(messages):
 
     sync_messages = filterSyncMessages(messages)
     for message in sync_messages:
-        # E.g; from "STATUS:OK:/tmp/client-bdd/Alice/"
+        # E.g; from
+        #   "STATUS:OK:/tmp/client-bdd/Alice/"
+        #   "STATUS:OK:C:\Users\myname\owncloudtest\Alice\"
         # excludes ":/tmp/client-bdd/Alice/"
         # adds only "STATUS:OK" to the pattern list
-        match = re.search(":/.*", message)
+        match = re.search(":(/|C:\\\\).*", message)
         if match:
             (end, _) = match.span()
             # shared resources will have status like "STATUS:OK+SWM"
@@ -162,7 +164,9 @@ def filterSyncMessages(messages):
 def filterMessagesForItem(messages, item):
     filteredMsg = []
     for msg in messages:
-        if msg.rstrip('/').endswith(item.rstrip('/')):
+        msg = msg.rstrip('/').rstrip('\\')
+        item = item.rstrip('/').rstrip('\\')
+        if msg.endswith(item):
             filteredMsg.append(msg)
     return filteredMsg
 
@@ -252,7 +256,9 @@ def hasSyncStatus(itemName, status):
     sync_messages = readAndUpdateSocketMessages()
     sync_messages = filterMessagesForItem(sync_messages, itemName)
     for line in sync_messages:
-        if line.startswith(status) and line.rstrip('/').endswith(itemName.rstrip('/')):
+        line = line.rstrip('/').rstrip('\\')
+        itemName = itemName.rstrip('/').rstrip('\\')
+        if line.startswith(status) and line.endswith(itemName):
             return True
     return False
 
