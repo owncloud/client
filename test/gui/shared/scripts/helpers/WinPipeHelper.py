@@ -78,10 +78,18 @@ class WinPipeConnect():
 
             peek_bytes = win32pipe.PeekNamedPipe(self._pipe, DEFAULT_BUFLEN)[1]
             if isinstance(peek_bytes, int) and peek_bytes > 0:
-                _, message = win32file.ReadFile(self._pipe, DEFAULT_BUFLEN, self._overlapped)
-                if message:
-                    if b'\n' in bytes(message):
-                        messages += bytes(message).split(b'\n', 1)[0] + b'\n'
+                _, message_mem = win32file.ReadFile(self._pipe, DEFAULT_BUFLEN, self._overlapped)
+                if message_mem:
+                    m_bytes = bytes(message_mem)
+                    if b'\n' in m_bytes:
+                        for m in m_bytes.split(b'\n'):
+                            print(type(m))
+                            try:
+                                # append decodable bytes
+                                m.decode('utf-8')
+                                messages += m + b'\n'
+                            except:
+                                pass
 
             else:
                 res = win32event.WaitForSingleObject(self._overlapped.hEvent, int(timeout * 1000))
