@@ -27,6 +27,8 @@ from helpers.ConfigHelper import (
     get_config,
     set_config,
     clear_scenario_config,
+    isWindows,
+    isLinux
 )
 from datetime import datetime
 
@@ -56,8 +58,16 @@ def hook(context):
     # set owncloud config file path
     config_dir = get_config('clientConfigDir')
     if os.path.exists(config_dir):
+        if len(os.listdir(config_dir)) != 0 and isWindows():
+            raise Exception(
+                "Looks like you have previous client config in '" +
+                config_dir +
+                "'\n[DANGER] Delete it and try again.\n[DANGER] Removing config file will make client to lost the previously added accounts."
+            )
         # clean previous configs
         shutil.rmtree(config_dir)
+    if os.path.exists(get_config('clientRootSyncPath')):
+        shutil.rmtree(get_config('clientRootSyncPath'))
     os.makedirs(config_dir, 0o0755)
     set_config('clientConfigFile', os.path.join(config_dir, 'owncloud.cfg'))
 
@@ -78,7 +88,7 @@ def hook(context):
         f.close()
 
     # this path will be changed according to the user added to the client
-    # e.g.: /tmp/client-bdd/Alice
+    # e.g.: <clientRootSyncPath>/Alice
     set_config('currentUserSyncPath', '')
 
     root_sync_dir = get_config('clientRootSyncPath')
@@ -136,7 +146,7 @@ def hook(context):
     global previousFailResultCount, previousErrorResultCount
 
     # capture a screenshot if there is error or test failure in the current scenario execution
-    if scenarioFailed() and os.getenv('CI'):
+    if scenarioFailed() and os.getenv('CI') and isLinux():
         import gi
 
         gi.require_version('Gtk', '3.0')
@@ -164,6 +174,11 @@ def hook(context):
         ctx.detach()
         wait_until_app_killed(pid)
 
+
+    # clean up config files
+    for config_file in os.listdir(get_config('clientConfigDir')):
+        os.unlink(os.path.join(get_config('clientConfigDir'), config_file))
+
     # delete local files/folders
     for filename in os.listdir(get_config('clientRootSyncPath')):
         test.log("Deleting: " + filename)
@@ -174,7 +189,7 @@ def hook(context):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-            test.log('Failed to delete' + file_path + ". Reason: " + e + '.')
+            test.log('Failed to delete' + file_path + ". Reason: " + str(e) + '.')
 
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing

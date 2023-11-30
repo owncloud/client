@@ -3,7 +3,7 @@ import squish, test
 from os import makedirs, path
 from os.path import exists, join
 from helpers.SpaceHelper import get_space_id
-from helpers.ConfigHelper import get_config, set_config
+from helpers.ConfigHelper import get_config, set_config, isWindows
 from helpers.SyncHelper import listenSyncStatusForItem
 
 
@@ -161,6 +161,9 @@ def setUpClient(username, displayName, space="Personal"):
 
 
 def is_app_killed(pid):
+    if isWindows():
+        # TODO: wait for application to exit
+        return True
     if path.isdir('/proc/{}'.format(pid)):
         # process is still running
         # wait 100ms before checking again
