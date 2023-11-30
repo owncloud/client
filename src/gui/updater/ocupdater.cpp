@@ -165,7 +165,7 @@ void OCUpdater::backgroundCheckForUpdate()
 
 QString OCUpdater::statusString() const
 {
-    QString updateVersion = _updateInfo.versionString();
+    QString updateVersion = QStringLiteral("%1 %2").arg(Theme::instance()->appNameGUI(), _updateInfo.versionString());
 
     switch (downloadState()) {
     case Downloading:
@@ -442,9 +442,9 @@ void NSISUpdater::showNoUrlDialog(const UpdateInfo &info)
     ico->setPixmap(infoIcon.pixmap(iconSize));
     QLabel *lbl = new QLabel;
     QString txt = tr("<p>A new version of the %1 Client is available.</p>"
-                     "<p><b>%2</b> is available for download. The installed version is %3.</p>")
-                      .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(info.versionString()), Utility::escape(Version::versionWithBuildNumber().toString()));
+                     "<p><b>%1 %2</b> is available for download. The installed version is %3.</p>")
+                      .arg(Utility::escape(Theme::instance()->appNameGUI()), Utility::escape(info.versionString()),
+                          Utility::escape(Version::versionWithBuildNumber().toString()));
 
     lbl->setText(txt);
     lbl->setTextFormat(Qt::RichText);
