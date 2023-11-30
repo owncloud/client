@@ -176,6 +176,7 @@ def listenSyncStatusForItem(item, type='FOLDER'):
     if type != 'FILE' and type != 'FOLDER':
         raise Exception("type must be 'FILE' or 'FOLDER'")
     socketConnect = getSocketConnection()
+    item = item.rstrip('\\')
     socketConnect.sendCommand("RETRIEVE_" + type + "_STATUS:" + item + "\n")
 
 

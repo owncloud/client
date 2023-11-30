@@ -4,7 +4,18 @@ import win32pipe, win32file, winerror, pywintypes, win32event
 
 TIMEOUT = 100
 DEFAULT_BUFLEN = 4096
-
+CLIENT_MESSAGES = [
+    'STATUS',
+    'REGISTER_PATH',
+    'UNREGISTER_PATH',
+    'UPDATE_VIEW',
+    'GET_STRINGS',
+    'STRING',
+    'VERSION',
+    'SHARE',
+    'GET_MENU_ITEMS',
+    'MENU_ITEM',
+]
 
 def get_pipe_path():
     pipename = r"\\.\\pipe\\"
@@ -83,11 +94,12 @@ class WinPipeConnect():
                     m_bytes = bytes(message_mem)
                     if b'\n' in m_bytes:
                         for m in m_bytes.split(b'\n'):
-                            print(type(m))
                             try:
-                                # append decodable bytes
+                                # append decodable and client specific bytes
                                 m.decode('utf-8')
-                                messages += m + b'\n'
+                                start = m.split(b':', 1)[0]
+                                if start.decode('utf-8') in CLIENT_MESSAGES:
+                                    messages += m + b'\n'
                             except:
                                 pass
 
