@@ -23,7 +23,7 @@
         <key>CFBundleVersion</key>
         <string>${MIRALL_VERSION_FULL}</string>
         <key>CFBundleShortVersionString</key>
-        <string>${MIRALL_VERSION_STRING}</string>
+        <string>${MIRALL_BUNDLE_SHORT_VERSION_STRING}</string>
         <key>NSHumanReadableCopyright</key>
         <string>(C) 2014-${MIRALL_VERSION_YEAR} ${APPLICATION_VENDOR}</string>
         <key>SUShowReleaseNotes</key>
