@@ -110,7 +110,6 @@ QUrlQuery Updater::getQueryParams()
     query.addQueryItem(QStringLiteral("kernelVersion"), QSysInfo::kernelVersion());
     query.addQueryItem(QStringLiteral("productType"), QSysInfo::productType());
     query.addQueryItem(QStringLiteral("productVersion"), QSysInfo::productVersion());
-    qDebug() << QSysInfo::productVersion();
 
     return query;
 }
