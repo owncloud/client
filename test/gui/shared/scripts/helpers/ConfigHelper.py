@@ -3,13 +3,14 @@ import platform
 from os import path
 import builtins
 from tempfile import gettempdir
+from pathlib import Path
 from configparser import ConfigParser
 
 
 def read_env_file():
     envs = {}
     script_path = path.dirname(path.realpath(__file__))
-    env_path = path.abspath(path.join(script_path, '..', '..', '..', 'envs.txt'))
+    env_path = path.abspath(Path(script_path, '../../../envs.txt'))
     with open(env_path, "rt", encoding="UTF-8") as f:
         for line in f:
             if line.startswith('#'):
@@ -87,9 +88,9 @@ CONFIG = {
     'clientRootSyncPath':  getClientRootPath(),
     'tempFolderPath':  path.join(getClientRootPath(), 'temp'),
     'clientConfigDir': getConfigHome(),
-    'guiTestReportDir': path.abspath(path.join('..', 'reports')),
+    'guiTestReportDir': path.abspath(Path('../reports')),
     'ocis': False,
-    'custom_lib': path.abspath(path.join('..', 'shared', 'scripts', 'custom_lib')),
+    'custom_lib': path.abspath(Path('../shared/scripts/custom_lib')),
 }
 
 READONLY_CONFIG = list(CONFIG_ENV_MAP.keys())
@@ -101,9 +102,7 @@ def init_config():
     cfg = ConfigParser()
     try:
         script_path = path.dirname(path.realpath(__file__))
-        config_path = path.abspath(
-            path.join(script_path, '..', '..', '..', 'config.ini')
-        )
+        config_path = path.abspath(Path(script_path, '../../../config.ini'))
         if cfg.read(config_path):
             for key, _ in CONFIG.items():
                 if key in CONFIG_ENV_MAP:

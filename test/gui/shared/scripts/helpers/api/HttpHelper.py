@@ -1,4 +1,5 @@
 import requests
+from posixpath import join
 from helpers.UserHelper import basic_auth_header
 
 requests.packages.urllib3.disable_warnings()
@@ -34,3 +35,10 @@ def mkcol(url, headers={}, user=None):
 
 def propfind(url, body=None, headers={}, user=None, password=None):
     return send_request(url, "PROPFIND", body, headers, user, password)
+
+
+def url_join(*args):
+    paths = []
+    for path in list(args):
+        paths.append(path.strip("/"))
+    return join(*paths)
