@@ -204,14 +204,12 @@ def step(context):
 @When('the user selects vfs option in advanced section')
 def step(context):
     AccountConnectionWizard.selectVFSOption()
+    AccountConnectionWizard.nextStep()
 
 
-@When(r'^the user (confirms|cancels) the enable experimental vfs option$', regexp=True)
-def step(context, action):
-    if action == "confirms":
-        AccountConnectionWizard.confirmEnableExperimentalVFSOption()
-    else:
-        AccountConnectionWizard.cancelEnableExperimentalVFSOption()
+@When('the user selects download everything option in advanced section')
+def step(context):
+    AccountConnectionWizard.selectDownloadEverythingOption()
     AccountConnectionWizard.nextStep()
 
 

@@ -45,3 +45,12 @@ def read_file_content(file):
     content = f.read()
     f.close()
     return content
+
+
+def is_empty_sync_folder(folder):
+    ignore_files = ["Desktop.ini"]
+    for item in os.listdir(folder):
+        # do not count the hidden files as they are ignored by the client
+        if not item.startswith(".") and not item in ignore_files:
+            return False
+    return True

@@ -17,6 +17,7 @@ from helpers.FilesHelper import (
     can_read,
     can_write,
     read_file_content,
+    is_empty_sync_folder,
 )
 from helpers.SetupClientHelper import (
     getTempResourcePath,
@@ -241,16 +242,9 @@ def step(context, itemType, resource):
     else:
         raise Exception("No such item type for resource")
 
-    isSyncFolderEmpty = True
-    for item in os.listdir(getResourcePath()):
-        # do not count the hidden files as they are ignored by the client
-        if not item.startswith("."):
-            isSyncFolderEmpty = False
-            break
-
     # if the sync folder is empty after deleting file,
     # a dialog will popup asking to confirm "Remove all files"
-    if isSyncFolderEmpty:
+    if is_empty_sync_folder(getResourcePath()):
         try:
             AccountSetting.confirmRemoveAllFiles()
         except:
