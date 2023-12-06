@@ -66,8 +66,6 @@ def hook(context):
             )
         # clean previous configs
         shutil.rmtree(config_dir)
-    if os.path.exists(get_config('clientRootSyncPath')):
-        shutil.rmtree(get_config('clientRootSyncPath'))
     os.makedirs(config_dir, 0o0755)
     set_config('clientConfigFile', os.path.join(config_dir, 'owncloud.cfg'))
 
