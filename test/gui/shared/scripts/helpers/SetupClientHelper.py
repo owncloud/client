@@ -73,6 +73,8 @@ def getResourcePath(resource='', user='', space=''):
         sync_path = join(sync_path, space)
     sync_path = join(get_config('clientRootSyncPath'), sync_path)
     resource = resource.replace(sync_path, '').strip('/').strip('\\')
+    if isWindows():
+        resource = resource.replace('/', '\\')
     return join(
         sync_path,
         resource,
