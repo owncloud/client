@@ -1,6 +1,6 @@
 from urllib.parse import quote
 import helpers.api.HttpHelper as request
-from helpers.api.HttpHelper import url_join
+from helpers.api.utils import url_join
 from helpers.ConfigHelper import get_config
 import xml.etree.ElementTree as ET
 

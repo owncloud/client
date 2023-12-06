@@ -30,6 +30,7 @@ from helpers.ConfigHelper import (
     isWindows,
     isLinux
 )
+from helpers.api.utils import url_join
 from datetime import datetime
 
 # this will reset in every test suite
@@ -98,7 +99,7 @@ def hook(context):
         os.makedirs(tmp_dir)
 
     req = urllib.request.Request(
-        os.path.join(get_config('middlewareUrl'), 'init'),
+        url_join(get_config('middlewareUrl'), 'init'),
         headers={"Content-Type": "application/json"},
         method='POST',
     )
@@ -203,7 +204,7 @@ def hook(context):
 
     # cleanup test server
     req = urllib.request.Request(
-        os.path.join(get_config('middlewareUrl'), 'cleanup'),
+        url_join(get_config('middlewareUrl'), 'cleanup'),
         headers={"Content-Type": "application/json"},
         method='POST',
     )
