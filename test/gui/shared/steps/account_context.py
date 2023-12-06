@@ -9,7 +9,7 @@ from helpers.UserHelper import getDisplaynameForUser, getPasswordForUser
 from helpers.SetupClientHelper import setUpClient, startClient
 from helpers.SyncHelper import waitForInitialSyncToComplete
 from helpers.SetupClientHelper import getResourcePath
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import get_config, isWindows, isLinux
 
 
 @Given(r'the user has added (the first|another) account with', regexp=True)
@@ -225,13 +225,25 @@ def step(context):
     test.compare(True, AccountConnectionWizard.canChangeLocalSyncDir())
 
 
-@Then("the download everything option should be selected by default")
+@Then("the download everything option should be selected by default for Linux")
 def step(context):
-    test.compare(
-        True,
-        AccountConnectionWizard.isSyncEverythingOptionChecked(),
-        "Sync everything option is checked",
-    )
+    if isLinux():
+        test.compare(
+            True,
+            AccountConnectionWizard.isSyncEverythingOptionChecked(),
+            "Sync everything option is checked",
+        )
+
+
+@Then("the VFS option should be selected by default for Windows")
+def step(context):
+    if isWindows():
+        test.compare(
+            True,
+            AccountConnectionWizard.isVFSOptionChecked(),
+            "VFS option is checked",
+        )
+
 
 
 @When(r'^the user presses the "([^"]*)" key(?:s)?', regexp=True)

@@ -363,3 +363,12 @@ class AccountConnectionWizard:
             ).checked
             == True
         )
+
+    @staticmethod
+    def isVFSOptionChecked():
+        return (
+            squish.waitForObjectExists(
+                AccountConnectionWizard.VIRTUAL_FILE_RADIO_BUTTON
+            ).checked
+            == True
+        )
