@@ -5,7 +5,7 @@ from pageObjects.Activity import Activity
 from pageObjects.Settings import Settings
 
 from helpers.SetupClientHelper import getResourcePath
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import get_config, isWindows
 from helpers.SyncHelper import (
     waitForFileOrFolderToSync,
     waitForFileOrFolderToHaveSyncError,
@@ -193,3 +193,10 @@ def step(context):
 @When("user unselects all the remote folders")
 def step(context):
     SyncConnectionWizard.deselectAllRemoteFolders()
+
+
+@When("the user |word| VFS support for Windows")
+def step(context, action):
+    if isWindows():
+        action = action.rstrip("s")
+        SyncConnectionWizard.enableOrDisableVfsSupport(action)

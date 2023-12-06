@@ -1,4 +1,5 @@
 import os
+import re
 
 
 def buildConflictedRegex(filename):
@@ -54,3 +55,26 @@ def is_empty_sync_folder(folder):
         if not item.startswith(".") and not item in ignore_files:
             return False
     return True
+
+
+def get_size_in_bytes(size):
+    match = re.match(r"(\d+)((?: )?[KkMmGgBb]{0,2})?", str(size))
+    units = ["b", "kb", "mb", "gb"]
+    multiplier = 1024
+    if match:
+        size_num = int(match.group(1))
+        size_unit = match.group(2).lower()
+
+        if not size_unit:
+            return size_num
+        if size_unit in units:
+            if size_unit == "b":
+                return size_num
+            if size_unit == "kb":
+                return size_num * multiplier
+            if size_unit == "mb":
+                return size_num * (multiplier ** 2)
+            if size_unit == "gb":
+                return size_num * (multiplier ** 3)
+
+    raise Exception("Invalid size: " + size)
