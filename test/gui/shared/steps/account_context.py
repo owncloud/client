@@ -243,7 +243,6 @@ def step(context):
         )
 
 
-
 @When(r'^the user presses the "([^"]*)" key(?:s)?', regexp=True)
 def step(context, key):
     AccountSetting.pressKey(key)

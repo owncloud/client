@@ -88,8 +88,15 @@ class PublicLinkDialog:
         "visible": 1,
     }
 
-
-    DATE_FORMATS = ["%m/%d/%Y", "%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d", "%m/%d/%y", "%d/%m/%y"]
+    DATE_FORMATS = [
+        "%m/%d/%Y",
+        "%d/%m/%Y",
+        "%Y-%m-%d",
+        "%d-%m-%Y",
+        "%Y/%m/%d",
+        "%m/%d/%y",
+        "%d/%m/%y",
+    ]
     # to store current default public link expiry date
     defaultExpiryDate = ''
 

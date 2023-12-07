@@ -139,9 +139,7 @@ def generateSyncPatternFromMessages(messages):
 
     sync_messages = filterSyncMessages(messages)
     for message in sync_messages:
-        # E.g; from
-        #   "STATUS:OK:/tmp/client-bdd/Alice/"
-        #   "STATUS:OK:C:\Users\myname\owncloudtest\Alice\"
+        # E.g; from "STATUS:OK:/tmp/client-bdd/Alice/"
         # excludes ":/tmp/client-bdd/Alice/"
         # adds only "STATUS:OK" to the pattern list
         match = re.search(":(/|C:\\\\).*", message)

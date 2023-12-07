@@ -47,7 +47,7 @@ def createUserSyncPath(username):
     userSyncPath = join(get_config('clientRootSyncPath'), username, '')
 
     if not exists(userSyncPath):
-        makedirs(userSyncPath, 0o0755)
+        makedirs(userSyncPath)
 
     setCurrentUserSyncPath(userSyncPath)
     return userSyncPath
@@ -150,7 +150,7 @@ def setUpClient(username, displayName, space="Personal"):
         'displayUserName': displayName,
         'davUserName': username if is_ocis else username.lower(),
         'displayUserFirstName': displayName.split()[0],
-        'client_sync_path': syncPath.replace('\\', '/'),
+        'client_sync_path': syncPath,
         'local_server': server_url,
         'oauth': 'true' if is_ocis else 'false',
         'vfs': 'wincfapi' if isWindows() else 'off',
@@ -179,6 +179,7 @@ def is_app_killed(pid):
         return True
 
     return True
+
 
 def wait_until_app_killed(pid=0):
     timeout = 5 * 1000

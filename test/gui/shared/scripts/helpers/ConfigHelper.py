@@ -1,16 +1,14 @@
 import os
 import platform
-from os import path
 import builtins
 from tempfile import gettempdir
-from pathlib import Path
 from configparser import ConfigParser
 
 
 def read_env_file():
     envs = {}
-    script_path = path.dirname(path.realpath(__file__))
-    env_path = path.abspath(Path(script_path, '../../../envs.txt'))
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    env_path = os.path.abspath(os.path.join(script_path, '..', '..', '..', 'envs.txt'))
     with open(env_path, "rt", encoding="UTF-8") as f:
         for line in f:
             if line.startswith('#'):
@@ -41,23 +39,16 @@ def getWinUserHome():
 
 def getClientRootPath():
     if isWindows():
-        return path.join(getWinUserHome(), 'owncloudtest')
-    return path.join(gettempdir(), 'owncloudtest')
+        return os.path.join(getWinUserHome(), 'owncloudtest')
+    return os.path.join(gettempdir(), 'owncloudtest')
 
 
 def getConfigHome():
     if isWindows():
         # There is no way to set custom config path in windows
         # TODO: set to different path if option is available
-        return path.join(
-            getWinUserHome(),
-            "AppData",
-            "Roaming",
-            "ownCloud"
-        )
-    return path.join(
-        get_config_from_env_file("XDG_CONFIG_HOME"), "ownCloud"
-    )
+        return os.path.join(getWinUserHome(), "AppData", "Roaming", "ownCloud")
+    return os.path.join(get_config_from_env_file("XDG_CONFIG_HOME"), "ownCloud")
 
 
 # map environment variables to config keys
@@ -85,12 +76,12 @@ CONFIG = {
     'lowestSyncTimeout': 1,
     'middlewareUrl': 'http://localhost:3000/',
     'clientLogFile': '-',
-    'clientRootSyncPath':  getClientRootPath(),
-    'tempFolderPath':  path.join(getClientRootPath(), 'temp'),
+    'clientRootSyncPath': getClientRootPath(),
+    'tempFolderPath': os.path.join(getClientRootPath(), 'temp'),
     'clientConfigDir': getConfigHome(),
-    'guiTestReportDir': path.abspath(Path('../reports')),
+    'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
-    'custom_lib': path.abspath(Path('../shared/scripts/custom_lib')),
+    'custom_lib': os.path.abspath('../shared/scripts/custom_lib'),
 }
 
 READONLY_CONFIG = list(CONFIG_ENV_MAP.keys())
@@ -101,8 +92,10 @@ def init_config():
     # try reading configs from config.ini
     cfg = ConfigParser()
     try:
-        script_path = path.dirname(path.realpath(__file__))
-        config_path = path.abspath(Path(script_path, '../../../config.ini'))
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        config_path = os.path.abspath(
+            os.path.join(script_path, '..', '..', '..', 'config.ini')
+        )
         if cfg.read(config_path):
             for key, _ in CONFIG.items():
                 if key in CONFIG_ENV_MAP:

@@ -11,9 +11,7 @@ def get_webdav_url():
 
 def get_resource_path(user, resource):
     resource = resource.strip('/').replace("\\", "/")
-    encoded_resource_path = [
-        quote(path, safe='') for path in resource.split('/')
-    ]
+    encoded_resource_path = [quote(path, safe='') for path in resource.split('/')]
     encoded_resource_path = '/'.join(encoded_resource_path)
     url = url_join(get_webdav_url(), user, encoded_resource_path)
     return url

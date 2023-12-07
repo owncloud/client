@@ -73,8 +73,8 @@ def get_size_in_bytes(size):
             if size_unit == "kb":
                 return size_num * multiplier
             if size_unit == "mb":
-                return size_num * (multiplier ** 2)
+                return size_num * (multiplier**2)
             if size_unit == "gb":
-                return size_num * (multiplier ** 3)
+                return size_num * (multiplier**3)
 
     raise Exception("Invalid size: " + size)

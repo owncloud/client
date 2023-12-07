@@ -5,7 +5,11 @@ from pageObjects.SharingDialog import SharingDialog
 
 from helpers.SetupClientHelper import getResourcePath, substituteInLineCodes
 from helpers.FilesHelper import sanitizePath
-from helpers.SyncHelper import getSocketConnection, waitForFileOrFolderToHaveSyncStatus, SYNC_STATUS
+from helpers.SyncHelper import (
+    getSocketConnection,
+    waitForFileOrFolderToHaveSyncStatus,
+    SYNC_STATUS,
+)
 from helpers.ConfigHelper import get_config
 
 
@@ -53,7 +57,9 @@ def createPublicShareWithRole(resource, role):
 
 def collaboratorShouldBeListed(receiver, resource, permissions, receiverCount=0):
     # wait for client to the view
-    waitForFileOrFolderToHaveSyncStatus(getResourcePath(), "FOLDER", SYNC_STATUS["UPDATE"])
+    waitForFileOrFolderToHaveSyncStatus(
+        getResourcePath(), "FOLDER", SYNC_STATUS["UPDATE"]
+    )
     openSharingDialog(resource)
 
     checkCollaboratorAndPremissions(receiver, permissions, receiverCount)
@@ -198,7 +204,9 @@ def step(context, resource, password):
 @Then('the expiration date of the last public link of file "|any|" should be "|any|"')
 def step(context, resource, expiryDate):
     # wait for client to the view
-    waitForFileOrFolderToHaveSyncStatus(getResourcePath(), "FOLDER", SYNC_STATUS["UPDATE"])
+    waitForFileOrFolderToHaveSyncStatus(
+        getResourcePath(), "FOLDER", SYNC_STATUS["UPDATE"]
+    )
     openSharingDialog(resource)
     PublicLinkDialog.openPublicLinkTab()
 
@@ -338,7 +346,9 @@ def step(context, publicLinkName, password):
 )
 def step(context, resource):
     # wait for client to the view
-    waitForFileOrFolderToHaveSyncStatus(getResourcePath(), "FOLDER", SYNC_STATUS["UPDATE"])
+    waitForFileOrFolderToHaveSyncStatus(
+        getResourcePath(), "FOLDER", SYNC_STATUS["UPDATE"]
+    )
     openSharingDialog(resource)
     #     Here we are trying to verify if the user added in when step are listed in the client-UI or not
     #     We now have a variable name receiverCount which is used in collaboratorShouldBeListed function call

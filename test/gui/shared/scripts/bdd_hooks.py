@@ -28,7 +28,7 @@ from helpers.ConfigHelper import (
     set_config,
     clear_scenario_config,
     isWindows,
-    isLinux
+    isLinux,
 )
 from helpers.api.utils import url_join
 from datetime import datetime
@@ -61,9 +61,9 @@ def hook(context):
     if os.path.exists(config_dir):
         if len(os.listdir(config_dir)) != 0 and isWindows():
             raise Exception(
-                "Looks like you have previous client config in '" +
-                config_dir +
-                "'\n[DANGER] Delete it and try again.\n[DANGER] Removing config file will make client to lost the previously added accounts."
+                "Looks like you have previous client config in '"
+                + config_dir
+                + "'\n[DANGER] Delete it and try again.\n[DANGER] Removing config file will make client to lost the previously added accounts."
             )
         # clean previous configs
         shutil.rmtree(config_dir)
@@ -87,7 +87,7 @@ def hook(context):
         f.close()
 
     # this path will be changed according to the user added to the client
-    # e.g.: <clientRootSyncPath>/Alice
+    # e.g.: /tmp/client-bdd/Alice
     set_config('currentUserSyncPath', '')
 
     root_sync_dir = get_config('clientRootSyncPath')
@@ -172,7 +172,6 @@ def hook(context):
         pid = ctx.pid
         ctx.detach()
         wait_until_app_killed(pid)
-
 
     # clean up config files
     for config_file in os.listdir(get_config('clientConfigDir')):
