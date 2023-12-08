@@ -790,18 +790,6 @@ Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile,
     }
 }
 
-void SocketApi::command_V2_LIST_ACCOUNTS(const QSharedPointer<SocketApiJobV2> &job) const
-{
-    QJsonArray out;
-    for (auto acc : AccountManager::instance()->accounts()) {
-        OC_DISABLE_DEPRECATED_WARNING; // allow use of id
-        out << QJsonObject({{QStringLiteral("name"), acc->account()->displayName()}, {QStringLiteral("id"), acc->account()->id()},
-            {QStringLiteral("uuid"), acc->account()->uuid().toString(QUuid::WithoutBraces)}});
-        OC_ENABLE_DEPRECATED_WARNING
-    }
-    job->success({ { QStringLiteral("accounts"), out } });
-}
-
 void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> &job) const
 {
     OC_ASSERT(job);
