@@ -4,6 +4,7 @@ import object
 
 
 class SharingDialog:
+
     ITEM_TO_SHARE = {
         "name": "label_name",
         "type": "QLabel",

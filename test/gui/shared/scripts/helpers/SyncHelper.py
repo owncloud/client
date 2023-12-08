@@ -66,7 +66,23 @@ SYNC_PATTERNS = {
         # when syncing an account that has some files/folders
         [SYNC_STATUS['SYNC'], SYNC_STATUS['OK']],
     ],
-    'synced': [SYNC_STATUS['SYNC'], SYNC_STATUS['OK']],
+    'synced': [
+        [
+            SYNC_STATUS['SYNC'],
+            SYNC_STATUS['OK'],
+            SYNC_STATUS['OK'],
+            SYNC_STATUS['OK'],
+            SYNC_STATUS['UPDATE'],
+        ],
+        [
+            SYNC_STATUS['SYNC'],
+            SYNC_STATUS['UPDATE'],
+            SYNC_STATUS['OK'],
+            SYNC_STATUS['OK'],
+            SYNC_STATUS['OK'],
+            SYNC_STATUS['UPDATE'],
+        ],
+    ],
     'error': [SYNC_STATUS['ERROR']],
 }
 
