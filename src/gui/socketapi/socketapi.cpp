@@ -1184,6 +1184,7 @@ void SocketApiJobV2::doFinish(const QJsonObject &obj) const
         data[QStringLiteral("warning")] = _warning;
     }
     _socketListener->sendMessage(_command + QStringLiteral("_RESULT:") + QString::fromUtf8(QJsonDocument(data).toJson(QJsonDocument::Compact)));
+    qCDebug(lcSocketApi) << "SocketApiJobV2" << _jobId << "finished" << _timer.duration() << _socketListener;
     Q_EMIT finished();
 }
 

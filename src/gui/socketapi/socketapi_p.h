@@ -157,6 +157,7 @@ private:
     QString _jobId;
     QJsonObject _arguments;
     QString _warning;
+    Utility::ChronoElapsedTimer _timer;
 };
 }
 
