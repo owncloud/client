@@ -420,6 +420,7 @@ int main(int argc, char **argv)
     // parse the arguments before we handle singleApplication
     // errors and help/version need to be handled in this instance
     const auto options = parseOptions(app.arguments());
+    qDebug() << app.arguments();
 
     KDSingleApplication singleApplication;
 

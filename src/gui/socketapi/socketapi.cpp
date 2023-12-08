@@ -792,7 +792,9 @@ Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile,
 
 void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> &job) const
 {
-    OC_ASSERT(job);
+    if (!OC_ENSURE_NOT(job.isNull())) {
+        return;
+    }
     const auto &arguments = job->arguments();
 
     const auto size = arguments.value(QStringLiteral("size"));
@@ -831,7 +833,28 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
 
         data = pngBuffer.data().toBase64();
     }
-    job->success({ { QStringLiteral("png"), QString::fromUtf8(data) } });
+    job->success({{QStringLiteral("png"), QString::fromUtf8(data)}});
+}
+
+void SocketApi::command_V2_RETRIEVE_FILE_STATUS(const QSharedPointer<SocketApiJobV2> &job)
+{
+    if (!OC_ENSURE_NOT(job.isNull())) {
+        return;
+    }
+    const auto &arguments = job->arguments();
+
+    SyncFileStatus status = SyncFileStatus::StatusNone;
+    auto fileData = FileData::get(arguments.value(QStringLiteral("path")).toString());
+    if (fileData.folder) {
+        // The user probably visited this directory in the file shell.
+        // Let the listener know that it should now send status pushes for sibblings of this file.
+        // TODO:
+        // QString directory = fileData.localPath.left(fileData.localPath.lastIndexOf(QLatin1Char('/')));
+        // listener->registerMonitoredDirectory(qHash(directory));
+        status = fileData.syncFileStatus();
+    }
+
+    job->success({{QStringLiteral("status"), SyncFileStatus(status).toSocketAPIString()}});
 }
 
 void SocketApi::emailPrivateLink(const QUrl &link)

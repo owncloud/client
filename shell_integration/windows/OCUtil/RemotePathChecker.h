@@ -24,9 +24,10 @@
 #include <atomic>
 #include <condition_variable>
 
-#pragma once    
+#pragma once
 
-class __declspec(dllexport) RemotePathChecker {
+class RemotePathChecker
+{
 public:
     enum FileState {
         // Order synced with OCOverlay
@@ -39,10 +40,11 @@ public:
     RemotePathChecker();
     ~RemotePathChecker();
     std::shared_ptr<const std::vector<std::wstring>> WatchedDirectories() const;
-    bool IsMonitoredPath(const wchar_t* filePath, int* state);
+    bool IsMonitoredPath(const wchar_t *filePath, int *state);
+
+    static FileState fileStateFromString(const std::wstring &str);
 
 private:
-    FileState _StrToFileState(const std::wstring &str);
     std::mutex _mutex;
     std::atomic<bool> _stop;
 

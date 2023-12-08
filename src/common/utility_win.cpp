@@ -124,6 +124,11 @@ Utility::NtfsPermissionLookupRAII::~NtfsPermissionLookupRAII()
     qt_ntfs_permission_lookup--;
 }
 
+void Utility::printWindowsDebugMessage(const QString &s)
+{
+    OutputDebugStringW(reinterpret_cast<const wchar_t *>(s.utf16()));
+}
+
 
 Utility::Handle::Handle(HANDLE h, std::function<void(HANDLE)> &&close)
     : _handle(h)

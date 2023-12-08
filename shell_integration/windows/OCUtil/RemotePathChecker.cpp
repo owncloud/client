@@ -123,7 +123,7 @@ void RemotePathChecker::workerThreadLoop()
                 if (!StringUtil::extractChunks(response, responseStatus, responsePath))
                     continue;
 
-                auto state = _StrToFileState(responseStatus);
+                auto state = fileStateFromString(responseStatus);
                 bool wasAsked = asked.erase(responsePath) > 0;
 
                 bool updateView = false;
@@ -222,7 +222,7 @@ bool RemotePathChecker::IsMonitoredPath(const wchar_t* filePath, int* state)
     return false;
 }
 
-RemotePathChecker::FileState RemotePathChecker::_StrToFileState(const std::wstring &str)
+RemotePathChecker::FileState RemotePathChecker::fileStateFromString(const std::wstring &str)
 {
     if (str == L"NOP" || str == L"NONE") {
         return StateNone;

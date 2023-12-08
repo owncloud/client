@@ -87,5 +87,7 @@ namespace Utility {
     private:
         Q_DISABLE_COPY(NtfsPermissionLookupRAII);
     };
+
+    OCSYNC_EXPORT void printWindowsDebugMessage(const QString &s);
 }
 }
