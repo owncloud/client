@@ -142,7 +142,7 @@ def generateSyncPatternFromMessages(messages):
         # E.g; from "STATUS:OK:/tmp/client-bdd/Alice/"
         # excludes ":/tmp/client-bdd/Alice/"
         # adds only "STATUS:OK" to the pattern list
-        match = re.search(":(/|C:\\\\).*", message)
+        match = re.search(":(/|[A-Z]{1}:\\\\).*", message)
         if match:
             (end, _) = match.span()
             # shared resources will have status like "STATUS:OK+SWM"

@@ -19,6 +19,7 @@ Feature: move file and folder
         And user "Alice" has uploaded file with content "ownCloud" to "folder1/folder2/folder3/folder4/folder5/lorem.txt" in the server
         And user "Alice" has set up a client with default settings
         When user "Alice" moves file "folder1/folder2/folder3/folder4/folder5/lorem.txt" to "/" in the sync folder
+        And the user waits for the files to sync
         And user "Alice" moves folder "folder1/folder2/folder3/folder4/folder5/test-folder" to "/" in the sync folder
         And the user waits for the files to sync
         Then as "Alice" the file "lorem.txt" should have the content "ownCloud" in the server
@@ -34,6 +35,7 @@ Feature: move file and folder
         And user "Alice" has set up a client with default settings
         When user "Alice" moves folder "test-folder1" to "folder1/folder2/folder3/folder4/folder5" in the sync folder
         And user "Alice" moves folder "test-folder2" to "folder1/folder2/folder3/folder4/folder5" in the sync folder
+        And the user waits for the files to sync
         And user "Alice" moves file "testFile.txt" to "folder1/folder2/folder3/folder4/folder5" in the sync folder
         And the user waits for the files to sync
         Then as "Alice" file "folder1/folder2/folder3/folder4/folder5/testFile.txt" should exist in the server
@@ -48,6 +50,7 @@ Feature: move file and folder
         Given user "Alice" has uploaded file with content "test file 1" to "textfile.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user renames a file "textfile.txt" to "lorem.txt"
+        And the user waits for the files to sync
         And the user renames a folder "folder1" to "FOLDER"
         And the user waits for the files to sync
         Then as "Alice" file "lorem.txt" should exist in the server

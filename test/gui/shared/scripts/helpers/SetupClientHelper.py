@@ -50,14 +50,14 @@ def createUserSyncPath(username):
         makedirs(userSyncPath)
 
     setCurrentUserSyncPath(userSyncPath)
-    return userSyncPath
+    return userSyncPath.replace('\\', '/')
 
 
 def createSpacePath(space='Personal'):
     spacePath = join(get_config('currentUserSyncPath'), space, '')
     if not exists(spacePath):
         makedirs(spacePath)
-    return spacePath
+    return spacePath.replace('\\', '/')
 
 
 def setCurrentUserSyncPath(syncPath):
