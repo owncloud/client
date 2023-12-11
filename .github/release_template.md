@@ -22,7 +22,7 @@ __TODO__:
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
-* [ ] Decide if the prerelease stage will be public or internat @michaelstingl 
+* [ ] Decide if the prerelease stage will be public or internal @michaelstingl 
 * [ ] Announce feature freeze in ``#release_coordination`` channel before Beta build
 * [ ] Announce string freeze in ``#release_coordination`` channel a few days later
    * [ ] Inform ``#documentation-internal`` about it so that they can do the translations
