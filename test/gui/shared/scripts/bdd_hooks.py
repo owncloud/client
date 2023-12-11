@@ -187,7 +187,7 @@ def hook(context):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-            test.log('Failed to delete' + file_path + ". Reason: " + str(e) + '.')
+            test.log(f'Failed to delete{file_path}. Reason: {e}.')
 
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing
