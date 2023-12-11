@@ -16,7 +16,6 @@ __TODO__:
 * [ ] QA: Check the translations coming from transifex: https://github.com/owncloud/client/commits/ -> Filter based on a release branch/tag and search for `[tx] updated client translations from transifex [skip ci]`
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Update [dependencies](https://confluence.owncloud.com/display/OG/Dependencies)
-* [ ] DEV: Update [SBOM](https://cloud.owncloud.com/f/6072843)
 * [ ] DEV: For a major release create `X` version branch
   * [ ] QA: In drone adjust the branch for nightly [GUI tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) @individual-it
 * [ ] QA: Communicate documentation changes  
@@ -76,6 +75,7 @@ __TODO__:
 * [ ] QA: Update lines 4 and 5 of [install docs](https://github.com/owncloud/docs-client-desktop/blob/master/modules/ROOT/pages/installing.adoc) with the final build number. Merge into master and backport to the respective branch
 * [ ] QA: Check that [documentation](https://doc.owncloud.com/desktop/next/) offers the new version
 * [ ] DEV: Merge version branch into master
+* [ ] DEV: Update [SBOM](https://cloud.owncloud.com/f/6072843)
 
 ### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
