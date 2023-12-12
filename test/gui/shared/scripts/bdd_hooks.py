@@ -35,6 +35,7 @@ from helpers.api.utils import url_join
 from datetime import datetime
 from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
+from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
 # this will reset in every test suite
 previousFailResultCount = 0
@@ -202,22 +203,19 @@ def hook(context):
 
 
 def teardown_client():
-    # close the current active dailog if it's not a main client window
-    activeWindow = QApplication.activeWindow()
-    if activeWindow.modal:
-        test.log(f"Closing '{activeWindow.objectName}' window")
-        activeWindow.close()
-        if activeWindow.visible:
-            clickButton(waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON))
-
-    # remove account from UI
-    # In Windows, removing only config and sync folders won't help
-    # so to work around that, remove the account connection
-    server_host = urlparse(get_config('localBackendUrl')).netloc
-    for account in Toolbar.get_accounts():
-        displayname = account.split('\n')[0]
-        Toolbar.openAccount(displayname, server_host)
-        AccountSetting.removeAccountConnection()
+    # Cleanup user accounts from UI for Windows platform
+    # It is not needed for Linux so skipping it in order to save CI time
+    if isWindows():
+        # remove account from UI
+        # In Windows, removing only config and sync folders won't help
+        # so to work around that, remove the account connection
+        close_open_dialogs()
+        server_host = urlparse(get_config('localBackendUrl')).netloc
+        for account in Toolbar.get_accounts():
+            displayname = account.split('\n')[0]
+            Toolbar.openAccount(displayname, server_host)
+            AccountSetting.removeAccountConnection()
+        waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in applicationContextList():
@@ -243,3 +241,15 @@ def teardown_client():
             test.log(f'Failed to delete{file_path}. Reason: {e}.')
 
 
+def close_open_dialogs():
+    # close the current active dailog if it's not a main client window
+    has_open_modal = True
+    while has_open_modal:
+        activeWindow = QApplication.activeWindow()
+        has_open_modal = activeWindow.modal
+        if not has_open_modal:
+            break
+        test.log(f"Closing '{activeWindow.objectName}' window")
+        activeWindow.close()
+        if activeWindow.visible:
+            clickButton(waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON))
