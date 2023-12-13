@@ -211,11 +211,13 @@ def teardown_client():
         # so to work around that, remove the account connection
         close_open_dialogs()
         server_host = urlparse(get_config('localBackendUrl')).netloc
-        for account in Toolbar.get_accounts():
+        accounts = Toolbar.get_accounts()
+        for account in accounts:
             displayname = account.split('\n')[0]
             Toolbar.openAccount(displayname, server_host)
             AccountSetting.removeAccountConnection()
-        waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
+        if len(accounts):
+            waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in applicationContextList():
