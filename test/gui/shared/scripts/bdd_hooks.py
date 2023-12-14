@@ -216,7 +216,7 @@ def teardown_client():
             displayname = account.split('\n')[0]
             Toolbar.openAccount(displayname, server_host)
             AccountSetting.removeAccountConnection()
-        if len(accounts):
+        if accounts:
             waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
@@ -227,20 +227,18 @@ def teardown_client():
         wait_until_app_killed(pid)
 
     # clean up config files
-    for config_file in os.listdir(get_config('clientConfigDir')):
-        os.unlink(os.path.join(get_config('clientConfigDir'), config_file))
+    shutil.rmtree(get_config('clientConfigDir'))
 
-    # delete local files/folders
-    for filename in os.listdir(get_config('clientRootSyncPath')):
-        test.log("Deleting: " + filename)
-        file_path = os.path.join(get_config('clientRootSyncPath'), filename)
+    # delete test files/folders
+    for entry in os.scandir(get_config('clientRootSyncPath')):
+        test.log("Deleting: " + entry.name)
         try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
+            if entry.is_file() or entry.is_symlink():
+                os.unlink(entry.path)
+            elif entry.is_dir():
+                shutil.rmtree(entry.path)
         except Exception as e:
-            test.log(f'Failed to delete{file_path}. Reason: {e}.')
+            test.log(f'Failed to delete{entry.name}. Reason: {e}.')
 
 
 def close_open_dialogs():
