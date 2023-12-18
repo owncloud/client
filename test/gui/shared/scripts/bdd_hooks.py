@@ -243,13 +243,13 @@ def teardown_client():
 
 def close_open_dialogs():
     # close the current active dailog if it's not a main client window
-    has_open_modal = True
-    while has_open_modal:
-        activeWindow = QApplication.activeWindow()
-        has_open_modal = activeWindow.modal
-        if not has_open_modal:
+    while True:
+        active_window = QApplication.activeModalWidget()
+        if str(active_window) == "<null>":
             break
-        test.log(f"Closing '{activeWindow.objectName}' window")
-        activeWindow.close()
-        if activeWindow.visible:
-            clickButton(waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON))
+        test.log(f"Closing '{active_window.objectName}' window")
+        closed = active_window.close()
+        if not closed:
+            confirm_dialog = QApplication.activeModalWidget()
+            if confirm_dialog.visible:
+                clickButton(waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON))
