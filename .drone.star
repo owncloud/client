@@ -619,6 +619,7 @@ def uploadGuiTestLogs(ctx, server_type = "oc10"):
     trigger = {
         "status": [
             "failure",
+            "success",
         ],
         "event": [
             "cron",
@@ -651,6 +652,7 @@ def logGuiReports(ctx, server_type):
     trigger = {
         "status": [
             "failure",
+            "success",
         ],
         "event": [
             "cron",
