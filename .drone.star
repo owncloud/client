@@ -18,7 +18,7 @@ OC_CI_NODEJS = "owncloudci/nodejs:16"
 OC_CI_PHP = "owncloudci/php:%s"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_OCIS = "owncloud/ocis:%s"
-OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.3"
+OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.7"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
 
 # Eventually, we have to use image built on ubuntu
