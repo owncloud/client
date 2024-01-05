@@ -106,7 +106,8 @@
         <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation type="unfinished"/>
+        <translation>%1 versioon %2&lt;byte value=&quot;xd&quot;/&gt;
+Failide sünkroniseerimise töölaua rakendus.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="106"/>
@@ -117,12 +118,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="125"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
-        <translation type="unfinished"/>
+        <translation>Alusta nähtava peamise aknaga või kui see juba töötab, too see esiplaanile. Vaikimisi käivitub klient taustal.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="127"/>
         <source>Quit the running instance.</source>
-        <translation type="unfinished"/>
+        <translation>Lõpeta käimasolev instants.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="129"/>
@@ -132,37 +133,37 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation type="unfinished"/>
+        <translation>Kirjuta iga sünkroniseerimise logi väljund kataloogis uude faili.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
-        <translation type="unfinished"/>
+        <translation>Tühjenda logifail pärast iga kirjutamist.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
-        <translation type="unfinished"/>
+        <translation>Väljasta silumisteated logisse.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
-        <translation type="unfinished"/>
+        <translation>Luba silumisrežiim.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
         <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation type="unfinished"/>
+        <translation>Edasta kõik argumendid cmd kliendile. See argument peab olema esimene.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="138"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation type="unfinished"/>
+        <translation>Avatav virtuaalse failisüsteemi fail (valikuline).</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="155"/>
         <source>--logfile and --logdir are mutually exclusive</source>
-        <translation type="unfinished"/>
+        <translation>--logfile ja --logdir välistavad üksteist.</translation>
     </message>
 </context>
 <context>
@@ -582,12 +583,12 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="376"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Keela virtuaalse faili tugi</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="382"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Luba virtuaalse faili tugi</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="689"/>
@@ -1281,17 +1282,17 @@ Palun kaaluge selle kausta eemaldamist kontolt ja selle uuesti lisamist.</transl
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="278"/>
         <source>The suffix VFS plugin is deprecated and will be removed in the 7.0 release.</source>
-        <translation type="unfinished"/>
+        <translation>Suffix VFS plugin on aegunud ja eemaldatakse versioonist 7.0.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="279"/>
         <source>Please use the context menu and select &quot;Disable virtual file support&quot; to  ensure future access to your synced files.</source>
-        <translation type="unfinished"/>
+        <translation>Palun kasutage kontekstimenüüd ja valige &quot;Keela virtuaalse faili tugi&quot; et tagada tulevikus juurdepääs teie sünkroonitud failidele.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="280"/>
         <source>You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>Te kaotate juurdepääsu oma sünkroonimiskaustale, kui te seda ei tee!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="355"/>
@@ -1523,7 +1524,7 @@ Palun kaaluge selle kausta eemaldamist kontolt ja selle uuesti lisamist.</transl
     <message>
         <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="48"/>
         <source>Use virtual files instead of downloading content immediately</source>
-        <translation type="unfinished"/>
+        <translation>Kasuta virtuaalseid faile sisu kohese allalaadimise asemel</translation>
     </message>
 </context>
 <context>
@@ -1584,7 +1585,7 @@ Palun kaaluge selle kausta eemaldamist kontolt ja selle uuesti lisamist.</transl
     <message>
         <location filename="../src/gui/generalsettings.ui" line="126"/>
         <source>Move remotely deleted files to the local trash bin instead of deleting them</source>
-        <translation type="unfinished"/>
+        <translation>Liiguta kaugelt kustutatud failid kohalikku prügikasti, selle asemel et neid kustutada.</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="142"/>
@@ -2146,66 +2147,66 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="355"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Serverist tagastatud viga:&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="358"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>„Token” lõpp-punktile juurdepääsul ilmnes viga:&lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="361"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Serverist tagastatud JSON-i parsimine ebaõnnestus: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="371"/>
         <source>Unsupported token type: %1</source>
         <translation>Mittetoetatud tokeni tüüp: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="366"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Serveri vastus ei sisaldanud kõiki oodatud välju
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="375"/>
         <source>Unknown Error</source>
         <translation>Tundmatu Viga</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="389"/>
         <source>Login Error</source>
         <translation>Sisselogimise viga</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="402"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Vale kasutaja&lt;/h1&gt;&lt;p&gt;Oled sisse loginud kasutajaga &lt;em&gt;%1&lt;/em&gt;, kuid pead sisse logima kasutajaga &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Palun naase %3 klienti ja taaskäivita autentimine.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="406"/>
         <source>Wrong user</source>
         <translation>Vale kasutaja</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="424"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Sisselogimine õnnestus&lt;/h1&gt;&lt;p&gt;Selle akna võite sulgeda&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="425"/>
         <source>Login Successful</source>
         <translation>Sisselogimine õnnestus</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="390"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Sisselogimise viga&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -2557,7 +2558,7 @@ for additional privileges during the process.</source>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="125"/>
         <source>Could not move &apos;%1&apos; to the trash bin</source>
-        <translation type="unfinished"/>
+        <translation>Ei suutnud liigutada &apos;%1&apos; prügikasti</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="89"/>
@@ -3566,12 +3567,12 @@ for additional privileges during the process.</source>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.cpp" line="36"/>
         <source>Restart later</source>
-        <translation type="unfinished"/>
+        <translation>Taaskäivita hiljem</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.cpp" line="38"/>
         <source>Restart now</source>
-        <translation type="unfinished"/>
+        <translation>Taaskäivita kohe</translation>
     </message>
 </context>
 <context>
@@ -4018,39 +4019,34 @@ Kas olete kindel, et soovite jätkata?</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="343"/>
+        <location filename="../src/common/utility.cpp" line="339"/>
         <source>in the future</source>
         <translation>tulevikus</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="339"/>
+        <location filename="../src/common/utility.cpp" line="334"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n päev(a) tagasi</numerusform><numerusform>%n päev(a) tagasi</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="347"/>
+        <location filename="../src/common/utility.cpp" line="344"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n tund(i) tagasi</numerusform><numerusform>%n tund(i) tagasi</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="352"/>
+        <location filename="../src/common/utility.cpp" line="350"/>
         <source>now</source>
         <translation>kohe</translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="354"/>
-        <source>Less than a minute ago</source>
-        <translation>Vähem kui minut tagasi</translation>
+        <location filename="../src/common/utility.cpp" line="352"/>
+        <source>less than a minute ago</source>
+        <translation>vähem kui minut tagasi</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="357"/>
+        <location filename="../src/common/utility.cpp" line="356"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n minut(it) tagasi</numerusform><numerusform>%n minut(it) tagasi</numerusform></translation>
-    </message>
-    <message>
-        <location filename="../src/common/utility.cpp" line="360"/>
-        <source>Some time ago</source>
-        <translation>Mõni aeg tagasi</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="115"/>
@@ -4224,12 +4220,12 @@ Kas olete kindel, et soovite jätkata?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="638"/>
+        <location filename="../src/libsync/theme.cpp" line="644"/>
         <source>Username</source>
         <translation>Kasutajanimi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="640"/>
+        <location filename="../src/libsync/theme.cpp" line="646"/>
         <source>E-mail address</source>
         <translation>E-posti aadress</translation>
     </message>
@@ -4239,12 +4235,12 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.ui" line="20"/>
         <source>Application restart required</source>
-        <translation type="unfinished"/>
+        <translation>Rakenduse taaskäivitamine on nõutud</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.ui" line="50"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Update installed successfully&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Restart the application to finish installing the update.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Uuendus on edukalt paigaldatud&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Uuenduse paigaldamise lõpetamiseks taaskäivita rakendus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>

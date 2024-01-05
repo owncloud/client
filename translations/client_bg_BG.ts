@@ -106,7 +106,8 @@
         <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation type="unfinished"/>
+        <translation>%1 версия %2
+Помощна програма за настолни компютри за синхронизиране на файлове.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="106"/>
@@ -122,32 +123,32 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="127"/>
         <source>Quit the running instance.</source>
-        <translation type="unfinished"/>
+        <translation>Напускане на работещата инстанция.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="129"/>
         <source>Write log to file (use - to write to stdout).</source>
-        <translation type="unfinished"/>
+        <translation>Записване на дневника във файл (използвайте - за да запишете в stdout).</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation type="unfinished"/>
+        <translation>Записване като нов файл в папката, всяко извеждане от дневника за синхронизиране.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
-        <translation type="unfinished"/>
+        <translation>Изчистване на регистрационния файл след всеки запис.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
-        <translation type="unfinished"/>
+        <translation>Извеждане на съобщения на ниво отстраняване на грешки в дневника.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
-        <translation type="unfinished"/>
+        <translation>Активиране на режима за поддръжка.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
@@ -157,12 +158,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="138"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation type="unfinished"/>
+        <translation>Файл от виртуалната файлова система, който да бъде отворен (по избор).</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="155"/>
         <source>--logfile and --logdir are mutually exclusive</source>
-        <translation type="unfinished"/>
+        <translation>--logfile и --logdir взаимно се изключват</translation>
     </message>
 </context>
 <context>
@@ -2146,66 +2147,66 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="355"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Грешка върната от сървъра: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="358"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Възникна грешка с &apos;токен&apos; при достъп до крайната точка: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="361"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Неуспех при анализа на върнатият JSON от сървъра: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="371"/>
         <source>Unsupported token type: %1</source>
         <translation>Неподдържан тип токен: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="366"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Отговорът от сървъра не съдържа всички очаквани полета
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="375"/>
         <source>Unknown Error</source>
         <translation>Неизвестна грешка</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="389"/>
         <source>Login Error</source>
         <translation>Грешка при влизане</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="402"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Грешен потребител&lt;/h1&gt;&lt;p&gt; Влезли сте с потребител &lt;em&gt;%1&lt;/em&gt;, но трябва да влезете с потребител &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Моля, върнете се към клиента %3 и рестартирайте удостоверяването.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="406"/>
         <source>Wrong user</source>
         <translation>Грешен потребител</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="424"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Влизането е успешно&lt;/h1&gt;&lt;p&gt;Можете да затворите този прозорец.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="425"/>
         <source>Login Successful</source>
         <translation>Влизането е успешно</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="390"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Грешка при влизане&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -4019,39 +4020,34 @@ Are you sure you want to proceed?</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="343"/>
+        <location filename="../src/common/utility.cpp" line="339"/>
         <source>in the future</source>
         <translation>в бъдеще</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="339"/>
+        <location filename="../src/common/utility.cpp" line="334"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>преди %n ден(а) </numerusform><numerusform>преди %n ден(а) </numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="347"/>
+        <location filename="../src/common/utility.cpp" line="344"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>преди %n час(а) </numerusform><numerusform>преди %n час(а) </numerusform></translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="352"/>
+        <location filename="../src/common/utility.cpp" line="350"/>
         <source>now</source>
         <translation>сега</translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="354"/>
-        <source>Less than a minute ago</source>
-        <translation>Преди по-малко от минута</translation>
+        <location filename="../src/common/utility.cpp" line="352"/>
+        <source>less than a minute ago</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="357"/>
+        <location filename="../src/common/utility.cpp" line="356"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>преди %n минута(и) </numerusform><numerusform>преди %n минута(и) </numerusform></translation>
-    </message>
-    <message>
-        <location filename="../src/common/utility.cpp" line="360"/>
-        <source>Some time ago</source>
-        <translation>Преди известно време</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="115"/>
@@ -4225,12 +4221,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="638"/>
+        <location filename="../src/libsync/theme.cpp" line="644"/>
         <source>Username</source>
         <translation>Потребителско име</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="640"/>
+        <location filename="../src/libsync/theme.cpp" line="646"/>
         <source>E-mail address</source>
         <translation>Имейл адрес</translation>
     </message>

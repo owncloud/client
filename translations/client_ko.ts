@@ -106,7 +106,8 @@
         <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation type="unfinished"/>
+        <translation>%1 버전 %2&lt;byte value=&quot;xd&quot;/&gt;
+파일 동기화 데스크탑 유틸리티.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="106"/>
@@ -122,7 +123,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="127"/>
         <source>Quit the running instance.</source>
-        <translation type="unfinished"/>
+        <translation>실행 인스턴스 종료.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="129"/>
@@ -132,22 +133,22 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation type="unfinished"/>
+        <translation>각 동기화 로그 출력을 폴더의 새 파일에 기록.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
-        <translation type="unfinished"/>
+        <translation>모든 기록 후에 로그 파일을 만듭니다.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
-        <translation type="unfinished"/>
+        <translation>로그에 디버그 레벨 메시지 출력합니다.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
-        <translation type="unfinished"/>
+        <translation>디버그 모드를 활성화합니다.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
@@ -157,7 +158,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="138"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation type="unfinished"/>
+        <translation>가상 파일 시스템 파일이 열립니다(옵션).</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="155"/>
@@ -2146,66 +2147,66 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="355"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>서버에서 오류 반환함: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="358"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>&apos;token&apos; 엔드포인트에 접근하는 중 오류 발생: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="361"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>서버에서 반환한 JSON을 처리할 수 없음: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="371"/>
         <source>Unsupported token type: %1</source>
         <translation>지원되지 않는 토큰 타입: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="366"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>서버의 응답에 기대되는 모든 필드가 포함되지 않았습니다
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="375"/>
         <source>Unknown Error</source>
         <translation>알 수 없는 오류</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="389"/>
         <source>Login Error</source>
         <translation>로그인 오류</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="402"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;잘못된 사용자&lt;/h1&gt;&lt;p&gt;&lt;em&gt;%1&lt;/em&gt; 사용자로 로그인되어 있지만, &lt;em&gt;%2&lt;/em&gt; 사용자로 로그인해야 합니다. &lt;br&gt;%3 클라이언트로 돌아간 후 다시 인증하세요.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="406"/>
         <source>Wrong user</source>
         <translation>잘못된 사용자</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="424"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;로그인 성공&lt;/h1&gt;&lt;p&gt;이 창을 닫으셔도 됩니다.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="425"/>
         <source>Login Successful</source>
         <translation>로그인 성공</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="390"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;로그인 오류&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -4019,39 +4020,34 @@ Are you sure you want to proceed?</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="343"/>
+        <location filename="../src/common/utility.cpp" line="339"/>
         <source>in the future</source>
         <translation>미래에</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="339"/>
+        <location filename="../src/common/utility.cpp" line="334"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n 일 전</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="347"/>
+        <location filename="../src/common/utility.cpp" line="344"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n 시간 전</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="352"/>
+        <location filename="../src/common/utility.cpp" line="350"/>
         <source>now</source>
         <translation>지금</translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="354"/>
-        <source>Less than a minute ago</source>
-        <translation>1분 미만</translation>
+        <location filename="../src/common/utility.cpp" line="352"/>
+        <source>less than a minute ago</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="357"/>
+        <location filename="../src/common/utility.cpp" line="356"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n 분 전</numerusform></translation>
-    </message>
-    <message>
-        <location filename="../src/common/utility.cpp" line="360"/>
-        <source>Some time ago</source>
-        <translation>몇 초 전</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="115"/>
@@ -4225,12 +4221,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="638"/>
+        <location filename="../src/libsync/theme.cpp" line="644"/>
         <source>Username</source>
         <translation>사용자 이름</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="640"/>
+        <location filename="../src/libsync/theme.cpp" line="646"/>
         <source>E-mail address</source>
         <translation>이메일 주소</translation>
     </message>

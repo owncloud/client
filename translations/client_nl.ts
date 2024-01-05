@@ -106,7 +106,8 @@
         <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation type="unfinished"/>
+        <translation>%1 versie %2&lt;byte value=&quot;xd&quot;/&gt;
+Bestandssynchronisatie desktop software tool.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="106"/>
@@ -122,7 +123,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="127"/>
         <source>Quit the running instance.</source>
-        <translation type="unfinished"/>
+        <translation>Stop het lopende programma.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="129"/>
@@ -132,22 +133,22 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation type="unfinished"/>
+        <translation>Schrijf elk synchronisatie log naar een nieuw bestand in de map.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
-        <translation type="unfinished"/>
+        <translation>Schrijf naar logbestand bij elke regel.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
-        <translation type="unfinished"/>
+        <translation>Schrijf debug-level berichten naar het logboek.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
-        <translation type="unfinished"/>
+        <translation>Zet debug modus aan.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
@@ -157,7 +158,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="138"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation type="unfinished"/>
+        <translation>Virtueel bestandssysteem bestand dat geopend wordt (optioneel).</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="155"/>
@@ -2147,66 +2148,66 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="355"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fout gemeld door de server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="358"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Er heeft zich een fout voorgedaan bij het verkrijgen van de &apos;token&apos; eindpunt: 1 2 %1 2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="361"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Kon de JSON dat teruggekomen is van de server niet ontleden: 1 2 %1 2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="371"/>
         <source>Unsupported token type: %1</source>
         <translation>Niet-ondersteund token type: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="366"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Het antwoord van de server bevat niet alle verwachte velden
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="375"/>
         <source>Unknown Error</source>
         <translation>Onbekende fout</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="389"/>
         <source>Login Error</source>
         <translation>Inlogfout</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="402"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Verkeerde gebruiker&lt;/h1&gt;&lt;p&gt;U bent ingelogd met de gebruiker &lt;em&gt;%1&lt;/em&gt;, maar u moet inloggen met gebruiker &lt;em&gt;%2&lt;/em&gt;. &lt;br&gt;Ga terug naar de %3 client en herstart de authenticatie.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="406"/>
         <source>Wrong user</source>
         <translation>Verkeerde gebruiker</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="424"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Inloggen is geslaagd&lt;/h1&gt;&lt;p&gt;Dit venster kan gesloten worden.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="425"/>
         <source>Login Successful</source>
         <translation>Succesvol ingelogd</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="390"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Inlog fout&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -4021,39 +4022,34 @@ Weet U zeker dat U verder wilt gaan?</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="343"/>
+        <location filename="../src/common/utility.cpp" line="339"/>
         <source>in the future</source>
         <translation>in de toekomst</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="339"/>
+        <location filename="../src/common/utility.cpp" line="334"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n dag geleden</numerusform><numerusform>%n dagen geleden</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="347"/>
+        <location filename="../src/common/utility.cpp" line="344"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n uur geleden</numerusform><numerusform>%n uur geleden</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="352"/>
+        <location filename="../src/common/utility.cpp" line="350"/>
         <source>now</source>
         <translation>nu</translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="354"/>
-        <source>Less than a minute ago</source>
-        <translation>Minder dan een minuut geleden</translation>
+        <location filename="../src/common/utility.cpp" line="352"/>
+        <source>less than a minute ago</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="357"/>
+        <location filename="../src/common/utility.cpp" line="356"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n minuut geleden</numerusform><numerusform>%n minuten geleden</numerusform></translation>
-    </message>
-    <message>
-        <location filename="../src/common/utility.cpp" line="360"/>
-        <source>Some time ago</source>
-        <translation>Even geleden</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="115"/>
@@ -4227,12 +4223,12 @@ Weet U zeker dat U verder wilt gaan?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="638"/>
+        <location filename="../src/libsync/theme.cpp" line="644"/>
         <source>Username</source>
         <translation>Gebruikersnaam</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="640"/>
+        <location filename="../src/libsync/theme.cpp" line="646"/>
         <source>E-mail address</source>
         <translation>&amp;E-mail adres</translation>
     </message>

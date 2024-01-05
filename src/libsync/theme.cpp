@@ -556,6 +556,12 @@ QPair<QString, QString> Theme::oauthOverrideAuthUrl() const
     return {};
 }
 
+QVector<quint16> Theme::oauthPorts() const
+{
+    // zero means a random port
+    return {0};
+}
+
 QString Theme::openIdConnectScopes() const
 {
     return QStringLiteral("openid offline_access email profile");
@@ -614,6 +620,11 @@ bool Theme::wizardEnableWebfinger() const
 QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
 {
     return {};
+}
+
+bool Theme::enableMoveToTrash() const
+{
+    return true;
 }
 
 bool Theme::enableCernBranding() const

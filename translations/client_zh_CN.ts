@@ -133,22 +133,22 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation type="unfinished"/>
+        <translation>将每个同步日志输出到文件夹中的一个新文件里。</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
-        <translation type="unfinished"/>
+        <translation>每次写完后都刷新日志文件。</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
-        <translation type="unfinished"/>
+        <translation>在日志中输出调试级别的信息。</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
-        <translation type="unfinished"/>
+        <translation>启用调试模式。</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
@@ -2136,66 +2136,66 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="355"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>来自服务器返回的错误&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="358"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>在&apos;token&apos; 结尾有个错误: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="361"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>不能解析来自服务器端的JSON:&lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="371"/>
         <source>Unsupported token type: %1</source>
         <translation>不支持的令牌类型：%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="366"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>服务器的回复未包含所有预期字段
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="375"/>
         <source>Unknown Error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="389"/>
         <source>Login Error</source>
         <translation>登录错误</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="402"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="406"/>
         <source>Wrong user</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="424"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="425"/>
         <source>Login Successful</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="390"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;登录错误&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -4007,39 +4007,34 @@ Are you sure you want to proceed?</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="343"/>
+        <location filename="../src/common/utility.cpp" line="339"/>
         <source>in the future</source>
         <translation>将来</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="339"/>
+        <location filename="../src/common/utility.cpp" line="334"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n 天前</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="347"/>
+        <location filename="../src/common/utility.cpp" line="344"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n 小时前</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="352"/>
+        <location filename="../src/common/utility.cpp" line="350"/>
         <source>now</source>
         <translation>现在</translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="354"/>
-        <source>Less than a minute ago</source>
-        <translation>刚刚</translation>
+        <location filename="../src/common/utility.cpp" line="352"/>
+        <source>less than a minute ago</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="357"/>
+        <location filename="../src/common/utility.cpp" line="356"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n 分钟前</numerusform></translation>
-    </message>
-    <message>
-        <location filename="../src/common/utility.cpp" line="360"/>
-        <source>Some time ago</source>
-        <translation>之前</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="115"/>
@@ -4213,12 +4208,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="638"/>
+        <location filename="../src/libsync/theme.cpp" line="644"/>
         <source>Username</source>
         <translation>用户名</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="640"/>
+        <location filename="../src/libsync/theme.cpp" line="646"/>
         <source>E-mail address</source>
         <translation type="unfinished"/>
     </message>

@@ -1,6 +1,7 @@
 # Table of Contents
 
 * [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 5.2.1](#changelog-for-owncloud-desktop-client-521-2024-01-04)
 * [Changelog for 5.2.0](#changelog-for-owncloud-desktop-client-520-2023-11-27)
 * [Changelog for 5.1.2](#changelog-for-owncloud-desktop-client-512-2023-11-10)
 * [Changelog for 5.1.1](#changelog-for-owncloud-desktop-client-511-2023-11-09)
@@ -38,7 +39,7 @@
 The following sections list the changes in ownCloud Desktop Client unreleased relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v5.2.0...master
+[unreleased]: https://github.com/owncloud/client/compare/v5.2.1...master
 
 ## Summary
 
@@ -47,6 +48,8 @@ ownCloud admins and users.
 * Change - Remove unused command line option --language: [#11245](https://github.com/owncloud/client/issues/11245)
 * Change - Windows: always use fusion style: [#11275](https://github.com/owncloud/client/issues/11275)
 * Change - Deprecate suffix VFS: [#11325](https://github.com/owncloud/client/issues/11325)
+* Enhancement - Prevent same default sync folder for multiple accounts with Spaces: [#11204](https://github.com/owncloud/client/issues/11204)
+* Enhancement - Add support to provide a list of ports for the OAuth process: [#11276](https://github.com/owncloud/client/issues/11276)
 * Enhancement - Include recent changes in scheduled syncs: [#11347](https://github.com/owncloud/client/pull/11347)
 
 ## Details
@@ -92,12 +95,55 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/11325
 
+* Enhancement - Prevent same default sync folder for multiple accounts with Spaces: [#11204](https://github.com/owncloud/client/issues/11204)
+
+   This is done by tagging the sync folder by an extended attribute (Linux/macoS)
+   or an alternative data stream (Windows).
+
+   https://github.com/owncloud/client/issues/11204
+   https://github.com/owncloud/client/pull/11364
+
+* Enhancement - Add support to provide a list of ports for the OAuth process: [#11276](https://github.com/owncloud/client/issues/11276)
+
+   We added a branding option that enables us to specify a list of ports that are
+   used for the local server during the OAuth process.
+
+   https://github.com/owncloud/client/issues/11276
+
 * Enhancement - Include recent changes in scheduled syncs: [#11347](https://github.com/owncloud/client/pull/11347)
 
    When starting a new sync we now also include the recent change events in the
    discovery.
 
    https://github.com/owncloud/client/pull/11347
+
+# Changelog for ownCloud Desktop Client [5.2.1] (2024-01-04)
+
+The following sections list the changes in ownCloud Desktop Client 5.2.1 relevant to
+ownCloud admins and users.
+
+[5.2.1]: https://github.com/owncloud/client/compare/v5.2.0...v5.2.1
+
+## Summary
+
+* Bugfix - Client stuck in reconnecting: [#11274](https://github.com/owncloud/client/issues/11274)
+* Enhancement - Improved reliability for persisting settings: [#11413](https://github.com/owncloud/client/pull/11413)
+
+## Details
+
+* Bugfix - Client stuck in reconnecting: [#11274](https://github.com/owncloud/client/issues/11274)
+
+   We fixed a bug where the client got stuck while reconnecting to the server.
+
+   https://github.com/owncloud/client/issues/11274
+
+* Enhancement - Improved reliability for persisting settings: [#11413](https://github.com/owncloud/client/pull/11413)
+
+   We improved the reliability of saving accounts. This might fix an issue where
+   sync connections were lost at random.
+
+   https://github.com/owncloud/client/issues/11411
+   https://github.com/owncloud/client/pull/11413
 
 # Changelog for ownCloud Desktop Client [5.2.0] (2023-11-27)
 

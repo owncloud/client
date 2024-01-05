@@ -106,7 +106,8 @@
         <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation type="unfinished"/>
+        <translation>%1 versão %2&lt;byte value=&quot;xd&quot;/&gt;
+Utilitário de sincronização de arquivos na área de trabalho. </translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="106"/>
@@ -117,7 +118,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="125"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
-        <translation type="unfinished"/>
+        <translation>Comece com a janela principal visível ou, se já estiver em execução, traga-a para a frente. Por padrão, o cliente é iniciado em segundo plano.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="127"/>
@@ -132,32 +133,32 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation type="unfinished"/>
+        <translation>Grave cada saída do log de sincronização em um novo arquivo na pasta. </translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
-        <translation type="unfinished"/>
+        <translation>Libere o arquivo de log após cada gravação. </translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
-        <translation type="unfinished"/>
+        <translation>Envie mensagens de nível de depuração no log. </translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
-        <translation type="unfinished"/>
+        <translation>Ative o modo de depuração. </translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
         <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation type="unfinished"/>
+        <translation>Encaminhe todos os argumentos para o cliente cmd. Este argumento deve ser o primeiro.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="138"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation type="unfinished"/>
+        <translation>Arquivo do sistema de arquivos virtual a ser aberto (opcional). </translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="155"/>
@@ -582,12 +583,12 @@ Esta ação irá anular qualquer sincronização atualmente em execução.</tran
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="376"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Desative o suporte a arquivos virtuais</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="382"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Habilitar suporte a arquivos virtuais</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="689"/>
@@ -1280,17 +1281,17 @@ Considere remover esta pasta da conta e adicioná-la novamente.</translation>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="278"/>
         <source>The suffix VFS plugin is deprecated and will be removed in the 7.0 release.</source>
-        <translation type="unfinished"/>
+        <translation>O plugin VFS de sufixo está obsoleto e será removido na versão 7.0.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="279"/>
         <source>Please use the context menu and select &quot;Disable virtual file support&quot; to  ensure future access to your synced files.</source>
-        <translation type="unfinished"/>
+        <translation>Use o menu de contexto e selecione &quot;Desativar suporte a arquivos virtuais&quot; para garantir acesso futuro aos seus arquivos sincronizados.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="280"/>
         <source>You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>Você perderá o acesso à sua pasta de sincronização se não fizer isso!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="355"/>
@@ -1522,7 +1523,7 @@ Considere remover esta pasta da conta e adicioná-la novamente.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="48"/>
         <source>Use virtual files instead of downloading content immediately</source>
-        <translation type="unfinished"/>
+        <translation>Use arquivos virtuais em vez de baixar o conteúdo imediatamente</translation>
     </message>
 </context>
 <context>
@@ -1583,7 +1584,7 @@ Considere remover esta pasta da conta e adicioná-la novamente.</translation>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="126"/>
         <source>Move remotely deleted files to the local trash bin instead of deleting them</source>
-        <translation type="unfinished"/>
+        <translation>Mova os arquivos excluídos remotamente para a lixeira local em vez de excluí-los</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="142"/>
@@ -2146,66 +2147,66 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="355"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Erro retornado do servidor: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="358"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Ocorreu um erro ao acessar o ponto final do token: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="361"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Não foi possível analisar o JSON retornado do servidor: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="371"/>
         <source>Unsupported token type: %1</source>
         <translation>Tipo de token não suportado: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="366"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>A resposta do servidor não continha todos os campos esperados
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="375"/>
         <source>Unknown Error</source>
         <translation>Erro Desconhecido</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="382"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="389"/>
         <source>Login Error</source>
         <translation>Erro de Login</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="402"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;usuário errado&lt;/h1&gt;&lt;p&gt;Você se conectou com o usuário&lt;em&gt;%1&lt;/em&gt;, mas deve fazer login com o usuário 4%2&lt;/em&gt;.&lt;br&gt;Por favor, retorne ao %3 cliente e reinicie a autenticação.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="399"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="406"/>
         <source>Wrong user</source>
         <translation>usuário errado</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="417"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="424"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Login bem-sucedido&lt;/h1&gt;&lt;p&gt;Você pode fechar esta janela.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="425"/>
         <source>Login Successful</source>
         <translation>Login bem-sucedido</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="372"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="390"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Erro de Login&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -2557,7 +2558,7 @@ for additional privileges during the process.</source>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="125"/>
         <source>Could not move &apos;%1&apos; to the trash bin</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível mover &apos;%1&apos; para a lixeira</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="89"/>
@@ -3566,12 +3567,12 @@ for additional privileges during the process.</source>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.cpp" line="36"/>
         <source>Restart later</source>
-        <translation type="unfinished"/>
+        <translation>Reiniciar mais tarde</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.cpp" line="38"/>
         <source>Restart now</source>
-        <translation type="unfinished"/>
+        <translation>Reinicie agora</translation>
     </message>
 </context>
 <context>
@@ -4018,39 +4019,34 @@ Tem certeza de que deseja continuar?</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="343"/>
+        <location filename="../src/common/utility.cpp" line="339"/>
         <source>in the future</source>
         <translation>no futuro</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="339"/>
+        <location filename="../src/common/utility.cpp" line="334"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n dia(s) atrás</numerusform><numerusform>%n dia(s) atrás</numerusform><numerusform>%n dia(s) atrás</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="347"/>
+        <location filename="../src/common/utility.cpp" line="344"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n hora(s) atrás</numerusform><numerusform>%n hora(s) atrás</numerusform><numerusform>%n hora(s) atrás</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="352"/>
+        <location filename="../src/common/utility.cpp" line="350"/>
         <source>now</source>
         <translation>agora</translation>
     </message>
     <message>
-        <location filename="../src/common/utility.cpp" line="354"/>
-        <source>Less than a minute ago</source>
-        <translation>A menos de um minuto atrás</translation>
+        <location filename="../src/common/utility.cpp" line="352"/>
+        <source>less than a minute ago</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/common/utility.cpp" line="357"/>
+        <location filename="../src/common/utility.cpp" line="356"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n minuto(s) atrás</numerusform><numerusform>%n minuto(s) atrás</numerusform><numerusform>%n minuto(s) atrás</numerusform></translation>
-    </message>
-    <message>
-        <location filename="../src/common/utility.cpp" line="360"/>
-        <source>Some time ago</source>
-        <translation>Algum tempo atrás</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="115"/>
@@ -4224,12 +4220,12 @@ Tem certeza de que deseja continuar?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="638"/>
+        <location filename="../src/libsync/theme.cpp" line="644"/>
         <source>Username</source>
         <translation>Nome do Usuário</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="640"/>
+        <location filename="../src/libsync/theme.cpp" line="646"/>
         <source>E-mail address</source>
         <translation>Endereço de e-mail</translation>
     </message>
@@ -4239,12 +4235,12 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.ui" line="20"/>
         <source>Application restart required</source>
-        <translation type="unfinished"/>
+        <translation>É necessário reiniciar o aplicativo</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/updatefinisheddialog.ui" line="50"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Update installed successfully&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Restart the application to finish installing the update.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Atualização instalada com sucesso&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Reinicie o aplicativo para concluir a instalação da atualização.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>

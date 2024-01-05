@@ -352,6 +352,11 @@ public:
     virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
+     * List of ports to use for the local redirect server
+     */
+    virtual QVector<quint16> oauthPorts() const;
+
+    /**
      * Returns the required opeidconnect scopes
      */
     virtual QString openIdConnectScopes() const;
@@ -426,6 +431,12 @@ public:
      * */
     virtual QVector<std::tuple<QString, QString, QUrl>> urlButtons() const;
 
+
+    /**
+     * Whether or not to enable move-to-trash instead of deleting files that are gone from the server.
+     * Default: true
+     */
+    virtual bool enableMoveToTrash() const;
 
     /**
      * Whether to enable the special code for cernbox
