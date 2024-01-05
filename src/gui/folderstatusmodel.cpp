@@ -303,7 +303,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
             auto status = f->syncResult();
             if (!accountConnected) {
                 status.setStatus(SyncResult::Status::Offline);
-            } else if (f->syncPaused()) {
+            } else if (f->syncPaused() || f->accountState()->state() == AccountState::PausedDueToMetered) {
                 status.setStatus(SyncResult::Status::Paused);
             }
             return Theme::instance()->syncStateIconName(status);
@@ -938,7 +938,7 @@ void FolderStatusModel::slotApplySelectiveSync()
         const auto changes = (oldBlackListSet - blackListSet) + (blackListSet - oldBlackListSet);
         if (!changes.isEmpty()) {
             if (folder->isSyncRunning()) {
-                folder->slotTerminateSync();
+                folder->slotTerminateSync(tr("Selective sync list changed"));
             }
             //The part that changed should not be read from the DB on next sync because there might be new folders
             // (the ones that are no longer in the blacklist)
@@ -1219,7 +1219,7 @@ void FolderStatusModel::slotSyncAllPendingBigFolders()
 
         // Trigger a sync
         if (folder->isSyncRunning()) {
-            folder->slotTerminateSync();
+            folder->slotTerminateSync(tr("User triggered sync-all for selective synced folder"));
         }
         // The part that changed should not be read from the DB on next sync because there might be new folders
         // (the ones that are no longer in the blacklist)

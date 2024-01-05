@@ -18,6 +18,7 @@
 #include "application.h"
 #include "configfile.h"
 #include "fetchserversettings.h"
+#include "guiutility.h"
 
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/creds/httpcredentials.h"
@@ -115,8 +116,8 @@ AccountState::AccountState(AccountPtr account)
         Qt::QueuedConnection);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
-    if (QNetworkInformation::loadDefaultBackend()) {
-        connect(QNetworkInformation::instance(), &QNetworkInformation::reachabilityChanged, this, [this](QNetworkInformation::Reachability reachability) {
+    if (QNetworkInformation *qNetInfo = QNetworkInformation::instance()) {
+        connect(qNetInfo, &QNetworkInformation::reachabilityChanged, this, [this](QNetworkInformation::Reachability reachability) {
             switch (reachability) {
             case QNetworkInformation::Reachability::Online:
                 [[fallthrough]];
@@ -136,8 +137,18 @@ AccountState::AccountState(AccountPtr account)
                 break;
             }
         });
-    } else {
-        qCWarning(lcAccountState) << "Failed to load QNetworkInformation";
+
+        connect(qNetInfo, &QNetworkInformation::isMeteredChanged, this, [this](bool isMetered) {
+            if (ConfigFile().pauseSyncWhenMetered()) {
+                if (state() == State::Connected && isMetered) {
+                    qCInfo(lcAccountState) << "Network switched to a metered connection, setting account state to PausedDueToMetered";
+                    setState(State::PausedDueToMetered);
+                } else if (state() == State::PausedDueToMetered && !isMetered) {
+                    qCInfo(lcAccountState) << "Network switched to a NON-metered connection, setting account state to Connected";
+                    setState(State::Connected);
+                }
+            }
+        });
     }
 #endif
     // as a fallback and to recover after server issues we also poll
@@ -233,6 +244,8 @@ void AccountState::setState(State state)
             _connectionValidator->deleteLater();
             _connectionValidator.clear();
             checkConnectivity();
+        } else if (_state == Connected && Utility::internetConnectionIsMetered() && ConfigFile().pauseSyncWhenMetered()) {
+            _state = PausedDueToMetered;
         }
     }
 
@@ -292,7 +305,7 @@ void AccountState::signIn()
 
 bool AccountState::isConnected() const
 {
-    return _state == Connected;
+    return _state == Connected || _state == PausedDueToMetered;
 }
 
 void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)

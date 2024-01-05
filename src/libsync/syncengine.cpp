@@ -83,7 +83,7 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
 SyncEngine::~SyncEngine()
 {
     _goingDown = true;
-    abort();
+    abort(tr("application exit", "abort reason"));
     _excludedFiles.reset();
 }
 
@@ -852,7 +852,7 @@ bool SyncEngine::shouldDiscoverLocally(const QString &path) const
     return false;
 }
 
-void SyncEngine::abort()
+void SyncEngine::abort(const QString &reason)
 {
     bool aborting = false;
     if (_propagator) {
@@ -868,7 +868,7 @@ void SyncEngine::abort()
     if (aborting) {
         qCInfo(lcEngine) << "Aborting sync";
         if (!_goingDown) {
-            Q_EMIT syncError(tr("Aborted"));
+            Q_EMIT syncError(tr("Aborted due to %1").arg(reason));
         }
         finalize(false);
     }
