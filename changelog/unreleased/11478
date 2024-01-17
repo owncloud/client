@@ -1,0 +1,7 @@
+Bugfix: Client stuck in reconnecting after application start
+
+We fixed a bug where the client was starting OAuth authentication but
+did not display the required ui.
+This resulted in the client apparently getting stuck in "reconnecting"
+
+https://github.com/owncloud/client/pull/11478
