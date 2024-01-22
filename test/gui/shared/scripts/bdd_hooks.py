@@ -210,6 +210,7 @@ def teardown_client():
         # In Windows, removing only config and sync folders won't help
         # so to work around that, remove the account connection
         close_open_dialogs()
+        close_widgets()
         server_host = urlparse(get_config('localBackendUrl')).netloc
         accounts = Toolbar.get_accounts()
         for account in accounts:
@@ -252,4 +253,19 @@ def close_open_dialogs():
         if not closed:
             confirm_dialog = QApplication.activeModalWidget()
             if confirm_dialog.visible:
+                clickButton(waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON))
+
+
+def close_widgets():
+    ch = object.children(squish.waitForObject(AccountSetting.DIALOG_STACK))
+    for obj in ch:
+        if (
+            hasattr(obj, "objectName")
+            and obj.objectName != ''
+            and obj.objectName != "page"
+        ):
+            obj.close()
+            # if the dialog has a confirmation dialog, confirm it
+            confirm_dialog = QApplication.activeModalWidget()
+            if str(confirm_dialog) != "<null>" and confirm_dialog.visible:
                 clickButton(waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON))
