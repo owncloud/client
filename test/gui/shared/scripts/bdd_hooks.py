@@ -205,7 +205,7 @@ def hook(context):
 def teardown_client():
     # Cleanup user accounts from UI for Windows platform
     # It is not needed for Linux so skipping it in order to save CI time
-    if isWindows():
+    if not isWindows():
         # remove account from UI
         # In Windows, removing only config and sync folders won't help
         # so to work around that, remove the account connection
