@@ -256,7 +256,7 @@ Feature: Sharing
             | user     | Alice          |
             | password | 1234           |
         And the user removes permissions "edit" for user "Brian Murphy" of resource "textfile.txt" using the client-UI
-        When the user closes the sharing dialog
+        And the user closes the sharing dialog
         And the user removes permissions "edit" for user "Brian Murphy" of resource "FOLDER" using the client-UI
         And the user closes the sharing dialog
         And user "Brian" tries to overwrite the file "textfile.txt" with content "overwrite ownCloud test text file"
@@ -444,7 +444,7 @@ Feature: Sharing
         And user "Alice" has created folder "simple-folder/child" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for file "textfile0.txt" without password using the client-UI
-        When the user closes the sharing dialog
+        And the user closes the sharing dialog
         Then as user "Alice" the file "textfile0.txt" should have a public link in the server
         And the public should be able to download the file "textfile0.txt" without password from the last created public link by "Alice" in the server
         When the user creates a new public link with permissions "Download / View" for folder "simple-folder" without password using the client-UI
@@ -458,7 +458,7 @@ Feature: Sharing
         And user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for file "textfile0.txt" with password "<password>" using the client-UI
-        When the user closes the sharing dialog
+        And the user closes the sharing dialog
         Then as user "Alice" the file "textfile0.txt" should have a public link in the server
         And the public should be able to download the file "textfile0.txt" with password "<password>" from the last created public link by "Alice" in the server
         When the user creates a new public link with permissions "Download / View" for folder "simple-folder" with password "<password>" using the client-UI
@@ -502,7 +502,7 @@ Feature: Sharing
         When the user creates a new public link with following settings using the client-UI:
             | path       | textfile.txt |
             | expireDate | %default%    |
-        When the user closes the sharing dialog
+        And the user closes the sharing dialog
         Then the expiration date of the last public link of file "textfile.txt" should be "%default%"
         And as user "Alice" the file "textfile.txt" should have a public link in the server
 
