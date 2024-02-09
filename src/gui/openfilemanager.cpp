@@ -24,6 +24,10 @@
 #include <QDesktopServices>
 #include <QApplication>
 
+
+Q_LOGGING_CATEGORY(lcOpenFileManager, "gui.openfilemanager", QtInfoMsg)
+
+
 namespace OCC {
 
 // according to the QStandardDir impl from Qt5
@@ -51,8 +55,9 @@ static QStringList xdgDataDirs()
 static QString findDefaultFileManager()
 {
     QProcess p;
-    p.start(QStringLiteral("xdg-mime"), QStringList() << QStringLiteral("query") << QStringLiteral("default") << QStringLiteral("inode/directory"),
-        QFile::ReadOnly);
+    p.setProgram(QStringLiteral("xdg-mime"));
+    p.setArguments({QStringLiteral("query"), QStringLiteral("default"), QStringLiteral("inode/directory")});
+    Utility::startQProcess(p, false);
     p.waitForFinished();
     QString fileName = QString::fromUtf8(p.readAll().trimmed());
     if (fileName.isEmpty())
@@ -76,7 +81,9 @@ static QString findDefaultFileManager()
 static bool checkDolphinCanSelect()
 {
     QProcess p;
-    p.start(QStringLiteral("dolphin"), QStringList() << QStringLiteral("--help"), QFile::ReadOnly);
+    p.setProgram(QStringLiteral("dolphin"));
+    p.setArguments({QStringLiteral("--help")});
+    Utility::startQProcess(p, false);
     p.waitForFinished();
     return p.readAll().contains("--select");
 }
@@ -106,8 +113,8 @@ void showInFileManager(const QString &localPath)
             // only around the path. Use setNativeArguments to bypass this logic.
             p.setNativeArguments(nativeArgs);
 #endif
-            p.start(explorer, QStringList());
-            p.waitForFinished(5000);
+            p.setProgram(explorer);
+            Utility::startQProcess(p);
         }
     } else if (Utility::isMac()) {
         QStringList scriptArgs;
@@ -185,7 +192,10 @@ void showInFileManager(const QString &localPath)
             // fall back: open the default file manager, without ever selecting the file
             QDesktopServices::openUrl(QUrl::fromLocalFile(pathToOpen));
         } else {
-            QProcess::startDetached(app, args);
+            [[maybe_unused]] auto [ok, pid] = Utility::startQProcess(app, args, true);
+            if (!ok) {
+                qCWarning(lcOpenFileManager) << "Failed to start" << app;
+            }
         }
     }
 }

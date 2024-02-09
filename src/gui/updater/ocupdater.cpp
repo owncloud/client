@@ -537,8 +537,12 @@ void WindowsUpdater::startInstallerAndQuit()
         QStringLiteral("&{msiexec /norestart /passive /i '%1' /L*V '%2'| Out-Null ; &'%3'}")
             .arg(preparePathForPowershell(updateFile), preparePathForPowershell(msiLogFile), preparePathForPowershell(QCoreApplication::applicationFilePath()));
 
-    QProcess::startDetached(QStringLiteral("powershell.exe"), QStringList{QStringLiteral("-Command"), command});
-    QTimer::singleShot(0, QApplication::instance(), &QApplication::quit);
+    [[maybe_unused]] auto [ok, pid] = Utility::startQProcess(QStringLiteral("powershell.exe"), {QStringLiteral("-Command"), command});
+    if (!ok) {
+        qCCritical(lcUpdater) << "Failed to start powershell";
+    } else {
+        QTimer::singleShot(0, QApplication::instance(), &QApplication::quit);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////

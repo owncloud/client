@@ -35,6 +35,7 @@
 #include <memory>
 #include <optional>
 
+class QProcess;
 class QSettings;
 
 namespace OCC {
@@ -145,6 +146,10 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
     // uses QDir::canonicalPath() to judge and cares for the systems
     // case sensitivity.
     OCSYNC_EXPORT bool fileNamesEqual(const QString &fn1, const QString &fn2);
+
+    // start a QProcess and possibly apply workarounds for support of LD_PRELOAD etc
+    OCSYNC_EXPORT std::tuple<bool, qint64> startQProcess(const QString &app, const QStringList &args, bool detach = true);
+    OCSYNC_EXPORT std::tuple<bool, qint64> startQProcess(QProcess & p, bool detach = true);
 
     inline auto stripTrailingSlash(QStringView s)
     {

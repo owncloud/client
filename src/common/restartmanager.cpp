@@ -41,9 +41,9 @@ RestartManager::~RestartManager()
         QProcess process;
         process.setProgram(_applicationToRestart);
         process.setArguments(_args);
-        qint64 pid;
         qCDebug(lcRestart) << "Detaching" << _applicationToRestart << _args;
-        if (process.startDetached(&pid)) {
+        auto [ok, pid] = Utility::startQProcess(process, true);
+        if (ok) {
             qCDebug(lcRestart) << "Successfully restarted. New process PID" << pid;
         } else {
             qCCritical(lcRestart) << "Failed to restart" << process.error() << process.errorString();

@@ -205,6 +205,54 @@ bool Utility::fileNamesEqual(const QString &fn1, const QString &fn2)
     bool re = !a.isEmpty() && QString::compare(a, b, fsCasePreserving() ? Qt::CaseInsensitive : Qt::CaseSensitive) == 0;
     return re;
 }
+std::tuple<bool, qint64> Utility::startQProcess(const QString &app, const QStringList &args, bool detach)
+{
+    QProcess p;
+    p.setProgram(app);
+    p.setArguments(args);
+    return startQProcess(p, detach);
+}
+
+std::tuple<bool, qint64> Utility::startQProcess(QProcess &p, bool detach)
+{
+    if (isLinux()) {
+        auto env = p.processEnvironment();
+        if (env.inheritsFromParent()) {
+            env = QProcessEnvironment::systemEnvironment();
+        }
+        // check whether the process is located in our installation or an external process
+        QString program = p.program();
+        if (!QFileInfo(program).isAbsolute()) {
+            program = QStandardPaths::findExecutable(program);
+        }
+        if (!FileSystem::isChildPathOf(program, QCoreApplication::instance()->applicationDirPath())) {
+            const QStringList ldPrelaod = env.value(QLatin1String("LD_PRELOAD")).split(QLatin1Char(':'), Qt::SkipEmptyParts);
+            // check for https://github.com/darealshinji/linuxdeploy-plugin-checkrt
+            QStringList newLdPrelaod;
+            for (const auto &so : ldPrelaod) {
+                if (!so.endsWith(QLatin1String("checkrt/exec.so"))) {
+                    newLdPrelaod.append(so);
+                }
+            }
+            if (newLdPrelaod.isEmpty()) {
+                env.remove(QLatin1String("LD_PRELOAD"));
+            } else {
+                env.insert(QStringLiteral("LD_PRELOAD"), newLdPrelaod.join(QLatin1Char(':')));
+            }
+        }
+
+        p.setProcessEnvironment(env);
+    }
+    qCDebug(lcUtility) << "Starting process:" << p.program() << p.arguments() << "Env:" << p.environment();
+    if (detach) {
+        qint64 pid;
+        bool ok = p.startDetached(&pid);
+        return {ok, pid};
+    } else {
+        p.start(QProcess::ReadOnly);
+        return {p.waitForStarted(), p.processId()};
+    }
+}
 
 QDateTime Utility::qDateTimeFromTime_t(qint64 t)
 {
