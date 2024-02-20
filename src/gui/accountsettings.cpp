@@ -31,6 +31,7 @@
 #include "folderwizard/folderwizard.h"
 #include "gui/accountmodalwidget.h"
 #include "gui/models/models.h"
+#include "gui/selectivesyncwidget.h"
 #include "guiutility.h"
 #include "loginrequireddialog.h"
 #include "oauthloginwidget.h"
@@ -38,7 +39,6 @@
 #include "scheduling/syncscheduler.h"
 #include "settingsdialog.h"
 #include "theme.h"
-#include "tooltipupdater.h"
 
 #include <QAction>
 #include <QClipboard>
@@ -63,44 +63,6 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountSettings, "gui.account.settings", QtInfoMsg)
 
-/**
- * Adjusts the mouse cursor based on the region it is on over the folder tree view.
- *
- * Used to show that one can click the red error list box by changing the cursor
- * to the pointing hand.
- */
-class MouseCursorChanger : public QObject
-{
-    Q_OBJECT
-public:
-    MouseCursorChanger(QObject *parent)
-        : QObject(parent)
-    {
-    }
-
-    QTreeView *folderList;
-    FolderStatusDelegate *delegate;
-    QAbstractItemModel *model;
-
-protected:
-    bool eventFilter(QObject *watched, QEvent *event) override
-    {
-        if (event->type() == QEvent::HoverMove) {
-            Qt::CursorShape shape = Qt::ArrowCursor;
-            auto pos = folderList->mapFromGlobal(QCursor::pos());
-            auto index = folderList->indexAt(pos);
-            const auto rect = folderList->visualRect(index);
-            if (index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>()
-                    == FolderStatusModel::RootFolder
-                && (QStyle::visualRect(folderList->layoutDirection(), rect, delegate->errorsListRect(rect, index).toRect()).contains(pos)
-                    || QStyle::visualRect(folderList->layoutDirection(), rect, delegate->computeOptionsButtonRect(rect).toRect()).contains(pos))) {
-                shape = Qt::PointingHandCursor;
-            }
-            folderList->setCursor(shape);
-        }
-        return QObject::eventFilter(watched, event);
-    }
-};
 
 AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *parent)
     : QWidget(parent)
@@ -116,8 +78,9 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 
     auto weightedModel = new Models::WeightedQSortFilterProxyModel(this);
     weightedModel->setSourceModel(_model);
-    weightedModel->setWeightedColumn(static_cast<int>(FolderStatusModel::Columns::Priority));
+    weightedModel->setWeightedColumn(static_cast<int>(FolderStatusModel::Columns::Priority), Qt::DescendingOrder);
     weightedModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    weightedModel->sort(static_cast<int>(FolderStatusModel::Columns::HeaderRole), Qt::DescendingOrder);
 
     _sortModel = weightedModel;
 
@@ -125,45 +88,17 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 
     ui->_folderList->setItemDelegate(_delegate);
 
-    for (int i = 1; i <= _sortModel->columnCount(); ++i) {
-        ui->_folderList->header()->hideSection(i);
-    }
-    ui->_folderList->header()->setStretchLastSection(true);
-
-    ui->_folderList->sortByColumn(static_cast<int>(FolderStatusModel::Columns::HeaderRole), Qt::AscendingOrder);
-
-    ui->_folderList->header()->hide();
-#if defined(Q_OS_MAC)
-    ui->_folderList->setMinimumWidth(400);
-#else
-    ui->_folderList->setMinimumWidth(300);
-#endif
-    new ToolTipUpdater(ui->_folderList);
-
-    auto mouseCursorChanger = new MouseCursorChanger(this);
-    mouseCursorChanger->folderList = ui->_folderList;
-    mouseCursorChanger->delegate = _delegate;
-    mouseCursorChanger->model = _sortModel;
-    ui->_folderList->setMouseTracking(true);
-    ui->_folderList->setAttribute(Qt::WA_Hover, true);
-    ui->_folderList->installEventFilter(mouseCursorChanger);
-
     createAccountToolbox();
     connect(ui->_folderList, &QWidget::customContextMenuRequested,
         this, &AccountSettings::slotCustomContextMenuRequested);
     connect(ui->_folderList, &QAbstractItemView::clicked, this, &AccountSettings::slotFolderListClicked);
     QAction *syncNowAction = new QAction(this);
-    syncNowAction->setShortcut(QKeySequence(Qt::Key_F6));
     connect(syncNowAction, &QAction::triggered, this, &AccountSettings::slotScheduleCurrentFolder);
     addAction(syncNowAction);
 
     QAction *syncNowWithRemoteDiscovery = new QAction(this);
-    syncNowWithRemoteDiscovery->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_F6));
     connect(syncNowWithRemoteDiscovery, &QAction::triggered, this, &AccountSettings::slotScheduleCurrentFolderForceFullDiscovery);
     addAction(syncNowWithRemoteDiscovery);
-
-
-    connect(_model, &FolderStatusModel::suggestExpand, this, [this](const QModelIndex &index) { ui->_folderList->expand(_sortModel->mapFromSource(index)); });
 
     connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
     connect(this, &AccountSettings::folderChanged, _model, &FolderStatusModel::resetFolders);
@@ -235,20 +170,9 @@ void AccountSettings::slotToggleSignInState()
     }
 }
 
-void AccountSettings::doExpand()
-{
-    // Make sure at least the root items are expanded
-    for (int i = 0; i < _sortModel->rowCount(); ++i) {
-        auto idx = _sortModel->index(i, 0);
-        if (!ui->_folderList->isExpanded(idx))
-            ui->_folderList->setExpanded(idx, true);
-    }
-}
-
 void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 {
-
-    QTreeView *tv = ui->_folderList;
+    auto *tv = ui->_folderList;
     QModelIndex index = tv->indexAt(pos);
     if (!index.isValid()) {
         return;
@@ -260,13 +184,8 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
         return menu->addAction(tr("Remove folder sync connection"), this, &AccountSettings::slotRemoveCurrentFolder);
     };
 
-    auto classification = index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>();
-    if (classification != FolderStatusModel::RootFolder && classification != FolderStatusModel::SubFolder) {
-        return;
-    }
-
     // Only allow removal if the item isn't in "ready" state.
-    if (classification == FolderStatusModel::RootFolder && !index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::IsReady)).data().toBool() && !isDeployed) {
+    if (!index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::IsReady)).data().toBool() && !isDeployed) {
         QMenu *menu = new QMenu(tv);
         menu->setAttribute(Qt::WA_DeleteOnClose);
         addRemoveFolderAction(menu);
@@ -280,14 +199,8 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     // Add an action to open the folder in the system's file browser:
 
     QUrl folderUrl;
-    if (classification == FolderStatusModel::SubFolder) {
-        const QString fileName = index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::FolderPathRole)).data().toString();
-        folderUrl = QUrl::fromLocalFile(fileName);
-    } else {
-        // the root folder
-        if (auto *folder = selectedFolder()) {
-            folderUrl = QUrl::fromLocalFile(folder->path());
-        }
+    if (auto *folder = selectedFolder()) {
+        folderUrl = QUrl::fromLocalFile(folder->path());
     }
 
     if (!folderUrl.isEmpty()) {
@@ -305,26 +218,15 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 
     // Add an action to open the folder on the server in a webbrowser:
 
-    if (auto info = _model->infoForIndex(_sortModel->mapToSource(index))) {
-        if (info->_folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
-            QString path = info->_folder->remotePathTrailingSlash();
-            if (classification == FolderStatusModel::SubFolder) {
-                // Only add the path of subfolders, because the remote path is the path of the root folder.
-                path += info->_path;
-            }
-            menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = info->_folder->webDavUrl(), this] {
+    if (auto folder = _model->folder(_sortModel->mapToSource(index))) {
+        if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
+            QString path = folder->remotePathTrailingSlash();
+            menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
                 fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QUrl &url) {
                     Utility::openBrowser(url, nullptr);
                 });
             });
         }
-    }
-
-    // For sub-folders we're now done.
-
-    if (index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>() == FolderStatusModel::SubFolder) {
-        menu->popup(QCursor::pos());
-        return;
     }
 
     // Root-folder specific actions:
@@ -338,12 +240,6 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
     // qpointer for the async context menu
     QPointer<Folder> folder = selectedFolder();
     if (OC_ENSURE(folder && folder->isReady())) {
-        if (!ui->_folderList->isExpanded(index) && folder->supportsSelectiveSync()) {
-            QAction *ac = menu->addAction(tr("Choose what to sync"));
-            ac->setEnabled(folderConnected);
-            connect(ac, &QAction::triggered, this, &AccountSettings::doExpand);
-        }
-
         if (!folderPaused) {
             QAction *ac = menu->addAction(tr("Force sync now"));
             if (folder->isSyncRunning()) {
@@ -375,6 +271,9 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
                 }
             }
         }
+        if (!folder->virtualFilesEnabled()) {
+            menu->addAction(tr("Choose what to sync"), this, [folder, this] { showSelectiveSyncDialog(folder); });
+        }
         menu->popup(QCursor::pos());
     } else {
         menu->deleteLater();
@@ -383,27 +282,35 @@ void AccountSettings::slotCustomContextMenuRequested(const QPoint &pos)
 
 void AccountSettings::slotFolderListClicked(const QModelIndex &indx)
 {
-    const auto itemType = indx.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>();
-    if (itemType == FolderStatusModel::RootFolder) {
-        // tries to find if we clicked on the '...' button.
-        QTreeView *tv = ui->_folderList;
-        const auto pos = tv->mapFromGlobal(QCursor::pos());
-        const auto rect = tv->visualRect(indx);
-        if (QStyle::visualRect(layoutDirection(), rect, _delegate->computeOptionsButtonRect(rect).toRect()).contains(pos)) {
-            slotCustomContextMenuRequested(pos);
-            return;
-        }
-        if (_delegate->errorsListRect(tv->visualRect(indx), indx).contains(pos)) {
-            emit showIssuesList();
-            return;
-        }
-
-        // Expand root items on single click
-        if (_accountState && _accountState->state() == AccountState::Connected) {
-            bool expanded = !(ui->_folderList->isExpanded(indx));
-            ui->_folderList->setExpanded(indx, expanded);
-        }
+    // tries to find if we clicked on the '...' button.
+    auto *tv = ui->_folderList;
+    const auto pos = tv->mapFromGlobal(QCursor::pos());
+    const auto rect = tv->visualRect(indx);
+    if (QStyle::visualRect(layoutDirection(), rect, _delegate->computeOptionsButtonRect(rect).toRect()).contains(pos)) {
+        slotCustomContextMenuRequested(pos);
+        return;
     }
+    if (_delegate->errorsListRect(tv->visualRect(indx), indx).contains(pos)) {
+        emit showIssuesList();
+        return;
+    }
+}
+
+void AccountSettings::showSelectiveSyncDialog(Folder *folder)
+{
+    auto *selectiveSync = new SelectiveSyncWidget(_accountState->account(), this);
+    selectiveSync->setDavUrl(folder->webDavUrl());
+    bool ok;
+    selectiveSync->setFolderInfo(
+        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok));
+    Q_ASSERT(ok);
+
+    auto *modalWidget = new AccountModalWidget(tr("Choose what to sync"), selectiveSync, this);
+    connect(modalWidget, &AccountModalWidget::accepted, this, [selectiveSync, folder, this] {
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
+        Q_EMIT folderChanged();
+    });
+    addModalWidget(modalWidget);
 }
 
 void AccountSettings::slotAddFolder()
@@ -707,7 +614,6 @@ void AccountSettings::slotAccountStateChanged()
         showConnectionLabel(tr("Disconnected from: %1.").arg(server));
         break;
     }
-
     _toggleReconnect->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
     // set the correct label for the Account toolbox button
     if (_accountState->isSignedOut()) {
@@ -717,7 +623,6 @@ void AccountSettings::slotAccountStateChanged()
     }
 
     if (state == AccountState::Connected) {
-        ui->_folderList->setItemsExpandable(true);
         ui->addButton->setEnabled(true);
 
         if (_accountState->supportsSpaces()) {
@@ -728,7 +633,6 @@ void AccountSettings::slotAccountStateChanged()
             ui->addButton->setToolTip(tr("Click this button to add a folder to synchronize."));
         }
     } else {
-        ui->_folderList->setItemsExpandable(false);
         ui->addButton->setEnabled(false);
 
         if (_accountState->supportsSpaces()) {
@@ -738,9 +642,6 @@ void AccountSettings::slotAccountStateChanged()
             ui->addButton->setText(tr("Add Folder"));
             ui->addButton->setToolTip(tr("You need to be connected to add a folder."));
         }
-
-        /* check if there are expanded root items, if so, close them */
-        ui->_folderList->collapseAll();
     }
 }
 
@@ -831,16 +732,7 @@ bool AccountSettings::event(QEvent *e)
             _accountState->quotaInfo()->setActive(isVisible());
         }
     }
-    if (e->type() == QEvent::Show) {
-        // Expand the folder automatically only if there's only one, see #4283
-        // The 2 is 1 folder + 1 'add folder' button
-        if (_sortModel->rowCount() <= 2) {
-            ui->_folderList->setExpanded(_sortModel->index(0, 0), true);
-        }
-    }
     return QWidget::event(e);
 }
 
 } // namespace OCC
-
-#include "accountsettings.moc"

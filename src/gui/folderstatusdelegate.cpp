@@ -46,11 +46,6 @@ QSize FolderStatusDelegate::sizeHint(const QStyleOptionViewItem &option,
     const_cast<FolderStatusDelegate *>(this)->updateFont(option.font);
     QFontMetricsF fm(_font);
 
-    const auto classif = index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>();
-    if (classif != FolderStatusModel::RootFolder) {
-        return QStyledItemDelegate::sizeHint(option, index);
-    }
-
     // calc height
     qreal h = rootFolderHeightWithoutErrors() + _margin;
     // this already includes the bottom margin
@@ -93,10 +88,6 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         return;
     }
 
-    if (index.siblingAtColumn(static_cast<int>(FolderStatusModel::Columns::ItemType)).data().value<FolderStatusModel::ItemType>()
-        != FolderStatusModel::RootFolder) {
-        return QStyledItemDelegate::paint(painter, option, index);
-    }
     const_cast<FolderStatusDelegate *>(this)->updateFont(option.font);
     const auto textAlign = Qt::AlignLeft;
 
@@ -164,15 +155,6 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
     auto palette = option.palette;
 
-    if (qApp->style()->inherits("QWindowsVistaStyle")) {
-        // Hack: Windows Vista's light blue is not contrasting enough for white
-
-        // (code from QWindowsVistaStyle::drawControl for CE_ItemViewItem)
-        palette.setColor(QPalette::All, QPalette::HighlightedText, palette.color(QPalette::Active, QPalette::Text));
-        palette.setColor(QPalette::All, QPalette::Highlight, palette.base().color().darker(108));
-    }
-
-
     QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
         ? QPalette::Normal
         : QPalette::Disabled;
@@ -180,7 +162,11 @@ void FolderStatusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
         cg = QPalette::Inactive;
 
     if (option.state & QStyle::State_Selected) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+        painter->setPen(palette.color(cg, QPalette::Accent));
+#else
         painter->setPen(palette.color(cg, QPalette::HighlightedText));
+#endif
     } else {
         painter->setPen(palette.color(cg, QPalette::Text));
     }
