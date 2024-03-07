@@ -93,7 +93,7 @@ config = {
                 "skip": False,
             },
             "ocis": {
-                "version": "5.0.0-rc.5",
+                "version": "5.0.0",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
                 "skip": False,
@@ -619,7 +619,6 @@ def uploadGuiTestLogs(ctx, server_type = "oc10"):
     trigger = {
         "status": [
             "failure",
-            "success",
         ],
         "event": [
             "cron",
@@ -652,7 +651,6 @@ def logGuiReports(ctx, server_type):
     trigger = {
         "status": [
             "failure",
-            "success",
         ],
         "event": [
             "cron",
