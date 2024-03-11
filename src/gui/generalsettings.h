@@ -47,7 +47,6 @@ private slots:
     void saveMiscSettings();
     void slotToggleLaunchOnStartup(bool);
     void slotToggleOptionalDesktopNotifications(bool);
-    void slotUpdateChannelChanged(int index);
     void slotIgnoreFilesEditor();
     void loadMiscSettings();
 
