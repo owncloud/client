@@ -141,6 +141,9 @@ public:
     bool pauseSyncWhenMetered() const;
     void setPauseSyncWhenMetered(bool isChecked);
 
+    bool pauseSyncWhenBehindCaptivePortal() const;
+    void setPauseSyncWhenBehindCaptivePortal(bool isChecked);
+
     /** If we should move the files deleted on the server in the trash  */
     bool moveToTrash() const;
     void setMoveToTrash(bool);

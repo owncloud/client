@@ -42,6 +42,7 @@ private slots:
     void saveProxySettings();
     void saveBWLimitSettings();
     void saveMeteredSettings();
+    void saveCaptivePortalSettings();
 
     /// Red marking of host field if empty and enabled
     void checkEmptyProxyHost();
@@ -55,6 +56,7 @@ private:
     void loadProxySettings();
     void loadBWLimitSettings();
     void loadMeteredSettings();
+    void loadCaptivePortalSettings();
     CredentialManager *_credentialManager;
 
 

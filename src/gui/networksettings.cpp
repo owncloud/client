@@ -96,6 +96,7 @@ NetworkSettings::NetworkSettings(QWidget *parent)
     checkAccountLocalhost();
 
     connect(_ui->pauseSyncWhenMeteredCheckbox, &QAbstractButton::clicked, this, &NetworkSettings::saveMeteredSettings);
+    connect(_ui->pauseSyncWhenBehindCaptivePortalCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveCaptivePortalSettings);
 }
 
 NetworkSettings::~NetworkSettings()
@@ -195,6 +196,18 @@ void NetworkSettings::loadMeteredSettings()
     _ui->pauseSyncWhenMeteredCheckbox->setVisible(false);
 }
 
+void NetworkSettings::loadCaptivePortalSettings()
+{
+    if (QNetworkInformation *qNetInfo = QNetworkInformation::instance()) {
+        if (qNetInfo->supports(QNetworkInformation::Feature::CaptivePortal)) {
+            _ui->pauseSyncWhenBehindCaptivePortalCheckBox->setChecked(ConfigFile().pauseSyncWhenBehindCaptivePortal());
+            return;
+        }
+    }
+
+    _ui->pauseSyncWhenBehindCaptivePortalCheckBox->setVisible(false);
+}
+
 void NetworkSettings::saveProxySettings()
 {
     ConfigFile cfgFile;
@@ -254,6 +267,13 @@ void NetworkSettings::saveMeteredSettings()
     bool pauseSyncWhenMetered = _ui->pauseSyncWhenMeteredCheckbox->isChecked();
     ConfigFile().setPauseSyncWhenMetered(pauseSyncWhenMetered);
     FolderMan::instance()->scheduler()->setPauseSyncWhenMetered(pauseSyncWhenMetered);
+}
+
+void OCC::NetworkSettings::saveCaptivePortalSettings()
+{
+    bool pauseWhenCaptivePortal = _ui->pauseSyncWhenBehindCaptivePortalCheckBox->isChecked();
+    ConfigFile().setPauseSyncWhenBehindCaptivePortal(pauseWhenCaptivePortal);
+    FolderMan::instance()->scheduler()->setPauseSyncWhenBehindCaptivePortal(pauseWhenCaptivePortal);
 }
 
 void NetworkSettings::checkEmptyProxyHost()

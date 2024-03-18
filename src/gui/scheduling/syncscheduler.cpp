@@ -107,6 +107,7 @@ private:
 SyncScheduler::SyncScheduler(FolderMan *parent)
     : QObject(parent)
     , _pauseSyncWhenMetered(ConfigFile().pauseSyncWhenMetered())
+    , _pauseSyncWhenBehindCaptivePortal(ConfigFile().pauseSyncWhenBehindCaptivePortal())
     , _queue(new FolderPriorityQueue)
 {
     new ETagWatcher(parent, this);
@@ -176,6 +177,16 @@ void SyncScheduler::startNext()
             }
         }
 
+        if (_pauseSyncWhenBehindCaptivePortal && Utility::internetThroughCaptivePortal()) {
+            if (syncPriority == Priority::High) {
+                qCInfo(lcSyncScheduler) << "Scheduler is paused due to a captive portal, BUT next sync is HIGH priority, so allow sync to start";
+            } else {
+                enqueueFolder(_currentSync, syncPriority);
+                qCInfo(lcSyncScheduler) << "Scheduler is paused due to a captive portal, next sync is not started";
+                return;
+            }
+        }
+
         connect(
             _currentSync, &Folder::syncFinished, this,
             [this](const SyncResult &result) {
@@ -210,6 +221,14 @@ void SyncScheduler::setPauseSyncWhenMetered(bool pauseSyncWhenMetered)
 {
     _pauseSyncWhenMetered = pauseSyncWhenMetered;
     if (!pauseSyncWhenMetered) {
+        startNext();
+    }
+}
+
+void OCC::SyncScheduler::setPauseSyncWhenBehindCaptivePortal(bool pauseSyncWhenBehindCaptivePortal)
+{
+    _pauseSyncWhenBehindCaptivePortal = pauseSyncWhenBehindCaptivePortal;
+    if (!pauseSyncWhenBehindCaptivePortal) {
         startNext();
     }
 }

@@ -22,6 +22,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="pauseSyncWhenBehindCaptivePortalCheckBox">
+     <property name="text">
+      <string>Pause synchronization when behind a captive portal</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="proxyGroupBox">
      <property name="enabled">
       <bool>true</bool>

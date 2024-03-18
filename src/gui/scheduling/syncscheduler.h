@@ -57,13 +57,14 @@ public:
     bool hasCurrentRunningSyncRunning() const;
 
     void setPauseSyncWhenMetered(bool pauseSyncWhenMetered);
-
+    void setPauseSyncWhenBehindCaptivePortal(bool pauseSyncWhenBehindCaptivePortal);
 
 private:
     void startNext();
 
     bool _running = false;
     bool _pauseSyncWhenMetered;
+    bool _pauseSyncWhenBehindCaptivePortal;
     QPointer<Folder> _currentSync;
     FolderPriorityQueue *_queue;
 };

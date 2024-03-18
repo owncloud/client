@@ -98,6 +98,12 @@ const QString pauseSyncWhenMeteredC()
 {
     return QStringLiteral("pauseWhenMetered");
 }
+
+const QString pauseSyncWhenBehindCaptivePortalC()
+{
+    return QStringLiteral("pauseSyncWhenBehindCaptivePortal");
+}
+
 const QString moveToTrashC() { return QStringLiteral("moveToTrash"); }
 
 const QString issuesWidgetFilterC()
@@ -706,6 +712,16 @@ bool ConfigFile::pauseSyncWhenMetered() const
 void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 {
     setValue(pauseSyncWhenMeteredC(), isChecked);
+}
+
+bool ConfigFile::pauseSyncWhenBehindCaptivePortal() const
+{
+    return getValue(pauseSyncWhenBehindCaptivePortalC(), {}, false).toBool();
+}
+
+void ConfigFile::setPauseSyncWhenBehindCaptivePortal(bool isChecked)
+{
+    setValue(pauseSyncWhenBehindCaptivePortalC(), isChecked);
 }
 
 bool ConfigFile::moveToTrash() const

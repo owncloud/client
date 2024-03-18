@@ -104,6 +104,15 @@ bool Utility::internetConnectionIsMetered()
     return false;
 }
 
+bool OCC::Utility::internetThroughCaptivePortal()
+{
+    if (auto *qNetInfo = QNetworkInformation::instance()) {
+        return qNetInfo->isBehindCaptivePortal();
+    }
+
+    return false;
+}
+
 void Utility::markDirectoryAsSyncRoot(const QString &path)
 {
     Q_ASSERT(getDirectorySyncRootMarking(path).isEmpty());
