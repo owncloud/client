@@ -7,10 +7,11 @@ from helpers.ConfigHelper import get_config
 
 class SyncConnection:
     FOLDER_SYNC_CONNECTION = {
-        "container": names.settings_stack_QStackedWidget,
-        "name": "_folderList",
-        "type": "QListView",
-        "visible": 1,
+        "checkable": False,
+        "container": names.quickWidget_scrollView_ScrollView,
+        "type": "Button",
+        "unnamed": 1,
+        "visible": True,
     }
     MENU = {
         "type": "QMenu",
@@ -32,14 +33,11 @@ class SyncConnection:
 
     @staticmethod
     def openMenu():
-        squish.openContextMenu(
-            squish.waitForObjectItem(
-                SyncConnection.FOLDER_SYNC_CONNECTION,
-                get_config('syncConnectionName'),
-            ),
+        squish.mouseClick(
+            squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION),
             0,
             0,
-            squish.Qt.NoModifier,
+            squish.Qt.LeftButton,
         )
 
     @staticmethod
