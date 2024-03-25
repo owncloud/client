@@ -9,6 +9,7 @@ from helpers.SyncHelper import (
     waitForFileOrFolderToSync,
     waitForFileOrFolderToHaveSyncError,
 )
+from helpers.SetupClientHelper import getTempResourcePath, setCurrentUserSyncPath
 
 
 @Given('the user has paused the file sync')
@@ -161,10 +162,12 @@ def step(context):
     'the user sets the temp folder "|any|" as local sync path in sync connection wizard'
 )
 def step(context, folderName):
-    SyncConnectionWizard.setSyncPathInSyncConnectionWizard(folderName)
+    sync_path = getTempResourcePath(folderName)
+    SyncConnectionWizard.setSyncPathInSyncConnectionWizard(sync_path)
     if get_config("ocis"):
         # empty connection name when using temporary locations
         set_config('syncConnectionName', '')
+        setCurrentUserSyncPath(sync_path)
 
 
 @When('the user selects "|any|" as a remote destination folder')
