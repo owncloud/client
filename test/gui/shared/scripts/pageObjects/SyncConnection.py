@@ -2,11 +2,17 @@ import names
 import squish
 import object
 
-from helpers.ConfigHelper import get_config
+from helpers.ObjectHelper import get_center_coordinates
 
 
 class SyncConnection:
     FOLDER_SYNC_CONNECTION = {
+        "container": names.settings_stack_QStackedWidget,
+        "name": "_folderList",
+        "type": "QListView",
+        "visible": 1,
+    }
+    FOLDER_SYNC_CONNECTION_MENU_BUTTON = {
         "checkable": False,
         "container": names.quickWidget_scrollView_ScrollView,
         "type": "Button",
@@ -33,10 +39,14 @@ class SyncConnection:
 
     @staticmethod
     def openMenu():
+        menu_button = squish.waitForObject(
+            SyncConnection.FOLDER_SYNC_CONNECTION_MENU_BUTTON
+        )
+        x, y = get_center_coordinates(menu_button)
         squish.mouseClick(
-            squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION),
-            0,
-            0,
+            menu_button,
+            x,
+            y,
             squish.Qt.LeftButton,
         )
 
