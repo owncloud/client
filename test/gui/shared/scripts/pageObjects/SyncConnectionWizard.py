@@ -232,14 +232,18 @@ class SyncConnectionWizard:
     @staticmethod
     def setSyncPathInSyncConnectionWizardOcis(spaceName):
         # override the default sync path
+        if not spaceName:
+            spaceName = get_config('syncConnectionName')
         squish.type(
             squish.waitForObject(SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER),
             "<Ctrl+A>",
         )
+        currentSyncPath = path.join(getCurrentUserSyncPath(), spaceName)
         squish.type(
             SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER,
-            path.join(getCurrentUserSyncPath(), spaceName),
+            currentSyncPath,
         )
+        setCurrentUserSyncPath(currentSyncPath)
         SyncConnectionWizard.nextStep()
 
     @staticmethod

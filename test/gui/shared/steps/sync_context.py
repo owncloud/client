@@ -4,7 +4,7 @@ from pageObjects.Toolbar import Toolbar
 from pageObjects.Activity import Activity
 from pageObjects.Settings import Settings
 
-from helpers.ConfigHelper import get_config, isWindows
+from helpers.ConfigHelper import get_config, isWindows, set_config
 from helpers.SyncHelper import (
     waitForFileOrFolderToSync,
     waitForFileOrFolderToHaveSyncError,
@@ -144,6 +144,14 @@ def step(context):
         rowIndex += 1
 
 
+@When('the user selects "|any|" space in sync connection wizard')
+def step(context, space_name):
+    if get_config("ocis"):
+        SyncConnectionWizard.selectSpaceToSync(space_name)
+        SyncConnectionWizard.nextStep()
+        set_config('syncConnectionName', space_name)
+
+
 @When('the user sets the sync path in sync connection wizard')
 def step(context):
     SyncConnectionWizard.setSyncPathInSyncConnectionWizard()
@@ -154,11 +162,16 @@ def step(context):
 )
 def step(context, folderName):
     SyncConnectionWizard.setSyncPathInSyncConnectionWizard(folderName)
+    if get_config("ocis"):
+        # empty connection name when using temporary locations
+        set_config('syncConnectionName', '')
 
 
 @When('the user selects "|any|" as a remote destination folder')
 def step(context, folderName):
-    SyncConnectionWizard.selectRemoteDestinationFolder(folderName)
+    # There's no remote destination section with oCIS server
+    if not get_config("ocis"):
+        SyncConnectionWizard.selectRemoteDestinationFolder(folderName)
 
 
 @When('the user syncs the "|any|" space')
