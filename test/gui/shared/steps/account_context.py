@@ -20,7 +20,9 @@ def step(context, accountType):
     AccountConnectionWizard.addAccount(account_details)
     space = ""
     if get_config("ocis"):
-        space = "Personal"
+        # listen for Shares space to finish sync
+        # Personal space doesn't include all sync messages
+        space = "Shares"
     # wait for files to sync
     waitForInitialSyncToComplete(getResourcePath('/', account_details["user"], space))
 
