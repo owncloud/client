@@ -15,9 +15,39 @@
 #include "accountmodalwidget.h"
 #include "ui_accountmodalwidget.h"
 
+#include "resources/resources.h"
+
+#include <QMessageBox>
 #include <QPushButton>
+#include <QQuickWidget>
 
 namespace OCC {
+
+namespace {
+    auto *createQmlWidget(const QUrl &url, const QList<QQmlContext::PropertyPair> &properties)
+    {
+        auto *widget = new QQuickWidget;
+        widget->engine()->rootContext()->setContextProperties(properties);
+        widget->engine()->addImageProvider(QStringLiteral("ownCloud"), new Resources::CoreImageProvider());
+        widget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+        widget->setSource(url);
+        if (!widget->errors().isEmpty()) {
+            auto box = new QMessageBox(QMessageBox::Critical, QStringLiteral("QML Error"), QDebug::toString(widget->errors()));
+            box->setAttribute(Qt::WA_DeleteOnClose);
+            box->exec();
+            qFatal("A qml error occured %s", qPrintable(QDebug::toString(widget->errors())));
+        }
+        return widget;
+    }
+}
+
+AccountModalWidget::AccountModalWidget(
+    const QString &title, const QUrl &qmlSrc, const QList<QQmlContext::PropertyPair> &properties, const QList<Button> &buttons, QWidget *parent)
+    : AccountModalWidget(title, createQmlWidget(qmlSrc, properties), buttons, parent)
+{
+}
+
+
 AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, const QList<Button> &buttons, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AccountModalWidget)

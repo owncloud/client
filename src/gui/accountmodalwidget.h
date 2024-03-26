@@ -13,8 +13,11 @@
  */
 
 #pragma once
+
 #include <QDialogButtonBox>
+#include <QQmlContext>
 #include <QWidget>
+
 
 namespace OCC {
 
@@ -28,6 +31,8 @@ class AccountModalWidget : public QWidget
 public:
     using Button = QPair<QPushButton *, QDialogButtonBox::ButtonRole>;
 
+    AccountModalWidget(const QString &title, const QUrl &qmlSrc, const QList<QQmlContext::PropertyPair> &properties, const QList<Button> &buttons = {},
+        QWidget *parent = nullptr);
     AccountModalWidget(const QString &title, QWidget *widget, const QList<Button> &buttons = {}, QWidget *parent = nullptr);
 
     QDialogButtonBox *buttons();
