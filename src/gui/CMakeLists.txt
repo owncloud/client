@@ -72,6 +72,7 @@ set(client_SRCS
     translations.cpp
     creds/httpcredentialsgui.cpp
     updateurldialog.cpp
+    removeallfileswidget.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp
