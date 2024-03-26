@@ -249,7 +249,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
         folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok));
     Q_ASSERT(ok);
 
-    auto *modalWidget = new AccountModalWidget(tr("Choose what to sync"), selectiveSync, this);
+    auto *modalWidget = new AccountModalWidget(tr("Choose what to sync"), selectiveSync, {}, this);
     connect(modalWidget, &AccountModalWidget::accepted, this, [selectiveSync, folder, this] {
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
         Q_EMIT folderChanged();
