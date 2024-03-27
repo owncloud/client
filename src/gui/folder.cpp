@@ -30,7 +30,9 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
+#include "gui/accountmodalwidget.h"
 #include "gui/accountsettings.h"
+#include "gui/removeallfileswidget.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
@@ -45,14 +47,12 @@
 #include "common/utility_win.h"
 #endif
 
+#include <QApplication>
+#include <QDir>
+#include <QPushButton>
+#include <QSettings>
 #include <QTimer>
 #include <QUrl>
-#include <QDir>
-#include <QSettings>
-
-#include <QMessageBox>
-#include <QPushButton>
-#include <QApplication>
 
 using namespace std::chrono_literals;
 
@@ -1226,29 +1226,15 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction)
         ownCloudGui::raise();
         return;
     }
-    const QString msg = [direction] {
-        if (direction == SyncFileItem::Down) {
-            return tr("All files in the sync folder '%1' folder were deleted on the server.\n"
-                      "These deletes will be synchronized to your local sync folder, making such files "
-                      "unavailable unless you have a right to restore. \n"
-                      "If you decide to keep the files, they will be re-synced with the server if you have rights to do so.\n"
-                      "If you decide to delete the files, they will be unavailable to you, unless you are the owner.");
-        } else {
-            return tr("All the files in your local sync folder '%1' were deleted. These deletes will be "
-                      "synchronized with your server, making such files unavailable unless restored.\n"
-                      "Are you sure you want to sync those actions with the server?\n"
-                      "If this was an accident and you decide to keep your files, they will be re-synced from the server.");
-        }
-    }();
-    _removeAllFilesDialog =
-        new QMessageBox(QMessageBox::Warning, tr("Remove All Files?"), msg.arg(shortGuiLocalPath()), QMessageBox::NoButton, ocApp()->gui()->settingsDialog());
-    _removeAllFilesDialog->setAttribute(Qt::WA_DeleteOnClose);
-    _removeAllFilesDialog->setWindowFlags(_removeAllFilesDialog->windowFlags() | Qt::WindowStaysOnTopHint);
-    _removeAllFilesDialog->addButton(tr("Remove all files"), QMessageBox::DestructiveRole);
-    QPushButton *keepBtn = _removeAllFilesDialog->addButton(tr("Keep files"), QMessageBox::AcceptRole);
-    _removeAllFilesDialog->setDefaultButton(keepBtn);
+
+    const QList<AccountModalWidget::Button> buttons = {
+        {new QPushButton(tr("Remove all files")), QDialogButtonBox::AcceptRole}, {new QPushButton(tr("Keep files")), QDialogButtonBox::RejectRole}};
+    QPushButton *keepBtn = buttons[1].first;
+    keepBtn->setDefault(true);
+
+    _removeAllFilesDialog = new AccountModalWidget(tr("Remove All Files?"), new RemoveAllFilesWidget(direction, shortGuiLocalPath()), buttons);
     setSyncPaused(true);
-    connect(_removeAllFilesDialog, &QMessageBox::finished, this, [keepBtn, this] {
+    connect(_removeAllFilesDialog, &AccountModalWidget::finished, this, [keepBtn, this] {
         if (_removeAllFilesDialog->clickedButton() == keepBtn) {
             // reset the db upload all local files or download all remote files
             FileSystem::setFolderMinimumPermissions(path());
@@ -1266,11 +1252,8 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction)
         }
     });
     connect(this, &Folder::destroyed, _removeAllFilesDialog, &QMessageBox::deleteLater);
-    ocApp()
-        ->gui()
-        ->settingsDialog()
-        ->accountSettings(_accountState->account().get())
-        ->addModalLegacyDialog(_removeAllFilesDialog, AccountSettings::ModalWidgetSizePolicy::Minimum);
+
+    ocApp()->gui()->settingsDialog()->accountSettings(_accountState->account().get())->addModalWidget(_removeAllFilesDialog);
 }
 
 FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName)

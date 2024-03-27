@@ -13,35 +13,28 @@
  */
 
 #pragma once
-#include <QDialogButtonBox>
+
+#include "gui/accountmodalwidget.h"
+#include "libsync/syncfileitem.h"
+
 #include <QWidget>
 
 namespace OCC {
 
 namespace Ui {
-    class AccountModalWidget;
+    class RemoveAllFilesWidget;
 }
 
-class AccountModalWidget : public QWidget
+
+class RemoveAllFilesWidget : public QWidget
 {
     Q_OBJECT
+
 public:
-    using Button = QPair<QPushButton *, QDialogButtonBox::ButtonRole>;
-
-    AccountModalWidget(const QString &title, QWidget *widget, const QList<Button> &buttons = {}, QWidget *parent = nullptr);
-
-    QDialogButtonBox *buttons();
-
-    QAbstractButton *clickedButton() const;
-
-Q_SIGNALS:
-    void accepted();
-    void rejected();
-    void finished();
+    explicit RemoveAllFilesWidget(SyncFileItem::Direction direction, const QString &path, QWidget *parent = nullptr);
+    ~RemoveAllFilesWidget();
 
 private:
-    Ui::AccountModalWidget *ui;
-    QAbstractButton *_clickedButton = nullptr;
+    Ui::RemoveAllFilesWidget *ui;
 };
-
-} // OCC
+}

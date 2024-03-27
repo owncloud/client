@@ -15,14 +15,23 @@
 #include "accountmodalwidget.h"
 #include "ui_accountmodalwidget.h"
 
+#include <QPushButton>
+
 namespace OCC {
-AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, QWidget *parent)
+AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, const QList<Button> &buttons, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AccountModalWidget)
 {
     ui->setupUi(this);
     ui->groupBox->setTitle(title);
     ui->groupBox->layout()->addWidget(widget);
+
+    if (!buttons.isEmpty()) {
+        ui->buttonBox->clear();
+        for (auto [button, role] : buttons) {
+            ui->buttonBox->addButton(button, role);
+        }
+    }
 
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, [this] {
         Q_EMIT accepted();
@@ -32,5 +41,18 @@ AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, QW
         Q_EMIT rejected();
         Q_EMIT finished();
     });
+
+    connect(ui->buttonBox, &QDialogButtonBox::clicked, this, [this](auto *button) { _clickedButton = button; });
 }
+
+QDialogButtonBox *AccountModalWidget::buttons()
+{
+    return ui->buttonBox;
+}
+
+QAbstractButton *AccountModalWidget::clickedButton() const
+{
+    return _clickedButton;
+}
+
 } // OCC
