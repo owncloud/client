@@ -121,6 +121,7 @@ qt_add_qml_module(owncloudCore
         QML_FILES
             qml/FolderDelegate.qml
             qml/FolderError.qml
+            qml/RemoveAllFiles.qml
 )
 
 target_link_libraries(owncloudCore PUBLIC owncloudCoreplugin)
