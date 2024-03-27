@@ -254,7 +254,7 @@ Feature: Syncing files
         And as "Alice" folder "Folder1/subFolder1/subFolder2" should exist in the server
 
     @skipOnWindows
-    Scenario: Filenames that are rejected by the server are reported
+    Scenario: Filenames that are rejected by the server are reported (Liux only)
         Given user "Alice" has created folder "Folder1" in the server
         And user "Alice" has set up a client with default settings
         When user "Alice" creates a file "Folder1/a\\a.txt" with the following content inside the sync folder
@@ -266,7 +266,7 @@ Feature: Syncing files
         Then the file "Folder1/a\\a.txt" should exist on the file system
         And the file "Folder1/a\\a.txt" should be blacklisted
 
-    @skipOnWindows
+
     Scenario Outline: Sync long nested folder
         Given user "Alice" has created folder "<foldername>" in the server
         And user "Alice" has set up a client with default settings
