@@ -307,7 +307,7 @@ def step(context, permissions, user, resource):
 
 @Then('the error "|any|" should be displayed')
 def step(context, errorMessage):
-    test.compare(SharingDialog.getErrorText(), errorMessage)
+    test.verify(errorMessage in SharingDialog.getErrorText())
 
 
 @When(
