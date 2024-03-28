@@ -155,6 +155,11 @@ void SyncScheduler::startNext()
         return;
     }
 
+    if (Utility::internetThroughCaptivePortal()) {
+        qCInfo(lcSyncScheduler) << "Client is behind a captive portal, next sync is not started";
+        return;
+    }
+
     if (!_currentSync.isNull()) {
         qCInfo(lcSyncScheduler) << "Another sync is already running, waiting for that to finish before starting a new sync";
         return;

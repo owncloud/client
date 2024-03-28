@@ -51,6 +51,10 @@ namespace Utility {
 
     QString socketApiSocketPath();
 
+    bool forcedCaptivePortal();
+    void setForcedCaptivePortal(bool onoff);
+    bool internetThroughCaptivePortal();
+
     bool internetConnectionIsMetered();
 
     void markDirectoryAsSyncRoot(const QString &path, const QUuid &accountUuid);

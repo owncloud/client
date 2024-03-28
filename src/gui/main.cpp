@@ -85,7 +85,7 @@ struct CommandLineOptions
     bool logFlush = false;
     bool logDebug = false;
 
-    bool debugMode = false;
+    bool debugMode = true;
 
     QString fileToOpen;
 };

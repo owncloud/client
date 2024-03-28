@@ -100,6 +100,32 @@ QString Utility::vfsFreeSpaceActionText()
     return QCoreApplication::translate("utility", "Free up local space");
 }
 
+static bool captivePortalForcedOn = false;
+
+bool Utility::forcedCaptivePortal()
+{
+    return captivePortalForcedOn;
+}
+
+void Utility::setForcedCaptivePortal(bool onoff)
+{
+    captivePortalForcedOn = onoff;
+    qCDebug(lcUtility) << "Switching forced captive portal to" << onoff;
+}
+
+bool Utility::internetThroughCaptivePortal()
+{
+    if (captivePortalForcedOn) {
+        return true;
+    }
+
+    if (auto *qNetInfo = QNetworkInformation::instance()) {
+        return qNetInfo->isBehindCaptivePortal();
+    }
+
+    return false;
+}
+
 bool Utility::internetConnectionIsMetered()
 {
     if (auto *qNetInfo = QNetworkInformation::instance()) {
