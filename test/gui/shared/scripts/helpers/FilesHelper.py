@@ -20,7 +20,7 @@ def sanitizePath(path):
     return path.replace('//', '/')
 
 
-def prefix_namespace(path):
+def prefix_path_namespace(path):
     if isWindows():
         # https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#win32-file-namespaces
         # disable string parsing
