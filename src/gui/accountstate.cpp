@@ -247,6 +247,7 @@ void AccountState::setState(State state)
         } else if (_state == Connected && Utility::internetConnectionIsMetered() && ConfigFile().pauseSyncWhenMetered()) {
             _state = PausedDueToMetered;
         }
+        // Do we need an extra state PausedDueToCaptivePortal?
     }
 
     // might not have changed but the underlying _connectionErrors might have
