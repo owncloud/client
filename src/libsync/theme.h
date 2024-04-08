@@ -201,10 +201,6 @@ public:
      */
     void setSystrayUseMonoIcons(bool mono);
 
-    /**
-     * Retrieve wether to use mono icons for systray
-     */
-    bool systrayUseMonoIcons() const;
 
     /**
      * @brief Where to check for new Updates.
@@ -424,7 +420,7 @@ protected:
         return Resources::themeUniversalIcon(iconName);
     }
 
-signals:
+Q_SIGNALS:
     void systrayUseMonoIconsChanged(bool);
 
 private:

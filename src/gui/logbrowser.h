@@ -42,7 +42,7 @@ public:
      */
     static void setupLoggingFromConfig();
 
-protected slots:
+protected Q_SLOTS:
     void togglePermanentLogging(bool enabled);
 
 private:

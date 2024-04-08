@@ -78,9 +78,8 @@ void FolderWatcherPrivate::inotifyRegisterPath(const QString &path)
         // If we're running out of memory or inotify watches, become unreliable.
         if (_parent->_isReliable && (errno == ENOMEM || errno == ENOSPC)) {
             _parent->_isReliable = false;
-            emit _parent->becameUnreliable(
-                tr("This problem usually happens when the inotify watches are exhausted. "
-                   "Check the FAQ for details."));
+            Q_EMIT _parent->becameUnreliable(tr("This problem usually happens when the inotify watches are exhausted. "
+                                                "Check the FAQ for details."));
         }
     }
 }
@@ -129,7 +128,7 @@ void FolderWatcherPrivate::slotReceivedNotification(int fd)
     int len;
     QVarLengthArray<char, 2048> buffer(2048);
 
-    forever {
+    while (true) {
         len = read(fd, buffer.data(), buffer.size());
         auto error = errno;
         /**

@@ -345,7 +345,7 @@ public:
 
     static Result<void, QString> checkPathLength(const QString &path);
 
-signals:
+Q_SIGNALS:
     void syncStateChange();
     void syncStarted();
     void syncFinished(const SyncResult &result);
@@ -359,7 +359,7 @@ signals:
      */
     void watchedFileChangedExternally(const QString &path);
 
-public slots:
+public Q_SLOTS:
     /**
        * terminate the current sync run
        */
@@ -413,7 +413,7 @@ public slots:
     /// Reloads the excludes, used when changing the user-defined excludes after saving them to disk.
     bool reloadExcludes();
 
-private slots:
+private Q_SLOTS:
     void slotSyncStarted();
     void slotSyncFinished(bool);
 

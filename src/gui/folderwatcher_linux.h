@@ -42,7 +42,7 @@ public:
     /// On linux the watcher is ready when the ctor finished.
     constexpr bool isReady() const { return true; }
 
-protected slots:
+protected Q_SLOTS:
     void slotReceivedNotification(int fd);
     void slotAddFolderRecursive(const QString &path);
 

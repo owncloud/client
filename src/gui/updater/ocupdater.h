@@ -77,7 +77,7 @@ public:
     // must pass app explicitly (as we're instantiated from Application's ctor, we cannot use ocApp())
     explicit UpdaterScheduler(Application *app, QObject *parent = nullptr);
 
-signals:
+Q_SIGNALS:
     /**
      * Show an update-related status message on the UI.
      * @param title message title
@@ -85,7 +85,7 @@ signals:
      */
     void updaterAnnouncement(const QString &title, const QString &msg);
 
-private slots:
+private Q_SLOTS:
     void slotTimerFired();
 
 private:
@@ -125,7 +125,7 @@ public:
     DownloadState downloadState() const;
     void setDownloadState(DownloadState state);
 
-signals:
+Q_SIGNALS:
     void downloadStateChanged();
 
     // it is up to the scheduler how to display either of these
@@ -138,11 +138,11 @@ signals:
      */
     void retryUpdateCheckLater();
 
-protected slots:
+protected Q_SLOTS:
     void backgroundCheckForUpdate() override;
     void slotOpenUpdateUrl();
 
-private slots:
+private Q_SLOTS:
     void slotVersionInfoArrived();
     void slotTimedOut();
 
@@ -177,7 +177,7 @@ public:
 
     void startInstallerAndQuit();
 
-private slots:
+private Q_SLOTS:
     void slotSetPreviouslySkippedVersion();
     void slotDownloadFinished();
     void slotWriteFile();

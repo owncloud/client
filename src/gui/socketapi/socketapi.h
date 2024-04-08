@@ -56,7 +56,7 @@ public:
 
     void startShellIntegration();
 
-public slots:
+public Q_SLOTS:
     void registerAccount(const AccountPtr &a);
     void unregisterAccount(const AccountPtr &a);
     void slotUpdateFolderView(Folder *f);
@@ -64,10 +64,10 @@ public slots:
     void slotRegisterPath(Folder *f);
     void broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus);
 
-signals:
+Q_SIGNALS:
     void shareCommandReceived(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
 
-private slots:
+private Q_SLOTS:
     void slotNewConnection();
     void slotReadSocket();
 
