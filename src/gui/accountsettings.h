@@ -12,9 +12,9 @@
  * for more details.
  */
 
-#ifndef ACCOUNTSETTINGS_H
-#define ACCOUNTSETTINGS_H
+#pragma once
 
+#include "gui/owncloudguilib.h"
 
 #include "folder.h"
 #include "loginrequireddialog.h"
@@ -47,7 +47,7 @@ class FolderStatusDelegate;
  * @brief The AccountSettings class
  * @ingroup gui
  */
-class AccountSettings : public QWidget
+class OWNCLOUDGUI_EXPORT AccountSettings : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(AccountStatePtr accountState MEMBER _accountState)
@@ -67,14 +67,14 @@ public:
 
     auto model() { return _sortModel; }
 
-signals:
+Q_SIGNALS:
     void folderChanged();
     void showIssuesList();
 
-public slots:
+public Q_SLOTS:
     void slotAccountStateChanged();
 
-protected slots:
+protected Q_SLOTS:
     void slotAddFolder();
     void slotEnableCurrentFolder(Folder *folder, bool terminate = false);
     void slotForceSyncCurrentFolder(Folder *folder);
@@ -108,5 +108,3 @@ private:
 };
 
 } // namespace OCC
-
-#endif // ACCOUNTSETTINGS_H

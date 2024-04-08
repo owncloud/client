@@ -68,7 +68,7 @@ class TestSyncVirtualFiles : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void testVirtualFileLifecycle_data()
     {
         QTest::addColumn<bool>("doLocalDiscovery");
@@ -81,8 +81,7 @@ private slots:
     {
         QFETCH(bool, doLocalDiscovery);
 
-        FakeFolder fakeFolder{ FileInfo() };
-        fakeFolder.syncEngine().setPromtRemoveAllFiles(false);
+        FakeFolder fakeFolder{FileInfo()};
 
         setupVfs(fakeFolder);
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -311,8 +310,7 @@ private slots:
 
     void testVirtualFileDownload()
     {
-        FakeFolder fakeFolder{ FileInfo() };
-        fakeFolder.syncEngine().setPromtRemoveAllFiles(false);
+        FakeFolder fakeFolder{FileInfo()};
         setupVfs(fakeFolder);
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         ItemCompletedSpy completeSpy(fakeFolder);

@@ -14,8 +14,9 @@
  * for more details.
  */
 
-#ifndef MIRALL_FOLDER_H
-#define MIRALL_FOLDER_H
+#pragma once
+
+#include "gui/owncloudguilib.h"
 
 #include "accountstate.h"
 #include "common/syncjournaldb.h"
@@ -48,7 +49,7 @@ class LocalDiscoveryTracker;
  * @brief The FolderDefinition class
  * @ingroup gui
  */
-class FolderDefinition
+class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
     static auto createNewFolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {})
@@ -143,7 +144,7 @@ private:
  * @brief The Folder class
  * @ingroup gui
  */
-class Folder : public QObject
+class OWNCLOUDGUI_EXPORT Folder : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
@@ -344,7 +345,7 @@ public:
 
     static Result<void, QString> checkPathLength(const QString &path);
 
-signals:
+Q_SIGNALS:
     void syncStateChange();
     void syncStarted();
     void syncFinished(const SyncResult &result);
@@ -358,14 +359,11 @@ signals:
      */
     void watchedFileChangedExternally(const QString &path);
 
-public slots:
+public Q_SLOTS:
     /**
        * terminate the current sync run
        */
     void slotTerminateSync(const QString &reason);
-
-    // connected to the corresponding signals in the SyncEngine
-    void slotAboutToRemoveAllFiles(SyncFileItem::Direction);
 
     /**
       * Starts a sync operation
@@ -375,9 +373,7 @@ public slots:
     void startSync();
 
     void slotDiscardDownloadProgress();
-    int downloadInfoCount();
     int slotWipeErrorBlacklist();
-    int errorBlackListEntryCount();
 
     /**
        * Triggered by the folder watcher when a file/dir in this folder
@@ -417,7 +413,7 @@ public slots:
     /// Reloads the excludes, used when changing the user-defined excludes after saving them to disk.
     bool reloadExcludes();
 
-private slots:
+private Q_SLOTS:
     void slotSyncStarted();
     void slotSyncFinished(bool);
 
@@ -518,13 +514,6 @@ private:
      */
     QSharedPointer<Vfs> _vfs;
 
-    QPointer<QMessageBox> _removeAllFilesDialog;
-
-    // allow that all files are removed in the next run
-    bool _allowRemoveAllOnce = false;
-
     friend class SpaceMigration;
 };
 }
-
-#endif

@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef MIRALL_FOLDERWATCHER_LINUX_H
-#define MIRALL_FOLDERWATCHER_LINUX_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -31,7 +30,7 @@ namespace OCC {
  * @brief Linux (inotify) API implementation of FolderWatcher
  * @ingroup gui
  */
-class FolderWatcherPrivate : public QObject
+class OWNCLOUDGUI_EXPORT FolderWatcherPrivate : public QObject
 {
     Q_OBJECT
 public:
@@ -43,7 +42,7 @@ public:
     /// On linux the watcher is ready when the ctor finished.
     constexpr bool isReady() const { return true; }
 
-protected slots:
+protected Q_SLOTS:
     void slotReceivedNotification(int fd);
     void slotAddFolderRecursive(const QString &path);
 
@@ -62,5 +61,3 @@ private:
     int _fd;
 };
 }
-
-#endif

@@ -132,10 +132,7 @@ public:
     auto getPropagator() { return _propagator; } // for the test
 
 
-    bool isPromtRemoveAllFiles() const;
-    void setPromtRemoveAllFiles(bool promtRemoveAllFiles);
-
-signals:
+Q_SIGNALS:
     // During update, before reconcile
     void rootEtag(const QString &, const QDateTime &);
 
@@ -154,21 +151,13 @@ signals:
     void finished(bool success);
     void started();
 
-    /**
-     * Emited when the sync engine detects that all the files have been removed or change.
-     * This usually happen when the server was reset or something.
-     * SyncFileItem::Down indicates all files where removed on the server
-     * SyncFileItem::Up indicates all files where removed locally
-     */
-    void aboutToRemoveAllFiles(SyncFileItem::Direction direction);
-
     /** Emitted when propagation has problems with a locked file.
      *
      * Forwarded from OwncloudPropagator::seenLockedFile.
      */
     void seenLockedFile(const QString &fileName, FileSystem::LockMode mode);
 
-private slots:
+private Q_SLOTS:
     void slotFolderDiscovered(bool local, const QString &folder);
     void slotRootEtagReceived(const QString &, const QDateTime &time);
 
@@ -211,7 +200,7 @@ private:
     // Removes stale and adds missing conflict records after sync
     void conflictRecordMaintenance();
 
-    // cleanup and emit the finished signal
+    // cleanup and Q_EMIT the finished signal
     void finalize(bool success);
 
     // Must only be acessed during update and reconcile
@@ -242,12 +231,6 @@ private:
      */
     void restoreOldFiles(SyncFileItemSet &syncItems);
 
-    // true if there is at least one file which was not changed on the server
-    bool _hasNoneFiles;
-
-    // true if there is at leasr one file with instruction REMOVE
-    bool _hasRemoveFile;
-
     // If ignored files should be ignored
     bool _ignore_hidden_files = false;
 
@@ -273,7 +256,5 @@ private:
 
     // destructor called
     bool _goingDown = false;
-
-    bool _promptRemoveAllFiles = true;
 };
 }

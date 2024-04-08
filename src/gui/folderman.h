@@ -13,16 +13,17 @@
  */
 
 
-#ifndef FOLDERMAN_H
-#define FOLDERMAN_H
+#pragma once
 
-#include <QObject>
-#include <QQueue>
-#include <QList>
+#include "gui/owncloudguilib.h"
 
 #include "folder.h"
 #include "folderwizard/folderwizard.h"
 #include "scheduling/syncscheduler.h"
+
+#include <QList>
+#include <QObject>
+#include <QQueue>
 
 class TestFolderMigration;
 
@@ -79,7 +80,7 @@ private:
  *   (_timeScheduler and slotScheduleFolderByTime()
  *    and Folder::slotSyncFinished())
  */
-class FolderMan : public QObject
+class OWNCLOUDGUI_EXPORT FolderMan : public QObject
 {
     Q_OBJECT
 public:
@@ -241,7 +242,7 @@ public:
     /** If the folder configuration is no longer supported this will return an error string */
     Result<void, QString> unsupportedConfiguration(const QString &path) const;
 
-signals:
+Q_SIGNALS:
     /**
       * signal to indicate a folder has changed its sync state.
       *
@@ -255,7 +256,7 @@ signals:
     void folderListChanged();
     void folderRemoved(Folder *folder);
 
-public slots:
+public Q_SLOTS:
 
     /**
      * Schedules folders of newly connected accounts, terminates and
@@ -274,7 +275,7 @@ public slots:
     /// This slot will tell all sync engines to reload the sync options.
     void slotReloadSyncOptions();
 
-private slots:
+private Q_SLOTS:
     void slotFolderSyncPaused(Folder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
@@ -331,4 +332,3 @@ private:
 };
 
 } // namespace OCC
-#endif // FOLDERMAN_H

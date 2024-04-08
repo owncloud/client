@@ -12,8 +12,10 @@
  * for more details.
  */
 
-#ifndef MIRALL_FOLDERWATCHER_H
-#define MIRALL_FOLDERWATCHER_H
+#pragma once
+
+#include "gui/owncloudguilib.h"
+
 
 #include <QElapsedTimer>
 #include <QHash>
@@ -44,7 +46,7 @@ class Folder;
  * @ingroup gui
  */
 
-class FolderWatcher : public QObject
+class OWNCLOUDGUI_EXPORT FolderWatcher : public QObject
 {
     Q_OBJECT
 public:
@@ -84,7 +86,7 @@ public:
     QSet<QString> popChangeSet();
 
 
-signals:
+Q_SIGNALS:
     /** Emitted when one of the watched directories or one
      *  of the contained files is changed. */
     void pathChanged(const QSet<QString> &path);
@@ -105,11 +107,11 @@ signals:
      */
     void becameUnreliable(const QString &message);
 
-protected slots:
+protected Q_SLOTS:
     // called from the implementations to indicate a change in path
     void changeDetected(const QSet<QString> &paths);
 
-private slots:
+private Q_SLOTS:
     void startNotificationTestWhenReady();
 
 private:
@@ -125,5 +127,3 @@ private:
     friend class FolderWatcherPrivate;
 };
 }
-
-#endif

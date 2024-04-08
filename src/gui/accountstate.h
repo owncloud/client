@@ -13,13 +13,13 @@
  */
 
 
-#ifndef ACCOUNTINFO_H
-#define ACCOUNTINFO_H
+#pragma once
 
-#include "jobqueue.h"
+#include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
 #include "creds/abstractcredentials.h"
+#include "jobqueue.h"
 #include "updateurldialog.h"
 #include <QByteArray>
 #include <QElapsedTimer>
@@ -32,7 +32,6 @@ class QSettings;
 
 namespace OCC {
 
-class AccountState;
 class Account;
 class QuotaInfo;
 class TlsErrorDialog;
@@ -42,7 +41,7 @@ class FetchServerSettingsJob;
  * @brief Extra info about an ownCloud server account.
  * @ingroup gui
  */
-class AccountState : public QObject
+class OWNCLOUDGUI_EXPORT AccountState : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(AccountPtr account MEMBER _account READ account)
@@ -159,7 +158,7 @@ public:
     bool isSettingUp() const;
     void setSettingUp(bool settingUp);
 
-public slots:
+public Q_SLOTS:
     /// Triggers a ping to the server to update state and
     /// connection status and errors.
     /// verifyServerState indicates that we must check the server
@@ -171,7 +170,7 @@ private:
 
     void setState(State state);
 
-signals:
+Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
     void urlUpdated();
@@ -220,5 +219,3 @@ private:
 
 Q_DECLARE_METATYPE(OCC::AccountState *)
 Q_DECLARE_METATYPE(OCC::AccountStatePtr)
-
-#endif //ACCOUNTINFO_H

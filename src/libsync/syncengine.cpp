@@ -60,8 +60,6 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _remotePath(remotePath)
     , _journal(journal)
     , _progressInfo(new ProgressInfo)
-    , _hasNoneFiles(false)
-    , _hasRemoveFile(false)
     , _uploadLimit(0)
     , _downloadLimit(0)
 {
@@ -272,10 +270,7 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 {
     if (Utility::isConflictFile(item->_file))
         _seenConflictFiles.insert(item->_file);
-    if (item->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA && !item->isDirectory()) {
-        _hasNoneFiles = true;
-    } else if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
-        _hasNoneFiles = true;
+    if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
         if (_account->capabilities().uploadConflictFiles() && Utility::isConflictFile(item->_file)) {
             // For uploaded conflict files, files with no action performed on them should
             // be displayed: but we mustn't overwrite the instruction if something happens
@@ -285,16 +280,6 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
             item->_status = SyncFileItem::Conflict;
         }
         return;
-    } else if (item->instruction() == CSYNC_INSTRUCTION_REMOVE && !item->_isSelectiveSync) {
-        _hasRemoveFile = true;
-    } else if (item->instruction() == CSYNC_INSTRUCTION_RENAME) {
-        _hasNoneFiles = true; // If a file (or every file) has been renamed, it means not al files where deleted
-    } else if (item->instruction() & (CSYNC_INSTRUCTION_TYPE_CHANGE & CSYNC_INSTRUCTION_SYNC)) {
-        if (item->_direction == SyncFileItem::Up) {
-            // An upload of an existing file means that the file was left unchanged on the server
-            // This counts as a NONE for detecting if all the files on the server were changed
-            _hasNoneFiles = true;
-        }
     }
 
     // check for blacklisting of this item.
@@ -332,8 +317,6 @@ void SyncEngine::startSync()
     _syncRunning = true;
     _anotherSyncNeeded = false;
 
-    _hasNoneFiles = false;
-    _hasRemoveFile = false;
     _seenConflictFiles.clear();
 
     _progressInfo->reset();
@@ -417,7 +400,7 @@ void SyncEngine::startSync()
     qCInfo(lcEngine) << "Server" << account()->capabilities().status().versionString()
                      << (account()->isHttp2Supported() ? "Using HTTP/2" : "");
     _progressInfo->_status = ProgressInfo::Discovery;
-    emit transmissionProgress(*_progressInfo);
+    Q_EMIT transmissionProgress(*_progressInfo);
 
     // TODO: add a constructor to DiscoveryPhase
     // pass a syncEngine object rather than copying everyhting to another object
@@ -480,7 +463,7 @@ void SyncEngine::slotFolderDiscovered(bool local, const QString &folder)
         _progressInfo->_currentDiscoveredRemoteFolder = folder;
         _progressInfo->_currentDiscoveredLocalFolder.clear();
     }
-    emit transmissionProgress(*_progressInfo);
+    Q_EMIT transmissionProgress(*_progressInfo);
 }
 
 void SyncEngine::slotRootEtagReceived(const QString &e, const QDateTime &time)
@@ -488,7 +471,7 @@ void SyncEngine::slotRootEtagReceived(const QString &e, const QDateTime &time)
     if (_remoteRootEtag.isEmpty()) {
         qCDebug(lcEngine) << "Root etag:" << e;
         _remoteRootEtag = e;
-        emit rootEtag(_remoteRootEtag, time);
+        Q_EMIT rootEtag(_remoteRootEtag, time);
     }
 }
 
@@ -520,7 +503,7 @@ void SyncEngine::slotDiscoveryFinished()
     _progressInfo->_currentDiscoveredRemoteFolder.clear();
     _progressInfo->_currentDiscoveredLocalFolder.clear();
     _progressInfo->_status = ProgressInfo::Reconcile;
-    emit transmissionProgress(*_progressInfo);
+    Q_EMIT transmissionProgress(*_progressInfo);
 
     //    qCInfo(lcEngine) << "Permissions of the root folder: " << _csync_ctx->remote.root_perms.toString();
     auto finish = [this]{
@@ -576,13 +559,13 @@ void SyncEngine::slotDiscoveryFinished()
         _localDiscoveryPaths.clear();
 
         // To announce the beginning of the sync
-        emit aboutToPropagate(_syncItems);
+        Q_EMIT aboutToPropagate(_syncItems);
 
         qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate OK) ####################################################" << _duration.duration();
 
         // it's important to do this before ProgressInfo::start(), to announce start of new sync
         _progressInfo->_status = ProgressInfo::Propagation;
-        emit transmissionProgress(*_progressInfo);
+        Q_EMIT transmissionProgress(*_progressInfo);
         _progressInfo->startEstimateUpdates();
 
         // do a database commit
@@ -619,21 +602,6 @@ void SyncEngine::slotDiscoveryFinished()
         qCInfo(lcEngine) << "#### Post-Reconcile end ####################################################" << _duration.duration();
     };
 
-    if (!_hasNoneFiles && _hasRemoveFile) {
-        qCInfo(lcEngine) << "All the files are going to be changed, asking the user";
-
-        if (_promptRemoveAllFiles) {
-            int side = 0; // > 0 means more deleted on the server.  < 0 means more deleted on the client
-            for (const auto &it : qAsConst(_syncItems)) {
-                if (it->instruction() == CSYNC_INSTRUCTION_REMOVE) {
-                    side += it->_direction == SyncFileItem::Down ? 1 : -1;
-                }
-            }
-            emit aboutToRemoveAllFiles(side >= 0 ? SyncFileItem::Down : SyncFileItem::Up);
-            finalize(false);
-            return;
-        }
-    }
     finish();
 }
 
@@ -668,8 +636,8 @@ void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
 
     _progressInfo->setProgressComplete(*item);
 
-    emit transmissionProgress(*_progressInfo);
-    emit itemCompleted(item);
+    Q_EMIT transmissionProgress(*_progressInfo);
+    Q_EMIT itemCompleted(item);
 }
 
 void SyncEngine::slotPropagationFinished(bool success)
@@ -698,7 +666,7 @@ void SyncEngine::slotPropagationFinished(bool success)
     // so we don't count this twice (like Recent Files)
     _progressInfo->_lastCompletedItem = SyncFileItem();
     _progressInfo->_status = ProgressInfo::Done;
-    emit transmissionProgress(*_progressInfo);
+    Q_EMIT transmissionProgress(*_progressInfo);
 
     finalize(success);
 }
@@ -712,7 +680,7 @@ void SyncEngine::finalize(bool success)
         _discoveryPhase.release()->deleteLater();
     }
     _syncRunning = false;
-    emit finished(success);
+    Q_EMIT finished(success);
 
     // Delete the propagator only after emitting the signal.
     _propagator.clear();
@@ -725,13 +693,13 @@ void SyncEngine::finalize(bool success)
 void SyncEngine::slotProgress(const SyncFileItem &item, qint64 current)
 {
     _progressInfo->setProgressItem(item, current);
-    emit transmissionProgress(*_progressInfo);
+    Q_EMIT transmissionProgress(*_progressInfo);
 }
 
 void SyncEngine::updateFileTotal(const SyncFileItem &item, qint64 newSize)
 {
     _progressInfo->updateTotalsForFile(item, newSize);
-    emit transmissionProgress(*_progressInfo);
+    Q_EMIT transmissionProgress(*_progressInfo);
 }
 void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
 {
@@ -829,7 +797,7 @@ bool SyncEngine::shouldDiscoverLocally(const QString &path) const
 
     // Maybe a parent folder of something in the list?
     // check for a prefix + / match
-    forever {
+    while (true) {
         if (it->size() > path.size() && it->at(path.size()) == QLatin1Char('/'))
             return true;
         ++it;
@@ -867,7 +835,7 @@ void SyncEngine::slotSummaryError(const QString &message)
         return;
 
     _uniqueErrors.insert(message);
-    emit syncError(message, ErrorCategory::Normal);
+    Q_EMIT syncError(message, ErrorCategory::Normal);
 }
 
 void SyncEngine::slotInsufficientLocalStorage()
@@ -885,17 +853,7 @@ void SyncEngine::slotInsufficientRemoteStorage()
         return;
 
     _uniqueErrors.insert(msg);
-    emit syncError(msg, ErrorCategory::InsufficientRemoteStorage);
-}
-
-bool SyncEngine::isPromtRemoveAllFiles() const
-{
-    return _promptRemoveAllFiles;
-}
-
-void SyncEngine::setPromtRemoveAllFiles(bool promtRemoveAllFiles)
-{
-    _promptRemoveAllFiles = promtRemoveAllFiles;
+    Q_EMIT syncError(msg, ErrorCategory::InsufficientRemoteStorage);
 }
 
 bool SyncEngine::isExcluded(QStringView filePath) const

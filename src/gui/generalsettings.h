@@ -39,15 +39,14 @@ public:
     explicit GeneralSettings(QWidget *parent = nullptr);
     ~GeneralSettings() override;
 
-signals:
+Q_SIGNALS:
     void showAbout();
     void syncOptionsChanged();
 
-private slots:
+private Q_SLOTS:
     void saveMiscSettings();
     void slotToggleLaunchOnStartup(bool);
     void slotToggleOptionalDesktopNotifications(bool);
-    void slotUpdateChannelChanged(int index);
     void slotIgnoreFilesEditor();
     void loadMiscSettings();
 

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include "gui/owncloudguilib.h"
+
 #include "account.h"
 #include "accountstate.h"
 
@@ -23,7 +25,7 @@ namespace OCC {
    @brief The AccountManager class
    @ingroup gui
 */
-class AccountManager : public QObject
+class OWNCLOUDGUI_EXPORT AccountManager : public QObject
 {
     Q_OBJECT
 public:
@@ -100,7 +102,7 @@ private:
     // Adds an account to the tracked list, emitting accountAdded()
     AccountStatePtr addAccountState(std::unique_ptr<AccountState> &&accountState);
 
-public slots:
+public Q_SLOTS:
     /// Saves account data, not including the credentials
     void saveAccount(Account *account, bool saveCredentials);
 

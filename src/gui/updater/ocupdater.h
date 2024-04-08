@@ -12,8 +12,13 @@
  * for more details.
  */
 
-#ifndef OCUPDATER_H
-#define OCUPDATER_H
+#pragma once
+#include "gui/owncloudguilib.h"
+
+#include "application.h"
+#include "updater/updatedownloadeddialog.h"
+#include "updater/updateinfo.h"
+#include "updater/updater.h"
 
 #include <QDateTime>
 #include <QObject>
@@ -23,10 +28,6 @@
 #include <QUrl>
 #include <QVersionNumber>
 
-#include "application.h"
-#include "updater/updatedownloadeddialog.h"
-#include "updater/updateinfo.h"
-#include "updater/updater.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -69,14 +70,14 @@ namespace OCC {
  *                +-------------+
  */
 
-class UpdaterScheduler : public QObject
+class OWNCLOUDGUI_EXPORT UpdaterScheduler : public QObject
 {
     Q_OBJECT
 public:
     // must pass app explicitly (as we're instantiated from Application's ctor, we cannot use ocApp())
     explicit UpdaterScheduler(Application *app, QObject *parent = nullptr);
 
-signals:
+Q_SIGNALS:
     /**
      * Show an update-related status message on the UI.
      * @param title message title
@@ -84,7 +85,7 @@ signals:
      */
     void updaterAnnouncement(const QString &title, const QString &msg);
 
-private slots:
+private Q_SLOTS:
     void slotTimerFired();
 
 private:
@@ -98,7 +99,7 @@ private:
  * @brief Class that uses an ownCloud proprietary XML format to fetch update information
  * @ingroup gui
  */
-class OCUpdater : public Updater
+class OWNCLOUDGUI_EXPORT OCUpdater : public Updater
 {
     Q_OBJECT
 public:
@@ -124,7 +125,7 @@ public:
     DownloadState downloadState() const;
     void setDownloadState(DownloadState state);
 
-signals:
+Q_SIGNALS:
     void downloadStateChanged();
 
     // it is up to the scheduler how to display either of these
@@ -137,11 +138,11 @@ signals:
      */
     void retryUpdateCheckLater();
 
-protected slots:
+protected Q_SLOTS:
     void backgroundCheckForUpdate() override;
     void slotOpenUpdateUrl();
 
-private slots:
+private Q_SLOTS:
     void slotVersionInfoArrived();
     void slotTimedOut();
 
@@ -167,7 +168,7 @@ private:
  * @brief Windows Updater Using NSIS
  * @ingroup gui
  */
-class WindowsUpdater : public OCUpdater
+class OWNCLOUDGUI_EXPORT WindowsUpdater : public OCUpdater
 {
     Q_OBJECT
 public:
@@ -176,7 +177,7 @@ public:
 
     void startInstallerAndQuit();
 
-private slots:
+private Q_SLOTS:
     void slotSetPreviouslySkippedVersion();
     void slotDownloadFinished();
     void slotWriteFile();
@@ -212,5 +213,3 @@ private:
     const QDateTime _initialAppMTime;
 };
 }
-
-#endif // OC_UPDATER
