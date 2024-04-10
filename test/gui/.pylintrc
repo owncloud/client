@@ -1,0 +1,44 @@
+[MAIN]
+
+py-version = 3.8
+ignore=names.py
+load-plugins=
+    pylint.extensions.check_elif,
+    pylint.extensions.bad_builtin,
+    pylint.extensions.code_style,
+    pylint.extensions.overlapping_exceptions,
+    pylint.extensions.typing,
+    pylint.extensions.redefined_variable_type,
+unsafe-load-any-extension=no
+fail-under=10.0
+
+[MESSAGES CONTROL]
+
+disable=
+    missing-docstring,
+    format,
+
+[SIMILARITIES]
+
+ignore-imports=yes
+ignore-comments=yes
+ignore-docstrings=yes
+
+[FORMAT]
+
+max-line-length=120
+indent-string='    '
+
+[BASIC]
+
+function-naming-style=snake_case
+variable-naming-style=snake_case
+const-naming-style=UPPER_CASE
+attr-naming-style=snake_case
+class-naming-style=PascalCase
+class-const-naming-style=UPPER_CASE
+method-naming-style=snake_case
+
+[TYPECHECK]
+
+ignored-modules=
