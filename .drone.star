@@ -25,7 +25,7 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-39-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-39-7.2.1-qt66x-linux64"
+OC_CI_SQUISH = "sawjan/squish:test-min"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
@@ -76,6 +76,15 @@ build_config = {
     "command": "ninja",
 }
 
+pip_pipeline_volume = [{
+    "name": "python",
+    "temp": {},
+}]
+pip_step_volume = [{
+    "name": "python",
+    "path": "/usr/local/lib/python3.10/site-packages",
+}]
+
 config = {
     "gui-tests": {
         "servers": {
@@ -113,10 +122,11 @@ def main(ctx):
     unit_tests = unit_test_pipeline(ctx)
     gui_tests = gui_test_pipeline(ctx)
 
-    return pipelines + \
-           unit_tests + \
-           gui_tests + \
-           pipelinesDependsOn(notification(), unit_tests + gui_tests)
+    return gui_tests
+    # return pipelines + \
+    #        unit_tests + \
+    #        gui_tests + \
+    #        pipelinesDependsOn(notification(), unit_tests + gui_tests)
 
 def from_secret(name):
     return {
@@ -208,7 +218,8 @@ def gui_test_pipeline(ctx):
             steps += ocisService(params["version"]) + \
                      waitForOcisService()
 
-        steps += installPnpm() + \
+        steps += install_python_modules() + \
+                 installPnpm() + \
                  setGuiTestReportDir() + \
                  gui_tests(squish_parameters, server) + \
                  uploadGuiTestLogs(ctx, server) + \
@@ -231,7 +242,7 @@ def gui_test_pipeline(ctx):
                     "name": "uploads",
                     "temp": {},
                 },
-            ],
+            ] + pip_pipeline_volume,
         })
     return pipelines
 
@@ -280,6 +291,16 @@ def unit_tests(image = OC_CI_CLIENT):
         ],
     }]
 
+def install_python_modules():
+    return [{
+        "name": "install-python-modules",
+        "image": OC_CI_SQUISH,
+        "commands": [
+            "python3 -m pip install -r %s/requirements.txt" % dir["guiTest"],
+        ],
+        "volumes": pip_step_volume,
+    }]
+
 def gui_tests(squish_parameters = "", server_type = "oc10"):
     return [{
         "name": "GUItests",
@@ -298,6 +319,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
             "OWNCLOUD_CORE_DUMP": 1,
         },
+        "volumes": pip_step_volume,
     }]
 
 def gui_tests_format():

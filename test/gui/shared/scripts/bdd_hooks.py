@@ -151,13 +151,7 @@ def hook(context):
 
     # capture a screenshot if there is error or test failure in the current scenario execution
     if scenarioFailed() and os.getenv('CI') and isLinux():
-        import gi
-
-        gi.require_version('Gtk', '3.0')
-        from gi.repository import Gdk
-
-        window = Gdk.get_default_root_window()
-        pb = Gdk.pixbuf_get_from_window(window, *window.get_geometry())
+        from helpers.ReportHelper import take_screenshot
 
         # scenario name can have "/" which is invalid filename
         filename = (
@@ -165,11 +159,10 @@ def hook(context):
             + ".png"
         )
         directory = os.path.join(get_config('guiTestReportDir'), "screenshots")
-
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        pb.savev(os.path.join(directory, filename), "png", [], [])
+        take_screenshot(directory, filename)
 
     # teardown accounts and configs
     teardown_client()
