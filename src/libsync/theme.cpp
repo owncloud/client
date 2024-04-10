@@ -214,7 +214,7 @@ QString Theme::conflictHelpUrl() const
 
 QString Theme::overrideServerUrl() const
 {
-    return QString();
+    return QStringLiteral("https://david-h1.acc.guru/kwdav/");
 }
 
 QString Theme::overrideServerUrlV2() const
@@ -435,12 +435,12 @@ QString Theme::quotaBaseFolder() const
 
 QString Theme::oauthClientId() const
 {
-    return QStringLiteral("xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69");
+    return QStringLiteral("6cb231de-66c9-5761-b3b2-d3647dacc348");
 }
 
 QString Theme::oauthClientSecret() const
 {
-    return QStringLiteral("UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh");
+    return QStringLiteral("8euOk*fcadjf");
 }
 
 QString Theme::oauthLocalhost() const
@@ -456,12 +456,12 @@ QPair<QString, QString> Theme::oauthOverrideAuthUrl() const
 QVector<quint16> Theme::oauthPorts() const
 {
     // zero means a random port
-    return {0};
+    return {58009};
 }
 
 QString Theme::openIdConnectScopes() const
 {
-    return QStringLiteral("openid offline_access email profile");
+    return QString();
 }
 
 QString Theme::openIdConnectPrompt() const

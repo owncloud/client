@@ -310,10 +310,10 @@ void OAuth::startAuthentication()
                 _server.close();
 
                 auto reply = postTokenRequest({
-                    { QStringLiteral("grant_type"), QStringLiteral("authorization_code") },
-                    { QStringLiteral("code"), args.queryItemValue(QStringLiteral("code")) },
-                    { QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(serverPort)) },
-                    { QStringLiteral("code_verifier"), QString::fromUtf8(_pkceCodeVerifier) },
+                    {QStringLiteral("grant_type"), QStringLiteral("authorization_code")},
+                    {QStringLiteral("code"), args.queryItemValue(QStringLiteral("code"))},
+                    {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2/").arg(_redirectUrl, QString::number(serverPort))},
+                    {QStringLiteral("code_verifier"), QString::fromUtf8(_pkceCodeVerifier)},
                 });
 
                 connect(reply, &QNetworkReply::finished, this, [reply, socket, this] {
@@ -447,7 +447,7 @@ QUrl OAuth::authorisationLink() const
     const QByteArray code_challenge = QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256)
                                           .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _clientId},
-        {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_server.serverPort()))},
+        {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2/").arg(_redirectUrl, QString::number(_server.serverPort()))},
         {QStringLiteral("code_challenge"), QString::fromLatin1(code_challenge)}, {QStringLiteral("code_challenge_method"), QStringLiteral("S256")},
         {QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes()))},
         {QStringLiteral("prompt"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectPrompt()))},
