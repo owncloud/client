@@ -13,22 +13,18 @@
  */
 
 #include "guiutility.h"
-#include "application.h"
-#include "settingsdialog.h"
+#include "gui/application.h"
+#include "gui/settingsdialog.h"
+#include "libsync/filesystem.h"
+#include "libsync/theme.h"
 
 #include <QApplication>
-#include <QClipboard>
 #include <QDesktopServices>
-#include <QIcon>
 #include <QLoggingCategory>
 #include <QMessageBox>
 #include <QNetworkInformation>
+#include <QQuickWidget>
 #include <QUrlQuery>
-
-#include "theme.h"
-
-#include "common/asserts.h"
-#include "libsync/filesystem.h"
 
 namespace OCC {
 Q_LOGGING_CATEGORY(lcGuiUtility, "gui.utility", QtInfoMsg)
