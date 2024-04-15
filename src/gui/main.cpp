@@ -458,7 +458,7 @@ int main(int argc, char **argv)
         }
 
         setupLogging(options);
-        NetworkInformation::initialize();
+        NetworkInformation::instance(); //
 
         platform->setApplication(&app);
 
