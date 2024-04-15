@@ -24,8 +24,8 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
-OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-38-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-38-7.1.1-qt64x-linux64"
+OC_CI_CLIENT_FEDORA = "sawjan/client:39-qt6.6"
+OC_CI_SQUISH = "sawjan/squish:craft"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
@@ -188,7 +188,7 @@ def gui_test_pipeline(ctx):
             squish_parameters += " --tags %s" % params["tags"]
 
         steps = skipIfUnchanged(ctx, "gui-tests") + \
-                build_client(OC_CI_CLIENT_FEDORA, False)
+                build_client(OC_CI_SQUISH, False)
 
         services = testMiddlewareService(server)
 
@@ -234,6 +234,10 @@ def gui_test_pipeline(ctx):
 def build_client(image = OC_CI_CLIENT, ctest = True):
     cmake_options = '-G"%s" -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s"'
     cmake_options = cmake_options % (build_config["generator"], build_config["c_compiler"], build_config["cxx_compiler"], build_config["build_type"])
+
+    if image == OC_CI_SQUISH:
+        # can be removed later
+        cmake_options += " -DCMAKE_PREFIX_PATH=/ownbuild/master/linux-gcc-x86_64-squish"
 
     if ctest:
         cmake_options += " -DBUILD_TESTING=ON"
