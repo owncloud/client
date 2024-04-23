@@ -252,7 +252,6 @@ def build_client(image = OC_CI_CLIENT, ctest = True):
                 "LC_ALL": "C.UTF-8",
             },
             "commands": [
-                "git submodule update --init --recursive",
                 "mkdir -p %s" % dir["build"],
                 "cd %s" % dir["build"],
                 # generate build files
