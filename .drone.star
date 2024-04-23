@@ -251,6 +251,7 @@ def build_client(image = OC_CI_CLIENT, ctest = True):
             "environment": {
                 "LC_ALL": "C.UTF-8",
             },
+            "user": "0:0",
             "commands": [
                 "mkdir -p %s" % dir["build"],
                 "cd %s" % dir["build"],
