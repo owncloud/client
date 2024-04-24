@@ -232,12 +232,11 @@ def gui_test_pipeline(ctx):
     return pipelines
 
 def build_client(image = OC_CI_CLIENT, ctest = True):
-    cmake_options = '-G"%s" -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s"'
-    cmake_options = cmake_options % (build_config["generator"], build_config["c_compiler"], build_config["cxx_compiler"], build_config["build_type"])
+    cmake_options = '-G"%s"' % build_config["generator"]
 
-    if image == OC_CI_SQUISH:
-        # can be removed later
-        cmake_options += " -DCMAKE_PREFIX_PATH=/ownbuild/master/linux-gcc-x86_64-squish"
+    if image != OC_CI_SQUISH:
+        cmake_options += ' -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s"'
+        cmake_options = cmake_options % (build_config["c_compiler"], build_config["cxx_compiler"], build_config["build_type"])
 
     if ctest:
         cmake_options += " -DBUILD_TESTING=ON"
