@@ -232,11 +232,10 @@ def gui_test_pipeline(ctx):
     return pipelines
 
 def build_client(image = OC_CI_CLIENT, ctest = True):
-    cmake_options = '-G"%s"' % build_config["generator"]
+    cmake_options = '-G"%s" -DCMAKE_BUILD_TYPE="%s"' % (build_config["generator"], build_config["build_type"])
 
     if image != OC_CI_SQUISH:
-        cmake_options += ' -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s" -DCMAKE_BUILD_TYPE="%s"'
-        cmake_options = cmake_options % (build_config["c_compiler"], build_config["cxx_compiler"], build_config["build_type"])
+        cmake_options += ' -DCMAKE_C_COMPILER="%s" -DCMAKE_CXX_COMPILER="%s"' % (build_config["c_compiler"], build_config["cxx_compiler"])
 
     if ctest:
         cmake_options += " -DBUILD_TESTING=ON"
