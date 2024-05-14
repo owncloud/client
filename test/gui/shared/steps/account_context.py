@@ -167,7 +167,6 @@ def step(context, username, host):
     displayname = substituteInLineCodes(displayname)
     host = substituteInLineCodes(host)
 
-    # Q: recently added account is not focused
     Toolbar.openAccount(displayname, host)
     AccountSetting.removeAccountConnection()
 

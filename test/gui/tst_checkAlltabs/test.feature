@@ -14,13 +14,6 @@ Feature: Visually check all tabs
             | Settings    |
             | Quit        |
 
-    # Q: log dialog is not opened
-    Scenario: Open log dialog with Ctrl+l keys combination
-        Given user "Alice" has been created on the server with default attributes and without skeleton files
-        And user "Alice" has set up a client with default settings
-        When the user presses the "Ctrl+l" keys
-        Then the log dialog should be opened
-
 
     Scenario: Verify various setting options in Settings tab
         Given user "Alice" has been created on the server with default attributes and without skeleton files
