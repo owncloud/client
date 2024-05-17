@@ -44,6 +44,7 @@ ownCloud admins and users.
 ## Summary
 
 * Bugfix - Schedule syncs after an abort: [#11396](https://github.com/owncloud/client/pull/11396)
+* Bugfix - Fix description of manage public links action: [#11450](https://github.com/owncloud/client/issues/11450)
 * Bugfix - Fix early-use crash in the folder watcher on Linux: [#11460](https://github.com/owncloud/client/issues/11460)
 * Bugfix - Client stuck in `reconnecting`: [#11467](https://github.com/owncloud/client/pull/11467)
 * Bugfix - Properly encode scope and prompt items in OAuth URL: [#11472](https://github.com/owncloud/client/issues/11472)
@@ -71,6 +72,7 @@ ownCloud admins and users.
 * Enhancement - Improve handling of a server blocking an unsupported client: [#11424](https://github.com/owncloud/client/issues/11424)
 * Enhancement - Ask user to restart application when update is available on Windows: [#11442](https://github.com/owncloud/client/pull/11442)
 * Enhancement - New Folder status: [#11491](https://github.com/owncloud/client/pull/11491)
+* Enhancement - Don't poll the Avatar endpoint with ocis: [#11615](https://github.com/owncloud/client/pull/11615)
 
 ## Details
 
@@ -80,6 +82,10 @@ ownCloud admins and users.
    aborted.
 
    https://github.com/owncloud/client/pull/11396
+
+* Bugfix - Fix description of manage public links action: [#11450](https://github.com/owncloud/client/issues/11450)
+
+   https://github.com/owncloud/client/issues/11450
 
 * Bugfix - Fix early-use crash in the folder watcher on Linux: [#11460](https://github.com/owncloud/client/issues/11460)
 
@@ -311,6 +317,13 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/11527
    https://github.com/owncloud/client/pull/11491
+
+* Enhancement - Don't poll the Avatar endpoint with ocis: [#11615](https://github.com/owncloud/client/pull/11615)
+
+   Ocis has no Avatar implemented yet and when it will be added we will require a
+   different approach.
+
+   https://github.com/owncloud/client/pull/11615
 
 # Changelog for ownCloud Desktop Client [5.2.1] (2024-01-04)
 
