@@ -48,9 +48,13 @@ def step(context, displayname, host):
 def step(context, displayname, host):
     displayname = substituteInLineCodes(displayname)
     host = substituteInLineCodes(host)
+    account_title = displayname + "\n" + host
+    timeout = get_config("lowestSyncTimeout") * 1000
 
-    waitFor(
-        lambda: (not object.exists(Toolbar.getItemSelector(displayname + "@" + host))),
+    test.compare(
+        False,
+        Toolbar.hasItem(account_title, timeout),
+        f"Expected account '{displayname}' to be removed",
     )
 
 
@@ -163,6 +167,7 @@ def step(context, username, host):
     displayname = substituteInLineCodes(displayname)
     host = substituteInLineCodes(host)
 
+    Toolbar.openAccount(displayname, host)
     AccountSetting.removeAccountConnection()
 
 
@@ -285,3 +290,14 @@ def step(context, username):
 @When("the user quits the client")
 def step(context):
     Toolbar.quit_owncloud()
+
+
+@Then('"|any|" account should be opened')
+def step(context, displayname):
+    displayname = substituteInLineCodes(displayname)
+    host = substituteInLineCodes("%local_server_hostname%")
+    account = displayname + "\n" + host
+
+    has_focus = Toolbar.account_has_focus(account)
+    if not has_focus:
+        raise LookupError(f"Account '{displayname}' should be opened, but it is not")
