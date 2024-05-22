@@ -847,6 +847,8 @@ void ownCloudGui::runNewAccountWizard()
                     auto accountStatePtr = ocApp()->addNewAccount(newAccount);
                     accountStatePtr->setSettingUp(true);
 
+                    _settingsDialog->setCurrentAccount(accountStatePtr->account().data());
+
                     // ensure we are connected and fetch the capabilities
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
 
@@ -965,7 +967,7 @@ void ownCloudGui::slotShowSettings()
 void ownCloudGui::slotShowSyncProtocol()
 {
     slotShowSettings();
-    _settingsDialog->showActivityPage();
+    _settingsDialog->setCurrentPage(SettingsDialog::SettingsPage::Activity);
 }
 
 
