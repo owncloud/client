@@ -36,12 +36,12 @@ jobs:
             # TODO: align the target with the name
             - name: macos-clang-x86_64
               target: macos-64-clang
-              os: macos-latest
+              os: macos-latest-large
               fetch-depth: 1
               container:
             - name: macos-clang-x86_64-debug
               target: macos-64-clang-debug
-              os: macos-latest
+              os: macos-latest-large
               fetch-depth: 1
               container:
             - name: linux-gcc-x86_64
