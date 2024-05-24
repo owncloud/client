@@ -65,16 +65,27 @@ class Activity:
         # Because files count will be appended like "Not Synced (2)"
         # So to overcome this the following approach has been implemented
         tabCount = squish.waitForObjectExists(Activity.SUBTAB_CONTAINER).count
+        tabs = []
         for index in range(tabCount):
             tabText = Activity.getTabText(index)
+            tabs.append(tabText)
 
             if tabName in tabText:
+                # o = squish.waitForObjectExists(Activity.getTabObject(index))
+                # squish.clickTab(o)
                 tabFound = True
                 squish.clickTab(Activity.TAB_CONTAINER, tabText)
                 break
 
         if not tabFound:
-            raise Exception("Tab not found: " + tabName)
+            raise Exception(
+                "Tab not found: "
+                + tabName
+                + " in "
+                + str(tabs)
+                + ". Count: "
+                + str(tabCount)
+            )
 
     @staticmethod
     def checkFileExist(filename):

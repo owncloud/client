@@ -25,7 +25,7 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-39-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-39-7.2.1-qt66x-linux64"
+OC_CI_SQUISH = "sawjan/squish:test"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
@@ -109,10 +109,11 @@ def main(ctx):
     unit_tests = unit_test_pipeline(ctx)
     gui_tests = gui_test_pipeline(ctx)
 
-    return pipelines + \
-           unit_tests + \
-           gui_tests + \
-           pipelinesDependsOn(notification(), unit_tests + gui_tests)
+    return gui_tests
+    # return pipelines + \
+    #        unit_tests + \
+    #        gui_tests + \
+    #        pipelinesDependsOn(notification(), unit_tests + gui_tests)
 
 def from_secret(name):
     return {
