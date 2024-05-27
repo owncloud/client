@@ -952,8 +952,9 @@ SyncFileStatus SocketApi::FileData::syncFileStatus() const
 SyncJournalFileRecord SocketApi::FileData::journalRecord() const
 {
     SyncJournalFileRecord record;
-    if (!folder)
+    if (!folder || !folder->canSync()) {
         return record;
+    }
     folder->journalDb()->getFileRecord(folderRelativePath, &record);
     return record;
 }
