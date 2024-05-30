@@ -90,7 +90,7 @@ class Activity:
                 + tabName
                 + " in "
                 + str(tabs)
-                + ". Count: "
+                + ". Tabs count: "
                 + str(tabCount)
             )
 

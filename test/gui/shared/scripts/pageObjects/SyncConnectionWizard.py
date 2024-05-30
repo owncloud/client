@@ -104,22 +104,14 @@ class SyncConnectionWizard:
     @staticmethod
     def selectRemoteDestinationFolder(folder):
         squish.mouseClick(
-            squish.waitForObjectItem(SyncConnectionWizard.REMOTE_FOLDER_TREE, folder),
-            0,
-            0,
-            squish.Qt.NoModifier,
-            squish.Qt.LeftButton,
+            squish.waitForObjectItem(SyncConnectionWizard.REMOTE_FOLDER_TREE, folder)
         )
         SyncConnectionWizard.nextStep()
 
     @staticmethod
     def deselectAllRemoteFolders():
         squish.mouseClick(
-            squish.waitForObject(SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER),
-            11,
-            11,
-            squish.Qt.NoModifier,
-            squish.Qt.LeftButton,
+            squish.waitForObject(SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER)
         )
 
     @staticmethod
@@ -156,21 +148,9 @@ class SyncConnectionWizard:
                     len(folder_levels) == 1
                     or folder_levels.index(sub_folder) == len(folder_levels) - 1
                 ):
-                    squish.mouseClick(
-                        squish.waitForObject(selector),
-                        11,
-                        11,
-                        squish.Qt.NoModifier,
-                        squish.Qt.LeftButton,
-                    )
+                    squish.mouseClick(squish.waitForObject(selector))
                 else:
-                    squish.doubleClick(
-                        squish.waitForObject(selector),
-                        65,
-                        7,
-                        squish.Qt.NoModifier,
-                        squish.Qt.LeftButton,
-                    )
+                    squish.doubleClick(squish.waitForObject(selector))
 
     @staticmethod
     def sortBy(headerText):
@@ -219,13 +199,7 @@ class SyncConnectionWizard:
     def selectSpaceToSync(spaceName):
         selector = SyncConnectionWizard.SPACE_NAME_SELECTOR.copy()
         selector["text"] = spaceName
-        squish.mouseClick(
-            squish.waitForObject(selector),
-            0,
-            0,
-            squish.Qt.NoModifier,
-            squish.Qt.LeftButton,
-        )
+        squish.mouseClick(squish.waitForObject(selector))
 
     @staticmethod
     def setSyncPathInSyncConnectionWizardOcis(sync_path):
