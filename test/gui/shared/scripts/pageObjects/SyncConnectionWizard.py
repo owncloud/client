@@ -110,8 +110,14 @@ class SyncConnectionWizard:
 
     @staticmethod
     def deselectAllRemoteFolders():
+        # NOTE: checkbox does not have separate object
+        # click on (11,11) which is a checkbox
         squish.mouseClick(
-            squish.waitForObject(SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER)
+            squish.waitForObject(SyncConnectionWizard.SELECTIVE_SYNC_ROOT_FOLDER),
+            11,
+            11,
+            squish.Qt.NoModifier,
+            squish.Qt.LeftButton,
         )
 
     @staticmethod
@@ -148,7 +154,15 @@ class SyncConnectionWizard:
                     len(folder_levels) == 1
                     or folder_levels.index(sub_folder) == len(folder_levels) - 1
                 ):
-                    squish.mouseClick(squish.waitForObject(selector))
+                    # NOTE: checkbox does not have separate object
+                    # click on (11,11) which is a checkbox to unselect the folder
+                    squish.mouseClick(
+                        squish.waitForObject(selector),
+                        11,
+                        11,
+                        squish.Qt.NoModifier,
+                        squish.Qt.LeftButton,
+                    )
                 else:
                     squish.doubleClick(squish.waitForObject(selector))
 

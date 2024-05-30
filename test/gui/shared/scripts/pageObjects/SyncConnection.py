@@ -100,7 +100,15 @@ class SyncConnection:
                         # example: folder1 (13 B) => folder1
                         item_name = item.text.rsplit(" ", 2)[0]
                         if item_name == folder_name:
-                            squish.mouseClick(item)
+                            # NOTE: checkbox does not have separate object
+                            # click on (11,11) which is a checkbox to unselect the folder
+                            squish.mouseClick(
+                                item,
+                                11,
+                                11,
+                                squish.Qt.NoModifier,
+                                squish.Qt.LeftButton,
+                            )
                             break
         squish.clickButton(
             squish.waitForObject(SyncConnection.SELECTIVE_SYNC_APPLY_BUTTON)
