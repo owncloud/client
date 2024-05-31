@@ -113,11 +113,10 @@ def main(ctx):
     unit_tests = unit_test_pipeline(ctx)
     gui_tests = gui_test_pipeline(ctx)
 
-    return gui_tests
-    # return pipelines + \
-    #        unit_tests + \
-    #        gui_tests + \
-    #        pipelinesDependsOn(notification(), unit_tests + gui_tests)
+    return pipelines + \
+           unit_tests + \
+           gui_tests + \
+           pipelinesDependsOn(notification(), unit_tests + gui_tests)
 
 def from_secret(name):
     return {
