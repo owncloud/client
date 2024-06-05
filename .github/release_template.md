@@ -11,13 +11,13 @@ __TODO__:
 
 ### Administration
 
-* [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
+* [ ] QA: Update [Test Plans](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21c0c0d47e-5da5-4254-8b02-bd8e97d43dfb)
 * [ ] Update [supported platforms](https://doc.owncloud.com/desktop/next/installing.html#system-requirements) @michaelstingl
 * [ ] QA: Check the translations coming from transifex: https://github.com/owncloud/client/commits/ -> Filter based on a release branch/tag and search for `[tx] updated client translations from transifex [skip ci]`
 * [ ] DEV: Check for new OpenSSL version 
-* [ ] DEV: Update [dependencies](https://confluence.owncloud.com/display/OG/Dependencies)
+* [ ] DEV: Update [dependencies](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21d231d3ed-498f-42b8-87e0-87420e66e16c)
 * [ ] DEV: For a major release create `X` version branch
-  * [ ] QA: In drone adjust the branch for nightly [GUI tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) @individual-it
+  * [ ] QA: In drone adjust the branch for nightly [GUI tests](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21be0a8bd0-0029-4335-9c4a-98303d89aa9f) @individual-it
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
@@ -28,19 +28,18 @@ __TODO__:
   
 ### Copy for Each Build (Beta/RC)
 
-* [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
+* [ ] DEV: Tag (Beta or RC) and build [builds](https://gitea.owncloud.services/client/do_release) for theme 'ownCloud' and 'testpilotcloud'
 * [ ] QA: [Smoke test](https://owncloud.testrail.io/index.php?/cases/view/2469) (for public prelease)
 * [ ] DEV: GitHub release
-* [ ] Beta/RC [Communication](https://confluence.owncloud.com/x/loJK)
-    * [ ] Inform ``#updates`` that we have Beta/RC    
-    * [ ] For public prerelease: Inform ``#marketing`` and tell them to send email to beta testers
+* [ ] Beta/RC Communication
+    * [ ] TODO
     * [ ] For public prerelease: Write/edit Central post https://central.owncloud.org/tags/c/news/desktop with link to github release 
 * [ ] DEV: Prepare the update server for new version (AppImages included)
    * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
      
 ### QA 
 
-* [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning) the first RC
+* [ ] QA: [Antivirus scan](https://www.virustotal.com/) the first RC
 * [ ] QA: [Upload](https://confluence.owncloud.com/display/OG/Upload+linux+gpg+keys+to+key+server) linux gpg keys to key server
 * [ ] QA: Check Crash reporter:  start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
   * [ ] Windows  
