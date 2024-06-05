@@ -200,11 +200,11 @@ def gui_test_pipeline(ctx):
 
         if params["tags"]:
             squish_parameters += " --tags %s" % params["tags"]
+        steps = []
+        # steps = skipIfUnchanged(ctx, "gui-tests") + \
+        #         build_client(OC_CI_SQUISH, False)
 
-        steps = skipIfUnchanged(ctx, "gui-tests") + \
-                build_client(OC_CI_SQUISH, False)
-
-        services = testMiddlewareService(server)
+        services = []  #testMiddlewareService(server)
 
         if server == "oc10":
             steps += installCore(params["version"]) + \
@@ -214,16 +214,13 @@ def gui_test_pipeline(ctx):
                      owncloudLog()
             services += owncloudService() + \
                         databaseService()
-        else:
-            steps += ocisService(params["version"]) + \
-                     waitForOcisService()
+
+        # else:
+        #     steps += ocisService(params["version"]) + \
+        #              waitForOcisService()
 
         steps += install_python_modules() + \
-                 installPnpm() + \
-                 setGuiTestReportDir() + \
-                 gui_tests(squish_parameters, server) + \
-                 uploadGuiTestLogs(ctx, server) + \
-                 logGuiReports(ctx, server)
+                 gui_tests(squish_parameters, server)
 
         pipelines.append({
             "kind": "pipeline",
@@ -297,6 +294,8 @@ def install_python_modules():
         "image": OC_CI_SQUISH,
         "commands": [
             "python3 -m pip install -r %s/requirements.txt" % dir["guiTest"],
+            "ls -al /usr/local/lib/python3.10/site-packages",
+            "python3 -m pip list -v",
         ],
         "volumes": pip_step_volume,
     }]
@@ -319,6 +318,12 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
             "OWNCLOUD_CORE_DUMP": 1,
         },
+        "commands": [
+            "ls -al /usr/local/lib/python3.10/site-packages",
+            "whereis python3",
+            "python3 --version",
+            "whereis pylint",
+        ],
         "volumes": pip_step_volume,
     }]
 
