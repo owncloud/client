@@ -109,6 +109,7 @@ Feature: Syncing files
         And the file "large-folder/lorem.txt" should not exist on the file system
         And as "Alice" file "simple-folder/localFile.txt" should exist in the server
         When the user deletes the folder "simple-folder"
+        And the user confirms to remove all the files
         And the user waits for the files to sync
         Then as "Alice" folder "simple-folder" should not exist in the server
 

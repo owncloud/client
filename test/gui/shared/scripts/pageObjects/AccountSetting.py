@@ -29,6 +29,13 @@ class AccountSetting:
         "unnamed": 1,
         "visible": 1,
     }
+    KEEP_FILES = {
+        "text": "Keep files",
+        "type": "QPushButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.remove_All_Files_QMessageBox,
+    }
     ACCOUNT_CONNECTION_LABEL = {
         "container": names.settings_stack_QStackedWidget,
         "name": "connectLabel",
@@ -171,6 +178,10 @@ class AccountSetting:
     @staticmethod
     def confirmRemoveAllFiles():
         squish.clickButton(squish.waitForObject(AccountSetting.REMOVE_ALL_FILES))
+
+    @staticmethod
+    def confirmKeepFiles():
+        squish.clickButton(squish.waitForObject(AccountSetting.KEEP_FILES))
 
     @staticmethod
     def pressKey(key):

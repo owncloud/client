@@ -13,6 +13,7 @@ Feature: deleting files and folders
         Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "<fileName>" in the server
         And user "Alice" has set up a client with default settings
         When the user deletes the file "<fileName>"
+        And the user confirms to remove all the files
         And the user waits for the files to sync
         Then as "Alice" file "<fileName>" should not exist in the server
         Examples:
@@ -26,6 +27,7 @@ Feature: deleting files and folders
         Given user "Alice" has created folder "<folderName>" in the server
         And user "Alice" has set up a client with default settings
         When the user deletes the folder "<folderName>"
+        And the user confirms to remove all the files
         And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist in the server
         Examples:
@@ -47,3 +49,12 @@ Feature: deleting files and folders
         And as "Alice" folder "test-folder1" should not exist in the server
         And as "Alice" file "textfile2.txt" should exist in the server
         And as "Alice" folder "test-folder2" should exist in the server
+        When the user deletes the file "textfile2.txt"
+        And the user deletes the folder "test-folder2"
+        And the user confirms to keep the files
+        And the user waits for the files to sync
+        Then as "Alice" file "textfile2.txt" should exist in the server
+        And as "Alice" folder "test-folder2" should exist in the server
+        Then the file "textfile2.txt" should exist on the file system
+        Then the folder "test-folder2" should exist on the file system
+

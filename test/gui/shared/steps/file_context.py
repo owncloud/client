@@ -17,7 +17,6 @@ from helpers.FilesHelper import (
     can_read,
     can_write,
     read_file_content,
-    is_empty_sync_folder,
     get_size_in_bytes,
     prefix_path_namespace,
 )
@@ -256,14 +255,6 @@ def step(context, itemType, resource):
         shutil.rmtree(resourcePath)
     else:
         raise Exception("No such item type for resource")
-
-    # if the sync folder is empty after deleting file,
-    # a dialog will popup asking to confirm "Remove all files"
-    if is_empty_sync_folder(getResourcePath()):
-        try:
-            AccountSetting.confirmRemoveAllFiles()
-        except:
-            pass
 
 
 @When('user "|any|" creates the following files inside the sync folder:')

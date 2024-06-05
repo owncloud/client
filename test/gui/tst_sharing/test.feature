@@ -335,6 +335,7 @@ Feature: Sharing
         And user "Brian" has set up a client with default settings
         When the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
+        And the user confirms to remove all the files
         And the user waits for the files to sync
         Then as "Brian" file "textfile.txt" on the server should not exist
         And as "Brian" folder "Folder" on the server should not exist
@@ -351,6 +352,7 @@ Feature: Sharing
         And user "Brian" has set up a client with default settings
         When the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
+        And the user confirms to remove all the files
         And the user waits for the files to sync
         # Sharee can delete (means unshare) the file shared with read permission
         Then as "Brian" file "textfile.txt" on the server should not exist

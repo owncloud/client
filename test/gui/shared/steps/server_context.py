@@ -3,6 +3,7 @@ import json
 from helpers.ConfigHelper import get_config
 from helpers.api.Provisioning import setup_app
 from helpers.api.utils import url_join
+from helpers.FilesHelper import is_empty_sync_folder
 import helpers.api.webdav_helper as webdav
 import helpers.api.sharing_helper as sharing_helper
 
@@ -181,3 +182,19 @@ def step(context, user, file_content, file_name):
 @When('user "|any|" deletes the folder "|any|" in the server')
 def step(context, user, folder_name):
     webdav.delete_resource(user, folder_name)
+
+
+@When("the user confirms to keep the files")
+def step(context):
+    AccountSetting.confirmKeepFiles()
+
+
+@When("the user confirms to remove all the files")
+def step(context):
+    # if the sync folder is empty after deleting file,
+    # a dialog will popup asking to confirm "Remove all files"
+    if is_empty_sync_folder(getResourcePath()):
+        try:
+            AccountSetting.confirmRemoveAllFiles()
+        except:
+            pass
