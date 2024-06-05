@@ -1,7 +1,7 @@
 Feature: Syncing files
 
     As a user
-    I want to be able to sync my local folders to to my owncloud server
+    I want to be able to sync my local folders to my owncloud server
     so that I dont have to upload and download files manually
 
     Background:

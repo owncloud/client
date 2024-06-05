@@ -23,8 +23,8 @@ Feature:  Logout users
   Scenario: login with incorrect and correct password after log out
     Given user "Alice" has set up a client with default settings
     And user "Alice" has logged out of the client-UI
-    When user "ALice" opens login dialog
-    And user "ALice" enters the password "invalid"
+    When user "Alice" opens login dialog
+    And user "Alice" enters the password "invalid"
     And user "Alice" logs out from the login required dialog
     And user "Alice" logs in to the client-UI
     Then user "Alice" should be connect to the client-UI
