@@ -82,7 +82,7 @@ pip_pipeline_volume = [{
 }]
 pip_step_volume = [{
     "name": "python",
-    "path": "/usr/local/lib/python3.10/site-packages",
+    "path": "/home/headless/.local/lib/python3.10/site-packages",
 }]
 
 config = {
@@ -293,9 +293,8 @@ def install_python_modules():
         "name": "install-python-modules",
         "image": OC_CI_SQUISH,
         "commands": [
+            "ls -al /home/headless",
             "python3 -m pip install -r %s/requirements.txt" % dir["guiTest"],
-            "ls -al /usr/local/lib/python3.10/site-packages",
-            "python3 -m pip list -v",
         ],
         "volumes": pip_step_volume,
     }]
@@ -319,9 +318,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "OWNCLOUD_CORE_DUMP": 1,
         },
         "commands": [
-            "ls -al /usr/local/lib/python3.10/site-packages",
-            "whereis python3",
-            "python3 --version",
+            "ls -al /home/headless/.local/lib/python3.10/site-packages",
             "whereis pylint",
         ],
         "volumes": pip_step_volume,
