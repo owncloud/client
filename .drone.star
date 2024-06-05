@@ -50,6 +50,7 @@ dir = {
     "guiTest": "/drone/src/test/gui",
     "guiTestReport": "/drone/src/test/gui/guiReportUpload",
     "build": "/drone/src/build",
+    "pythonModules": "/usr/local/lib/python3.10/site-packages",
 }
 
 notify_channels = {
@@ -82,7 +83,7 @@ pip_pipeline_volume = [{
 }]
 pip_step_volume = [{
     "name": "python",
-    "path": "/home/headless/.local/lib/python3.10/site-packages",
+    "path": dir["pythonModules"],
 }]
 
 config = {
@@ -200,11 +201,11 @@ def gui_test_pipeline(ctx):
 
         if params["tags"]:
             squish_parameters += " --tags %s" % params["tags"]
-        steps = []
-        # steps = skipIfUnchanged(ctx, "gui-tests") + \
-        #         build_client(OC_CI_SQUISH, False)
 
-        services = []  #testMiddlewareService(server)
+        steps = skipIfUnchanged(ctx, "gui-tests") + \
+                build_client(OC_CI_SQUISH, False)
+
+        services = testMiddlewareService(server)
 
         if server == "oc10":
             steps += installCore(params["version"]) + \
@@ -214,13 +215,16 @@ def gui_test_pipeline(ctx):
                      owncloudLog()
             services += owncloudService() + \
                         databaseService()
+        else:
+            steps += ocisService(params["version"]) + \
+                     waitForOcisService()
 
-        # else:
-        #     steps += ocisService(params["version"]) + \
-        #              waitForOcisService()
-
-        steps += install_python_modules() + \
-                 gui_tests(squish_parameters, server)
+        steps += installPnpm() + \
+                 install_python_modules() + \
+                 setGuiTestReportDir() + \
+                 gui_tests(squish_parameters, server) + \
+                 uploadGuiTestLogs(ctx, server) + \
+                 logGuiReports(ctx, server)
 
         pipelines.append({
             "kind": "pipeline",
@@ -292,8 +296,8 @@ def install_python_modules():
     return [{
         "name": "install-python-modules",
         "image": OC_CI_SQUISH,
+        "user": "0:0",
         "commands": [
-            "ls -al /home/headless",
             "python3 -m pip install -r %s/requirements.txt" % dir["guiTest"],
         ],
         "volumes": pip_step_volume,
@@ -317,10 +321,6 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
             "OWNCLOUD_CORE_DUMP": 1,
         },
-        "commands": [
-            "ls -al /home/headless/.local/lib/python3.10/site-packages",
-            "whereis pylint",
-        ],
         "volumes": pip_step_volume,
     }]
 
