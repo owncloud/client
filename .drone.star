@@ -14,7 +14,7 @@ OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_CLIENT = "owncloudci/client:latest"
 OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
-OC_CI_NODEJS = "owncloudci/nodejs:16"
+OC_CI_NODEJS = "owncloudci/nodejs:18"
 OC_CI_PHP = "owncloudci/php:%s"
 OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_OCIS = "owncloud/ocis:%s"
@@ -219,8 +219,7 @@ def gui_test_pipeline(ctx):
             steps += ocisService(params["version"]) + \
                      waitForOcisService()
 
-        steps += installPnpm() + \
-                 install_python_modules() + \
+        steps += installDependencies() + \
                  setGuiTestReportDir() + \
                  gui_tests(squish_parameters, server) + \
                  uploadGuiTestLogs(ctx, server) + \
@@ -616,6 +615,21 @@ def waitForOcisService():
         "commands": [
             "wait-for -it ocis:9200 -t 300",
         ],
+    }]
+
+def installDependencies():
+    return [{
+        "name": "pnpm-install",
+        "image": OC_CI_SQUISH,
+        "environment": {
+            "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
+        },
+        "user": "0:0",
+        "commands": [
+            "pnpm config set store-dir %s/.pnpm-store" % dir["base"],
+            "make -C %s install" % dir["guiTest"],
+        ],
+        "volumes": pip_step_volume,
     }]
 
 def installPnpm():
