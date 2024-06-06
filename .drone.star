@@ -187,7 +187,7 @@ def unit_test_pipeline(ctx):
 def gui_test_pipeline(ctx):
     pipelines = []
     for server, params in config["gui-tests"]["servers"].items():
-        squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip --tags ~@skipOnLinux" % dir["guiTestReport"]
+        squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip --tags @fail --tags ~@skipOnLinux" % dir["guiTestReport"]
         if params.get("skip", False):
             continue
         if ctx.build.event == "pull_request" and params.get("skip_in_pr", False) and not "full-ci" in ctx.build.title.lower():

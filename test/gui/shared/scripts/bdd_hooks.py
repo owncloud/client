@@ -38,6 +38,11 @@ from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
+# Squish test settings
+# testSettings.logScreenshotOnFail = True
+# testSettings.logScreenshotOnError = True
+testSettings.throwOnFailure = True
+
 # this will reset in every test suite
 previousFailResultCount = 0
 previousErrorResultCount = 0
@@ -151,8 +156,6 @@ def hook(context):
 
     # capture a screenshot if there is error or test failure in the current scenario execution
     if scenarioFailed() and os.getenv('CI') and isLinux():
-        from helpers.ReportHelper import take_screenshot
-
         # scenario name can have "/" which is invalid filename
         filename = (
             context._data["title"].replace(" ", "_").replace("/", "_").strip(".")
@@ -162,7 +165,7 @@ def hook(context):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        take_screenshot(directory, filename)
+        saveDesktopScreenshot(os.path.join(dir, filename))
 
     # teardown accounts and configs
     teardown_client()
