@@ -39,8 +39,6 @@ from pageObjects.AccountSetting import AccountSetting
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
 # Squish test settings
-# testSettings.logScreenshotOnFail = True
-# testSettings.logScreenshotOnError = True
 testSettings.throwOnFailure = True
 
 # this will reset in every test suite
@@ -165,7 +163,7 @@ def hook(context):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        saveDesktopScreenshot(os.path.join(dir, filename))
+        saveDesktopScreenshot(os.path.join(directory, filename))
 
     # teardown accounts and configs
     teardown_client()

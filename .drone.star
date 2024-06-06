@@ -298,7 +298,7 @@ def install_python_modules():
         "image": OC_CI_SQUISH,
         "user": "0:0",
         "commands": [
-            "python3 -m pip install -r %s/requirements.txt" % dir["guiTest"],
+            "make -C %s pip-install" % dir["guiTest"],
         ],
         "volumes": pip_step_volume,
     }]
@@ -627,11 +627,10 @@ def installPnpm():
             "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "true",
         },
         "commands": [
-            "cd %s/webUI" % dir["guiTest"],
             "pnpm config set store-dir ./.pnpm-store",
-            "pnpm install",
+            "make -C %s pnpm-install" % dir["guiTest"],
             # install required browser
-            "npx playwright install chromium",
+            "make -C %s pnpm-install-chromium" % dir["guiTest"],
         ],
     }]
 
