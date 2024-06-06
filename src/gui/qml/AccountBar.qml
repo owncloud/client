@@ -21,6 +21,7 @@ import org.ownCloud.libsync 1.0
 Pane {
     id: bar
     Accessible.name: qsTr("Navigation bar")
+    Accessible.role: Accessible.PageTabList
 
     RowLayout {
         anchors.fill: parent
