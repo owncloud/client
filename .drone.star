@@ -20,6 +20,7 @@ OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_OCIS = "owncloud/ocis:%s"
 OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.7"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
+PYTHON_ALPINE = "python:3.10.12-alpine"
 
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
@@ -219,7 +220,8 @@ def gui_test_pipeline(ctx):
             steps += ocisService(params["version"]) + \
                      waitForOcisService()
 
-        steps += installDependencies() + \
+        steps += installPnpm() + \
+                 install_python_modules() + \
                  setGuiTestReportDir() + \
                  gui_tests(squish_parameters, server) + \
                  uploadGuiTestLogs(ctx, server) + \
@@ -294,10 +296,10 @@ def unit_tests(image = OC_CI_CLIENT):
 def install_python_modules():
     return [{
         "name": "install-python-modules",
-        "image": OC_CI_SQUISH,
-        "user": "0:0",
+        "image": PYTHON_ALPINE,
         "commands": [
             "make -C %s pip-install" % dir["guiTest"],
+            "python3 -m pip list -v",
         ],
         "volumes": pip_step_volume,
     }]
@@ -617,31 +619,16 @@ def waitForOcisService():
         ],
     }]
 
-def installDependencies():
-    return [{
-        "name": "pnpm-install",
-        "image": OC_CI_SQUISH,
-        "environment": {
-            "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
-        },
-        "user": "0:0",
-        "commands": [
-            "pnpm config set store-dir %s/.pnpm-store" % dir["base"],
-            "make -C %s install" % dir["guiTest"],
-        ],
-        "volumes": pip_step_volume,
-    }]
-
 def installPnpm():
     return [{
         "name": "pnpm-install",
         "image": OC_CI_NODEJS,
         "environment": {
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
-            "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "true",
         },
         "commands": [
-            "pnpm config set store-dir ./.pnpm-store",
+            'npm install --silent --global --force "$(jq -r ".packageManager" < package.json)"',
+            "pnpm config set store-dir %s/.pnpm-store" % dir["base"],
             "make -C %s pnpm-install" % dir["guiTest"],
             # install required browser
             "make -C %s pnpm-install-chromium" % dir["guiTest"],
