@@ -291,17 +291,6 @@ def unit_tests(image = OC_CI_CLIENT):
         ],
     }]
 
-def install_python_modules():
-    return [{
-        "name": "install-python-modules",
-        "image": OC_CI_SQUISH,
-        "user": "0:0",
-        "commands": [
-            "make -C %s pip-install" % dir["guiTest"],
-        ],
-        "volumes": pip_step_volume,
-    }]
-
 def gui_tests(squish_parameters = "", server_type = "oc10"):
     return [{
         "name": "GUItests",
@@ -631,6 +620,17 @@ def installPnpm():
             # install required browser
             "make -C %s pnpm-install-chromium" % dir["guiTest"],
         ],
+    }]
+
+def install_python_modules():
+    return [{
+        "name": "install-python-modules",
+        "image": OC_CI_SQUISH,
+        "user": "0:0",
+        "commands": [
+            "make -C %s pip-install" % dir["guiTest"],
+        ],
+        "volumes": pip_step_volume,
     }]
 
 def setGuiTestReportDir():

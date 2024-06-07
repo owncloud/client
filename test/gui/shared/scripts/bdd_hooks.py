@@ -38,7 +38,10 @@ from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
-# Squish test settings
+# Squish test settings:
+# This controls whether a test (scenario) should stop execution on failure or not
+# If set to True, the scenario will stop on the first step failure and remaining steps will not be executed
+# If set to False, the scenario will continue to execute all steps and report all failures at the end
 testSettings.throwOnFailure = True
 
 # this will reset in every test suite
