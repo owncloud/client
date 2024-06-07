@@ -20,7 +20,6 @@ OC_CI_WAIT_FOR = "owncloudci/wait-for:latest"
 OC_OCIS = "owncloud/ocis:%s"
 OC_TEST_MIDDLEWARE = "owncloud/owncloud-test-middleware:1.8.7"
 OC_UBUNTU = "owncloud/ubuntu:20.04"
-PYTHON_ALPINE = "python:3.10.12-alpine"
 
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
@@ -296,10 +295,10 @@ def unit_tests(image = OC_CI_CLIENT):
 def install_python_modules():
     return [{
         "name": "install-python-modules",
-        "image": PYTHON_ALPINE,
+        "image": OC_CI_SQUISH,
+        "user": "0:0",
         "commands": [
             "make -C %s pip-install" % dir["guiTest"],
-            "python3 -m pip list -v",
         ],
         "volumes": pip_step_volume,
     }]
