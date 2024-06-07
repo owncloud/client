@@ -20,7 +20,7 @@ Feature: adding accounts
         And the VFS option should be selected by default for Windows
         And the user should be able to choose the local download directory
 
-    @fail
+
     Scenario: Adding normal Account
         Given the user has started the client
         When the user adds the following account:
