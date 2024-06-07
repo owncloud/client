@@ -627,7 +627,7 @@ def installPnpm():
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
         },
         "commands": [
-            'npm install --silent --global --force "$(jq -r ".packageManager" < package.json)"',
+            'npm i -s -g -f "$(jq -r ".packageManager" < %s/webUI/package.json)"' % dir["guiTest"],
             "pnpm config set store-dir %s/.pnpm-store" % dir["base"],
             "make -C %s pnpm-install" % dir["guiTest"],
             # install required browser
