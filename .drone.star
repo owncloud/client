@@ -107,7 +107,7 @@ config = {
                 "skip": False,
             },
             "ocis": {
-                "version": "5.0.0",
+                "version": "5.0",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
                 "skip": False,
@@ -308,6 +308,8 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
             "OWNCLOUD_CORE_DUMP": 1,
+            # allow to use any available pnpm version
+            "COREPACK_ENABLE_STRICT": 0,
         },
         "volumes": pip_step_volume,
     }]
