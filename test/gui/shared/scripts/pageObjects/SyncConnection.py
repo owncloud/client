@@ -2,10 +2,13 @@ import names
 import squish
 import object
 
-from helpers.ObjectHelper import get_center_coordinates
-
 
 class SyncConnection:
+    FOLDER_SYNC_CONNECTION_LIST = {
+        "container": names.quickWidget_scrollView_ScrollView,
+        "type": "ListView",
+        "visible": True,
+    }
     FOLDER_SYNC_CONNECTION = {
         "container": names.settings_stack_QStackedWidget,
         "name": "_folderList",
@@ -42,13 +45,7 @@ class SyncConnection:
         menu_button = squish.waitForObject(
             SyncConnection.FOLDER_SYNC_CONNECTION_MENU_BUTTON
         )
-        x, y = get_center_coordinates(menu_button)
-        squish.mouseClick(
-            menu_button,
-            x,
-            y,
-            squish.Qt.LeftButton,
-        )
+        squish.mouseClick(menu_button)
 
     @staticmethod
     def performAction(action):
@@ -108,10 +105,12 @@ class SyncConnection:
                         # example: folder1 (13 B) => folder1
                         item_name = item.text.rsplit(" ", 2)[0]
                         if item_name == folder_name:
+                            # NOTE: checkbox does not have separate object
+                            # click on (11,11) which is a checkbox to unselect the folder
                             squish.mouseClick(
                                 item,
-                                9,
-                                9,
+                                11,
+                                11,
                                 squish.Qt.NoModifier,
                                 squish.Qt.LeftButton,
                             )
@@ -119,3 +118,7 @@ class SyncConnection:
         squish.clickButton(
             squish.waitForObject(SyncConnection.SELECTIVE_SYNC_APPLY_BUTTON)
         )
+
+    @staticmethod
+    def get_folder_connection_count():
+        return squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_LIST).count
