@@ -87,6 +87,9 @@
         <property name="contextMenuPolicy">
          <enum>Qt::CustomContextMenu</enum>
         </property>
+        <property name="accessibleName">
+         <string>Server activity table</string>
+        </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
         </property>
