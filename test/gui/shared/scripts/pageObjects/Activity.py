@@ -60,7 +60,7 @@ class Activity:
     def clickTab(tabName):
         tabFound = False
 
-        # NOTE: Some activity tabs are not immediately available
+        # NOTE: Some activity tabs are loaded dynamically
         # and the tab index changes after all the tabs are loaded properly
         # So wait for a second to let the UI render the tabs properly
         # before trying to click the tab
