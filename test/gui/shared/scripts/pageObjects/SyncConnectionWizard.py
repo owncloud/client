@@ -113,6 +113,12 @@ class SyncConnectionWizard:
         "visible": 1,
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
     }
+    ADD_FOLDER_SYNC_BUTTON = {
+        "container": names.settings_stack_QStackedWidget,
+        "name": "addButton",
+        "type": "QPushButton",
+        "visible": 1,
+    }
 
     @staticmethod
     def setSyncPathInSyncConnectionWizardOc10(sync_path=''):
@@ -350,3 +356,17 @@ class SyncConnectionWizard:
     @staticmethod
     def is_remote_folder_selected(folder_selector):
         return squish.waitForObjectExists(folder_selector).selected
+
+    @staticmethod
+    def click_on_add_button_to_sync():
+        squish.clickButton(
+            squish.waitForObject(SyncConnectionWizard.ADD_FOLDER_SYNC_BUTTON)
+        )
+
+    @staticmethod
+    def get_default_local_sync_folder():
+        return str(
+            squish.waitForObjectExists(
+                SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER
+            ).displayText
+        )

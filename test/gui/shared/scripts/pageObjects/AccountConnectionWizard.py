@@ -350,3 +350,11 @@ class AccountConnectionWizard:
             ).checked
             == True
         )
+
+    @staticmethod
+    def get_local_download_foldername():
+        return str(
+            squish.waitForObjectExists(
+                AccountConnectionWizard.SELECT_LOCAL_FOLDER
+            ).displayText
+        )

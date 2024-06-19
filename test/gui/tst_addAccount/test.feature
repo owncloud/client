@@ -80,3 +80,17 @@ Feature: adding accounts
         And the user syncs the "Personal" space
         Then the folder "simple-folder" should exist on the file system
 
+
+    Scenario: Check for incremented number in bracket while adding new account and folder
+        Given folder "ownCloud" has been created in local system
+        And the user has started the client
+        And the user has entered the following account information:
+            | server | %local_server% |
+        When the user adds the following user credentials:
+            | user     | Alice |
+            | password | 1234  |
+        And the user opens the advanced configuration
+        Then the default local download directory should be "/tmp/owncloudtest/ownCloud (2)"
+        When the user selects download everything option in advanced section
+        And the user selects the add folder to sync button
+        Then the default local sync folder should be "/tmp/owncloudtest/ownCloud (2) (2)"

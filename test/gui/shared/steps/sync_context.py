@@ -271,3 +271,17 @@ def step(context, folder_name, selected):
             SyncConnectionWizard.is_remote_folder_selected(folder_selector),
             "Folder should be selected",
         )
+
+
+@When("the user selects the add folder to sync button")
+def step(context):
+    SyncConnectionWizard.click_on_add_button_to_sync()
+
+
+@Then('the default local sync folder should be "|any|"')
+def step(context, sync_directory):
+    test.compare(
+        sync_directory,
+        SyncConnectionWizard.get_default_local_sync_folder(),
+        "Default sync directory should have bracket with incremented number",
+    )

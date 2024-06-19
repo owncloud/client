@@ -33,6 +33,14 @@ def step(context):
     )
 
 
+@When('the user adds the following user credentials:')
+def step(context):
+    account_details = getClientDetails(context)
+    AccountConnectionWizard.addUserCreds(
+        account_details['user'], account_details['password']
+    )
+
+
 @Then('the account with displayname "|any|" and host "|any|" should be displayed')
 def step(context, displayname, host):
     displayname = substituteInLineCodes(displayname)
@@ -285,3 +293,12 @@ def step(context, username):
 @When("the user quits the client")
 def step(context):
     Toolbar.quit_owncloud()
+
+
+@Then('the default local download directory should be "|any|"')
+def step(context, local_directory):
+    test.compare(
+        local_directory,
+        AccountConnectionWizard.get_local_download_foldername(),
+        "Default local download directory should have bracket with incremented number",
+    )
