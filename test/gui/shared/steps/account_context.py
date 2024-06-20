@@ -25,15 +25,7 @@ def step(context, accountType):
     waitForInitialSyncToComplete(getResourcePath('/', account_details["user"], space))
 
 
-@When('the user adds the following wrong user credentials:')
-def step(context):
-    account_details = getClientDetails(context)
-    AccountConnectionWizard.addUserCreds(
-        account_details['user'], account_details['password']
-    )
-
-
-@When('the user adds the following user credentials:')
+@When(r'the user adds the following(?: wrong)? user credentials:', regexp=True)
 def step(context):
     account_details = getClientDetails(context)
     AccountConnectionWizard.addUserCreds(
@@ -295,10 +287,17 @@ def step(context):
     Toolbar.quit_owncloud()
 
 
-@Then('the default local download directory should be "|any|"')
-def step(context, local_directory):
+@Then(
+    r'the default local sync path should be "([^"]*)" in the (configuration|sync connection) wizard',
+    regexp=True,
+)
+def step(context, sync_path, wizard):
     test.compare(
-        local_directory,
-        AccountConnectionWizard.get_local_download_foldername(),
+        sync_path,
+        (
+            AccountConnectionWizard.get_local_sync_path()
+            if wizard == 'configuration'
+            else SyncConnectionWizard.get_local_sync_path()
+        ),
         "Default local download directory should have bracket with incremented number",
     )

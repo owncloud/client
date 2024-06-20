@@ -352,7 +352,7 @@ class AccountConnectionWizard:
         )
 
     @staticmethod
-    def get_local_download_foldername():
+    def get_local_sync_path():
         return str(
             squish.waitForObjectExists(
                 AccountConnectionWizard.SELECT_LOCAL_FOLDER

@@ -188,6 +188,11 @@ def step(context, spaceName):
     SyncConnectionWizard.syncSpace(spaceName)
 
 
+@When('the user selects the "|any|" space to sync')
+def step(context, space_name):
+    SyncConnectionWizard.select_space_to_sync(space_name)
+
+
 @Then('the settings tab should have the following options in the general section:')
 def step(context):
     for item in context.table:
@@ -273,15 +278,6 @@ def step(context, folder_name, selected):
         )
 
 
-@When("the user selects the add folder to sync button")
+@When("the user opens the sync connection wizard")
 def step(context):
-    SyncConnectionWizard.click_on_add_button_to_sync()
-
-
-@Then('the default local sync folder should be "|any|"')
-def step(context, sync_directory):
-    test.compare(
-        sync_directory,
-        SyncConnectionWizard.get_default_local_sync_folder(),
-        "Default sync directory should have bracket with incremented number",
-    )
+    SyncConnectionWizard.open_sync_connection_wizard()

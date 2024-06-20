@@ -301,6 +301,11 @@ class SyncConnectionWizard:
         SyncConnectionWizard.addSyncConnection()
 
     @staticmethod
+    def select_space_to_sync(space_name):
+        SyncConnectionWizard.selectSpaceToSync(space_name)
+        SyncConnectionWizard.nextStep()
+
+    @staticmethod
     def create_folder_in_remote_destination(folder_name):
         squish.clickButton(
             squish.waitForObject(SyncConnectionWizard.CREATE_REMOTE_FOLDER_BUTTON)
@@ -358,13 +363,13 @@ class SyncConnectionWizard:
         return squish.waitForObjectExists(folder_selector).selected
 
     @staticmethod
-    def click_on_add_button_to_sync():
+    def open_sync_connection_wizard():
         squish.clickButton(
             squish.waitForObject(SyncConnectionWizard.ADD_FOLDER_SYNC_BUTTON)
         )
 
     @staticmethod
-    def get_default_local_sync_folder():
+    def get_local_sync_path():
         return str(
             squish.waitForObjectExists(
                 SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER

@@ -380,7 +380,7 @@ def step(context, username, source):
     shutil.copy2(source_dir, destination_dir)
 
 
-@Given('folder "|any|" has been created in local system')
+@Given('folder "|any|" has been created in the local sync path')
 def step(context, folder_name):
     folder_path = join(get_config('clientRootSyncPath'), folder_name)
     os.makedirs(prefix_path_namespace(folder_path))
