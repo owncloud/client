@@ -572,7 +572,6 @@ def testMiddlewareService(server_type = "oc10"):
         "name": "testmiddleware",
         "image": OC_TEST_MIDDLEWARE,
         "environment": environment,
-        "detach": True,
         "volumes": [{
             "name": "uploads",
             "path": "/uploads",
@@ -583,7 +582,6 @@ def owncloudLog():
     return [{
         "name": "owncloud-log",
         "image": OC_UBUNTU,
-        "detach": True,
         "commands": [
             "tail -f %s/data/owncloud.log" % dir["server"],
         ],
@@ -603,7 +601,6 @@ def ocisService(server_version = "latest"):
     return [{
         "name": "ocis",
         "image": OC_OCIS % server_version,
-        "detach": True,
         "environment": {
             "OCIS_URL": "https://ocis:9200",
             "IDM_ADMIN_PASSWORD": "admin",
