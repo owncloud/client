@@ -201,29 +201,51 @@ def gui_test_pipeline(ctx):
         if params["tags"]:
             squish_parameters += " --tags %s" % params["tags"]
 
-        steps = skipIfUnchanged(ctx, "gui-tests") + \
-                build_client(OC_CI_SQUISH, False)
+        step_skip_if_changed = skipIfUnchanged(ctx, "gui-tests")
+        step_build_client = pipelinesDependsOn(build_client(OC_CI_SQUISH, False), step_skip_if_changed)
+        step_wait_for_middleware = pipelinesDependsOn(waitForService("middleware", ["testmiddleware:3000"]), step_skip_if_changed)
 
-        services = testMiddlewareService(server)
+        step_wait_for_server = []
+        steps = step_skip_if_changed + \
+                pipelinesDependsOn(testMiddlewareService(server), step_skip_if_changed) + \
+                step_wait_for_middleware + \
+                step_build_client
 
         if server == "oc10":
-            steps += installCore(params["version"]) + \
-                     setupServerAndApp() + \
-                     installExtraApps(params["extra_apps"]) + \
-                     fixPermissions() + \
-                     owncloudLog()
-            services += owncloudService() + \
-                        databaseService()
-        else:
-            steps += ocisService(params["version"]) + \
-                     waitForOcisService()
+            step_wait_for_services = pipelinesDependsOn(waitForService("services", ["mysql:3306", "owncloud:80"]), step_skip_if_changed)
+            step_install_oc10 = pipelinesDependsOn(installOC10(params["version"]), step_wait_for_services)
+            step_setup_oc10 = pipelinesDependsOn(setupServerAndApp(), step_install_oc10)
+            step_install_extra_apps = pipelinesDependsOn(installExtraApps(params["extra_apps"]), step_setup_oc10)
+            step_fix_permissions = pipelinesDependsOn(fixPermissions(), step_install_extra_apps)
 
-        steps += installPnpm() + \
-                 install_python_modules() + \
-                 setGuiTestReportDir() + \
-                 gui_tests(squish_parameters, server) + \
-                 uploadGuiTestLogs(ctx, server) + \
-                 logGuiReports(ctx, server)
+            steps += pipelinesDependsOn(owncloudService(), step_skip_if_changed) + \
+                     pipelinesDependsOn(databaseService(), step_skip_if_changed) + \
+                     step_wait_for_services + \
+                     step_install_oc10 + \
+                     step_setup_oc10 + \
+                     step_install_extra_apps + \
+                     step_fix_permissions + \
+                     owncloudLog()
+            step_wait_for_server = step_fix_permissions
+        else:
+            step_ocis_server = pipelinesDependsOn(ocisService(params["version"]), step_skip_if_changed)
+            step_wait_for_ocis = pipelinesDependsOn(waitForService("ocis", ["ocis:9200"]), step_skip_if_changed)
+            steps += step_ocis_server + \
+                     step_wait_for_ocis
+            step_wait_for_server = step_wait_for_ocis
+
+        step_install_pnpm = pipelinesDependsOn(installPnpm(), step_skip_if_changed)
+        step_install_python_modules = pipelinesDependsOn(install_python_modules(), step_build_client)
+        step_gui_report_dir = pipelinesDependsOn(setGuiTestReportDir(), step_skip_if_changed)
+        step_gui_tests = pipelinesDependsOn(gui_tests(squish_parameters, server), step_wait_for_server + step_install_pnpm + step_install_python_modules + step_gui_report_dir)
+        step_upload_test_reports = pipelinesDependsOn(uploadGuiTestLogs(ctx, server), step_gui_tests)
+
+        steps += step_install_pnpm + \
+                 step_install_python_modules + \
+                 step_gui_report_dir + \
+                 step_gui_tests + \
+                 step_upload_test_reports + \
+                 pipelinesDependsOn(logGuiReports(ctx, server), step_upload_test_reports)
 
         pipelines.append({
             "kind": "pipeline",
@@ -233,7 +255,6 @@ def gui_test_pipeline(ctx):
                 "arch": "amd64",
             },
             "steps": steps,
-            "services": services,
             "trigger": {
                 "ref": trigger_ref,
             },
@@ -468,7 +489,7 @@ def databaseService():
         "command": ["--default-authentication-plugin=mysql_native_password"],
     }]
 
-def installCore(server_version = "latest"):
+def installOC10(server_version = "latest"):
     return [{
         "name": "install-core",
         "image": OC_CI_CORE,
@@ -551,6 +572,7 @@ def testMiddlewareService(server_type = "oc10"):
         "name": "testmiddleware",
         "image": OC_TEST_MIDDLEWARE,
         "environment": environment,
+        "detach": True,
         "volumes": [{
             "name": "uploads",
             "path": "/uploads",
@@ -605,6 +627,15 @@ def waitForOcisService():
         "image": OC_CI_WAIT_FOR,
         "commands": [
             "wait-for -it ocis:9200 -t 300",
+        ],
+    }]
+
+def waitForService(name, servers = []):
+    return [{
+        "name": "wait-for-%s" % name,
+        "image": OC_CI_WAIT_FOR,
+        "commands": [
+            "wait-for -it %s -t 300" % ",".join(servers),
         ],
     }]
 
