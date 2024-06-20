@@ -188,6 +188,11 @@ def step(context, spaceName):
     SyncConnectionWizard.syncSpace(spaceName)
 
 
+@When('the user selects the "|any|" space to sync')
+def step(context, space_name):
+    SyncConnectionWizard.select_space_to_sync(space_name)
+
+
 @Then('the settings tab should have the following options in the general section:')
 def step(context):
     for item in context.table:
@@ -271,3 +276,8 @@ def step(context, folder_name, selected):
             SyncConnectionWizard.is_remote_folder_selected(folder_selector),
             "Folder should be selected",
         )
+
+
+@When("the user opens the sync connection wizard")
+def step(context):
+    SyncConnectionWizard.open_sync_connection_wizard()
