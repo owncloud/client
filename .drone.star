@@ -480,6 +480,7 @@ def databaseService():
     return [{
         "name": "mysql",
         "image": MYSQL,
+        "detach": True,
         "environment": {
             "MYSQL_USER": "owncloud",
             "MYSQL_PASSWORD": "owncloud",
@@ -540,6 +541,7 @@ def owncloudService():
     return [{
         "name": "owncloud",
         "image": OC_CI_PHP % DEFAULT_PHP_VERSION,
+        "detach": True,
         "environment": {
             "APACHE_WEBROOT": dir["server"],
             "APACHE_CONFIG_TEMPLATE": "ssl",
@@ -572,6 +574,7 @@ def testMiddlewareService(server_type = "oc10"):
         "name": "testmiddleware",
         "image": OC_TEST_MIDDLEWARE,
         "environment": environment,
+        "detach": True,
         "volumes": [{
             "name": "uploads",
             "path": "/uploads",
@@ -582,6 +585,7 @@ def owncloudLog():
     return [{
         "name": "owncloud-log",
         "image": OC_UBUNTU,
+        "detach": True,
         "commands": [
             "tail -f %s/data/owncloud.log" % dir["server"],
         ],
@@ -601,6 +605,7 @@ def ocisService(server_version = "latest"):
     return [{
         "name": "ocis",
         "image": OC_OCIS % server_version,
+        "detach": True,
         "environment": {
             "OCIS_URL": "https://ocis:9200",
             "IDM_ADMIN_PASSWORD": "admin",
