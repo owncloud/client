@@ -42,7 +42,7 @@ void loadQNetworkInformationBackend()
     qCDebug(lcNetInfo) << "Available backends:" << QNetworkInformation::availableBackends().join(QStringLiteral(", "));
     if (auto qni = QNetworkInformation::instance()) {
         QObject::connect(qni, &QNetworkInformation::reachabilityChanged,
-            [](QNetworkInformation::Reachability reachability) { qCInfo(lcNetInfo) << "Connection Status changed to:" << reachability; });
+            [qni](QNetworkInformation::Reachability reachability) { qCInfo(lcNetInfo) << "Connection Status changed to:" << reachability << "captive portal status:" << qni->isBehindCaptivePortal(); });
     }
 }
 
@@ -123,6 +123,8 @@ bool NetworkInformation::isBehindCaptivePortal() const
 
 void NetworkInformation::slotIsBehindCaptivePortalChanged(bool state)
 {
+    qCDebug(lcNetInfo) << "OS signals behind captive portal changed to" << state << "forced captive portal flag:" << _forcedCaptivePortal;
+
     if (!_forcedCaptivePortal) {
         Q_EMIT isBehindCaptivePortalChanged(state);
     }
