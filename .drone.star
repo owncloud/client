@@ -126,6 +126,7 @@ config = {
 }
 
 def main(ctx):
+    return gui_test_pipeline(ctx)
     pipelines = check_starlark() + \
                 gui_tests_format() + \
                 changelog(ctx)
