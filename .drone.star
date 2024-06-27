@@ -195,7 +195,14 @@ def unit_test_pipeline(ctx):
 def gui_test_pipeline(ctx):
     pipelines = []
     for server, params in config["gui-tests"]["servers"].items():
-        squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip --tags ~@skipOnLinux" % dir["guiTestReport"]
+        squish_parameters = [
+            "--testsuite %s" % dir["guiTest"],
+            "--reportgen html,%s" % dir["guiTestReport"],
+            "--envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false",
+            "--tags ~@skip",
+            "--tags ~@skipOnLinux",
+        ]
+
         if params.get("skip", False):
             continue
         if ctx.build.event == "pull_request" and params.get("skip_in_pr", False) and not "full-ci" in ctx.build.title.lower():
@@ -208,7 +215,8 @@ def gui_test_pipeline(ctx):
         pipeline_name = "GUI-tests-%s" % server
 
         if params["tags"]:
-            squish_parameters += " --tags %s" % params["tags"]
+            squish_parameters.append("--tags %s" % params["tags"])
+        squish_parameters = " ".join(squish_parameters)
 
         step_skip_if_changed = skipIfUnchanged(ctx, "gui-tests")
         step_build_client = pipelinesDependsOn(build_client(OC_CI_SQUISH, False), step_skip_if_changed)
