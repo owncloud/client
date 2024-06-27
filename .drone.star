@@ -199,7 +199,6 @@ def gui_test_pipeline(ctx):
         squish_parameters = [
             "--testsuite %s" % dir["guiTest"],
             "--reportgen html,%s" % dir["guiTestReport"],
-            "--reportgen stdout",
             "--envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false",
             "--tags ~@skip --tags @only",
             "--tags ~@skipOnLinux",
