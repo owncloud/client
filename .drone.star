@@ -341,10 +341,6 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             # allow to use any available pnpm version
             "COREPACK_ENABLE_STRICT": 0,
         },
-        "commands": [
-            "python3.10 -V",
-            "python3.10 -m pip list -v",
-        ],
         "volumes": pip_step_volume + pip_step64_volume,
     }]
 
