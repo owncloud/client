@@ -51,6 +51,7 @@ dir = {
     "guiTestReport": "/drone/src/test/gui/guiReportUpload",
     "build": "/drone/src/build",
     "pythonModules": "/usr/local/lib/python3.10/site-packages",
+    "pythonModules64": "/usr/local/lib64/python3.10/site-packages",
 }
 
 notify_channels = {
@@ -81,9 +82,17 @@ pip_pipeline_volume = [{
     "name": "python",
     "temp": {},
 }]
+pip_pipeline64_volume = [{
+    "name": "python",
+    "temp": {},
+}]
 pip_step_volume = [{
     "name": "python",
     "path": dir["pythonModules"],
+}]
+pip_step64_volume = [{
+    "name": "python",
+    "path": dir["pythonModules64"],
 }]
 
 config = {
@@ -263,7 +272,7 @@ def gui_test_pipeline(ctx):
                     "name": "uploads",
                     "temp": {},
                 },
-            ] + pip_pipeline_volume,
+            ] + pip_pipeline_volume + pip_pipeline64_volume,
         })
     return pipelines
 
@@ -336,7 +345,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "python3.10 -V",
             "python3.10 -m pip list -v",
         ],
-        "volumes": pip_step_volume,
+        "volumes": pip_step_volume + pip_step64_volume,
     }]
 
 def gui_tests_format():
@@ -670,7 +679,7 @@ def install_python_modules():
             "make -C %s pip-install" % dir["guiTest"],
             "python3.10 -m pip list -v",
         ],
-        "volumes": pip_step_volume,
+        "volumes": pip_step_volume + pip_step64_volume,
     }]
 
 def setGuiTestReportDir():
