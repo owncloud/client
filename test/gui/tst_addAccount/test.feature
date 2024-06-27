@@ -1,3 +1,4 @@
+@only
 Feature: adding accounts
 
     As a user

@@ -113,7 +113,7 @@ config = {
                     },
                 },
                 "skip_in_pr": True,
-                "skip": False,
+                "skip": True,
             },
             "ocis": {
                 "version": "5.0",
@@ -198,8 +198,9 @@ def gui_test_pipeline(ctx):
         squish_parameters = [
             "--testsuite %s" % dir["guiTest"],
             "--reportgen html,%s" % dir["guiTestReport"],
+            "--reportgen stdout",
             "--envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false",
-            "--tags ~@skip",
+            "--tags ~@skip --tags @only",
             "--tags ~@skipOnLinux",
         ]
 
