@@ -38,6 +38,9 @@ public:
     explicit NetworkSettings(QWidget *parent = nullptr);
     ~NetworkSettings() override;
 
+    QWidget *firstTabAbleWidget() const;
+    QWidget *lastTabAbleWidget() const;
+
 private Q_SLOTS:
     void saveProxySettings();
     void saveBWLimitSettings();
