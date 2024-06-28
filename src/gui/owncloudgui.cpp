@@ -26,6 +26,7 @@
 #include "folderwizard/folderwizard.h"
 #include "gui/accountsettings.h"
 #include "gui/commonstrings.h"
+#include "gui/networkinformation.h"
 #include "guiutility.h"
 #include "libsync/theme.h"
 #include "logbrowser.h"
@@ -639,17 +640,22 @@ void ownCloudGui::updateContextMenu()
     _contextMenu->addSeparator();
 
     if (_app->debugMode()) {
-        auto *crashMenu = _contextMenu->addMenu(QStringLiteral("Debug actions"));
-        crashMenu->addAction(QStringLiteral("Crash if asserts enabled - OC_ENSURE"), _app, [] {
+        auto *debugMenu = _contextMenu->addMenu(QStringLiteral("Debug actions"));
+        debugMenu->addAction(QStringLiteral("Crash if asserts enabled - OC_ENSURE"), _app, [] {
             if (OC_ENSURE(false)) {
                 Q_UNREACHABLE();
             }
         });
-        crashMenu->addAction(QStringLiteral("Crash if asserts enabled - Q_ASSERT"), _app, [] { Q_ASSERT(false); });
-        crashMenu->addAction(QStringLiteral("Crash now - Utility::crash()"), _app, [] { Utility::crash(); });
-        crashMenu->addAction(QStringLiteral("Crash now - OC_ENFORCE()"), _app, [] { OC_ENFORCE(false); });
-        crashMenu->addAction(QStringLiteral("Crash now - qFatal"), _app, [] { qFatal("la Qt fatale"); });
-        crashMenu->addAction(QStringLiteral("Restart now"), _app, [] { RestartManager::requestRestart(); });
+        debugMenu->addAction(QStringLiteral("Crash if asserts enabled - Q_ASSERT"), _app, [] { Q_ASSERT(false); });
+        debugMenu->addAction(QStringLiteral("Crash now - Utility::crash()"), _app, [] { Utility::crash(); });
+        debugMenu->addAction(QStringLiteral("Crash now - OC_ENFORCE()"), _app, [] { OC_ENFORCE(false); });
+        debugMenu->addAction(QStringLiteral("Crash now - qFatal"), _app, [] { qFatal("la Qt fatale"); });
+        debugMenu->addAction(QStringLiteral("Restart now"), _app, [] { RestartManager::requestRestart(); });
+        debugMenu->addSeparator();
+        auto captivePortalCheckbox = debugMenu->addAction(QStringLiteral("Behind Captive Portal"));
+        captivePortalCheckbox->setCheckable(true);
+        captivePortalCheckbox->setChecked(NetworkInformation::instance()->isForcedCaptivePortal());
+        connect(captivePortalCheckbox, &QAction::triggered, [](bool checked) { NetworkInformation::instance()->setForcedCaptivePortal(checked); });
     }
 
     _contextMenu->addSeparator();
