@@ -1,4 +1,3 @@
-@only
 Feature: adding accounts
 
     As a user
@@ -28,7 +27,7 @@ Feature: adding accounts
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
-        Then the account with displayname "Alice Hanse" and host "%local_server_hostname%" should be displayed
+        Then the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
 
 
     Scenario: Adding multiple accounts
