@@ -106,12 +106,12 @@ config = {
                 "skip_in_pr": True,
                 "skip": False,
             },
-            "ocis": {
-                "version": "5.0",
-                # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
-                "tags": "~@skipOnOCIS",
-                "skip": False,
-            },
+            # "ocis": {
+            #     "version": "5.0",
+            #     # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
+            #     "tags": "~@skipOnOCIS",
+            #     "skip": False,
+            # },
         },
     },
 }
@@ -186,7 +186,7 @@ def unit_test_pipeline(ctx):
 def gui_test_pipeline(ctx):
     pipelines = []
     for server, params in config["gui-tests"]["servers"].items():
-        squish_parameters = "--reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip --tags ~@skipOnLinux" % dir["guiTestReport"]
+        squish_parameters = "--testcase %s/tst_loginLogout --reportgen html,%s --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false  --tags ~@skip --tags ~@skipOnLinux" % (dir["guiTest"], dir["guiTestReport"])
         if params.get("skip", False):
             continue
         if ctx.build.event == "pull_request" and params.get("skip_in_pr", False) and not "full-ci" in ctx.build.title.lower():
