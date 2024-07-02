@@ -78,22 +78,26 @@ build_config = {
     "command": "ninja",
 }
 
-pip_pipeline_volume = [{
-    "name": "python",
-    "temp": {},
-}]
-pip_pipeline64_volume = [{
-    "name": "python",
-    "temp": {},
-}]
-pip_step_volume = [{
-    "name": "python",
-    "path": dir["pythonModules"],
-}]
-pip_step64_volume = [{
-    "name": "python",
-    "path": dir["pythonModules64"],
-}]
+pip_pipeline_volume = [
+    {
+        "name": "python",
+        "temp": {},
+    },
+    {
+        "name": "python",
+        "temp": {},
+    },
+]
+pip_step_volume = [
+    {
+        "name": "python",
+        "path": dir["pythonModules"],
+    },
+    {
+        "name": "python",
+        "path": dir["pythonModules64"],
+    },
+]
 
 config = {
     "gui-tests": {
@@ -259,7 +263,7 @@ def gui_test_pipeline(ctx):
                     "name": "uploads",
                     "temp": {},
                 },
-            ] + pip_pipeline_volume + pip_pipeline64_volume,
+            ] + pip_pipeline_volume,
         })
     return pipelines
 
@@ -328,7 +332,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             # allow to use any available pnpm version
             "COREPACK_ENABLE_STRICT": 0,
         },
-        "volumes": pip_step_volume + pip_step64_volume,
+        "volumes": pip_step_volume,
     }]
 
 def gui_tests_format():
@@ -651,7 +655,7 @@ def install_python_modules():
         "commands": [
             "make -C %s pip-install" % dir["guiTest"],
         ],
-        "volumes": pip_step_volume + pip_step64_volume,
+        "volumes": pip_step_volume,
     }]
 
 def setGuiTestReportDir():
