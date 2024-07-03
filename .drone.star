@@ -84,7 +84,7 @@ pip_pipeline_volume = [
         "temp": {},
     },
     {
-        "name": "python",
+        "name": "python64",
         "temp": {},
     },
 ]
@@ -94,7 +94,7 @@ pip_step_volume = [
         "path": dir["pythonModules"],
     },
     {
-        "name": "python",
+        "name": "python64",
         "path": dir["pythonModules64"],
     },
 ]
