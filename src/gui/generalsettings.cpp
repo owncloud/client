@@ -84,6 +84,9 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     if (!Theme::instance()->aboutShowCopyright()) {
         _ui->copyrightLabel->hide();
     }
+
+    setTabOrder(_ui->scrollArea, _ui->networkSettings->lastTabAbleWidget());
+    _ui->networkSettings->setTabOrder(_ui->networkSettings->firstTabAbleWidget(), _ui->logSettingsButton);
 }
 
 GeneralSettings::~GeneralSettings()

@@ -106,6 +106,16 @@ NetworkSettings::~NetworkSettings()
     delete _ui;
 }
 
+QWidget *NetworkSettings::firstTabAbleWidget() const
+{
+    return _ui->pauseSyncWhenMeteredCheckbox;
+}
+
+QWidget *NetworkSettings::lastTabAbleWidget() const
+{
+    return _ui->uploadSpinBox;
+}
+
 
 void NetworkSettings::loadProxySettings()
 {
