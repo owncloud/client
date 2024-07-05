@@ -63,13 +63,13 @@ jobs:
 
     steps:
     - name: Check out source code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: ${{ matrix.fetch-depth }}
         submodules: true
 
     - name: Restore cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/cache
         key: ${{ runner.os }}-${{ matrix.target }}
@@ -147,7 +147,7 @@ jobs:
         Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.name }}
         path: ${{ github.workspace }}/binaries/*
