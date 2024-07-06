@@ -30,6 +30,7 @@
 #include "folderwizard/folderwizard.h"
 #include "gui/accountmodalwidget.h"
 #include "gui/models/models.h"
+#include "gui/networkinformation.h"
 #include "gui/qmlutils.h"
 #include "gui/selectivesyncwidget.h"
 #include "gui/spaces/spaceimageprovider.h"
@@ -391,7 +392,7 @@ void AccountSettings::slotEnableCurrentFolder(Folder *folder, bool terminate)
 
 void AccountSettings::slotForceSyncCurrentFolder(Folder *folder)
 {
-    if (Utility::internetConnectionIsMetered() && ConfigFile().pauseSyncWhenMetered()) {
+    if (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered()) {
         auto messageBox = new QMessageBox(QMessageBox::Question, tr("Internet connection is metered"),
             tr("Synchronization is paused because the Internet connection is a metered connection"
                "<p>Do you really want to force a Synchronization now?"),
@@ -436,7 +437,7 @@ void AccountSettings::slotAccountStateChanged()
 {
     const AccountState::State state = _accountState->state();
     const AccountPtr account = _accountState->account();
-
+qDebug()<<"*** account state changed to"<<state;
     // in 2023 there should never be credentials encoded in the url, but we never know...
     const auto safeUrl = account->url().adjusted(QUrl::RemoveUserInfo);
 
@@ -449,9 +450,6 @@ void AccountSettings::slotAccountStateChanged()
                                .arg(Utility::escape(safeUrl.toString()));
 
     switch (state) {
-    case AccountState::PausedDueToMetered:
-        showConnectionLabel(tr("Sync to %1 is paused due to metered internet connection.").arg(server));
-        break;
     case AccountState::Connected: {
         QStringList errors;
         if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
@@ -474,7 +472,13 @@ void AccountSettings::slotAccountStateChanged()
         break;
     }
     case AccountState::Connecting:
-        showConnectionLabel(tr("Connecting to: %1.").arg(server));
+        if (NetworkInformation::instance()->isBehindCaptivePortal()) {
+            showConnectionLabel(tr("Captive portal prevents connections to %1.").arg(server));
+        } else if (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered()) {
+            showConnectionLabel(tr("Sync to %1 is paused due to metered internet connection.").arg(server));
+        } else {
+            showConnectionLabel(tr("Connecting to: %1.").arg(server));
+        }
         break;
     case AccountState::ConfigurationError:
         showConnectionLabel(tr("Server configuration error: %1.")

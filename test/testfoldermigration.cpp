@@ -11,6 +11,7 @@
 #include "common/utility.h"
 #include "configfile.h"
 #include "folderman.h"
+#include "gui/networkinformation.h"
 #include "testutils/testutils.h"
 
 using namespace OCC;
