@@ -81,3 +81,33 @@ Feature: adding accounts
         And the user syncs the "Personal" space
         Then the folder "simple-folder" should exist on the file system
 
+    @skipOnOCIS
+    Scenario: Check for incremented number in bracket while adding new account and folder (OC10)
+        Given folder "ownCloud" has been created in the local sync path
+        And the user has started the client
+        And the user has entered the following account information:
+            | server | %local_server% |
+        When the user adds the following user credentials:
+            | user     | Alice |
+            | password | 1234  |
+        And the user opens the advanced configuration
+        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2)" in the configuration wizard
+        When the user selects download everything option in advanced section
+        And the user opens the sync connection wizard
+        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2) (2)" in the sync connection wizard
+
+    @skipOnOC10
+    Scenario: Check for incremented number in bracket while adding new account and folder (oCIS)
+        Given folder "ownCloud" has been created in the local sync path
+        And the user has started the client
+        And the user has entered the following account information:
+            | server | %local_server% |
+        When the user adds the following user credentials:
+            | user     | Alice |
+            | password | 1234  |
+        And the user opens the advanced configuration
+        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2)" in the configuration wizard
+        When the user selects download everything option in advanced section
+        And the user opens the sync connection wizard
+        And the user selects the "Personal" space to sync
+        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2)/Personal" in the sync connection wizard

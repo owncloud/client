@@ -320,3 +320,19 @@ def step(context, displayname):
     has_focus = Toolbar.account_has_focus(account)
     if not has_focus:
         raise LookupError(f"Account '{displayname}' should be opened, but it is not")
+
+
+@Then(
+    r'the default local sync path should be "([^"]*)" in the (configuration|sync connection) wizard',
+    regexp=True,
+)
+def step(context, sync_path, wizard):
+    test.compare(
+        sync_path,
+        (
+            AccountConnectionWizard.get_local_sync_path()
+            if wizard == 'configuration'
+            else SyncConnectionWizard.get_local_sync_path()
+        ),
+        "Default local download directory should have bracket with incremented number",
+    )
