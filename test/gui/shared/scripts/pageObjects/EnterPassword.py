@@ -1,3 +1,4 @@
+import names
 import squish
 from helpers.WebUIHelper import authorize_via_webui
 from helpers.ConfigHelper import get_config
@@ -5,7 +6,7 @@ from helpers.UserHelper import getPasswordForUser
 
 
 class EnterPassword:
-    LOGIN_DIALOG = {
+    LOGIN_CONTAINER = {
         "name": "LoginRequiredDialog",
         "type": "OCC::LoginRequiredDialog",
         "visible": 1,
@@ -14,37 +15,37 @@ class EnterPassword:
         "name": "topLabel",
         "type": "QLabel",
         "visible": 1,
-        "window": LOGIN_DIALOG,
+        "window": LOGIN_CONTAINER,
     }
     USERNAME_BOX = {
         "name": "usernameLineEdit",
         "type": "QLineEdit",
         "visible": 1,
-        "window": LOGIN_DIALOG,
+        "window": LOGIN_CONTAINER,
     }
     PASSWORD_BOX = {
         "name": "passwordLineEdit",
         "type": "QLineEdit",
         "visible": 1,
-        "window": LOGIN_DIALOG,
+        "window": LOGIN_CONTAINER,
     }
     LOGIN_BUTTON = {
         "text": "Log in",
         "type": "QPushButton",
         "visible": 1,
-        "window": LOGIN_DIALOG,
+        "window": names.stack_stackedWidget_QStackedWidget,
     }
     LOGOUT_BUTTON = {
         "text": "Log out",
         "type": "QPushButton",
         "visible": 1,
-        "window": LOGIN_DIALOG,
+        "window": names.stack_stackedWidget_QStackedWidget,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
         "name": "copyUrlToClipboardButton",
         "type": "QPushButton",
         "visible": 1,
-        "window": LOGIN_DIALOG,
+        "window": LOGIN_CONTAINER,
     }
     TLS_CERT_WINDOW = {
         "name": "OCC__TlsErrorDialog",
@@ -59,9 +60,7 @@ class EnterPassword:
     }
 
     def __init__(self, occurrence=1):
-        if occurrence > 1 and not get_config('ocis'):
-            self.LOGIN_DIALOG.update({"occurrence": occurrence})
-        elif occurrence > 1 and get_config('ocis'):
+        if occurrence > 1 and get_config('ocis'):
             self.TLS_CERT_WINDOW.update({"occurrence": occurrence})
 
     def get_username(self):
