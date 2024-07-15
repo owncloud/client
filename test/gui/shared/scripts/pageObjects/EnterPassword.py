@@ -97,11 +97,7 @@ class EnterPassword:
         else:
             self.enterPassword(password)
 
-    def loginAfterSetup(self, username=None, password=None):
-        if not username:
-            username = self.get_username()
-            password = getPasswordForUser(username)
-
+    def loginAfterSetup(self, username, password):
         if get_config('ocis'):
             self.oidcReLogin(username, password)
         else:

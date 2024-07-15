@@ -77,14 +77,16 @@ def step(context):
             enter_password = EnterPassword(len(users) - idx)
             enter_password.accept_certificate()
 
-    for idx, sync_path in enumerate(sync_paths):
-        listenSyncStatusForItem(sync_path)
+    for idx, sync_path in enumerate(sync_paths.values()):
         # login from last dialog
         account_idx = len(sync_paths) - idx
         enter_password = EnterPassword(account_idx)
-        enter_password.loginAfterSetup()
+        username = enter_password.get_username()
+        password = getPasswordForUser(username)
+        listenSyncStatusForItem(sync_paths[username])
+        enter_password.loginAfterSetup(username, password)
         # wait for files to sync
-        waitForInitialSyncToComplete(sync_path)
+        waitForInitialSyncToComplete(sync_paths[username])
 
 
 @Given('the user has started the client')
@@ -156,7 +158,8 @@ def step(context, username):
 def step(context, username):
     AccountSetting.login()
     password = getPasswordForUser(username)
-    EnterPassword.reLogin(username, password, True)
+    enter_password = EnterPassword()
+    enter_password.reLogin(username, password, True)
 
     # wait for files to sync
     waitForInitialSyncToComplete(getResourcePath('/', username))

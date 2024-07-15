@@ -112,7 +112,7 @@ remotePollInterval={pollingInterval}
 
 
 def generate_account_config(users, space="Personal"):
-    sync_paths = []
+    sync_paths = {}
     user_setting = ''
     for idx, username in enumerate(users):
         user_setting += '''
@@ -165,7 +165,7 @@ def generate_account_config(users, space="Personal"):
             'uuid_v4': generate_UUIDV4(),
         }
         user_setting = user_setting.format(**args)
-        sync_paths.append(sync_path)
+        sync_paths.update({username: sync_path})
     # append extra configs
     user_setting += "version=13"
     user_setting = user_setting + getPollingInterval()
@@ -180,7 +180,7 @@ def generate_account_config(users, space="Personal"):
 def setUpClient(username, space="Personal"):
     sync_paths = generate_account_config([username], space)
     startClient()
-    for sync_path in sync_paths:
+    for _, sync_path in sync_paths.items():
         listenSyncStatusForItem(sync_path)
 
 
