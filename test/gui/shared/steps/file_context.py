@@ -372,3 +372,5 @@ def step(context, folder_name):
     folder_path = join(get_config('home_dir'), folder_name)
     os.makedirs(prefix_path_namespace(folder_path))
     remember_path(folder_path)
+    # when account is added, folder with suffix will be created
+    remember_path(folder_path + " (2)")

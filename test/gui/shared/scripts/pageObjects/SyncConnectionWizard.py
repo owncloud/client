@@ -121,6 +121,12 @@ class SyncConnectionWizard:
         "unnamed": 1,
         "visible": True,
     }
+    WARN_LABEL = {
+        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        "name": "warnLabel",
+        "type": "QLabel",
+        "visible": 1,
+    }
 
     @staticmethod
     def setSyncPathInSyncConnectionWizardOc10(sync_path=''):
@@ -365,3 +371,7 @@ class SyncConnectionWizard:
                 SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER
             ).displayText
         )
+
+    @staticmethod
+    def get_warn_label():
+        return str(squish.waitForObjectExists(SyncConnectionWizard.WARN_LABEL).text)

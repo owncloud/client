@@ -110,4 +110,5 @@ Feature: adding accounts
         When the user selects download everything option in advanced section
         And the user opens the sync connection wizard
         And the user selects the "Personal" space to sync
-        Then the default local sync path should contain "%home%/ownCloud (2) (2)" in the sync connection wizard
+        Then the default local sync path should contain "%home%/ownCloud (2)/Personal" in the sync connection wizard
+        And the warning "There is already a sync from the server to this local folder. Please pick another local folder!" should appear in the sync connection wizard
