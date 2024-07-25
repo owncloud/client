@@ -47,7 +47,7 @@ Feature: adding accounts
         Given the user has started the client
         And the user has entered the following account information:
             | server   | %local_server% |
-        When the user adds the following wrong user credentials:
+        When the user adds the following user credentials:
             | user     | Alice |
             | password | 12345 |
         Then the error "Invalid credentials" should be displayed in the account connection wizard
@@ -83,7 +83,7 @@ Feature: adding accounts
 
     @skipOnOCIS
     Scenario: Check for incremented number in bracket while adding new account and folder (OC10)
-        Given folder "ownCloud" has been created in the local sync path
+        Given the user has created folder "ownCloud" in the default home path
         And the user has started the client
         And the user has entered the following account information:
             | server | %local_server% |
@@ -91,14 +91,14 @@ Feature: adding accounts
             | user     | Alice |
             | password | 1234  |
         And the user opens the advanced configuration
-        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2)" in the configuration wizard
+        Then the default local sync path should contain "%home%/ownCloud (2)" in the configuration wizard
         When the user selects download everything option in advanced section
         And the user opens the sync connection wizard
-        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2) (2)" in the sync connection wizard
+        Then the default local sync path should contain "%home%/ownCloud (2) (2)" in the sync connection wizard
 
     @skipOnOC10
     Scenario: Check for incremented number in bracket while adding new account and folder (oCIS)
-        Given folder "ownCloud" has been created in the local sync path
+        Given the user has created folder "ownCloud" in the default home path
         And the user has started the client
         And the user has entered the following account information:
             | server | %local_server% |
@@ -106,8 +106,8 @@ Feature: adding accounts
             | user     | Alice |
             | password | 1234  |
         And the user opens the advanced configuration
-        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2)" in the configuration wizard
+        Then the default local sync path should contain "%home%/ownCloud (2)" in the configuration wizard
         When the user selects download everything option in advanced section
         And the user opens the sync connection wizard
         And the user selects the "Personal" space to sync
-        Then the default local sync path should be "/tmp/owncloudtest/ownCloud (2)/Personal" in the sync connection wizard
+        Then the default local sync path should contain "%home%/ownCloud (2) (2)" in the sync connection wizard

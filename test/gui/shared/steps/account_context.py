@@ -17,7 +17,7 @@ from helpers.SyncHelper import waitForInitialSyncToComplete, listenSyncStatusFor
 from helpers.ConfigHelper import get_config, isWindows, isLinux
 
 
-@When('the user adds the following wrong user credentials:')
+@When('the user adds the following user credentials:')
 def step(context):
     account_details = getClientDetails(context)
     AccountConnectionWizard.addUserCreds(
@@ -323,16 +323,20 @@ def step(context, displayname):
 
 
 @Then(
-    r'the default local sync path should be "([^"]*)" in the (configuration|sync connection) wizard',
+    r'the default local sync path should contain "([^"]*)" in the (configuration|sync connection) wizard',
     regexp=True,
 )
 def step(context, sync_path, wizard):
+    sync_path = substituteInLineCodes(sync_path)
+
+    actual_sync_path = ""
+    if wizard == 'configuration':
+        actual_sync_path = AccountConnectionWizard.get_local_sync_path()
+    else:
+        actual_sync_path = SyncConnectionWizard.get_local_sync_path()
+
     test.compare(
+        actual_sync_path,
         sync_path,
-        (
-            AccountConnectionWizard.get_local_sync_path()
-            if wizard == 'configuration'
-            else SyncConnectionWizard.get_local_sync_path()
-        ),
-        "Default local download directory should have bracket with incremented number",
+        "Compare sync path contains the expected path",
     )
