@@ -341,6 +341,7 @@ def step(context, sync_path, wizard):
         "Compare sync path contains the expected path",
     )
 
+
 @Then('the warning "|any|" should appear in the sync connection wizard')
 def step(context, warn_message):
     actual_message = SyncConnectionWizard.get_warn_label()
