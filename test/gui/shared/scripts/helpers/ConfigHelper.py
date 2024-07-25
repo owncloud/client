@@ -11,6 +11,8 @@ def read_env_file():
     env_path = os.path.abspath(os.path.join(script_path, '..', '..', '..', 'envs.txt'))
     with open(env_path, "rt", encoding="UTF-8") as f:
         for line in f:
+            if not line.strip():
+                continue
             if line.startswith('#'):
                 continue
             key, value = line.split('=', 1)
