@@ -1,2 +1,2 @@
 XDG_CONFIG_HOME=/tmp/owncloudtest/.config
-HOME=/tmp/owncloudtest
+
