@@ -18,6 +18,9 @@ Feature:  Logout users
     And user "Alice" has logged out from the client-UI
     When user "Alice" logs in using the client-UI
     Then user "Alice" should be connected to the server
+    When the user quits the client
+    And the user starts the client
+    Then user "Alice" should be connected to the server
 
   @skipOnOCIS
   Scenario: login with incorrect and correct password after log out
