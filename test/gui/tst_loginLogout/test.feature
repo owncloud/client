@@ -33,7 +33,7 @@ Feature:  Logout users
     And user "Alice" logs in using the client-UI
     Then user "Alice" should be connected to the server
 
-  @skipOnOCIS @skip @issue-11619
+  @skipOnOCIS @issue-11619
   Scenario: login, logout and restart with oauth2 authentication
       Given app "oauth2" has been "enabled" in the server
       And the user has started the client
