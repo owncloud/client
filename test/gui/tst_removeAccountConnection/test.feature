@@ -1,5 +1,4 @@
 Feature: remove account connection
-
   As a user
   I want to remove my account
   So that I won't be using any client-UI services
