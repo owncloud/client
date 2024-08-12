@@ -1,6 +1,6 @@
 {
   "rules": {
-    "indentation": "error",
+    "indentation": ["error", 4],
     "no_repetitive_step_keyword": "error",
     "require_step": "error",
     "no_trailing_whitespace": "error",
