@@ -4,3 +4,5 @@ An encrypted connection to a captive portal will use an unknown certificate, whi
 This is now changed: when a captive portal is detected by the OS, the client now shows in the account status that it cannot connect to the server because of a captive portal.
 
 Supported OSses: Windows, Linux (with some network managers)
+
+https://github.com/owncloud/client/pull/11567
