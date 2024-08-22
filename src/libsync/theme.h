@@ -61,6 +61,7 @@ class OWNCLOUDSYNC_EXPORT Theme : public QObject
     Q_PROPERTY(bool multiAccount READ multiAccount FINAL CONSTANT)
     Q_PROPERTY(bool singleSyncFolder READ singleSyncFolder FINAL CONSTANT)
     Q_PROPERTY(QList<QmlUrlButton> urlButtons READ qmlUrlButtons FINAL CONSTANT)
+    Q_PROPERTY(bool syncNewlyDiscoveredSpaces READ syncNewlyDiscoveredSpaces FINAL CONSTANT)
     QML_SINGLETON
     QML_ELEMENT
 public:
@@ -190,7 +191,6 @@ public:
 
     /** @return color for the setup wizard */
     virtual QColor wizardHeaderTitleColor() const;
-    [[deprecated]] virtual QColor wizardHeaderSubTitleColor() const;
 
     /** @return color for the setup wizard. */
     virtual QColor wizardHeaderBackgroundColor() const;
