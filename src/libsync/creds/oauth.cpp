@@ -170,10 +170,11 @@ Q_SIGNALS:
 private:
     void registerClientOnline()
     {
-        const QJsonObject json({ { QStringLiteral("client_name"), QStringLiteral("%1 %2").arg(Theme::instance()->appNameGUI(), OCC::Version::versionWithBuildNumber().toString()) },
-            { QStringLiteral("redirect_uris"), QJsonArray { QStringLiteral("http://127.0.0.1") } },
-            { QStringLiteral("application_type"), QStringLiteral("native") },
-            { QStringLiteral("token_endpoint_auth_method"), QStringLiteral("client_secret_basic") } });
+        const QJsonObject json(
+            {{QStringLiteral("client_name"), QStringLiteral("%1 %2").arg(Theme::instance()->appNameGUI(), OCC::Version::versionWithBuildNumber().toString())},
+                {QStringLiteral("redirect_uris"), QJsonArray{QStringLiteral("http://127.0.0.1")}},
+                {QStringLiteral("application_type"), QStringLiteral("native")}, //
+                {QStringLiteral("token_endpoint_auth_method"), QStringLiteral("none")}});
         QNetworkRequest req;
         req.setUrl(_registrationEndpoint);
         req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
@@ -436,6 +437,9 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
         queryItems.addQueryItem(QStringLiteral("client_id"), _clientId);
         queryItems.addQueryItem(QStringLiteral("client_secret"), _clientSecret);
         break;
+    case TokenEndpointAuthMethods::none:
+        queryItems.addQueryItem(QStringLiteral("client_id"), _clientId);
+        break;
     }
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded; charset=UTF-8"));
     req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
@@ -554,13 +558,20 @@ void OAuth::fetchWellKnown()
                 _registrationEndpoint = QUrl::fromEncoded(data[QStringLiteral("registration_endpoint")].toString().toUtf8());
                 _redirectUrl = QStringLiteral("http://127.0.0.1");
 
-                const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
-                if (authMethods.contains(QStringLiteral("client_secret_basic"))) {
-                    _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
-                } else if (authMethods.contains(QStringLiteral("client_secret_post"))) {
-                    _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_post;
+                if (_clientSecret.isEmpty()) {
+                    _endpointAuthMethod = TokenEndpointAuthMethods::none;
                 } else {
-                    OC_ASSERT_X(false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
+                    const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
+                    if (authMethods.contains(QStringLiteral("none"))) {
+                        _endpointAuthMethod = TokenEndpointAuthMethods::none;
+                    } else if (authMethods.contains(QStringLiteral("client_secret_post"))) {
+                        _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_post;
+                    } else if (authMethods.contains(QStringLiteral("client_secret_basic"))) {
+                        _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
+                    } else {
+                        OC_ASSERT_X(
+                            false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
+                    }
                 }
                 const auto promtValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
                 if (!promtValuesSupported.isEmpty()) {

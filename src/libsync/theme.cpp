@@ -426,12 +426,12 @@ QString Theme::quotaBaseFolder() const
 
 QString Theme::oauthClientId() const
 {
-    return QStringLiteral("xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69");
+    return QStringLiteral("ownCloud Desktop Client 6.0+");
 }
 
 QString Theme::oauthClientSecret() const
 {
-    return QStringLiteral("UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh");
+    return QString();
 }
 
 QString Theme::oauthLocalhost() const
