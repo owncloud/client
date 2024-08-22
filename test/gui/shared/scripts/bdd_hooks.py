@@ -167,11 +167,10 @@ def hook(context):
         directory = os.path.join(get_config('guiTestReportDir'), "screenshots")
         if not os.path.exists(directory):
             os.makedirs(directory)
-
-        saveDesktopScreenshot(os.path.join(directory, filename))
-
-    # teardown accounts and configs
-    teardown_client()
+        try:
+            saveDesktopScreenshot(os.path.join(directory, filename))
+        except Exception as e:
+            test.log("Failed to capture screenshot: " + str(e))
 
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing
@@ -184,6 +183,9 @@ def hook(context):
             test.log("Exception occured:" + str(err))
     elif scenarioFailed():
         test.log("No coredump found!")
+
+    # teardown accounts and configs
+    teardown_client()
 
     # cleanup test server
     req = urllib.request.Request(
