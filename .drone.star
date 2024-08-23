@@ -7,7 +7,7 @@
 
 DEFAULT_PHP_VERSION = "7.4"
 
-CYTOPIA_BLACK = "cytopia/black"
+PYFOUND_BLACK = "pyfound/black:24.8.0"
 MYSQL = "mysql:8.0"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
@@ -354,18 +354,18 @@ def lint_gui_test():
 def python_lint():
     return [{
         "name": "python-lint",
-        "image": CYTOPIA_BLACK,
+        "image": PYFOUND_BLACK,
         "commands": [
-            "make -C %s python-lint" % dir["guiTest"],
+            "cd %s" % dir["guiTest"],
+            "black --check --diff .",
         ],
     }]
 
 def gherkin_lint():
     return [{
-        "name": "lint-feature-files",
+        "name": "gherkin-lint",
         "image": OC_CI_NODEJS,
         "commands": [
-            "cd test/gui",
             "npm install -g %s" % NPM_GHERLINT,
             "make -C %s gherkin-lint" % dir["guiTest"],
         ],
