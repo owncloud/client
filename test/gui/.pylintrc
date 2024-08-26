@@ -1,7 +1,9 @@
 [MAIN]
-
-py-version = 3.8
-ignore=names.py
+disable=
+    missing-docstring,
+fail-under=10
+ignore-paths=^tst_.*/test.py$|shared/scripts/names.py
+ignored-modules=squish,object
 load-plugins=
     pylint.extensions.check_elif,
     pylint.extensions.bad_builtin,
@@ -9,36 +11,40 @@ load-plugins=
     pylint.extensions.overlapping_exceptions,
     pylint.extensions.typing,
     pylint.extensions.redefined_variable_type,
+py-version = 3.8
 unsafe-load-any-extension=no
-fail-under=10.0
-
-[MESSAGES CONTROL]
-
-disable=
-    missing-docstring,
-    format,
-
-[SIMILARITIES]
-
-ignore-imports=yes
-ignore-comments=yes
-ignore-docstrings=yes
-
-[FORMAT]
-
-max-line-length=120
-indent-string='    '
 
 [BASIC]
-
-function-naming-style=snake_case
-variable-naming-style=snake_case
-const-naming-style=UPPER_CASE
 attr-naming-style=snake_case
-class-naming-style=PascalCase
 class-const-naming-style=UPPER_CASE
+class-naming-style=PascalCase
+const-naming-style=UPPER_CASE
+function-naming-style=snake_case
 method-naming-style=snake_case
+module-naming-style=snake_case
+variable-naming-style=snake_case
 
-[TYPECHECK]
+[VARIABLES]
+additional-builtins=
+    squish,
+    test,
+    object,
+    testSettings,
+    OnFeatureStart,
+    OnFeatureEnd,
+    OnScenarioStart,
+    OnScenarioEnd,
+    QApplication,
+    Given,
+    When,
+    Then,
+allow-global-unused-variables=no
 
-ignored-modules=
+[FORMAT]
+indent-string='    '
+max-line-length=120
+
+[SIMILARITIES]
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes
