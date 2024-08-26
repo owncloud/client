@@ -1,6 +1,10 @@
 [MAIN]
+enable=all
 disable=
     missing-docstring,
+    global-statement,
+    locally-disabled,
+    suppressed-message,
 fail-under=10
 ignore-paths=^tst_.*/test.py$|shared/scripts/names.py
 ignored-modules=squish,object
@@ -11,7 +15,7 @@ load-plugins=
     pylint.extensions.overlapping_exceptions,
     pylint.extensions.typing,
     pylint.extensions.redefined_variable_type,
-py-version = 3.8
+py-version=3.8
 unsafe-load-any-extension=no
 
 [BASIC]
@@ -28,7 +32,6 @@ variable-naming-style=snake_case
 additional-builtins=
     squish,
     test,
-    object,
     testSettings,
     OnFeatureStart,
     OnFeatureEnd,
@@ -39,10 +42,18 @@ additional-builtins=
     When,
     Then,
 allow-global-unused-variables=no
+dummy-variables-rgx=^hook$|^_$|^step$
+ignored-argument-names=^context$|^_$
+
+[STRING]
+check-quote-consistency=yes
 
 [FORMAT]
 indent-string='    '
 max-line-length=120
+
+[TYPECHECK]
+ignored-classes=object
 
 [SIMILARITIES]
 ignore-comments=yes

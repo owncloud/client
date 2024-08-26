@@ -53,26 +53,25 @@ PREVIOUS_ERROR_RESULT_COUNT = 0
 # runs before a feature
 # Order: 1
 @OnFeatureStart
-def hook(context):  # pylint:disable=unused-argument,unused-variable
+def hook(context):  # pylint: disable=unused-variable
     init_config()
 
 
 # runs before every scenario
 # Order: 1
 @OnScenarioStart
-def hook(context):  # pylint:disable=unused-argument,unused-variable,function-redefined
+def hook(context):  # pylint: disable=unused-variable
     clear_scenario_config()
 
 
 # runs before every scenario
 # Order: 2
 @OnScenarioStart
-def hook(context):  # pylint:disable=unused-variable,function-redefined
-    print(dir(context))
+def hook(context):  # pylint: disable=unused-variable
     # set owncloud config file path
-    config_dir = get_config('clientConfigDir')
+    config_dir = get_config("clientConfigDir")
     if os.path.exists(config_dir):
-        if len(os.listdir(config_dir)) != 0 and isWindows():
+        if len(os.listdir(config_dir)) and isWindows():
             raise OSError(
                 "Looks like you have previous client config in '"
                 + config_dir
@@ -82,15 +81,15 @@ def hook(context):  # pylint:disable=unused-variable,function-redefined
         # clean previous configs
         shutil.rmtree(config_dir)
     os.makedirs(config_dir, 0o0755)
-    set_config('clientConfigFile', os.path.join(config_dir, 'owncloud.cfg'))
+    set_config("clientConfigFile", os.path.join(config_dir, "owncloud.cfg"))
 
     # create reports dir if not exists
-    test_report_dir = get_config('guiTestReportDir')
+    test_report_dir = get_config("guiTestReportDir")
     if not os.path.exists(test_report_dir):
         os.makedirs(test_report_dir)
 
     # log tests scenario title on serverlog file
-    if os.getenv('CI'):
+    if os.getenv("CI"):
         with open(test_report_dir + "/serverlog.log", "a", encoding="utf-8") as f:
             f.write(
                 str((datetime.now()).strftime("%H:%M:%S:%f"))
@@ -102,20 +101,20 @@ def hook(context):  # pylint:disable=unused-variable,function-redefined
 
     # this path will be changed according to the user added to the client
     # e.g.: /tmp/client-bdd/Alice
-    set_config('currentUserSyncPath', '')
+    set_config("currentUserSyncPath", "")
 
-    root_sync_dir = get_config('clientRootSyncPath')
+    root_sync_dir = get_config("clientRootSyncPath")
     if not os.path.exists(root_sync_dir):
         os.makedirs(root_sync_dir)
 
-    tmp_dir = get_config('tempFolderPath')
+    tmp_dir = get_config("tempFolderPath")
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
     req = request.Request(
-        url_join(get_config('middlewareUrl'), 'init'),
+        url_join(get_config("middlewareUrl"), "init"),
         headers={"Content-Type": "application/json"},
-        method='POST',
+        method="POST",
     )
     try:
         with request.urlopen(req) as _:
@@ -126,7 +125,7 @@ def hook(context):  # pylint:disable=unused-variable,function-redefined
         ) from e
 
     # sync connection folder display name
-    set_config('syncConnectionName', "Personal" if get_config("ocis") else "ownCloud")
+    set_config("syncConnectionName", "Personal" if get_config("ocis") else "ownCloud")
 
 
 # determines if the test scenario failed or not
@@ -145,8 +144,8 @@ def scenario_failed():
 # Order: 1
 # cleanup spaces
 @OnScenarioEnd
-def hook(context):  # pylint:disable=unused-argument,unused-variable,function-redefined
-    if get_config('ocis'):
+def hook(context):  # pylint: disable=unused-variable
+    if get_config("ocis"):
         delete_project_spaces()
     delete_created_groups()
 
@@ -154,20 +153,18 @@ def hook(context):  # pylint:disable=unused-argument,unused-variable,function-re
 # runs after every scenario
 # Order: 2
 @OnScenarioEnd
-def hook(context):  # pylint:disable=unused-variable,function-redefined
+def hook(context):  # pylint: disable=unused-variable
     clearWaitedAfterSync()
     closeSocketConnection()
 
-    print("Scenario failed: ", scenario_failed())
     # capture a screenshot if there is error or test failure in the current scenario execution
-    if scenario_failed() and os.getenv('CI') and isLinux():
+    if scenario_failed() and os.getenv("CI") and isLinux():
         # scenario name can have "/" which is invalid filename
         filename = context.title.replace(" ", "_").replace("/", "_").strip(".") + ".png"
-        directory = os.path.join(get_config('guiTestReportDir'), "screenshots")
+        directory = os.path.join(get_config("guiTestReportDir"), "screenshots")
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        # [Check]
         squish.saveDesktopScreenshot(os.path.join(directory, filename))
 
     # teardown accounts and configs
@@ -186,9 +183,9 @@ def hook(context):  # pylint:disable=unused-variable,function-redefined
 
     # cleanup test server
     req = request.Request(
-        url_join(get_config('middlewareUrl'), 'cleanup'),
+        url_join(get_config("middlewareUrl"), "cleanup"),
         headers={"Content-Type": "application/json"},
-        method='POST',
+        method="POST",
     )
     try:
         with request.urlopen(req) as _:
@@ -198,7 +195,7 @@ def hook(context):  # pylint:disable=unused-variable,function-redefined
             "Step execution through test middleware failed. Error: " + e.read().decode()
         ) from e
 
-    global PREVIOUS_FAIL_RESULT_COUNT, PREVIOUS_ERROR_RESULT_COUNT  # pylint:disable=global-statement
+    global PREVIOUS_FAIL_RESULT_COUNT, PREVIOUS_ERROR_RESULT_COUNT
     PREVIOUS_FAIL_RESULT_COUNT = test.resultCount("fails")
     PREVIOUS_ERROR_RESULT_COUNT = test.resultCount("errors")
 
@@ -220,7 +217,6 @@ def teardown_client():
             squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
-    # [Check]
     for ctx in squish.applicationContextList():
         # get pid before detaching
         pid = ctx.pid
@@ -228,10 +224,10 @@ def teardown_client():
         wait_until_app_killed(pid)
 
     # clean up config files
-    shutil.rmtree(get_config('clientConfigDir'))
+    shutil.rmtree(get_config("clientConfigDir"))
 
     # delete test files/folders
-    for entry in os.scandir(get_config('clientRootSyncPath')):
+    for entry in os.scandir(get_config("clientRootSyncPath")):
         test.log("Deleting: " + entry.name)
         try:
             if entry.is_file() or entry.is_symlink():
@@ -239,7 +235,7 @@ def teardown_client():
             elif entry.is_dir():
                 shutil.rmtree(prefix_path_namespace(entry.path))
         except OSError as e:
-            test.log(f'Failed to delete{entry.name}. Reason: {e}.')
+            test.log(f"Failed to delete{entry.name}. Reason: {e}.")
     # cleanup paths created outside of the temporary directory during the test
     cleanup_created_paths()
 
@@ -261,14 +257,11 @@ def close_dialogs():
 
 def close_widgets():
     try:
-        # [Check]
-        ch = squish.object.children(
-            squish.waitForObject(AccountSetting.DIALOG_STACK, 500)
-        )
+        ch = object.children(squish.waitForObject(AccountSetting.DIALOG_STACK, 500))
         for obj in ch:
             if (
                 hasattr(obj, "objectName")
-                and obj.objectName != ''
+                and obj.objectName
                 and obj.objectName != "page"
             ):
                 obj.close()
