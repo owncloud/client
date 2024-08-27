@@ -20,6 +20,7 @@ import os
 from urllib import request, error
 from urllib.parse import urlparse
 from datetime import datetime
+
 from helpers.StacktraceHelper import getCoredumps, generateStacktrace
 from helpers.SyncHelper import closeSocketConnection, clearWaitedAfterSync
 from helpers.SpaceHelper import delete_project_spaces
@@ -36,6 +37,7 @@ from helpers.ConfigHelper import (
 from helpers.api.utils import url_join
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from pageObjects.Toolbar import Toolbar
+
 from pageObjects.AccountSetting import AccountSetting
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
@@ -72,7 +74,7 @@ def hook(context):  # pylint: disable=unused-variable
     config_dir = get_config("clientConfigDir")
     if os.path.exists(config_dir):
         if len(os.listdir(config_dir)) and isWindows():
-            raise OSError(
+            raise FileExistsError(
                 "Looks like you have previous client config in '"
                 + config_dir
                 + "'\n[DANGER] Delete it and try again."

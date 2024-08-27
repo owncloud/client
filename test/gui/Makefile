@@ -16,9 +16,10 @@ pip-install:
 .PHONY: python-lint
 python-lint:
 	black --check --diff .
+	pylint --rcfile ./.pylintrc ./shared/steps/* ./shared/scripts/bdd_hooks.py
 
 .PHONY: python-lint-fix
-python-lint-fix:
+python-lint-fix: python-lint
 	black .
 
 .PHONY: gherkin-lint

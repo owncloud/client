@@ -1,3 +1,6 @@
+[MASTER]
+init-hook='import sys; sys.path.append("./shared/scripts")'
+
 [MAIN]
 enable=all
 disable=
@@ -5,6 +8,12 @@ disable=
     global-statement,
     locally-disabled,
     suppressed-message,
+    unused-variable,
+    too-many-public-methods,
+    bare-except,
+    fixme,
+    ; TODO: enable later
+    invalid-name,
 fail-under=10
 ignore-paths=^tst_.*/test.py$|shared/scripts/names.py
 ignored-modules=squish,object
@@ -25,7 +34,7 @@ class-naming-style=PascalCase
 const-naming-style=UPPER_CASE
 function-naming-style=snake_case
 method-naming-style=snake_case
-module-naming-style=snake_case
+module-naming-style=any
 variable-naming-style=snake_case
 
 [VARIABLES]
@@ -41,9 +50,10 @@ additional-builtins=
     Given,
     When,
     Then,
+    Step,
 allow-global-unused-variables=no
-dummy-variables-rgx=^hook$|^_$|^step$
-ignored-argument-names=^context$|^_$
+dummy-variables-rgx=^hook$|^_*$|^step$
+ignored-argument-names=^context$|^_*$
 
 [STRING]
 check-quote-consistency=yes
@@ -53,7 +63,7 @@ indent-string='    '
 max-line-length=120
 
 [TYPECHECK]
-ignored-classes=object
+ignored-classes=object,test
 
 [SIMILARITIES]
 ignore-comments=yes
