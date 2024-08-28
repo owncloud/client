@@ -18,7 +18,6 @@
 import shutil
 import os
 from urllib import request, error
-from urllib.parse import urlparse
 from datetime import datetime
 
 from helpers.StacktraceHelper import getCoredumps, generateStacktrace
@@ -55,21 +54,21 @@ PREVIOUS_ERROR_RESULT_COUNT = 0
 # runs before a feature
 # Order: 1
 @OnFeatureStart
-def hook(context):  # pylint: disable=unused-variable
+def hook(context):
     init_config()
 
 
 # runs before every scenario
 # Order: 1
 @OnScenarioStart
-def hook(context):  # pylint: disable=unused-variable
+def hook(context):
     clear_scenario_config()
 
 
 # runs before every scenario
 # Order: 2
 @OnScenarioStart
-def hook(context):  # pylint: disable=unused-variable
+def hook(context):
     # set owncloud config file path
     config_dir = get_config("clientConfigDir")
     if os.path.exists(config_dir):
@@ -146,7 +145,7 @@ def scenario_failed():
 # Order: 1
 # cleanup spaces
 @OnScenarioEnd
-def hook(context):  # pylint: disable=unused-variable
+def hook(context):
     if get_config("ocis"):
         delete_project_spaces()
     delete_created_groups()
@@ -155,7 +154,7 @@ def hook(context):  # pylint: disable=unused-variable
 # runs after every scenario
 # Order: 2
 @OnScenarioEnd
-def hook(context):  # pylint: disable=unused-variable
+def hook(context):
     clearWaitedAfterSync()
     closeSocketConnection()
 
