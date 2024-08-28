@@ -26,8 +26,6 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-39-amd64"
 OC_CI_SQUISH = "owncloudci/squish:fedora-39-7.2.1-qt66x-linux64"
 
-PIPELINECOMPONENTS_BLACK = "pipelinecomponents/black:latest"
-PIPELINECOMPONENTS_PYLINT = "pipelinecomponents/pylint:latest"
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
 PLUGINS_SLACK = "plugins/slack"
@@ -344,7 +342,7 @@ def lint_gui_test():
         "kind": "pipeline",
         "type": "docker",
         "name": "lint-gui-test",
-        "steps": python_format() + python_lint() + gherkin_lint(),
+        "steps": python_lint() + gherkin_lint(),
         "trigger": {
             "event": [
                 "pull_request",
@@ -352,23 +350,13 @@ def lint_gui_test():
         },
     }]
 
-def python_format():
-    return [{
-        "name": "python-format",
-        "image": PIPELINECOMPONENTS_BLACK,
-        "commands": [
-            "cd %s" % dir["guiTest"],
-            "black --check --diff .",
-        ],
-    }]
-
 def python_lint():
     return [{
         "name": "python-lint",
-        "image": PIPELINECOMPONENTS_PYLINT,
+        "image": OC_CI_ALPINE,
         "commands": [
-            "cd %s" % dir["guiTest"],
-            "pylint --rcfile ./.pylintrc ./shared/steps/* ./shared/scripts/bdd_hooks.py",
+            "apk add --no-cache py3-pylint black",
+            "make -C %s python-lint" % dir["guiTest"],
         ],
     }]
 
