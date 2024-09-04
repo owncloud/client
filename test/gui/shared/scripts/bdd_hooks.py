@@ -17,6 +17,7 @@
 # manual for a complete reference of the available API.
 import shutil
 import os
+import glob
 from urllib import request, error
 from datetime import datetime
 
@@ -141,6 +142,14 @@ def scenario_failed():
     )
 
 
+def get_screenshot_name(title):
+    return title.replace(" ", "_").replace("/", "_").strip(".") + ".png"
+
+
+def get_screenrecord_name(title):
+    return title.replace(" ", "_").replace("/", "_").strip(".") + ".mp4"
+
+
 # runs after every scenario
 # Order: 1
 @OnScenarioEnd
@@ -151,7 +160,7 @@ def hook(context):
     # capture a screenshot if there is error or test failure in the current scenario execution
     if scenario_failed() and os.getenv("CI") and isLinux():
         # scenario name can have "/" which is invalid filename
-        filename = context.title.replace(" ", "_").replace("/", "_").strip(".") + ".png"
+        filename = get_screenshot_name(context.title)
         directory = os.path.join(get_config("guiTestReportDir"), "screenshots")
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -159,6 +168,25 @@ def hook(context):
             squish.saveDesktopScreenshot(os.path.join(directory, filename))
         except:
             test.log("Failed to save screenshot")
+
+    # check video report
+    test.stopVideoCapture()
+    squish_test_report_dir = os.path.join(get_config("squishReportDir"), "Test Results")
+    for entry in os.scandir(squish_test_report_dir):
+        if entry.is_dir():
+            if scenario_failed():
+                video_files = glob.glob(
+                    squish_test_report_dir + "/**/*.mp4", recursive=True
+                )
+                if video_files:
+                    filename = get_screenrecord_name(context.title)
+                    video_dir = os.path.join(
+                        get_config("guiTestReportDir"), "screenrecords"
+                    )
+                    if not os.path.exists(video_dir):
+                        os.makedirs(video_dir)
+                    shutil.move(video_files[0], os.path.join(video_dir, filename))
+            shutil.rmtree(prefix_path_namespace(entry.path))
 
     # teardown accounts and configs
     teardown_client()

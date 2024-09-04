@@ -100,6 +100,7 @@ def startClient():
         + " --logdebug"
         + " --logflush"
     )
+    test.startVideoCapture()
 
 
 def getPollingInterval():

@@ -74,6 +74,7 @@ CONFIG_ENV_MAP = {
     'clientConfigDir': 'CLIENT_CONFIG_DIR',
     'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
     'ocis': 'OCIS',
+    'squishReportDir': 'SQUISH_REPORT_DIR',
 }
 
 DEFAULT_PATH_CONFIG = {
@@ -95,6 +96,7 @@ CONFIG = {
     'clientConfigDir': getConfigHome(),
     'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
+    'squishReportDir': os.environ.get("HOME") + '/.squish',
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)
 
