@@ -150,6 +150,33 @@ def get_screenrecord_name(title):
     return title.replace(" ", "_").replace("/", "_").strip(".") + ".mp4"
 
 
+def save_screenrecord(filename):
+    try:
+        # do not throw if stopVideoCapture() fails
+        test.stopVideoCapture()
+    except:
+        test.log("Failed to stop screen recording")
+
+    if not (video_dir := squishinfo.resultDir):
+        video_dir = squishinfo.testCase
+    else:
+        test_case = "/".join(squishinfo.testCase.split("/")[-2:])
+        video_dir = os.path.join(video_dir, test_case)
+    video_dir = os.path.join(video_dir, "attachments")
+
+    if scenario_failed():
+        video_files = glob.glob(f"{video_dir}/**/*.mp4", recursive=True)
+        screenrecords_dir = os.path.join(
+            get_config("guiTestReportDir"), "screenrecords"
+        )
+        if not os.path.exists(screenrecords_dir):
+            os.makedirs(screenrecords_dir)
+        if video_files:
+            shutil.move(video_files[0], os.path.join(screenrecords_dir, filename))
+
+    shutil.rmtree(prefix_path_namespace(video_dir))
+
+
 # runs after every scenario
 # Order: 1
 @OnScenarioEnd
@@ -170,23 +197,9 @@ def hook(context):
             test.log("Failed to save screenshot")
 
     # check video report
-    test.stopVideoCapture()
-    squish_test_report_dir = os.path.join(get_config("squishReportDir"), "Test Results")
-    for entry in os.scandir(squish_test_report_dir):
-        if entry.is_dir():
-            if scenario_failed():
-                video_files = glob.glob(
-                    squish_test_report_dir + "/**/*.mp4", recursive=True
-                )
-                if video_files:
-                    filename = get_screenrecord_name(context.title)
-                    video_dir = os.path.join(
-                        get_config("guiTestReportDir"), "screenrecords"
-                    )
-                    if not os.path.exists(video_dir):
-                        os.makedirs(video_dir)
-                    shutil.move(video_files[0], os.path.join(video_dir, filename))
-            shutil.rmtree(prefix_path_namespace(entry.path))
+    if get_config("screenRecordOnFailure"):
+        filename = get_screenrecord_name(context.title)
+        save_screenrecord(filename)
 
     # teardown accounts and configs
     teardown_client()
