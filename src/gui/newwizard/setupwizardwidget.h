@@ -14,10 +14,11 @@
 
 #pragma once
 
+#include "gui/newwizard/navigation.h"
+#include "gui/newwizard/pages/abstractsetupwizardpage.h"
+#include "gui/newwizard/setupwizardaccountbuilder.h"
+#include "gui/qmlutils.h"
 #include "gui/settingsdialog.h"
-#include "navigation.h"
-#include "pages/abstractsetupwizardpage.h"
-#include "setupwizardaccountbuilder.h"
 
 namespace Ui {
 class SetupWizardWidget;
@@ -31,7 +32,7 @@ namespace OCC::Wizard {
 class SetupWizardWidget : public QWidget
 {
     Q_OBJECT
-
+    OC_DECLARE_WIDGET_FOCUS
 public:
     explicit SetupWizardWidget(SettingsDialog *parent);
     ~SetupWizardWidget() noexcept override;

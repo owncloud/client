@@ -17,9 +17,11 @@
 #include "common/utility.h"
 
 #include <QObject>
+#include <QtQmlIntegration/QtQmlIntegration>
 
 namespace OCC::Wizard {
 Q_NAMESPACE
+QML_ELEMENT
 
 enum class SetupWizardState {
     ServerUrlState,

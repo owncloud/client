@@ -81,7 +81,7 @@
            </size>
           </property>
           <property name="pixmap">
-           <pixmap resource="../../resources/client.qrc">:/client/resources/light/warning.svg</pixmap>
+           <pixmap>:/client/resources/light/warning.svg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -91,7 +91,7 @@
         <item>
          <widget class="QLabel" name="errorMessageLabel">
           <property name="textFormat">
-           <enum>Qt::RichText</enum>
+           <enum>Qt::TextFormat::RichText</enum>
           </property>
          </widget>
         </item>
@@ -118,33 +118,14 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="OCC::Wizard::Navigation" name="navigation" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="OCC::Wizard::Navigation" name="navigation" native="true"/>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="backButton">
@@ -180,8 +161,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../resources/client.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

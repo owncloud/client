@@ -6,77 +6,40 @@
 namespace OCC::Wizard {
 
 Navigation::Navigation(QWidget *parent)
-    : QWidget(parent)
+    : OCQuickWidget(parent)
 {
-    // this class manages its own layout
-    setLayout(new QHBoxLayout(this));
+    setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/newwizard/qml/Navigation.qml")), this->parentWidget(), this, QJSEngine::CppOwnership);
 }
 
-void Navigation::setEntries(const QList<SetupWizardState> &newEntries)
+void Navigation::setStates(const QList<SetupWizardState> &newEntries)
 {
-    // TODO: more advanced implementation (reuse existing buttons within layout)
-    // current active page is also lost that way
-    removeAllItems();
-
-    for (const auto state : newEntries) {
-        const QString text = Utility::enumToDisplayName(state);
-
-        auto newButton = new QRadioButton(text, this);
-
-        _entries.insert(state, newButton);
-        layout()->addWidget(newButton);
-
-        connect(newButton, &QRadioButton::clicked, this, [this, state]() {
-            // clicks to the current state button should be ignored
-            // this used to be handled by disabling the button
-            if (state != _activeState) {
-                Q_EMIT paginationEntryClicked(state);
-            }
-        });
+    if (_states != newEntries) {
+        _states = newEntries;
+        Q_EMIT statesChanged();
     }
-
-    enableOrDisableButtons();
 }
 
-// needed to clean up widgets we added to the layout
-Navigation::~Navigation() noexcept
+QList<SetupWizardState> Navigation::states() const
 {
-    removeAllItems();
-}
-
-void Navigation::removeAllItems()
-{
-    qDeleteAll(_entries);
-}
-
-void Navigation::enableOrDisableButtons()
-{
-    for (const auto state : _entries.keys()) {
-        auto button = _entries.value(state);
-
-        const auto enabled = [&state, this]() {
-            if (_enabled) {
-                return state <= _activeState;
-            }
-
-            return false;
-        }();
-
-        // we just ignore clicks to the current page
-        button->setEnabled(enabled);
-    }
+    return _states;
 }
 
 void Navigation::setActiveState(SetupWizardState newState)
 {
-    _activeState = newState;
-
-    for (const auto key : _entries.keys()) {
-        auto button = _entries.value(key);
-        button->setChecked(key == _activeState);
+    if (_activeState != newState) {
+        _activeState = newState;
+        Q_EMIT activeStatesChanged();
     }
+}
 
-    enableOrDisableButtons();
+SetupWizardState Navigation::activeState() const
+{
+    return _activeState;
+}
+
+QString Navigation::stateDisplayName(SetupWizardState state) const
+{
+    return Utility::enumToDisplayName(state);
 }
 
 }

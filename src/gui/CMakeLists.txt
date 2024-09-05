@@ -98,18 +98,19 @@ set( final_src
     ${3rdparty_SRC}
 )
 
+add_library(owncloudGui SHARED ${final_src})
+set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
+
 add_subdirectory(newwizard)
 add_subdirectory(folderwizard)
 add_subdirectory(loginrequireddialog)
 
-add_library(owncloudGui SHARED ${final_src})
-set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
 # for the generated qml module
-target_include_directories(owncloudGui PRIVATE models spaces)
+target_include_directories(owncloudGui PRIVATE models spaces newwizard)
 target_link_libraries(owncloudGui
     PUBLIC
         Qt::Widgets Qt::Network Qt::Xml Qt::Quick Qt::QuickWidgets Qt::QuickControls2
-        newwizard folderwizard loginrequireddialog
+        folderwizard loginrequireddialog
         libsync
         Qt6Keychain::Qt6Keychain
 )
@@ -127,6 +128,8 @@ ecm_add_qml_module(owncloudGui
 
             spaces/qml/SpaceDelegate.qml
             spaces/qml/SpacesView.qml
+
+            newwizard/qml/Navigation.qml
 )
 
 generate_export_header(owncloudGui

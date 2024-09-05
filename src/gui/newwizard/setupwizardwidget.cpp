@@ -64,7 +64,7 @@ SetupWizardWidget::SetupWizardWidget(SettingsDialog *parent)
         Q_EMIT backButtonClicked();
     });
 
-    connect(_ui->navigation, &Navigation::paginationEntryClicked, this, [this](SetupWizardState clickedState) {
+    connect(_ui->navigation, &Navigation::stateClicked, this, [this](SetupWizardState clickedState) {
         slotStartTransition();
         Q_EMIT navigationEntryClicked(clickedState);
     });
@@ -178,7 +178,7 @@ void SetupWizardWidget::showErrorMessage(const QString &errorMessage)
 
 void SetupWizardWidget::setNavigationEntries(const QList<SetupWizardState> &entries)
 {
-    _ui->navigation->setEntries(entries);
+    _ui->navigation->setStates(entries);
 }
 
 void SetupWizardWidget::slotUpdateNextButton()

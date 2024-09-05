@@ -16,6 +16,8 @@
 
 #include "enums.h"
 
+#include "gui/qmlutils.h"
+
 #include <QHBoxLayout>
 #include <QMap>
 #include <QRadioButton>
@@ -27,42 +29,46 @@ namespace OCC::Wizard {
 /**
  * Provides a radio button based quick navigation on the wizard's bottom side.
  */
-class Navigation : public QWidget
+class Navigation : public QmlUtils::OCQuickWidget
 {
     Q_OBJECT
+    Q_PROPERTY(QList<SetupWizardState> states READ states NOTIFY statesChanged)
+    Q_PROPERTY(SetupWizardState activeState READ activeState WRITE setActiveState NOTIFY activeStatesChanged)
+    QML_ELEMENT
+    QML_UNCREATABLE("C++")
 
 public:
     explicit Navigation(QWidget *parent = nullptr);
 
-    ~Navigation() noexcept override;
 
     /**
      * Set or replace entries in the navigation.
      * This method creates the corresponding buttons.
      * @param newEntries ordered list of wizard states to be rendered in the navigation
      */
-    void setEntries(const QList<SetupWizardState> &newEntries);
+    void setStates(const QList<SetupWizardState> &newEntries);
+    QList<SetupWizardState> states() const;
+
+    /**
+     * Change to another state. Applies changes to hosted UI elements (e.g., disables buttons, )
+     */
+    void setActiveState(SetupWizardState activeState);
+    SetupWizardState activeState() const;
+
+    Q_INVOKABLE QString stateDisplayName(SetupWizardState state) const;
 
 Q_SIGNALS:
     /**
-     * Emitted when a pagination entry is clicked.
+     * Emitted when a state is clicked.
      * This event is only emitted for previous states.
      * @param clickedState state the user wants to switch to
      */
-    void paginationEntryClicked(SetupWizardState clickedState);
-
-public Q_SLOTS:
-    /**
-     * Change to another state. Applies changes to hosted UI elements (e.g., disables buttons, )
-     * @param newState state to activate
-     */
-    void setActiveState(SetupWizardState newState);
+    void stateClicked(SetupWizardState clickedState);
+    void statesChanged();
+    void activeStatesChanged();
 
 private:
-    void removeAllItems();
-    void enableOrDisableButtons();
-
-    QMap<SetupWizardState, QRadioButton *> _entries;
+    QList<SetupWizardState> _states;
     SetupWizardState _activeState = SetupWizardState::FirstState;
     bool _enabled = true;
 };
