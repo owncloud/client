@@ -18,6 +18,7 @@
 import shutil
 import os
 import glob
+import subprocess
 from urllib import request, error
 from datetime import datetime
 
@@ -170,8 +171,12 @@ def save_screenrecord(filename):
         )
         if not os.path.exists(screenrecords_dir):
             os.makedirs(screenrecords_dir)
-        if video_files:
-            shutil.move(video_files[0], os.path.join(screenrecords_dir, filename))
+        video_files.reverse()
+        for idx, video in enumerate(video_files):
+            if idx:
+                file_parts = filename.rsplit(".", 1)
+                filename = f"{file_parts[0]}_{idx+1}.{file_parts[1]}"
+            shutil.move(video, os.path.join(screenrecords_dir, filename))
 
     shutil.rmtree(prefix_path_namespace(video_dir))
 
