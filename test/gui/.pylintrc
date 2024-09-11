@@ -15,7 +15,9 @@ disable=
     ; TODO: enable later
     invalid-name,
 fail-under=10
-ignore-paths=^tst_.*/test.py$|shared/scripts/names.py
+ignore-paths=^tst_.*/test.py$,
+    shared/scripts/names.py,
+    shared/scripts/custom_lib
 ignored-modules=squish,object,objectmaphelper,test
 load-plugins=
     pylint.extensions.check_elif,
@@ -36,6 +38,9 @@ function-naming-style=snake_case
 method-naming-style=snake_case
 module-naming-style=any
 variable-naming-style=snake_case
+
+[DESIGN]
+max-args=8
 
 [VARIABLES]
 additional-builtins=
