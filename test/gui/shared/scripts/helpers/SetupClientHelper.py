@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from os import makedirs
 from os.path import exists, join
 import test
-import psutil  # pylint: disable=import-error
+import psutil
 import squish
 
 from helpers.SpaceHelper import get_space_id

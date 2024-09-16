@@ -28,7 +28,7 @@ else:
     # if the IDE fails to reference the script,
     # add the folder in Edit->Preferences->PyDev->Interpreters->Libraries
     sys.path.append(custom_lib)
-    from custom_lib.syncstate import SocketConnect  # pylint: disable=import-error
+    from custom_lib.syncstate import SocketConnect
 
 # socket messages
 socket_messages = []

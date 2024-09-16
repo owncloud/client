@@ -1,5 +1,5 @@
-import requests  # pylint: disable=import-error
-import urllib3  # pylint: disable=import-error
+import requests
+import urllib3
 
 from helpers.UserHelper import basic_auth_header
 from helpers.ConfigHelper import get_config
@@ -9,6 +9,8 @@ urllib3.disable_warnings()
 
 def send_request(url, method, body=None, headers=None, user=None, password=None):
     auth_header = basic_auth_header(user, password)
+    if not headers:
+        headers = {}
     headers.update(auth_header)
     return requests.request(
         method,

@@ -11,10 +11,13 @@ def buildConflictedRegex(filename):
         # TODO: improve this for complex filenames
         namepart = filename.split(".")[0]
         extpart = filename.split(".")[1]
-        return (
-            f"{namepart} \\(conflicted copy \\d{4}-\\d{2}-\\d{2} \\d{6}\\)\\.{extpart}"
+        # pylint: disable=anomalous-backslash-in-string
+        return "%s \(conflicted copy \d{4}-\d{2}-\d{2} \d{6}\)\.%s" % (
+            namepart,
+            extpart,
         )
-    return f"{filename} \\(conflicted copy \\d{4}-\\d{2}-\\d{2} \\d{6}\\)"
+    # pylint: disable=anomalous-backslash-in-string
+    return "%s \(conflicted copy \d{4}-\d{2}-\d{2} \d{6}\)" % filename
 
 
 def sanitizePath(path):
@@ -77,7 +80,7 @@ def get_size_in_bytes(size):
         size_num = int(match.group(1))
         size_unit = match.group(2)
 
-        if not (size_unit := match.lower()):
+        if not (size_unit := size_unit.lower()):
             return size_num
         if size_unit in units:
             if size_unit == "b":

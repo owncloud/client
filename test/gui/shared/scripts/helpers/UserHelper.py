@@ -60,7 +60,7 @@ def basic_auth_header(user=None, password=None):
 
 def getUserInfo(username, attribute):
     if username in test_users:
-        return test_users[username][attribute]
+        return getattr(test_users[username], attribute)
     if attribute == "password":
         return get_default_password()
     raise ValueError(f"Invalid user attribute: {attribute}")

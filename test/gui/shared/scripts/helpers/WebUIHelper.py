@@ -24,13 +24,13 @@ def authorize_via_webui(username, password, login_type='oidc'):
         'OC_AUTH_URL': getClipboardText(),
     }
     proc = subprocess.run(
-        f'pnpm run {login_type}-login' % login_type,
+        f'pnpm run {login_type}-login',
         capture_output=True,
         shell=True,
         env={**os.environ, **envs},
         check=False,
     )
-    if not proc.returncode:
+    if proc.returncode:
         if proc.stderr.decode('utf-8'):
             raise OSError(proc.stderr.decode('utf-8'))
         raise OSError(proc.stdout.decode('utf-8'))

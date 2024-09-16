@@ -32,24 +32,29 @@ def add_user_to_group(user, group_name):
 
 
 def create_user(username):
-    user = {}
     if username in UserHelper.test_users:
         user = UserHelper.test_users[username]
     else:
-        user = {
-            'username': username,
-            'displayname': username,
-            'email': f'{username}@mail.com',
-            'password': UserHelper.get_default_password(),
-        }
+        user = UserHelper.User(
+            username=username,
+            displayname=username,
+            email=f'{username}@mail.com',
+            password=UserHelper.get_default_password(),
+        )
 
     if get_config('ocis'):
         user_info = ocis.create_user(
-            user['username'], user['password'], user['displayname'], user['email']
+            user.username,
+            user.password,
+            user.displayname,
+            user.email,
         )
     else:
         user_info = oc.create_user(
-            user['username'], user['password'], user['displayname'], user['email']
+            user.username,
+            user.password,
+            user.displayname,
+            user.email,
         )
     created_users[username] = user_info
 

@@ -18,7 +18,15 @@ fail-under=10
 ignore-paths=^tst_.*/test.py$,
     shared/scripts/names.py,
     shared/scripts/custom_lib
-ignored-modules=squish,object,objectmaphelper,test
+ignored-modules=
+    squish,
+    object,
+    objectmaphelper,
+    test,
+    requests,
+    psutil,
+    urllib3,
+    custom_lib.syncstate,
 load-plugins=
     pylint.extensions.check_elif,
     pylint.extensions.bad_builtin,
