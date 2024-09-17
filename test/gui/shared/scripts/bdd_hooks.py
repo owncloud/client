@@ -99,7 +99,6 @@ def hook(context):
                 + context.title
                 + "\n"
             )
-            f.close()
 
     # this path will be changed according to the user added to the client
     # e.g.: /tmp/client-bdd/Alice

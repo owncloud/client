@@ -13,7 +13,6 @@ def getCoredumps():
     # read coredump location
     with open('/proc/sys/kernel/core_pattern', 'r', encoding='utf-8') as f:
         coredumpPath = f.read().strip('\n')
-        f.close()
 
     # yields something like: /tmp/core-*-*-*-*
     coredumpFilePattern = re.sub(r'%[a-zA-Z]{1}', '*', coredumpPath)
@@ -35,7 +34,6 @@ def generateStacktrace(scenario_title, coredumps):
     # save stacktrace to a file
     with open(stacktrace_file, 'a', encoding='utf-8') as f:
         f.write(stacktrace)
-        f.close()
 
 
 def parseStacktrace(coredumpFile):

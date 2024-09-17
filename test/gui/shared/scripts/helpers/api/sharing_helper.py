@@ -12,18 +12,19 @@ share_types = MappingProxyType(
     {'user': 0, 'group': 1, 'public_link': 3, 'federated_cloud_share': 6}
 )
 
-PERMISSIONS = {"read": 1, "update": 2, "create": 4, "delete": 8, "share": 16}
+PERMISSIONS = MappingProxyType(
+    {'read': 1, 'update': 2, 'create': 4, 'delete': 8, 'share': 16}
+)
 
 
 def get_permission_value(permissions):
-    permission_list = [perm.strip() for perm in permissions.split(",")]
+    permission_list = [perm.strip() for perm in permissions.split(',')]
     combinedPermission = 0
-    if "all" in permission_list:
+    if 'all' in permission_list:
         return sum(PERMISSIONS.values())
 
     for permission in permission_list:
-        permission_value = PERMISSIONS.get(permission)
-        if permission_value is None:
+        if (permission_value := PERMISSIONS.get(permission)) is None:
             raise ValueError(f"Permission '{permission}' is not valid.")
         combinedPermission += permission_value
 

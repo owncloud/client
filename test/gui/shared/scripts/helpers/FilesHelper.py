@@ -38,7 +38,6 @@ def can_read(resource):
     read = False
     try:
         with open(resource, encoding="utf-8") as f:
-            f.close()
             read = True
     except:
         pass
@@ -49,7 +48,6 @@ def can_write(resource):
     write = False
     try:
         with open(resource, "w", encoding="utf-8") as f:
-            f.close()
             write = True
     except:
         pass
@@ -59,7 +57,6 @@ def can_write(resource):
 def read_file_content(file):
     with open(file, "r", encoding="utf-8") as f:
         content = f.read()
-        f.close()
     return content
 
 

@@ -176,7 +176,6 @@ def generate_account_config(users, space='Personal'):
 
     with open(get_config('clientConfigFile'), 'a+', encoding='utf-8') as config_file:
         config_file.write(user_setting)
-        config_file.close()
 
     return sync_paths
 

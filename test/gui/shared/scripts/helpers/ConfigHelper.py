@@ -164,7 +164,6 @@ def set_config(key, value):
     if key in READONLY_CONFIG:
         raise KeyError(f'Cannot set read-only config: {key}')
     CONFIG[key] = value
-    return CONFIG
 
 
 def clear_scenario_config():
