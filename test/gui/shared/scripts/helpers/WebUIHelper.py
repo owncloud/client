@@ -5,11 +5,11 @@ import squish
 
 def get_clipboard_text():
     try:
-        return squish.get_clipboard_text()
+        return squish.getClipboardText()
     except:
         # Retry after 2 seconds
         squish.snooze(2)
-        return squish.get_clipboard_text()
+        return squish.getClipboardText()
 
 
 def authorize_via_webui(username, password, login_type='oidc'):
