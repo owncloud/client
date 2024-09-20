@@ -92,7 +92,7 @@ class PublicLinkDialog:
         "%d/%m/%y",
     ]
     # to store current default public link expiry date
-    defaultExpiryDate = ""
+    default_expiry_date = ""
 
     @staticmethod
     def parse_date(date):
@@ -107,11 +107,11 @@ class PublicLinkDialog:
 
     @staticmethod
     def set_default_expiry_date(default_date):
-        PublicLinkDialog.defaultExpiryDate = PublicLinkDialog.parse_date(default_date)
+        PublicLinkDialog.default_expiry_date = PublicLinkDialog.parse_date(default_date)
 
     @staticmethod
     def get_default_expiry_date():
-        return PublicLinkDialog.defaultExpiryDate
+        return PublicLinkDialog.default_expiry_date
 
     @staticmethod
     def open_public_link_tab():
