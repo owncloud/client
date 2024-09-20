@@ -12,8 +12,6 @@ disable=
     too-many-public-methods,
     bare-except,
     fixme,
-    ; TODO: enable later
-    invalid-name,
 fail-under=10
 ignore-paths=^tst_.*/test.py$,
     shared/scripts/names.py,

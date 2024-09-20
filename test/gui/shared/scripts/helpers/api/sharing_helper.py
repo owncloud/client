@@ -5,7 +5,7 @@ from helpers.ConfigHelper import get_config
 from helpers.api.utils import url_join
 import helpers.api.http_helper as request
 import helpers.api.oc10 as oc
-from helpers.api.oc10 import checkSuccessOcsStatus
+from helpers.api.oc10 import check_success_ocs_status
 
 
 share_types = MappingProxyType(
@@ -19,16 +19,16 @@ PERMISSIONS = MappingProxyType(
 
 def get_permission_value(permissions):
     permission_list = [perm.strip() for perm in permissions.split(',')]
-    combinedPermission = 0
+    combined_permission = 0
     if 'all' in permission_list:
         return sum(PERMISSIONS.values())
 
     for permission in permission_list:
         if (permission_value := PERMISSIONS.get(permission)) is None:
             raise ValueError(f"Permission '{permission}' is not valid.")
-        combinedPermission += permission_value
+        combined_permission += permission_value
 
-    return combinedPermission
+    return combined_permission
 
 
 def get_share_url():
@@ -53,7 +53,7 @@ def get_public_endpoint():
 def get_public_link_shares(user):
     public_shares_list = []
     response = request.get(get_share_url(), user=user)
-    checkSuccessOcsStatus(response)
+    check_success_ocs_status(response)
     shares = json.loads(response.text)['ocs']['data']
 
     for share in shares:
