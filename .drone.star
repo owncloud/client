@@ -24,8 +24,7 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-39-amd64"
-OC_CI_SQUISH = "sawjan/squish:unlock"
-OC_CI_SQUISH_UP = "owncloudci/squish:fedora-39-7.2.1-qt66x-linux64"
+OC_CI_SQUISH = "sawjan/squish:export-session"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3"
@@ -128,12 +127,6 @@ config = {
                 "tags": "~@skipOnOCIS",
                 "skip": False,
             },
-            "ocis-2": {
-                "version": "latest",
-                # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
-                "tags": "~@skipOnOCIS",
-                "skip": False,
-            },
         },
     },
 }
@@ -145,11 +138,10 @@ def main(ctx):
     unit_tests = unit_test_pipeline(ctx)
     gui_tests = gui_test_pipeline(ctx)
 
-    return gui_tests
-    # return pipelines + \
-    #        unit_tests + \
-    #        gui_tests + \
-    #        pipelinesDependsOn(notification(), unit_tests + gui_tests)
+    return pipelines + \
+           unit_tests + \
+           gui_tests + \
+           pipelinesDependsOn(notification(), unit_tests + gui_tests)
 
 def from_secret(name):
     return {
@@ -211,7 +203,6 @@ def gui_test_pipeline(ctx):
     for server, params in config["gui-tests"]["servers"].items():
         squish_parameters = [
             "--testsuite %s" % dir["guiTest"],
-            "--testcase %s/tst_loginLogout" % dir["guiTest"],
             "--reportgen html,%s" % dir["guiTestReport"],
             "--envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false",
             "--tags ~@skip",
@@ -329,7 +320,7 @@ def unit_tests(image = OC_CI_CLIENT):
 def gui_tests(squish_parameters = "", server_type = "oc10"):
     return [{
         "name": "GUItests",
-        "image": OC_CI_SQUISH if server_type == "ocis" else OC_CI_SQUISH_UP,
+        "image": OC_CI_SQUISH,
         "environment": {
             "LICENSEKEY": from_secret("SQUISH_LICENSEKEY"),
             "GUI_TEST_REPORT_DIR": dir["guiTestReport"],
@@ -337,7 +328,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "MIDDLEWARE_URL": "http://testmiddleware:3000/",
             "BACKEND_HOST": "http://owncloud/" if server_type == "oc10" else "https://ocis:9200",
             "SECURE_BACKEND_HOST": "https://owncloud/" if server_type == "oc10" else "https://ocis:9200",
-            "OCIS": "true" if "ocis" in server_type else "false",
+            "OCIS": "true" if server_type == "ocis" else "false",
             "SERVER_INI": "%s/drone/server.ini" % dir["guiTest"],
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
@@ -587,7 +578,7 @@ def testMiddlewareService(server_type = "oc10"):
         "REMOTE_UPLOAD_DIR": "/uploads",
     }
 
-    if "ocis" in server_type:
+    if server_type == "ocis":
         environment["BACKEND_HOST"] = "https://ocis:9200"
         environment["TEST_WITH_GRAPH_API"] = "true"
         environment["RUN_ON_OCIS"] = "true"

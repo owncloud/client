@@ -18,7 +18,6 @@
 import shutil
 import os
 import glob
-import subprocess
 from urllib import request, error
 from datetime import datetime
 
@@ -26,7 +25,7 @@ from helpers.StacktraceHelper import getCoredumps, generateStacktrace
 from helpers.SyncHelper import closeSocketConnection, clearWaitedAfterSync
 from helpers.SpaceHelper import delete_project_spaces
 from helpers.api.provisioning import delete_created_groups, delete_created_users
-from helpers.SetupClientHelper import wait_until_app_killed
+from helpers.SetupClientHelper import wait_until_app_killed, unlock_keyring
 from helpers.ConfigHelper import (
     init_config,
     get_config,
@@ -64,6 +63,7 @@ def hook(context):
 # Order: 1
 @OnScenarioStart
 def hook(context):
+    unlock_keyring()
     clear_scenario_config()
 
 
@@ -171,11 +171,12 @@ def save_screenrecord(filename):
         )
         if not os.path.exists(screenrecords_dir):
             os.makedirs(screenrecords_dir)
+        # reverse the list to get the latest video first
         video_files.reverse()
         for idx, video in enumerate(video_files):
             if idx:
                 file_parts = filename.rsplit(".", 1)
-                filename = f"{file_parts[0]}_{idx+1}.{file_parts[1]}"
+                filename = f"{file_parts[0]}_{idx}.{file_parts[1]}"
             shutil.move(video, os.path.join(screenrecords_dir, filename))
 
     shutil.rmtree(prefix_path_namespace(video_dir))
