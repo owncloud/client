@@ -252,7 +252,6 @@ bool Capabilities::versioningEnabled() const
 bool Capabilities::avatarsAvailable() const
 {
     auto userCaps = _fileSharingCapabilities.value(QStringLiteral("user")).toMap();
-    // true by default for older servers, because turning off profile pictures was introduced in later versions
     return userCaps.value(QStringLiteral("profile_picture"), false).toBool();
 }
 
