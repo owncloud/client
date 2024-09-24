@@ -176,7 +176,7 @@ def save_screenrecord(filename):
         for idx, video in enumerate(video_files):
             if idx:
                 file_parts = filename.rsplit(".", 1)
-                filename = f"{file_parts[0]}_{idx}.{file_parts[1]}"
+                filename = f"{file_parts[0]}_{idx+1}.{file_parts[1]}"
             shutil.move(video, os.path.join(screenrecords_dir, filename))
 
     shutil.rmtree(prefix_path_namespace(video_dir))
