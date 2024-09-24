@@ -3,7 +3,7 @@ import json
 
 from helpers.ConfigHelper import get_config
 from helpers.api.utils import url_join
-from helpers.api import Provisioning, webdav_helper as webdav, sharing_helper
+from helpers.api import provisioning, sharing_helper, webdav_helper as webdav
 import helpers.api.oc10 as oc
 
 from pageObjects.Toolbar import Toolbar
@@ -187,14 +187,46 @@ def step(context, user, folder_name):
 
 @Given('group "|any|" has been created in the server')
 def step(context, group_name):
-    Provisioning.create_group(group_name)
+    provisioning.create_group(group_name)
 
 
 @Given('user "|any|" has been added to group "|any|" in the server')
 def step(context, user, group_name):
-    Provisioning.add_user_to_group(user, group_name)
+    provisioning.add_user_to_group(user, group_name)
 
 
 @Given('user "|any|" has been created in the server with default attributes')
 def step(context, user):
-    Provisioning.create_user(user)
+    provisioning.create_user(user)
+
+
+@Given(
+    # pylint: disable=line-too-long
+    r'user "([^"].*)" has shared (?:file|folder) "([^"].*)" in the server with (user|group) "([^"].*)" with "([^"].*)" permission(?:s)?',
+    regexp=True,
+)
+def step(context, user, resource, receiver_type, receiver, permissions):
+    sharing_helper.share_resource(user, resource, receiver, permissions, receiver_type)
+
+
+@Given('user "|any|" has created the following public link share in the server')
+def step(context, user):
+    data = {
+        'resource': None,
+        'permissions': None,
+        'name': None,
+        'password': None,
+        'expireDate': None,
+    }
+    for row in context.table:
+        key, value = row
+        if key in data:
+            data[key] = value
+    sharing_helper.create_link_share(
+        user,
+        data['resource'],
+        data['permissions'],
+        data['name'],
+        data['password'],
+        data['expireDate'],
+    )
