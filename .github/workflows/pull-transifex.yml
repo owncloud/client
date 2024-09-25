@@ -1,0 +1,28 @@
+name: "Pull translations from Transifex"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  pull-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
+          ref: "master"
+
+      - name: l10n-pull
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TX_TOKEN }}
+          args: pull --force --skip --all
+
+      - uses: GuillaumeFalourd/git-commit-push@v1.3
+        with:
+          email: devops@owncloud.com
+          name: ownClouders
+          commit_message: "tx] updated translations from transifex"

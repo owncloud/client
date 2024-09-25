@@ -1,0 +1,19 @@
+name: "Push translation source and German translation to Transifex"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: l10n-push-source
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TX_TOKEN }}
+          args: push -s --skip
