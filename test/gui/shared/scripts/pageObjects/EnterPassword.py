@@ -13,10 +13,9 @@ class EnterPassword:
         "visible": 1,
     }
     LOGIN_USER_LABEL = {
-        "name": "topLabel",
-        "type": "QLabel",
-        "visible": 1,
-        "window": LOGIN_CONTAINER,
+        "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
+        "type": "Label",
+        "visible": True,
     }
     USERNAME_BOX = {
         "name": "usernameLineEdit",
@@ -29,28 +28,24 @@ class EnterPassword:
         "id": "passwordField",
         "type": "TextField",
         "visible": True,
-        # "window": LOGIN_CONTAINER,
     }
     LOGIN_BUTTON = {
         "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
         "id": "loginButton",
-        "text": "Log in",
         "type": "Button",
         "visible": True,
-        "checkable": False,
-        # "window": names.stack_stackedWidget_QStackedWidget,
     }
     LOGOUT_BUTTON = {
-        "text": "Log out",
-        "type": "QPushButton",
-        "visible": 1,
-        "window": names.stack_stackedWidget_QStackedWidget,
+        "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
+        "id": "logOutButton",
+        "type": "Button",
+        "visible": True,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
-        "name": "copyUrlToClipboardButton",
-        "type": "QPushButton",
-        "visible": 1,
-        "window": LOGIN_CONTAINER,
+        "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
+        "id": "copyToClipboardButton",
+        "type": "Button",
+        "visible": True,
     }
     TLS_CERT_WINDOW = {
         "name": "OCC__TlsErrorDialog",
@@ -69,30 +64,29 @@ class EnterPassword:
             self.TLS_CERT_WINDOW.update({"occurrence": occurrence})
 
     def get_username(self):
-        # Parse username from following label:
-        #   Please enter your password to log in to the account Alice Hansen@localhost.
-        #   The account Alice Hansen@localhost:9200 is currently logged out.
+        # Parse username from the login label:
         label = str(squish.waitForObjectExists(self.LOGIN_USER_LABEL).text)
-        label = label.split("@", maxsplit=1)[0].split(" ")
-        label.reverse()
-        return label[1].capitalize()
+        username = label.split(" ", maxsplit=2)[1]
+        return username.capitalize()
 
     def enterPassword(self, password):
-        squish.waitForObject(self.PASSWORD_BOX, get_config("maxSyncTimeout") * 1000)
-        squish.mousePress(squish.waitForObject(self.PASSWORD_BOX))
-        squish.type(squish.waitForObject(self.PASSWORD_BOX), password)
-        squish.mouseClick(squish.waitForObject(self.LOGIN_BUTTON))
+        squish.waitForObjectExists(
+            self.PASSWORD_BOX, get_config("maxSyncTimeout") * 1000
+        )
+        squish.mouseClick(squish.waitForObjectExists(self.PASSWORD_BOX))
+        squish.nativeType(password)
+        squish.mouseClick(squish.waitForObjectExists(self.LOGIN_BUTTON))
 
     def oidcReLogin(self, username, password):
         # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
-        squish.clickButton(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))
+        squish.mouseClick(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))
         authorize_via_webui(username, password)
 
     def oauthReLogin(self, username, password):
         # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
-        squish.clickButton(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))
+        squish.mouseClick(squish.waitForObject(self.COPY_URL_TO_CLIPBOARD_BUTTON))
         authorize_via_webui(username, password, "oauth")
 
     def reLogin(self, username, password, oauth=False):
@@ -110,7 +104,7 @@ class EnterPassword:
             self.enterPassword(password)
 
     def logout(self):
-        squish.clickButton(squish.waitForObject(self.LOGOUT_BUTTON))
+        squish.mouseClick(squish.waitForObject(self.LOGOUT_BUTTON))
 
     def accept_certificate(self):
         squish.clickButton(squish.waitForObject(self.ACCEPT_CERTIFICATE_YES))
