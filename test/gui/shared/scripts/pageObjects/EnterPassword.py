@@ -25,16 +25,20 @@ class EnterPassword:
         "window": LOGIN_CONTAINER,
     }
     PASSWORD_BOX = {
-        "name": "passwordLineEdit",
-        "type": "QLineEdit",
-        "visible": 1,
-        "window": LOGIN_CONTAINER,
+        "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
+        "id": "passwordField",
+        "type": "TextField",
+        "visible": True,
+        # "window": LOGIN_CONTAINER,
     }
     LOGIN_BUTTON = {
+        "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
+        "id": "loginButton",
         "text": "Log in",
-        "type": "QPushButton",
-        "visible": 1,
-        "window": names.stack_stackedWidget_QStackedWidget,
+        "type": "Button",
+        "visible": True,
+        "checkable": False,
+        # "window": names.stack_stackedWidget_QStackedWidget,
     }
     LOGOUT_BUTTON = {
         "text": "Log out",
@@ -75,8 +79,9 @@ class EnterPassword:
 
     def enterPassword(self, password):
         squish.waitForObject(self.PASSWORD_BOX, get_config("maxSyncTimeout") * 1000)
+        squish.mousePress(squish.waitForObject(self.PASSWORD_BOX))
         squish.type(squish.waitForObject(self.PASSWORD_BOX), password)
-        squish.clickButton(squish.waitForObject(self.LOGIN_BUTTON))
+        squish.mouseClick(squish.waitForObject(self.LOGIN_BUTTON))
 
     def oidcReLogin(self, username, password):
         # wait 500ms for copy button to fully load

@@ -35,16 +35,16 @@ class AccountConnectionWizard:
         "window": names.insecure_connection_QMessageBox,
     }
     USERNAME_BOX = {
-        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
-        "name": "usernameLineEdit",
-        "type": "QLineEdit",
-        "visible": 1,
+        "container": names.contentWidget_OCC_QmlUtils_OCQuickWidget,
+        "id": "userNameField",
+        "type": "TextField",
+        "visible": True,
     }
     PASSWORD_BOX = {
-        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
-        "name": "passwordLineEdit",
-        "type": "QLineEdit",
-        "visible": 1,
+        "container": names.contentWidget_OCC_QmlUtils_OCQuickWidget,
+        "id": "passwordField",
+        "type": "TextField",
+        "visible": True,
     }
     SELECT_LOCAL_FOLDER = {
         "container": names.advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox,
@@ -160,14 +160,12 @@ class AccountConnectionWizard:
 
     @staticmethod
     def basicLogin(username, password):
+        squish.mousePress(squish.waitForObject(AccountConnectionWizard.USERNAME_BOX))
         squish.type(
             squish.waitForObject(AccountConnectionWizard.USERNAME_BOX),
             username,
         )
-        squish.type(
-            squish.waitForObject(AccountConnectionWizard.USERNAME_BOX),
-            "<Tab>",
-        )
+        squish.mousePress(squish.waitForObject(AccountConnectionWizard.PASSWORD_BOX))
         squish.type(
             squish.waitForObject(AccountConnectionWizard.PASSWORD_BOX),
             password,
