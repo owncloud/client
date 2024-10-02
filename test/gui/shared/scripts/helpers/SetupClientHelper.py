@@ -214,7 +214,7 @@ def generate_uuidv4():
 # sometimes the keyring is locked during the test execution
 # and we need to unlock it
 def unlock_keyring():
-    if isWindows():
+    if is_windows():
         return
 
     stdout, stderr, _ = run_sys_command(
