@@ -103,7 +103,11 @@ def start_client():
         + ' --logdebug'
         + ' --logflush'
     )
-    if get_config('screenRecordOnFailure'):
+    if (
+        get_config('screenRecordOnFailure')
+        or get_config('retrying')
+        and get_config('videoRecordCount') < get_config('videoRecordLimit')
+    ):
         test.startVideoCapture()
 
 

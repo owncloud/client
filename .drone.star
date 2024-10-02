@@ -209,8 +209,13 @@ def gui_test_pipeline(ctx):
             "--tags ~@skipOnLinux",
         ]
 
-        if not "full-ci" in ctx.build.title.lower() and ctx.build.event == "pull_request":
+        # '--retry' and '--abortOnFail' are mutually exclusive
+        if "debug-gui-test" in ctx.build.title.lower() or "full-ci" in ctx.build.title.lower() or ctx.build.event in ("tag", "cron"):
+            # retry failed tests once
+            squish_parameters.append("--retry 1")
+        elif not "full-ci" in ctx.build.title.lower() and ctx.build.event == "pull_request":
             squish_parameters.append("--abortOnFail")
+            pass
 
         if params.get("skip", False):
             continue

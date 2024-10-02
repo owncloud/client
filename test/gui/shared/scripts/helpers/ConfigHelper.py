@@ -79,6 +79,8 @@ CONFIG_ENV_MAP = {
 DEFAULT_PATH_CONFIG = {
     'custom_lib': os.path.abspath('../shared/scripts/custom_lib'),
     'home_dir': get_default_home_dir(),
+    # allow to record first 5 videos
+    'videoRecordLimit': 5,
 }
 
 # default config values
@@ -96,10 +98,14 @@ CONFIG = {
     'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
     'screenRecordOnFailure': False,
+    'retrying': False,
+    'videoRecordCount': 0,
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)
 
 READONLY_CONFIG = list(CONFIG_ENV_MAP.keys()) + list(DEFAULT_PATH_CONFIG.keys())
+
+SCENARIO_CONFIGS = {}
 
 
 def read_cfg_file(cfg_path):
@@ -135,6 +141,8 @@ def init_config():
 
     # Set the default values if empty
     for key, value in CONFIG.items():
+        if key == 'videoRecordCount':
+            CONFIG[key] = get_config('videoRecordCount')
         if key in ('maxSyncTimeout', 'minSyncTimeout'):
             CONFIG[key] = builtins.int(value)
         elif key in ('localBackendUrl', 'middlewareUrl', 'secureLocalBackendUrl'):
@@ -154,22 +162,21 @@ def init_config():
                 CONFIG[key] = value.rstrip('/') + '/'
 
 
-def get_config(key=None):
-    if key:
-        return CONFIG[key]
-    return CONFIG
+def get_config(key):
+    return CONFIG[key]
 
 
 def set_config(key, value):
     if key in READONLY_CONFIG:
         raise KeyError(f'Cannot set read-only config: {key}')
+    # save the initial config value
+    # 'videoRecordCount' is a special case, it is not a scenario config
+    # but is a global config throughout the test run
+    if key not in SCENARIO_CONFIGS and not key == 'videoRecordCount':
+        SCENARIO_CONFIGS[key] = CONFIG.get(key)
     CONFIG[key] = value
 
 
 def clear_scenario_config():
-    global CONFIG
-    initial_config = {}
-    for key in READONLY_CONFIG:
-        initial_config[key] = CONFIG[key]
-
-    CONFIG = initial_config
+    for key, value in SCENARIO_CONFIGS.items():
+        CONFIG[key] = value

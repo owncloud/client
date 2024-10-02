@@ -50,6 +50,7 @@ testSettings.throwOnFailure = True
 # this will reset in every test suite
 PREVIOUS_FAIL_RESULT_COUNT = 0
 PREVIOUS_ERROR_RESULT_COUNT = 0
+PREVIOUS_SCENARIO = ""
 
 
 # runs before a feature
@@ -65,6 +66,11 @@ def hook(context):
 def hook(context):
     unlock_keyring()
     clear_scenario_config()
+    global PREVIOUS_SCENARIO
+    if PREVIOUS_SCENARIO == context.title:
+        test.log("[INFO] Retrying this failed scenario...")
+        set_config("retrying", True)
+    PREVIOUS_SCENARIO = context.title
 
 
 # runs before every scenario
@@ -178,7 +184,7 @@ def save_screenrecord(filename):
                 file_parts = filename.rsplit(".", 1)
                 filename = f"{file_parts[0]}_{idx+1}.{file_parts[1]}"
             shutil.move(video, os.path.join(screenrecords_dir, filename))
-
+        set_config("videoRecordCount", get_config("videoRecordCount") + 1)
     shutil.rmtree(prefix_path_namespace(video_dir))
 
 
@@ -202,7 +208,11 @@ def hook(context):
             test.log("Failed to save screenshot")
 
     # check video report
-    if get_config("screenRecordOnFailure"):
+    if (
+        get_config("screenRecordOnFailure")
+        or get_config("retrying")
+        and get_config("videoRecordCount") < get_config("videoRecordLimit")
+    ):
         filename = get_screenrecord_name(context.title)
         save_screenrecord(filename)
 
@@ -248,6 +258,13 @@ def hook(context):
         delete_project_spaces()
     delete_created_groups()
     delete_created_users()
+
+
+@OnFeatureEnd
+def hook(context):
+    test.log("----------------")
+    test.log(str(get_config("videoRecordCount")))
+    test.log("----------------")
 
 
 def teardown_client():
