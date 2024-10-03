@@ -73,7 +73,7 @@ CONFIG_ENV_MAP = {
     'clientConfigDir': 'CLIENT_CONFIG_DIR',
     'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
     'ocis': 'OCIS',
-    'screenRecordOnFailure': 'SCREEN_RECORD_ON_FAILURE',
+    'recordVideoOnFailure': 'RECORD_VIDEO_ON_FAILURE',
 }
 
 DEFAULT_PATH_CONFIG = {
@@ -97,9 +97,9 @@ CONFIG = {
     'clientConfigDir': get_config_home(),
     'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
-    'screenRecordOnFailure': False,
+    'recordVideoOnFailure': False,
     'retrying': False,
-    'videoRecordCount': 0,
+    'videoRecordingStarted': False,
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)
 
@@ -114,7 +114,7 @@ def read_cfg_file(cfg_path):
         for key, _ in CONFIG.items():
             if key in CONFIG_ENV_MAP:
                 if value := cfg.get('DEFAULT', CONFIG_ENV_MAP[key]):
-                    if key in ('ocis', 'screenRecordOnFailure'):
+                    if key in ('ocis', 'recordVideoOnFailure'):
                         CONFIG[key] = value == 'true'
                     else:
                         CONFIG[key] = value
@@ -134,15 +134,13 @@ def init_config():
     # read and override configs from environment variables
     for key, value in CONFIG_ENV_MAP.items():
         if os.environ.get(value):
-            if key in ('ocis', 'screenRecordOnFailure'):
+            if key in ('ocis', 'recordVideoOnFailure'):
                 CONFIG[key] = os.environ.get(value) == 'true'
             else:
                 CONFIG[key] = os.environ.get(value)
 
     # Set the default values if empty
     for key, value in CONFIG.items():
-        if key == 'videoRecordCount':
-            CONFIG[key] = get_config('videoRecordCount')
         if key in ('maxSyncTimeout', 'minSyncTimeout'):
             CONFIG[key] = builtins.int(value)
         elif key in ('localBackendUrl', 'middlewareUrl', 'secureLocalBackendUrl'):
@@ -170,9 +168,7 @@ def set_config(key, value):
     if key in READONLY_CONFIG:
         raise KeyError(f'Cannot set read-only config: {key}')
     # save the initial config value
-    # 'videoRecordCount' is a special case, it is not a scenario config
-    # but is a global config throughout the test run
-    if key not in SCENARIO_CONFIGS and not key == 'videoRecordCount':
+    if key not in SCENARIO_CONFIGS:
         SCENARIO_CONFIGS[key] = CONFIG.get(key)
     CONFIG[key] = value
 

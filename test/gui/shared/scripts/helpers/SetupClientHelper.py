@@ -13,6 +13,7 @@ from helpers.ConfigHelper import get_config, set_config, is_windows
 from helpers.SyncHelper import listen_sync_status_for_item
 from helpers.api.utils import url_join
 from helpers.UserHelper import get_displayname_for_user
+from helpers.ReportHelper import is_video_enabled
 
 
 def substitute_inline_codes(value):
@@ -103,12 +104,9 @@ def start_client():
         + ' --logdebug'
         + ' --logflush'
     )
-    if (
-        get_config('screenRecordOnFailure')
-        or get_config('retrying')
-        and get_config('videoRecordCount') < get_config('videoRecordLimit')
-    ):
+    if is_video_enabled():
         test.startVideoCapture()
+        set_config('videoRecordingStarted', True)
 
 
 def get_polling_interval():
