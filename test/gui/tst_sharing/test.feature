@@ -191,7 +191,7 @@ Feature: Sharing
     Scenario: User (non-author) can not share to a group to which the file/folder is already shared
         Given user "Brian" has been created in the server with default attributes
         And group "grp1" has been created in the server
-        And user "Brian" on the server has been added to group "grp1"
+        And user "Brian" has been added to group "grp1" in the server
         And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has created folder "Folder" in the server
         And user "Alice" has shared file "/textfile0.txt" in the server with user "Brian" with "read, share, update" permission
@@ -336,10 +336,10 @@ Feature: Sharing
         When the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
         And the user waits for the files to sync
-        Then as "Brian" file "textfile.txt" on the server should not exist
-        And as "Brian" folder "Folder" on the server should not exist
-        And as "Alice" file "textfile.txt" on the server should exist
-        And as "Alice" folder "Folder" on the server should exist
+        Then as "Brian" file "textfile.txt" should not exist in the server
+        And as "Brian" folder "Folder" should not exist in the server
+        And as "Alice" file "textfile.txt" should exist in the server
+        And as "Alice" folder "Folder" should exist in the server
 
     @issue-11102
     Scenario: sharee tries to delete shared file and folder without permissions
@@ -353,10 +353,10 @@ Feature: Sharing
         And the user deletes the folder "Folder"
         And the user waits for the files to sync
         # Sharee can delete (means unshare) the file shared with read permission
-        Then as "Brian" file "textfile.txt" on the server should not exist
-        And as "Brian" folder "Folder" on the server should not exist
-        And as "Alice" file "textfile.txt" on the server should exist
-        And as "Alice" folder "Folder" on the server should exist
+        Then as "Brian" file "textfile.txt" should not exist in the server
+        And as "Brian" folder "Folder" should not exist in the server
+        And as "Alice" file "textfile.txt" should exist in the server
+        And as "Alice" folder "Folder" should exist in the server
 
 
     Scenario: reshare a file/folder
@@ -400,12 +400,12 @@ Feature: Sharing
         And user "Alice" has set up a client with default settings
         When the user unshares the resource "textfile0.txt" for collaborator "Brian Murphy" using the client-UI
         Then the text "The item is not shared with any users or groups" should be displayed in the sharing dialog
-        And as "Brian" file "textfile0.txt" on the server should not exist
+        And as "Brian" file "textfile0.txt" should not exist in the server
         When the user closes the sharing dialog
         And the user unshares the resource "simple-folder" for collaborator "Brian Murphy" using the client-UI
         Then the text "The item is not shared with any users or groups" should be displayed in the sharing dialog
         And the user closes the sharing dialog
-        And as "Brian" folder "simple-folder" on the server should not exist
+        And as "Brian" folder "simple-folder" should not exist in the server
 
 
     Scenario: share a file with many users
