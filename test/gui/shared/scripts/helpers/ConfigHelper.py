@@ -73,14 +73,14 @@ CONFIG_ENV_MAP = {
     'clientConfigDir': 'CLIENT_CONFIG_DIR',
     'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
     'ocis': 'OCIS',
-    'recordVideoOnFailure': 'RECORD_VIDEO_ON_FAILURE',
+    'record_video_on_failure': 'RECORD_VIDEO_ON_FAILURE',
 }
 
 DEFAULT_PATH_CONFIG = {
     'custom_lib': os.path.abspath('../shared/scripts/custom_lib'),
     'home_dir': get_default_home_dir(),
     # allow to record first 5 videos
-    'videoRecordLimit': 5,
+    'video_record_limit': 5,
 }
 
 # default config values
@@ -97,9 +97,9 @@ CONFIG = {
     'clientConfigDir': get_config_home(),
     'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
-    'recordVideoOnFailure': False,
+    'record_video_on_failure': False,
     'retrying': False,
-    'videoRecordingStarted': False,
+    'video_recording_started': False,
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)
 
@@ -114,7 +114,7 @@ def read_cfg_file(cfg_path):
         for key, _ in CONFIG.items():
             if key in CONFIG_ENV_MAP:
                 if value := cfg.get('DEFAULT', CONFIG_ENV_MAP[key]):
-                    if key in ('ocis', 'recordVideoOnFailure'):
+                    if key in ('ocis', 'record_video_on_failure'):
                         CONFIG[key] = value == 'true'
                     else:
                         CONFIG[key] = value
@@ -134,7 +134,7 @@ def init_config():
     # read and override configs from environment variables
     for key, value in CONFIG_ENV_MAP.items():
         if os.environ.get(value):
-            if key in ('ocis', 'recordVideoOnFailure'):
+            if key in ('ocis', 'record_video_on_failure'):
                 CONFIG[key] = os.environ.get(value) == 'true'
             else:
                 CONFIG[key] = os.environ.get(value)

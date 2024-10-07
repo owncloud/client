@@ -106,7 +106,7 @@ def start_client():
     )
     if is_video_enabled():
         test.startVideoCapture()
-        set_config('videoRecordingStarted', True)
+        set_config('video_recording_started', True)
 
 
 def get_polling_interval():

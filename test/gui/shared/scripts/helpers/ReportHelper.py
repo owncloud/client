@@ -19,7 +19,7 @@ def get_screenshots_path():
 
 def is_video_enabled():
     return (
-        get_config("recordVideoOnFailure")
+        get_config("record_video_on_failure")
         or get_config("retrying")
         and not reached_video_limit()
     )
@@ -30,7 +30,7 @@ def reached_video_limit():
     if not os.path.exists(video_report_dir):
         return False
     entries = [f for f in os.scandir(video_report_dir) if f.is_file()]
-    return len(entries) >= get_config("videoRecordLimit")
+    return len(entries) >= get_config("video_record_limit")
 
 
 def save_video_recording(filename, test_failed):

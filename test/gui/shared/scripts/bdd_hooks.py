@@ -166,7 +166,7 @@ def hook(context):
         if scenario_failed():
             take_screenshot(f"{filename}.png")
 
-        if get_config("videoRecordingStarted"):
+        if get_config("video_recording_started"):
             save_video_recording(f"{filename}.mp4", scenario_failed())
 
     # teardown accounts and configs
