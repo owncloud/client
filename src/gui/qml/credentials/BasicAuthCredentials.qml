@@ -30,41 +30,49 @@ Credentials {
         text: credentials.isReadOnlyName ? qsTr("Please enter your password to log in.") : qsTr("Please enter %1 and password to log in.").arg(credentials.userNameLabel)
     }
 
-    Label {
-        text: credentials.userNameLabel
-    }
-    TextField {
-        id: userNameField
-        placeholderText: qsTr("Enter %1").arg(credentials.userNameLabel)
-        horizontalAlignment: TextField.AlignHCenter
-        text: credentials.userName
-        enabled: !credentials.isReadOnlyName
-        onTextChanged: {
-            credentials.userName = text;
-        }
+    Pane {
+        // Treat the user name and password fields (and labels) as one single group, so they are
+        // always placed and layed out together.
+        Layout.alignment: Qt.AlignHCenter
 
-        Keys.onBacktabPressed: {
-            widget.parentFocusWidget.focusPrevious();
-        }
-    }
+        ColumnLayout {
+            Label {
+                text: credentials.userNameLabel
+            }
+            TextField {
+                id: userNameField
+                placeholderText: qsTr("Enter %1").arg(credentials.userNameLabel)
+                horizontalAlignment: TextField.AlignHCenter
+                text: credentials.userName
+                enabled: !credentials.isReadOnlyName
+                onTextChanged: {
+                    credentials.userName = text;
+                }
 
-    Label {
-        text: qsTr("Password")
-    }
-    TextField {
-        id: passwordField
-        horizontalAlignment: TextField.AlignHCenter
-        placeholderText: qsTr("Enter Password")
-        text: credentials.password
-        echoMode: TextField.PasswordEchoOnEdit
-        onTextChanged: {
-            credentials.password = text;
-        }
-        Keys.onTabPressed: event => {
-            // there is no lougout button
-            if (!credentials.isRefresh) {
-                widget.parentFocusWidget.focusNext();
-                event.accepted = true;
+                Keys.onBacktabPressed: {
+                    widget.parentFocusWidget.focusPrevious();
+                }
+            }
+
+            Label {
+                text: qsTr("Password")
+            }
+            TextField {
+                id: passwordField
+                horizontalAlignment: TextField.AlignHCenter
+                placeholderText: qsTr("Enter Password")
+                text: credentials.password
+                echoMode: TextField.PasswordEchoOnEdit
+                onTextChanged: {
+                    credentials.password = text;
+                }
+                Keys.onTabPressed: event => {
+                    // there is no lougout button
+                    if (!credentials.isRefresh) {
+                        widget.parentFocusWidget.focusNext();
+                        event.accepted = true;
+                    }
+                }
             }
         }
     }
