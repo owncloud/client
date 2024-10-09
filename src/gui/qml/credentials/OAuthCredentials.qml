@@ -59,7 +59,7 @@ Credentials {
 
             Button {
                 id: copyToClipboardButton
-                Layout.preferredWidth: openBrowserButton.width
+                Layout.preferredWidth: openBrowserButton.implicitWidth // Note: the width property is ignored in a Layout
                 visible: credentials.isValid
 
                 text: qsTr("Copy url")
