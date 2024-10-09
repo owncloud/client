@@ -61,11 +61,16 @@ Credentials {
             credentials.password = text;
         }
         Keys.onTabPressed: event => {
-            // there is no lougout button
-            if (!credentials.isRefresh) {
+            if (loginButton.visible && loginButton.enabled) {
+                loginButton.forceActiveFocus(Qt.TabFocusReason);
+            } else if (credentials.isRefresh) {
+                // with logout button
+                logOutButton.item.logOutButton.forceActiveFocus(Qt.TabFocusReason);
+            } else {
+                // there is no lougout button
                 widget.parentFocusWidget.focusNext();
-                event.accepted = true;
             }
+            event.accepted = true;
         }
     }
 
