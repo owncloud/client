@@ -3,6 +3,9 @@ import platform
 import builtins
 from tempfile import gettempdir
 from configparser import ConfigParser
+from pathlib import Path
+
+CURRENT_DIR = Path(__file__).resolve().parent
 
 
 def read_env_file():
@@ -27,35 +30,35 @@ def get_config_from_env_file(env):
     raise KeyError(f'Environment "{env}" not found in envs.txt')
 
 
-def isWindows():
+def is_windows():
     return platform.system() == 'Windows'
 
 
-def isLinux():
+def is_linux():
     return platform.system() == 'Linux'
 
 
-def getWinUserHome():
+def get_win_user_home():
     return os.environ.get('UserProfile')
 
 
-def getClientRootPath():
-    if isWindows():
-        return os.path.join(getWinUserHome(), 'owncloudtest')
+def get_client_root_path():
+    if is_windows():
+        return os.path.join(get_win_user_home(), 'owncloudtest')
     return os.path.join(gettempdir(), 'owncloudtest')
 
 
-def getConfigHome():
-    if isWindows():
+def get_config_home():
+    if is_windows():
         # There is no way to set custom config path in windows
         # TODO: set to different path if option is available
-        return os.path.join(getWinUserHome(), 'AppData', 'Roaming', 'ownCloud')
+        return os.path.join(get_win_user_home(), 'AppData', 'Roaming', 'ownCloud')
     return os.path.join(get_config_from_env_file('XDG_CONFIG_HOME'), 'ownCloud')
 
 
 def get_default_home_dir():
-    if isWindows():
-        return getWinUserHome()
+    if is_windows():
+        return get_win_user_home()
     return os.environ.get('HOME')
 
 
@@ -73,12 +76,14 @@ CONFIG_ENV_MAP = {
     'clientConfigDir': 'CLIENT_CONFIG_DIR',
     'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
     'ocis': 'OCIS',
-    'screenRecordOnFailure': 'SCREEN_RECORD_ON_FAILURE',
+    'record_video_on_failure': 'RECORD_VIDEO_ON_FAILURE',
 }
 
 DEFAULT_PATH_CONFIG = {
     'custom_lib': os.path.abspath('../shared/scripts/custom_lib'),
     'home_dir': get_default_home_dir(),
+    # allow to record first 5 videos
+    'video_record_limit': 5,
 }
 
 # default config values
@@ -90,16 +95,21 @@ CONFIG = {
     'lowestSyncTimeout': 1,
     'middlewareUrl': 'http://localhost:3000/',
     'clientLogFile': '-',
-    'clientRootSyncPath': getClientRootPath(),
-    'tempFolderPath': os.path.join(getClientRootPath(), 'temp'),
-    'clientConfigDir': getConfigHome(),
+    'clientRootSyncPath': get_client_root_path(),
+    'tempFolderPath': os.path.join(get_client_root_path(), 'temp'),
+    'clientConfigDir': get_config_home(),
     'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
-    'screenRecordOnFailure': False,
+    'record_video_on_failure': False,
+    'retrying': False,
+    'video_recording_started': False,
+    'files_for_upload': os.path.join(CURRENT_DIR.parent.parent, 'files-for-upload'),
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)
 
 READONLY_CONFIG = list(CONFIG_ENV_MAP.keys()) + list(DEFAULT_PATH_CONFIG.keys())
+
+SCENARIO_CONFIGS = {}
 
 
 def read_cfg_file(cfg_path):
@@ -108,7 +118,7 @@ def read_cfg_file(cfg_path):
         for key, _ in CONFIG.items():
             if key in CONFIG_ENV_MAP:
                 if value := cfg.get('DEFAULT', CONFIG_ENV_MAP[key]):
-                    if key in ('ocis', 'screenRecordOnFailure'):
+                    if key in ('ocis', 'record_video_on_failure'):
                         CONFIG[key] = value == 'true'
                     else:
                         CONFIG[key] = value
@@ -128,7 +138,7 @@ def init_config():
     # read and override configs from environment variables
     for key, value in CONFIG_ENV_MAP.items():
         if os.environ.get(value):
-            if key in ('ocis', 'screenRecordOnFailure'):
+            if key in ('ocis', 'record_video_on_failure'):
                 CONFIG[key] = os.environ.get(value) == 'true'
             else:
                 CONFIG[key] = os.environ.get(value)
@@ -147,29 +157,26 @@ def init_config():
             'guiTestReportDir',
         ):
             # make sure there is always one trailing slash
-            if isWindows():
+            if is_windows():
                 value = value.replace('/', '\\')
                 CONFIG[key] = value.rstrip('\\') + '\\'
             else:
                 CONFIG[key] = value.rstrip('/') + '/'
 
 
-def get_config(key=None):
-    if key:
-        return CONFIG[key]
-    return CONFIG
+def get_config(key):
+    return CONFIG[key]
 
 
 def set_config(key, value):
     if key in READONLY_CONFIG:
         raise KeyError(f'Cannot set read-only config: {key}')
+    # save the initial config value
+    if key not in SCENARIO_CONFIGS:
+        SCENARIO_CONFIGS[key] = CONFIG.get(key)
     CONFIG[key] = value
 
 
 def clear_scenario_config():
-    global CONFIG
-    initial_config = {}
-    for key in READONLY_CONFIG:
-        initial_config[key] = CONFIG[key]
-
-    CONFIG = initial_config
+    for key, value in SCENARIO_CONFIGS.items():
+        CONFIG[key] = value

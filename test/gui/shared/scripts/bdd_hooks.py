@@ -17,12 +17,11 @@
 # manual for a complete reference of the available API.
 import shutil
 import os
-import glob
 from urllib import request, error
 from datetime import datetime
 
-from helpers.StacktraceHelper import getCoredumps, generateStacktrace
-from helpers.SyncHelper import closeSocketConnection, clearWaitedAfterSync
+from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
+from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
 from helpers.SpaceHelper import delete_project_spaces
 from helpers.api.provisioning import delete_created_groups, delete_created_users
 from helpers.SetupClientHelper import wait_until_app_killed, unlock_keyring
@@ -31,13 +30,14 @@ from helpers.ConfigHelper import (
     get_config,
     set_config,
     clear_scenario_config,
-    isWindows,
-    isLinux,
+    is_windows,
+    is_linux,
 )
 from helpers.api.utils import url_join
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
-from pageObjects.Toolbar import Toolbar
+from helpers.ReportHelper import save_video_recording, take_screenshot
 
+from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
 from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
@@ -50,6 +50,7 @@ testSettings.throwOnFailure = True
 # this will reset in every test suite
 PREVIOUS_FAIL_RESULT_COUNT = 0
 PREVIOUS_ERROR_RESULT_COUNT = 0
+PREVIOUS_SCENARIO = ""
 
 
 # runs before a feature
@@ -65,6 +66,11 @@ def hook(context):
 def hook(context):
     unlock_keyring()
     clear_scenario_config()
+    global PREVIOUS_SCENARIO
+    if PREVIOUS_SCENARIO == context.title:
+        test.log("[INFO] Retrying this failed scenario...")
+        set_config("retrying", True)
+    PREVIOUS_SCENARIO = context.title
 
 
 # runs before every scenario
@@ -74,7 +80,7 @@ def hook(context):
     # set owncloud config file path
     config_dir = get_config("clientConfigDir")
     if os.path.exists(config_dir):
-        if len(os.listdir(config_dir)) and isWindows():
+        if len(os.listdir(config_dir)) and is_windows():
             raise FileExistsError(
                 "Looks like you have previous client config in '"
                 + config_dir
@@ -142,78 +148,35 @@ def scenario_failed():
     )
 
 
-def get_screenshot_name(title):
-    return title.replace(" ", "_").replace("/", "_").strip(".") + ".png"
-
-
-def get_screenrecord_name(title):
-    return title.replace(" ", "_").replace("/", "_").strip(".") + ".mp4"
-
-
-def save_screenrecord(filename):
-    try:
-        # do not throw if stopVideoCapture() fails
-        test.stopVideoCapture()
-    except:
-        test.log("Failed to stop screen recording")
-
-    if not (video_dir := squishinfo.resultDir):
-        video_dir = squishinfo.testCase
-    else:
-        test_case = "/".join(squishinfo.testCase.split("/")[-2:])
-        video_dir = os.path.join(video_dir, test_case)
-    video_dir = os.path.join(video_dir, "attachments")
-
-    if scenario_failed():
-        video_files = glob.glob(f"{video_dir}/**/*.mp4", recursive=True)
-        screenrecords_dir = os.path.join(
-            get_config("guiTestReportDir"), "screenrecords"
-        )
-        if not os.path.exists(screenrecords_dir):
-            os.makedirs(screenrecords_dir)
-        # reverse the list to get the latest video first
-        video_files.reverse()
-        for idx, video in enumerate(video_files):
-            if idx:
-                file_parts = filename.rsplit(".", 1)
-                filename = f"{file_parts[0]}_{idx+1}.{file_parts[1]}"
-            shutil.move(video, os.path.join(screenrecords_dir, filename))
-
-    shutil.rmtree(prefix_path_namespace(video_dir))
+def scenario_title_to_filename(title):
+    # scenario name can have "/" which is invalid filename
+    return title.replace(" ", "_").replace("/", "_").strip(".")
 
 
 # runs after every scenario
 # Order: 1
 @OnScenarioEnd
 def hook(context):
-    clearWaitedAfterSync()
-    closeSocketConnection()
+    clear_waited_after_sync()
+    close_socket_connection()
 
-    # capture a screenshot if there is error or test failure in the current scenario execution
-    if scenario_failed() and os.getenv("CI") and isLinux():
-        # scenario name can have "/" which is invalid filename
-        filename = get_screenshot_name(context.title)
-        directory = os.path.join(get_config("guiTestReportDir"), "screenshots")
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        try:
-            squish.saveDesktopScreenshot(os.path.join(directory, filename))
-        except:
-            test.log("Failed to save screenshot")
+    # generate screenshot and video reports
+    if is_linux():
+        filename = scenario_title_to_filename(context.title)
+        if scenario_failed():
+            take_screenshot(f"{filename}.png")
 
-    # check video report
-    if get_config("screenRecordOnFailure"):
-        filename = get_screenrecord_name(context.title)
-        save_screenrecord(filename)
+        if get_config("video_recording_started"):
+            save_video_recording(f"{filename}.mp4", scenario_failed())
 
     # teardown accounts and configs
     teardown_client()
 
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing
-    if coredumps := getCoredumps():
+    if coredumps := get_core_dumps():
         try:
-            generateStacktrace(context.title, coredumps)
+            generate_stacktrace(context.title, coredumps)
             test.log("Stacktrace generated!")
         except OSError as err:
             test.log("Exception occured:" + str(err))
@@ -253,7 +216,7 @@ def hook(context):
 def teardown_client():
     # Cleanup user accounts from UI for Windows platform
     # It is not needed for Linux so skipping it in order to save CI time
-    if isWindows():
+    if is_windows():
         # remove account from UI
         # In Windows, removing only config and sync folders won't help
         # so to work around that, remove the account connection
@@ -261,8 +224,8 @@ def teardown_client():
         close_widgets()
         accounts, _ = Toolbar.get_accounts()
         for account in accounts:
-            Toolbar.openAccount(account["displayname"])
-            AccountSetting.removeAccountConnection()
+            Toolbar.open_account(account["displayname"])
+            AccountSetting.remove_account_connection()
         if accounts:
             squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
 

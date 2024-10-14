@@ -5,7 +5,7 @@ from helpers.ConfigHelper import get_config
 from helpers.api.utils import url_join
 import helpers.api.http_helper as request
 import helpers.api.oc10 as oc
-from helpers.api.oc10 import checkSuccessOcsStatus
+from helpers.api.oc10 import check_success_ocs_status
 
 
 share_types = MappingProxyType(
@@ -19,16 +19,16 @@ PERMISSIONS = MappingProxyType(
 
 def get_permission_value(permissions):
     permission_list = [perm.strip() for perm in permissions.split(',')]
-    combinedPermission = 0
+    combined_permission = 0
     if 'all' in permission_list:
         return sum(PERMISSIONS.values())
 
     for permission in permission_list:
         if (permission_value := PERMISSIONS.get(permission)) is None:
             raise ValueError(f"Permission '{permission}' is not valid.")
-        combinedPermission += permission_value
+        combined_permission += permission_value
 
-    return combinedPermission
+    return combined_permission
 
 
 def get_share_url():
@@ -53,7 +53,7 @@ def get_public_endpoint():
 def get_public_link_shares(user):
     public_shares_list = []
     response = request.get(get_share_url(), user=user)
-    checkSuccessOcsStatus(response)
+    check_success_ocs_status(response)
     shares = json.loads(response.text)['ocs']['data']
 
     for share in shares:
@@ -98,26 +98,24 @@ def download_last_public_link_resource(user, resource, public_link_password=None
 
 def share_resource(user, resource, receiver, permissions, receiver_type):
     permissions = get_permission_value(permissions)
-    url = get_share_url()
     body = {
         'path': resource,
         'shareType': share_types[receiver_type],
         'shareWith': receiver,
         'permissions': permissions,
     }
-    response = request.post(url, body, user=user)
-    request.assertHttpStatus(
+    response = request.post(get_share_url(), body, user=user)
+    request.assert_http_status(
         response,
         200,
-        f"Failed to share resource '{resource}' to {receiver_type} '{receiver}'",
+        f'Failed to share resource "{resource}" to {receiver_type} "{receiver}"',
     )
-    checkSuccessOcsStatus(response)
+    check_success_ocs_status(response)
 
 
 def create_link_share(
     user, resource, permissions, name=None, password=None, expire_date=None
 ):
-    url = get_share_url()
     permissions = get_permission_value(permissions)
     body = {
         'path': resource,
@@ -130,8 +128,27 @@ def create_link_share(
         body['password'] = password
     if expire_date is not None:
         body['expireDate'] = expire_date
-    response = request.post(url, body, user=user)
-    request.assertHttpStatus(
-        response, 200, f"Failed to create public link for resource '{resource}'"
+    response = request.post(get_share_url(), body, user=user)
+    request.assert_http_status(
+        response, 200, f'Failed to create public link for resource "{resource}"'
     )
-    checkSuccessOcsStatus(response)
+    check_success_ocs_status(response)
+
+
+def get_shares(user):
+    response = request.get(get_share_url(), user=user)
+    request.assert_http_status(response, 200, 'Failed to get public link share details')
+    check_success_ocs_status(response)
+    return json.loads(response.text)['ocs']['data']
+
+
+def get_share(user, path, share_type, share_with=None):
+    shares = get_shares(user)
+    for share in shares:
+        if share['path'] == path and share['share_type'] == share_types[share_type]:
+            if share['share_type'] == share_types['public_link']:
+                return share
+            if share_with and share_with == share['share_with']:
+                return share
+            raise ValueError(f'No share_with found for  a {share_type} share')
+    raise ValueError(f'No valid share found for resource "{path}"')

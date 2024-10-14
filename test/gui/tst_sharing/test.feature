@@ -6,7 +6,6 @@ Feature: Sharing
 
     Background:
         Given user "Alice" has been created in the server with default attributes
-        And the setting "shareapi_auto_accept_share" on the server of app "core" has been set to "yes"
 
     @smokeTest
     Scenario: simple sharing with user
@@ -192,7 +191,7 @@ Feature: Sharing
     Scenario: User (non-author) can not share to a group to which the file/folder is already shared
         Given user "Brian" has been created in the server with default attributes
         And group "grp1" has been created in the server
-        And user "Brian" on the server has been added to group "grp1"
+        And user "Brian" has been added to group "grp1" in the server
         And user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
         And user "Alice" has created folder "Folder" in the server
         And user "Alice" has shared file "/textfile0.txt" in the server with user "Brian" with "read, share, update" permission
@@ -337,10 +336,10 @@ Feature: Sharing
         When the user deletes the file "textfile.txt"
         And the user deletes the folder "Folder"
         And the user waits for the files to sync
-        Then as "Brian" file "textfile.txt" on the server should not exist
-        And as "Brian" folder "Folder" on the server should not exist
-        And as "Alice" file "textfile.txt" on the server should exist
-        And as "Alice" folder "Folder" on the server should exist
+        Then as "Brian" file "textfile.txt" should not exist in the server
+        And as "Brian" folder "Folder" should not exist in the server
+        And as "Alice" file "textfile.txt" should exist in the server
+        And as "Alice" folder "Folder" should exist in the server
 
     @issue-11102
     Scenario: sharee tries to delete shared file and folder without permissions
@@ -354,10 +353,10 @@ Feature: Sharing
         And the user deletes the folder "Folder"
         And the user waits for the files to sync
         # Sharee can delete (means unshare) the file shared with read permission
-        Then as "Brian" file "textfile.txt" on the server should not exist
-        And as "Brian" folder "Folder" on the server should not exist
-        And as "Alice" file "textfile.txt" on the server should exist
-        And as "Alice" folder "Folder" on the server should exist
+        Then as "Brian" file "textfile.txt" should not exist in the server
+        And as "Brian" folder "Folder" should not exist in the server
+        And as "Alice" file "textfile.txt" should exist in the server
+        And as "Alice" folder "Folder" should exist in the server
 
 
     Scenario: reshare a file/folder
@@ -401,12 +400,12 @@ Feature: Sharing
         And user "Alice" has set up a client with default settings
         When the user unshares the resource "textfile0.txt" for collaborator "Brian Murphy" using the client-UI
         Then the text "The item is not shared with any users or groups" should be displayed in the sharing dialog
-        And as "Brian" file "textfile0.txt" on the server should not exist
+        And as "Brian" file "textfile0.txt" should not exist in the server
         When the user closes the sharing dialog
         And the user unshares the resource "simple-folder" for collaborator "Brian Murphy" using the client-UI
         Then the text "The item is not shared with any users or groups" should be displayed in the sharing dialog
         And the user closes the sharing dialog
-        And as "Brian" folder "simple-folder" on the server should not exist
+        And as "Brian" folder "simple-folder" should not exist in the server
 
 
     Scenario: share a file with many users
@@ -507,73 +506,6 @@ Feature: Sharing
         Then the expiration date of the last public link of file "textfile.txt" should be "%default%"
         And as user "Alice" the file "textfile.txt" should have a public link in the server
 
-    @issue-9321 @skipOnWindows @skip
-    Scenario: simple sharing of file and folder by public link with expiration date
-        Given user "Alice" has created folder "FOLDER" in the server
-        And user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
-        And user "Alice" has set up a client with default settings
-        When the user creates a new public link with following settings using the client-UI:
-            | path       | textfile.txt |
-            | expireDate | 2031-10-14   |
-        Then as user "Alice" the file "textfile.txt" should have a public link in the server
-        And the last public link share response of user "Alice" should include the following fields on the server
-            | expireDate | 2031-10-14 |
-        When the user closes the sharing dialog
-        And the user creates a new public link with following settings using the client-UI:
-            | path       | FOLDER     |
-            | expireDate | 2031-12-30 |
-        And the user closes the sharing dialog
-        Then as user "Alice" the folder "FOLDER" should have a public link in the server
-        And the last public link share response of user "Alice" should include the following fields on the server
-            | expireDate | 2031-12-30 |
-
-    @issue-9321 @skipOnWindows @skip
-    Scenario: simple sharing of a file by public link with password and expiration date
-        Given user "Alice" has uploaded file with content "ownCloud test text file" to "/textfile.txt" in the server
-        And user "Alice" has set up a client with default settings
-        When the user creates a new public link with following settings using the client-UI:
-            | path       | textfile.txt |
-            | password   | pass123      |
-            | expireDate | 2031-10-14   |
-        And the user closes the sharing dialog
-        Then as user "Alice" the file "textfile.txt" should have a public link in the server
-        And the last public link share response of user "Alice" should include the following fields on the server
-            | expireDate | 2031-10-14 |
-        And the public should be able to download the file "textfile.txt" with password "pass123" from the last created public link by "Alice" in the server
-
-    @skip @issue-9321 @skipOnWindows
-    Scenario: user changes the expiration date of an already existing public link for file using client-UI
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "/textfile0.txt" in the server
-        And user "Alice" has created the following public link share in the server
-            | resource    | textfile0.txt |
-            | permissions | read          |
-            | name        | Public link   |
-            | expireDate  | 2031-10-14    |
-        And user "Alice" has set up a client with default settings
-        When the user opens the public links dialog of "textfile0.txt" using the client-UI
-        And the user edits the public link named "Public link" of file "textfile0.txt" changing following
-            | expireDate | 2038-07-21 |
-        And the user closes the sharing dialog
-        Then the last public link share response of user "Alice" should include the following fields on the server
-            | expireDate | 2038-07-21 |
-
-    @skip @issue-9321 @skipOnWindows
-    Scenario: user changes the expiration date of an already existing public link for folder using client-UI
-        Given user "Alice" has created folder "simple-folder" in the server
-        And user "Alice" has created the following public link share in the server
-            | resource    | simple-folder                |
-            | permissions | read, update, create, delete |
-            | name        | Public link                  |
-            | expireDate  | 2031-10-14                   |
-
-        And user "Alice" has set up a client with default settings
-        When the user opens the public links dialog of "simple-folder" using the client-UI
-        And the user edits the public link named "Public link" of file "simple-folder" changing following
-            | expireDate | 2038-07-21 |
-        And the user closes the sharing dialog
-        Then the last public link share response of user "Alice" should include the following fields on the server
-            | expireDate | 2038-07-21 |
-
 
     Scenario Outline: simple sharing of folder by public link with different roles
         Given user "Alice" has created folder "simple-folder" in the server
@@ -581,13 +513,13 @@ Feature: Sharing
         When the user creates a new public link for folder "simple-folder" using the client-UI with these details:
             | role | <role> |
         And the user closes the sharing dialog
-        Then user "Alice" on the server should have a share with these details:
+        Then user "Alice" should have a share with these details in the server:
             | field       | value          |
             | share_type  | public_link    |
             | uid_owner   | Alice          |
             | permissions | <permissions>  |
             | path        | /simple-folder |
-            | name        | Public link    |
+            | item_type   | folder         |
         Examples:
             | role        | permissions                  |
             | Viewer      | read                         |
@@ -597,24 +529,24 @@ Feature: Sharing
 
     Scenario: sharing a folder by public link with "Uploader" role and check if file can be downloaded
         Given user "Alice" has created folder "simple-folder" in the server
-        And user "Alice" has created file "simple-folder/lorem.txt" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "simple-folder/lorem.txt" in the server
         And user "Alice" has set up a client with default settings
         When the user creates a new public link for folder "simple-folder" using the client-UI with these details:
             | role | Contributor |
         And the user closes the sharing dialog
-        Then user "Alice" on the server should have a share with these details:
+        Then user "Alice" should have a share with these details in the server:
             | field       | value          |
             | share_type  | public_link    |
             | uid_owner   | Alice          |
             | permissions | create         |
             | path        | /simple-folder |
-            | name        | Public link    |
+            | item_type   | folder         |
         And the public should not be able to download the file "lorem.txt" from the last created public link by "Alice" in the server
 
 
     Scenario Outline: change collaborator permissions of a file & folder
         Given user "Alice" has created folder "simple-folder" in the server
-        And user "Alice" has created file "lorem.txt" on the server
+        And user "Alice" has uploaded file with content "ownCloud test text file 0" to "lorem.txt" in the server
         And user "Brian" has been created in the server with default attributes
         And user "Alice" has shared folder "simple-folder" in the server with user "Brian" with "all" permissions
         And user "Alice" has shared file "lorem.txt" in the server with user "Brian" with "all" permissions
@@ -625,22 +557,22 @@ Feature: Sharing
         And the user removes permissions "<permissions>" for user "Brian Murphy" of resource "lorem.txt" using the client-UI
         Then "<permissions>" permissions should not be displayed for user "Brian Murphy" for resource "lorem.txt" on the client-UI
         And the user closes the sharing dialog
-        And user "Alice" on the server should have a share with these details:
+        And user "Alice" should have a share with these details in the server:
             | field       | value                        |
-            | uid_owner   | Alice                        |
-            | share_with  | Brian                        |
             | share_type  | user                         |
-            | file_target | /simple-folder        |
-            | item_type   | folder                       |
+            | uid_owner   | Alice                        |
             | permissions | <expected-folder-permission> |
-        And user "Alice" on the server should have a share with these details:
+            | path        | /simple-folder               |
+            | item_type   | folder                       |
+            | share_with  | Brian                        |
+        And user "Alice" should have a share with these details in the server:
             | field       | value                      |
-            | uid_owner   | Alice                      |
-            | share_with  | Brian                      |
             | share_type  | user                       |
-            | file_target | /lorem.txt          |
-            | item_type   | file                       |
+            | uid_owner   | Alice                      |
             | permissions | <expected-file-permission> |
+            | path        | /lorem.txt                 |
+            | item_type   | file                       |
+            | share_with  | Brian                      |
         Examples:
             | permissions | expected-folder-permission   | expected-file-permission |
             | edit        | read, share                  | read, share              |

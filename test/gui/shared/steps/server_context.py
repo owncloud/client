@@ -9,7 +9,7 @@ import helpers.api.oc10 as oc
 from pageObjects.Toolbar import Toolbar
 
 
-def executeStepThroughMiddleware(context, step_name):
+def execute_step_through_middleware(context, step_name):
     body = {'step': step_name}
     if hasattr(context, 'table'):
         body['table'] = context.table
@@ -32,23 +32,23 @@ def executeStepThroughMiddleware(context, step_name):
 
 
 @Given(r'^(.*) on the server (.*)$', regexp=True)
-def step(context, stepPart1, stepPart2):
-    executeStepThroughMiddleware(context, f'Given {stepPart1} {stepPart2}')
+def step(context, step_part_1, step_part_2):
+    execute_step_through_middleware(context, f'Given {step_part_1} {step_part_2}')
 
 
 @Given(r'^(.*) on the server$', regexp=True)
-def step(context, stepPart1):
-    executeStepThroughMiddleware(context, f'Given {stepPart1}')
+def step(context, step_part_1):
+    execute_step_through_middleware(context, f'Given {step_part_1}')
 
 
 @Then(r'^(.*) on the server (.*)$', regexp=True)
-def step(context, stepPart1, stepPart2):
-    executeStepThroughMiddleware(context, f'Then {stepPart1} {stepPart2}')
+def step(context, step_part_1, step_part_2):
+    execute_step_through_middleware(context, f'Then {step_part_1} {step_part_2}')
 
 
 @Then(r'^(.*) on the server$', regexp=True)
-def step(context, stepPart1):
-    executeStepThroughMiddleware(context, f'Then {stepPart1}')
+def step(context, step_part_1):
+    execute_step_through_middleware(context, f'Then {step_part_1}')
 
 
 @Given('app "|any|" has been "|any|" in the server')
@@ -230,3 +230,31 @@ def step(context, user):
         data['password'],
         data['expireDate'],
     )
+
+
+@Then('user "|any|" should have a share with these details in the server:')
+def step(context, user):
+    path = None
+    share_type = None
+    share_with = None
+    for key, value in context.table[1:]:
+        if key == 'path':
+            path = value
+        elif key == 'share_type':
+            share_type = value
+        elif key == 'share_with':
+            share_with = value
+
+    share = sharing_helper.get_share(user, path, share_type, share_with)
+
+    for key, value in context.table[1:]:
+        if key == 'permissions':
+            value = sharing_helper.get_permission_value(value)
+        if key == 'share_type':
+            value = sharing_helper.share_types[value]
+        assert share.get(key) == value, 'Key value did not match'
+
+
+@Given('user "|any|" has uploaded file "|any|" to "|any|" in the server')
+def step(context, user, file_name, destination):
+    webdav.upload_file(user, file_name, destination)
