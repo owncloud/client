@@ -223,7 +223,7 @@ Datei Synchronisations-Applikation.</translation>
     <message numerus="yes">
         <location filename="../src/gui/commonstrings.cpp" line="48"/>
         <source>%n Filter(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 Filter</numerusform><numerusform>%n Filter</numerusform></translation>
     </message>
 </context>
 <context>
@@ -485,7 +485,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="113"/>
         <source>Action button group</source>
-        <translation type="unfinished"/>
+        <translation>Aktionsbuttongruppe</translation>
     </message>
 </context>
 <context>
@@ -620,7 +620,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
         <source>GroupBox</source>
-        <translation type="unfinished"/>
+        <translation>Gruppenbox</translation>
     </message>
 </context>
 <context>
@@ -959,12 +959,12 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="288"/>
         <source>%n notification(s) for %1.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n Benachrichtigung für %1.</numerusform><numerusform>%n Benachrichtigungen für %1.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="294"/>
         <source>%n notification(s) for %1 and %2.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 Benachrichtigung für %1 und %2.</numerusform><numerusform>%n Benachrichtigungen für %1 und %2.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="296"/>
@@ -979,7 +979,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="423"/>
         <source>Activity item menu</source>
-        <translation type="unfinished"/>
+        <translation>Aktivitätsmenü</translation>
     </message>
 </context>
 <context>
@@ -1136,7 +1136,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="502"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 und %n andere Datei wurden gelöscht.</numerusform><numerusform>%1 und %n andere Dateien wurden gelöscht.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="187"/>
@@ -1156,7 +1156,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="509"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 und %n andere Datei wurden hinzugefügt.</numerusform><numerusform>%1 und %n andere Dateien wurden hinzugefügt.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="511"/>
@@ -1167,22 +1167,22 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="516"/>
         <source>%1 and %n other file(s) have been updated.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 und %n andere Datei wurden aktualisiert.</numerusform><numerusform>%1 und %n andere Dateien wurden aktualisiert.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="523"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 wurde in %2 umbenannt und %n andere Datei wurden umbenannt.</numerusform><numerusform>%1 wurde in %2 umbenannt und %n andere Dateien wurden umbenannt.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="530"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 wurde in %2 verschoben und %n andere Datei wurden verschoben.</numerusform><numerusform>%1 wurde in %2 verschoben und %n andere Dateien wurden verschoben.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="537"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 und %n andere Datei haben Konflikte beim Synchronisieren.</numerusform><numerusform>%1 und %n andere Dateien haben Konflikte beim Synchronisieren.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="539"/>
@@ -1192,7 +1192,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="544"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 und %n andere Datei konnten aufgrund von Fehlern nicht synchronisiert werden. Schaue in das Protokoll für Details.</numerusform><numerusform>%1 und %n andere Dateien konnten aufgrund von Fehlern nicht synchronisiert werden. Schaue in das Protokoll für Details.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="546"/>
@@ -4150,12 +4150,12 @@ Möchtest du fortfahren?</translation>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n Jahr</numerusform><numerusform>%n Jahre</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n Monat</numerusform><numerusform>%n Monate</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
@@ -4175,7 +4175,7 @@ Möchtest du fortfahren?</translation>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n Sekunde</numerusform><numerusform>%n Sekunden</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
