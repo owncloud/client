@@ -1,6 +1,6 @@
 # Shipping
 
-This readme file is for distribution packagers and provides some reasoning and hints about shipping the desktop client for a seamless experience on the Linux desktop. 
+This readme file is for distribution packagers and provides some reasoning and hints about shipping the desktop client for a seamless experience on the Linux desktop.
 
 For that, ownCloud and the distributions need to collaborate.
 
@@ -28,10 +28,10 @@ With that, the user gets on the one hand very frequently updated desktop clients
 
 Here are some hints for packager of the linux distributions which we kindly ask to change their packages in the distros to help us providing the best ownCloud client integration experience:
 
-The shell integrations are available for KDE Dolphin [1], Nautilus and Caja [1]. While KDE Dolphin needs compiled code, the latter two are using python. [ADD LINKS].
+The shell integrations are available for [KDE Dolphin](https://github.com/owncloud/client-desktop-shell-integration-dolphin), [Nautilus and Caja](https://github.com/owncloud/client-desktop-shell-integration-nautilus). While KDE Dolphin needs compiled code, the latter two are using python.
 Each of them should be available as separate distro package, so that they can be suggested to complement "their" file manager.
 
-All of these packages should depend on the client-extension-resources [ADD LINK] package, which basically only contains the overlay icons. They can optionally be branded with a distro specific theme, to maintain a cool desktop experience.
+All of these packages should depend on the [client-extension-resources](https://github.com/owncloud/client-desktop-shell-integration-resources) package, which basically only contains the overlay icons. They can optionally be branded with a distro specific theme, to maintain a cool desktop experience.
 
 Non of the three file manager integration packages (for Dolphin, Nautilus or Caja) need a dependency on the "big" ownCloud desktop client package any more, so that they do not change in foreseeable times.
 
