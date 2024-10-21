@@ -4,6 +4,7 @@ This readme file is for distribution packagers and provides some reasoning and h
 
 For that, ownCloud and the distributions need to collaborate.
 
+Note that this information is valid for the ownCloud Desktop App 6.0 and subsequent releases only and does not apply for releases 5.x and below.
 ## Integration Problems
 
 The ownCloud desktop client gets shipped as AppImage because it is effortless to create, independent from the underlying distro and easy to install, as long as the distribution is not providing a package on their own which is frequently updated.
