@@ -64,8 +64,9 @@ def hook(context):
 def hook(context):
     unlock_keyring()
     clear_scenario_config()
+
     global PREVIOUS_SCENARIO
-    if PREVIOUS_SCENARIO == context.title:
+    if PREVIOUS_SCENARIO == context.title and previous_scenario_failed():
         test.log("[INFO] Retrying this failed scenario...")
         set_config("retrying", True)
     PREVIOUS_SCENARIO = context.title
@@ -130,6 +131,19 @@ def scenario_failed():
     return (
         test.resultCount("fails") - PREVIOUS_FAIL_RESULT_COUNT > 0
         or test.resultCount("errors") - PREVIOUS_ERROR_RESULT_COUNT > 0
+    )
+
+
+# There's no way to determine a Scenario and a Scenario Outline in OnScenarioStart hook
+# So, we need to check the previous scenario result count in OnScenarioEnd hook
+# to determine if the current scenario is a failed one or an another example
+# from a Scenario Outline
+def previous_scenario_failed():
+    if not PREVIOUS_FAIL_RESULT_COUNT and not PREVIOUS_ERROR_RESULT_COUNT:
+        return False
+    return (
+        test.resultCount("fails") - (PREVIOUS_FAIL_RESULT_COUNT - 1) > 0
+        or test.resultCount("errors") - (PREVIOUS_ERROR_RESULT_COUNT - 1) > 0
     )
 
 
