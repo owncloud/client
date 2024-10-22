@@ -71,7 +71,7 @@ class EnterPassword:
 
     def enter_password(self, password):
         squish.waitForObjectExists(
-            self.PASSWORD_BOX, get_config("maxSyncTimeout") * 1000
+            self.PASSWORD_BOX, get_config("minSyncTimeout") * 1000
         )
         squish.mouseClick(squish.waitForObjectExists(self.PASSWORD_BOX))
         squish.nativeType(password)

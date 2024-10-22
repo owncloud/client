@@ -28,13 +28,13 @@ def send_share_command(resource):
 def open_sharing_dialog(resource):
     resource = get_resource_path(resource)
     resource_exist = squish.waitFor(
-        lambda: os.path.exists(resource), get_config('maxSyncTimeout') * 1000
+        lambda: os.path.exists(resource), get_config('minSyncTimeout') * 1000
     )
     if not resource_exist:
         raise FileNotFoundError(f"{resource} doesn't exists")
     share_dialog = squish.waitFor(
         lambda: send_share_command(resource),
-        get_config('maxSyncTimeout') * 1000,
+        get_config('minSyncTimeout') * 1000,
     )
     if not share_dialog:
         raise LookupError(f"Sharing dialog didn't open for {resource}")
