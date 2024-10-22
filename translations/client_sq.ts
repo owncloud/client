@@ -2,27 +2,27 @@
 <context>
     <name>AccountBar</name>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="25"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
         <source>Navigation bar</source>
         <translation>Shtyllë lëvizjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="101"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="108"/>
         <source>Add Account</source>
         <translation>Shtoni Llogari</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="128"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="135"/>
         <source>Activity</source>
         <translation>Veprimtari</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="142"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="149"/>
         <source>Settings</source>
         <translation>Rregullime</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="171"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="178"/>
         <source>Quit</source>
         <translation>Dilni</translation>
     </message>
@@ -89,32 +89,32 @@
 <context>
     <name>BasicAuthCredentials</name>
     <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="29"/>
+        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
         <translation>Ju lutemi, që të bëni hyrjen, jepni fjalëkalimin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="29"/>
+        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter %1 and password to log in.</source>
         <translation>Ju lutemi, që të bëni hyrjen, jepni %1 dhe fjalëkalim.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="37"/>
+        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
         <source>Enter %1</source>
         <translation>Jepni %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="51"/>
+        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
         <source>Password</source>
         <translation>Fjalëkalim</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="56"/>
+        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
         <source>Enter Password</source>
         <translation>Jepni Fjalëkalimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="82"/>
+        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="92"/>
         <source>Log in</source>
         <translation>Hyni</translation>
     </message>
@@ -229,19 +229,19 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>Credentials</name>
     <message>
-        <location filename="../src/gui/qml/credentials/Credentials.qml" line="43"/>
+        <location filename="../src/gui/qml/credentials/Credentials.qml" line="44"/>
         <source>Stay logged out</source>
         <translation>Qëndro jashtë llogarie</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/Credentials.qml" line="89"/>
+        <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting %1 to:
 %2</source>
         <translation>Po bëhet lidhja e %1 me:
 %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/Credentials.qml" line="89"/>
+        <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting to:
 %1</source>
         <translation>Po bëhet lidhja me:
@@ -296,22 +296,22 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>FolderDelegate</name>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="29"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
         <source>Folder Sync</source>
         <translation>Njëkohësim Dosjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="233"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
         <source>Add Space</source>
         <translation>Shtoni Hapësirë</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="233"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
         <source>Add Folder</source>
         <translation>Shtoni Dosje</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="258"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %2 spaces</source>
         <translation>Po bëni njëkohësimin e %1 nga %2 hapësira</translation>
     </message>
@@ -491,32 +491,32 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OAuthCredentials</name>
     <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="31"/>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Log in with your web browser</source>
         <translation>Hyni në llogari me shfletuesin tuaj</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="31"/>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Login failed, please try it again</source>
         <translation>Hyrja dështoi, ju lutemi, riprovoni</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="49"/>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Reopen web browser</source>
         <translation>Rihap shfletuesin</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="49"/>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web brower</source>
         <translation>Hap shfletuesin</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="64"/>
-        <source>Copy url</source>
-        <translation>Kopjoji URL-në</translation>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
+        <source>Copy URL</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="96"/>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authenticaion</source>
         <translation>Rinis mirëfilltësimin</translation>
     </message>
@@ -542,16 +542,6 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location filename="../src/gui/aboutdialog.ui" line="148"/>
         <source>Versions</source>
         <translation>Versione</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="89"/>
-        <source>ownCloud 10 LTS</source>
-        <translation>ownCloud 10 LTS</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="90"/>
-        <source>ownCloud Infinite Scale stable</source>
-        <translation>ownCloud Infinite Scale, version i qëndrueshëm</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="92"/>
@@ -646,9 +636,9 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <translation>Njëkohëso lidhje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="292"/>
-        <location filename="../src/gui/accountsettings.cpp" line="331"/>
-        <location filename="../src/gui/accountsettings.cpp" line="667"/>
+        <location filename="../src/gui/accountsettings.cpp" line="299"/>
+        <location filename="../src/gui/accountsettings.cpp" line="338"/>
+        <location filename="../src/gui/accountsettings.cpp" line="674"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
@@ -658,18 +648,18 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <translation>Hiqe</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="215"/>
-        <location filename="../src/gui/accountsettings.cpp" line="235"/>
+        <location filename="../src/gui/accountsettings.cpp" line="223"/>
+        <location filename="../src/gui/accountsettings.cpp" line="242"/>
         <source>Choose what to sync</source>
         <translation>Zgjidhni çfarë të njëkohësohet</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="183"/>
+        <location filename="../src/gui/accountsettings.cpp" line="181"/>
         <source>Force sync now</source>
         <translation>Detyro njëkohësim tani</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="185"/>
+        <location filename="../src/gui/accountsettings.cpp" line="183"/>
         <source>Restart sync</source>
         <translation>Rinise njëkohësimin</translation>
     </message>
@@ -699,22 +689,22 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <translation>Dosja s’është ende gati</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="285"/>
+        <location filename="../src/gui/accountsettings.cpp" line="292"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Ripohoni Heqje Lidhjeje Njëkohësimi Dosjeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="291"/>
+        <location filename="../src/gui/accountsettings.cpp" line="298"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Hiqni Lidhjen Për Njëkohësim Dosjeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="322"/>
+        <location filename="../src/gui/accountsettings.cpp" line="329"/>
         <source>Disable virtual file support?</source>
         <translation>Të çaktivizohet mbulimi për kartela virtuale?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="323"/>
+        <location filename="../src/gui/accountsettings.cpp" line="330"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -727,47 +717,47 @@ Përfitimi i vetëm i çaktivizimit të mbulimit për kartela virtuale është s
 Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e sipër atë çast.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="330"/>
+        <location filename="../src/gui/accountsettings.cpp" line="337"/>
         <source>Disable support</source>
         <translation>Çaktivizoje mbulimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="395"/>
+        <location filename="../src/gui/accountsettings.cpp" line="402"/>
         <source>Sync Running</source>
         <translation>Njëkohësimi Po Kryhet</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="395"/>
+        <location filename="../src/gui/accountsettings.cpp" line="402"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>Veprimi i njëkohësimit po kryhet.&lt;br/&gt;Doni të ndalet?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="202"/>
+        <location filename="../src/gui/accountsettings.cpp" line="216"/>
         <source>Disable virtual file support</source>
         <translation>Çaktivizo mbulim për kartela virtuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="207"/>
+        <location filename="../src/gui/accountsettings.cpp" line="202"/>
         <source>Enable virtual file support</source>
         <translation>Aktivizo mbulim kartelash virtuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="412"/>
+        <location filename="../src/gui/accountsettings.cpp" line="419"/>
         <source>Sync paused by user</source>
         <translation>Njëkohësim i ndalur nga përdoruesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="427"/>
+        <location filename="../src/gui/accountsettings.cpp" line="434"/>
         <source>Internet connection is metered</source>
         <translation>Lidhja Internet është me masë</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="428"/>
+        <location filename="../src/gui/accountsettings.cpp" line="435"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>Njëkohësimi është ndalur, ngaqë lidhja Internet është një lidhje me masë&lt;p&gt;Doni vërtet të detyrohet Njëkohësimi tani?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="452"/>
+        <location filename="../src/gui/accountsettings.cpp" line="459"/>
         <source>User triggered force sync</source>
         <translation>Përdoruesi shkaktoi njëkohësim të detyruar</translation>
     </message>
@@ -777,67 +767,67 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Hyni</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="486"/>
+        <location filename="../src/gui/accountsettings.cpp" line="493"/>
         <source>Connected</source>
         <translation>I lidhur</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="495"/>
+        <location filename="../src/gui/accountsettings.cpp" line="502"/>
         <source>Server is temporarily unavailable</source>
         <translation>Shërbyesi është përkohësisht jashtë funksionimi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="498"/>
+        <location filename="../src/gui/accountsettings.cpp" line="505"/>
         <source>Server is currently in maintenance mode</source>
         <translation>Shërbyesi është aktualisht nën mënyrën mirëmbajtje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="501"/>
+        <location filename="../src/gui/accountsettings.cpp" line="508"/>
         <source>Signed out</source>
         <translation>I dalë</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="504"/>
+        <location filename="../src/gui/accountsettings.cpp" line="511"/>
         <source>Updating credentials...</source>
         <translation>Po përditësohen kredenciale…</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="509"/>
+        <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="511"/>
+        <location filename="../src/gui/accountsettings.cpp" line="518"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Njëkohësimi është ndalur, për shkak lidhjeje internet me racion</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="513"/>
+        <location filename="../src/gui/accountsettings.cpp" line="520"/>
         <source>Connecting...</source>
         <translation>Po lidhet…</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="517"/>
+        <location filename="../src/gui/accountsettings.cpp" line="524"/>
         <source>Server configuration error</source>
         <translation>Gabim formësimi shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="523"/>
+        <location filename="../src/gui/accountsettings.cpp" line="530"/>
         <source>Disconnected</source>
         <translation>I shkëputur</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="661"/>
+        <location filename="../src/gui/accountsettings.cpp" line="668"/>
         <source>Confirm Account Removal</source>
         <translation>Ripohoni Heqjen e Llogarisë</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="662"/>
+        <location filename="../src/gui/accountsettings.cpp" line="669"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Doni vërtet të hiqet lidhja për te llogaria &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="666"/>
+        <location filename="../src/gui/accountsettings.cpp" line="673"/>
         <source>Remove connection</source>
         <translation>Hiqe lidhjen</translation>
     </message>
@@ -847,22 +837,22 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Dilni</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="191"/>
+        <location filename="../src/gui/accountsettings.cpp" line="189"/>
         <source>Resume sync</source>
         <translation>Rimerre njëkohësimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="191"/>
+        <location filename="../src/gui/accountsettings.cpp" line="189"/>
         <source>Pause sync</source>
         <translation>Ndale njëkohësimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="286"/>
+        <location filename="../src/gui/accountsettings.cpp" line="293"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Doni vërtet të ndalet njëkohësimi i dosjes &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="483"/>
+        <location filename="../src/gui/accountsettings.cpp" line="490"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>Versioni %1 i shërbyesit nuk mbulohet! Qari dhe zarari i juaj.</translation>
     </message>
@@ -1356,12 +1346,10 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="256"/>
-        <source>The suffix VFS plugin is deprecated and will be removed in the 7.0 release.
-Please use the context menu and select &quot;Disable virtual file support&quot; to  ensure future access to your synced files.
+        <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
+Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation>Shtojca për prapashtesë VFS është nxjerrë nga përdorimi dhe do të hiqet nga hedhja në qarkullim 7.0.
-Ju lutemi, përdorni menunë e kontekstit dhe përzgjidhni “Çaktivizo mbulim për kartela virtuale”, që të garantoni hyrje të ardhshme në kartelat tuaja të njëkohësuara.
-Nëse nuk bëni kështu, do të humbni hyrje te dosja juaj e njëkohësuar!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="311"/>
@@ -2771,7 +2759,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="218"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="246"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>Aktualisht te shërbyesi s’ka nëndosje</translation>
     </message>
@@ -4058,7 +4046,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>SpacesView</name>
     <message>
-        <location filename="../src/gui/spaces/qml/SpacesView.qml" line="30"/>
+        <location filename="../src/gui/spaces/qml/SpacesView.qml" line="31"/>
         <source>Spaces</source>
         <translation>Hapësira</translation>
     </message>
