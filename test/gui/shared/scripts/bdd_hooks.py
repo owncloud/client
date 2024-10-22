@@ -34,6 +34,7 @@ from helpers.ConfigHelper import (
 )
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from helpers.ReportHelper import save_video_recording, take_screenshot
+import helpers.api.oc10 as oc
 
 from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
@@ -194,6 +195,8 @@ def hook(context):
 def hook(context):
     if get_config("ocis"):
         delete_project_spaces()
+    else:
+        oc.restore_apps_state()
     delete_created_groups()
     delete_created_users()
 
