@@ -513,7 +513,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Kopjoji URL-në</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
@@ -794,7 +794,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>Portali rrëmbyes pengon lidhjet me shërbyesin.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="518"/>
@@ -1349,7 +1349,9 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>Shtojca Suffix-VFS është nxjerrë nga përdorimi dhe do të hiqet nga hedhja në qarkullim 7.0.
+Ju lutemi, përdorni menunë e kontekstit dhe përzgjidhni “Çaktivizo mbulim për kartela virtuale”, që të garantoni hyrje të ardhshme në kartelat tuaja të njëkohësuara.
+Nëse nuk bëni kështu, do të humbni hyrje te dosja juaj e njëkohësuar!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="311"/>
