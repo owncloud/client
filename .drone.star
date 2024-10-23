@@ -612,6 +612,7 @@ def ocisService(server_version = "latest"):
             "OCIS_LOG_COLOR": True,
         },
         "commands": [
+            "/usr/bin/ocis version || true",
             "/usr/bin/ocis init",
             "/usr/bin/ocis server",
         ],
