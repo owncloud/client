@@ -43,7 +43,7 @@ jobs:
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TX_TOKEN }}
-          args: push -s --skip --silent
+          args: push -s --silent
 
       - name: fix-transifex-action
         run: rm -rf /tmp/tx
@@ -52,7 +52,7 @@ jobs:
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TX_TOKEN }}
-          args: pull --force --skip --all  --silent
+          args: pull --force --all --silent
 
       - uses: GuillaumeFalourd/git-commit-push@v1.3
         with:
