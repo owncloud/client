@@ -5,6 +5,12 @@ from helpers.api.utils import url_join
 from helpers.ConfigHelper import get_config
 
 
+# store the apps initial state to restore it after the test
+# E.g.:
+#   "app_name": "enabled"
+apps_initial_state = {}
+
+
 def format_json(url):
     return url + "?format=json"
 
@@ -91,6 +97,14 @@ def add_user_to_group(user, group_name):
     check_success_ocs_status(response)
 
 
+def get_enabled_apps():
+    url = get_provisioning_url("apps")
+    response = request.get(f"{url}&filter=enabled")
+    request.assert_http_status(response, 200, "Failed to get enabled apps")
+    check_success_ocs_status(response)
+    return json.loads(response.text)["ocs"]["data"]["apps"]
+
+
 def enable_app(app_name):
     url = get_provisioning_url("apps", app_name)
     response = request.post(url)
@@ -112,3 +126,15 @@ def setup_app(app_name, action):
         disable_app(app_name)
     else:
         raise ValueError("Unknown action: " + action)
+
+    if app_name not in apps_initial_state:
+        enabled_apps = get_enabled_apps()
+        if app_name in enabled_apps:
+            apps_initial_state[app_name] = "enabled"
+        apps_initial_state[app_name] = "disabled"
+
+
+def restore_apps_state():
+    for app_name, action in apps_initial_state.items():
+        setup_app(app_name, action)
+    apps_initial_state.clear()

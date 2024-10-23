@@ -18,6 +18,8 @@ def send_request(url, method, body=None, headers=None, user=None, password=None)
         data=body,
         headers=headers,
         verify=False,
+        # in seconds
+        # e.g.: 60
         timeout=get_config("maxSyncTimeout"),
     )
 
