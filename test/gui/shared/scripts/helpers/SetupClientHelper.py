@@ -106,7 +106,11 @@ def start_client():
     )
     if is_video_enabled():
         test.startVideoCapture()
-        set_config('video_recording_started', True)
+    else:
+        test.log(
+            f'Video recordings reached the maximum limit of {get_config("video_record_limit")}.'
+            + 'Skipping video recording...'
+        )
 
 
 def get_polling_interval():

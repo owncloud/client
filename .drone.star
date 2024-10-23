@@ -208,11 +208,7 @@ def gui_test_pipeline(ctx):
             "--tags ~@skipOnLinux",
         ]
 
-        # '--retry' and '--abortOnFail' are mutually exclusive
-        if "full-ci" in ctx.build.title.lower() or ctx.build.event in ("tag", "cron"):
-            # retry failed tests once
-            squish_parameters.append("--retry 1")
-        elif not "full-ci" in ctx.build.title.lower() and ctx.build.event == "pull_request":
+        if not "full-ci" in ctx.build.title.lower() and ctx.build.event == "pull_request":
             squish_parameters.append("--abortOnFail")
 
         if params.get("skip", False):
@@ -250,7 +246,7 @@ def gui_test_pipeline(ctx):
         steps += installPnpm() + \
                  install_python_modules() + \
                  setGuiTestReportDir() + \
-                 gui_tests(squish_parameters, server) + \
+                 gui_tests(ctx, squish_parameters, server) + \
                  uploadGuiTestLogs(ctx, server) + \
                  logGuiReports(ctx, server)
 
@@ -320,7 +316,13 @@ def unit_tests(image = OC_CI_CLIENT):
         ],
     }]
 
-def gui_tests(squish_parameters = "", server_type = "oc10"):
+def gui_tests(ctx, squish_parameters = "", server_type = "oc10"):
+    record_video = False
+
+    # generate video reports on cron build
+    if ctx.build.event == "cron":
+        record_video = True
+
     return [{
         "name": "GUItests",
         "image": OC_CI_SQUISH,
@@ -336,7 +338,7 @@ def gui_tests(squish_parameters = "", server_type = "oc10"):
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
             "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
             "OWNCLOUD_CORE_DUMP": 1,
-            "RECORD_VIDEO_ON_FAILURE": False,
+            "RECORD_VIDEO_ON_FAILURE": record_video,
             # allow to use any available pnpm version
             "COREPACK_ENABLE_STRICT": 0,
         },
