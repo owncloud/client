@@ -18,7 +18,7 @@ set(APPLE_SUPPRESS_X11_WARNING ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(QT 6.5 NAMES Qt6 COMPONENTS Core REQUIRED)
+find_package(QT 6.8 NAMES Qt6 COMPONENTS Core REQUIRED)
 
 find_package(Qt6 COMPONENTS Core Concurrent Network Widgets Xml Quick QuickWidgets QuickControls2 REQUIRED)
 find_package(Qt6LinguistTools REQUIRED)

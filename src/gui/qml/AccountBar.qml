@@ -23,6 +23,7 @@ Pane {
     id: bar
     readonly property SettingsDialog settingsDialog: ocContext
     readonly property OCQuickWidget widget: ocQuickWidget
+    ToolTip.toolTip.popupType: Popup.Native
 
     Accessible.name: qsTr("Navigation bar")
 
