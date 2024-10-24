@@ -304,6 +304,7 @@ SpaceSupport::SpaceSupport(const QVariantMap &spaces_support)
         return;
     }
     enabled = spaces_support.value(QStringLiteral("enabled")).toBool();
+    hasMultiplePersonalSpaces = spaces_support.value(QStringLiteral("has_multiple_personal_spaces")).toBool();
     version = QVersionNumber::fromString(spaces_support.value(QStringLiteral("version")).toString());
 }
 
