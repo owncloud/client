@@ -99,8 +99,6 @@ CONFIG = {
     'guiTestReportDir': os.path.abspath('../reports'),
     'ocis': False,
     'record_video_on_failure': False,
-    'retrying': False,
-    'video_recording_started': False,
     'files_for_upload': os.path.join(CURRENT_DIR.parent.parent, 'files-for-upload'),
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)

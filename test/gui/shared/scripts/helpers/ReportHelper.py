@@ -18,11 +18,7 @@ def get_screenshots_path():
 
 
 def is_video_enabled():
-    return (
-        get_config("record_video_on_failure")
-        or get_config("retrying")
-        and not reached_video_limit()
-    )
+    return get_config("record_video_on_failure") and not reached_video_limit()
 
 
 def reached_video_limit():

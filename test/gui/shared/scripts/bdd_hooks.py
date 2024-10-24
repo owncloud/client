@@ -33,7 +33,7 @@ from helpers.ConfigHelper import (
     is_linux,
 )
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
-from helpers.ReportHelper import save_video_recording, take_screenshot
+from helpers.ReportHelper import save_video_recording, take_screenshot, is_video_enabled
 import helpers.api.oc10 as oc
 
 from pageObjects.Toolbar import Toolbar
@@ -49,7 +49,6 @@ testSettings.throwOnFailure = True
 # this will reset in every test suite
 PREVIOUS_FAIL_RESULT_COUNT = 0
 PREVIOUS_ERROR_RESULT_COUNT = 0
-PREVIOUS_SCENARIO = ""
 
 
 # runs before a feature
@@ -65,12 +64,6 @@ def hook(context):
 def hook(context):
     unlock_keyring()
     clear_scenario_config()
-
-    global PREVIOUS_SCENARIO
-    if PREVIOUS_SCENARIO == context.title and previous_scenario_failed():
-        test.log("[INFO] Retrying this failed scenario...")
-        set_config("retrying", True)
-    PREVIOUS_SCENARIO = context.title
 
 
 # runs before every scenario
@@ -135,19 +128,6 @@ def scenario_failed():
     )
 
 
-# There's no way to determine a Scenario and a Scenario Outline in OnScenarioStart hook
-# So, we need to check the previous scenario result count in OnScenarioEnd hook
-# to determine if the current scenario is a failed one or an another example
-# from a Scenario Outline
-def previous_scenario_failed():
-    if not PREVIOUS_FAIL_RESULT_COUNT and not PREVIOUS_ERROR_RESULT_COUNT:
-        return False
-    return (
-        test.resultCount("fails") - (PREVIOUS_FAIL_RESULT_COUNT - 1) > 0
-        or test.resultCount("errors") - (PREVIOUS_ERROR_RESULT_COUNT - 1) > 0
-    )
-
-
 def scenario_title_to_filename(title):
     # scenario name can have "/" which is invalid filename
     return title.replace(" ", "_").replace("/", "_").strip(".")
@@ -166,7 +146,7 @@ def hook(context):
         if scenario_failed():
             take_screenshot(f"{filename}.png")
 
-        if get_config("video_recording_started"):
+        if is_video_enabled():
             save_video_recording(f"{filename}.mp4", scenario_failed())
 
     # teardown accounts and configs
