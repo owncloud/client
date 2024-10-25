@@ -76,7 +76,7 @@ Feature: adding accounts
             | user     | Alice          |
             | password | 1234           |
         When the user selects manual sync folder option in advanced section
-        And the user syncs the "Personal" space
+        And the user syncs the "Alice Hansen" space
         Then the folder "simple-folder" should exist on the file system
 
     @skipOnOCIS

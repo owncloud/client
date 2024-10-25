@@ -11,7 +11,7 @@ from helpers.SpaceHelper import (
     get_file_content,
     resource_exists,
 )
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import get_config, set_config
 
 
 @Given('the administrator has created a space "|any|"')
@@ -43,6 +43,7 @@ def step(context, user, space_name):
     enter_password = EnterPassword()
     if get_config('ocis'):
         enter_password.accept_certificate()
+        set_config('syncConnectionName', space_name)
     enter_password.login_after_setup(user, password)
     # wait for files to sync
     wait_for_initial_sync_to_complete(get_resource_path('/', user, space_name))
