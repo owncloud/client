@@ -17,12 +17,13 @@ from helpers.SyncHelper import (
     wait_for_initial_sync_to_complete,
     listen_sync_status_for_item,
 )
-from helpers.ConfigHelper import get_config, is_windows, is_linux
+from helpers.ConfigHelper import get_config, set_config, is_windows, is_linux
 
 
 @When('the user adds the following user credentials:')
 def step(context):
     account_details = get_client_details(context)
+    set_config('syncConnectionName', get_displayname_for_user(account_details['user']))
     AccountConnectionWizard.add_user_credentials(
         account_details['user'], account_details['password']
     )
@@ -105,6 +106,7 @@ def step(context):
 @When('the user adds the following account:')
 def step(context):
     account_details = get_client_details(context)
+    set_config('syncConnectionName', get_displayname_for_user(account_details['user']))
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
     wait_for_initial_sync_to_complete(get_resource_path('/', account_details['user']))
@@ -113,6 +115,10 @@ def step(context):
 @Given('the user has entered the following account information:')
 def step(context):
     account_details = get_client_details(context)
+    if account_details['user']:
+        set_config(
+            'syncConnectionName', get_displayname_for_user(account_details['user'])
+        )
     AccountConnectionWizard.add_account_information(account_details)
 
 
