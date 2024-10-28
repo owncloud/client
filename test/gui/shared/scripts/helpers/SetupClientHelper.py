@@ -74,15 +74,18 @@ def set_current_user_sync_path(sync_path):
 
 def get_resource_path(resource='', user='', space=''):
     sync_path = get_config('currentUserSyncPath')
-    if user:
-        sync_path = user
-    else:
-        user = parse_username_from_sync_path(sync_path)
-    if get_config('ocis'):
-        space = (
-            space or get_config('syncConnectionName') or get_displayname_for_user(user)
-        )
-        sync_path = join(sync_path, space)
+    if not sync_path.startswith(get_config('tempFolderPath')):
+        if user:
+            sync_path = user
+        else:
+            user = parse_username_from_sync_path(sync_path)
+        if get_config('ocis'):
+            space = (
+                space
+                or get_config('syncConnectionName')
+                or get_displayname_for_user(user)
+            )
+            sync_path = join(sync_path, space)
     sync_path = join(get_config('clientRootSyncPath'), sync_path)
     resource = resource.replace(sync_path, '').strip('/').strip('\\')
     if is_windows():
