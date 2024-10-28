@@ -76,6 +76,8 @@ def get_resource_path(resource='', user='', space=''):
     sync_path = get_config('currentUserSyncPath')
     if user:
         sync_path = user
+    else:
+        user = parse_username_from_sync_path(sync_path)
     if get_config('ocis'):
         space = (
             space or get_config('syncConnectionName') or get_displayname_for_user(user)
@@ -89,6 +91,10 @@ def get_resource_path(resource='', user='', space=''):
         sync_path,
         resource,
     )
+
+
+def parse_username_from_sync_path(sync_path):
+    return sync_path.split('/').pop()
 
 
 def get_temp_resource_path(resource_name):
