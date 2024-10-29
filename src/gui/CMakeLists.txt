@@ -172,7 +172,7 @@ endif()
 
 if(WITH_AUTO_UPDATER)
     add_subdirectory(updater)
-    target_compile_definitions(owncloudGui PRIVATE WITH_AUTO_UPDATER)
+    target_compile_definitions(owncloudGui PUBLIC $<BUILD_INTERFACE:WITH_AUTO_UPDATER>)
 endif()
 
 add_executable(owncloud main.cpp)
