@@ -68,6 +68,8 @@ QUrl Updater::updateUrl()
     return updateBaseUrl;
 }
 
+void Updater::validateUpdate() { }
+
 QUrlQuery Updater::getQueryParams()
 {
     QUrlQuery query;

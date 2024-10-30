@@ -517,26 +517,18 @@ int main(int argc, char **argv)
 
         platform->startServices();
 
-        // Handle user requests from the command-line first, before checking for updates. Because, if
-        // the user explicitly requested an action, then quiting because of an update will not be
-        // appreciated.
+#ifdef WITH_AUTO_UPDATER
+if (Updater::instance()) {
+    // validate whether the last update was successful.
+    Updater::instance()->validateUpdate();
+}
+#endif
         if (options.show) {
             ocApp->gui()->slotShowSettings();
             // The user explicitly requested the settings dialog, so don't start the new-account wizard.
         } else if (!options.fileToOpen.isEmpty() && !AccountManager::instance()->accounts().isEmpty()) {
             // Only try to open a file when accounts have been configured.
             QTimer::singleShot(0, ocApp.get(), [ocApp = ocApp.get(), fileToOpen = options.fileToOpen] { ocApp->openVirtualFile(fileToOpen); });
-        } else {
-            // No user-requested action, check for updates.
-#ifdef WITH_AUTO_UPDATER
-            // if handleStartup returns true, main()
-            // needs to terminate here, e.g. because
-            // the updater is triggered
-            Updater *updater = Updater::instance();
-            if (updater && updater->handleStartup()) {
-                return 1;
-            }
-#endif
         }
 
         // Display the wizard if we don't have an account yet, and no other UI is showing.

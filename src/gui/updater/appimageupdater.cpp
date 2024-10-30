@@ -123,13 +123,6 @@ AppImageUpdater::AppImageUpdater(const QUrl &url)
 {
 }
 
-
-bool AppImageUpdater::handleStartup()
-{
-    // nothing to do, update will be performed while app is running, if anything
-    return false;
-}
-
 void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
 {
     const auto &currentVersion = Version::versionWithBuildNumber();
