@@ -96,7 +96,6 @@ FolderMan::FolderMan()
     : _lockWatcher(new LockWatcher)
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
-    , _appRestartRequired(false)
 {
     connect(AccountManager::instance(), &AccountManager::accountRemoved,
         this, &FolderMan::slotRemoveFoldersForAccount);

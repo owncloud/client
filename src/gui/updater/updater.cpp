@@ -24,6 +24,7 @@
 #include "updater/appimageupdater.h"
 #endif
 
+#include "common/restartmanager.h"
 #include "common/utility.h"
 #include "common/version.h"
 #include "configfile.h"
@@ -69,6 +70,11 @@ QUrl Updater::updateUrl()
 }
 
 void Updater::validateUpdate() { }
+
+void Updater::applyUpdateAndRestart()
+{
+    RestartManager::requestRestart();
+}
 
 QUrlQuery Updater::getQueryParams()
 {
