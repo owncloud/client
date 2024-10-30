@@ -513,7 +513,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Copy URL</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
@@ -1349,7 +1349,9 @@ Please consider removing this folder from the account and adding it again.</tran
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
+Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
+You are going to lose access to your sync folder if you do not do so!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="311"/>
