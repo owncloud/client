@@ -126,11 +126,7 @@ void AboutDialog::setupUpdaterWidget()
                 ui->restartButton->setVisible(ocupdater->downloadState() == OCUpdater::DownloadComplete);
             };
             connect(ocupdater, &OCUpdater::downloadStateChanged, this, updateInfo);
-            if (auto *nsisupdater = qobject_cast<WindowsUpdater *>(ocupdater)) {
-                connect(ui->restartButton, &QAbstractButton::clicked, nsisupdater, &WindowsUpdater::startInstallerAndQuit);
-            } else {
-                connect(ui->restartButton, &QAbstractButton::clicked, this, [] { RestartManager::requestRestart(); });
-            }
+            connect(ui->restartButton, &QAbstractButton::clicked, ocupdater, &Updater::applyUpdateAndRestart);
             updateInfo();
         }
 #ifdef HAVE_SPARKLE

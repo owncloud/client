@@ -360,8 +360,6 @@ private:
 
     std::unique_ptr<SocketApi> _socketApi;
 
-    bool _appRestartRequired;
-
     mutable QMap<QString, Result<void, QString>> _unsupportedConfigurationError;
 
     static FolderMan *_instance;

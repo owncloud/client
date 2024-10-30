@@ -177,7 +177,7 @@ public:
     explicit WindowsUpdater(const QUrl &url);
     void validateUpdate() override;
 
-    void startInstallerAndQuit();
+    void applyUpdateAndRestart() override;
 
 private Q_SLOTS:
     void slotSetPreviouslySkippedVersion();

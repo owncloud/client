@@ -38,6 +38,11 @@ public:
     virtual void backgroundCheckForUpdate() = 0;
     virtual void validateUpdate();
 
+    /***
+     * This function will just restart on most platforms
+    */
+    virtual void applyUpdateAndRestart();
+
 protected:
     Updater()
         : QObject(nullptr)

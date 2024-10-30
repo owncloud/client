@@ -55,7 +55,7 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
                 _updateDownloadedWidget = new UpdateDownloadedWidget(app->gui()->settingsDialog(), updater->statusString());
                 ocApp()->gui()->settingsDialog()->addModalWidget(_updateDownloadedWidget);
 
-                connect(_updateDownloadedWidget, &UpdateDownloadedWidget::accepted, this, []() { RestartManager::requestRestart(); });
+                connect(_updateDownloadedWidget, &UpdateDownloadedWidget::accepted, this, []() { Updater::instance()->applyUpdateAndRestart(); });
                 connect(_updateDownloadedWidget, &UpdateDownloadedWidget::finished, this, [this]() { delete _updateDownloadedWidget.data(); });
             }
         });
@@ -439,7 +439,7 @@ void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)
     });
     // askagain: do nothing
     connect(retry, &QAbstractButton::clicked, this, [this]() {
-        startInstallerAndQuit();
+        applyUpdateAndRestart();
         qApp->quit();
     });
     connect(getupdate, &QAbstractButton::clicked, this, [this]() {
@@ -480,7 +480,7 @@ void WindowsUpdater::slotSetPreviouslySkippedVersion()
     setPreviouslySkippedVersion(updateInfo().version());
 }
 
-void WindowsUpdater::startInstallerAndQuit()
+void WindowsUpdater::applyUpdateAndRestart()
 {
     Q_ASSERT(downloadState() == DownloadState::DownloadComplete);
 
