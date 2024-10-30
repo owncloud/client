@@ -175,7 +175,7 @@ class OWNCLOUDGUI_EXPORT WindowsUpdater : public OCUpdater
     Q_OBJECT
 public:
     explicit WindowsUpdater(const QUrl &url);
-    bool handleStartup() override;
+    void validateUpdate() override;
 
     void startInstallerAndQuit();
 
@@ -207,7 +207,6 @@ class PassiveUpdateNotifier : public OCUpdater
     Q_OBJECT
 public:
     explicit PassiveUpdateNotifier(const QUrl &url);
-    bool handleStartup() override { return false; }
     void backgroundCheckForUpdate() override;
 
 private:

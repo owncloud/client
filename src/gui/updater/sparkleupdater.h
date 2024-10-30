@@ -33,7 +33,6 @@ public:
     // unused in this updater
     void checkForUpdate() override;
     void backgroundCheckForUpdate() override;
-    bool handleStartup() override { return false; }
 
     QString statusString();
 

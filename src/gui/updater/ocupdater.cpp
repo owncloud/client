@@ -451,7 +451,7 @@ void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)
     msgBox->open();
 }
 
-bool WindowsUpdater::handleStartup()
+void WindowsUpdater::validateUpdate()
 {
     const auto settings = ConfigFile::makeQSettings();
     const QString updateFileName = settings.value(updateAvailableC).toString();
@@ -465,17 +465,14 @@ bool WindowsUpdater::handleStartup()
                 qCInfo(lcUpdater) << "The requested update attempt has succeeded"
                                   << Version::versionWithBuildNumber();
                 wipeUpdateData();
-                return false;
             } else {
                 // auto update failed. Ask user what to do
                 qCInfo(lcUpdater) << "The requested update attempt has failed"
                         << settings.value(updateTargetVersionC).toString();
                 showUpdateErrorDialog(settings.value(updateTargetVersionStringC).toString());
-                return false;
             }
         }
     }
-    return false;
 }
 
 void WindowsUpdater::slotSetPreviouslySkippedVersion()
