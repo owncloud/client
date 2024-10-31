@@ -7,22 +7,22 @@
         <translation>Shtyllë lëvizjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="108"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
         <translation>Shtoni Llogari</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="135"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
         <source>Activity</source>
         <translation>Veprimtari</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="149"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="155"/>
         <source>Settings</source>
         <translation>Rregullime</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="178"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="184"/>
         <source>Quit</source>
         <translation>Dilni</translation>
     </message>
@@ -549,27 +549,27 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <translation>beta</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="164"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
         <source>Change update channel?</source>
         <translation>Të ndryshohet kanali i përditësimit?</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="165"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
         <translation>&lt;html&gt;Kanali i përditësimeve përcakton cilat përditësime klienti do të ofrohen për instalim.&lt;ul&gt;&lt;li&gt;“ownCloud 10 LTS” përmban vetëm përmirësime që konsiderohen të qëndrueshme&lt;/li&gt;&lt;li&gt;“ownCloud Infinite Scale, version i qëndrueshëm” përmban vetëm përmirësime që konsiderohen të qëndrueshme, por &lt;b&gt;heq mbulim për “ownCloud 10”&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Prapapkthimet në versione më të vjetër nuk mbulohen. Nëse kaloni në një kanal të qëndrueshëm, ky ndryshim do të aplikohet vetëm me hedhjen tjetër të rëndësishme në qarkullim.&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="168"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
         <translation>&lt;li&gt;“beta” mund të përmbajë veçori më të reja dhe ndreqje të metash, por s’është testuar në mënyrë shteruese&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="174"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
         <source>Change update channel</source>
         <translation>Ndryshoje kanalin e përditësimit</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="175"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
@@ -1233,102 +1233,102 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="294"/>
+        <location filename="../src/gui/folderman.cpp" line="293"/>
         <source>Could not reset folder state</source>
         <translation>Gjendja e dosjes s’u ricaktua dot</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="295"/>
+        <location filename="../src/gui/folderman.cpp" line="294"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>U gjet një regjistër i vjetër njëkohësimesh &apos;%1&apos;, por s’u hoq dot. Ju lutemi, sigurohuni që s’po e përdor ndonjë aplikacion.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="393"/>
+        <location filename="../src/gui/folderman.cpp" line="392"/>
         <source>Account disconnected or paused</source>
         <translation>Llogari e shkëputur, ose e pezulluar</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="603"/>
+        <location filename="../src/gui/folderman.cpp" line="602"/>
         <source>Folder is about to be removed</source>
         <translation>Dosja është gati për t’u hequr</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="627"/>
+        <location filename="../src/gui/folderman.cpp" line="626"/>
         <source> (backup)</source>
         <translation> (kopjeruajtje)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="632"/>
+        <location filename="../src/gui/folderman.cpp" line="631"/>
         <source> (backup %1)</source>
         <translation> (kopjeruajtja %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="686"/>
+        <location filename="../src/gui/folderman.cpp" line="685"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>Njëkohësimi qe i suksesshëm, ka përplasje të pazgjidhura.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="695"/>
+        <location filename="../src/gui/folderman.cpp" line="694"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (Njëkohësimi është ndalur)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="727"/>
+        <location filename="../src/gui/folderman.cpp" line="726"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>Dosja “%1” është tashmë në përdorim nga aplikacioni %2!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="742"/>
+        <location filename="../src/gui/folderman.cpp" line="741"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Dosja “%1” është tashmë në përdorim nga një tjetër llogari.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="757"/>
+        <location filename="../src/gui/folderman.cpp" line="756"/>
         <source>No valid folder selected!</source>
         <translation>S’është përzgjedhur dosje e vlefshme!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="779"/>
+        <location filename="../src/gui/folderman.cpp" line="778"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>Dosja %1 është e përdorur në një lidhje njëkohësimi dosjesh!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="821"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>Dosja vendore %1 përmban tashmë një dosje të përdorur në një lidhje njëkohësimi dosjeje. Ju lutemi, zgjidhni një tjetër dosje vendore!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="827"/>
+        <location filename="../src/gui/folderman.cpp" line="826"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>Dosja vendore %1 përmbahet tashmë në një dosje të përdorur në një lidhje njëkohësimi dosjeje. Ju lutemi, zgjidhni një tjetër dosje vendore!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="835"/>
+        <location filename="../src/gui/folderman.cpp" line="834"/>
         <source>%1 Please pick another local folder!</source>
         <translation>%1 Ju lutemi, zgjidhni një tjetër dosje vendore!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="775"/>
+        <location filename="../src/gui/folderman.cpp" line="774"/>
         <source>The selected path does not exist!</source>
         <translation>Shtegu i përzgjedhur s’ekziston!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="785"/>
+        <location filename="../src/gui/folderman.cpp" line="784"/>
         <source>The selected path is not a folder!</source>
         <translation>Shtegu i përzgjedhur s’ka dosje!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="789"/>
+        <location filename="../src/gui/folderman.cpp" line="788"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>S’keni leje për shkrim te dosja e përzgjedhur!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="817"/>
+        <location filename="../src/gui/folderman.cpp" line="816"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>Ka tashmë një njëkohësim prej shërbyesi te kjo dosje vendore. Ju lutemi, përzgjidhni një tjetër dosje vendore!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="892"/>
+        <location filename="../src/gui/folderman.cpp" line="891"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>

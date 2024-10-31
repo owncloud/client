@@ -7,22 +7,22 @@
         <translation>Navigatiebalk</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="108"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
         <translation>Voeg account toe</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="135"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
         <source>Activity</source>
         <translation>Activiteit</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="149"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="155"/>
         <source>Settings</source>
         <translation>Instellingen</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="178"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="184"/>
         <source>Quit</source>
         <translation>Afsluiten</translation>
     </message>
@@ -548,27 +548,27 @@ Bestandssynchronisatie desktop software tool.</translation>
         <translation>beta</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="164"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
         <source>Change update channel?</source>
         <translation>Updatekanaal veranderen?</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="165"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="168"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="174"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
         <source>Change update channel</source>
         <translation>Verander updatekanaal</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="175"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Cancel</source>
         <translation>Annuleer</translation>
     </message>
@@ -1232,102 +1232,102 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="294"/>
+        <location filename="../src/gui/folderman.cpp" line="293"/>
         <source>Could not reset folder state</source>
         <translation>Kan de beginstaat van de map niet terugzetten</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="295"/>
+        <location filename="../src/gui/folderman.cpp" line="294"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>Een oud synchronisatieverslag  &apos;%1&apos; is gevonden maar kan niet worden verwijderd. Zorg ervoor dat geen applicatie dit bestand gebruikt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="393"/>
+        <location filename="../src/gui/folderman.cpp" line="392"/>
         <source>Account disconnected or paused</source>
         <translation>Account losgekoppeld of gepauzeerd</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="603"/>
+        <location filename="../src/gui/folderman.cpp" line="602"/>
         <source>Folder is about to be removed</source>
         <translation>Map wordt zometeen verwijderd</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="627"/>
+        <location filename="../src/gui/folderman.cpp" line="626"/>
         <source> (backup)</source>
         <translation>(backup)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="632"/>
+        <location filename="../src/gui/folderman.cpp" line="631"/>
         <source> (backup %1)</source>
         <translation>(backup %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="686"/>
+        <location filename="../src/gui/folderman.cpp" line="685"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>Synchronisatie was succesvol, onopgeloste conflicten.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="695"/>
+        <location filename="../src/gui/folderman.cpp" line="694"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (Synchronisatie onderbroken)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="727"/>
+        <location filename="../src/gui/folderman.cpp" line="726"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>Map &apos;%1&apos; is al in gebruik door toepassing %2!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="742"/>
+        <location filename="../src/gui/folderman.cpp" line="741"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="757"/>
+        <location filename="../src/gui/folderman.cpp" line="756"/>
         <source>No valid folder selected!</source>
         <translation>Geen geldige map geselecteerd!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="779"/>
+        <location filename="../src/gui/folderman.cpp" line="778"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>Map %1 wordt al gebruikt voor synchronisatie!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="821"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="827"/>
+        <location filename="../src/gui/folderman.cpp" line="826"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="835"/>
+        <location filename="../src/gui/folderman.cpp" line="834"/>
         <source>%1 Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="775"/>
+        <location filename="../src/gui/folderman.cpp" line="774"/>
         <source>The selected path does not exist!</source>
         <translation>Het geselecteerde pad bestaat niet!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="785"/>
+        <location filename="../src/gui/folderman.cpp" line="784"/>
         <source>The selected path is not a folder!</source>
         <translation>Het geselecteerde pad is geen map!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="789"/>
+        <location filename="../src/gui/folderman.cpp" line="788"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>U heeft geen permissie om te schrijven naar de geselecteerde map!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="817"/>
+        <location filename="../src/gui/folderman.cpp" line="816"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>Er wordt vanaf de server al naar deze lokale map gesynchroniseerd. Kies een andere lokale map!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="892"/>
+        <location filename="../src/gui/folderman.cpp" line="891"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>

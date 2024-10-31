@@ -7,22 +7,22 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="108"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="135"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
         <source>Activity</source>
         <translation>动态</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="149"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="155"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="178"/>
+        <location filename="../src/gui/qml/AccountBar.qml" line="184"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>
@@ -547,27 +547,27 @@ File synchronization desktop utility.</source>
         <translation>公测的</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="164"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
         <source>Change update channel?</source>
         <translation>更改升级渠道?</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="165"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="168"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="174"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
         <source>Change update channel</source>
         <translation>更改升级渠道</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="175"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -1229,102 +1229,102 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="294"/>
+        <location filename="../src/gui/folderman.cpp" line="293"/>
         <source>Could not reset folder state</source>
         <translation>不能重置文件夹状态</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="295"/>
+        <location filename="../src/gui/folderman.cpp" line="294"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>一个旧的同步日志 &apos;%1&apos; 被找到，但是不能被移除。请确定没有应用程序正在使用它。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="393"/>
+        <location filename="../src/gui/folderman.cpp" line="392"/>
         <source>Account disconnected or paused</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="603"/>
+        <location filename="../src/gui/folderman.cpp" line="602"/>
         <source>Folder is about to be removed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="627"/>
+        <location filename="../src/gui/folderman.cpp" line="626"/>
         <source> (backup)</source>
         <translation> (备份)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="632"/>
+        <location filename="../src/gui/folderman.cpp" line="631"/>
         <source> (backup %1)</source>
         <translation> (备份 %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="686"/>
+        <location filename="../src/gui/folderman.cpp" line="685"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>同步成功，但有未解决的冲突。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="695"/>
+        <location filename="../src/gui/folderman.cpp" line="694"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (同步已暂停)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="727"/>
+        <location filename="../src/gui/folderman.cpp" line="726"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="742"/>
+        <location filename="../src/gui/folderman.cpp" line="741"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="757"/>
+        <location filename="../src/gui/folderman.cpp" line="756"/>
         <source>No valid folder selected!</source>
         <translation>没有选择有效的文件夹！</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="779"/>
+        <location filename="../src/gui/folderman.cpp" line="778"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>文件夹 %1 用于文件夹同步连接！</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="821"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="827"/>
+        <location filename="../src/gui/folderman.cpp" line="826"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="835"/>
+        <location filename="../src/gui/folderman.cpp" line="834"/>
         <source>%1 Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="775"/>
+        <location filename="../src/gui/folderman.cpp" line="774"/>
         <source>The selected path does not exist!</source>
         <translation>您选择的目录不存在！</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="785"/>
+        <location filename="../src/gui/folderman.cpp" line="784"/>
         <source>The selected path is not a folder!</source>
         <translation>选择的路径不是一个文件夹！</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="789"/>
+        <location filename="../src/gui/folderman.cpp" line="788"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>你没有写入所选文件夹的权限！</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="817"/>
+        <location filename="../src/gui/folderman.cpp" line="816"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>已经有一个从服务器到此文件夹的同步设置。请选择其他本地文件夹！</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="892"/>
+        <location filename="../src/gui/folderman.cpp" line="891"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
