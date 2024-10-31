@@ -200,6 +200,16 @@ public:
      */
     QString overrideServerUrlV2() const;
 
+    /**
+     * If set to a non-empty string, the path part of the URL will be overwritten with this path.
+     * This can be used to set the end-point to a fixed location, and thereby shorten the URL that
+     * is given to the users.
+     *
+     * For example, if the URL for the product always contains `/dav` as the path, and setting that
+     * here, and the URL given to the user is `example.com`, the branded application will contact
+     * `example.com/dav`.
+     */
+    virtual QString overrideServerPath() const;
 
     /**
      * The default folder name without path on the server at setup time.
