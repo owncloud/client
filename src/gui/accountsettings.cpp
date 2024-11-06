@@ -555,8 +555,8 @@ void AccountSettings::slotSpacesUpdated()
                 qCInfo(lcAccountSettings) << "Adding sync connection for newly discovered space" << newSpace->displayName();
 
                 const QString localDir(accountsState()->account()->defaultSyncRoot());
-                const QString folderName =
-                    FolderMan::instance()->findGoodPathForNewSyncFolder(localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder);
+                const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
+                    localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, accountStatePtr->account()->uuid());
 
                 FolderMan::SyncConnectionDescription fwr;
                 fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());

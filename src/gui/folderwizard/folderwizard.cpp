@@ -64,7 +64,7 @@ QString FolderWizardPrivate::defaultSyncRoot() const
 {
     if (!_account->account()->hasDefaultSyncRoot()) {
         const auto folderType = _account->supportsSpaces() ? FolderMan::NewFolderType::SpacesSyncRoot : FolderMan::NewFolderType::OC10SyncRoot;
-        return FolderMan::suggestSyncFolder(folderType);
+        return FolderMan::suggestSyncFolder(folderType, _account->account()->uuid());
     } else {
         return _account->account()->defaultSyncRoot();
     }
@@ -94,12 +94,13 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, const AccountStatePtr 
 QString FolderWizardPrivate::initialLocalPath() const
 {
     if (_account->supportsSpaces()) {
-        return FolderMan::findGoodPathForNewSyncFolder(defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot);
+        return FolderMan::findGoodPathForNewSyncFolder(
+            defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->account()->uuid());
     }
 
     // Split default sync root:
     const QFileInfo path(defaultSyncRoot());
-    return FolderMan::findGoodPathForNewSyncFolder(path.path(), path.fileName(), FolderMan::NewFolderType::OC10SyncRoot);
+    return FolderMan::findGoodPathForNewSyncFolder(path.path(), path.fileName(), FolderMan::NewFolderType::OC10SyncRoot, _account->account()->uuid());
 }
 
 QString FolderWizardPrivate::remotePath() const

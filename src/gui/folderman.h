@@ -130,7 +130,7 @@ public:
         QSet<QString> selectiveSyncBlackList;
     };
 
-    static QString suggestSyncFolder(NewFolderType folderType);
+    static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
     [[nodiscard]] static bool prepareFolder(const QString &folder);
 
     static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
@@ -235,7 +235,7 @@ public:
      * subfolder of ~ would be a good candidate. When that happens \a basePath
      * is returned.
      */
-    static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType);
+    static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
 
     /**
      * While ignoring hidden files can theoretically be switched per folder,

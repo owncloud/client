@@ -44,7 +44,8 @@ AccountConfiguredSetupWizardState::AccountConfiguredSetupWizardState(SetupWizard
     }
 
     // We need some sync root, either for spaces, or for OC10. It's never a Space folder.
-    const QString defaultSyncTargetDir = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot);
+    // We pass an invalid UUID, because we don't "own" a syncroot yet, and all checks against UUIDs should fail.
+    const QString defaultSyncTargetDir = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot, {});
     QString syncTargetDir = _context->accountBuilder().syncTargetDir();
 
     if (syncTargetDir.isEmpty()) {

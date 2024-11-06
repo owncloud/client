@@ -186,29 +186,34 @@ private Q_SLOTS:
 
         // TEST
         const auto folderType = FolderMan::NewFolderType::OC10SyncRoot;
+        const auto uuid = QUuid::createUuid();
 
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("oc"), folderType), dirPath + QStringLiteral("/oc"));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud"), folderType), dirPath + QStringLiteral("/ownCloud (3)"));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2"), folderType), dirPath + QStringLiteral("/ownCloud2 (2)"));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud (2)"), folderType), dirPath + QStringLiteral("/ownCloud (2) (2)"));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2/foo"), folderType), dirPath + QStringLiteral("/ownCloud2_foo"));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2/bar"), folderType), dirPath + QStringLiteral("/ownCloud2_bar"));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("sub"), folderType), dirPath + QStringLiteral("/sub (2)"));
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("oc"), folderType, uuid), dirPath + QStringLiteral("/oc"));
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud"), folderType, uuid), dirPath + QStringLiteral("/ownCloud (3)"));
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2"), folderType, uuid), dirPath + QStringLiteral("/ownCloud2 (2)"));
+        QCOMPARE(
+            folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud (2)"), folderType, uuid), dirPath + QStringLiteral("/ownCloud (2) (2)"));
+        QCOMPARE(
+            folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2/foo"), folderType, uuid), dirPath + QStringLiteral("/ownCloud2_foo"));
+        QCOMPARE(
+            folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2/bar"), folderType, uuid), dirPath + QStringLiteral("/ownCloud2_bar"));
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("sub"), folderType, uuid), dirPath + QStringLiteral("/sub (2)"));
 
         // REMOVE ownCloud2 from the filesystem, but keep a folder sync'ed to it.
         // We should still not suggest this folder as a new folder.
         QDir(dirPath + QStringLiteral("/ownCloud (2)/")).removeRecursively();
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud"), folderType), dirPath + QStringLiteral("/ownCloud (3)"));
-        QCOMPARE(
-            folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2"), folderType), QString(dirPath + QStringLiteral("/ownCloud2 (2)")));
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud (2)"), folderType),
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud"), folderType, uuid), dirPath + QStringLiteral("/ownCloud (3)"));
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2"), folderType, uuid),
+            QString(dirPath + QStringLiteral("/ownCloud2 (2)")));
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud (2)"), folderType, uuid),
             QString(dirPath + QStringLiteral("/ownCloud (2) (2)")));
 
         // make sure people can't do evil stuff
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("../../../Bo/b"), folderType), QString(dirPath + QStringLiteral("/___Bo_b")));
+        QCOMPARE(
+            folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("../../../Bo/b"), folderType, uuid), QString(dirPath + QStringLiteral("/___Bo_b")));
 
         // normalise the name
-        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("            Bo:*<>!b          "), folderType),
+        QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("            Bo:*<>!b          "), folderType, uuid),
             QString(dirPath + QStringLiteral("/Bo____!b")));
     }
 
