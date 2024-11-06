@@ -72,7 +72,13 @@ void ServerUrlSetupWizardState::evaluatePage()
             userProvidedUrl.prepend(defaultUrlSchemeC);
         }
 
-        return QUrl::fromUserInput(userProvidedUrl).adjusted(QUrl::RemoveUserInfo);
+        auto url = QUrl::fromUserInput(userProvidedUrl).adjusted(QUrl::RemoveUserInfo);
+        const QString serverPathOverride = Theme::instance()->overrideServerPath();
+        if (!serverPathOverride.isEmpty()) {
+            url.setPath(serverPathOverride);
+        }
+
+        return url;
     }();
 
     // (ab)use the account builder as temporary storage for the URL we are about to probe (after sanitation)

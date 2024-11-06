@@ -232,6 +232,11 @@ QString Theme::overrideServerUrlV2() const
     return serverOverride;
 }
 
+QString Theme::overrideServerPath() const
+{
+    return {};
+}
+
 void Theme::setSystrayUseMonoIcons(bool mono)
 {
     _mono = mono;
