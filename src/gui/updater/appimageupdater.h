@@ -31,7 +31,6 @@ class AppImageUpdater : public OCUpdater
 
 public:
     explicit AppImageUpdater(const QUrl &url);
-    bool handleStartup() override;
     void backgroundCheckForUpdate() override;
 
 private:
