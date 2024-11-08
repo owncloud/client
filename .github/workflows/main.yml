@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - master
-      - '[0-9]+'
+      - "[0-9]+"
   pull_request:
   workflow_dispatch:
 
-concurrency: 
+concurrency:
   group: ${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
@@ -19,36 +19,41 @@ defaults:
     shell: pwsh
 
 jobs:
-# ------------------------------------------------------------------------------------------------------------------------------------------
+  # ------------------------------------------------------------------------------------------------------------------------------------------
   build:
     permissions:
       # actions/upload-artifact doesn't need contents: write
       contents: read
     strategy:
-        fail-fast: true
-        matrix:
-            include:
-            - name: windows-cl-x86_64
-              target: windows-cl-msvc2022-x86_64
-              os: windows-latest
-              container:
-              useSonarCloud: ${{ github.event_name != 'pull_request' }}
-            # TODO: align the target with the name
-            - name: macos-clang-arm64
-              target: macos-clang-arm64
-              os: macos-latest
-              container:
-              useSonarCloud:
-            - name: macos-clang-arm64-debug
-              target: macos-clang-arm64-debug
-              os: macos-latest
-              container:
-              useSonarCloud:
-            - name: linux-gcc-x86_64
-              target: linux-64-gcc
-              os: ubuntu-latest
-              container: owncloudci/appimage-build:sles15-amd64
-              useSonarCloud:
+      fail-fast: true
+      matrix:
+        include:
+          - name: windows-cl-x86_64
+            target: windows-cl-msvc2022-x86_64
+            os: windows-latest
+            container:
+            useSonarCloud: ${{ github.event_name != 'pull_request' }}
+          # TODO: align the target with the name
+          - name: macos-clang-arm64
+            target: macos-clang-arm64
+            os: macos-latest
+            container:
+            useSonarCloud:
+          - name: macos-clang-arm64-debug
+            target: macos-clang-arm64-debug
+            os: macos-latest
+            container:
+            useSonarCloud:
+          - name: linux-gcc-x86_64
+            target: linux-64-gcc
+            os: ubuntu-latest
+            container: owncloudci/appimage-build:sles15-amd64
+            useSonarCloud:
+          - name: linux-appimage
+            target: linux-appimage
+            os: ubuntu-latest
+            container: owncloudci/appimage-build:sles15-amd64
+            useSonarCloud:
 
     name: ${{ matrix.name }}
 
@@ -62,116 +67,116 @@ jobs:
     container: ${{ matrix.container }}
 
     steps:
-    - name: Check out full source code for tooling
-      if: ${{ matrix.useSonarCloud || matrix.name  == 'linux-gcc-x86_64' }}
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Check out full source code for tooling
+        if: ${{ matrix.useSonarCloud || matrix.name  == 'linux-gcc-x86_64' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Check out latest commit
-      if: ${{ !matrix.useSonarCloud && matrix.name  != 'linux-gcc-x86_64' }}
-      uses: actions/checkout@v4
+      - name: Check out latest commit
+        if: ${{ !matrix.useSonarCloud && matrix.name  != 'linux-gcc-x86_64' }}
+        uses: actions/checkout@v4
 
-    - name: Restore cache
-      uses: actions/cache@v4
-      with:
-        path: ~/cache
-        key: ${{ runner.os }}-${{ matrix.target }}
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: ~/cache
+          key: ${{ runner.os }}-${{ matrix.target }}
 
-    - name: Clone CraftMaster
-      run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
+      - name: Clone CraftMaster
+        run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
 
-    - name: Craft setup
-      run: |
-        New-Item -Path ~/cache -ItemType Directory -ErrorAction SilentlyContinue
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" --setup
+      - name: Craft setup
+        run: |
+          New-Item -Path ~/cache -ItemType Directory -ErrorAction SilentlyContinue
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" --setup
 
-    - name: Craft unshelve
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --unshelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
+      - name: Craft unshelve
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --unshelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
 
-    - name: Prepare
-      run: |
-        New-Item -ItemType Directory "${env:GITHUB_WORKSPACE}/binaries/"
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set forceAsserts=true owncloud/owncloud-client
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set srcDir="${env:GITHUB_WORKSPACE}" owncloud/owncloud-client
-        if ($IsWindows) {
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c dev-utils/nsis
-        } elseif($IsLinux) {
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c dev-utils/linuxdeploy
-        }
+      - name: Prepare
+        run: |
+          New-Item -ItemType Directory "${env:GITHUB_WORKSPACE}/binaries/"
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set forceAsserts=true owncloud/owncloud-client
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set srcDir="${env:GITHUB_WORKSPACE}" owncloud/owncloud-client
+          if ($IsWindows) {
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c dev-utils/nsis
+          } elseif($IsLinux) {
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c dev-utils/linuxdeploy
+          }
 
-    - name: Install dependencies
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
+      - name: Install dependencies
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
 
-    - name: QML format lint
-      if: matrix.name  == 'linux-gcc-x86_64'
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/qt6/qttools
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh -c "git ls-files *.qml | %{ qmlformat -i `$_}"
-        $diff = git diff
-        if ($diff) {
-          $diff
-          exit 1
-        }
+      - name: QML format lint
+        if: matrix.name  == 'linux-gcc-x86_64'
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/qt6/qttools
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh -c "git ls-files *.qml | %{ qmlformat -i `$_}"
+          $diff = git diff
+          if ($diff) {
+            $diff
+            exit 1
+          }
 
-    - name: clang-format format lint
-      if: matrix.name  == 'linux-gcc-x86_64'
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run git clang-format --force  ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
-        $diff = git diff
-        if ($diff) {
-          $diff
-          exit 1
-        }
+      - name: clang-format format lint
+        if: matrix.name  == 'linux-gcc-x86_64'
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run git clang-format --force  ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
+          $diff = git diff
+          if ($diff) {
+            $diff
+            exit 1
+          }
 
-    - name: Build
-      if: ${{ !matrix.useSonarCloud }}
-      run: |
-        if ("${{ matrix.target }}" -eq "macos-64-clang-debug" ) {
-            # https://api.kde.org/ecm/module/ECMEnableSanitizers.html
-            # address;leak;undefined
-            # clang: error: unsupported option '-fsanitize=leak' for target 'x86_64-apple-darwin21.6.0'
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set args="-DECM_ENABLE_SANITIZERS='address;undefined'" owncloud/owncloud-client
-        }
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache owncloud/owncloud-client
+      - name: Build
+        if: ${{ !matrix.useSonarCloud }}
+        run: |
+          if ("${{ matrix.target }}" -eq "macos-64-clang-debug" ) {
+              # https://api.kde.org/ecm/module/ECMEnableSanitizers.html
+              # address;leak;undefined
+              # clang: error: unsupported option '-fsanitize=leak' for target 'x86_64-apple-darwin21.6.0'
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set args="-DECM_ENABLE_SANITIZERS='address;undefined'" owncloud/owncloud-client
+          }
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache owncloud/owncloud-client
 
-    - name: Build for SonarCloud
-      if: ${{ matrix.useSonarCloud }}
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --configure owncloud/owncloud-client
-        $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.sonar.ps1" --build
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --install --qmerge owncloud/owncloud-client
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.sonar.ps1" --analyze
+      - name: Build for SonarCloud
+        if: ${{ matrix.useSonarCloud }}
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --configure owncloud/owncloud-client
+          $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.sonar.ps1" --build
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --install --qmerge owncloud/owncloud-client
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.sonar.ps1" --analyze
 
-    - name: Run tests
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test owncloud/owncloud-client
+      - name: Run tests
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test owncloud/owncloud-client
 
-    - name: Clang tidy
-      if: github.event_name != 'pull_request'
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m pip install clang-html
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
-        $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.run-clang-tidy.ps1"
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m clang_html "${env:TMPDIR}/clang-tidy.log" -o "${env:GITHUB_WORKSPACE}/binaries/clang-tidy.html"
+      - name: Clang tidy
+        if: github.event_name != 'pull_request'
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m pip install clang-html
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
+          $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.run-clang-tidy.ps1"
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m clang_html "${env:TMPDIR}/clang-tidy.log" -o "${env:GITHUB_WORKSPACE}/binaries/clang-tidy.html"
 
-    - name: Package
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --package owncloud/owncloud-client
+      - name: Package
+        run: |
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --package owncloud/owncloud-client
 
-    - name: Prepare artifacts
-      run: |
-        Copy-Item "$env:HOME/craft/binaries/*" "${env:GITHUB_WORKSPACE}/binaries/" -ErrorAction SilentlyContinue
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --shelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
-        Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
+      - name: Prepare artifacts
+        run: |
+          Copy-Item "$env:HOME/craft/binaries/*" "${env:GITHUB_WORKSPACE}/binaries/" -ErrorAction SilentlyContinue
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --shelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
+          Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.name }}
-        path: ${{ github.workspace }}/binaries/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ github.workspace }}/binaries/*
