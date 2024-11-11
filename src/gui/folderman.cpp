@@ -836,8 +836,11 @@ QString FolderMan::checkPathValidityForNewFolder(const QString &path, NewFolderT
     return {};
 }
 
-QString FolderMan::findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, FolderMan::NewFolderType folderType)
+QString FolderMan::findGoodPathForNewSyncFolder(
+    const QString &basePath, const QString &newFolder, FolderMan::NewFolderType folderType, const QUuid &accountUuid)
 {
+    OC_ASSERT(!accountUuid.isNull() || folderType == FolderMan::NewFolderType::SpacesSyncRoot);
+
     // reserve extra characters to allow appending of a number
     const QString normalisedPath = FileSystem::createPortableFileName(basePath, FileSystem::pathEscape(newFolder), std::string_view(" (100)").size());
 
@@ -854,7 +857,7 @@ QString FolderMan::findGoodPathForNewSyncFolder(const QString &basePath, const Q
     {
         QString folder = normalisedPath;
         for (int attempt = 2; attempt <= 100; ++attempt) {
-            if (!QFileInfo::exists(folder) && FolderMan::instance()->checkPathValidityForNewFolder(folder, folderType, {}).isEmpty()) {
+            if (!QFileInfo::exists(folder) && FolderMan::instance()->checkPathValidityForNewFolder(folder, folderType, accountUuid).isEmpty()) {
                 return canonicalPath(folder);
             }
             folder = normalisedPath + QStringLiteral(" (%1)").arg(attempt);
@@ -967,9 +970,9 @@ Folder *FolderMan::addFolderFromFolderWizardResult(const AccountStatePtr &accoun
     return f;
 }
 
-QString FolderMan::suggestSyncFolder(NewFolderType folderType)
+QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)
 {
-    return FolderMan::instance()->findGoodPathForNewSyncFolder(QDir::homePath(), Theme::instance()->appName(), folderType);
+    return FolderMan::instance()->findGoodPathForNewSyncFolder(QDir::homePath(), Theme::instance()->appName(), folderType, accountUuid);
 }
 
 bool FolderMan::prepareFolder(const QString &folder)
