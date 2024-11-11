@@ -103,7 +103,13 @@ jobs:
 
     - name: Install dependencies
       run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
+          if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
+              # build with appimage updater and others
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=true owncloud/owncloud-client
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
+          }
+          & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
 
     - name: QML format lint
       if: matrix.name  == 'linux-gcc-x86_64'
@@ -136,6 +142,12 @@ jobs:
             # clang: error: unsupported option '-fsanitize=leak' for target 'x86_64-apple-darwin21.6.0'
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set args="-DECM_ENABLE_SANITIZERS='address;undefined'" owncloud/owncloud-client
         }
+        if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
+            # build with appimage updater and others
+            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client
+            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=true owncloud/owncloud-client
+            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
+        }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache owncloud/owncloud-client
 
     - name: Build for SonarCloud
@@ -162,6 +174,10 @@ jobs:
 
     - name: Package
       run: |
+        if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
+            # package without crash reporter
+            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=false owncloud/owncloud-client
+        }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --package owncloud/owncloud-client
 
     - name: Prepare artifacts
