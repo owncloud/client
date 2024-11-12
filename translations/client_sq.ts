@@ -1328,7 +1328,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
         <translation>Ka tashmë një njëkohësim prej shërbyesi te kjo dosje vendore. Ju lutemi, përzgjidhni një tjetër dosje vendore!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="894"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1403,17 +1403,17 @@ Nëse nuk bëni kështu, do të humbni hyrje te dosja juaj e njëkohësuar!</tra
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="158"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>S’ka kartela virtuale për dosjen e përzgjedhur</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="171"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
         <source>Add Folder Sync Connection</source>
         <translation>Shtoni Lidhje Njëkohësimi Dosjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="173"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
         <source>Add Sync Connection</source>
         <translation>Shtoni Lidhje Njëkohësimesh</translation>
     </message>
@@ -3504,7 +3504,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Wizard::AccountConfiguredSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="73"/>
+        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="74"/>
         <source>Invalid local download directory: %1</source>
         <translation>Drejtori vendore shkarkimesh e pavlefshme: %1</translation>
     </message>
@@ -3701,199 +3701,199 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>OCC::ownCloudGui</name>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="302"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="303"/>
         <source>Please sign in</source>
         <translation>Ju lutemi, bëni hyrjen</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="330"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="331"/>
         <source>Folder %1: %2</source>
         <translation>Dosja %1: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="339"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="340"/>
         <source>Unresolved %1 conflicts</source>
         <translation>%1 përplasje të pazgjidhura</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="342"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="343"/>
         <source>Ignored errors %1</source>
         <translation>Gabime të shpërfillur %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="357"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="358"/>
         <source>There are no sync folders configured.</source>
         <translation>S’ka të formësuara dosje njëkohësimi.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="391"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="392"/>
         <source>Log in...</source>
         <translation>Hyni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="393"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="394"/>
         <source>Log out</source>
         <translation>Dilni</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="490"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="491"/>
         <source>Recent Changes</source>
         <translation>Ndryshime Së Fundi</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="380"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="381"/>
         <source>Open folder &apos;%1&apos;</source>
         <translation>Hapni dosjen &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="231"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="232"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>Shërbyesi në llogarinë %1 xhiron një version të pambuluar të %2. Përdorimi i këtij klienti me versione të pambuluar të shërbyesit është i patestuar dhe potencialisht i rrezikshëm. Qari dhe zarari i juaj.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="289"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="290"/>
         <source>Account %1</source>
         <translation>Llogari %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="387"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="618"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="388"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="619"/>
         <source>Stop synchronization</source>
         <translation>Ndal njëkohësimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="613"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="614"/>
         <source>Create a new account</source>
         <translation>Krijoni një llogari të re</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="736"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="737"/>
         <source>Unknown status</source>
         <translation>Gjendje e panjohur</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="752"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="753"/>
         <source>Details...</source>
         <translation>Hollësi…</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="663"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="664"/>
         <source>Help</source>
         <translation>Ndihmë</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="385"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="616"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="386"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="617"/>
         <source>Resume synchronization</source>
         <translation>Riktheju njëkohësimit</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="670"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="671"/>
         <source>Quit %1</source>
         <translation>Dilni nga %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="284"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="285"/>
         <source>Disconnected from %1</source>
         <translation>U shkëput prej %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="230"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="231"/>
         <source>Unsupported Server Version</source>
         <translation>Version i Pambuluar Shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="274"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="275"/>
         <source>Disconnected</source>
         <translation>I shkëputur</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="276"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="277"/>
         <source>Disconnected from some accounts</source>
         <translation>I shkëputur prej disa llogarish</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="287"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="288"/>
         <source>Disconnected from accounts:</source>
         <translation>U shkëput prej llogarive:</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="303"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="304"/>
         <source>Signed out</source>
         <translation>Dolët</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="307"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="308"/>
         <source>Account synchronization is disabled</source>
         <translation>Njëkohësimi i llogarisë është çaktivizuar</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="308"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="309"/>
         <source>Synchronization is paused</source>
         <translation>Njëkohësimi është ndalur</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="354"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="355"/>
         <source>Up to date (%1)</source>
         <translation>Të përditësuar (%1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="358"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="359"/>
         <source>No sync folders configured</source>
         <translation>S’ka të formësuara dosje njëkohësimesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="609"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="610"/>
         <source>Show %1</source>
         <translation>Shfaq %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="667"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="668"/>
         <source>About %1</source>
         <translation>Rreth %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="749"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="750"/>
         <source>No items synced recently</source>
         <translation>Pa objekte të njëkohësuar së fundi</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="766"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="767"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Po kërkohet për ndryshime te shërbyesi i largët &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="769"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="770"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Po kërkohet për ndryshime te shërbyesi vendor &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="784"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="785"/>
         <source>Syncing %1 of %2  (%3 left)</source>
         <translation>Po njëkohësohet %1 nga %2  (mbeten edhe %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="789"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="790"/>
         <source>Syncing %1 of %2</source>
         <translation>Po njëkohësohet %1 nga %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="798"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="799"/>
         <source>Syncing %1 (%2 left)</source>
         <translation>Po njëkohësohet %1 (mbeten edhe %2)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="801"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="802"/>
         <source>Syncing %1</source>
         <translation>Po njëkohësohet %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="810"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="811"/>
         <source>%1 (%2, %3)</source>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="961"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="962"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>Përdoruesi ndali njëkohësimin për llogarinë “%1”</translation>
     </message>

@@ -1329,7 +1329,7 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
         <translation>Já existe uma sincronização do servidor para esta pasta local. Por favor, escolha uma outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="894"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1404,17 +1404,17 @@ Você vai perder o acesso à sua pasta de sincronização se não o fizer!</tran
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="158"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Arquivos virtuais não estão disponíveis para a pasta selecionada</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="171"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
         <source>Add Folder Sync Connection</source>
         <translation>Adicionar Conexão de Sincronização de pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="173"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
         <source>Add Sync Connection</source>
         <translation>Adicionar Conexão de Sincronização</translation>
     </message>
@@ -3506,7 +3506,7 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
 <context>
     <name>OCC::Wizard::AccountConfiguredSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="73"/>
+        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="74"/>
         <source>Invalid local download directory: %1</source>
         <translation>Diretório de download local inválido:%1</translation>
     </message>
@@ -3703,199 +3703,199 @@ Tem certeza de que deseja continuar?</translation>
 <context>
     <name>OCC::ownCloudGui</name>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="302"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="303"/>
         <source>Please sign in</source>
         <translation>Favor conectar</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="330"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="331"/>
         <source>Folder %1: %2</source>
         <translation>Pasta %1: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="339"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="340"/>
         <source>Unresolved %1 conflicts</source>
         <translation>Conflito %1 não resolvidos</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="342"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="343"/>
         <source>Ignored errors %1</source>
         <translation>Erros ignorados %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="357"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="358"/>
         <source>There are no sync folders configured.</source>
         <translation>Não há pastas de sincronização configuradas.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="391"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="392"/>
         <source>Log in...</source>
         <translation>Entrar...</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="393"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="394"/>
         <source>Log out</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="490"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="491"/>
         <source>Recent Changes</source>
         <translation>Alterações Recentes</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="380"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="381"/>
         <source>Open folder &apos;%1&apos;</source>
         <translation>Abrir pasta &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="231"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="232"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>O servidor na conta %1 executa uma versão não suportada %2. A utilização deste cliente com versões de servidor não suportadas não foi testada e é potencialmente perigosa. Prossiga por sua conta e risco.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="289"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="290"/>
         <source>Account %1</source>
         <translation>Conta %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="387"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="618"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="388"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="619"/>
         <source>Stop synchronization</source>
         <translation>Stop synchronization</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="613"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="614"/>
         <source>Create a new account</source>
         <translation>Criar uma nova conta</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="736"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="737"/>
         <source>Unknown status</source>
         <translation>Status desconhecido</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="752"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="753"/>
         <source>Details...</source>
         <translation>Detalhes...</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="663"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="664"/>
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="385"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="616"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="386"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="617"/>
         <source>Resume synchronization</source>
         <translation>Retomar sincronização</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="670"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="671"/>
         <source>Quit %1</source>
         <translation>Sair %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="284"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="285"/>
         <source>Disconnected from %1</source>
         <translation>Desconectado de %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="230"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="231"/>
         <source>Unsupported Server Version</source>
         <translation>Versão do Servidor Não Suportada</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="274"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="275"/>
         <source>Disconnected</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="276"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="277"/>
         <source>Disconnected from some accounts</source>
         <translation>Desconectado de algumas contas</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="287"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="288"/>
         <source>Disconnected from accounts:</source>
         <translation>Desconectado de contas:</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="303"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="304"/>
         <source>Signed out</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="307"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="308"/>
         <source>Account synchronization is disabled</source>
         <translation>A sincronização de conta está desativada</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="308"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="309"/>
         <source>Synchronization is paused</source>
         <translation>A sincronização está pausada</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="354"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="355"/>
         <source>Up to date (%1)</source>
         <translation>Atualizado (%1) </translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="358"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="359"/>
         <source>No sync folders configured</source>
         <translation>Nenhuma pasta de sincronização configurada</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="609"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="610"/>
         <source>Show %1</source>
         <translation>Mostrar %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="667"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="668"/>
         <source>About %1</source>
         <translation>Sobre %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="749"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="750"/>
         <source>No items synced recently</source>
         <translation>Não há itens sincronizados recentemente</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="766"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="767"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Verificando alterações remotamente &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="769"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="770"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Verificação de alterações local &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="784"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="785"/>
         <source>Syncing %1 of %2  (%3 left)</source>
         <translation>Sincronizar %1 de %2 (%3 faltando)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="789"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="790"/>
         <source>Syncing %1 of %2</source>
         <translation>Sincronizando %1 de %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="798"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="799"/>
         <source>Syncing %1 (%2 left)</source>
         <translation>Sincronizando %1 (%2 faltando)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="801"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="802"/>
         <source>Syncing %1</source>
         <translation>Sincronizando %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="810"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="811"/>
         <source>%1 (%2, %3)</source>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="961"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="962"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>O usuário pausou a sincronização da conta &apos;%1&apos;</translation>
     </message>
