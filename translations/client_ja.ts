@@ -9,7 +9,7 @@
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
-        <translation type="unfinished"/>
+        <translation>アカウントを追加</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
@@ -91,17 +91,17 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
-        <translation type="unfinished"/>
+        <translation>パスワードを入力してログインしてください。</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter %1 and password to log in.</source>
-        <translation type="unfinished"/>
+        <translation>%1 とパスワードを入力してログインしてください。</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
         <source>Enter %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 を入力してください</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
@@ -1126,7 +1126,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="502"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 と他 %n 個のファイルが削除されました。</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="187"/>
@@ -1146,7 +1146,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="509"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 と %n 個の他のファイルが追加されました。</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="511"/>
@@ -1157,22 +1157,22 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="516"/>
         <source>%1 and %n other file(s) have been updated.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 と他 %n 個のファイルが更新されました。</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="523"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 の名前が %2 に変更され、他 %n 個のファイルの名前が変更されました。</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="530"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 が %2 に移され、他 %n 個のファイルが移されました。</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="537"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 とその他 %n 個のファイルが同期で衝突しました。</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="539"/>
@@ -1182,7 +1182,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="544"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>エラーにより、%1 と %n 個の他のファイルを同期できませんでした。ログで詳細を確認してください。</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="546"/>
@@ -1278,7 +1278,7 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="741"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
-        <translation type="unfinished"/>
+        <translation>フォルダ &apos;%1&apos; は既に別のアカウントによって使用されています。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="756"/>
@@ -1293,17 +1293,17 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>ローカルフォルダー %1 には、フォルダー同期接続で使用されるフォルダーが既に含まれています。別のローカルフォルダーを選択してください。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="826"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>ローカルフォルダー %1 は、フォルダー同期接続で使用されるフォルダーに既に含まれています。別のローカルフォルダーを選択してください。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="834"/>
         <source>%1 Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>%1 別のローカルフォルダーを選んでください！</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="774"/>
@@ -1340,19 +1340,21 @@ Please consider removing this folder from the account and adding it again.</sour
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="252"/>
         <source>There are unresolved conflicts.</source>
-        <translation type="unfinished"/>
+        <translation>未解決の競合があります。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="256"/>
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>Suffix-VFS プラグインは非推奨であり、7.0 リリースで削除されます。
+コンテキスト メニューを使用して「仮想ファイル サポートを無効にする」を選択し、同期されたファイルに将来アクセスできるようにします。
+これを行わないと、同期フォルダーにアクセスできなくなります。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="311"/>
         <source>%1 of %2 used</source>
-        <translation type="unfinished"/>
+        <translation>%2 の %1 を使用</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="391"/>
@@ -1541,7 +1543,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="41"/>
         <source>Use Monochrome Icons in the system tray</source>
-        <translation type="unfinished"/>
+        <translation>システムトレイにモノクロアイコンを使用する</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="48"/>
@@ -1551,7 +1553,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="55"/>
         <source>Start on Login</source>
-        <translation type="unfinished"/>
+        <translation>ログインして開始</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="73"/>
@@ -1561,7 +1563,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="89"/>
         <source>Language selector</source>
-        <translation type="unfinished"/>
+        <translation>言語選択</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="112"/>
@@ -1758,7 +1760,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="273"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>フィルターメニュー</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="275"/>
@@ -1881,7 +1883,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="130"/>
         <source>Proxy Hostname</source>
-        <translation type="unfinished"/>
+        <translation>プロキシー ホスト名</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="140"/>
@@ -1891,7 +1893,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="153"/>
         <source>Proxy Port Number</source>
-        <translation type="unfinished"/>
+        <translation>プロキシー ポート番号</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="174"/>
@@ -1911,7 +1913,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="360"/>
         <source>Upload bandwidth in kilobytes per second</source>
-        <translation type="unfinished"/>
+        <translation>アップロード帯域幅(キロバイト/秒)</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="291"/>
@@ -1928,7 +1930,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="59"/>
         <source>Specify proxy manually</source>
-        <translation type="unfinished"/>
+        <translation>プロキシを手動設定</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
@@ -1950,7 +1952,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="278"/>
         <source>Download bandwidth in kilobytes per second</source>
-        <translation type="unfinished"/>
+        <translation>ダウンロード帯域幅(キロバイト/秒)</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="322"/>
@@ -2558,7 +2560,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="591"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"/>
+        <translation>サーバーはファイル権限を提供しませんでした</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="599"/>
@@ -2710,22 +2712,22 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="97"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>フィルターメニュー</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="112"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>アクションメニュー</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="154"/>
         <source>Sort ascending by %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 で昇順にソート</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="158"/>
         <source>Sort descending by %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 で降順にソート</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="180"/>
@@ -2759,12 +2761,12 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="246"/>
         <source>Currently there are no subfolders on the server.</source>
-        <translation type="unfinished"/>
+        <translation>現在、サーバー上にサブフォルダーはありません。</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="112"/>
         <source>An error occurred while loading the list of subfolders.</source>
-        <translation type="unfinished"/>
+        <translation>サーバーからフォルダーのリスト取得時にエラーが発生しました。</translation>
     </message>
 </context>
 <context>
@@ -3215,7 +3217,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="912"/>
         <source>Manage public links</source>
-        <translation type="unfinished"/>
+        <translation>公開リンクの管理</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="997"/>
@@ -3649,7 +3651,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="43"/>
         <source>&lt; &amp;Back</source>
-        <translation type="unfinished"/>
+        <translation>&lt;&amp;戻る</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="49"/>
@@ -3948,7 +3950,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
         <source>SSL Error: %1</source>
-        <translation type="unfinished"/>
+        <translation>SSL エラー: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
@@ -4007,12 +4009,12 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="101"/>
         <source>&amp;Dismiss</source>
-        <translation type="unfinished"/>
+        <translation>&amp;閉じる</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="116"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;キャンセル</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="152"/>
@@ -4139,12 +4141,12 @@ Are you sure you want to proceed?</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 年</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n ヶ月</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
@@ -4164,7 +4166,7 @@ Are you sure you want to proceed?</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 秒</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
