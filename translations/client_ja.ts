@@ -4,7 +4,7 @@
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
         <source>Navigation bar</source>
-        <translation type="unfinished"/>
+        <translation>ナビゲーションバー</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
@@ -223,7 +223,7 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location filename="../src/gui/commonstrings.cpp" line="48"/>
         <source>%n Filter(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 個のフィルター</numerusform></translation>
     </message>
 </context>
 <context>
@@ -231,7 +231,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="44"/>
         <source>Stay logged out</source>
-        <translation type="unfinished"/>
+        <translation>ログアウトしたままにする</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
@@ -243,7 +243,8 @@ File synchronization desktop utility.</source>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting to:
 %1</source>
-        <translation type="unfinished"/>
+        <translation>接続中:
+%1</translation>
     </message>
 </context>
 <context>
@@ -319,7 +320,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="58"/>
         <source>Show less</source>
-        <translation type="unfinished"/>
+        <translation>簡略表示</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="77"/>
@@ -468,7 +469,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="49"/>
         <source>Notification icon</source>
-        <translation type="unfinished"/>
+        <translation>通知アイコン</translation>
     </message>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="73"/>
