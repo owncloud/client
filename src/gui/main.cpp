@@ -491,8 +491,6 @@ int main(int argc, char **argv)
             return -1;
         }
 
-        folderManager->setSyncEnabled(true);
-
         auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
 
         QObject::connect(platform.get(), &Platform::requestAttention, ocApp->gui(), &ownCloudGui::slotShowSettings);
@@ -518,11 +516,17 @@ int main(int argc, char **argv)
         platform->startServices();
 
 #ifdef WITH_AUTO_UPDATER
-if (Updater::instance()) {
-    // validate whether the last update was successful.
-    Updater::instance()->validateUpdate();
-}
+        if (Updater::instance()) {
+            // validate whether the last update was successful.
+            Updater::instance()->validateUpdate();
+        }
 #endif
+
+        // Enable syncing. We cannot do this earlier, because the UI needs to be set up in order to
+        // show sync errors. We also want to wait for the auto-updater to finish, in case it needs
+        // to install an update.
+        folderManager->setSyncEnabled(true);
+
         if (options.show) {
             ocApp->gui()->slotShowSettings();
             // The user explicitly requested the settings dialog, so don't start the new-account wizard.
