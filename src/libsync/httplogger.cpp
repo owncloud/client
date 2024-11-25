@@ -18,6 +18,7 @@
 #include "common/utility.h"
 
 #include <QBuffer>
+#include <QHttpHeaders>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -64,17 +65,17 @@ struct HttpContext
     bool send = false;
 };
 
-void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIODevice *device, bool cached = false)
+void logHttp(const QByteArray &verb, const QHttpHeaders &headers, HttpContext *ctx, QJsonObject &&header, QIODevice *device, bool cached = false)
 {
     static const bool redact = !qEnvironmentVariableIsSet("OWNCLOUD_HTTPLOGGER_NO_REDACT");
     const auto reply = qobject_cast<QNetworkReply *>(device);
     const auto contentLength = device ? device->size() : 0;
 
     if (redact) {
-        const QString authKey = QStringLiteral("Authorization");
-        const QString auth = header.value(authKey).toString();
-        if (!auth.isEmpty()) {
-            header.insert(authKey, auth.startsWith(QStringLiteral("Bearer ")) ? QStringLiteral("Bearer [redacted]") : QStringLiteral("Basic [redacted]"));
+        if (headers.contains(QHttpHeaders::WellKnownHeader::Authorization)) {
+            const auto auth = QString::fromUtf8(headers.value(QHttpHeaders::WellKnownHeader::Authorization));
+            header.insert(QStringLiteral("Authorization"),
+                auth.startsWith(QStringLiteral("Bearer ")) ? QStringLiteral("Bearer [redacted]") : QStringLiteral("Basic [redacted]"));
         }
     }
 
@@ -105,10 +106,7 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
 
     QJsonObject body = {{QStringLiteral("length"), contentLength}};
     if (contentLength > 0) {
-        QString contentType = header.value(QStringLiteral("Content-Type")).toString();
-        if (contentType.isEmpty()) {
-            contentType = header.value(QStringLiteral("content-type")).toString();
-        }
+        const auto contentType = QString::fromUtf8(headers.value(QHttpHeaders::WellKnownHeader::ContentType));
         if (isTextBody(contentType)) {
             if (!device->isOpen()) {
                 Q_ASSERT(dynamic_cast<QBuffer *>(device));
@@ -117,8 +115,7 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
             }
             Q_ASSERT(device->pos() == 0);
             QString data = QString::fromUtf8(device->peek(PeekSize));
-            if (PeekSize < contentLength)
-            {
+            if (PeekSize < contentLength) {
                 data += QStringLiteral("...(%1 bytes elided)").arg(QString::number(contentLength - PeekSize));
             }
             body[QStringLiteral("data")] = data;
@@ -163,10 +160,14 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
 
         const auto request = reply->request();
         QJsonObject header;
+        QHttpHeaders h = {};
         for (const auto &key : request.rawHeaderList()) {
-            header[QString::fromUtf8(key)] = QString::fromUtf8(request.rawHeader(key));
+            auto k = QString::fromUtf8(key);
+            auto v = QString::fromUtf8(request.rawHeader(key));
+            header[k] = v;
+            h.append(k, v);
         }
-        logHttp(requestVerb(operation, request), ctx, std::move(header), device, cached);
+        logHttp(requestVerb(operation, request), h, ctx, std::move(header), device, cached);
     };
     QObject::connect(reply, &QNetworkReply::requestSent, reply, logSend, Qt::DirectConnection);
 
@@ -179,10 +180,14 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
                 logSend(true);
             }
             QJsonObject header;
+            QHttpHeaders h = {};
             for (const auto &[key, value] : reply->rawHeaderPairs()) {
-                header[QString::fromUtf8(key)] = QString::fromUtf8(value);
+                auto k = QString::fromUtf8(key);
+                auto v = QString::fromUtf8(value);
+                header[k] = v;
+                h.append(k, v);
             }
-            logHttp(requestVerb(*reply), ctx.get(), std::move(header), reply);
+            logHttp(requestVerb(*reply), h, ctx.get(), std::move(header), reply);
         },
         Qt::DirectConnection);
 }
