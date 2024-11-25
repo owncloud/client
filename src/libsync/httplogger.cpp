@@ -105,7 +105,10 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
 
     QJsonObject body = {{QStringLiteral("length"), contentLength}};
     if (contentLength > 0) {
-        const QString contentType = header.value(QStringLiteral("Content-Type")).toString();
+        QString contentType = header.value(QStringLiteral("Content-Type")).toString();
+        if (contentType.isEmpty()) {
+            contentType = header.value(QStringLiteral("content-type")).toString();
+        }
         if (isTextBody(contentType)) {
             if (!device->isOpen()) {
                 Q_ASSERT(dynamic_cast<QBuffer *>(device));
