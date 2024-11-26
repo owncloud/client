@@ -82,7 +82,8 @@ void ProcessDirectoryJob::process()
     };
     std::map<QString, Entries> entries;
     for (auto &e : _serverNormalQueryEntries) {
-        entries[e.name].serverEntry = std::move(e);
+        // XXXX
+        entries[e.name.normalized(QString::NormalizationForm_C)].serverEntry = std::move(e);
     }
     _serverNormalQueryEntries.clear();
 
@@ -102,7 +103,9 @@ void ProcessDirectoryJob::process()
     }
 
     for (auto &e : _localNormalQueryEntries) {
-        entries[e.name].localEntry = e;
+        // XXXX
+
+        entries[e.name.normalized(QString::NormalizationForm_C)].localEntry = e;
     }
     if (isVfsWithSuffix()) {
         // For vfs-suffix the local data for suffixed files should usually be associated
