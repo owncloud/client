@@ -308,8 +308,15 @@ void ProcessDirectoryJob::processFile(const PathTuple &path,
     const LocalInfo &localEntry, const RemoteInfo &serverEntry,
     const SyncJournalFileRecord &dbEntry)
 {
+    // The percent-encoded file name as it would be passed in an HTTP request. This can be used to
+    // debug Unicode encoding/normalization issues.
+    auto encodedFileName = QUrl::fromLocalFile(path._original).toEncoded().sliced(std::string_view("file:").length());
     const char *hasServer = serverEntry.isValid() ? "true" : _queryServer == ParentNotChanged ? "db" : "false";
     const char *hasLocal = localEntry.isValid() ? "true" : _queryLocal == ParentNotChanged ? "db" : "false";
+
+    // The code below is formatted like this ON PURPOSE: each field is db/local/server, one field
+    // per (source code) line, so it's easy to understand.
+    // clang-format off
     qCInfo(lcDisco).nospace() << "Processing " << path._original
                               << " | valid: " << dbEntry.isValid() << "/" << hasLocal << "/" << hasServer
                               << " | mtime: " << dbEntry._modtime << "/" << localEntry.modtime << "/" << serverEntry.modtime
@@ -319,7 +326,9 @@ void ProcessDirectoryJob::processFile(const PathTuple &path,
                               << " | perm: " << dbEntry._remotePerm << "//" << serverEntry.remotePerm
                               << " | fileid: " << dbEntry._fileId << "//" << serverEntry.fileId
                               << " | inode: " << dbEntry._inode << "/" << localEntry.inode << "/"
-                              << " | type: " << dbEntry._type << "/" << localEntry.type << "/" << (serverEntry.isDirectory ? ItemTypeDirectory : ItemTypeFile);
+                              << " | type: " << dbEntry._type << "/" << localEntry.type << "/" << (serverEntry.isDirectory ? ItemTypeDirectory : ItemTypeFile)
+                              << " (" << encodedFileName << ")";
+    // clang-format on
 
     if (_discoveryData->isRenamed(path._original)) {
         qCDebug(lcDisco) << "Ignoring renamed";
