@@ -2230,57 +2230,57 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Failinimi on serveris mustas nimekirjas.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="415"/>
+        <location filename="../src/libsync/discovery.cpp" line="424"/>
         <source>server reported no %1</source>
         <translation>server vastas, et %1 puudub </translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1176"/>
+        <location filename="../src/libsync/discovery.cpp" line="1185"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: Ignoreeritud, sest selle rada ei ole valitud</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1250"/>
+        <location filename="../src/libsync/discovery.cpp" line="1259"/>
         <source>Moved to invalid target, restoring</source>
         <translation>Teisaldatud kehtetule sihtmärgile, taastamine</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1263"/>
+        <location filename="../src/libsync/discovery.cpp" line="1272"/>
         <source>Not allowed to remove, restoring</source>
         <translation>Eemaldamine pole lubatud, taastan</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1209"/>
+        <location filename="../src/libsync/discovery.cpp" line="1218"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>Ei ole lubatud, kuna teil puuduvad õigused sellesse kausta alamkaustu lisada</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="621"/>
+        <location filename="../src/libsync/discovery.cpp" line="630"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Viga ümbernimetamisel, staatuse kood: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1214"/>
+        <location filename="../src/libsync/discovery.cpp" line="1223"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Ei ole lubatud, kuna teil puuduvad õigused sellesse kausta faile lisada</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1227"/>
+        <location filename="../src/libsync/discovery.cpp" line="1236"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>Pole lubatud üles laadida, kuna tegemist on ainult loetava serveriga, taastan</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1373"/>
+        <location filename="../src/libsync/discovery.cpp" line="1382"/>
         <source>Error while reading the database</source>
         <translation>Viga andmebaasi lugemisel</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1421"/>
+        <location filename="../src/libsync/discovery.cpp" line="1430"/>
         <source>This Space is currently unavailable</source>
         <translation>See ruum ei ole hetkel kättesaadav</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1442"/>
+        <location filename="../src/libsync/discovery.cpp" line="1451"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>Server vastas veaga kataloogi &apos;%1&apos; lugemisel: %2</translation>
     </message>
