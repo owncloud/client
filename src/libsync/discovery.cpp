@@ -82,6 +82,7 @@ void ProcessDirectoryJob::process()
     };
     std::map<QString, Entries> entries;
     for (auto &e : _serverNormalQueryEntries) {
+        e.name = e.name.normalized(QString::NormalizationForm_C);
         entries[e.name].serverEntry = std::move(e);
     }
     _serverNormalQueryEntries.clear();
@@ -93,7 +94,7 @@ void ProcessDirectoryJob::process()
             if (rec.isVirtualFile() && isVfsWithSuffix()) {
                 name = chopVirtualFileSuffix(name);
             }
-            auto &dbEntry = entries[name].dbEntry;
+            auto &dbEntry = entries[name.normalized(QString::NormalizationForm_C)].dbEntry;
             dbEntry = rec;
             setupDbPinStateActions(dbEntry);
         })) {
@@ -102,6 +103,7 @@ void ProcessDirectoryJob::process()
     }
 
     for (auto &e : _localNormalQueryEntries) {
+        e.name = e.name.normalized(QString::NormalizationForm_C);
         entries[e.name].localEntry = e;
     }
     if (isVfsWithSuffix()) {
