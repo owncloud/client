@@ -123,33 +123,6 @@ version = 10.44
 [libs/python]
 version = 3.11.7
 
-[libs/qt6/qtbase]
-version = 6.8.0
-
-[libs/qt6/qtdeclarative]
-version = 6.8.0
-
-[libs/qt6/qtimageformats]
-version = 6.8.0
-
-[libs/qt6/qtlanguageserver]
-version = 6.8.0
-
-[libs/qt6/qtscxml]
-version = 6.8.0
-
-[libs/qt6/qtshadertools]
-version = 6.8.0
-
-[libs/qt6/qtsvg]
-version = 6.8.0
-
-[libs/qt6/qttools]
-version = 6.8.0
-
-[libs/qt6/qttranslations]
-version = 6.8.0
-
 [libs/runtime]
 version = 17
 
@@ -180,4 +153,3 @@ version = master
 
 [qt-libs/qtkeychain]
 version = 0.14.3
-
