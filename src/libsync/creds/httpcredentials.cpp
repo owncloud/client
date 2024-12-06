@@ -27,6 +27,7 @@
 #include <QJsonObject>
 #include <QLoggingCategory>
 #include <QMutex>
+#include <QNetworkInformation>
 #include <QNetworkReply>
 
 #include <chrono>
@@ -37,6 +38,7 @@ Q_LOGGING_CATEGORY(lcHttpCredentials, "sync.credentials.http", QtInfoMsg)
 
 namespace {
 constexpr int TokenRefreshMaxRetries = 3;
+constexpr std::chrono::seconds TokenRefreshDefaultTimeout = 30s;
 constexpr int CredentialVersion = 1;
 const char authenticationFailedC[] = "owncloud-authentication-failed";
 
@@ -275,29 +277,47 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
     _oAuthJob = new AccountBasedOAuth(_account->sharedFromThis(), _account->accessManager());
     connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, [tokenRefreshRetriesCount, this](QNetworkReply::NetworkError error, const QString &) {
         _oAuthJob->deleteLater();
+
+        auto networkUnavailable = []() {
+            if (auto qni = QNetworkInformation::instance()) {
+                if (qni->reachability() == QNetworkInformation::Reachability::Disconnected) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
         int nextTry = tokenRefreshRetriesCount + 1;
         std::chrono::seconds timeout = {};
-        switch (error) {
-        case QNetworkReply::ContentNotFoundError:
-            // 404: bigip f5?
-            timeout = 0s;
-            break;
-        case QNetworkReply::HostNotFoundError:
-            [[fallthrough]];
-        case QNetworkReply::TimeoutError:
-            [[fallthrough]];
-        // Qt reports OperationCanceledError if the request timed out
-        case QNetworkReply::OperationCanceledError:
-            [[fallthrough]];
-        case QNetworkReply::TemporaryNetworkFailureError:
-            [[fallthrough]];
-        // VPN not ready?
-        case QNetworkReply::ConnectionRefusedError:
+
+        if (networkUnavailable()) {
             nextTry = 0;
-            [[fallthrough]];
-        default:
-            timeout = 30s;
+            timeout = TokenRefreshDefaultTimeout;
+        } else {
+            switch (error) {
+            case QNetworkReply::ContentNotFoundError:
+                // 404: bigip f5?
+                timeout = 0s;
+                break;
+            case QNetworkReply::HostNotFoundError:
+                [[fallthrough]];
+            case QNetworkReply::TimeoutError:
+                [[fallthrough]];
+            // Qt reports OperationCanceledError if the request timed out
+            case QNetworkReply::OperationCanceledError:
+                [[fallthrough]];
+            case QNetworkReply::TemporaryNetworkFailureError:
+                [[fallthrough]];
+            // VPN not ready?
+            case QNetworkReply::ConnectionRefusedError:
+                nextTry = 0;
+                [[fallthrough]];
+            default:
+                timeout = TokenRefreshDefaultTimeout;
+            }
         }
+
         if (nextTry >= TokenRefreshMaxRetries) {
             qCWarning(lcHttpCredentials) << "Too many failed refreshes" << nextTry << "-> log out";
             forgetSensitiveData();
@@ -336,6 +356,8 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
 
 void HttpCredentials::invalidateToken()
 {
+    qCWarning(lcHttpCredentials) << "Invalidating the credentials";
+
     if (!_password.isEmpty()) {
         _previousPassword = _password;
     }
