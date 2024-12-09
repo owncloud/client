@@ -229,8 +229,7 @@ def generate_uuidv4():
     return str(uuid.uuid4())
 
 
-# sometimes the keyring is locked during the test execution
-# and we need to unlock it
+# sometimes the keyring is locked during the test execution, and we need to unlock it
 def unlock_keyring():
     if is_windows():
         return

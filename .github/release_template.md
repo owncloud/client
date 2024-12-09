@@ -12,7 +12,7 @@ __TODO__:
 ### Administration
 
 * [ ] QA: Update [Test Plans](https://confluence.owncloud.com/display/OG/Desktop+Client+Test+Plan+Maintenance)
-* [ ] Update [supported platforms](https://doc.owncloud.com/desktop/next/installing.html#system-requirements) @michaelstingl
+* [ ] Update [supported platforms](https://doc.owncloud.com/desktop/next/installing.html#system-requirements) @DeepDiver1975
 * [ ] QA: Check the translations coming from transifex: https://github.com/owncloud/client/commits/ -> Filter based on a release branch/tag and search for `[tx] updated client translations from transifex [skip ci]`
 * [ ] DEV: Check for new OpenSSL version 
 * [ ] DEV: Update [dependencies](https://confluence.owncloud.com/display/OG/Dependencies)
@@ -21,7 +21,7 @@ __TODO__:
 * [ ] QA: Communicate documentation changes  
    * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
-* [ ] Decide if the prerelease stage will be public or internal @michaelstingl 
+* [ ] Decide if the prerelease stage will be public or internal @DeepDiver1975 
 * [ ] Announce feature freeze in ``#release_coordination`` channel before Beta build
 * [ ] Announce string freeze in ``#release_coordination`` channel a few days later
    * [ ] Inform ``#documentation-internal`` about it so that they can do the translations
@@ -29,12 +29,12 @@ __TODO__:
 ### Copy for Each Build (Beta/RC)
 
 * [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
-* [ ] QA: [Smoke test](https://owncloud.testrail.io/index.php?/cases/view/2469) (for public prelease)
+* [ ] QA: [Smoke test](https://owncloud.testrail.io/index.php?/cases/view/2469) (for public pre-release)
 * [ ] DEV: GitHub release
 * [ ] Beta/RC [Communication](https://confluence.owncloud.com/x/loJK)
     * [ ] Inform ``#updates`` that we have Beta/RC    
     * [ ] For public prerelease: Inform ``#marketing`` and tell them to send email to beta testers
-    * [ ] For public prerelease: Write/edit Central post https://central.owncloud.org/tags/c/news/desktop with link to github release 
+    * [ ] For public prerelease: Write/edit Central post https://central.owncloud.org/tags/c/news/desktop with link to GitHub release 
 * [ ] DEV: Prepare the update server for new version (AppImages included)
    * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
      
@@ -42,7 +42,7 @@ __TODO__:
 
 * [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning) the first RC
 * [ ] QA: [Upload](https://confluence.owncloud.com/display/OG/Upload+linux+gpg+keys+to+key+server) linux gpg keys to key server
-* [ ] QA: Check Crash reporter:  start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works)
+* [ ] QA: Check Crash reporter:  start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works
   * [ ] Windows  
   * [ ] macOS
   * [ ] AppImage (Linux)
@@ -65,7 +65,7 @@ __TODO__:
 * [ ] DEV: Create final release tag (e.g., `v4.5.6`)
 * [ ] DEV: Create [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Tags) for themes 'ownCloud' and 'testpilotcloud' for final release tag
 * [ ] DEV: Update version for future builds
-* [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfuly on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
+* [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfully on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
 * [ ] QA: Create a new release issue for a branded release if needed [Branded Client Release Template](https://github.com/owncloud/enterprise/blob/master/internal_release_templates/internal_client_release_template.md)
 
 ### Final Steps
@@ -79,7 +79,7 @@ __TODO__:
 
 ### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
-* [ ] QA: Ping ``#marketing``at marketing@owncloud.com; @bwalter to update links on https://owncloud.com/desktop-app/ (provide links from github releases) and @mfeilner to update [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576))
+* [ ] QA: Ping ``#marketing`` to update links on https://owncloud.com/desktop-app/ (provide links from GitHub releases) and @mfeilner to update [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576)) 
 * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
 * [ ] QA: Inform on ``#updates`` channel
 * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)

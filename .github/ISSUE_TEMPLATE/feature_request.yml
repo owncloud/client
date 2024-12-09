@@ -55,5 +55,5 @@ body:
   id: additional-context
   attributes:
     label: Additional context
-    description: Any other information you'd like to include, for instance, screnshots, mockups, etc.
+    description: Any other information you'd like to include, for instance, screenshots, mockups, etc.
 
