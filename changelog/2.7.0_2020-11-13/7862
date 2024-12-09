@@ -1,5 +1,0 @@
-Change: The client uploads chunks even though the server repports lack of support
-
-We now correctly handle the bigfilechunking capability
-
-https://github.com/owncloud/client/issues/7862

@@ -1,7 +1,0 @@
-Change: Only allow to add unsyced spaces
-
-We now prevent users from syncing the same space multiple times.
-
-
-https://github.com/owncloud/client/issues/11752
-https://github.com/owncloud/client/pull/11759

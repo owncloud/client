@@ -146,7 +146,7 @@ Some small changes and bug fixes:
 * GUI: Improve help text in ignore editor (#7162)
 * GUI: Show restoration items in protocol
 * Sharing: Fix issues with enforced passwords and expiry (#7246, #7245)
-* Sharing: Fix resharing an item in a share with limited permissions (#7275)
+* Sharing: Fix re-sharing an item in a share with limited permissions (#7275)
 * Sharing: Use the default expiration date even when not enforced (#7256)
 * Sharing: When sharing from context menu, show dialog if share creation fails (#7286)
 * Sharing: Always show at least readonly permissions (#7429)
@@ -159,7 +159,7 @@ Some small changes and bug fixes:
 * Updater: Set correct state on network error (#3933)
 * Updater: Provide more useful options on update failure (#7217)
 * Updater: Improve logging (#3475, #7388)
-* Updater: Fix Version numer not shown in the user visible string (#7288)
+* Updater: Fix Version number not shown in the user visible string (#7288)
 * DB: Database path for new folders now starts  with ".sync_", avoiding the "._" (#5904)
 * File hashes: Add support for SHA256 and SHA3
 * Cmd: Respect chunk sizing environment variables (#7078)
@@ -249,7 +249,7 @@ version 2.5.1 (2018-11-09)
 * macOS: Improve macdeployqt.py
 * Discovery: Include path in error message (#6826)
 * Database: Allow downgrade from 2.6
-* Migration from 2.4: fallback to move file by file if directory move failled (#6807)
+* Migration from 2.4: fallback to move file by file if directory move failed (#6807)
 * owncloudcmd: Read server version and dav user id from the server (#6830)
 
 version 2.5.0 (2018-09-18)
@@ -314,12 +314,12 @@ version 2.5.0 (2018-09-18)
 * Sync: When detecting a local move, keep the local mtime (#6629)
 * Sync: Better error handling for local directory parsing (#6610)
 * Sync: Error if properties are missing (#6317)
-* Sync: Recover when the PUT reply (or chunkin's MOVE) is lost (#5106)
+* Sync: Recover when the PUT reply (or chunking MOVE) is lost (#5106)
 * Sync: Do not abort a sync if the server closes the connection (#6516)
 * Sync: Increase the timeout for the last MOVE/PUT for huge files (#6527)
 * Sync: Fix renames making hierarchy inversion (#6694)
 * Sync: RemotePermissions: Fix empty vs null (#4608)
-* Sync: Fix the "direction" of the "all file delted" message when the server is reset (#6317)
+* Sync: Fix the "direction" of the "all file deleted" message when the server is reset (#6317)
 * Data-Fingerprint: Fix backup detection when fingerprint is empty
 * propagateuploadv1: Fixed an assert with ownCloud 5
 * Download: Use the <s:message> from the reply in the error message (#6459, #6459)
@@ -522,9 +522,9 @@ version 2.3.3 (2017-08-29)
 * Overlay Icons: Fix potential hangs on Windows
 * SyncJournalDB: Don't use ._ as filename pattern if that does not work because of SMB storage settings (#5844)
 * SyncJournalDB: Log reason for sqlite3 opening errors
-* Notifications: Proapgate "Dismiss" button action to server (#5922)
+* Notifications: Propagate "Dismiss" button action to server (#5922)
 * Switch Linux build also to Qt 5.6.2 (#5470)
-* Stopped maintaining Qt 4 buildability
+* Stopped maintaining Qt 4 build ability
 
 version 2.3.2 (2017-05-08)
 * Fix more crashes (thanks to everyone submitting to our crash reporter!)
@@ -546,21 +546,21 @@ version 2.3.0 (2017-03-03)
 * Allow to not sync the server's external storages by default
 * Switch Windows and OS X build to Qt 5.6.2
 * Switch to new ownCloud server WebDAV endpoint
-* Chunking NG: New file upload chunking algorithmn for ownCloud server 9.2
+* Chunking NG: New file upload chunking algorithm for ownCloud server 9.2
 * Allow to sync a folder to multiple different servers (Filename change from .csync_journal.db to _sync_$HASH.db)
 * Conflicts: Use the local mtime for the conflict file name (#5273)
 * "Sync now" menu item
 * SSL Client certificate support improved (Show UI, Store keys in keychain)
 * Propagator: Upload more small files in parallel
 * Sync Engine: Read data-fingerprint property to detect backups (#2325)
-* GUI: Show link to ceate an app password/token for syncing
+* GUI: Show link to create an app password/token for syncing
 * Share dialog: Add 'Mail link' button
 * Caja file manager plugin
 * Make "backup detected" message to not trigger in wrong cases
 * SyncEngine: Fix renaming of folder when file are changed (#5192)
 * Fix reconnect bug if status.php intermittently returns wrong data (#5188)
 * Improve sync scheduling (#5317)
-* Overlay icons: Improvements in correctnes
+* Overlay icons: Improvements in correctness
 * Tray menu: Only update on demand to fix Linux desktop integration glitches
 * Progress: Better time/bandwidth estimations
 * Network: Follow certain HTTP redirects (#2791)
@@ -634,7 +634,7 @@ version 2.2.0 (release 2016-05-12)
  * Improved netrc parser (#4691)
  * Improved user notifications about ignored files and conflicts (#4761, #3222)
  * Add warnings for old server versions (#4523)
- * Enable tranportation checksums if the server supports based on server capabilities (#3735)
+ * Enable transportation checksums if the server supports based on server capabilities (#3735)
 
  * Default Chunk-size changed to 10MB (#4354)
  * Documentation Improvements, ie. about overlay icons
@@ -645,7 +645,7 @@ version 2.2.0 (release 2016-05-12)
 
 version 2.1.1 (release 2016-02-10)
  * UI improvements for HiDPI screens, error messages, RTL languages
- * Fix occurences of "Connection Closed" when a new unauthenticated TCP socket is used
+ * Fix occurrences of "Connection Closed" when a new unauthenticated TCP socket is used
  * Fix undeliberate WiFi scanning done by Qt Network classes
  * Several fixes/improvements to the sharing dialog
  * Several fixes/improvements to the server activity tab
@@ -676,12 +676,12 @@ version 2.1 (release 2015-12-03)
  * Improved reconnecting after network change/disconnect (#4167 #3969 ...)
  * Improved performance in Windows file system discovery
  * Removed libneon-based propagator. As a consequence, The client can no
-   longer provide bandwith limiting on Linux-distributions where it is
+   longer provide bandwidth limiting on Linux-distributions where it is
    using Qt < 5.4
  * Performance improvements in the logging functions
  * Ensured that local disk space problems are handled gracefully (#2939)
  * Improved handling of checksums: transport validation, db (#3735)
- * For *eml-files don't reupload if size and checksum are unchanged (#3235)
+ * For *eml-files don't re-upload if size and checksum are unchanged (#3235)
  * Ensured 403 reply code is handled properly (File Firewall) (#3490)
  * Reduced number of PROPFIND requests to server(#3964)
  * GUI: Added Account toolbox widget to keep account actions (#4139)
@@ -689,14 +689,14 @@ version 2.1 (release 2015-12-03)
  * FolderMan: Fixed infinite wait on pause (#4093)
  * Renamed env variables to include unit (#2939)
  * FolderStatusModel: Attempt to detect removed undecided files (#3612)
- * SyncEngine: Don't whipe the white list if the sync was aborted (#4018)
+ * SyncEngine: Don't wipe the white list if the sync was aborted (#4018)
  * Quota: Handle special negative value for the quota (#3940)
  * State app name in update notification (#4020)
  * PropagateUpload: Fixed double-emission of finished (#3844)
  * GUI: Ensured folder names which are excluded from sync can be clicked
  * Shell Integration: Dolphin support, requires KF 5.16 and KDE Application 15.12
  * FolderStatusModel: Ensured reset also if a folder was renamed (#4011)
- * GUI: Fixed accessiblity of remaing items in full settings toolbar (#3795)
+ * GUI: Fixed accessibility of remaining items in full settings toolbar (#3795)
  * Introduced the term "folder sync connection" in more places (#3757)
  * AccountSettings: Don't disable pause when offline (#4010)
  * Fixed handling of hidden files (#3980)
@@ -709,7 +709,7 @@ version 2.1 (release 2015-12-03)
  * owncloudcmd: Don't do a check that file are older than 2s (#4160)
  * Fixed getting size for selective sync (#3986)
  * Re-added close button in the settings window (#3713)
- * Added abililty to handle storage limitations gracefully (#3736)
+ * Added ability to handle storage limitations gracefully (#3736)
  * Organized patches to our base Qt version into admin/qt/patches
  * Plus: A lot of unmentioned improvements and fixes
 
@@ -808,7 +808,7 @@ version 1.8.2 (release 2015-06-08)
  * Win32: Allow concurrent OEM (un-)installers (#3272)
  * Win32: Make Setup/Update Mutex theme-unique (#3272)
  * HTTP: Add the branding name to the UserAgent string
- * ConnectonValidator: Always run with new credentials (#3266)
+ * ConnectionValidator: Always run with new credentials (#3266)
  * Recall Feature: Admins can trigger an upload of a file from
    client to server again (#3246)
  * Propagator: Add 'Content-Length: 0' header to MKCOL request (#3256)
@@ -817,7 +817,7 @@ version 1.8.2 (release 2015-06-08)
  * Fix opening external links for some labels (#3135)
  * AccountState: Run only a single validator, allow error message
    overriding (#3236, #3153)
- * SyncJournalDB: Minor fixes and simplificatons
+ * SyncJournalDB: Minor fixes and simplifications
  * SyncEngine: Force re-read of folder Etags for upgrades from
    1.8.0 and 1.8.1
  * Propagator: Limit length of temporary file name (#2789)
@@ -881,7 +881,7 @@ version 1.8.1 (release 2015-05-07)
  * AccountWizard: Fix auth error handling. #3155
  * Documentation fixes
  * Infrastructure/build fixes
- * Win32/OS X: Apply patch from OpenSSL to handle oudated intermediates gracefully #3087
+ * Win32/OS X: Apply patch from OpenSSL to handle outdated intermediates gracefully #3087
 
 version 1.8.0 (release 2015-03-17)
  * Mac OS: HIDPI support
@@ -891,7 +891,7 @@ version 1.8.0 (release 2015-03-17)
  * Enhanced usage of parallel HTTP requests for ownCloud 8 servers
  * Renamed github repository from mirall to client.
  * Mac OS: Use native notification support
- * Selective Sync: allow to enforce selective sync in brandings.
+ * Selective Sync: allow to enforce selective sync in branding.
  * Added ability to build on Windows utilizing MingGW
  * SQLite database fixes if running on FAT filesystems
  * Improved detection of changing files to upload from local
@@ -913,12 +913,12 @@ version 1.7.1 (release 2014-12-18)
  * Documentation fixes and updates
  * Nautilus Python plugin fixed for Python 3
  * GUI wording fixes plus improved log messages
- * Fix hidning of the database files in the sync directories
+ * Fix hiding of the database files in the sync directories
  * Compare http download size with the header value to avoid broken
    downloads, bug #2528
  * Avoid initial ETag fetch job at startup, which is not needed.
  * Add chunk size http header to PUT requests
- * Fixed deteteCookie method of our CookieJar, fix for Shibboleth
+ * Fixed detectCookie method of our CookieJar, fix for Shibboleth
  * Added fallback for distros where XDG_RUNTIME_DIR is undefined
  * Fix the setup wizard, bug #1989, #2264
  * Fix scheduling of ETag check jobs, bug #2553
@@ -999,7 +999,7 @@ version 1.6.2 (release 2014-07-28 )
  * Fix data corruption while trying to resume and the server does
    not support it.
  * HTTP Credentials: Read password from legacy place if not found.
- * Shibboleth: Fix the waiting curser that would not disapear (#1915)
+ * Shibboleth: Fix the waiting cursor that would not disappear (#1915)
  * Limit memory usage to avoid mem wasting and crashes
  * Propagator: Fix crash when logging out during upload (#1957)
  * Propagator_qnam: Fix signal slot connection (#1963)
@@ -1030,14 +1030,14 @@ version 1.6.1 (release 2014-06-26 )
 version 1.6.0 (release 2014-05-30 )
  * Minor GUI improvements
  * Qt5 compile issues fixed
- * Ignore sync log file in filewatcher
+ * Ignore sync log file in file-watcher
  * Install libocsync to private library dir and use rpath to localize
  * Fix reconnect after server disconnect
  * Fix "unknown action" display in Activity window
  * Fix memory leaks
  * Respect XDG_CONFIG_HOME environment var
  * Handle empty fileids in the journal correctly
- * Add abilility to compile libowncloudsync without GUI dependendy
+ * Add ability to compile libowncloudsync without GUI dependency
  * Fix SSL error with previously-expired CAs on Windows
  * Fix incorrect folder pause state after start
  * Fix a couple of actual potential crashes
@@ -1084,7 +1084,7 @@ version 1.5.2 (release 2014-02-26 )
   * Fix online state handling (#1441, #1459)
   * Fix potential crash in c_iconv on Mac OS
   * Fix certificate chain display in SSLButton
-  * Fix sporadicly appearing multiple auth prompts on sign-in
+  * Fix sporadically appearing multiple auth prompts on sign-in
   * Show correct state icon in Account Settings right away
   * Re-fetch content that gets deleted from read only shared directories
   * Do not store the password in the config file, erase existing ones (#1469)
@@ -1137,7 +1137,7 @@ version 1.5.0 (release 2013-12-12 ), csync 0.91.4 required
   * Ask for password if missing
   * Introduce activity view
   * Introduce black list for files which could not be synced
-  * Enabling accessbility by shipping accessibility enables on OS X (#736)
+  * Enabling accessibility by shipping accessibility enables on OS X (#736)
   * Toggle Settings window when clicking on systray icon on Win and KDE (#896)
   * FolderWizard: Sanitize error detection (#1201)
   * Set proper enable state of blacklist button after the dialog was opened
@@ -1193,7 +1193,7 @@ version 1.4.1 (release 2013-09-24 ), csync 0.90.1 required
   * Pop up config wizard if no server url is configured, fixes bug #1018
   * Settings: calculate sidebar width dynamically, fixes bug #1020
   * Fixed a crash if sync folders were removed, fixes bug #713
-  * Do proper resync after network disconnect, fixes bug #1007
+  * Do proper re-sync after network disconnect, fixes bug #1007
   * Various minor code fixes
 
 version 1.4.0 (release 2013-09-04 ), csync 0.90.0 required
@@ -1207,15 +1207,15 @@ version 1.4.0 (release 2013-09-04 ), csync 0.90.0 required
   * Introduce a sync history, persisting results across syncs
   * Move ability to switch to mono icons from a switch to a Settings option
   * Add "Launch on System Startup" GUI option
-  * Add "Show Desktop Nofications"GUI option (enabled by default)
+  * Add "Show Desktop Notifications" GUI option (enabled by default)
     top optionally disable sync notifications
   * Add Help item, pointing to online reference
   * Implement graphical selection of remote folders in FolderWizard
   * Allow custom ignore patterns
-  * Add an editor for ingore patterns
-  * ALlow to flag certain ignore patterns as discardable
+  * Add an editor for ignore patterns
+  * Allow to flag certain ignore patterns as discard-able
   * Ensure to ship with all valid translations
-  * Progress Dialog now preserves the last syncned items across sync runs
+  * Progress Dialog now preserves the last synced items across sync runs
   * Split Setup Wizard into multiple pages again
   * Implement "--logfile -" to log to stdout
   * Add preliminary support for Shibboleth authentication
@@ -1274,7 +1274,7 @@ version 1.2.4 (release 2013-04-11 ), csync 0.70.6 required
   * [Fixes] Allow setting the configuration directory on command line
 
 version 1.2.3 (release 2013-04-02 ), csync 0.70.5 required
-  * [Fixes] Unbreak self-signed certificate handling
+  * [Fixes] Un-break self-signed certificate handling
 
 version 1.2.2 (release 2013-04-02 ), csync 0.70.5 required
   * [Fixes] Do not crash when local file tree contains symlinks
@@ -1424,7 +1424,7 @@ version 1.0.2 (release 2012-05-18), csync 0.50.6 required
   * [GUI] New icon set for ownCloud client
   * [GUI] No splashscreen any more (oC Bug #498)
   * [GUI] Russian translation added
-  * [GUI] Added 'open ownCloud' to traymenu
+  * [GUI] Added 'open ownCloud' to tray-menu
   * [GUI] "Pause" and "Resume" instead of Enable/Disable
   * [Fixes] Long running syncs can be interrupted now.
   * [Fixes] Dialogs comes to front on click
@@ -1449,7 +1449,7 @@ version 1.0.1 (release 2012-04-18), csync 0.50.5 required
   * [Intern] Backport to Qt Version 4.6 for compat. with older distros.
   * [Platform] MacOSX porting efforts
   * [Platform] MacOSX Bundle creation added
-  * [Platform] Enabled ranslations on Windows.
+  * [Platform] Enabled translations on Windows.
 
 
 
