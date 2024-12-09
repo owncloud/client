@@ -221,7 +221,7 @@ void FolderWizardRemotePath::slotUpdateDirectories(const QStringList &list)
     }
     QStringList sortedList = list;
     Utility::sortFilenames(sortedList);
-    for (auto path : qAsConst(sortedList)) {
+    for (auto path : std::as_const(sortedList)) {
         path.remove(webdavFolder);
         QStringList paths = path.split(QLatin1Char('/'));
         if (paths.last().isEmpty())
@@ -323,7 +323,7 @@ bool FolderWizardRemotePath::isComplete() const
 
     bool ok = true;
 
-    for (auto *f : qAsConst(FolderMan::instance()->folders())) {
+    for (auto *f : std::as_const(FolderMan::instance()->folders())) {
         if (f->accountState()->account() != folderWizardPrivate()->accountState()->account()) {
             continue;
         }

@@ -236,7 +236,7 @@ void ActivityListModel::startFetchJob(AccountStatePtr ast)
 void ActivityListModel::combineActivityLists()
 {
     ActivityList resultList;
-    for (const ActivityList &list : qAsConst(_activityLists)) {
+    for (const ActivityList &list : std::as_const(_activityLists)) {
         resultList.append(list);
     }
     setActivityList(std::move(resultList));

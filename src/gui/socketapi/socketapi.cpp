@@ -215,7 +215,7 @@ void SocketApi::slotNewConnection()
 
     auto listener = QSharedPointer<SocketListener>::create(socket);
     _listeners.insert(socket, listener);
-    for (const auto &a : qAsConst(_registeredAccounts)) {
+    for (const auto &a : std::as_const(_registeredAccounts)) {
         if (a->hasDefaultSyncRoot()) {
             broadcastMessage(buildRegisterPathMessage(Utility::stripTrailingSlash(a->defaultSyncRoot())));
         }
@@ -406,7 +406,7 @@ void SocketApi::slotUpdateFolderView(Folder *f)
 
 void SocketApi::broadcastMessage(const QString &msg, bool doWait)
 {
-    for (const auto &listener : qAsConst(_listeners)) {
+    for (const auto &listener : std::as_const(_listeners)) {
         listener->sendMessage(msg, doWait);
     }
 }
@@ -457,7 +457,7 @@ void SocketApi::broadcastStatusPushMessage(const QString &systemPath, SyncFileSt
     QString msg = buildMessage(QStringLiteral("STATUS"), systemPath, fileStatus.toSocketAPIString());
     Q_ASSERT(!systemPath.endsWith(QLatin1Char('/')));
     auto directoryHash = qHash(systemPath.left(systemPath.lastIndexOf(QLatin1Char('/'))));
-    for (const auto &listener : qAsConst(_listeners)) {
+    for (const auto &listener : std::as_const(_listeners)) {
         listener->sendMessageIfDirectoryMonitored(msg, directoryHash);
     }
 }

@@ -296,7 +296,7 @@ QString setupTranslations(QApplication *app)
         return lang;
     };
 
-    for (QString lang : qAsConst(uiLanguages)) {
+    for (QString lang : std::as_const(uiLanguages)) {
         lang = substLang(lang);
         const QString trFile = Translations::translationsFilePrefix() + lang;
         if (QTranslator *translator = new QTranslator(app); translator->load(trFile, trPath) || lang.startsWith(QLatin1String("en"))) {

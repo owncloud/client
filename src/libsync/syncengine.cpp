@@ -244,7 +244,7 @@ void SyncEngine::conflictRecordMaintenance()
     //
     // This happens when the conflicts table is new or when conflict files
     // are downlaoded but the server doesn't send conflict headers.
-    for (const auto &path : qAsConst(_seenConflictFiles)) {
+    for (const auto &path : std::as_const(_seenConflictFiles)) {
         OC_ASSERT(Utility::isConflictFile(path));
 
         auto bapath = path.toUtf8();

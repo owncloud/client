@@ -102,7 +102,7 @@ void FolderWatcherPrivate::slotAddFolderRecursive(const QString &path)
                                              << path << "'";
     }
 
-    for (const auto &subfolder : qAsConst(allSubfolders)) {
+    for (const auto &subfolder : std::as_const(allSubfolders)) {
         QDir folder(subfolder);
         if (folder.exists() && !_pathToWatch.contains(folder.absolutePath())) {
             ++subdirCount;

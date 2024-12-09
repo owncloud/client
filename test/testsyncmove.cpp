@@ -48,7 +48,7 @@ bool expectAndWipeConflict(FileModifier &local, FileInfo state, const QString &p
     auto base = state.find(pathComponents.parentDirComponents());
     if (!base)
         return false;
-    for (const auto &item : qAsConst(base->children)) {
+    for (const auto &item : std::as_const(base->children)) {
         if (item.name.startsWith(pathComponents.fileName()) && item.name.contains(QLatin1String("(conflicted copy"))) {
             local.remove(item.path());
             return true;
@@ -628,13 +628,13 @@ private Q_SLOTS:
         auto currentLocal = fakeFolder.currentLocalState();
         auto conflicts = findConflicts(currentLocal.children[QStringLiteral("A4")]);
         QCOMPARE(conflicts.size(), 1);
-        for (const auto &c : qAsConst(conflicts)) {
+        for (const auto &c : std::as_const(conflicts)) {
             QCOMPARE(currentLocal.find(c)->contentChar, 'L');
             local.remove(c);
         }
         conflicts = findConflicts(currentLocal.children[QStringLiteral("B4")]);
         QCOMPARE(conflicts.size(), 1);
-        for (const auto &c : qAsConst(conflicts)) {
+        for (const auto &c : std::as_const(conflicts)) {
             QCOMPARE(currentLocal.find(c)->contentChar, 'L');
             local.remove(c);
         }

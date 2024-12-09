@@ -221,7 +221,7 @@ void BandwidthManager::relativeUploadDelayTimerExpired()
     _relativeLimitCurrentMeasuredDevice->setChoked(false);
 
     // choke all other UploadDevices
-    for (auto *ud : qAsConst(_relativeUploadDeviceList)) {
+    for (auto *ud : std::as_const(_relativeUploadDeviceList)) {
         if (ud != _relativeLimitCurrentMeasuredDevice) {
             ud->setBandwidthLimited(true);
             ud->setChoked(true);
@@ -382,7 +382,7 @@ void BandwidthManager::absoluteLimitTimerExpired()
     if (usingAbsoluteUploadLimit() && !_absoluteUploadDeviceList.empty()) {
         qint64 quotaPerDevice = _currentUploadLimit / _absoluteUploadDeviceList.size();
         qCDebug(lcBandwidthManager) << quotaPerDevice << _absoluteUploadDeviceList.size() << _currentUploadLimit;
-        for (auto *device : qAsConst(_absoluteUploadDeviceList)) {
+        for (auto *device : std::as_const(_absoluteUploadDeviceList)) {
             device->giveBandwidthQuota(quotaPerDevice);
             qCDebug(lcBandwidthManager) << "Gave " << quotaPerDevice / 1024.0 << " kB to" << device;
         }

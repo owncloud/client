@@ -87,7 +87,7 @@ ActivityWidget::ActivityWidget(QWidget *parent)
             showLabels();
         }
 
-        for (const auto widget : qAsConst(_widgetForNotifId)) {
+        for (const auto widget : std::as_const(_widgetForNotifId)) {
             if (widget->activity().accountUuid() == ast->account()->uuid()) {
                 scheduleWidgetToRemove(widget);
             }
