@@ -267,7 +267,7 @@ void PropfindJob::start()
                                     "<d:propfind xmlns:d=\"DAV:\">"
                                     "<d:prop>");
 
-        for (const QByteArray &prop : qAsConst(_properties)) {
+        for (const QByteArray &prop : std::as_const(_properties)) {
             const int colIdx = prop.lastIndexOf(':');
             if (colIdx >= 0) {
                 stream << QByteArrayLiteral("<") << prop.mid(colIdx + 1) << QByteArrayLiteral(" xmlns=\"") << prop.left(colIdx) << QByteArrayLiteral("\"/>");

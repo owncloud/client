@@ -351,7 +351,7 @@ Folder *FolderMan::folder(const QByteArray &id)
 
 void FolderMan::scheduleAllFolders()
 {
-    for (auto *f : qAsConst(_folders)) {
+    for (auto *f : std::as_const(_folders)) {
         if (f && f->canSync()) {
             scheduler()->enqueueFolder(f);
         }
@@ -374,7 +374,7 @@ void FolderMan::slotIsConnectedChanged()
     if (accountState->isConnected()) {
         qCInfo(lcFolderMan) << "Account" << accountName << "connected, scheduling its folders";
 
-        for (auto *f : qAsConst(_folders)) {
+        for (auto *f : std::as_const(_folders)) {
             if (f
                 && f->canSync()
                 && f->accountState() == accountState) {
@@ -385,7 +385,7 @@ void FolderMan::slotIsConnectedChanged()
         qCInfo(lcFolderMan) << "Account" << accountName << "disconnected or paused, "
                                                            "terminating or descheduling sync folders";
 
-        for (auto *f : qAsConst(_folders)) {
+        for (auto *f : std::as_const(_folders)) {
             if (f
                 && f->isSyncRunning()
                 && f->accountState() == accountState) {
@@ -415,7 +415,7 @@ void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
     QList<Folder *> foldersToRemove;
     // reserve a magic number
     foldersToRemove.reserve(16);
-    for (auto *folder : qAsConst(_folders)) {
+    for (auto *folder : std::as_const(_folders)) {
         if (folder->accountState() == accountState) {
             foldersToRemove.append(folder);
         }
@@ -432,7 +432,7 @@ void FolderMan::slotServerVersionChanged(Account *account)
         qCWarning(lcFolderMan) << "The server version is unsupported:" << account->capabilities().status().versionString()
                                << "pausing all folders on the account";
 
-        for (auto &f : qAsConst(_folders)) {
+        for (auto &f : std::as_const(_folders)) {
             if (f->accountState()->account().data() == account) {
                 f->setSyncPaused(true);
             }
@@ -546,7 +546,7 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
 {
     QString absolutePath = QDir::cleanPath(path) + QLatin1Char('/');
 
-    for (auto *folder : qAsConst(_folders)) {
+    for (auto *folder : std::as_const(_folders)) {
         const QString folderPath = folder->cleanPath() + QLatin1Char('/');
 
         if (absolutePath.startsWith(folderPath, (Utility::isWindows() || Utility::isMac()) ? Qt::CaseInsensitive : Qt::CaseSensitive)) {
@@ -572,7 +572,7 @@ QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Acco
     if (!serverPath.startsWith(QLatin1Char('/')))
         serverPath.prepend(QLatin1Char('/'));
 
-    for (auto *folder : qAsConst(_folders)) {
+    for (auto *folder : std::as_const(_folders)) {
         if (acc != nullptr && folder->accountState()->account() != acc) {
             continue;
         }
@@ -638,7 +638,7 @@ QString FolderMan::getBackupName(QString fullPathName) const
 
 void FolderMan::setDirtyProxy()
 {
-    for (auto *f : qAsConst(_folders)) {
+    for (auto *f : std::as_const(_folders)) {
         if (f) {
             if (f->accountState() && f->accountState()->account()
                 && f->accountState()->account()->accessManager()) {
@@ -652,7 +652,7 @@ void FolderMan::setDirtyProxy()
 
 void FolderMan::setDirtyNetworkLimits()
 {
-    for (auto *f : qAsConst(_folders)) {
+    for (auto *f : std::as_const(_folders)) {
         // set only in busy folders. Otherwise they read the config anyway.
         if (f && f->isSyncRunning()) {
             f->setDirtyNetworkLimits();
@@ -879,7 +879,7 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
 {
     // Note that the setting will revert to 'true' if all folders
     // are deleted...
-    for (auto *folder : qAsConst(_folders)) {
+    for (auto *folder : std::as_const(_folders)) {
         folder->setIgnoreHiddenFiles(ignore);
         folder->saveToSettings();
     }
@@ -917,7 +917,7 @@ bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
 
 void FolderMan::slotReloadSyncOptions()
 {
-    for (auto *f : qAsConst(_folders)) {
+    for (auto *f : std::as_const(_folders)) {
         if (f) {
             f->reloadSyncOptions();
         }
