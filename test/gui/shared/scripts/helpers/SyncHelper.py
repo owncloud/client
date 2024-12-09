@@ -24,7 +24,7 @@ else:
             os.path.join(custom_lib, 'syncstate.py'),
         )
 
-    # the script needs to use the system wide python
+    # the script needs to use the system-wide python
     # to switch from the built-in interpreter
     #   see https://kb.froglogic.com/squish/howto/using-external-python-interpreter-squish-6-6/
     # if the IDE fails to reference the script,

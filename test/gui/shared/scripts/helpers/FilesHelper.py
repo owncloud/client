@@ -105,7 +105,7 @@ def get_file_size(resource_path):
     return os.stat(resource_path).st_size
 
 
-# temp paths created outside of the temporary directory during the test
+# temp paths created outside the temporary directory during the test
 CREATED_PATHS = []
 
 

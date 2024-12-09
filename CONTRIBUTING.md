@@ -9,7 +9,7 @@ We are also available on [IRC][irc].
 - **Important**: When reporting an issue provide as much requested information as possible, we :heart: log files.
 - **SECURITY**: Report any potential security bug to security@owncloud.com following our [security policy](https://owncloud.com/security/) instead of filing an issue in our bug tracker
 - This repository is _only_ for issues within the ownCloud desktop client.
-  Issues in other components should be reported in their own repositores:
+  Issues in other components should be reported in their own repositories:
   - [ownCloud server](https://github.com/owncloud/core/issues)
   - [ownCloud apps](https://github.com/owncloud/apps/issues) (e.g. Calendar,
     Contacts...)

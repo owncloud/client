@@ -46,7 +46,7 @@ Test Plan
 3. SSL
 
 => With version 1.0.1 oCC supports SSL connections.
-+ Pre-Req: Have a SSL ready host with unsigned certificate.
++ Pre-Req: Have an SSL ready host with unsigned certificate.
 
 3.1 SSL connection
   - Start ownCloud configuration and enter the SSL url with https://...

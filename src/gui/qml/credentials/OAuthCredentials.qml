@@ -48,7 +48,7 @@ Credentials {
                 enabled: credentials.ready
                 visible: credentials.isValid
                 icon.source: QMLResources.resourcePath("core", "open", true)
-                text: browserWasOpened ? qsTr("Reopen web browser") : qsTr("Open web brower")
+                text: browserWasOpened ? qsTr("Reopen web browser") : qsTr("Open web browser")
                 onClicked: {
                     browserWasOpened = true;
                     credentials.openAuthenticationUrlInBrowser();
@@ -75,7 +75,7 @@ Credentials {
                 ToolTip.delay: 500
 
                 Keys.onTabPressed: event => {
-                    // there is no lougout button
+                    // there is no logout button
                     if (!credentials.isRefresh) {
                         widget.parentFocusWidget.focusNext();
                         event.accepted = true;
@@ -97,7 +97,7 @@ Credentials {
             Layout.preferredWidth: openBrowserButton.width
             visible: !credentials.isValid
             icon.source: QMLResources.resourcePath("core", "undo", true)
-            text: qsTr("Restart authenticaion")
+            text: qsTr("Restart authentication")
             onClicked: credentials.requestRestart()
 
             Keys.onBacktabPressed: {
