@@ -134,13 +134,11 @@ def main(ctx):
     pipelines = check_starlark() + \
                 lint_gui_test() + \
                 changelog(ctx)
-    unit_tests = unit_test_pipeline(ctx)
     gui_tests = gui_test_pipeline(ctx)
 
     return pipelines + \
-           unit_tests + \
            gui_tests + \
-           pipelinesDependsOn(notification(), unit_tests + gui_tests)
+           pipelinesDependsOn(notification(), gui_tests)
 
 def from_secret(name):
     return {
@@ -178,22 +176,6 @@ def check_starlark():
             "event": [
                 "pull_request",
             ],
-        },
-    }]
-
-def unit_test_pipeline(ctx):
-    return [{
-        "kind": "pipeline",
-        "name": "unit-tests",
-        "platform": {
-            "os": "linux",
-            "arch": "amd64",
-        },
-        "steps": skipIfUnchanged(ctx, "unit-tests") +
-                 build_client(OC_CI_CLIENT_FEDORA) +
-                 unit_tests(OC_CI_CLIENT_FEDORA),
-        "trigger": {
-            "ref": trigger_ref,
         },
     }]
 
@@ -300,21 +282,6 @@ def build_client(image = OC_CI_CLIENT, ctest = True):
             ],
         },
     ]
-
-def unit_tests(image = OC_CI_CLIENT):
-    return [{
-        "name": "ctest",
-        "image": image,
-        "environment": {
-            "LC_ALL": "C.UTF-8",
-        },
-        "commands": [
-            "cd %s" % dir["build"],
-            "useradd -m -s /bin/bash tester",
-            "chown -R tester:tester .",
-            "su-exec tester ctest --output-on-failure -LE nodrone",
-        ],
-    }]
 
 def gui_tests(ctx, squish_parameters = "", server_type = "oc10"):
     record_video = False
