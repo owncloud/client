@@ -1,4 +1,0 @@
-Bugfix: Fixed a potential crash on cancelation of discovery jobs
-
-
-https://github.com/owncloud/client/pull/7760

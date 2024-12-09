@@ -1,3 +1,0 @@
-Bugfix: Correctly detect timeouts during token refrshs
-
-https://github.com/owncloud/client/pull/10373

@@ -1,6 +1,0 @@
-Change: The layout of serveral ui elements is broken
-
-We replace an old layout mechanism with a more advanced one.
-
-https://github.com/owncloud/client/issues/7920
-https://github.com/owncloud/client/issues/7941
