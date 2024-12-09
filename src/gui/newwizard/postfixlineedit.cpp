@@ -12,7 +12,6 @@
  * for more details.
  */
 
-#include <QStyle>
 #include <QStyleOptionFrame>
 
 #include "postfixlineedit.h"

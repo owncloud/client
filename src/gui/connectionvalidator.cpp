@@ -17,20 +17,15 @@
 #include "gui/networkinformation.h"
 #include "gui/tlserrordialog.h"
 #include "libsync/account.h"
-#include "libsync/cookiejar.h"
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/checkserverjobfactory.h"
-#include "libsync/networkjobs/jsonjob.h"
 #include "libsync/theme.h"
 
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QLoggingCategory>
-#include <QNetworkReply>
 #include <QNetworkProxyFactory>
-#include <QXmlStreamReader>
-
+#include <QNetworkReply>
 
 using namespace std::chrono_literals;
 

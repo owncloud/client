@@ -13,22 +13,8 @@
  * for more details.
  */
 
-#include <QLoggingCategory>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QSslConfiguration>
-#include <QBuffer>
-#include <QXmlStreamReader>
-#include <QStringList>
-#include <QStack>
-#include <QTimer>
-#include <QMutex>
-#include <QCoreApplication>
 #include <QAuthenticator>
-#include <QMetaEnum>
-#include <QRegularExpression>
+#include <QNetworkRequest>
 
 #include "common/asserts.h"
 #include "networkjobs.h"

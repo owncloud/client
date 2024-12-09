@@ -17,8 +17,6 @@
 #include "theme.h"
 
 #include <QCoreApplication>
-#include <QDir>
-#include <QStringList>
 #include <QtConcurrent>
 #include <QtGlobal>
 

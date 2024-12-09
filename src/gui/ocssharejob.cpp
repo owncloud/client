@@ -17,9 +17,6 @@
 #include "common/utility.h"
 #include "networkjobs.h"
 
-#include <QBuffer>
-#include <QJsonDocument>
-
 namespace {
 OCC::JsonApiJob *createJob(OCC::AccountPtr account, const QString &path, const QByteArray &verb, const OCC::JsonApiJob::UrlQuery &arguments, QObject *parent)
 {

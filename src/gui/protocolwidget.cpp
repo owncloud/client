@@ -12,7 +12,6 @@
  * for more details.
  */
 
-#include <QCursor>
 #include <QtGui>
 #include <QtWidgets>
 

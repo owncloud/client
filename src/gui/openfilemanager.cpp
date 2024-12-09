@@ -17,12 +17,11 @@
 #include "application.h"
 #include "common/utility.h"
 
+#include <QDesktopServices>
+#include <QDir>
 #include <QProcess>
 #include <QSettings>
-#include <QDir>
 #include <QUrl>
-#include <QDesktopServices>
-#include <QApplication>
 
 namespace OCC {
 

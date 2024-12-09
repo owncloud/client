@@ -16,7 +16,6 @@
 #include "common/utility.h"
 #include "ui_tlserrordialog.h"
 
-#include <QAbstractButton>
 #include <QPushButton>
 
 namespace OCC {

@@ -14,11 +14,10 @@
 
 #include "owncloudtheme.h"
 
+#include <QCoreApplication>
+#include <QIcon>
 #include <QString>
 #include <QVariant>
-#include <QPixmap>
-#include <QIcon>
-#include <QCoreApplication>
 
 namespace OCC {
 

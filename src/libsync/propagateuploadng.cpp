@@ -15,7 +15,6 @@
 #include "account.h"
 #include "common/asserts.h"
 #include "common/syncjournaldb.h"
-#include "common/utility.h"
 #include "filesystem.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
@@ -25,10 +24,8 @@
 #include "propagatorjobs.h"
 #include "syncengine.h"
 
-#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QNetworkAccessManager>
 #include <QRandomGenerator>
 
 #include <memory>

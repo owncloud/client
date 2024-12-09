@@ -17,7 +17,6 @@
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "guiutility.h"
-#include <cookiejar.h>
 #include <creds/httpcredentialsgui.h>
 #include <theme.h>
 
@@ -25,9 +24,8 @@
 #include "common/utility_win.h"
 #endif
 
-#include <QSettings>
 #include <QDir>
-#include <QNetworkAccessManager>
+#include <QSettings>
 
 namespace {
 auto urlC()

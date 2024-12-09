@@ -17,7 +17,6 @@
 
 #include "gui/accountstate.h"
 #include "gui/application.h"
-#include "gui/guiutility.h"
 #include "gui/settingsdialog.h"
 #include "gui/sharee.h"
 #include "gui/sharelinkwidget.h"
@@ -30,7 +29,6 @@
 
 #include <QFileIconProvider>
 #include <QFileInfo>
-#include <QFrame>
 #include <QPointer>
 #include <QPushButton>
 #include <QRegularExpression>

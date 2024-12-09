@@ -28,17 +28,13 @@
 
 #include "QProgressIndicator.h"
 
-#include <QAbstractProxyModel>
 #include <QAction>
-#include <QBuffer>
 #include <QClipboard>
 #include <QColor>
 #include <QCompleter>
 #include <QCryptographicHash>
-#include <QDesktopServices>
 #include <QFileInfo>
 #include <QMenu>
-#include <QMessageBox>
 #include <QPainter>
 #include <QPropertyAnimation>
 

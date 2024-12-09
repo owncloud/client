@@ -14,8 +14,6 @@
 
 #include "vfs_suffix.h"
 
-#include <QFile>
-
 #include "common/syncjournaldb.h"
 #include "filesystem.h"
 #include "syncfileitem.h"

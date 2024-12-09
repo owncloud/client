@@ -17,8 +17,6 @@
 #include "common/utility.h"
 #include "filesystem.h"
 
-#include "csync/vio/csync_vio_local.h"
-
 #include <QCoreApplication>
 
 #include <bitset>

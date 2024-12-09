@@ -31,10 +31,8 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkProxy>
-#include <QStringList>
 #include <QUrl>
 
 #include <iostream>

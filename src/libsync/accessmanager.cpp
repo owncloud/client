@@ -13,13 +13,7 @@
  */
 
 #include <QAuthenticator>
-#include <QLoggingCategory>
 #include <QNetworkCookie>
-#include <QNetworkCookieJar>
-#include <QNetworkProxy>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QSslConfiguration>
 #include <QUuid>
 
 #include "accessmanager.h"

@@ -17,15 +17,11 @@
 #include "account.h"
 #include "enums.h"
 #include "gui/settingsdialog.h"
-#include "pages/abstractsetupwizardpage.h"
-#include "setupwizardaccountbuilder.h"
 #include "setupwizardcontext.h"
 #include "setupwizardcontroller_p.h"
 #include "setupwizardwidget.h"
 #include "states/abstractsetupwizardstate.h"
 
-#include <QDialog>
-#include <optional>
 
 namespace OCC::Wizard {
 /**

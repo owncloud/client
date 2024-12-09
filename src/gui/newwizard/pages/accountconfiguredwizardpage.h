@@ -17,8 +17,6 @@
 #include "abstractsetupwizardpage.h"
 #include "setupwizardcontroller.h"
 
-#include <QSharedPointer>
-
 namespace Ui {
 class AccountConfiguredWizardPage;
 }

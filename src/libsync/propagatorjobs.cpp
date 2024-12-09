@@ -14,21 +14,19 @@
  */
 
 #include "propagatorjobs.h"
-#include "owncloudpropagator.h"
-#include "owncloudpropagator_p.h"
-#include "propagateremotemove.h"
-#include "common/utility.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "filesystem.h"
-#include <qfile.h>
-#include <qdir.h>
-#include <qdiriterator.h>
-#include <qtemporaryfile.h>
-#include <qsavefile.h>
-#include <QDateTime>
-#include <qstack.h>
+#include "owncloudpropagator.h"
+#include "owncloudpropagator_p.h"
+#include "propagateremotemove.h"
 #include <QCoreApplication>
+#include <QDateTime>
+#include <qdir.h>
+#include <qfile.h>
+#include <qsavefile.h>
+#include <qstack.h>
+#include <qtemporaryfile.h>
 
 #include <time.h>
 

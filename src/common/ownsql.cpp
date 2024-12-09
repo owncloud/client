@@ -20,7 +20,6 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QLoggingCategory>
 #include <QString>
 
 #include "common/asserts.h"
@@ -31,7 +30,6 @@
 
 #include <sqlite3.h>
 
-#include <chrono>
 #include <thread>
 
 using namespace std::chrono_literals;

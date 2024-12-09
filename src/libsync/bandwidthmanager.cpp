@@ -15,8 +15,6 @@
 #include "owncloudpropagator.h"
 #include "propagatedownload.h"
 #include "propagateupload.h"
-#include "propagatorjobs.h"
-#include "common/utility.h"
 
 #include <QLoggingCategory>
 #include <QTimer>

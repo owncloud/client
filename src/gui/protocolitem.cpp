@@ -16,10 +16,7 @@
 #include "folderman.h"
 #include "progressdispatcher.h"
 
-#include <QApplication>
-#include <QFileInfo>
 #include <QMenu>
-#include <QPointer>
 
 
 using namespace OCC;

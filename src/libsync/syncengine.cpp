@@ -32,10 +32,8 @@
 
 #include <chrono>
 
-#include <QCoreApplication>
 #include <QDir>
 #include <QLoggingCategory>
-#include <QProcess>
 #include <QSslSocket>
 #include <QStringList>
 #include <QTextStream>

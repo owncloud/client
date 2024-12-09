@@ -19,7 +19,6 @@
  */
 
 #include "config.h"
-#include "config_csync.h"
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -30,10 +29,9 @@
 #include "common/utility.h"
 #include "common/version.h"
 
-#include <QString>
-#include <QFileInfo>
 #include <QFile>
-#include <QDir>
+#include <QFileInfo>
+#include <QString>
 
 namespace {
 
@@ -97,7 +95,7 @@ OCSYNC_EXPORT void csync_exclude_expand_escapes(QByteArray &input)
 
 /**
  * @brief Checks if filename is considered reserved by Windows
- * @param file_name filename
+ * @param filename filename
  * @return true if file is reserved, false otherwise
  */
 OCSYNC_EXPORT bool csync_is_windows_reserved_word(QStringView filename)

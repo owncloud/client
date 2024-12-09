@@ -19,7 +19,6 @@
  */
 
 #include "csync.h"
-#include "moc_csync.cpp"
 
 #include <QMetaEnum>
 

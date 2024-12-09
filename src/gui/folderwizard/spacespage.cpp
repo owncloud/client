@@ -14,8 +14,6 @@
 #include "spacespage.h"
 #include "ui_spacespage.h"
 
-#include <QModelIndex>
-
 using namespace OCC;
 
 SpacesPage::SpacesPage(AccountPtr acc, QWidget *parent)

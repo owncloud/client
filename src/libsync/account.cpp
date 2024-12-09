@@ -26,16 +26,11 @@
 
 #include <QAuthenticator>
 #include <QDir>
-#include <QFileInfo>
 #include <QLoggingCategory>
-#include <QMutex>
 #include <QNetworkAccessManager>
 #include <QNetworkCookieJar>
 #include <QNetworkDiskCache>
-#include <QNetworkReply>
-#include <QSettings>
 #include <QSslKey>
-#include <QSslSocket>
 #include <QStandardPaths>
 
 namespace OCC {

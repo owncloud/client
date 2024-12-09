@@ -15,7 +15,9 @@
 #include "platform.h"
 
 #include "platform_unix.h"
+#if defined(Q_OS_WIN)
 #include "platform_win.h"
+#endif
 
 #if defined(Q_OS_MAC)
 #include "platform_mac.h"

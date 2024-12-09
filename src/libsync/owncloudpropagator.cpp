@@ -40,7 +40,6 @@
 #include <QObject>
 #include <QStack>
 #include <QTimer>
-#include <QTimerEvent>
 #include <qmath.h>
 
 using namespace std::chrono_literals;

@@ -20,8 +20,6 @@
 #include "libsync/configfile.h"
 #include "libsync/syncengine.h"
 
-#include "guiutility.h"
-
 using namespace std::chrono_literals;
 
 using namespace OCC;

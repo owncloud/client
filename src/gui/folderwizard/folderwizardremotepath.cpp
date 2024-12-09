@@ -19,7 +19,6 @@
 #include "folderwizardremotepath.h"
 #include "ui_folderwizardtargetpage.h"
 
-#include "folderwizard.h"
 #include "folderwizard_p.h"
 
 #include "gui/folderman.h"

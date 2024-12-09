@@ -25,7 +25,6 @@
 #include <QDir>
 #include <QFile>
 #include <QSettings>
-#include <QUrl>
 
 #include <sys/stat.h>
 #include <sys/types.h>

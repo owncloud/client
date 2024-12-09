@@ -28,7 +28,6 @@
 #include "openfilemanager.h"
 #include "protocolwidget.h"
 #include "servernotificationhandler.h"
-#include "syncresult.h"
 #include "theme.h"
 
 #include "models/activitylistmodel.h"

@@ -15,7 +15,6 @@
 #include "updateurldialog.h"
 
 #include <QMessageBox>
-#include <QPushButton>
 #include <QTimer>
 
 namespace OCC {

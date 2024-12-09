@@ -16,7 +16,6 @@
 
 #include "accountmanager.h"
 #include "common/restartmanager.h"
-#include "common/utility.h"
 #include "gui/application.h"
 #include "gui/logbrowser.h"
 #include "gui/networkinformation.h"

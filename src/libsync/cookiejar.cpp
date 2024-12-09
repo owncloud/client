@@ -16,12 +16,9 @@
 
 #include "configfile.h"
 
-#include <QFile>
-#include <QDateTime>
+#include <QDir>
 #include <QLoggingCategory>
 #include <QNetworkCookie>
-#include <QDataStream>
-#include <QDir>
 
 namespace OCC {
 

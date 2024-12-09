@@ -16,7 +16,6 @@
 
 #include "enums.h"
 
-#include <QHBoxLayout>
 #include <QMap>
 #include <QRadioButton>
 #include <QString>
