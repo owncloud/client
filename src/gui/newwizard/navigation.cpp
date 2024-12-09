@@ -1,6 +1,6 @@
 #include "navigation.h"
 
-#include <QDebug>
+#include <QHBoxLayout>
 #include <QRadioButton>
 
 namespace OCC::Wizard {

@@ -30,7 +30,6 @@
 #include "gui/tlserrordialog.h"
 
 #include "logger.h"
-#include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
 

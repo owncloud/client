@@ -1,6 +1,5 @@
 #include "resources.h"
 
-#include <QDir>
 #include <QFile>
 #include <QIcon>
 #include <QMimeDatabase>

@@ -2,15 +2,12 @@
 #include "ui_accountconfiguredwizardpage.h"
 
 #include "gui/application.h"
-#include "gui/guiutility.h"
-#include "gui/settingsdialog.h"
 #include "libsync/theme.h"
 
 #include "resources/resources.h"
 
 #include <QDir>
 #include <QFileDialog>
-#include <QMessageBox>
 
 
 namespace OCC::Wizard {

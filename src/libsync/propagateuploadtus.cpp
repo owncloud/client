@@ -24,14 +24,11 @@
 #include "httplogger.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
-#include "propagateremotedelete.h"
 #include "propagateupload.h"
 #include "propagatorjobs.h"
 #include "syncengine.h"
 
-#include <QNetworkAccessManager>
 #include <QFileInfo>
-#include <QDir>
 
 #include <cmath>
 #include <memory>

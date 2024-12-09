@@ -26,7 +26,6 @@
 
 #include "csync_exclude.h"
 
-#include <QWidget>
 #include <QHeaderView>
 #include <QCoreApplication>
 #include <QDir>

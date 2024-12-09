@@ -17,9 +17,7 @@
 #include "configfile.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QMenu>
-#include <QScopedValueRollback>
 
 using namespace OCC;
 

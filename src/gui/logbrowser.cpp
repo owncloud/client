@@ -17,16 +17,10 @@
 #include "stdio.h"
 #include <iostream>
 
-#include <QAction>
-#include <QCoreApplication>
 #include <QDesktopServices>
-#include <QDialogButtonBox>
 #include <QDir>
-#include <QLabel>
 #include <QLayout>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QSettings>
 #include <QTextStream>
 #include <optional>
 

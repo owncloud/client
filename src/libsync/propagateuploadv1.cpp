@@ -12,23 +12,18 @@
  * for more details.
  */
 
-#include "propagateupload.h"
-#include "owncloudpropagator_p.h"
-#include "networkjobs.h"
 #include "account.h"
-#include "common/syncjournaldb.h"
-#include "common/syncjournalfilerecord.h"
-#include "common/utility.h"
-#include "filesystem.h"
-#include "propagatorjobs.h"
 #include "common/checksums.h"
+#include "common/syncjournaldb.h"
+#include "filesystem.h"
+#include "networkjobs.h"
+#include "owncloudpropagator_p.h"
+#include "propagateupload.h"
+#include "propagatorjobs.h"
 #include "syncengine.h"
-#include "propagateremotedelete.h"
-#include "common/asserts.h"
 
 #include <QDir>
 #include <QFileInfo>
-#include <QNetworkAccessManager>
 #include <QRandomGenerator>
 
 #include <cmath>

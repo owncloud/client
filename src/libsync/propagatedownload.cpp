@@ -31,7 +31,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLoggingCategory>
-#include <QNetworkAccessManager>
 #include <QRandomGenerator>
 
 #include <cmath>

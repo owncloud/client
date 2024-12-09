@@ -16,10 +16,8 @@
 #include "theme.h"
 
 #ifdef USE_FDO_NOTIFICATIONS
-#include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusMessage>
-#include <QDBusPendingCall>
 
 namespace {
 auto NOTIFICATIONS_SERVICE_C()
@@ -61,7 +59,7 @@ Systray::~Systray()
     if (delegate) {
         releaseOsXNotificationCenterDelegate(delegate);
     }
-#endif // Q_OS_OSX
+#endif // Q_OS_MACOS
 }
 
 void Systray::showMessage(const QString &title, const QString &message, const QIcon &icon, int millisecondsTimeoutHint)

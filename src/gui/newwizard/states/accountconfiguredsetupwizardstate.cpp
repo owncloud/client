@@ -12,8 +12,6 @@
  * for more details.
  */
 
-#include <QDir>
-
 #include "accountconfiguredsetupwizardstate.h"
 #include "gui/folderman.h"
 #include "libsync/filesystem.h"

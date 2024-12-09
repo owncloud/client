@@ -14,12 +14,11 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
-#include "common/restartmanager.h"
 #include "gui/guiutility.h"
-#include "libsync/configfile.h"
 #include "libsync/theme.h"
 
 #ifdef WITH_AUTO_UPDATER
+#include "libsync/configfile.h"
 #include "updater/ocupdater.h"
 #ifdef Q_OS_MAC
 // FIXME We should unify those, but Sparkle does everything behind the scene transparently
@@ -71,7 +70,7 @@ void AboutDialog::openBrowserFromUrl(const QUrl &s)
 void AboutDialog::setupUpdaterWidget()
 {
 #ifdef WITH_AUTO_UPDATER
-    // non standard update channels are only supported by the vanilla theme and the testpilotcloud theme
+    // non-standard update channels are only supported by the vanilla theme and the testpilotcloud theme
     if (!Resources::isVanillaTheme() && !isTestPilotCloudTheme()) {
         if (Utility::isMac()) {
             // Because we don't have any statusString from the SparkleUpdater anyway we can hide the whole thing

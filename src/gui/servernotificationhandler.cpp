@@ -17,7 +17,6 @@
 #include "capabilities.h"
 #include "networkjobs/jsonjob.h"
 
-#include <QJsonDocument>
 #include <QJsonObject>
 
 namespace OCC {

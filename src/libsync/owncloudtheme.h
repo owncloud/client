@@ -36,4 +36,4 @@ public:
     QmlButtonColor secondaryButtonColor() const override;
 };
 }
-#endif // OWNCLOUD_MIRALL_THEME_H
+#endif // OWNCLOUD_THEME_H

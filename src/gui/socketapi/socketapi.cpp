@@ -34,23 +34,19 @@
 #include "syncfileitem.h"
 #include "theme.h"
 
-#include <array>
-#include <QBitArray>
-#include <QUrl>
+#include <QApplication>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QLocalSocket>
+#include <QMessageBox>
 #include <QMetaMethod>
 #include <QMetaObject>
-#include <QStringList>
 #include <QScopedPointer>
-#include <QFile>
-#include <QDir>
-#include <QApplication>
-#include <QLocalSocket>
-#include <QStringBuilder>
-#include <QMessageBox>
-#include <QFileDialog>
+#include <QUrl>
+#include <array>
 
 
-#include <QAction>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -58,9 +54,6 @@
 #include <QBuffer>
 
 #include <QClipboard>
-
-#include <QProcess>
-#include <QStandardPaths>
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CoreFoundation.h>

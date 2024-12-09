@@ -23,7 +23,6 @@
 
 #include <QDateTime>
 #include <QFile>
-#include <QFileInfo>
 #include <QLoggingCategory>
 #include <QUrl>
 #include <cstring>

@@ -17,8 +17,6 @@
 #include "networkjobs.h"
 #include "networkjobs/jsonjob.h"
 
-#include <QBuffer>
-
 namespace OCC {
 
 Q_DECLARE_LOGGING_CATEGORY(lcNotifications)

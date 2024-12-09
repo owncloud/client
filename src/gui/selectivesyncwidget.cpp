@@ -20,11 +20,9 @@
 
 #include "resources/resources.h"
 
-#include <QDialogButtonBox>
 #include <QHeaderView>
 #include <QLabel>
 #include <QScopedValueRollback>
-#include <QSettings>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 

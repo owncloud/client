@@ -21,7 +21,6 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "common/asserts.h"
 #include "common/version.h"
 #include "common/vfs.h"
 #include "configfile.h"
@@ -31,7 +30,6 @@
 #include "sharedialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
-#include "translations.h"
 
 #ifdef WITH_AUTO_UPDATER
 #include "updater/ocupdater.h"
@@ -43,10 +41,7 @@
 
 #include <QApplication>
 #include <QDesktopServices>
-#include <QDir>
 #include <QFileOpenEvent>
-#include <QMessageBox>
-#include <QPushButton>
 
 namespace OCC {
 

@@ -16,8 +16,6 @@
 
 #include "account.h"
 
-#include <QJsonArray>
-
 #include <OAICollection_of_drives.h>
 #include <OAIDrive.h>
 

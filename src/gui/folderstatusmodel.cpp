@@ -20,16 +20,12 @@
 #include "gui/quotainfo.h"
 #include "theme.h"
 
-#include "resources/resources.h"
-
 #include "libsync/graphapi/space.h"
 #include "libsync/graphapi/spacesmanager.h"
 
 #include <QApplication>
-#include <QDir>
 #include <QFileIconProvider>
 #include <QRandomGenerator>
-#include <QVarLengthArray>
 
 #include <set>
 

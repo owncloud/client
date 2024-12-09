@@ -13,8 +13,6 @@
  */
 
 #include <QLoggingCategory>
-#include <QString>
-#include <QCoreApplication>
 
 #include "account.h"
 #include "common/asserts.h"

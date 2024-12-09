@@ -22,7 +22,6 @@
 #include "c_time.h"
 
 #include "common/filesystembase.h"
-#include "common/utility.h"
 
 #include <QFile>
 

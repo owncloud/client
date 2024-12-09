@@ -18,7 +18,6 @@
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
 #include "propagateremotedelete.h"
-#include "propagatorjobs.h"
 #include "syncengine.h"
 
 #include "common/asserts.h"
@@ -31,9 +30,7 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <QJsonDocument>
 #include <QJsonObject>
-#include <QNetworkAccessManager>
 
 #include <chrono>
 #include <cmath>

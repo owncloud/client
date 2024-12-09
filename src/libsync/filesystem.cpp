@@ -17,7 +17,6 @@
 #include "common/asserts.h"
 #include "common/utility.h"
 #include <QCoreApplication>
-#include <QDir>
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>

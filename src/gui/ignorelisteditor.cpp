@@ -17,14 +17,12 @@
 
 #include "configfile.h"
 #include "gui/folderman.h"
-#include "gui/guiutility.h"
 
-#include <QFile>
 #include <QDir>
-#include <QListWidget>
+#include <QFile>
+#include <QInputDialog>
 #include <QListWidgetItem>
 #include <QMessageBox>
-#include <QInputDialog>
 
 namespace OCC {
 

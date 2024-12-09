@@ -12,23 +12,17 @@
  * for more details.
  */
 
-#include <QtCore>
 #include <QAbstractListModel>
-#include <QWidget>
-#include <QIcon>
-#include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonObject>
+#include <QtCore>
 
-#include "accessmanager.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "folderman.h"
-#include "guiutility.h"
 #include "models.h"
 #include "networkjobs/jsonjob.h"
-
-#include "resources/resources.h"
 
 #include "activitydata.h"
 #include "activitylistmodel.h"

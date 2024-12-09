@@ -1,11 +1,9 @@
 #include "setupwizardcontroller.h"
 
-#include "accessmanager.h"
 #include "determineauthtypejobfactory.h"
 #include "gui/application.h"
 #include "gui/folderman.h"
 #include "pages/accountconfiguredwizardpage.h"
-#include "pages/basiccredentialssetupwizardpage.h"
 #include "states/abstractsetupwizardstate.h"
 #include "states/accountconfiguredsetupwizardstate.h"
 #include "states/basiccredentialssetupwizardstate.h"
@@ -13,9 +11,6 @@
 #include "states/oauthcredentialssetupwizardstate.h"
 #include "states/serverurlsetupwizardstate.h"
 #include "theme.h"
-
-#include <QClipboard>
-#include <QTimer>
 
 using namespace std::chrono_literals;
 

@@ -16,8 +16,6 @@
 #include "gui/folderman.h"
 #include "libsync/graphapi/spacesmanager.h"
 
-#include <QIcon>
-#include <QPixmap>
 #include <QRandomGenerator>
 
 using namespace OCC::Spaces;

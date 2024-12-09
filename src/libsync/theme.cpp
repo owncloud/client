@@ -23,13 +23,11 @@
 #include "resources/qmlresources.h"
 #include "resources/resources.h"
 
+#include <QSslSocket>
+#include <QStyle>
 #include <QtCore>
 #include <QtGui>
-#include <QStyle>
-#include <QApplication>
-#include <QSslSocket>
 
-#include "owncloudtheme.h"
 #include "themewatcher.h"
 
 #ifdef THEME_INCLUDE

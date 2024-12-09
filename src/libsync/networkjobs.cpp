@@ -15,18 +15,7 @@
 
 #include <QBuffer>
 #include <QCoreApplication>
-#include <QJsonDocument>
-#include <QLoggingCategory>
-#include <QMutex>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QSslCipher>
-#include <QSslConfiguration>
-#include <QStack>
-#include <QStringList>
-#include <QTimer>
-#include <QXmlStreamReader>
 #include <QPainter>
 #include <QPainterPath>
 

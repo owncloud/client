@@ -18,9 +18,8 @@
 #include "translations.h"
 
 #include <QApplication>
-#include <QLoggingCategory>
-#include <QDir>
 #include <QDirIterator>
+#include <QLoggingCategory>
 #include <QStandardPaths>
 
 namespace OCC {

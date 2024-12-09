@@ -21,7 +21,6 @@
 #include "common/restartmanager.h"
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
-#include "creds/abstractcredentials.h"
 #include "folderman.h"
 #include "folderwizard/folderwizard.h"
 #include "gui/accountsettings.h"
@@ -45,10 +44,7 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QDialog>
-#include <QDir>
 #include <QHBoxLayout>
-#include <QMessageBox>
-#include <QScreen>
 
 #ifdef Q_OS_WIN
 #include <qt_windows.h>

@@ -50,14 +50,13 @@
 #include <QDir>
 #include <QSettings>
 
-#include <QMessageBox>
-#include <QPushButton>
 #include <QApplication>
+#include <QMessageBox>
 
 using namespace std::chrono_literals;
 
 namespace {
-/* How oftern to retry a sync
+/* How often to retry a sync
  * Either due to _engine->isAnotherSyncNeeded or a sync error
  */
 constexpr int retrySyncLimitC = 3;
