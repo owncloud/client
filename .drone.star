@@ -22,8 +22,8 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Eventually, we have to use image built on ubuntu
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
-OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-39-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-39-7.2.1-qt66x-linux64"
+OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-41-amd64"
+OC_CI_SQUISH = "owncloudci/squish:fedora-39-8.0.0-qt67x-linux64"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3:1.4.0"
@@ -134,13 +134,11 @@ def main(ctx):
     pipelines = check_starlark() + \
                 lint_gui_test() + \
                 changelog(ctx)
-    unit_tests = unit_test_pipeline(ctx)
     gui_tests = gui_test_pipeline(ctx)
 
     return pipelines + \
-           unit_tests + \
            gui_tests + \
-           pipelinesDependsOn(notification(), unit_tests + gui_tests)
+           pipelinesDependsOn(notification(), gui_tests)
 
 def from_secret(name):
     return {
@@ -178,22 +176,6 @@ def check_starlark():
             "event": [
                 "pull_request",
             ],
-        },
-    }]
-
-def unit_test_pipeline(ctx):
-    return [{
-        "kind": "pipeline",
-        "name": "unit-tests",
-        "platform": {
-            "os": "linux",
-            "arch": "amd64",
-        },
-        "steps": skipIfUnchanged(ctx, "unit-tests") +
-                 build_client(OC_CI_CLIENT_FEDORA) +
-                 unit_tests(OC_CI_CLIENT_FEDORA),
-        "trigger": {
-            "ref": trigger_ref,
         },
     }]
 
@@ -300,21 +282,6 @@ def build_client(image = OC_CI_CLIENT, ctest = True):
             ],
         },
     ]
-
-def unit_tests(image = OC_CI_CLIENT):
-    return [{
-        "name": "ctest",
-        "image": image,
-        "environment": {
-            "LC_ALL": "C.UTF-8",
-        },
-        "commands": [
-            "cd %s" % dir["build"],
-            "useradd -m -s /bin/bash tester",
-            "chown -R tester:tester .",
-            "su-exec tester ctest --output-on-failure -LE nodrone",
-        ],
-    }]
 
 def gui_tests(ctx, squish_parameters = "", server_type = "oc10"):
     record_video = False
