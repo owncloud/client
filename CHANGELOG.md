@@ -282,7 +282,7 @@ ownCloud admins and users.
 
    The release series 6 is a long term release. As version 7 will drop the support
    for ownCloud 10, users will either have to select the ownCloud infinite scale
-   update channel in the about dialog or manually install a newer release. This
+   update channel in the about-dialog or manually install a newer release. This
    change only affects the unbranded version.
 
    https://github.com/owncloud/client/issues/11742
@@ -309,7 +309,8 @@ ownCloud admins and users.
 
    On platforms that support metered-connection detection, an option is now
    available to pause folder synchronization when the network connection switches
-   to metered. When synchronization is paused, force-syncing can still be done.
+   to metered-connection. When synchronization is paused, force-syncing can still
+   be done.
 
    https://github.com/owncloud/client/issues/4808
    https://github.com/owncloud/client/pull/11305
@@ -533,7 +534,7 @@ ownCloud admins and users.
 * Bugfix - Fix url resolution for app provider: [#11296](https://github.com/owncloud/client/issues/11296)
 
    We fixed a bug in the url resolution for the app provider. If owncloud is
-   installed to a non root directory we computed a wrong url for the app provider
+   installed to a non-root directory we computed a wrong url for the app provider
    urls. This could trigger a connection validation in the client, which intern
    triggered a request to the app provider. Resulting in an endless loop rendering
    the client unusable.
@@ -682,7 +683,7 @@ ownCloud admins and users.
 * Enhancement - Port from QtSingleApplication to KDSingleApplication: [#8432](https://github.com/owncloud/client/issues/8432)
 * Enhancement - Enable crash reporter in commandline client: [#8991](https://github.com/owncloud/client/issues/8991)
 * Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
-* Enhancement - Log http request when it is send: [#10313](https://github.com/owncloud/client/issues/10313)
+* Enhancement - Log http request when it is sent: [#10313](https://github.com/owncloud/client/issues/10313)
 * Enhancement - Allow selective sync of spaces in folder wizard: [#10596](https://github.com/owncloud/client/issues/10596)
 * Enhancement - Send a language header in all http requests: [#10619](https://github.com/owncloud/client/issues/10619)
 * Enhancement - Help user fix problems on the last setup wizard page: [#10680](https://github.com/owncloud/client/issues/10680)
@@ -857,7 +858,7 @@ ownCloud admins and users.
 * Enhancement - Windows VFS: Prevent rename to ignored file name: [#8216](https://github.com/owncloud/client/issues/8216)
 
    We now prevent renaming of virtual files to ignored file names. This basically
-   resulted in a delete on the server and a local placeholder that pointed to a
+   resulted in deletion on the server and a local placeholder that pointed to a
    non-existing file.
 
    https://github.com/owncloud/client/issues/8216
@@ -895,9 +896,9 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/10197
 
-* Enhancement - Log http request when it is send: [#10313](https://github.com/owncloud/client/issues/10313)
+* Enhancement - Log http request when it is sent: [#10313](https://github.com/owncloud/client/issues/10313)
 
-   We now log the http request when it is send, not when it is created. This will
+   We now log the http request when it is sent, not when it is created. This will
    enable us to print more headers set by the platform and measure the request time
    more accurately.
 
@@ -1065,7 +1066,7 @@ ownCloud admins and users.
 * Bugfix - Escape navigation elements from user name: [#10427](https://github.com/owncloud/client/issues/10427)
 * Bugfix - Under certain conditions the folder watcher could drop events: [#10458](https://github.com/owncloud/client/pull/10458)
 * Bugfix - Properly handle OAuth invalidation: [#10494](https://github.com/owncloud/client/issues/10494)
-* Bugfix - Clear conflict errors after they where resolved: [#10569](https://github.com/owncloud/client/issues/10569)
+* Bugfix - Clear conflict errors after they were resolved: [#10569](https://github.com/owncloud/client/issues/10569)
 * Bugfix - Set the expected download content length in the job properly: [#10607](https://github.com/owncloud/client/pull/10607)
 * Bugfix - UI freeze when multiple modal dialogs displayed on macOS: [#10621](https://github.com/owncloud/client/issues/10621)
 * Bugfix - Ensure the account state is properly persisted: [#10648](https://github.com/owncloud/client/issues/10648)
@@ -1079,7 +1080,7 @@ ownCloud admins and users.
 * Enhancement - Disable DPI scaling factor rounding on Windows: [#10406](https://github.com/owncloud/client/issues/10406)
 * Enhancement - Display quota for Spaces: [#10453](https://github.com/owncloud/client/issues/10453)
 * Enhancement - New WebFinger workflow: [#10517](https://github.com/owncloud/client/issues/10517)
-* Enhancement - Branding: Allow the addition of buttons to open a url: [#10518](https://github.com/owncloud/client/issues/10518)
+* Enhancement - Branding: Allow the addition of buttons to open an url: [#10518](https://github.com/owncloud/client/issues/10518)
 * Enhancement - Build the client without the auto updater by default: [#10537](https://github.com/owncloud/client/issues/10537)
 * Enhancement - Improve presentation of connection state: [#10557](https://github.com/owncloud/client/issues/10557)
 * Enhancement - Display open in web in file browser context menu, on sync roots: [#10572](https://github.com/owncloud/client/issues/10572)
@@ -1087,7 +1088,7 @@ ownCloud admins and users.
 * Enhancement - Open sharing options in Web: [#10590](https://github.com/owncloud/client/pull/10590)
 * Enhancement - Display the space name provided by the server: [#10602](https://github.com/owncloud/client/pull/10602)
 * Enhancement - Always point to the latest documentation: [#10634](https://github.com/owncloud/client/issues/10634)
-* Enhancement - More user friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
+* Enhancement - More user-friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
 * Enhancement - Don't invalidate oauth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
 
 ## Details
@@ -1149,7 +1150,7 @@ ownCloud admins and users.
    https://github.com/owncloud/client/issues/10494
    https://github.com/owncloud/client/issues/10495
 
-* Bugfix - Clear conflict errors after they where resolved: [#10569](https://github.com/owncloud/client/issues/10569)
+* Bugfix - Clear conflict errors after they were resolved: [#10569](https://github.com/owncloud/client/issues/10569)
 
    https://github.com/owncloud/client/issues/10569
 
@@ -1240,13 +1241,13 @@ ownCloud admins and users.
 
    This is useful when a large organization operates multiple instances to
    distribute the load on multiple servers, or single departments operate their own
-   servers but they all use a common entrypoint URL and authentication system.
+   servers, but they all use a common entrypoint URL and authentication system.
 
    https://github.com/owncloud/client/issues/10517
    https://github.com/owncloud/client/pull/10665
    https://owncloud.dev/services/webfinger/
 
-* Enhancement - Branding: Allow the addition of buttons to open a url: [#10518](https://github.com/owncloud/client/issues/10518)
+* Enhancement - Branding: Allow the addition of buttons to open an url: [#10518](https://github.com/owncloud/client/issues/10518)
 
    We added a branding option that allows to add buttons to the toolbar. Those
    buttons will then open a hardcoded web page.
@@ -1289,14 +1290,14 @@ ownCloud admins and users.
 
 * Enhancement - Always point to the latest documentation: [#10634](https://github.com/owncloud/client/issues/10634)
 
-   We used a url for the documentation that contained the client version. While
+   We used an url for the documentation that contained the client version. While
    this ensured a used would get the documentation matching to their client, this
-   only worked with the last two released clients. So users of a pre release or of
+   only worked with the last two released clients. So users of a pre-release or of
    a very old client where served a 404.
 
    https://github.com/owncloud/client/issues/10634
 
-* Enhancement - More user friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
+* Enhancement - More user-friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
 
    https://github.com/owncloud/client/pull/10637
 
@@ -1321,7 +1322,7 @@ ownCloud admins and users.
 
 * Bugfix - Handle hide VirtualFiles options as disable VirtualFiles: [#5612](https://github.com/owncloud/enterprise/issues/5612)
 
-   Due to legacy reasons the branding flag and its fuction differ.
+   Due to legacy reasons the branding flag and its function differ.
 
    https://github.com/owncloud/enterprise/issues/5612
 
@@ -1520,7 +1521,7 @@ ownCloud admins and users.
 * Enhancement - Allow HTTP/1.1 pipelining: [#9930](https://github.com/owncloud/client/pull/9930/)
 * Enhancement - Improve look and feel of many dialogs on macOS: [#9995](https://github.com/owncloud/client/issues/9995)
 * Enhancement - Windows VFS download speed improvement: [#10031](https://github.com/owncloud/client/issues/10031)
-* Enhancement - Add a prefer: minimal header to PROPFIND: [#10104](https://github.com/owncloud/client/pull/10104)
+* Enhancement - Add a `prefer: minimal` header to PROPFIND: [#10104](https://github.com/owncloud/client/pull/10104)
 * Enhancement - Allow creation of sync roots with long paths: [#10135](https://github.com/owncloud/client/pull/10135/)
 * Enhancement - Windows add longPath awareness: [#10136](https://github.com/owncloud/client/pull/10136)
 * Enhancement - Estimate duration of network requests in httplogger: [#10142](https://github.com/owncloud/client/pull/10142)
@@ -1571,7 +1572,7 @@ ownCloud admins and users.
 
 * Bugfix - Don't unset implicit log flush: [#9515](https://github.com/owncloud/client/pull/9515)
 
-   Since https://github.com/owncloud/client/pull/9515 we flush the the log if the
+   Since https://github.com/owncloud/client/pull/9515 we flush the log if the
    output is stdout. We fixed a bug which disabled it again.
 
    https://github.com/owncloud/client/pull/9515
@@ -1819,7 +1820,7 @@ ownCloud admins and users.
    The check was introduced in #6049 to prevent crashes if the db does not exist or
    is removed during runtime. We nowadays gracefully handle missing dbs on startup,
    removing the db at runtime is too much of a corner case to sacrifice that much
-   performance however.
+   performance, however.
 
    https://github.com/owncloud/client/pull/9918
 
@@ -1853,7 +1854,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/10031
 
-* Enhancement - Add a prefer: minimal header to PROPFIND: [#10104](https://github.com/owncloud/client/pull/10104)
+* Enhancement - Add a `prefer: minimal` header to PROPFIND: [#10104](https://github.com/owncloud/client/pull/10104)
 
    This will not return missing attribs in the reply in a 404 not found status
    propset. That reduces the amount of transferred data significant.
@@ -1919,7 +1920,7 @@ ownCloud admins and users.
 ## Summary
 
 * Bugfix - Windows VFS: Keep file attributes and pin state: [#34](https://github.com/owncloud/client-desktop-vfs-win/pull/34)
-* Bugfix - Compare usernames case insensitive: [#5174](https://github.com/owncloud/enterprise/issues/5174)
+* Bugfix - Compare usernames case-insensitive: [#5174](https://github.com/owncloud/enterprise/issues/5174)
 * Bugfix - Use UTF-8 for .owncloudsync.log: [#9571](https://github.com/owncloud/client/pull/9571)
 * Bugfix - Crash when interacting with a folder in an error state: [#9600](https://github.com/owncloud/client/issues/9600)
 * Bugfix - Database was recreated after its removal: [#9791](https://github.com/owncloud/client/issues/9791)
@@ -1940,16 +1941,16 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client-desktop-vfs-win/pull/34
 
-* Bugfix - Compare usernames case insensitive: [#5174](https://github.com/owncloud/enterprise/issues/5174)
+* Bugfix - Compare usernames case-insensitive: [#5174](https://github.com/owncloud/enterprise/issues/5174)
 
    We fixed a bug where the user name was compared with the name provided by the
-   server in a case sensitive way.
+   server in a case-sensitive way.
 
    https://github.com/owncloud/enterprise/issues/5174
 
 * Bugfix - Use UTF-8 for .owncloudsync.log: [#9571](https://github.com/owncloud/client/pull/9571)
 
-   We fixed a bug where unicode file names were not correctly displayed in
+   We fixed a bug where Unicode file names were not correctly displayed in
    .owncloudsync.log.
 
    https://github.com/owncloud/client/pull/9571
@@ -2006,7 +2007,7 @@ ownCloud admins and users.
 
    Previously we aborted any running sync if a user requested a file that was not
    yet available locally. This was done to ensure the user does not need to wait
-   for the current sync to finish. However in today's code both actions the
+   for the current sync to finish. However, in today's code both actions the
    download and the sync can run in parallel.
 
    https://github.com/owncloud/client/issues/9832
@@ -2044,7 +2045,7 @@ ownCloud admins and users.
 * Bugfix - Ensure proper setup of network jobs on retries: [#9437](https://github.com/owncloud/client/pull/9437)
 * Bugfix - Fix Account Filter for Server Activity tab: [#9481](https://github.com/owncloud/client/pull/9481)
 * Bugfix - If required clear cookies in more scenarios: [#9489](https://github.com/owncloud/client/pull/9489)
-* Bugfix - Possible crash when removing non existing folder: [#9533](https://github.com/owncloud/client/issues/9533)
+* Bugfix - Possible crash when removing non-existing folder: [#9533](https://github.com/owncloud/client/issues/9533)
 * Bugfix - Can't stop basic auth login: [#9545](https://github.com/owncloud/client/issues/9545)
 * Enhancement - Retry token refresh multiple times before logout: [#9245](https://github.com/owncloud/client/issues/9245)
 * Enhancement - Don't log error when checking removed file for changes: [#9304](https://github.com/owncloud/client/issues/9304)
@@ -2154,7 +2155,7 @@ ownCloud admins and users.
 
    We fixed a bug where we reset the change time of Windows placeholder files to
    the value in the database during uploads. This cold cause other applications to
-   detect non existing changes in that file.
+   detect non-existing changes in that file.
 
    https://github.com/owncloud/client/issues/9383
    https://github.com/owncloud/client-desktop-vfs-win/pull/16
@@ -2217,7 +2218,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/9489
 
-* Bugfix - Possible crash when removing non existing folder: [#9533](https://github.com/owncloud/client/issues/9533)
+* Bugfix - Possible crash when removing non-existing folder: [#9533](https://github.com/owncloud/client/issues/9533)
 
    https://github.com/owncloud/client/issues/9533
 
@@ -2255,7 +2256,7 @@ ownCloud admins and users.
 * Enhancement - Provide informal German translations: [#9460](https://github.com/owncloud/client/issues/9460)
 
    The community was maintaining an informal German translation for years but we
-   where only able to provide a single version of German in the client. We now ship
+   were only able to provide a single version of German in the client. We now ship
    both versions, the informal can be selected in the combobox in the advanced
    settings. To be able to distinguish between formal and informal locales, we also
    include the locale identifier in the dropdown (e.g., "Deutsch (de-informal)").
@@ -2333,9 +2334,9 @@ ownCloud admins and users.
 
 * Bugfix - Do not ask for credentials at start-up when the user logged out: [#8924](https://github.com/owncloud/client/issues/8924)
 
-   When a user would logout, and quit the client, then on the next start the client
-   would immediately ask for credentials. This has been fixed by storing the fact
-   that the user logged out before in the account settings.
+   When a user would log out, and quit the client, then on the next start the
+   client would immediately ask for credentials. This has been fixed by storing the
+   fact that the user logged out before in the account settings.
 
    https://github.com/owncloud/client/issues/8924
 
@@ -2380,7 +2381,7 @@ ownCloud admins and users.
 * Bugfix - Don't abort upload if chunk is locked: [#9194](https://github.com/owncloud/client/issues/9194)
 
    Since 2.9 we know that we need exclusive file access to a file to properly
-   handle it with Windows virtual files. Therefore we checked for the locked state
+   handle it with Windows virtual files. Therefore, we checked for the locked state
    before we start the upload. Due to a bug we checked that for each file chunk,
    now we only check when the upload starts and when it finished completely.
 
@@ -2432,7 +2433,7 @@ ownCloud admins and users.
 
 * Bugfix - Run a full local discovery after we were paused or on a forced sync: [#9341](https://github.com/owncloud/client/issues/9341)
 
-   Previously we did a incremental search which might have skipped some local
+   Previously we did an incremental search which might have skipped some local
    changes.
 
    https://github.com/owncloud/client/issues/9341
@@ -2469,7 +2470,7 @@ ownCloud admins and users.
 
 * Enhancement - Also ignore local repeating errors for a period of time: [#9208](https://github.com/owncloud/client/issues/9208)
 
-   If an error occurs on the server (a url is not reachable) we try a couple of
+   If an error occurs on the server (an url is not reachable) we try a couple of
    times, then we ignore that file for a period of time. We now do the same with
    errors that occur locally.
 
@@ -2512,8 +2513,8 @@ ownCloud admins and users.
 
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
 
-   We fixed a branding issue where vfs was used even when the parameter was set to
-   disabled.
+   We fixed a branding issue where vfs was used even when the parameter was not
+   enabled.
 
    https://github.com/owncloud/client/issues/9159
    https://github.com/owncloud/enterprise/issues/4820
@@ -2522,8 +2523,8 @@ ownCloud admins and users.
 
    When the client detects a change of the url we ask the user to accept the change
    or if it was only representational change (demo.com vs demo.com/) we directly
-   accept the change. Due to a bug the we aborted the sync only after we updated
-   the url. This caused the client to idle for one minute.
+   accept the change. Due to a bug we aborted the sync only after we updated the
+   url. This caused the client to idle for one minute.
 
    https://github.com/owncloud/client/pull/9202
 
@@ -2591,7 +2592,7 @@ ownCloud admins and users.
 
 * Bugfix - Enforce rtl layout with rtl languages: [#8806](https://github.com/owncloud/client/issues/8806)
 
-   We fixed a bug where setting the language to a right to left language on mac did
+   We fixed a bug where setting the language to a right to left language on Mac did
    not change the layout of the application.
 
    https://github.com/owncloud/client/issues/8806
@@ -2648,8 +2649,8 @@ ownCloud admins and users.
 * Bugfix - A upgrade to 2.9 causes the usage of a new journal file: [#9019](https://github.com/owncloud/client/issues/9019)
 
    We fixed a bug where the name of the sync journal was not properly saved to the
-   settings. This caused a bug when migration to 2.9, so a new a new sync journal
-   was created.
+   settings. This caused a bug when migration to 2.9, so a new sync journal was
+   created.
 
    This not only caused the loss of some selective sync settings, but also caused
    the display of the following warning message:
@@ -2750,7 +2751,7 @@ ownCloud admins and users.
 * Change - Remove support for http redirects: [#8293](https://github.com/owncloud/client/pull/8293)
 * Change - Ignore the desktop.ini file in every directory, not only in top dir: [#8298](https://github.com/owncloud/client/issues/8298)
 * Change - Add support for dynamic client registration with OIDC: [#8350](https://github.com/owncloud/client/pull/8350/)
-* Change - Include full os version in the about dialog: [#8374](https://github.com/owncloud/client/pull/8374)
+* Change - Include full os version in the about-dialog: [#8374](https://github.com/owncloud/client/pull/8374)
 * Change - We removed the support for async jobs using OC-JobStatus-Location: [#8398](https://github.com/owncloud/client/pull/8398)
 * Change - Add a branding option to skip the advanced setup page: [#8665](https://github.com/owncloud/client/issues/8665)
 * Enhancement - Make crash report IDs easy to copy: [#25](https://github.com/dschmidt/libcrashreporter-qt/pull/25)
@@ -2862,7 +2863,7 @@ ownCloud admins and users.
 
 * Bugfix - Locked files are not correctly synced: [#8761](https://github.com/owncloud/client/issues/8761)
 
-   We fixed an issue where files locked by office etc, where not correctly synced,
+   We fixed an issue where files locked by office etc., where not correctly synced,
    when Windows Virtual files are enabled.
 
    https://github.com/owncloud/client/issues/8761
@@ -2966,7 +2967,7 @@ ownCloud admins and users.
 
 * Change - Ignore the desktop.ini file in every directory, not only in top dir: [#8298](https://github.com/owncloud/client/issues/8298)
 
-   The windows explorer files called desktop.ini were ignored only in the top sync
+   The Windows explorer files called desktop.ini were ignored only in the top sync
    dir so far. They are now ignored in the sync in all directory levels of the file
    tree.
 
@@ -2980,9 +2981,9 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/8350/
 
-* Change - Include full os version in the about dialog: [#8374](https://github.com/owncloud/client/pull/8374)
+* Change - Include full os version in the about-dialog: [#8374](https://github.com/owncloud/client/pull/8374)
 
-   We now include the os version in the about dialog, this might help us to faster
+   We now include the os version in the about-dialog, this might help us to faster
    pin down os related issues.
 
    https://github.com/owncloud/client/pull/8374
@@ -3095,8 +3096,8 @@ ownCloud admins and users.
 
 * Enhancement - Retry sync on `502 Bad Gateway`: [#8811](https://github.com/owncloud/client/issues/8811)
 
-   We now treat a `502 Bad Gateway` as an less severer error and directly
-   initialise a retry.
+   We now treat a `502 Bad Gateway` as a less severe error and directly initialise
+   a retry.
 
    https://github.com/owncloud/client/issues/8811
 
@@ -3106,7 +3107,7 @@ ownCloud admins and users.
    certain amount of time. If we have ignored files we are not in sync, we now
    don't display the green icon.
 
-   Additionally this change aligns the icon displayed in the system tray with the
+   Additionally, this change aligns the icon displayed in the system tray with the
    icon displayed in the app.
 
    Https://github.com/owncloud/client/issues/7715
@@ -3260,7 +3261,7 @@ ownCloud admins and users.
 ## Summary
 
 * Bugfix - Fix missing sidebar icons on Mac with branded builds: [#4387](https://github.com/owncloud/enterprise/issues/4387)
-* Bugfix - Case sensitive comparison of checksum algorithm: [#8371](https://github.com/owncloud/client/pull/8371)
+* Bugfix - Case-sensitive comparison of checksum algorithm: [#8371](https://github.com/owncloud/client/pull/8371)
 
 ## Details
 
@@ -3270,9 +3271,9 @@ ownCloud admins and users.
 
    https://github.com/owncloud/enterprise/issues/4387
 
-* Bugfix - Case sensitive comparison of checksum algorithm: [#8371](https://github.com/owncloud/client/pull/8371)
+* Bugfix - Case-sensitive comparison of checksum algorithm: [#8371](https://github.com/owncloud/client/pull/8371)
 
-   We fixed a bug where the checksum detection was case sensitive and used a
+   We fixed a bug where the checksum detection was case-sensitive and used a
    different casing than the server.
 
    https://github.com/owncloud/client/pull/8371
@@ -3369,7 +3370,7 @@ ownCloud admins and users.
 
 * Bugfix - Update Windows launch on start entry: [#7672](https://github.com/owncloud/client/issues/7672)
 
-   We fixed a bug where launch on start did not work after a re install to a new
+   We fixed a bug where launch on start did not work after a re-install to a new
    location.
 
    https://github.com/owncloud/client/issues/7672
@@ -3500,7 +3501,7 @@ ownCloud admins and users.
 * Bugfix - Check whether the local folder supports the virtual file system: [#8131](https://github.com/owncloud/client/issues/8131)
 * Bugfix - "All Files removed" dialog no longer blocks the application: [#8170](https://github.com/owncloud/client/issues/8170)
 * Bugfix - We fixed the permissions check for local folders on NTFS: [#8187](https://github.com/owncloud/client/issues/8187)
-* Change - Add support for the TUS resumeable upload protocol: [#19](https://github.com/owncloud/product/issues/19)
+* Change - Add support for the TUS resume-able upload protocol: [#19](https://github.com/owncloud/product/issues/19)
 * Change - Don't hardcode a plugin location: [#3839](https://github.com/owncloud/enterprise/issues/3839)
 * Change - Detect the Windows 10 theme for the system tray: [#7356](https://github.com/owncloud/client/issues/7356)
 * Change - Support for OpenID Connect: [#7509](https://github.com/owncloud/client/pull/7509)
@@ -3572,7 +3573,7 @@ ownCloud admins and users.
 
 * Bugfix - The back button on the advanced wizard page no longer gets enabled: [#8051](https://github.com/owncloud/client/issues/8051)
 
-   We fixed a bug where the back button in the advanced wizard page get re enabled.
+   We fixed a bug where the back button in the advanced wizard page get re-enabled.
 
    https://github.com/owncloud/client/issues/8051
 
@@ -3611,7 +3612,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/8187
 
-* Change - Add support for the TUS resumeable upload protocol: [#19](https://github.com/owncloud/product/issues/19)
+* Change - Add support for the TUS resume-able upload protocol: [#19](https://github.com/owncloud/product/issues/19)
 
    With the support of the TUS protocol we are now able to easily and reliably
    upload files to oCIS.
@@ -3742,7 +3743,7 @@ ownCloud admins and users.
 * Change - Move "Choose what to sync" to sync everything settings: [#8018](https://github.com/owncloud/client/pull/8018)
 
    While selective sync is a feature only available when everything is synced, the
-   the option had its own radio button. We now moved the button to the other sync
+   option had its own radio button. We now moved the button to the other sync
    everything related settings.
 
    https://github.com/owncloud/client/pull/8018
@@ -3795,8 +3796,8 @@ ownCloud admins and users.
    with a preview build. For that exact reason we offer testpilotcloud clients,
    they can be installed in parallel and updated via the beta channel.
 
-   If a user is more adventures than the average a manual install of a preview is
-   always possible.
+   If a user is more adventurous than the average a manual installation of a
+   preview is always possible.
 
    https://github.com/owncloud/client/issues/8127
 
@@ -3870,7 +3871,7 @@ ownCloud admins and users.
 
 * Bugfix - Expand file tree also when no folders are synced: [#7336](https://github.com/owncloud/client/issues/7336)
 
-   We have fixed the behaviour of the folder Widget, when a account was added and
+   We have fixed the behaviour of the folder Widget, when an account was added and
    none of its folders was selected to be synced, the tree was not expanded.
 
    https://github.com/owncloud/client/issues/7336
@@ -3942,7 +3943,7 @@ ownCloud admins and users.
 
 * Bugfix - On Windows the share dialog does not open as the top most window: [#7774](https://github.com/owncloud/client/issues/7774)
 
-   We now ensure that the our dialogs are correctly raised.
+   We now ensure that our dialogs are correctly raised.
 
    https://github.com/owncloud/client/issues/7774
 
@@ -5119,7 +5120,7 @@ version 1.4.2 (release 2013-10-18 ), csync 0.90.4 required
   * Fix high CPU load (#1073)
   * Reconnect if network is unavailable after startup (#1080)
   * Ensure paused folder stays paused when syncing with more than one folder (#1083)
-  * Don't show desktop notification when the user doesn't want to (#1093)
+  * Don't show desktop notification when the user does not want to (#1093)
   * System tray: Avoid quick flickering up of the ok-icon for the sync prepare state
   * Progress: Do not show progress if nothing is transmitted
   * Progress: Show number of deletes.
@@ -5243,7 +5244,7 @@ version 1.2.1 (release 2013-02-26 ), csync 0.70.4 required
   * [Fixes] Stop sync scheduling when configuration wizard starts.
   * [Fixes] Clear pending network requests when stepping back in config wizard.
   * [Fixes] User password dialog asynchronous issues.
-  * [Fixes] Make folderman starting and stoping the scheduling.
+  * [Fixes] Make folderman starting and stopping the scheduling.
   * [Fixes] Various minor fixes and cleanups.
   * [Fixes] Crash on pausing sync
   * [Fixes] Stale lock file after pausing sync
@@ -5254,16 +5255,16 @@ version 1.2.1 (release 2013-02-26 ), csync 0.70.4 required
   * [Platform] Simplified/fixed credential store usage and custom configs.
   * [Platform] Added soname version to libowncloudsync.
   * [Platform] Pull in Qt translations
-  * [Gui]  Make sync result popups less annoyingq
+  * [Gui]  Make sync result popups less annoying
   * [Gui] Fix for result popup
 
 version 1.2.0 (release 2013-01-24 ), csync 0.70.2 required
   * [GUI] New status dialog to show a detailed list of synced files.
   * [GUI] New tray notifications about synced files.
   * [GUI] New platform specific icon set.
-  * [App] Using cross platform QtKeychain library to store credentials crypted.
+  * [App] Using cross platform QtKeychain library to store credentials encrypted.
   * [App] Use cross platform notification for changes in the local file system rather than regular poll.
-  * [Fixes] Improved SSL Certificate handling and SSL fixes troughout syncing.
+  * [Fixes] Improved SSL Certificate handling and SSL fixes throughout syncing.
   * [Fixes] Fixed proxy authentication.
   * [Fixes] Allow brackets in folder name alias.
   * [Fixes] Lots of other minor fixes.
@@ -5284,13 +5285,13 @@ version 1.1.2 (release 2012-11-26 ), csync 0.60.2 required
   * [Fixes] lots of other minor fixes.
   * [GUI] Display error messages in status dialog.
   * [GUI] GUI fixes for the connection wizard.
-  * [GUI] Show username for connection in statusdialog.
+  * [GUI] Show username for connection in status-dialog.
   * [GUI] Show intro wizard on new connection setup.
   * [APP] Use CredentialStore to better support various credential
           backends.
   * [APP] Handle missing local folder more robust: Create it if
           missing instead of ignoring.
-  * [APP] Simplify treewalk code.
+  * [APP] Simplify tree-walk code.
   * [Platform] Fix Mac building
 
 version 1.1.1 (release 2012-10-18), csync 0.60.1 required
@@ -5348,7 +5349,7 @@ version 1.0.4 (release 2012-08-10), csync 0.50.8 required
           Portuguese (Brazil), German, Greek, Spanish, Czech, Italian, Slovak,
 	  French, Russian, Japanese, Swedish, Portuguese (Portugal)
 	  all with translation rate >90%.
-  * [Fixes] Loading of self signed certs into Networkmanager (#oc-843)
+  * [Fixes] Loading of self signed certs into NetworkManager (#oc-843)
   * [Fixes] Win32: Handle SSL dll loading correctly.
   * [Fixes] Many other small fixes and improvements.
 
