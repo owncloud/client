@@ -195,7 +195,7 @@ Pane {
                                 Layout.maximumHeight: 30
                                 display: AbstractButton.IconOnly
                                 icon.source: QMLResources.resourcePath("core", "more", enabled)
-                                // this should have no effect, but without it the higlight is not displayed in Qt 6.7 on Windows
+                                // this should have no effect, but without it the highlight is not displayed in Qt 6.7 on Windows
                                 palette.highlight: folderSyncPanel.palette.higlight
 
                                 Keys.onTabPressed: {
@@ -232,7 +232,7 @@ Pane {
             Button {
                 id: addSyncButton
                 text: accountSettings.accountState.supportsSpaces ? qsTr("Add Space") : qsTr("Add Folder")
-                // this should have no effect, but without it the higlight is not displayed in Qt 6.7 on Windows
+                // this should have no effect, but without it the highlight is not displayed in Qt 6.7 on Windows
                 palette.highlight: folderSyncPanel.palette.highlight
 
                 onClicked: {
