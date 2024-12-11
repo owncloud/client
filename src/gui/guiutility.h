@@ -29,7 +29,7 @@ Q_DECLARE_LOGGING_CATEGORY(lcGuiUtility)
 
 namespace Utility {
 
-    /** Open an url in the browser.
+    /** Open a URL in the browser.
      *
      * If launching the browser fails, display a message.
      */

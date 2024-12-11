@@ -812,7 +812,7 @@ void Folder::saveToSettings() const
         }
     }
     // with spaces we rely on the space id
-    // we save the dav url nevertheless to have it available during startup
+    // we save the dav URL nevertheless to have it available during startup
     definitionToSave.setWebDavUrl(webDavUrl());
 
     // keep the scope of the interaction with the settings limited to prevent possible loss of settings

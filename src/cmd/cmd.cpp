@@ -286,7 +286,8 @@ CmdOptions parseOptions(const QStringList &app_args)
     auto excludeOption = addOption({ { QStringLiteral("exclude") }, QStringLiteral("Path to an exclude list [file]"), QStringLiteral("file") });
     auto unsyncedfoldersOption = addOption({ { QStringLiteral("unsyncedfolders") }, QStringLiteral("File containing the list of unsynced remote folders (selective sync)"), QStringLiteral("file") });
 
-    auto serverOption = addOption({ { QStringLiteral("server") }, QStringLiteral("Use [url] as the location of the server. OCIS only (server location and spaces url can differ)"), QStringLiteral("url") });
+    auto serverOption = addOption({{QStringLiteral("server")},
+        QStringLiteral("Use [url] as the location of the server. OCIS only (server location and spaces URL can differ)"), QStringLiteral("url")});
     auto userOption = addOption({ { QStringLiteral("u"), QStringLiteral("user") }, QStringLiteral("Use [name] as the login name"), QStringLiteral("name") });
     auto passwordOption = addOption({{QStringLiteral("p"), QStringLiteral("password")}, QStringLiteral("Use [pass] as password"), QStringLiteral("password")});
 
@@ -305,7 +306,7 @@ CmdOptions parseOptions(const QStringList &app_args)
     parser.addVersionOption();
 
     parser.addPositionalArgument(QStringLiteral("source_dir"), QStringLiteral("The source dir"));
-    parser.addPositionalArgument(QStringLiteral("server_url"), QStringLiteral("The url to the server"));
+    parser.addPositionalArgument(QStringLiteral("server_url"), QStringLiteral("The URL to the server"));
     parser.addPositionalArgument(QStringLiteral("remote_folder"), QStringLiteral("A remote folder"));
 
     parser.process(app_args);
@@ -422,7 +423,7 @@ int main(int argc, char **argv)
 
         const QUrl baseUrl = [&ctx] {
             auto tmp = ctx.options.server_url;
-            // Find the folder and the original owncloud url
+            // Find the folder and the original owncloud URL
             QStringList splitted = tmp.path().split(ctx.account->davPath());
             tmp.setPath(splitted.value(0));
             tmp.setScheme(tmp.scheme().replace(QLatin1String("owncloud"), QLatin1String("http")));

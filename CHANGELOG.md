@@ -526,15 +526,15 @@ ownCloud admins and users.
 
 ## Summary
 
-* Bugfix - Fix url resolution for app provider: [#11296](https://github.com/owncloud/client/issues/11296)
+* Bugfix - Fix URL resolution for app provider: [#11296](https://github.com/owncloud/client/issues/11296)
 * Bugfix - Fix crash on unhandled status code on rename check: [#11379](https://github.com/owncloud/client/issues/11379)
 
 ## Details
 
-* Bugfix - Fix url resolution for app provider: [#11296](https://github.com/owncloud/client/issues/11296)
+* Bugfix - Fix URL resolution for app provider: [#11296](https://github.com/owncloud/client/issues/11296)
 
-   We fixed a bug in the url resolution for the app provider. If owncloud is
-   installed to a non-root directory we computed a wrong url for the app provider
+   We fixed a bug in the URL resolution for the app provider. If owncloud is
+   installed to a non-root directory we computed a wrong URL for the app provider
    urls. This could trigger a connection validation in the client, which intern
    triggered a request to the app provider. Resulting in an endless loop rendering
    the client unusable.
@@ -983,7 +983,7 @@ ownCloud admins and users.
 
 * Bugfix - Wrong davUser in cmd client: [#10946](https://github.com/owncloud/client/issues/10946)
 
-   We fixed a bug where the wrong dav user was used in the url, when the username
+   We fixed a bug where the wrong dav user was used in the URL, when the username
    from the credentials differed from the username used on the server.
 
    https://github.com/owncloud/client/issues/10946
@@ -1015,8 +1015,8 @@ ownCloud admins and users.
 * Bugfix - Follow same site redirects in the Wizard: [#5743](https://github.com/owncloud/enterprise/issues/5743)
 
    We fixed a bug where the client did not follow same site redirects during the
-   setup. If the used url https://test.com/owncloud redirected to https://test.com
-   the new url was not correctly used for the newly created account.
+   setup. If the used URL https://test.com/owncloud redirected to https://test.com
+   the new URL was not correctly used for the newly created account.
 
    https://github.com/owncloud/enterprise/issues/5743
 
@@ -1080,7 +1080,7 @@ ownCloud admins and users.
 * Enhancement - Disable DPI scaling factor rounding on Windows: [#10406](https://github.com/owncloud/client/issues/10406)
 * Enhancement - Display quota for Spaces: [#10453](https://github.com/owncloud/client/issues/10453)
 * Enhancement - New WebFinger workflow: [#10517](https://github.com/owncloud/client/issues/10517)
-* Enhancement - Branding: Allow the addition of buttons to open an url: [#10518](https://github.com/owncloud/client/issues/10518)
+* Enhancement - Branding: Allow the addition of buttons to open a URL: [#10518](https://github.com/owncloud/client/issues/10518)
 * Enhancement - Build the client without the auto updater by default: [#10537](https://github.com/owncloud/client/issues/10537)
 * Enhancement - Improve presentation of connection state: [#10557](https://github.com/owncloud/client/issues/10557)
 * Enhancement - Display open in web in file browser context menu, on sync roots: [#10572](https://github.com/owncloud/client/issues/10572)
@@ -1247,7 +1247,7 @@ ownCloud admins and users.
    https://github.com/owncloud/client/pull/10665
    https://owncloud.dev/services/webfinger/
 
-* Enhancement - Branding: Allow the addition of buttons to open an url: [#10518](https://github.com/owncloud/client/issues/10518)
+* Enhancement - Branding: Allow the addition of buttons to open a URL: [#10518](https://github.com/owncloud/client/issues/10518)
 
    We added a branding option that allows to add buttons to the toolbar. Those
    buttons will then open a hardcoded web page.
@@ -1290,7 +1290,7 @@ ownCloud admins and users.
 
 * Enhancement - Always point to the latest documentation: [#10634](https://github.com/owncloud/client/issues/10634)
 
-   We used an url for the documentation that contained the client version. While
+   We used a URL for the documentation that contained the client version. While
    this ensured a used would get the documentation matching to their client, this
    only worked with the last two released clients. So users of a pre-release or of
    a very old client where served a 404.
@@ -1480,7 +1480,7 @@ ownCloud admins and users.
 * Bugfix - Properly resume upload with a partial local discovery: [#5382](https://github.com/owncloud/enterprise/issues/5382)
 * Bugfix - Add request time and other missing data to .owncloudsync.log: [#7348](https://github.com/owncloud/client/issues/7348)
 * Bugfix - Don't display a context-menu on the root folder: [#8595](https://github.com/owncloud/client/issues/8595)
-* Bugfix - Fix copy url location for private links: [#9048](https://github.com/owncloud/client/issues/9048)
+* Bugfix - Fix copy URL location for private links: [#9048](https://github.com/owncloud/client/issues/9048)
 * Bugfix - Fix status of files uploaded with TUS: [#9472](https://github.com/owncloud/client/pull/9472)
 * Bugfix - Don't unset implicit log flush: [#9515](https://github.com/owncloud/client/pull/9515)
 * Bugfix - The condition for the read only files menu was inverted: [#9574](https://github.com/owncloud/client/issues/9574)
@@ -1556,10 +1556,10 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/8595
 
-* Bugfix - Fix copy url location for private links: [#9048](https://github.com/owncloud/client/issues/9048)
+* Bugfix - Fix copy URL location for private links: [#9048](https://github.com/owncloud/client/issues/9048)
 
    We fixed a bug where a placeholder was copied to the clipboard instead of the
-   url.
+   URL.
 
    https://github.com/owncloud/client/issues/9048
 
@@ -1697,7 +1697,7 @@ ownCloud admins and users.
 * Change - Don't guess remote folder in owncloudcmd: [#10193](https://github.com/owncloud/client/issues/10193)
 
    The commandline client was modified to explicitly accept remote folder, the
-   remote folder must no longer be encoded in the server url.
+   remote folder must no longer be encoded in the server URL.
 
    https://github.com/owncloud/client/issues/10193
 
@@ -1711,8 +1711,8 @@ ownCloud admins and users.
 * Change - Owncloudcmd oCIS support: [#10239](https://github.com/owncloud/client/pull/10239)
 
    When using oCIS and spaces with the cmd client the additional parameter
-   `--server` is required. `--server` specifies the url to the server, while the
-   positional parameter 'server_url' specifies the webdav url.
+   `--server` is required. `--server` specifies the URL to the server, while the
+   positional parameter 'server_url' specifies the webdav URL.
 
    https://github.com/owncloud/client/pull/10239
 
@@ -2470,7 +2470,7 @@ ownCloud admins and users.
 
 * Enhancement - Also ignore local repeating errors for a period of time: [#9208](https://github.com/owncloud/client/issues/9208)
 
-   If an error occurs on the server (an url is not reachable) we try a couple of
+   If an error occurs on the server (a URL is not reachable) we try a couple of
    times, then we ignore that file for a period of time. We now do the same with
    errors that occur locally.
 
@@ -2495,7 +2495,7 @@ ownCloud admins and users.
 
 * Bugfix - Properly handle Windows log off: [#8979](https://github.com/owncloud/client/issues/8979)
 * Bugfix - Disable vfs option is ignored: [#9159](https://github.com/owncloud/client/issues/9159)
-* Bugfix - The client no longer idles after a minor url change: [#9202](https://github.com/owncloud/client/pull/9202)
+* Bugfix - The client no longer idles after a minor URL change: [#9202](https://github.com/owncloud/client/pull/9202)
 * Bugfix - Config migration on systems with a 2.4 and a 2.8 config: [#9224](https://github.com/owncloud/client/issues/9224)
 * Enhancement - Add branding option to disable icons in the file explorer: [#9167](https://github.com/owncloud/client/issues/9167)
 * Enhancement - Branding option to disable warning for multiple sync_journal.db's: [#9216](https://github.com/owncloud/client/pull/9216)
@@ -2519,12 +2519,12 @@ ownCloud admins and users.
    https://github.com/owncloud/client/issues/9159
    https://github.com/owncloud/enterprise/issues/4820
 
-* Bugfix - The client no longer idles after a minor url change: [#9202](https://github.com/owncloud/client/pull/9202)
+* Bugfix - The client no longer idles after a minor URL change: [#9202](https://github.com/owncloud/client/pull/9202)
 
-   When the client detects a change of the url we ask the user to accept the change
+   When the client detects a change of the URL we ask the user to accept the change
    or if it was only representational change (demo.com vs demo.com/) we directly
    accept the change. Due to a bug we aborted the sync only after we updated the
-   url. This caused the client to idle for one minute.
+   URL. This caused the client to idle for one minute.
 
    https://github.com/owncloud/client/pull/9202
 
@@ -2564,7 +2564,7 @@ ownCloud admins and users.
 
 * Bugfix - Mac multiple dialogs block all input: [#8421](https://github.com/owncloud/client/issues/8421)
 * Bugfix - Enforce rtl layout with rtl languages: [#8806](https://github.com/owncloud/client/issues/8806)
-* Bugfix - Broken url in branded builds: [#8920](https://github.com/owncloud/client/issues/8920)
+* Bugfix - Broken URL in branded builds: [#8920](https://github.com/owncloud/client/issues/8920)
 * Bugfix - Handle use of directory of another Windows VFS sync client: [#8994](https://github.com/owncloud/client/issues/8994)
 * Bugfix - Building libcloudprovider support fails: [#8996](https://github.com/owncloud/client/issues/8996)
 * Bugfix - Tables now display local time: [#9006](https://github.com/owncloud/client/issues/9006)
@@ -2598,7 +2598,7 @@ ownCloud admins and users.
    https://github.com/owncloud/client/issues/8806
    https://github.com/owncloud/client/pull/8981
 
-* Bugfix - Broken url in branded builds: [#8920](https://github.com/owncloud/client/issues/8920)
+* Bugfix - Broken URL in branded builds: [#8920](https://github.com/owncloud/client/issues/8920)
 
    We fixed a string issue with branded builds resulting in invalid urls.
 
@@ -2755,7 +2755,7 @@ ownCloud admins and users.
 * Change - We removed the support for async jobs using OC-JobStatus-Location: [#8398](https://github.com/owncloud/client/pull/8398)
 * Change - Add a branding option to skip the advanced setup page: [#8665](https://github.com/owncloud/client/issues/8665)
 * Enhancement - Make crash report IDs easy to copy: [#25](https://github.com/dschmidt/libcrashreporter-qt/pull/25)
-* Enhancement - Prefer 127.0.0.1 as oauth redirect url: [#4542](https://github.com/owncloud/enterprise/issues/4542)
+* Enhancement - Prefer 127.0.0.1 as oauth redirect URL: [#4542](https://github.com/owncloud/enterprise/issues/4542)
 * Enhancement - Display an icon in the Windows explorer context menu: [#4627](https://github.com/owncloud/client/issues/4627)
 * Enhancement - Show last sync date in tray menu: [#5644](https://github.com/owncloud/client/issues/5644)
 * Enhancement - Consider a remote poll interval coming with the server capabilities: [#5947](https://github.com/owncloud/client/issues/5947)

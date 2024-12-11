@@ -159,7 +159,7 @@ void ConnectionValidator::slotStatusFound(const QUrl &url, const QJsonObject &in
                                   << url << " with version "
                                   << info.value(QLatin1String("versionstring")).toString();
 
-    // Update server url in case of redirection
+    // Update server URL in case of redirection
     if (_account->url() != url) {
         qCInfo(lcConnectionValidator()) << "status.php was redirected to" << url.toString() << "asking user to accept and abort for now";
         Q_EMIT _account->requestUrlUpdate(url);

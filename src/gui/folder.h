@@ -95,8 +95,8 @@ public:
     // could change in the case of spaces
     void setWebDavUrl(const QUrl &url) { _webDavUrl = url; }
 
-    // when using spaces we don't store the dav url but the space id
-    // this id is then used to look up the dav url
+    // when using spaces we don't store the dav URL but the space id
+    // this id is then used to look up the dav URL
     QString spaceId() const;
 
     void setSpaceId(const QString &spaceId) { _spaceId = spaceId; }
@@ -199,7 +199,7 @@ public:
     QString remotePath() const;
 
     /**
-     * The full remote webdav url
+     * The full remote webdav URL
      */
     QUrl webDavUrl() const;
 
@@ -209,7 +209,7 @@ public:
     QString remotePathTrailingSlash() const;
 
     /**
-     * remote folder path with server url
+     * remote folder path with server URL
      */
     QUrl remoteUrl() const;
 

@@ -291,7 +291,7 @@ void NetworkSettings::checkAccountLocalhost()
         // effect for localhost (#7169)
         for (const auto &account : AccountManager::instance()->accounts()) {
             const auto host = account->account()->url().host();
-            // Some typical url for localhost
+            // Some typical URL for localhost
             if (host == QLatin1String("localhost") || host.startsWith(QLatin1String("127.")) || host == QLatin1String("[::1]"))
                 visible = true;
         }

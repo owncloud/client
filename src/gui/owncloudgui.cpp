@@ -712,7 +712,7 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
 void ownCloudGui::slotFolderOpenAction(Folder *f)
 {
     if (f) {
-        qCInfo(lcApplication) << "opening local url " << f->path();
+        qCInfo(lcApplication) << "opening local URL " << f->path();
         QUrl url = QUrl::fromLocalFile(f->path());
 
 #ifdef Q_OS_WIN

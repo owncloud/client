@@ -159,7 +159,7 @@ Pane {
             }
         }
         Repeater {
-            // branded buttons with an url
+            // branded buttons with a URL
             model: Theme.urlButtons
 
             delegate: AccountButton {
