@@ -1089,7 +1089,7 @@ ownCloud admins and users.
 * Enhancement - Display the space name provided by the server: [#10602](https://github.com/owncloud/client/pull/10602)
 * Enhancement - Always point to the latest documentation: [#10634](https://github.com/owncloud/client/issues/10634)
 * Enhancement - More user-friendly error handling in the cmd client: [#10637](https://github.com/owncloud/client/pull/10637)
-* Enhancement - Don't invalidate oauth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
+* Enhancement - Don't invalidate OAuth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
 
 ## Details
 
@@ -1301,7 +1301,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/10637
 
-* Enhancement - Don't invalidate oauth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
+* Enhancement - Don't invalidate OAuth refresh token on ConnectionRefusedError: [#10654](https://github.com/owncloud/client/issues/10654)
 
    https://github.com/owncloud/client/issues/10654
 
@@ -1801,7 +1801,7 @@ ownCloud admins and users.
 
 * Enhancement - Display a correct error when the wrong user was authenticated: [#9772](https://github.com/owncloud/client/issues/9772)
 
-   When the wrong user was authenticated using oauth we used to display a
+   When the wrong user was authenticated using OAuth we used to display a
    misleading message. We now also style the html response the client provides to
    the file browser.
 
@@ -2744,8 +2744,8 @@ ownCloud admins and users.
 * Bugfix - Prevent sync root sharing: [#8849](https://github.com/owncloud/client/issues/8849)
 * Bugfix - Removed support for client side certificates: [#8864](https://github.com/owncloud/client/pull/8864)
 * Bugfix - The `Re-open Browser` now always does what it says: [#8866](https://github.com/owncloud/client/pull/8866)
-* Bugfix - Start oauth/password prompt if password is wrong during start up: [#8901](https://github.com/owncloud/client/issues/8901)
-* Bugfix - Handle timeouts occurring during oauth: [#8940](https://github.com/owncloud/client/pull/8940)
+* Bugfix - Start OAuth/password prompt if password is wrong during start up: [#8901](https://github.com/owncloud/client/issues/8901)
+* Bugfix - Handle timeouts occurring during OAuth: [#8940](https://github.com/owncloud/client/pull/8940)
 * Change - Don't ask the user to switch to http: [#8231](https://github.com/owncloud/client/issues/8231)
 * Change - We no longer try to locate an ownCloud install at /owncloud: [#8273](https://github.com/owncloud/client/issues/8273)
 * Change - Remove support for http redirects: [#8293](https://github.com/owncloud/client/pull/8293)
@@ -2755,7 +2755,7 @@ ownCloud admins and users.
 * Change - We removed the support for async jobs using OC-JobStatus-Location: [#8398](https://github.com/owncloud/client/pull/8398)
 * Change - Add a branding option to skip the advanced setup page: [#8665](https://github.com/owncloud/client/issues/8665)
 * Enhancement - Make crash report IDs easy to copy: [#25](https://github.com/dschmidt/libcrashreporter-qt/pull/25)
-* Enhancement - Prefer 127.0.0.1 as oauth redirect URL: [#4542](https://github.com/owncloud/enterprise/issues/4542)
+* Enhancement - Prefer 127.0.0.1 as OAuth redirect URL: [#4542](https://github.com/owncloud/enterprise/issues/4542)
 * Enhancement - Display an icon in the Windows explorer context menu: [#4627](https://github.com/owncloud/client/issues/4627)
 * Enhancement - Show last sync date in tray menu: [#5644](https://github.com/owncloud/client/issues/5644)
 * Enhancement - Consider a remote poll interval coming with the server capabilities: [#5947](https://github.com/owncloud/client/issues/5947)
@@ -2929,16 +2929,16 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/8866
 
-* Bugfix - Start oauth/password prompt if password is wrong during start up: [#8901](https://github.com/owncloud/client/issues/8901)
+* Bugfix - Start OAuth/password prompt if password is wrong during start up: [#8901](https://github.com/owncloud/client/issues/8901)
 
-   If the oauth token was invalid during start up we didn't start the oauth process
+   If the OAuth token was invalid during start up we didn't start the OAuth process
    and the user needed to manually log out in order to log in again.
 
    https://github.com/owncloud/client/issues/8901
 
-* Bugfix - Handle timeouts occurring during oauth: [#8940](https://github.com/owncloud/client/pull/8940)
+* Bugfix - Handle timeouts occurring during OAuth: [#8940](https://github.com/owncloud/client/pull/8940)
 
-   We now handle timeouts occurring during oauth.
+   We now handle timeouts occurring during OAuth.
 
    https://github.com/owncloud/client/pull/8940
 
@@ -3009,7 +3009,7 @@ ownCloud admins and users.
    https://github.com/dschmidt/libcrashreporter-qt/pull/25
    https://github.com/owncloud/client/pull/8540
 
-* Enhancement - Prefer 127.0.0.1 as oauth redirect URL: [#4542](https://github.com/owncloud/enterprise/issues/4542)
+* Enhancement - Prefer 127.0.0.1 as OAuth redirect URL: [#4542](https://github.com/owncloud/enterprise/issues/4542)
 
    When using OpenID Connect we now always use http://127.0.0.1 as redirect URL
    instead of http://localhost, following the recommendations in RFC 8252
