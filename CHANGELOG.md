@@ -2944,7 +2944,7 @@ ownCloud admins and users.
 
 * Change - Don't ask the user to switch to http: [#8231](https://github.com/owncloud/client/issues/8231)
 
-   We no longer recommend to use a http connection if a https url was not found.
+   We no longer recommend to use a http connection if a https URL was not found.
 
    https://github.com/owncloud/client/issues/8231
 
@@ -3009,9 +3009,9 @@ ownCloud admins and users.
    https://github.com/dschmidt/libcrashreporter-qt/pull/25
    https://github.com/owncloud/client/pull/8540
 
-* Enhancement - Prefer 127.0.0.1 as oauth redirect url: [#4542](https://github.com/owncloud/enterprise/issues/4542)
+* Enhancement - Prefer 127.0.0.1 as oauth redirect URL: [#4542](https://github.com/owncloud/enterprise/issues/4542)
 
-   When using OpenID Connect we now always use http://127.0.0.1 as redirect url
+   When using OpenID Connect we now always use http://127.0.0.1 as redirect URL
    instead of http://localhost, following the recommendations in RFC 8252
    (https://tools.ietf.org/html/rfc8252). For OAuth2 we added a branding parameter
    which allows to specify http://127.0.0.1 instead of http://localhost.
@@ -4120,7 +4120,7 @@ Some small changes and bug fixes:
 * Log: Print critical and fatal messages to stderr
 * Doc: Migrate the documentation to Antora (#6785)
 * Doc: Update Windows build instructions
-* Doc: Add explanation of how to manually change server url (#6579)
+* Doc: Add explanation of how to manually change server URL (#6579)
 * Doc: List more environment variables
 * Doc: List more config file options (owncloud/docs#1365)
 * Build: Fix KDEInstallDirs deprecation warnings (#6922)
@@ -5141,7 +5141,7 @@ version 1.4.1 (release 2013-09-24 ), csync 0.90.1 required
   * Fixed various folder wizard issues, bug #992
   * Made "Sync started" message optional, fixes bug #934
   * Fixed shutdown, avoid crashed config on win32, fixes bug #945
-  * Pop up config wizard if no server url is configured, fixes bug #1018
+  * Pop up config wizard if no server URL is configured, fixes bug #1018
   * Settings: calculate sidebar width dynamically, fixes bug #1020
   * Fixed a crash if sync folders were removed, fixes bug #713
   * Do proper re-sync after network disconnect, fixes bug #1007
@@ -5336,7 +5336,7 @@ version 1.0.5 (release 2012-08-14), csync 0.50.8 required
 version 1.0.4 (release 2012-08-10), csync 0.50.8 required
   * [APP] ownCloud is now a single instance app, can not start twice any more.
   * [APP] Proxy support
-  * [APP] Handle HTTP redirection correctly, note new url.
+  * [APP] Handle HTTP redirection correctly, note new URL.
   * [APP] More relaxed handling of read only directories in the sync paths.
   * [APP] Started to split off a library with sync functionality, eg for KDE
   * [APP] Make ownCloud Info class a singleton, more robust.
