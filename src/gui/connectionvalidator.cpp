@@ -189,7 +189,7 @@ void ConnectionValidator::slotStatusFound(const QUrl &url, const QJsonObject &in
 
 void ConnectionValidator::checkAuthentication()
 {
-    // simply GET the webdav root, will fail if credentials are wrong.
+    // simply GET the WebDAV root, will fail if credentials are wrong.
     // continue in slotAuthCheck here :-)
     qCDebug(lcConnectionValidator) << "# Check whether authenticated propfind works.";
 

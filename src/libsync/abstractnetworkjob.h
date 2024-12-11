@@ -60,7 +60,7 @@ public:
     QString path() const { return _path; }
 
     /*
-     * A base Url, for most of the jobs this will be the webdav entry point.
+     * A base Url, for most of the jobs this will be the WebDAV entry point.
      */
     QUrl baseUrl() const;
 

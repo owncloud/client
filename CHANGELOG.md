@@ -1712,7 +1712,7 @@ ownCloud admins and users.
 
    When using oCIS and spaces with the cmd client the additional parameter
    `--server` is required. `--server` specifies the URL to the server, while the
-   positional parameter 'server_url' specifies the webdav URL.
+   positional parameter 'server_url' specifies the WebDAV URL.
 
    https://github.com/owncloud/client/pull/10239
 

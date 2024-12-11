@@ -244,7 +244,7 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
             return defaultPath;
         }();
 
-        // migration: 2.10 did not specify a webdav URL
+        // migration: 2.10 did not specify a WebDAV URL
         if (folderDefinition._webDavUrl.isEmpty()) {
             folderDefinition._webDavUrl = account->account()->davUrl();
         }
