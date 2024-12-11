@@ -507,18 +507,18 @@ Anwendung zur Datei-Synchronisation.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
-        <source>Open web brower</source>
-        <translation>Webbrowser öffnen</translation>
+        <source>Open web browser</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
+        <source>Restart authentication</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
         <translation>URL kopieren</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
-        <source>Restart authenticaion</source>
-        <translation>Authentifizierung neu starten</translation>
     </message>
 </context>
 <context>
