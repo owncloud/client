@@ -578,7 +578,7 @@ private:
 
     const QString _localDir; // absolute path to the local directory. ends with '/'
     const QString _remoteFolder; // remote folder, ends with '/'
-    const QUrl _webDavUrl; // full webdav url, might be the same as in the account
+    const QUrl _webDavUrl; // full WebDAV URL, might be the same as in the account
 };
 
 /**

@@ -210,7 +210,7 @@ version 0.50.9 (first beta version, released 2012-08-30)
 
 version 0.50.8 (released 2012-08-10)
   * Inode equivalent support for Win32 platforms to support rename
-  * ownCloud supports propagates renames from local to webdav MOVE
+  * ownCloud supports propagates renames from local to WebDAV MOVE
   * ownCloud module works with proxy, settings from mirall.
   * improved CMake modules (openSSL)
   * Fixed namespace for lastmodified propset.

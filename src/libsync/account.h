@@ -148,7 +148,7 @@ public:
      */
     QString davPath() const;
 
-    /** Returns webdav entry URL, based on url() */
+    /** Returns WebDAV entry URL, based on url() */
     QUrl davUrl() const;
 
     /** Holds the accounts credentials */

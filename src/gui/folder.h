@@ -199,7 +199,7 @@ public:
     QString remotePath() const;
 
     /**
-     * The full remote webdav URL
+     * The full remote WebDAV URL
      */
     QUrl webDavUrl() const;
 
