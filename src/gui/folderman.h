@@ -96,7 +96,7 @@ public:
     struct SyncConnectionDescription
     {
         /***
--         * The webdav url for the sync connection.
+-         * The webdav URL for the sync connection.
          */
         QUrl davUrl;
 

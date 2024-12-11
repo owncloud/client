@@ -165,7 +165,7 @@ bool AccountManager::restoreFromLegacySettings()
             auto oCSettings = std::make_unique<QSettings>(oCCfgFile, QSettings::IniFormat);
             oCSettings->beginGroup(QStringLiteral("ownCloud"));
 
-            // Check the theme url to see if it is the same url that the oC config was for
+            // Check the theme URL to see if it is the same URL that the oC config was for
             QString overrideUrl = Theme::instance()->overrideServerUrlV2();
             if (!overrideUrl.isEmpty()) {
                 if (overrideUrl.endsWith(QLatin1Char('/'))) {
