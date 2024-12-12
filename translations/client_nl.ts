@@ -3400,8 +3400,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
-        <translation>Wijzig de URL permanent naar %1</translation>
+        <source>Change URL permanently to %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3415,8 +3415,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
-        <translation>De URL voor %1 is veranderd van %2 naar %3, wilt u deze wijziging accepteren?</translation>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

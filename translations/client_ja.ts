@@ -3401,8 +3401,8 @@ Note that using any logging command line options will override the settings.</so
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
-        <translation>URLを永久に %1 に変更する</translation>
+        <source>Change URL permanently to %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3416,8 +3416,8 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
-        <translation>&quot;%1&quot; の URL が &quot;%2&quot; から &quot;%3&quot; に変わっちゃったんだけど、新しいリンク先使う？</translation>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

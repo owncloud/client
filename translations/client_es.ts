@@ -3397,8 +3397,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
-        <translation>Cambiar permanentemente la URL a %1</translation>
+        <source>Change URL permanently to %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3412,8 +3412,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
-        <translation>La URL para %1 ha cambiado de %2 a %3, ¿desea aceptar el cambio de URL?</translation>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

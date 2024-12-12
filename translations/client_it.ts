@@ -3402,8 +3402,8 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
-        <translation>Modifica permanentemente l&apos;url in %1</translation>
+        <source>Change URL permanently to %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3417,8 +3417,8 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
-        <translation>L&apos;URL per %1 è cambiato da %2 a %3, vuoi accettare il nuovo URL?</translation>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

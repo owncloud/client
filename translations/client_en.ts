@@ -3410,7 +3410,7 @@ Note that using any logging command line options will override the settings.</so
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
+        <source>Change URL permanently to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3425,7 +3425,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

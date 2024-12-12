@@ -508,12 +508,12 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>Webbrowser öffnen</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Authentifizierung neu starten</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
@@ -3402,8 +3402,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
-        <translation>URL wurde permanent geändert in %1.</translation>
+        <source>Change URL permanently to %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3417,8 +3417,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
-        <translation>Die URL für %1 wurde von %2 in %3 geändert. Möchten Sie die geänderte URL übernehmen?</translation>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

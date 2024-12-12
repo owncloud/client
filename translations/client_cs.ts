@@ -3386,8 +3386,8 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     <name>OCC::UpdateUrlDialog</name>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
-        <source>Change url permanently to %1</source>
-        <translation>Změnit adresu trvale na %1</translation>
+        <source>Change URL permanently to %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3401,7 +3401,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
-        <source>The url for %1 changed from %2 to %3, do you want to accept the changed url?</source>
+        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
         <translation type="unfinished"/>
     </message>
 </context>
