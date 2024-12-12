@@ -1,9 +1,9 @@
-Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+Changelog for ownCloud Desktop Client [5.3.2] (2024-12-12)
 =======================================
-The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+The following sections list the changes in ownCloud Desktop Client 5.3.2 relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v5.3.1...master
+[5.3.2]: https://github.com/owncloud/client/compare/v5.3.1...v5.3.2
 
 Summary
 -------
