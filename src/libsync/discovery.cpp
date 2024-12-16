@@ -91,7 +91,7 @@ void ProcessDirectoryJob::process()
     _serverNormalQueryEntries.clear();
 
     // fetch all the name from the DB
-    auto pathU8 = _currentFolder._original.toUtf8();
+    auto pathU8 = Utility::isMac() ? _currentFolder._original.normalized(QString::NormalizationForm_C).toUtf8() : _currentFolder._original.toUtf8(); // XXX
     if (!_discoveryData->_statedb->listFilesInPath(pathU8, [&](const SyncJournalFileRecord &rec) {
             auto name = pathU8.isEmpty() ? QString::fromUtf8(rec._path) : QString::fromUtf8(rec._path.constData() + (pathU8.size() + 1));
             if (rec.isVirtualFile() && isVfsWithSuffix()) {
