@@ -10,11 +10,10 @@ version = master
 revision = bab894659e6914b293eacf765888db78fd4925de
 
 [craft/craft-blueprints-owncloud]
-version = 5
+version = master
 
 [craft/craft-core]
 version = master
-revision = ab3623cbeeabe3444742a3325a201d73062e301c
 
 [dev-utils/cmake]
 version = latest
