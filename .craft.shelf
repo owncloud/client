@@ -7,7 +7,7 @@ version = 2023-01-10
 
 [craft/craft-blueprints-kde]
 version = master
-revision = bab894659e6914b293eacf765888db78fd4925de
+revision = 9be073decbb06b7425655806c4e57ccc85ea2117
 
 [craft/craft-blueprints-owncloud]
 version = 5
