@@ -80,20 +80,24 @@ void ProcessDirectoryJob::process()
         RemoteInfo serverEntry;
         LocalInfo localEntry;
     };
+
+    // The key for the `entries` mapping is the NFC form of the filename. This is done to prevent
+    // NFC->NFD or NFD->NFC conversions done by `QFile` and/or the underlying local filesystem.
     std::map<QString, Entries> entries;
     for (auto &e : _serverNormalQueryEntries) {
-        entries[e.name].serverEntry = std::move(e);
+        // Keep the name on the server as-is, but use the NFC form as the key
+        entries[e.name.normalized(QString::NormalizationForm_C)].serverEntry = std::move(e);
     }
     _serverNormalQueryEntries.clear();
 
     // fetch all the name from the DB
-    auto pathU8 = _currentFolder._original.toUtf8();
+    auto pathU8 = Utility::isMac() ? _currentFolder._original.normalized(QString::NormalizationForm_C).toUtf8() : _currentFolder._original.toUtf8(); // XXX
     if (!_discoveryData->_statedb->listFilesInPath(pathU8, [&](const SyncJournalFileRecord &rec) {
             auto name = pathU8.isEmpty() ? QString::fromUtf8(rec._path) : QString::fromUtf8(rec._path.constData() + (pathU8.size() + 1));
             if (rec.isVirtualFile() && isVfsWithSuffix()) {
                 name = chopVirtualFileSuffix(name);
             }
-            auto &dbEntry = entries[name].dbEntry;
+            auto &dbEntry = entries[name.normalized(QString::NormalizationForm_C)].dbEntry;
             dbEntry = rec;
             setupDbPinStateActions(dbEntry);
         })) {
@@ -102,6 +106,7 @@ void ProcessDirectoryJob::process()
     }
 
     for (auto &e : _localNormalQueryEntries) {
+        e.name = e.name.normalized(QString::NormalizationForm_C);
         entries[e.name].localEntry = e;
     }
     if (isVfsWithSuffix()) {
@@ -140,8 +145,16 @@ void ProcessDirectoryJob::process()
     for (const auto &f : entries) {
         const auto &e = f.second;
 
-        PathTuple path;
-        path = _currentFolder.addName(e.nameOverride.isEmpty() ? f.first : e.nameOverride);
+        QString name;
+        if (!e.nameOverride.isEmpty()) {
+            name = e.nameOverride;
+        } else if (!e.serverEntry.name.isEmpty()) {
+            // IF there is a name on the server, take that, as it hasn't been normalized.
+            name = e.serverEntry.name;
+        } else {
+            name = f.first;
+        }
+        PathTuple path = _currentFolder.addName(name);
 
         if (isVfsWithSuffix()) {
             // Without suffix vfs the paths would be good. But since the dbEntry and localEntry
