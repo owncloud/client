@@ -237,7 +237,8 @@ File synchronization desktop utility.</source>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting %1 to:
 %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 を次の場所に接続しています:
+%2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
@@ -312,7 +313,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <translation>%2 個のスペースのうち %1 個を同期しています</translation>
     </message>
 </context>
 <context>
@@ -325,7 +326,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="77"/>
         <source>Show more</source>
-        <translation type="unfinished"/>
+        <translation>もっと見る</translation>
     </message>
 </context>
 <context>
@@ -344,12 +345,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="123"/>
         <source>, ⬇️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬇️ %1/秒</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="126"/>
         <source>, ⬆️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬆️ %1/秒</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="130"/>
@@ -484,7 +485,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="113"/>
         <source>Action button group</source>
-        <translation type="unfinished"/>
+        <translation>アクションボタングループ</translation>
     </message>
 </context>
 <context>
@@ -492,32 +493,32 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Log in with your web browser</source>
-        <translation type="unfinished"/>
+        <translation>ウェブブラウザでログインする</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Login failed, please try it again</source>
-        <translation type="unfinished"/>
+        <translation>ログインに失敗しました。もう一度お試しください</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Reopen web browser</source>
-        <translation type="unfinished"/>
+        <translation>ウェブブラウザを再度開く</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>ウェブブラウザを開く</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>認証を再開する</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>URLをコピー</translation>
     </message>
 </context>
 <context>
@@ -555,12 +556,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="160"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;Updateチャネルによって、インストールに提供されるクライアント更新が決定されます。&lt;ul&gt;&lt;li&gt;「ownCloud 10 LTS」には、信頼性が高いとみなされるアップグレードのみが含まれます。&lt;/li&gt;&lt;li&gt;「ownCloud Infinite Scale stable」には、信頼性が高いとみなされるアップグレードのみが含まれます。 &lt;b&gt;しかしながら「ownCloud 10」のサポートは削除されます。&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️ダウングレードはサポートされていません。Stableチャネルに切り替えると、この変更は次のメジャー リリースでのみ適用されます。&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="167"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;li&gt;「ベータ版」には新しい機能やバグ修正が含まれている可能性があり、まだ十分にテストされていません&lt;/li&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="169"/>
@@ -609,7 +610,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
         <source>GroupBox</source>
-        <translation type="unfinished"/>
+        <translation>グループボックス</translation>
     </message>
 </context>
 <context>
@@ -622,7 +623,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="73"/>
         <source>Manage Account</source>
-        <translation type="unfinished"/>
+        <translation>アカウントの管理</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="109"/>
@@ -632,7 +633,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="137"/>
         <source>Sync connections</source>
-        <translation type="unfinished"/>
+        <translation>同期接続</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="299"/>
@@ -670,7 +671,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="88"/>
         <source>Account options menu</source>
-        <translation type="unfinished"/>
+        <translation>アカウントオプションメニュー</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="90"/>
@@ -680,12 +681,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="134"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>同期オプションメニュー</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="140"/>
         <source>Folder is not ready yet</source>
-        <translation type="unfinished"/>
+        <translation>フォルダはまだ準備ができていません</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="292"/>
@@ -778,7 +779,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="505"/>
         <source>Server is currently in maintenance mode</source>
-        <translation type="unfinished"/>
+        <translation>サーバーは現在メンテナンスモードです</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="508"/>
@@ -788,27 +789,27 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="511"/>
         <source>Updating credentials...</source>
-        <translation type="unfinished"/>
+        <translation>証明書を更新しています...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>キャプティブポータルは、サーバーへの接続を防ぎます。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="518"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
+        <translation>従量制インターネット接続のため同期が一時停止されています</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="520"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>接続中...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="524"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>サーバー設定エラー</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="530"/>
@@ -895,7 +896,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="466"/>
         <source>Local Activity</source>
-        <translation type="unfinished"/>
+        <translation>ローカルの利用履歴</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="515"/>
@@ -914,7 +915,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="14"/>
         <source>Server activities</source>
-        <translation type="unfinished"/>
+        <translation>サーバー利用履歴</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="73"/>
@@ -924,7 +925,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="91"/>
         <source>Server activity table</source>
-        <translation type="unfinished"/>
+        <translation>サーバー利用履歴表</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="100"/>
@@ -935,12 +936,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="147"/>
         <source>&amp;Server Activities</source>
-        <translation type="unfinished"/>
+        <translation>&amp;サーバー利用履歴</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="148"/>
         <source>&amp;Notifications</source>
-        <translation type="unfinished"/>
+        <translation>&amp;通知</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="153"/>
@@ -950,12 +951,12 @@ This action will abort any currently running synchronization.</source>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="287"/>
         <source>%n notification(s) for %1.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 の通知が %n 件あります。</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="293"/>
         <source>%n notification(s) for %1 and %2.</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%1 と %2 の %n 件の通知。</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="295"/>
@@ -970,7 +971,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="422"/>
         <source>Activity item menu</source>
-        <translation type="unfinished"/>
+        <translation>利用履歴項目メニュー</translation>
     </message>
 </context>
 <context>
@@ -1731,7 +1732,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/issueswidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>問題表</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.ui" line="72"/>
@@ -1936,7 +1937,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
-        <translation type="unfinished"/>
+        <translation>プロキシの種類</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="256"/>
@@ -1948,7 +1949,7 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/networksettings.ui" line="268"/>
         <location filename="../src/gui/networksettings.ui" line="350"/>
         <source>Manual limit</source>
-        <translation type="unfinished"/>
+        <translation>手動制限</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="278"/>
@@ -2702,7 +2703,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/protocolwidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>ローカルの利用履歴表</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="62"/>
@@ -3402,7 +3403,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation type="unfinished"/>
+        <translation>URL を %1 に完全に変更します</translation>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3417,7 +3418,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation type="unfinished"/>
+        <translation>%1 の URL が %2 から %3 に変更されました。変更された URL を受け入れますか？</translation>
     </message>
 </context>
 <context>
@@ -3595,7 +3596,7 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.cpp" line="36"/>
         <source>%1 logo</source>
         <extracomment>This is the accessibility text for the logo in the setup wizard page. The parameter is the name for the (branded) application.</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1 ロゴ</translation>
     </message>
 </context>
 <context>
@@ -3673,7 +3674,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="107"/>
         <source>&amp;Finish</source>
-        <translation type="unfinished"/>
+        <translation>&amp;終了</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="108"/>
@@ -4036,12 +4037,12 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="17"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Space to sync it to your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;スペースを選択してコンピューターに同期します。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="33"/>
         <source>Spaces list</source>
-        <translation type="unfinished"/>
+        <translation>スペース一覧</translation>
     </message>
 </context>
 <context>
@@ -4049,7 +4050,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/spaces/qml/SpacesView.qml" line="31"/>
         <source>Spaces</source>
-        <translation type="unfinished"/>
+        <translation>スペース</translation>
     </message>
 </context>
 <context>

@@ -4,12 +4,12 @@
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
         <source>Navigation bar</source>
-        <translation type="unfinished"/>
+        <translation>Navigatsiooniriba</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
-        <translation type="unfinished"/>
+        <translation>Lisa konto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
@@ -91,17 +91,17 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
-        <translation type="unfinished"/>
+        <translation>Sisselogimiseks sisesta parool.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter %1 and password to log in.</source>
-        <translation type="unfinished"/>
+        <translation>Sisselogimiseks palun sisesta %1 ja parool.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
         <source>Enter %1</source>
-        <translation type="unfinished"/>
+        <translation>Sisesta %1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
@@ -223,7 +223,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message numerus="yes">
         <location filename="../src/gui/commonstrings.cpp" line="48"/>
         <source>%n Filter(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n filter</numerusform><numerusform>%n filtrit</numerusform></translation>
     </message>
 </context>
 <context>
@@ -231,19 +231,21 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="44"/>
         <source>Stay logged out</source>
-        <translation type="unfinished"/>
+        <translation>Jää väljalogituks</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting %1 to:
 %2</source>
-        <translation type="unfinished"/>
+        <translation>Ühendan %1:
+%2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting to:
 %1</source>
-        <translation type="unfinished"/>
+        <translation>Ühendun:
+%1</translation>
     </message>
 </context>
 <context>
@@ -311,7 +313,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <translation>Oled sünkroniseerimas %1 ruumi %2-st</translation>
     </message>
 </context>
 <context>
@@ -319,12 +321,12 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="58"/>
         <source>Show less</source>
-        <translation type="unfinished"/>
+        <translation>Näita vähem</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="77"/>
         <source>Show more</source>
-        <translation type="unfinished"/>
+        <translation>Näita rohkem</translation>
     </message>
 </context>
 <context>
@@ -343,12 +345,12 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="123"/>
         <source>, ⬇️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬇️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="126"/>
         <source>, ⬆️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬆️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="130"/>
@@ -372,7 +374,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <location filename="../src/gui/folderstatusmodel.cpp" line="160"/>
         <source>%1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>%1 / %2, fail %3 / %4</translation>
+        <translation>%1 %2-st, fail %3 %4-st</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="164"/>
@@ -468,7 +470,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="49"/>
         <source>Notification icon</source>
-        <translation type="unfinished"/>
+        <translation>Teavituse ikoon</translation>
     </message>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="73"/>
@@ -483,7 +485,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="113"/>
         <source>Action button group</source>
-        <translation type="unfinished"/>
+        <translation>Tegevuste nupu grupp</translation>
     </message>
 </context>
 <context>
@@ -491,32 +493,32 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Log in with your web browser</source>
-        <translation type="unfinished"/>
+        <translation>Logi sisse veebibrauseriga</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Login failed, please try it again</source>
-        <translation type="unfinished"/>
+        <translation>Sisselogimine ebaõnnestus, palun proovi uuesti</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Reopen web browser</source>
-        <translation type="unfinished"/>
+        <translation>Taasava veebibrauser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>Ava veebibrauser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Taasalusta autentimist</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Kopeeri URL</translation>
     </message>
 </context>
 <context>
@@ -554,12 +556,12 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="160"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;Uuenduste kanal otsustab, milliseid kliendiuuendusi paigaldamiseks pakutakse.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; sisaldab ainult uuendusi, mida peetakse töökindlateks&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; sisaldab ainult uuendusi, mida peetakse töökindlateks, kuid &lt;b&gt;eemaldab toe &quot;ownCloud 10&quot;-le&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Vanemale versioonile tagasiminek ei ole toetatud. Kui lülitud stabiilsele kanalile, siis rakendatakse see ainult koos järgmise suurema uuendusega.&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="167"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;li&gt;&quot;beta&quot; võib sisaldada uuemaid võimalusi ja veaparandusi, kuid ei ole veel täielikult testitud&lt;/li&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="169"/>
@@ -608,7 +610,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
         <source>GroupBox</source>
-        <translation type="unfinished"/>
+        <translation>GroupBox</translation>
     </message>
 </context>
 <context>
@@ -621,7 +623,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="73"/>
         <source>Manage Account</source>
-        <translation type="unfinished"/>
+        <translation>Halda kontot</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="109"/>
@@ -631,7 +633,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="137"/>
         <source>Sync connections</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseeri ühendused</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="299"/>
@@ -669,7 +671,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="88"/>
         <source>Account options menu</source>
-        <translation type="unfinished"/>
+        <translation>Konto valikute menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="90"/>
@@ -679,12 +681,12 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="134"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimise valikute menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="140"/>
         <source>Folder is not ready yet</source>
-        <translation type="unfinished"/>
+        <translation>Kaust ei ole veel valmis</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="292"/>
@@ -772,12 +774,12 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="502"/>
         <source>Server is temporarily unavailable</source>
-        <translation type="unfinished"/>
+        <translation>Server ei ole ajutiselt ligipääsetav</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="505"/>
         <source>Server is currently in maintenance mode</source>
-        <translation type="unfinished"/>
+        <translation>Server on hooldusrežiimil</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="508"/>
@@ -787,17 +789,17 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="511"/>
         <source>Updating credentials...</source>
-        <translation type="unfinished"/>
+        <translation>Uuendan kasutajatunnuseid...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>Piiratud portaal takistab ühendusi serverisse.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="518"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine on peatatud mahupõhise internetiühenduse tõttu</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="520"/>
@@ -807,7 +809,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="524"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>Serveri seadete viga</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="530"/>
@@ -894,7 +896,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="466"/>
         <source>Local Activity</source>
-        <translation type="unfinished"/>
+        <translation>Kohalik tegevus</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="515"/>
@@ -913,7 +915,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="14"/>
         <source>Server activities</source>
-        <translation type="unfinished"/>
+        <translation>Serveri tegevused</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="73"/>
@@ -923,7 +925,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="91"/>
         <source>Server activity table</source>
-        <translation type="unfinished"/>
+        <translation>Serveri tegevuste tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="100"/>
@@ -934,12 +936,12 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="147"/>
         <source>&amp;Server Activities</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Serveri tegevused</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="148"/>
         <source>&amp;Notifications</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Teavitused</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="153"/>
@@ -949,12 +951,12 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="287"/>
         <source>%n notification(s) for %1.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n teavitus %1 jaoks.</numerusform><numerusform>%n teavitust %1 jaoks.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="293"/>
         <source>%n notification(s) for %1 and %2.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n teavitus %1 ja %2 jaoks.</numerusform><numerusform>%n teavitust %1 ja %2 jaoks.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="295"/>
@@ -969,7 +971,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="422"/>
         <source>Activity item menu</source>
-        <translation type="unfinished"/>
+        <translation>Tegevuste üksuste menüü</translation>
     </message>
 </context>
 <context>
@@ -1126,7 +1128,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="501"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 ja veel %n fail eemaldati</numerusform><numerusform>%1 ja veel %n faili eemaldati.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="186"/>
@@ -1146,7 +1148,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="508"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 ja veel %n fail lisati.</numerusform><numerusform>%1 ja veel %n faili lisati.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="510"/>
@@ -1157,22 +1159,22 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="515"/>
         <source>%1 and %n other file(s) have been updated.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 ja veel %n fail uuendati.</numerusform><numerusform>%1 ja veel %n faili uuendati.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="522"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 nimetati ümber %2-ks ja veel %n fail nimetati ümber.</numerusform><numerusform>%1 nimetati ümber %2-ks ja veel %n faili nimetati ümber.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="529"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 liigutati %2 ja veel %n fail liigutati.</numerusform><numerusform>%1 liigutati %2 ja veel %n faili liigutati.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="536"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1-l ja veel %n-l failil on sünkroniseerimise konfliktid.</numerusform><numerusform>%1-l ja veel %n-l failil on sünkroniseerimise konfliktid.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="538"/>
@@ -1182,7 +1184,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="543"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 ja veel %n faili ei sünkroniseeritud vigade tõttu. Täpsemaks infoks vaata logisid.</numerusform><numerusform>%1 ja veel %n faili ei sünkroniseeritud vigade tõttu. Täpsemaks infoks vaata logisid.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="545"/>
@@ -1277,7 +1279,7 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
     <message>
         <location filename="../src/gui/folderman.cpp" line="741"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
-        <translation type="unfinished"/>
+        <translation>Kaust &apos;%1&apos; on juba teise konto poolt kasutuses.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="756"/>
@@ -1292,17 +1294,17 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
     <message>
         <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>Kohalik kaust %1 sisaldab juba kausta, mida kasutatakse kaustade sünkroniseerimise ühenduses. Palun vali teine kohalik kaust!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="826"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>Kohalik kaust %1 on juba kaustas, mida kasutatakse kaustade sünkroniseerimise ühenduses. Palun vali teine kohalik kaust!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="834"/>
         <source>%1 Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>%1 Palun vali teine kohalik kaust!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="774"/>
@@ -1339,19 +1341,21 @@ Palun kaaluge selle kausta eemaldamist kontolt ja selle uuesti lisamist.</transl
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="248"/>
         <source>There are unresolved conflicts.</source>
-        <translation type="unfinished"/>
+        <translation>Mõned konfliktid on lahendamata.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="252"/>
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>Suffix-VFS pistikprogramm on aegunud ja eemaldatakse versioonist 7.0.
+Palun kasuta kontekstimenüüd ja vali &quot;Keela virtuaalse faili tugi&quot;, et tagada tulevikus juurdepääs oma sünkroniseeritud failidele.
+Vastasel juhul kaotad ligipääsu oma sünkroniseeritud kaustale!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="307"/>
         <source>%1 of %2 used</source>
-        <translation type="unfinished"/>
+        <translation>%1 %2-st on kasutuses</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="387"/>
@@ -1540,7 +1544,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="41"/>
         <source>Use Monochrome Icons in the system tray</source>
-        <translation type="unfinished"/>
+        <translation>Kasuta menüüribal mustvalgeid ikoone</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="48"/>
@@ -1550,7 +1554,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="55"/>
         <source>Start on Login</source>
-        <translation type="unfinished"/>
+        <translation>Käivita sisselogimisel</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="73"/>
@@ -1560,7 +1564,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="89"/>
         <source>Language selector</source>
-        <translation type="unfinished"/>
+        <translation>Keelte valik</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="112"/>
@@ -1727,7 +1731,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/issueswidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>Vigade tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.ui" line="72"/>
@@ -1757,7 +1761,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="273"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filtri menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="275"/>
@@ -1880,7 +1884,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networksettings.ui" line="130"/>
         <source>Proxy Hostname</source>
-        <translation type="unfinished"/>
+        <translation>Proksi hosti nimi</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="140"/>
@@ -1890,7 +1894,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networksettings.ui" line="153"/>
         <source>Proxy Port Number</source>
-        <translation type="unfinished"/>
+        <translation>Proksi pordi number</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="174"/>
@@ -1910,7 +1914,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networksettings.ui" line="360"/>
         <source>Upload bandwidth in kilobytes per second</source>
-        <translation type="unfinished"/>
+        <translation>Üleslaadimise läbilaskevõime kb/s</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="291"/>
@@ -1927,12 +1931,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networksettings.ui" line="59"/>
         <source>Specify proxy manually</source>
-        <translation type="unfinished"/>
+        <translation>Määra proksi käsitsi</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
-        <translation type="unfinished"/>
+        <translation>Proksi tüüp</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="256"/>
@@ -1944,12 +1948,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <location filename="../src/gui/networksettings.ui" line="268"/>
         <location filename="../src/gui/networksettings.ui" line="350"/>
         <source>Manual limit</source>
-        <translation type="unfinished"/>
+        <translation>Manuaalne piir</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="278"/>
         <source>Download bandwidth in kilobytes per second</source>
-        <translation type="unfinished"/>
+        <translation>Allalaadimise läbilaskevõime kb/s</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="322"/>
@@ -2557,7 +2561,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="588"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"/>
+        <translation>Server ei väljastanud faili õiguseid</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="596"/>
@@ -2698,7 +2702,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/protocolwidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>Kohalike tegevuste tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="62"/>
@@ -2709,22 +2713,22 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="96"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filtri menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="111"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>Tegevuste menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="153"/>
         <source>Sort ascending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Sort järgi %1 kasvavalt</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="157"/>
         <source>Sort descending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Sorteeri %1 järgi kahanevalt</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="179"/>
@@ -2758,12 +2762,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <location filename="../src/gui/selectivesyncwidget.cpp" line="108"/>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="244"/>
         <source>Currently there are no subfolders on the server.</source>
-        <translation type="unfinished"/>
+        <translation>Hetkel ei ole serveris alamkaustasid.</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
         <source>An error occurred while loading the list of subfolders.</source>
-        <translation type="unfinished"/>
+        <translation>Alamkaustade nimekirja laadimisel tekkis viga.</translation>
     </message>
 </context>
 <context>
@@ -3214,7 +3218,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="905"/>
         <source>Manage public links</source>
-        <translation type="unfinished"/>
+        <translation>Halda avalikke linke</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="990"/>
@@ -3398,7 +3402,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation type="unfinished"/>
+        <translation>Vaheta URL püsivalt %1-ks</translation>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3413,7 +3417,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation type="unfinished"/>
+        <translation>URL %1 vahetati %2-st %3-ks, kas nõustud muudetud URL-iga?</translation>
     </message>
 </context>
 <context>
@@ -3591,7 +3595,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.cpp" line="36"/>
         <source>%1 logo</source>
         <extracomment>This is the accessibility text for the logo in the setup wizard page. The parameter is the name for the (branded) application.</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1 logo</translation>
     </message>
 </context>
 <context>
@@ -3648,7 +3652,7 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="43"/>
         <source>&lt; &amp;Back</source>
-        <translation type="unfinished"/>
+        <translation>&lt; &amp;Tagasi</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="49"/>
@@ -3669,7 +3673,7 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="107"/>
         <source>&amp;Finish</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Lõpeta</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="108"/>
@@ -3947,7 +3951,7 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
         <source>SSL Error: %1</source>
-        <translation type="unfinished"/>
+        <translation>SSL viga: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
@@ -4006,12 +4010,12 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="101"/>
         <source>&amp;Dismiss</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Jäta vahele</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="116"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Loobu</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="152"/>
@@ -4032,12 +4036,12 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="17"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Space to sync it to your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vali ruum oma arvutisse sünkroniseerimiseks.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="33"/>
         <source>Spaces list</source>
-        <translation type="unfinished"/>
+        <translation>Ruumide nimekiri</translation>
     </message>
 </context>
 <context>
@@ -4045,7 +4049,7 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/spaces/qml/SpacesView.qml" line="31"/>
         <source>Spaces</source>
-        <translation type="unfinished"/>
+        <translation>Ruumid</translation>
     </message>
 </context>
 <context>
@@ -4138,12 +4142,12 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n aasta</numerusform><numerusform>%n aastat</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n kuu</numerusform><numerusform>%n kuud</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
@@ -4163,7 +4167,7 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n sekund</numerusform><numerusform>%n sekundit</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
