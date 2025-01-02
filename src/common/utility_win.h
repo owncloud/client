@@ -68,7 +68,7 @@ namespace Utility {
 
     // Possibly refactor to share code with UnixTimevalToFileTime in c_time.c
     OCSYNC_EXPORT void UnixTimeToFiletime(time_t t, FILETIME *filetime);
-    OCSYNC_EXPORT void FiletimeToLargeIntegerFiletime(FILETIME *filetime, LARGE_INTEGER *hundredNSecs);
+    OCSYNC_EXPORT void FiletimeToLargeIntegerFiletime(const FILETIME *filetime, LARGE_INTEGER *hundredNSecs);
     OCSYNC_EXPORT void UnixTimeToLargeIntegerFiletime(time_t t, LARGE_INTEGER *hundredNSecs);
 
     OCSYNC_EXPORT QString formatWinError(long error);
