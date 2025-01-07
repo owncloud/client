@@ -508,12 +508,12 @@ Utilità desktop per la sincronizzazione dei file.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>Apri browser web</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Riavvia autenticazione</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
@@ -3403,7 +3403,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation type="unfinished"/>
+        <translation>Cambia URL permanentemente a %1</translation>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3418,7 +3418,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation type="unfinished"/>
+        <translation>La URL per %1 è è stata modificata da %2 a %3, accetti la modifica alla URL?</translation>
     </message>
 </context>
 <context>
