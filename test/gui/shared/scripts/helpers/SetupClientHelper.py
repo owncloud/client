@@ -109,6 +109,8 @@ def get_current_user_sync_path():
 
 
 def start_client():
+    check_keyring()
+
     squish.startApplication(
         'owncloud -s'
         + f' --logfile {get_config("clientLogFile")}'
@@ -230,9 +232,54 @@ def generate_uuidv4():
 
 
 # sometimes the keyring is locked during the test execution, and we need to unlock it
-def unlock_keyring():
+def check_keyring():
     if is_windows():
         return
+
+    if is_keyring_locked():
+        test.log('[INFO] Keyring is locked or service is down. Unlocking...')
+        wait_until_keyring_unlocked()
+
+
+def unlock_keyring() -> bool | None:
+    if is_windows():
+        return None
+
+    password = os.getenv('VNC_PW')
+    command = f'echo -n "{password}" | gnome-keyring-daemon -r --unlock'
+    stdout, stderr, returncode = run_sys_command(command, True)
+
+    output = ''
+    if stdout:
+        output = stdout.decode('utf-8')
+    if stderr:
+        output = stderr.decode('utf-8')
+    test.log(f'[INFO] Keyring unlock output: {output}')
+    # wait for keyring to unlock
+    squish.snooze(1)
+
+    if returncode:
+        return False
+
+    return not is_keyring_locked()
+
+
+def wait_until_keyring_unlocked():
+    if is_windows():
+        return
+
+    timeout = 10
+    unlocked = squish.waitFor(
+        lambda: unlock_keyring(),  # pylint: disable=unnecessary-lambda
+        timeout * 1000,
+    )
+    if not unlocked:
+        test.fail(f'Timeout. Keyring was not unlocked within {timeout} seconds')
+
+
+def is_keyring_locked() -> bool | None:
+    if is_windows():
+        return None
 
     stdout, stderr, _ = run_sys_command(
         [
@@ -250,18 +297,8 @@ def unlock_keyring():
         output = stdout.decode('utf-8')
     if stderr:
         output = stderr.decode('utf-8')
-
-    if not output.strip().endswith('false'):
-        test.log('Unlocking keyring...')
-        password = os.getenv('VNC_PW')
-        command = f'echo -n "{password}" | gnome-keyring-daemon -r -d --unlock'
-        stdout, stderr, returncode = run_sys_command(command, True)
-        if stdout:
-            output = stdout.decode('utf-8')
-        if stderr:
-            output = stderr.decode('utf-8')
-        if returncode:
-            test.log(f'Failed to unlock keyring:\n{output}')
+    test.log(f'[INFO] Keyring locked status: {output}')
+    return not output.strip().endswith('false')
 
 
 def run_sys_command(command=None, shell=False):
