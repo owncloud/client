@@ -141,8 +141,9 @@ public:
     static SyncFileItemPtr fromSyncJournalFileRecord(const SyncJournalFileRecord &rec);
 
 
-    SyncFileItem()
-        : _type(ItemTypeSkip)
+    SyncFileItem(const QString &localName = {})
+        : _localName(localName)
+        , _type(ItemTypeSkip)
         , _direction(None)
         , _serverHasIgnoredFiles(false)
         , _hasBlacklistEntry(false)
@@ -204,13 +205,10 @@ public:
         if (!_renameTarget.isEmpty()) {
             return _renameTarget;
         }
-        return _file;
+        return localName();
     }
 
-    bool isEmpty() const
-    {
-        return _file.isEmpty();
-    }
+    bool isEmpty() const { return localName().isEmpty(); }
 
     bool isDirectory() const
     {
@@ -246,14 +244,19 @@ public:
             && !(_instruction == CSYNC_INSTRUCTION_CONFLICT && _status == SyncFileItem::Success);
     }
 
-    // Variables useful for everybody
+    QString localName() const { return _localName; }
+    void setLocalName(const QString &newName) { _localName = newName; }
 
+private:
     /** The syncfolder-relative filesystem path that the operation is about
      *
      * For rename operation this is the rename source and the target is in _renameTarget.
      */
-    QString _file;
+    QString _localName;
 
+    // QString _remoteName;
+
+public:
     /** for renames: the name _file should be renamed to
      * for dehydrations: the name _file should become after dehydration (like adding a suffix)
      * otherwise empty. Use destination() to find the sync target.

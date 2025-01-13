@@ -420,7 +420,7 @@ void PropagateDownloadFile::start()
     auto &vfs = syncOptions._vfs;
 
 
-    const QString fsPath = propagator()->fullLocalPath(_item->_file);
+    const QString fsPath = propagator()->fullLocalPath(_item->localName());
     // For virtual files just dehydrate or create the file and be done
     if (_item->_type == ItemTypeVirtualFileDehydration) {
         if (FileSystem::fileChanged(QFileInfo{fsPath}, _item->_previousSize, _item->_previousModtime)) {
@@ -433,12 +433,12 @@ void PropagateDownloadFile::start()
             done(SyncFileItem::SoftError, tr("Failed to free up space, the file %1 is currently in use").arg(fsPath));
             return;
         }
-        qCDebug(lcPropagateDownload) << "dehydrating file" << _item->_file;
+        qCDebug(lcPropagateDownload) << "dehydrating file" << _item->localName();
         updateMetadata(false);
         return;
     }
     if (vfs->mode() == Vfs::Off && _item->_type == ItemTypeVirtualFile) {
-        qCWarning(lcPropagateDownload) << "ignored virtual file type of" << _item->_file;
+        qCWarning(lcPropagateDownload) << "ignored virtual file type of" << _item->localName();
         _item->_type = ItemTypeFile;
     }
 
@@ -454,8 +454,10 @@ void PropagateDownloadFile::start()
     if (_item->_type == ItemTypeVirtualFile) {
         qCDebug(lcPropagateDownload) << "creating virtual file" << _item;
         // do a klaas' case clash check.
-        if (auto clash = propagator()->localFileNameClash(_item->_file)) {
-            done(SyncFileItem::NormalError, tr("File %1 can not be downloaded because of a local file name clash with %2!").arg(QDir::toNativeSeparators(_item->_file), QDir::toNativeSeparators(clash.get())));
+        if (auto clash = propagator()->localFileNameClash(_item->localName())) {
+            done(SyncFileItem::NormalError,
+                tr("File %1 can not be downloaded because of a local file name clash with %2!")
+                    .arg(QDir::toNativeSeparators(_item->localName()), QDir::toNativeSeparators(clash.get())));
             return;
         }
         const bool isConflict = _item->instruction() == CSYNC_INSTRUCTION_CONFLICT && QFileInfo(fsPath).isDir();
@@ -494,14 +496,14 @@ void PropagateDownloadFile::start()
 
     if (_item->instruction() == CSYNC_INSTRUCTION_CONFLICT && _item->_size == _item->_previousSize && !_item->_checksumHeader.isEmpty()
         && (csync_is_collision_safe_hash(_item->_checksumHeader) || _item->_modtime == _item->_previousModtime)) {
-        qCDebug(lcPropagateDownload) << _item->_file << "may not need download, computing checksum";
+        qCDebug(lcPropagateDownload) << _item->localName() << "may not need download, computing checksum";
         auto computeChecksum = new ComputeChecksum(this);
         const auto checksumHeader = ChecksumHeader::parseChecksumHeader(_item->_checksumHeader);
         computeChecksum->setChecksumType(checksumHeader.type());
         connect(computeChecksum, &ComputeChecksum::done,
             this, &PropagateDownloadFile::conflictChecksumComputed);
         propagator()->_activeJobList.append(this);
-        computeChecksum->start(propagator()->fullLocalPath(_item->_file));
+        computeChecksum->start(propagator()->fullLocalPath(_item->localName()));
         return;
     }
 
@@ -514,11 +516,11 @@ void PropagateDownloadFile::conflictChecksumComputed(CheckSums::Algorithm checks
     const auto checksumHeader = ChecksumHeader::parseChecksumHeader(_item->_checksumHeader);
     if (checksumHeader == ChecksumHeader(checksumType, checksum)) {
         // No download necessary, just update fs and journal metadata
-        qCDebug(lcPropagateDownload) << _item->_file << "remote and local checksum match";
+        qCDebug(lcPropagateDownload) << _item->localName() << "remote and local checksum match";
 
         // Apply the server mtime locally if necessary, ensuring the journal
         // and local mtimes end up identical
-        auto fn = propagator()->fullLocalPath(_item->_file);
+        auto fn = propagator()->fullLocalPath(_item->localName());
         if (_item->_modtime != _item->_previousModtime) {
             FileSystem::setModTime(fn, _item->_modtime);
         }
@@ -535,27 +537,29 @@ void PropagateDownloadFile::startDownload()
         return;
 
     // do a klaas' case clash check.
-    if (auto clash = propagator()->localFileNameClash(_item->_file)) {
-        done(SyncFileItem::NormalError, tr("File %1 can not be downloaded because of a local file name clash with %2!").arg(QDir::toNativeSeparators(_item->_file), QDir::toNativeSeparators(clash.get())));
+    if (auto clash = propagator()->localFileNameClash(_item->localName())) {
+        done(SyncFileItem::NormalError,
+            tr("File %1 can not be downloaded because of a local file name clash with %2!")
+                .arg(QDir::toNativeSeparators(_item->localName()), QDir::toNativeSeparators(clash.get())));
         return;
     }
     // If the file is locked, we want to retry this sync when it
     // becomes available again
-    const auto targetFile = propagator()->fullLocalPath(_item->_file);
+    const auto targetFile = propagator()->fullLocalPath(_item->localName());
     if (FileSystem::isFileLocked(targetFile, FileSystem::LockMode::Exclusive)) {
         Q_EMIT propagator()->seenLockedFile(targetFile, FileSystem::LockMode::Exclusive);
-        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(QDir::toNativeSeparators(_item->_file)));
+        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(QDir::toNativeSeparators(_item->localName())));
         return;
     }
     propagator()->reportProgress(*_item, 0);
 
     QString tmpFileName;
-    const SyncJournalDb::DownloadInfo progressInfo = propagator()->_journal->getDownloadInfo(_item->_file);
+    const SyncJournalDb::DownloadInfo progressInfo = propagator()->_journal->getDownloadInfo(_item->localName());
     if (progressInfo._valid) {
         // if the etag has changed meanwhile, remove the already downloaded part.
         if (progressInfo._etag != _item->_etag.toUtf8()) {
             FileSystem::remove(propagator()->fullLocalPath(progressInfo._tmpfile));
-            propagator()->_journal->setDownloadInfo(_item->_file, SyncJournalDb::DownloadInfo());
+            propagator()->_journal->setDownloadInfo(_item->localName(), SyncJournalDb::DownloadInfo());
         } else {
             tmpFileName = progressInfo._tmpfile;
             _expectedEtagForResume = QString::fromUtf8(progressInfo._etag);
@@ -563,7 +567,7 @@ void PropagateDownloadFile::startDownload()
     }
 
     if (tmpFileName.isEmpty()) {
-        tmpFileName = createDownloadTmpFileName(_item->_file);
+        tmpFileName = createDownloadTmpFileName(_item->localName());
     }
     _tmpFile.setFileName(propagator()->fullLocalPath(tmpFileName));
 
@@ -614,7 +618,7 @@ void PropagateDownloadFile::startDownload()
         pi._etag = _item->_etag.toUtf8();
         pi._tmpfile = tmpFileName;
         pi._valid = true;
-        propagator()->_journal->setDownloadInfo(_item->_file, pi);
+        propagator()->_journal->setDownloadInfo(_item->localName(), pi);
         propagator()->_journal->commit(QStringLiteral("download file start"));
     }
 
@@ -627,12 +631,11 @@ void PropagateDownloadFile::startFullDownload()
 
     if (_item->_directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
-        _job = new GETFileJob(propagator()->account(), propagator()->webDavUrl(),
-            propagator()->fullRemotePath(_item->_file),
-            &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
+        _job = new GETFileJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), &_tmpFile, headers,
+            _expectedEtagForResume, _resumeStart, this);
     } else {
         // We were provided a direct URL, use that one
-        qCInfo(lcPropagateDownload) << "directDownloadUrl given for " << _item->_file << _item->_directDownloadUrl;
+        qCInfo(lcPropagateDownload) << "directDownloadUrl given for " << _item->localName() << _item->_directDownloadUrl;
 
         if (!_item->_directDownloadCookies.isEmpty()) {
             headers["Cookie"] = _item->_directDownloadCookies.toUtf8();
@@ -701,7 +704,7 @@ void PropagateDownloadFile::slotGetFinished()
         if (_tmpFile.exists() && (_tmpFile.size() == 0 || badRangeHeader || fileNotFound)) {
             _tmpFile.close();
             FileSystem::remove(_tmpFile.fileName());
-            propagator()->_journal->setDownloadInfo(_item->_file, SyncJournalDb::DownloadInfo());
+            propagator()->_journal->setDownloadInfo(_item->localName(), SyncJournalDb::DownloadInfo());
         }
 
         if (!_item->_directDownloadUrl.isEmpty() && err != QNetworkReply::OperationCanceledError) {
@@ -730,7 +733,7 @@ void PropagateDownloadFile::slotGetFinished()
             // As a precaution against bugs that cause our database and the
             // reality on the server to diverge, rediscover this folder on the
             // next sync run.
-            propagator()->_journal->schedulePathForRemoteDiscovery(_item->_file);
+            propagator()->_journal->schedulePathForRemoteDiscovery(_item->localName());
         }
 
         QByteArray errorBody;
@@ -809,7 +812,7 @@ void PropagateDownloadFile::slotGetFinished()
     // it might still be downloaded in a parallel job and not exist in
     // the database yet!)
     if (job->reply()->rawHeader("OC-Conflict") == "1") {
-        _conflictRecord.path = _item->_file.toUtf8();
+        _conflictRecord.path = _item->localName().toUtf8();
         _conflictRecord.initialBasePath = job->reply()->rawHeader("OC-ConflictInitialBasePath");
         _conflictRecord.baseFileId = job->reply()->rawHeader("OC-ConflictBaseFileId");
         _conflictRecord.baseEtag = job->reply()->rawHeader("OC-ConflictBaseEtag");
@@ -847,7 +850,7 @@ void PropagateDownloadFile::slotChecksumFail(const QString &errMsg)
 
 void PropagateDownloadFile::deleteExistingFolder()
 {
-    QString existingDir = propagator()->fullLocalPath(_item->_file);
+    QString existingDir = propagator()->fullLocalPath(_item->localName());
     if (!QFileInfo(existingDir).isDir()) {
         return;
     }
@@ -903,8 +906,10 @@ void PropagateDownloadFile::downloadFinished()
 
     // In case of file name clash, report an error
     // This can happen if another parallel download saved a clashing file.
-    if (auto clash = propagator()->localFileNameClash(_item->_file)) {
-        done(SyncFileItem::NormalError, tr("File %1 cannot be saved because of a local file name clash with %2!").arg(QDir::toNativeSeparators(_item->_file), QDir::toNativeSeparators(clash.get())));
+    if (auto clash = propagator()->localFileNameClash(_item->localName())) {
+        done(SyncFileItem::NormalError,
+            tr("File %1 cannot be saved because of a local file name clash with %2!")
+                .arg(QDir::toNativeSeparators(_item->localName()), QDir::toNativeSeparators(clash.get())));
         return;
     }
 
@@ -928,7 +933,7 @@ void PropagateDownloadFile::downloadFinished()
             done(SyncFileItem::NormalError, result.error());
             return;
         } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
-            done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->_file));
+            done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->localName()));
             return;
         }
     }
@@ -990,7 +995,7 @@ void PropagateDownloadFile::downloadFinished()
         // If the virtual file used to have a different name and db
         // entry, remove it transfer its old pin state.
         if (_item->_type == ItemTypeVirtualFileDownload) {
-            const QString virtualFile = _item->_file + vfs->fileSuffix();
+            const QString virtualFile = _item->localName() + vfs->fileSuffix();
             const QString virtualFileAbsPath = propagator()->fullLocalPath(virtualFile);
             qCDebug(lcPropagateDownload) << "Download of previous virtual file finished" << virtualFileAbsPath;
             if (QFileInfo::exists(virtualFileAbsPath)) {
@@ -1003,15 +1008,15 @@ void PropagateDownloadFile::downloadFinished()
             // Move the pin state to the new location
             auto pin = propagator()->_journal->internalPinStates().rawForPath(virtualFile.toUtf8());
             if (pin && *pin != PinState::Inherited) {
-                std::ignore = vfs->setPinState(_item->_file, *pin);
+                std::ignore = vfs->setPinState(_item->localName(), *pin);
                 std::ignore = vfs->setPinState(virtualFile, PinState::Inherited);
             }
         }
 
         // Ensure the pin state isn't contradictory
-        auto pin = vfs->pinState(_item->_file);
+        auto pin = vfs->pinState(_item->localName());
         if (pin && *pin == PinState::OnlineOnly) {
-            std::ignore = vfs->setPinState(_item->_file, PinState::Unspecified);
+            std::ignore = vfs->setPinState(_item->localName(), PinState::Unspecified);
         }
     }
 
@@ -1025,10 +1030,10 @@ void PropagateDownloadFile::updateMetadata(bool isConflict)
         done(SyncFileItem::FatalError, tr("Error updating metadata: %1").arg(result.error()));
         return;
     } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
-        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->_file));
+        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->localName()));
         return;
     }
-    propagator()->_journal->setDownloadInfo(_item->_file, SyncJournalDb::DownloadInfo());
+    propagator()->_journal->setDownloadInfo(_item->localName(), SyncJournalDb::DownloadInfo());
     propagator()->_journal->commit(QStringLiteral("download file start2"));
 
     done(isConflict ? SyncFileItem::Conflict : SyncFileItem::Success);
@@ -1036,7 +1041,7 @@ void PropagateDownloadFile::updateMetadata(bool isConflict)
     // handle the special recall file
     if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
         if (!_item->_remotePerm.hasPermission(RemotePermissions::IsShared)
-            && (_item->_file == QLatin1String(".sys.admin#recall#") || _item->_file.endsWith(QLatin1String("/.sys.admin#recall#")))) {
+            && (_item->localName() == QLatin1String(".sys.admin#recall#") || _item->localName().endsWith(QLatin1String("/.sys.admin#recall#")))) {
             const QString fn = propagator()->fullLocalPath(_item->destination());
             CernRecallFeature::handleRecallFile(fn, propagator()->localPath(), *propagator()->_journal);
         }
@@ -1044,7 +1049,8 @@ void PropagateDownloadFile::updateMetadata(bool isConflict)
 
     const auto duration = std::chrono::milliseconds(_stopwatch.elapsed());
     if (isLikelyFinishedQuickly() && duration > 5s) {
-        qCWarning(lcPropagateDownload) << "WARNING: Unexpectedly slow connection, took" << duration.count() << "ms for" << _item->_size - _resumeStart << "bytes for" << _item->_file;
+        qCWarning(lcPropagateDownload) << "WARNING: Unexpectedly slow connection, took" << duration.count() << "ms for" << _item->_size - _resumeStart
+                                       << "bytes for" << _item->localName();
     }
 }
 

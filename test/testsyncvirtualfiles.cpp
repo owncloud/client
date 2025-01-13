@@ -825,7 +825,7 @@ private Q_SLOTS:
         QVERIFY(hasDehydratedDbEntries(QStringLiteral("A/a1")));
         QCOMPARE(itemInstruction(completeSpy, QStringLiteral("A/a1") + Theme::instance()->appDotVirtualFileSuffix()), CSYNC_INSTRUCTION_SYNC);
         QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1") + Theme::instance()->appDotVirtualFileSuffix())->_type, ItemTypeVirtualFileDehydration);
-        QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1") + Theme::instance()->appDotVirtualFileSuffix())->_file, QStringLiteral("A/a1"));
+        QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1") + Theme::instance()->appDotVirtualFileSuffix())->localName(), QStringLiteral("A/a1"));
         QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1") + Theme::instance()->appDotVirtualFileSuffix())->_renameTarget,
             QStringLiteral("A/a1") + Theme::instance()->appDotVirtualFileSuffix());
         QVERIFY(isDehydrated(QStringLiteral("A/a2")));

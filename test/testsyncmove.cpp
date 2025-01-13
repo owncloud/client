@@ -397,9 +397,9 @@ private Q_SLOTS:
             QCOMPARE(counter.nDELETE, 0);
             QVERIFY(itemSuccessfulMove(completeSpy, QStringLiteral("A/a1m")));
             QVERIFY(itemSuccessfulMove(completeSpy, QStringLiteral("B/b1m")));
-            QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1m"))->_file, QStringLiteral("A/a1"));
+            QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1m"))->localName(), QStringLiteral("A/a1"));
             QCOMPARE(completeSpy.findItem(QStringLiteral("A/a1m"))->_renameTarget, QStringLiteral("A/a1m"));
-            QCOMPARE(completeSpy.findItem(QStringLiteral("B/b1m"))->_file, QStringLiteral("B/b1"));
+            QCOMPARE(completeSpy.findItem(QStringLiteral("B/b1m"))->localName(), QStringLiteral("B/b1"));
             QCOMPARE(completeSpy.findItem(QStringLiteral("B/b1m"))->_renameTarget, QStringLiteral("B/b1m"));
             counter.reset();
         }
@@ -552,9 +552,9 @@ private Q_SLOTS:
             QCOMPARE(counter.nDELETE, 0);
             QVERIFY(itemSuccessfulMove(completeSpy, QStringLiteral("AM")));
             QVERIFY(itemSuccessfulMove(completeSpy, QStringLiteral("BM")));
-            QCOMPARE(completeSpy.findItem(QStringLiteral("AM"))->_file, QStringLiteral("A"));
+            QCOMPARE(completeSpy.findItem(QStringLiteral("AM"))->localName(), QStringLiteral("A"));
             QCOMPARE(completeSpy.findItem(QStringLiteral("AM"))->_renameTarget, QStringLiteral("AM"));
-            QCOMPARE(completeSpy.findItem(QStringLiteral("BM"))->_file, QStringLiteral("B"));
+            QCOMPARE(completeSpy.findItem(QStringLiteral("BM"))->localName(), QStringLiteral("B"));
             QCOMPARE(completeSpy.findItem(QStringLiteral("BM"))->_renameTarget, QStringLiteral("BM"));
             counter.reset();
         }

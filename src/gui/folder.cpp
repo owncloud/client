@@ -470,19 +470,18 @@ void Folder::showSyncResultPopup()
         LogStatus status(LogStatusRename);
         // if the path changes it's rather a move
         QDir renTarget = QFileInfo(_syncResult.firstItemRenamed()->_renameTarget).dir();
-        QDir renSource = QFileInfo(_syncResult.firstItemRenamed()->_file).dir();
+        QDir renSource = QFileInfo(_syncResult.firstItemRenamed()->localName()).dir();
         if (renTarget != renSource) {
             status = LogStatusMove;
         }
-        createGuiLog(_syncResult.firstItemRenamed()->_file, status,
-            _syncResult.numRenamedItems(), _syncResult.firstItemRenamed()->_renameTarget);
+        createGuiLog(_syncResult.firstItemRenamed()->localName(), status, _syncResult.numRenamedItems(), _syncResult.firstItemRenamed()->_renameTarget);
     }
 
     if (_syncResult.firstNewConflictItem()) {
         createGuiLog(_syncResult.firstNewConflictItem()->destination(), LogStatusConflict, _syncResult.numNewConflictItems());
     }
     if (int errorCount = _syncResult.numErrorItems()) {
-        createGuiLog(_syncResult.firstItemError()->_file, LogStatusError, errorCount);
+        createGuiLog(_syncResult.firstItemError()->localName(), LogStatusError, errorCount);
     }
 
     qCInfo(lcFolder) << "Folder" << path() << "sync result: " << _syncResult.status();

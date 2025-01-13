@@ -267,15 +267,15 @@ private Q_SLOTS:
         auto checkIsUpdateMetaData = [&](const SyncFileItemSet &items) {
             QCOMPARE(items.size(), 2);
             auto it = items.cbegin();
-            QCOMPARE(it->get()->_file, QLatin1String("A"));
+            QCOMPARE(it->get()->localName(), QLatin1String("A"));
             QCOMPARE(it->get()->instruction(), CSYNC_INSTRUCTION_UPDATE_METADATA);
             it++;
-            QCOMPARE(it->get()->_file, QLatin1String("A/a0"));
+            QCOMPARE(it->get()->localName(), QLatin1String("A/a0"));
             QCOMPARE(it->get()->instruction(), CSYNC_INSTRUCTION_UPDATE_METADATA);
             QCOMPARE(it->get()->_etag, QString::fromUtf8(fakeFolder.remoteModifier().find(QStringLiteral("A/a0"))->etag));
         };
         auto checkEtagUpdated = [&](const SyncFileItemPtr &item) {
-            if (item->_file == QLatin1String("A/a0")) {
+            if (item->localName() == QLatin1String("A/a0")) {
                 SyncJournalFileRecord record;
                 QVERIFY(fakeFolder.syncJournal().getFileRecord(QByteArray("A/a0"), &record));
                 QCOMPARE(record._etag, fakeFolder.remoteModifier().find(QStringLiteral("A/a0"))->etag);

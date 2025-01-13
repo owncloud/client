@@ -62,7 +62,7 @@ SyncJournalFileRecord SyncFileItem::toSyncJournalFileRecordWithInode(const QStri
 SyncFileItemPtr SyncFileItem::fromSyncJournalFileRecord(const SyncJournalFileRecord &rec)
 {
     auto item = SyncFileItemPtr::create();
-    item->_file = QString::fromUtf8(rec._path);
+    item->_localName = QString::fromUtf8(rec._path);
     item->_inode = rec._inode;
     item->_modtime = rec._modtime;
     item->_type = rec._type;
@@ -132,7 +132,7 @@ QDebug operator<<(QDebug debug, const OCC::SyncFileItem *item)
     } else {
         QDebugStateSaver saver(debug);
         debug.setAutoInsertSpaces(false);
-        debug << "OCC::SyncFileItem(file=" << item->_file;
+        debug << "OCC::SyncFileItem(file=" << item->localName();
         if (!item->_renameTarget.isEmpty()) {
             debug << ", destination=" << item->destination();
         }

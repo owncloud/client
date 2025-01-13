@@ -52,14 +52,14 @@ private Q_SLOTS:
         std::vector<ProtocolItem> tmp;
         tmp.reserve(size);
         for (size_t i = 0; i < size; ++i) {
-            item->_file = QString::number(i);
+            item->setLocalName(QString::number(i));
             tmp.emplace_back(foo, item);
         }
         model->reset(std::move(tmp));
 
         // test some inserts
         for (int i = 0; i < 5; ++i) {
-            item->_file = QString::number(i);
+            item->setLocalName(QString::number(i));
             model->addProtocolItem(ProtocolItem { bar, item });
         }
 

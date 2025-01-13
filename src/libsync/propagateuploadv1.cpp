@@ -34,7 +34,7 @@ namespace OCC {
 
 void PropagateUploadFileV1::doStartUpload()
 {
-    const QString fileName = propagator()->fullLocalPath(_item->_file);
+    const QString fileName = propagator()->fullLocalPath(_item->localName());
     // If the file is currently locked, we want to retry the sync
     // when it becomes available again.
     if (FileSystem::isFileLocked(fileName, FileSystem::LockMode::SharedRead)) {
@@ -51,12 +51,12 @@ void PropagateUploadFileV1::doStartUpload()
     _startChunk = 0;
     _transferId = uint(QRandomGenerator::global()->generate()) ^ uint(_item->_modtime) ^ (uint(_item->_size) << 16);
 
-    const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->_file);
+    const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->localName());
 
     if (progressInfo.isChunked() && progressInfo.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
         _startChunk = progressInfo._chunk;
         _transferId = progressInfo._transferid;
-        qCInfo(lcPropagateUploadV1) << _item->_file << ": Resuming from chunk " << _startChunk;
+        qCInfo(lcPropagateUploadV1) << _item->localName() << ": Resuming from chunk " << _startChunk;
     } else if (_chunkCount <= 1 && !_item->_checksumHeader.isEmpty()) {
         // If there is only one chunk, write the checksum in the database, so if the PUT is sent
         // to the server, but the connection drops before we get the etag, we can check the checksum
@@ -65,7 +65,7 @@ void PropagateUploadFileV1::doStartUpload()
         pi._chunk = 0;
         pi._transferid = 0; // We set a null transfer id because it is not chunked.
         pi._errorCount = 0;
-        propagator()->_journal->setUploadInfo(_item->_file, pi);
+        propagator()->_journal->setUploadInfo(_item->localName(), pi);
         propagator()->_journal->commit(QStringLiteral("Upload info"));
     }
 
@@ -93,7 +93,7 @@ void PropagateUploadFileV1::startNextChunk()
     headers[QByteArrayLiteral("OC-Total-Length")] = QByteArray::number(fileSize);
     headers[QByteArrayLiteral("OC-Chunk-Size")] = QByteArray::number(chunkSize());
 
-    QString path = _item->_file;
+    QString path = _item->localName();
 
     qint64 chunkStart = 0;
     qint64 currentChunkSize = fileSize;
@@ -127,7 +127,7 @@ void PropagateUploadFileV1::startNextChunk()
         headers[checkSumHeaderC] = _transmissionChecksumHeader;
     }
 
-    const QString fileName = propagator()->fullLocalPath(_item->_file);
+    const QString fileName = propagator()->fullLocalPath(_item->localName());
     auto device = std::make_unique<UploadDevice>(fileName, chunkStart, currentChunkSize,
         propagator()->_bandwidthManager);
     if (!device->open(QIODevice::ReadOnly)) {
@@ -221,7 +221,7 @@ void PropagateUploadFileV1::slotPutFinished()
     _finished = etag.length() > 0;
 
     // Check if the file still exists
-    const QString fullFilePath(propagator()->fullLocalPath(_item->_file));
+    const QString fullFilePath(propagator()->fullLocalPath(_item->localName()));
     if (!FileSystem::fileExists(fullFilePath)) {
         if (!_finished) {
             abortWithError(SyncFileItem::SoftError, tr("The local file was removed during sync."));
@@ -253,7 +253,7 @@ void PropagateUploadFileV1::slotPutFinished()
 
         // Deletes an existing blacklist entry on successful chunk upload
         if (_item->_hasBlacklistEntry) {
-            propagator()->_journal->wipeErrorBlacklistEntry(_item->_file);
+            propagator()->_journal->wipeErrorBlacklistEntry(_item->localName());
             _item->_hasBlacklistEntry = false;
         }
 
@@ -272,7 +272,7 @@ void PropagateUploadFileV1::slotPutFinished()
         pi._errorCount = 0; // successful chunk upload resets
         pi._contentChecksum = _item->_checksumHeader;
         pi._size = _item->_size;
-        propagator()->_journal->setUploadInfo(_item->_file, pi);
+        propagator()->_journal->setUploadInfo(_item->localName(), pi);
         propagator()->_journal->commit(QStringLiteral("Upload info"));
         startNextChunk();
         return;

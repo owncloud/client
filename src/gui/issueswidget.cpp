@@ -202,9 +202,8 @@ IssuesWidget::IssuesWidget(QWidget *parent)
         });
 
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::excluded, this, [this](Folder *f, const QString &file) {
-        auto item = SyncFileItemPtr::create();
+        auto item = SyncFileItemPtr::create(file);
         item->_status = SyncFileItem::FilenameReserved;
-        item->_file = file;
         item->_errorString = tr("The file %1 was ignored as its name is reserved by %2").arg(file, Theme::instance()->appNameGUI());
         _model->addProtocolItem(ProtocolItem { f, item });
     });

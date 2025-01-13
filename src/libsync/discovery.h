@@ -193,7 +193,7 @@ private:
     /** An DB operation failed */
     void dbError();
 
-    void addVirtualFileSuffix(QString &str) const;
+    [[nodiscard]] QString addVirtualFileSuffix(const QString &str) const;
     bool hasVirtualFileSuffix(const QString &str) const;
     Q_REQUIRED_RESULT QString chopVirtualFileSuffix(const QString &str) const;
 

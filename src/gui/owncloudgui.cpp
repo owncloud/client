@@ -804,9 +804,9 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
     if (!progress._lastCompletedItem.isEmpty() && shouldShowInRecentsMenu(progress._lastCompletedItem)) {
         QString kindStr = Progress::asResultString(progress._lastCompletedItem);
         QString timeStr = QTime::currentTime().toString(QStringLiteral("hh:mm"));
-        QString actionText = tr("%1 (%2, %3)").arg(progress._lastCompletedItem._file, kindStr, timeStr);
+        QString actionText = tr("%1 (%2, %3)").arg(progress._lastCompletedItem.localName(), kindStr, timeStr);
         QAction *action = new QAction(actionText, this);
-        QString fullPath = folder->path() + QLatin1Char('/') + progress._lastCompletedItem._file;
+        QString fullPath = folder->path() + QLatin1Char('/') + progress._lastCompletedItem.localName();
         if (QFile(fullPath).exists()) {
             connect(action, &QAction::triggered, this, [this, fullPath] { this->slotOpenPath(fullPath); });
         } else {
