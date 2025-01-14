@@ -87,7 +87,7 @@ void SyncRunFileLog::logItem(const SyncFileItem &item)
     {
         QDebug(&tmp).noquote() << dateTimeStr(Utility::parseRFC1123Date(QString::fromUtf8(item._responseTimeStamp))) << L
                                << ((item.instruction() != CSYNC_INSTRUCTION_RENAME) ? item.destination()
-                                                                                    : item._file + QStringLiteral(" -> ") + item._renameTarget)
+                                                                                    : item.localName() + QStringLiteral(" -> ") + item._renameTarget)
                                << L << item.instruction() << L << item._direction << L << L << item._modtime << L << item._etag << L << item._size << L
                                << item._fileId << L << item._status << L << item._errorString << L << item._httpErrorCode << L << item._previousSize << L
                                << item._previousModtime << L << item._requestId << L << Qt::endl;

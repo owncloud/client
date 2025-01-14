@@ -21,29 +21,23 @@ private Q_SLOTS:
     void cleanupTestCase() {
     }
 
-    SyncFileItem createItem( const QString& file ) {
-        SyncFileItem i;
-        i._file = file;
-        return i;
-    }
-
     void testComparator_data() {
         QTest::addColumn<SyncFileItem>("a");
         QTest::addColumn<SyncFileItem>("b");
         QTest::addColumn<SyncFileItem>("c");
 
-        QTest::newRow("a1") << createItem(QStringLiteral("client")) << createItem(QStringLiteral("client/build")) << createItem(QStringLiteral("client-build"));
-        QTest::newRow("a2") << createItem(QStringLiteral("test/t1")) << createItem(QStringLiteral("test/t2")) << createItem(QStringLiteral("test/t3"));
-        QTest::newRow("a3") << createItem(QStringLiteral("ABCD")) << createItem(QStringLiteral("abcd")) << createItem(QStringLiteral("zzzz"));
+        QTest::newRow("a1") << SyncFileItem(QStringLiteral("client")) << SyncFileItem(QStringLiteral("client/build"))
+                            << SyncFileItem(QStringLiteral("client-build"));
+        QTest::newRow("a2") << SyncFileItem(QStringLiteral("test/t1")) << SyncFileItem(QStringLiteral("test/t2")) << SyncFileItem(QStringLiteral("test/t3"));
+        QTest::newRow("a3") << SyncFileItem(QStringLiteral("ABCD")) << SyncFileItem(QStringLiteral("abcd")) << SyncFileItem(QStringLiteral("zzzz"));
 
-        SyncFileItem movedItem1;
-        movedItem1._file = QStringLiteral("folder/source/file.f");
+        SyncFileItem movedItem1(QStringLiteral("folder/source/file.f"));
         movedItem1._renameTarget = QStringLiteral("folder/destination/file.f");
         movedItem1.setInstruction(CSYNC_INSTRUCTION_RENAME);
 
-        QTest::newRow("move1") << createItem(QStringLiteral("folder/destination")) << movedItem1 << createItem(QStringLiteral("folder/destination-2"));
-        QTest::newRow("move2") << createItem(QStringLiteral("folder/destination/1")) << movedItem1 << createItem(QStringLiteral("folder/source"));
-        QTest::newRow("move3") << createItem(QStringLiteral("abc")) << movedItem1 << createItem(QStringLiteral("ijk"));
+        QTest::newRow("move1") << SyncFileItem(QStringLiteral("folder/destination")) << movedItem1 << SyncFileItem(QStringLiteral("folder/destination-2"));
+        QTest::newRow("move2") << SyncFileItem(QStringLiteral("folder/destination/1")) << movedItem1 << SyncFileItem(QStringLiteral("folder/source"));
+        QTest::newRow("move3") << SyncFileItem(QStringLiteral("abc")) << movedItem1 << SyncFileItem(QStringLiteral("ijk"));
     }
 
     void testComparator() {

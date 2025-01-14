@@ -97,13 +97,13 @@ namespace {
             } else {
                 estimatedUpBw += progress.fileProgress(citm._item).estimatedBandwidth;
             }
-            allFilenames.append(QApplication::translate("FolderStatus", "'%1'").arg(citm._item._file));
+            allFilenames.append(QApplication::translate("FolderStatus", "'%1'").arg(citm._item.localName()));
         }
         if (curItemProgress == -1) {
             curItemProgress = curItem._size;
         }
 
-        const QString itemFileName = curItem._file;
+        const QString itemFileName = curItem.localName();
         const QString kindString = Progress::asActionString(curItem);
 
         QString fileProgressString;

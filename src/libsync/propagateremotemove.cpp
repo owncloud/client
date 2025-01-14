@@ -59,7 +59,7 @@ void PropagateRemoteMove::start()
     if (propagator()->_abortRequested)
         return;
 
-    QString origin = propagator()->adjustRenamedPath(_item->_file);
+    QString origin = propagator()->adjustRenamedPath(_item->localName());
     qCDebug(lcPropagateRemoteMove) << origin << _item->_renameTarget;
     if (origin == _item->_renameTarget) {
         // The parent has been renamed already so there is nothing more to do.
@@ -205,7 +205,7 @@ void PropagateRemoteMove::finalize()
         done(SyncFileItem::FatalError, tr("Error updating metadata: %1").arg(result.error()));
         return;
     } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
-        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(newItem._file));
+        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(newItem.localName()));
         return;
     }
     if (pinState && *pinState != PinState::Inherited
@@ -215,8 +215,8 @@ void PropagateRemoteMove::finalize()
     }
 
     if (_item->isDirectory()) {
-        propagator()->_renamedDirectories.insert(_item->_file, _item->_renameTarget);
-        if (!adjustSelectiveSync(propagator()->_journal, _item->_file, _item->_renameTarget)) {
+        propagator()->_renamedDirectories.insert(_item->localName(), _item->_renameTarget);
+        if (!adjustSelectiveSync(propagator()->_journal, _item->localName(), _item->_renameTarget)) {
             done(SyncFileItem::FatalError, tr("Error writing metadata to the database"));
             return;
         }

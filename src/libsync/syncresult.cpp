@@ -112,7 +112,7 @@ void SyncResult::processCompletedItem(const SyncFileItemPtr &item)
     // Process the item to the gui
     if (item->_status == SyncFileItem::FatalError || item->_status == SyncFileItem::NormalError) {
         //: this displays an error string (%2) for a file %1
-        appendErrorString(QObject::tr("%1: %2").arg(item->_file, item->_errorString));
+        appendErrorString(QObject::tr("%1: %2").arg(item->localName(), item->_errorString));
         _numErrorItems++;
         if (!_firstItemError) {
             _firstItemError = item;

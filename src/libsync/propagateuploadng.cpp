@@ -84,7 +84,7 @@ PropagateUploadFileNG::PropagateUploadFileNG(OwncloudPropagator *propagator, con
 }
 void PropagateUploadFileNG::doStartUpload()
 {
-    const QString fileName = propagator()->fullLocalPath(_item->_file);
+    const QString fileName = propagator()->fullLocalPath(_item->localName());
     // If the file is currently locked, we want to retry the sync
     // when it becomes available again.
     if (FileSystem::isFileLocked(fileName, FileSystem::LockMode::SharedRead)) {
@@ -104,7 +104,7 @@ void PropagateUploadFileNG::doStartUpload()
 
 void PropagateUploadFileNG::doStartUploadNext()
 {
-    const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->_file);
+    const SyncJournalDb::UploadInfo progressInfo = propagator()->_journal->getUploadInfo(_item->localName());
     if (progressInfo.isChunked() && progressInfo.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
         _transferId = progressInfo._transferid;
         auto job = new PropfindJob(propagator()->account(), propagator()->account()->url(), chunkPath(), PropfindJob::Depth::One, this);
@@ -186,9 +186,8 @@ void PropagateUploadFileNG::slotPropfindFinished()
     if (_sent > _bytesToUpload) {
         // Normally this can't happen because the size is xor'ed with the transfer id, and it is
         // therefore impossible that there is more data on the server than on the file.
-        qCCritical(lcPropagateUploadNG) << "Inconsistency while resuming " << _item->_file
-                                      << ": the size on the server (" << _sent << ") is bigger than the size of the file ("
-                                      << _item->_size << ")";
+        qCCritical(lcPropagateUploadNG) << "Inconsistency while resuming " << _item->localName() << ": the size on the server (" << _sent
+                                        << ") is bigger than the size of the file (" << _item->_size << ")";
 
         // Wipe the old chunking data.
         // Fire and forget. Any error will be ignored.
@@ -199,7 +198,7 @@ void PropagateUploadFileNG::slotPropfindFinished()
         return;
     }
 
-    qCInfo(lcPropagateUploadNG) << "Resuming " << _item->_file << "; sent =" << _sent << "; total=" << _bytesToUpload;
+    qCInfo(lcPropagateUploadNG) << "Resuming " << _item->localName() << "; sent =" << _sent << "; total=" << _bytesToUpload;
 
     if (!_serverChunks.isEmpty()) {
         qCInfo(lcPropagateUploadNG) << "To Delete" << _serverChunks.keys();
@@ -287,7 +286,7 @@ void PropagateUploadFileNG::startNewUpload()
 
     auto pi = _item->toUploadInfo();
     pi._transferid = _transferId;
-    propagator()->_journal->setUploadInfo(_item->_file, pi);
+    propagator()->_journal->setUploadInfo(_item->localName(), pi);
     propagator()->_journal->commit(QStringLiteral("Upload info"));
     QMap<QByteArray, QByteArray> headers;
     headers["OC-Total-Length"] = QByteArray::number(_item->_size);
@@ -329,8 +328,7 @@ void PropagateUploadFileNG::doFinalMove()
     _finished = true;
 
     // Finish with a MOVE
-    QString destination = QDir::cleanPath(propagator()->webDavUrl().path()
-        + propagator()->fullRemotePath(_item->_file));
+    QString destination = QDir::cleanPath(propagator()->webDavUrl().path() + propagator()->fullRemotePath(_item->localName()));
     auto headers = PropagateUploadFileCommon::headers();
 
     // "If-Match applies to the source, but we are interested in comparing the etag of the destination
@@ -371,7 +369,7 @@ void PropagateUploadFileNG::startNextChunk()
     _currentChunkOffset = _rangesToUpload.first().start;
     _currentChunkSize = qMin(propagator()->_chunkSize, _rangesToUpload.first().size);
 
-    const QString fileName = propagator()->fullLocalPath(_item->_file);
+    const QString fileName = propagator()->fullLocalPath(_item->localName());
     auto device = std::make_unique<UploadDevice>(fileName, _currentChunkOffset, _currentChunkSize,
         propagator()->_bandwidthManager);
     if (!device->open(QIODevice::ReadOnly)) {
@@ -455,7 +453,7 @@ void PropagateUploadFileNG::slotPutFinished()
     _finished = _sent == _bytesToUpload;
 
     // Check if the file still exists
-    const QString fullFilePath(propagator()->fullLocalPath(_item->_file));
+    const QString fullFilePath(propagator()->fullLocalPath(_item->localName()));
     if (!FileSystem::fileExists(fullFilePath)) {
         if (!_finished) {
             abortWithError(SyncFileItem::SoftError, tr("The local file was removed during sync."));
@@ -477,14 +475,14 @@ void PropagateUploadFileNG::slotPutFinished()
     if (!_finished) {
         // Deletes an existing blacklist entry on successful chunk upload
         if (_item->_hasBlacklistEntry) {
-            propagator()->_journal->wipeErrorBlacklistEntry(_item->_file);
+            propagator()->_journal->wipeErrorBlacklistEntry(_item->localName());
             _item->_hasBlacklistEntry = false;
         }
 
         // Reset the error count on successful chunk upload
-        auto uploadInfo = propagator()->_journal->getUploadInfo(_item->_file);
+        auto uploadInfo = propagator()->_journal->getUploadInfo(_item->localName());
         uploadInfo._errorCount = 0;
-        propagator()->_journal->setUploadInfo(_item->_file, uploadInfo);
+        propagator()->_journal->setUploadInfo(_item->localName(), uploadInfo);
         propagator()->_journal->commit(QStringLiteral("Upload info"));
     }
     startNextChunk();
@@ -516,7 +514,7 @@ void PropagateUploadFileNG::slotMoveJobFinished()
 
     QByteArray fid = job->reply()->rawHeader("OC-FileID");
     if (fid.isEmpty()) {
-        qCWarning(lcPropagateUploadNG) << "Server did not return a OC-FileID" << _item->_file;
+        qCWarning(lcPropagateUploadNG) << "Server did not return a OC-FileID" << _item->localName();
         abortWithError(SyncFileItem::NormalError, tr("Missing File ID from server"));
         return;
     } else {
@@ -529,7 +527,7 @@ void PropagateUploadFileNG::slotMoveJobFinished()
 
     _item->_etag = getEtagFromReply(job->reply());
     if (_item->_etag.isEmpty()) {
-        qCWarning(lcPropagateUploadNG) << "Server did not return an ETAG" << _item->_file;
+        qCWarning(lcPropagateUploadNG) << "Server did not return an ETAG" << _item->localName();
         abortWithError(SyncFileItem::NormalError, tr("Missing ETag from server"));
         return;
     }

@@ -81,8 +81,8 @@ void LocalDiscoveryTracker::slotItemCompleted(const SyncFileItemPtr &item)
     case SyncFileItem::Conflict:
         Q_FALLTHROUGH();
     case OCC::SyncFileItem::Message:
-        if (_previousLocalDiscoveryPaths.erase(item->_file)) {
-            qCDebug(lcLocalDiscoveryTracker) << "wiped successful item" << item->_file;
+        if (_previousLocalDiscoveryPaths.erase(item->localName())) {
+            qCDebug(lcLocalDiscoveryTracker) << "wiped successful item" << item->localName();
         }
         if (!item->_renameTarget.isEmpty() && _previousLocalDiscoveryPaths.erase(item->_renameTarget)) {
             qCDebug(lcLocalDiscoveryTracker) << "wiped successful item" << item->_renameTarget;
@@ -106,8 +106,8 @@ void LocalDiscoveryTracker::slotItemCompleted(const SyncFileItemPtr &item)
         Q_UNREACHABLE();
     }
 
-    _localDiscoveryPaths.insert(item->_file);
-    qCDebug(lcLocalDiscoveryTracker) << "inserted error item" << item->_file;
+    _localDiscoveryPaths.insert(item->localName());
+    qCDebug(lcLocalDiscoveryTracker) << "inserted error item" << item->localName();
 }
 
 void LocalDiscoveryTracker::slotSyncFinished(bool success)

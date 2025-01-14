@@ -44,7 +44,7 @@ QString Progress::asResultString(const SyncFileItem &item)
     case CSYNC_INSTRUCTION_REMOVE:
         return QCoreApplication::translate("progress", "Deleted");
     case CSYNC_INSTRUCTION_RENAME:
-        return QCoreApplication::translate("progress", "%1 moved to %2").arg(item._file, item._renameTarget);
+        return QCoreApplication::translate("progress", "%1 moved to %2").arg(item.localName(), item._renameTarget);
     case CSYNC_INSTRUCTION_IGNORE:
         return QCoreApplication::translate("progress", "Ignored");
     case CSYNC_INSTRUCTION_ERROR:
@@ -185,14 +185,14 @@ void ProgressInfo::updateTotalsForFile(const SyncFileItem &item, qint64 newSize)
         return;
     }
 
-    if (!_currentItems.contains(item._file)) {
+    if (!_currentItems.contains(item.localName())) {
         _sizeProgress._total += newSize - item._size;
     } else {
-        _sizeProgress._total += newSize - _currentItems[item._file]._progress._total;
+        _sizeProgress._total += newSize - _currentItems[item.localName()]._progress._total;
     }
 
     setProgressItem(item, 0);
-    _currentItems[item._file]._progress._total = newSize;
+    _currentItems[item.localName()]._progress._total = newSize;
 }
 
 qint64 ProgressInfo::totalFiles() const
@@ -228,9 +228,9 @@ void ProgressInfo::setProgressComplete(const SyncFileItem &item)
 
     _fileProgress.setCompleted(_fileProgress._completed + item._affectedItems);
     if (ProgressInfo::isSizeDependent(item)) {
-        _totalSizeOfCompletedJobs += _currentItems[item._file]._progress._total;
+        _totalSizeOfCompletedJobs += _currentItems[item.localName()]._progress._total;
     }
-    _currentItems.remove(item._file);
+    _currentItems.remove(item.localName());
     recomputeCompletedSize();
     _lastCompletedItem = item;
 }
@@ -241,11 +241,11 @@ void ProgressInfo::setProgressItem(const SyncFileItem &item, qint64 completed)
         return;
     }
 
-    if (!_currentItems.contains(item._file)) {
-        _currentItems[item._file]._item = item;
-        _currentItems[item._file]._progress._total = item._size;
+    if (!_currentItems.contains(item.localName())) {
+        _currentItems[item.localName()]._item = item;
+        _currentItems[item.localName()]._progress._total = item._size;
     }
-    _currentItems[item._file]._progress.setCompleted(completed);
+    _currentItems[item.localName()]._progress.setCompleted(completed);
     recomputeCompletedSize();
 
     // This seems dubious!
@@ -329,7 +329,7 @@ bool ProgressInfo::trustEta() const
 
 ProgressInfo::Estimates ProgressInfo::fileProgress(const SyncFileItem &item) const
 {
-    return _currentItems[item._file]._progress.estimates();
+    return _currentItems[item.localName()]._progress.estimates();
 }
 
 void ProgressInfo::updateEstimates()

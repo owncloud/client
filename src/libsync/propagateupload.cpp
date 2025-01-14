@@ -121,14 +121,15 @@ void PropagateUploadFileCommon::start()
     }
 
     // Check if the specific file can be accessed
-    if (propagator()->hasCaseClashAccessibilityProblem(_item->_file)) {
-        done(SyncFileItem::NormalError, tr("File %1 cannot be uploaded because another file with the same name, differing only in case, exists").arg(QDir::toNativeSeparators(_item->_file)));
+    if (propagator()->hasCaseClashAccessibilityProblem(_item->localName())) {
+        done(SyncFileItem::NormalError,
+            tr("File %1 cannot be uploaded because another file with the same name, differing only in case, exists")
+                .arg(QDir::toNativeSeparators(_item->localName())));
         return;
     }
 
     // Check if we believe that the upload will fail due to remote quota limits
-    const qint64 quotaGuess = propagator()->_folderQuota.value(
-        QFileInfo(_item->_file).path(), std::numeric_limits<qint64>::max());
+    const qint64 quotaGuess = propagator()->_folderQuota.value(QFileInfo(_item->localName()).path(), std::numeric_limits<qint64>::max());
     if (_item->_size > quotaGuess) {
         // Necessary for blacklisting logic
         _item->_httpErrorCode = 507;
@@ -143,9 +144,7 @@ void PropagateUploadFileCommon::start()
         return slotComputeContentChecksum();
     }
 
-    auto job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(),
-        propagator()->fullRemotePath(_item->_file),
-        this);
+    auto job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), this);
     addChildJob(job);
     connect(job, &DeleteJob::finishedSignal, this, &PropagateUploadFileCommon::slotComputeContentChecksum);
     job->start();
@@ -157,7 +156,7 @@ void PropagateUploadFileCommon::slotComputeContentChecksum()
         return;
     }
 
-    const QString filePath = propagator()->fullLocalPath(_item->_file);
+    const QString filePath = propagator()->fullLocalPath(_item->localName());
 
     // remember the modtime before checksumming to be able to detect a file
     // change during the checksum calculation
@@ -202,7 +201,7 @@ void PropagateUploadFileCommon::slotComputeTransmissionChecksum(CheckSums::Algor
         return;
     }
 
-    const QString filePath = propagator()->fullLocalPath(_item->_file);
+    const QString filePath = propagator()->fullLocalPath(_item->localName());
     // we must be able to read the file
     if (FileSystem::isFileLocked(filePath, FileSystem::LockMode::SharedRead)) {
         Q_EMIT propagator()->seenLockedFile(filePath, FileSystem::LockMode::SharedRead);
@@ -238,7 +237,7 @@ void PropagateUploadFileCommon::slotStartUpload(CheckSums::Algorithm transmissio
         _item->_checksumHeader = _transmissionChecksumHeader;
     }
 
-    const QString fullFilePath = propagator()->fullLocalPath(_item->_file);
+    const QString fullFilePath = propagator()->fullLocalPath(_item->localName());
 
     if (!FileSystem::fileExists(fullFilePath)) {
         done(SyncFileItem::SoftError, tr("File Removed"));
@@ -430,18 +429,16 @@ void PropagateUploadFileCommon::checkResettingErrors()
 {
     if (_item->_httpErrorCode == 412
         || propagator()->account()->capabilities().httpErrorCodesThatResetFailingChunkedUploads().contains(_item->_httpErrorCode)) {
-        auto uploadInfo = propagator()->_journal->getUploadInfo(_item->_file);
+        auto uploadInfo = propagator()->_journal->getUploadInfo(_item->localName());
         uploadInfo._errorCount += 1;
         if (uploadInfo._errorCount > 3) {
-            qCInfo(lcPropagateUpload) << "Reset transfer of" << _item->_file
-                                      << "due to repeated error" << _item->_httpErrorCode;
+            qCInfo(lcPropagateUpload) << "Reset transfer of" << _item->localName() << "due to repeated error" << _item->_httpErrorCode;
             uploadInfo = SyncJournalDb::UploadInfo();
         } else {
-            qCInfo(lcPropagateUpload) << "Error count for maybe-reset error" << _item->_httpErrorCode
-                                      << "on file" << _item->_file
-                                      << "is" << uploadInfo._errorCount;
+            qCInfo(lcPropagateUpload) << "Error count for maybe-reset error" << _item->_httpErrorCode << "on file" << _item->localName() << "is"
+                                      << uploadInfo._errorCount;
         }
-        propagator()->_journal->setUploadInfo(_item->_file, uploadInfo);
+        propagator()->_journal->setUploadInfo(_item->localName(), uploadInfo);
         propagator()->_journal->commit(QStringLiteral("Upload info"));
     }
 }
@@ -457,7 +454,7 @@ void PropagateUploadFileCommon::commonErrorHandling(AbstractNetworkJob *job)
 
         // Maybe the bad etag is in the database, we need to clear the
         // parent folder etag so we won't read from DB next sync.
-        propagator()->_journal->schedulePathForRemoteDiscovery(_item->_file);
+        propagator()->_journal->schedulePathForRemoteDiscovery(_item->localName());
         propagator()->_anotherSyncNeeded = true;
     }
 
@@ -470,7 +467,7 @@ void PropagateUploadFileCommon::commonErrorHandling(AbstractNetworkJob *job)
     // Insufficient remote storage.
     if (_item->_httpErrorCode == 507) {
         // Update the quota expectation
-        const auto path = QFileInfo(_item->_file).path();
+        const auto path = QFileInfo(_item->localName()).path();
         auto quotaIt = propagator()->_folderQuota.find(path);
         if (quotaIt != propagator()->_folderQuota.end()) {
             quotaIt.value() = qMin(quotaIt.value(), _item->_size - 1);
@@ -501,7 +498,7 @@ void PropagateUploadFileCommon::adjustLastJobTimeout(AbstractNetworkJob *job, qi
 // This function is used whenever there is an error occuring and jobs might be in progress
 void PropagateUploadFileCommon::abortWithError(SyncFileItem::Status status, const QString &error)
 {
-    qCWarning(lcPropagateUpload) << Q_FUNC_INFO << _item->_file << error;
+    qCWarning(lcPropagateUpload) << Q_FUNC_INFO << _item->localName() << error;
     if (!_aborting) {
         abort(AbortType::Synchronous);
         done(status, error);
@@ -524,7 +521,7 @@ QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
     headers[QByteArrayLiteral("Content-Type")] = QByteArrayLiteral("application/octet-stream");
     headers[QByteArrayLiteral("X-OC-Mtime")] = QByteArray::number(qint64(_item->_modtime));
 
-    if (Q_UNLIKELY(Theme::instance()->enableCernBranding() && _item->_file.contains(QLatin1String(".sys.admin#recall#")))) {
+    if (Q_UNLIKELY(Theme::instance()->enableCernBranding() && _item->localName().contains(QLatin1String(".sys.admin#recall#")))) {
         // This is a file recall triggered by the admin.  Note: the
         // recall list file created by the admin and downloaded by the
         // client (.sys.admin#recall#) also falls into this category
@@ -544,7 +541,7 @@ QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
     }
 
     // Set up a conflict file header pointing to the original file
-    auto conflictRecord = propagator()->_journal->conflictRecord(_item->_file.toUtf8());
+    auto conflictRecord = propagator()->_journal->conflictRecord(_item->localName().toUtf8());
     if (conflictRecord.isValid()) {
         headers[QByteArrayLiteral("OC-Conflict")] = "1";
         if (!conflictRecord.initialBasePath.isEmpty())
@@ -566,7 +563,7 @@ void PropagateUploadFileCommon::finalize()
 
     // Update the quota, if known
     if (!_quotaUpdated) {
-        auto quotaIt = propagator()->_folderQuota.find(QFileInfo(_item->_file).path());
+        auto quotaIt = propagator()->_folderQuota.find(QFileInfo(_item->localName()).path());
         if (quotaIt != propagator()->_folderQuota.end()) {
             quotaIt.value() -= _item->_size;
         }
@@ -574,9 +571,9 @@ void PropagateUploadFileCommon::finalize()
     }
 
     if (_item->_remotePerm.isNull()) {
-        qCWarning(lcPropagateUpload) << "PropagateUploadFileCommon::finalize: Missing permissions for" << propagator()->fullRemotePath(_item->_file);
-        auto *permCheck =
-            new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
+        qCWarning(lcPropagateUpload) << "PropagateUploadFileCommon::finalize: Missing permissions for" << propagator()->fullRemotePath(_item->localName());
+        auto *permCheck = new PropfindJob(
+            propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), PropfindJob::Depth::Zero, this);
         addChildJob(permCheck);
         permCheck->setProperties({ "http://owncloud.org/ns:permissions" });
         connect(permCheck, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &map) {
@@ -601,14 +598,14 @@ void PropagateUploadFileCommon::finalize()
     // even if their parent folder is online-only.
     if (_item->instruction() & (CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_TYPE_CHANGE)) {
         auto &vfs = propagator()->syncOptions()._vfs;
-        const auto pin = vfs->pinState(_item->_file);
+        const auto pin = vfs->pinState(_item->localName());
         if (pin && *pin == PinState::OnlineOnly) {
-            std::ignore = vfs->setPinState(_item->_file, PinState::Unspecified);
+            std::ignore = vfs->setPinState(_item->localName(), PinState::Unspecified);
         }
     }
 
     // Remove from the progress database:
-    propagator()->_journal->setUploadInfo(_item->_file, SyncJournalDb::UploadInfo());
+    propagator()->_journal->setUploadInfo(_item->localName(), SyncJournalDb::UploadInfo());
     propagator()->_journal->commit(QStringLiteral("upload file start"));
 
     done(SyncFileItem::Success);

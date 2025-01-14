@@ -339,12 +339,12 @@ private Q_SLOTS:
         QSet<QString> seen;
         for(const QList<QVariant> &args : completeSpy) {
             auto item = args[0].value<SyncFileItemPtr>();
-            qDebug() << item->_file << item->isDirectory() << item->_status;
-            QVERIFY(!seen.contains(item->_file)); // signal only sent once per item
-            seen.insert(item->_file);
-            if (item->_file == QLatin1String("Y/Z/d2")) {
+            qDebug() << item->localName() << item->isDirectory() << item->_status;
+            QVERIFY(!seen.contains(item->localName())); // signal only sent once per item
+            seen.insert(item->localName());
+            if (item->localName() == QLatin1String("Y/Z/d2")) {
                 QVERIFY(item->_status == SyncFileItem::NormalError);
-            } else if (item->_file == QLatin1String("Y/Z/d3")) {
+            } else if (item->localName() == QLatin1String("Y/Z/d3")) {
                 QVERIFY(item->_status != SyncFileItem::Success);
             } else if (!item->isDirectory()) {
                 QVERIFY(item->_status == SyncFileItem::Success);
@@ -493,11 +493,11 @@ private Q_SLOTS:
         connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, [&](const SyncFileItemSet &items) {
             SyncFileItemPtr a1, b1, c1;
             for (auto &item : items) {
-                if (item->_file == QLatin1String("A/a1"))
+                if (item->localName() == QLatin1String("A/a1"))
                     a1 = item;
-                if (item->_file == QLatin1String("B/b1"))
+                if (item->localName() == QLatin1String("B/b1"))
                     b1 = item;
-                if (item->_file == QLatin1String("C/c1"))
+                if (item->localName() == QLatin1String("C/c1"))
                     c1 = item;
             }
 

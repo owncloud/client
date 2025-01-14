@@ -52,7 +52,7 @@ Q_LOGGING_CATEGORY(lcPropagateUploadTUS, "sync.propagator.upload.tus", QtDebugMs
 
 UploadDevice *PropagateUploadFileTUS::prepareDevice(const quint64 &chunkSize)
 {
-    const QString localFileName = propagator()->fullLocalPath(_item->_file);
+    const QString localFileName = propagator()->fullLocalPath(_item->localName());
     // If the file is currently locked, we want to retry the sync
     // when it becomes available again.
     if (FileSystem::isFileLocked(localFileName, FileSystem::LockMode::SharedRead)) {
@@ -80,7 +80,7 @@ SimpleNetworkJob *PropagateUploadFileTUS::makeCreationWithUploadJob(QNetworkRequ
 
     QByteArrayList encodedMetaData;
     auto addMetaData = [&encodedMetaData](const QByteArray &key, const QByteArray &value) { encodedMetaData << key + ' ' + value.toBase64(); };
-    addMetaData(QByteArrayLiteral("filename"), propagator()->fullRemotePath(_item->_file).toUtf8());
+    addMetaData(QByteArrayLiteral("filename"), propagator()->fullRemotePath(_item->localName()).toUtf8());
     // in difference to the old protocol the algrithm and the value are space seperated
     addMetaData(QByteArrayLiteral("checksum"), Utility::enumToString(checksumHeader.type()).toUtf8() + ' ' + checksumHeader.checksum());
     addMetaData(QByteArrayLiteral("mtime"), QByteArray::number(static_cast<int64_t>(_item->_modtime)));
@@ -119,7 +119,7 @@ void PropagateUploadFileTUS::doStartUpload()
     propagator()->reportProgress(*_item, 0);
     propagator()->_activeJobList.append(this);
 
-    const auto info = propagator()->_journal->getUploadInfo(_item->_file);
+    const auto info = propagator()->_journal->getUploadInfo(_item->localName());
     if (info.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
         _location = info._url;
         Q_ASSERT(_location.isValid());
@@ -152,11 +152,11 @@ void PropagateUploadFileTUS::startNextChunk()
 
     SimpleNetworkJob *job;
     if (_currentOffset != 0) {
-        qCDebug(lcPropagateUploadTUS) << "Starting to patch upload:" << propagator()->fullRemotePath(_item->_file);
+        qCDebug(lcPropagateUploadTUS) << "Starting to patch upload:" << propagator()->fullRemotePath(_item->localName());
         job = new SimpleNetworkJob(propagator()->account(), _location, {}, "PATCH", device, req, this);
     } else {
         Q_ASSERT(_location.isEmpty());
-        qCDebug(lcPropagateUploadTUS) << "Starting creation with upload:" << propagator()->fullRemotePath(_item->_file);
+        qCDebug(lcPropagateUploadTUS) << "Starting creation with upload:" << propagator()->fullRemotePath(_item->localName());
         job = makeCreationWithUploadJob(&req, device);
     }
 
@@ -179,7 +179,7 @@ void PropagateUploadFileTUS::slotChunkFinished()
 {
     SimpleNetworkJob *job = qobject_cast<SimpleNetworkJob *>(sender());
     Q_ASSERT(job);
-    qCDebug(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->_file) << HttpLogger::requestVerb(*job->reply());
+    qCDebug(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->localName()) << HttpLogger::requestVerb(*job->reply());
 
     _item->_httpErrorCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     _item->_responseTimeStamp = job->responseTimestamp();
@@ -190,7 +190,7 @@ void PropagateUploadFileTUS::slotChunkFinished()
         // try to get the offset if possible, only try once
         if (err == QNetworkReply::TimeoutError && !_location.isEmpty() && HttpLogger::requestVerb(*job->reply())  != "HEAD")
         {
-            qCWarning(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->_file) << "Encountered a timeout -> get progrss for" << _location;
+            qCWarning(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->localName()) << "Encountered a timeout -> get progrss for" << _location;
             QNetworkRequest req;
             setTusVersionHeader(req);
             auto updateJob = new SimpleNetworkJob(propagator()->account(), propagator()->webDavUrl(), _location.path(), "HEAD", {}, req, this);
@@ -216,7 +216,7 @@ void PropagateUploadFileTUS::slotChunkFinished()
     _finished = offset == _item->_size;
 
     // Check if the file still exists
-    const QString fullFilePath(propagator()->fullLocalPath(_item->_file));
+    const QString fullFilePath(propagator()->fullLocalPath(_item->localName()));
     if (!FileSystem::fileExists(fullFilePath)) {
         if (!_finished) {
             abortWithError(SyncFileItem::SoftError, tr("The local file was removed during sync."));
@@ -242,7 +242,7 @@ void PropagateUploadFileTUS::slotChunkFinished()
             // add the new location
             auto info = _item->toUploadInfo();
             info._url = _location;
-            propagator()->_journal->setUploadInfo(_item->_file, info);
+            propagator()->_journal->setUploadInfo(_item->localName(), info);
         }
         startNextChunk();
         return;
@@ -259,7 +259,8 @@ void PropagateUploadFileTUS::slotChunkFinished()
     if (!_finished) {
         // Either the ETag or the remote Permissions were not in the headers of the reply.
         // Start a PROPFIND to fetch these data from the server.
-        auto check = new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
+        auto check = new PropfindJob(
+            propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), PropfindJob::Depth::Zero, this);
         addChildJob(check);
         check->setProperties({ "http://owncloud.org/ns:fileid", "http://owncloud.org/ns:permissions", "getetag" });
         connect(check, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &map) {

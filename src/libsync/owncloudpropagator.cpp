@@ -145,7 +145,7 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
     const SyncJournalErrorBlacklistRecord &old, const SyncFileItem &item)
 {
     SyncJournalErrorBlacklistRecord entry;
-    entry._file = item._file;
+    entry._file = item.localName();
     entry._errorString = item._errorString;
     entry._lastTryModtime = item._modtime;
     entry._lastTryEtag = item._etag.toUtf8();
@@ -187,7 +187,7 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
  */
 static void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
 {
-    SyncJournalErrorBlacklistRecord oldEntry = journal->errorBlacklistEntry(item._file);
+    SyncJournalErrorBlacklistRecord oldEntry = journal->errorBlacklistEntry(item.localName());
 
     const bool mayBlacklist = item._status == SyncFileItem::NormalError
         || item._status == SyncFileItem::SoftError
@@ -196,7 +196,7 @@ static void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
     // No new entry? Possibly remove the old one, then done.
     if (!mayBlacklist) {
         if (oldEntry.isValid()) {
-            journal->wipeErrorBlacklistEntry(item._file);
+            journal->wipeErrorBlacklistEntry(item.localName());
         }
         return;
     }
@@ -211,16 +211,13 @@ static void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
     if (item._status == SyncFileItem::SoftError
         && newEntry._retryCount > 1
         && item._httpErrorCode != 0) {
-        qCWarning(lcPropagator) << "escalating http soft error on " << item._file
-                                << " to normal error, " << item._httpErrorCode;
+        qCWarning(lcPropagator) << "escalating http soft error on " << item.localName() << " to normal error, " << item._httpErrorCode;
         item._status = SyncFileItem::NormalError;
     } else if (item._status != SyncFileItem::SoftError && item._hasBlacklistEntry && newEntry._ignoreDuration > 0) {
         item._status = SyncFileItem::BlacklistedError;
     }
 
-    qCInfo(lcPropagator) << "blacklisting " << item._file
-                         << " for " << newEntry._ignoreDuration
-                         << ", retry count " << newEntry._retryCount;
+    qCInfo(lcPropagator) << "blacklisting " << item.localName() << " for " << newEntry._ignoreDuration << ", retry count " << newEntry._retryCount;
 }
 
 void PropagateItemJob::done(SyncFileItem::Status statusArg, const QString &errorString)
@@ -269,9 +266,9 @@ void PropagateItemJob::done(SyncFileItem::Status statusArg, const QString &error
     case SyncFileItem::Restoration:
         if (_item->_hasBlacklistEntry) {
             // wipe blacklist entry.
-            propagator()->_journal->wipeErrorBlacklistEntry(_item->_file);
+            propagator()->_journal->wipeErrorBlacklistEntry(_item->localName());
             // remove a blacklist entry in case the file was moved.
-            if (_item->_originalFile != _item->_file) {
+            if (_item->_originalFile != _item->localName()) {
                 propagator()->_journal->wipeErrorBlacklistEntry(_item->_originalFile);
             }
         }
@@ -443,7 +440,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
 
     for (const auto &item : std::as_const(items)) {
         // First check if this is an item in a directory which is going to be removed.
-        if (currentRemoveDirectoryJob && FileSystem::isChildPathOf(item->_file, currentRemoveDirectoryJob->path())) {
+        if (currentRemoveDirectoryJob && FileSystem::isChildPathOf(item->localName(), currentRemoveDirectoryJob->path())) {
             // Check the sync instruction for the item:
             if (item->instruction() == CSYNC_INSTRUCTION_REMOVE) {
                 // already taken care of. (by the removal of the parent directory)
@@ -466,7 +463,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 continue;
             } else if (item->instruction() != CSYNC_INSTRUCTION_RENAME) {
                 // all is good, the rename will be executed before the directory deletion
-                qCWarning(lcPropagator) << "WARNING:  Job within a removed directory?  This should not happen!" << item->_file << item->instruction();
+                qCWarning(lcPropagator) << "WARNING:  Job within a removed directory?  This should not happen!" << item->localName() << item->instruction();
                 Q_ASSERT(false); // we shouldn't land here, but assert for debug purposes
             }
         }
@@ -477,7 +474,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
         if (!maybeConflictDirectory.isEmpty()) {
             if (FileSystem::isChildPathOf(item->destination(), maybeConflictDirectory)) {
                 // We're processing an item in a CONFLICT directory.
-                qCInfo(lcPropagator) << "Skipping job inside CONFLICT directory" << item->_file << item->instruction();
+                qCInfo(lcPropagator) << "Skipping job inside CONFLICT directory" << item->localName() << item->instruction();
                 item->setInstruction(CSYNC_INSTRUCTION_NONE);
                 continue;
             } else {
@@ -549,7 +546,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
             if (item->instruction() == CSYNC_INSTRUCTION_CONFLICT) {
                 // This might be a file or a directory on the local side. If it's a
                 // directory we want to skip processing items inside it.
-                maybeConflictDirectory = item->_file;
+                maybeConflictDirectory = item->localName();
             }
         }
     }
@@ -746,15 +743,14 @@ OwncloudPropagator::DiskSpaceResult OwncloudPropagator::diskSpaceCheck() const
 bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
     PropagatorCompositeJob *composite, QString *error)
 {
-    QString fn = fullLocalPath(item->_file);
+    QString fn = fullLocalPath(item->localName());
 
     QString renameError;
     auto conflictModTime = FileSystem::getModTime(fn);
     QString conflictUserName;
     if (account()->capabilities().uploadConflictFiles())
         conflictUserName = account()->davDisplayName();
-    QString conflictFileName = Utility::makeConflictFileName(
-        item->_file, Utility::qDateTimeFromTime_t(conflictModTime), conflictUserName);
+    QString conflictFileName = Utility::makeConflictFileName(item->localName(), Utility::qDateTimeFromTime_t(conflictModTime), conflictUserName);
     QString conflictFilePath = fullLocalPath(conflictFileName);
 
     // If the file is locked, we want to retry this sync when it
@@ -778,7 +774,7 @@ bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
     ConflictRecord conflictRecord;
     conflictRecord.path = conflictFileName.toUtf8();
     conflictRecord.baseModtime = item->_previousModtime;
-    conflictRecord.initialBasePath = item->_file.toUtf8();
+    conflictRecord.initialBasePath = item->localName().toUtf8();
 
     SyncJournalFileRecord baseRecord;
     if (_journal->getFileRecord(item->_originalFile, &baseRecord) && baseRecord.isValid()) {
@@ -794,7 +790,7 @@ bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
     if (account()->capabilities().uploadConflictFiles()) {
         if (composite && !QFileInfo(conflictFilePath).isDir()) {
             SyncFileItemPtr conflictItem = SyncFileItemPtr(new SyncFileItem);
-            conflictItem->_file = conflictFileName;
+            conflictItem->setLocalName(conflictFileName);
             conflictItem->_type = ItemTypeFile;
             conflictItem->_direction = SyncFileItem::Up;
             conflictItem->setInstruction(CSYNC_INSTRUCTION_NEW);
@@ -823,7 +819,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlace
         if (item._type == ItemTypeVirtualFileDehydration) {
             // when dehydrating the file must not be pinned
             // don't use destinatio() with suffix placeholder
-            const auto pin = syncOptions()._vfs->pinState(item._file);
+            const auto pin = syncOptions()._vfs->pinState(item.localName());
             if (pin && pin.get() == PinState::AlwaysLocal) {
                 return false;
             }
@@ -843,7 +839,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updateMetad
     auto record = item.toSyncJournalFileRecordWithInode(fsPath);
     if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
         record._hasDirtyPlaceholder = true;
-        Q_EMIT seenLockedFile(fullLocalPath(item._file), FileSystem::LockMode::Exclusive);
+        Q_EMIT seenLockedFile(fullLocalPath(item.localName()), FileSystem::LockMode::Exclusive);
     }
     const auto dBresult = _journal->setFileRecord(record);
     if (!dBresult) {
@@ -1126,7 +1122,7 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
                 _item->_status = SyncFileItem::Success;
                 const auto result = propagator()->updateMetadata(*_item);
                 if (!result) {
-                    qCWarning(lcDirectory) << "Error writing to the database for file" << _item->_file << "with" << result.error();
+                    qCWarning(lcDirectory) << "Error writing to the database for file" << _item->localName() << "with" << result.error();
                     done(SyncFileItem::FatalError, tr("Error updating metadata: %1").arg(result.error()));
                     return;
                 } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
@@ -1154,7 +1150,7 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
 PropagateRootDirectory::PropagateRootDirectory(OwncloudPropagator *propagator)
     : PropagateDirectory(propagator, SyncFileItemPtr([] {
         auto f = new SyncFileItem;
-        f->_file = QLatin1Char('/');
+        f->setLocalName(QStringLiteral("/"));
         return f;
     }()))
     , _dirDeletionJobs(propagator, path())
@@ -1301,8 +1297,7 @@ void OCC::PropagateUpdateMetaDataJob::start()
     const QString filePath = propagator()->fullLocalPath(_item->destination());
     if (_item->_direction == SyncFileItem::Down) {
         SyncJournalFileRecord prev;
-        if (propagator()->_journal->getFileRecord(_item->_file, &prev)
-            && prev.isValid()) {
+        if (propagator()->_journal->getFileRecord(_item->localName(), &prev) && prev.isValid()) {
             if (_item->_checksumHeader.isEmpty()) {
                 _item->_checksumHeader = prev._checksumHeader;
             }
@@ -1314,7 +1309,7 @@ void OCC::PropagateUpdateMetaDataJob::start()
         done(SyncFileItem::FatalError, tr("Could not update file : %1").arg(result.error()));
         return;
     } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
-        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->_file));
+        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(_item->localName()));
         return;
     }
     done(SyncFileItem::Success);
