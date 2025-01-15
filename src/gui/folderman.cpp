@@ -545,6 +545,9 @@ Folder *FolderMan::addFolderInternal(
 Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
 {
     QString absolutePath = QDir::cleanPath(path) + QLatin1Char('/');
+    if (!Utility::isLinux()) {
+        absolutePath = absolutePath.normalized(QString::NormalizationForm_C);
+    }
 
     for (auto *folder : std::as_const(_folders)) {
         const QString folderPath = folder->cleanPath() + QLatin1Char('/');

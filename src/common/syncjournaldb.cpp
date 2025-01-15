@@ -824,11 +824,11 @@ QVector<QByteArray> SyncJournalDb::tableColumns(const QByteArray &table)
 
 qint64 SyncJournalDb::getPHash(const QByteArray &file)
 {
-    qint64 h;
-    int len = file.length();
-
-    h = c_jhash64((uint8_t *)file.data(), len, 0);
-    return h;
+    QByteArray normalizedFile = file;
+    if (Utility::isMac()) {
+        normalizedFile = QString::fromUtf8(file).normalized(QString::NormalizationForm_C).toUtf8();
+    }
+    return c_jhash64((uint8_t *)normalizedFile.data(), normalizedFile.length(), 0);
 }
 
 Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &_record)
