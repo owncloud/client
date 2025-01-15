@@ -48,8 +48,7 @@ Q_LOGGING_CATEGORY(lcCSyncCtime, "sync.csync.c_time", QtInfoMsg)
 //after Microsoft KB167296
 static void UnixTimevalToFileTime(struct timeval t, LPFILETIME pft)
 {
-    LONGLONG ll;
-    ll = Int32x32To64(t.tv_sec, CSYNC_USEC_IN_SEC*10) + t.tv_usec*10 + CSYNC_SECONDS_SINCE_1601*CSYNC_USEC_IN_SEC*10;
+    LONGLONG ll = t.tv_sec * CSYNC_USEC_IN_SEC*10 + t.tv_usec*10 + CSYNC_SECONDS_SINCE_1601*CSYNC_USEC_IN_SEC*10;
     pft->dwLowDateTime = (DWORD)ll;
     pft->dwHighDateTime = ll >> 32;
 }
