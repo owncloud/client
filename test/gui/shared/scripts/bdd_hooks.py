@@ -23,7 +23,7 @@ from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
 from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
 from helpers.SpaceHelper import delete_project_spaces
 from helpers.api.provisioning import delete_created_groups, delete_created_users
-from helpers.SetupClientHelper import wait_until_app_killed, unlock_keyring
+from helpers.SetupClientHelper import wait_until_app_killed
 from helpers.ConfigHelper import (
     init_config,
     get_config,
@@ -62,7 +62,6 @@ def hook(context):
 # Order: 1
 @OnScenarioStart
 def hook(context):
-    unlock_keyring()
     clear_scenario_config()
 
 
