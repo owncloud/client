@@ -12,6 +12,9 @@
 
 #include "common/filesystembase.h"
 #include "common/utility.h"
+#ifdef Q_OS_WIN
+#include "common/utility_win.h"
+#endif
 
 using namespace std::chrono_literals;
 
@@ -322,6 +325,17 @@ private Q_SLOTS:
         QVERIFY(Tags::remove(fn, testKey));
         QVERIFY(!Tags::get(fn, testKey).has_value());
     }
+#ifdef Q_OS_WIN
+    void testUtilityUnixTimeToLargeIntegerFiletime()
+    {
+        // Sun Jan 31 2038 23:00:00 GMT+0000
+        time_t y2k38 = 2148591600;
+        LARGE_INTEGER out;
+        OCC::Utility::UnixTimeToLargeIntegerFiletime(y2k38, &out);
+        // (2148591600 * 10000000) + 116444736000000000
+        QCOMPARE(out.QuadPart, 137930652000000000);
+    }
+#endif
 };
 
 QTEST_GUILESS_MAIN(TestUtility)
