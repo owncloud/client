@@ -60,6 +60,7 @@ public:
     bool _serverHasIgnoredFiles = false;
     bool _hasDirtyPlaceholder = false;
     QByteArray _checksumHeader;
+    QByteArray _serverPath;
 };
 
 bool OCSYNC_EXPORT

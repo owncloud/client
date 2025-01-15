@@ -47,11 +47,12 @@ Q_LOGGING_CATEGORY(lcDb, "sync.database", QtInfoMsg)
 
 namespace {
 // base query used to select file record objects, used in combination with WHERE statements.
-const auto getFileRecordQueryC = QByteArrayLiteral("SELECT path, inode, modtime, type, md5, fileid, remotePerm, filesize,"
-                                                   " ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum,"
-                                                   " hasDirtyPlaceholder"
-                                                   " FROM metadata"
-                                                   " LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id ");
+const auto getFileRecordQueryC =
+    QByteArrayLiteral("SELECT path, inode, modtime, type, md5, fileid, remotePerm, filesize,"
+                      " ignoredChildrenRemote, contentchecksumtype.name || ':' || contentChecksum,"
+                      " hasDirtyPlaceholder, serverPath"
+                      " FROM metadata"
+                      " LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id ");
 
 
 void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, OCC::SqlQuery &query)
@@ -66,6 +67,7 @@ void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, OCC::SqlQuery &
     rec._fileSize = query.int64Value(7);
     rec._serverHasIgnoredFiles = (query.intValue(8) > 0);
     rec._checksumHeader = query.baValue(9);
+    rec._serverPath = query.baValue(11);
 }
 
 QByteArray defaultJournalMode(const QString &dbPath)
@@ -347,6 +349,7 @@ bool SyncJournalDb::checkConnect()
                         // contentChecksum
                         // contentChecksumTypeId
                         // hasDirtyPlaceholder
+                        // serverPath
                         "PRIMARY KEY(phash)"
                         ");");
 
@@ -714,6 +717,17 @@ bool SyncJournalDb::updateMetadataTableStructure()
         commitInternal(QStringLiteral("update database structure: add hasDirtyPlaceholder col"));
     }
 
+    if (columns.indexOf("serverPath") == -1) {
+        SqlQuery addDirtyQuery(_db);
+        addDirtyQuery.prepare("ALTER TABLE metadata ADD COLUMN serverPath VARCHAR(4096);");
+        if (!addDirtyQuery.exec()) {
+            sqlFail(QStringLiteral("updateMetadataTableStructure: add serverPath column"), addDirtyQuery);
+            re = false;
+        }
+        // TODO: add index?
+        commitInternal(QStringLiteral("update database structure: add serverPath col"));
+    }
+
     auto uploadInfoColumns = tableColumns("uploadinfo");
     if (uploadInfoColumns.isEmpty())
         return false;
@@ -848,10 +862,9 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
         }
     }
     OC_ASSERT(!record._remotePerm.isNull());
-    qCInfo(lcDb) << "Updating file record for path:" << record._path << "inode:" << record._inode
-                 << "modtime:" << record._modtime << "type:" << record._type
-                 << "etag:" << record._etag << "fileId:" << record._fileId << "remotePerm:" << record._remotePerm.toString()
-                 << "fileSize:" << record._fileSize << "checksum:" << record._checksumHeader << "hasDirtyPlaceholder:" << record._hasDirtyPlaceholder;
+    qCInfo(lcDb) << "Updating file record for path:" << record._path << "inode:" << record._inode << "modtime:" << record._modtime << "type:" << record._type
+                 << "etag:" << record._etag << "fileId:" << record._fileId << "remotePerm:" << record._remotePerm.toString() << "fileSize:" << record._fileSize
+                 << "checksum:" << record._checksumHeader << "hasDirtyPlaceholder:" << record._hasDirtyPlaceholder << "serverPath:" << record._serverPath;
 
     const qint64 phash = getPHash(record._path);
     if (checkConnect()) {
@@ -867,9 +880,11 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
 
         const auto checksumHeader = ChecksumHeader::parseChecksumHeader(record._checksumHeader);
         int contentChecksumTypeId = mapChecksumType(checksumHeader.type());
-        const auto query = _queryManager.get(PreparedSqlQueryManager::SetFileRecordQuery, QByteArrayLiteral("INSERT OR REPLACE INTO metadata "
-                                                                                                            "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, contentChecksum, contentChecksumTypeId, hasDirtyPlaceholder) "
-                                                                                                            "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17);"),
+        const auto query = _queryManager.get(PreparedSqlQueryManager::SetFileRecordQuery,
+            QByteArrayLiteral("INSERT OR REPLACE INTO metadata "
+                              "(phash, pathlen, path, inode, uid, gid, mode, modtime, type, md5, fileid, remotePerm, filesize, ignoredChildrenRemote, "
+                              "contentChecksum, contentChecksumTypeId, hasDirtyPlaceholder, serverPath) "
+                              "VALUES (?1 , ?2, ?3 , ?4 , ?5 , ?6 , ?7,  ?8 , ?9 , ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18);"),
             _db);
         if (!query) {
             return query->error();
@@ -892,6 +907,7 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
         query->bindValue(15, checksumHeader.checksum());
         query->bindValue(16, contentChecksumTypeId);
         query->bindValue(17, record._hasDirtyPlaceholder);
+        query->bindValue(18, record._serverPath);
 
         if (!query->exec()) {
             return query->error();
