@@ -543,8 +543,9 @@ bool SyncJournalDb::checkConnect()
         return sqlFail(QStringLiteral("prepare _deleteUploadInfoQuery"), *deleteUploadInfoQuery);
     }
 
-    QByteArray sql("SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId "
-                   "FROM blacklist WHERE path=?1");
+    QByteArray sql(
+        "SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId, remoteName "
+        "FROM blacklist WHERE path=?1");
     if (Utility::fsCasePreserving()) {
         // if the file system is case preserving we have to check the blacklist
         // case insensitively
@@ -806,7 +807,17 @@ bool SyncJournalDb::updateErrorBlacklistTableStructure()
             sqlFail(QStringLiteral("updateBlacklistTableStructure: Add requestId"), query);
             re = false;
         }
-        commitInternal(QStringLiteral("update database structure: add errorCategory col"));
+        commitInternal(QStringLiteral("update database structure: add requestId col"));
+    }
+
+    if (columns.indexOf("remoteName") == -1) {
+        SqlQuery query(_db);
+        query.prepare("ALTER TABLE blacklist ADD COLUMN remoteName VARCHAR(4096);");
+        if (!query.exec()) {
+            sqlFail(QStringLiteral("updateBlacklistTableStructure: Add remoteName"), query);
+            re = false;
+        }
+        commitInternal(QStringLiteral("update database structure: add remoteName col"));
     }
 
     SqlQuery query(_db);
@@ -1553,6 +1564,7 @@ SyncJournalErrorBlacklistRecord SyncJournalDb::errorBlacklistEntry(const QString
                     query->intValue(7));
                 entry._requestId = query->baValue(8);
                 entry._file = file;
+                entry._remoteName = QString::fromUtf8(query->baValue(9));
             }
         }
     }
@@ -1691,18 +1703,18 @@ void SyncJournalDb::setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord
 {
     QMutexLocker locker(&_mutex);
 
-    qCInfo(lcDb) << "Setting blacklist entry for" << item._file << item._retryCount
-                 << item._errorString << item._lastTryTime << item._ignoreDuration
-                 << item._lastTryModtime << item._lastTryEtag << item._renameTarget
-                 << item._errorCategory;
+    qCInfo(lcDb) << "Setting blacklist entry for" << item._file << item._retryCount << item._errorString << item._lastTryTime << item._ignoreDuration
+                 << item._lastTryModtime << item._lastTryEtag << item._renameTarget << item._errorCategory << item._requestId << item._remoteName;
 
     if (!checkConnect()) {
         return;
     }
 
-    const auto query = _queryManager.get(PreparedSqlQueryManager::SetErrorBlacklistQuery, QByteArrayLiteral("INSERT OR REPLACE INTO blacklist "
-                                                                                                            "(path, lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId) "
-                                                                                                            "VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)"),
+    const auto query = _queryManager.get(PreparedSqlQueryManager::SetErrorBlacklistQuery,
+        QByteArrayLiteral(
+            "INSERT OR REPLACE INTO blacklist "
+            "(path, lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId, remoteName) "
+            "VALUES ( ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)"),
         _db);
     if (!query) {
         return;
@@ -1718,6 +1730,7 @@ void SyncJournalDb::setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord
     query->bindValue(8, item._renameTarget);
     query->bindValue(9, item._errorCategory);
     query->bindValue(10, item._requestId);
+    query->bindValue(11, item._remoteName);
     query->exec();
 }
 
