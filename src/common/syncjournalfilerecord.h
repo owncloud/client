@@ -60,6 +60,7 @@ public:
     bool _serverHasIgnoredFiles = false;
     bool _hasDirtyPlaceholder = false;
     QByteArray _checksumHeader;
+    QByteArray _serverPath;
 };
 
 bool OCSYNC_EXPORT
@@ -107,6 +108,7 @@ public:
 
     QString _file;
     QString _renameTarget;
+    QString _remoteName;
 
     /// The last X-Request-ID of the request that failled
     QByteArray _requestId;

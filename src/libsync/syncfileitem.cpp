@@ -72,6 +72,7 @@ SyncFileItemPtr SyncFileItem::fromSyncJournalFileRecord(const SyncJournalFileRec
     item->_remotePerm = rec._remotePerm;
     item->_serverHasIgnoredFiles = rec._serverHasIgnoredFiles;
     item->_checksumHeader = rec._checksumHeader;
+    item->_remoteName = QString::fromUtf8(rec._serverPath);
     return item;
 }
 

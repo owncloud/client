@@ -153,6 +153,7 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
     entry._renameTarget = item._renameTarget;
     entry._retryCount = old._retryCount + 1;
     entry._requestId = item._requestId;
+    entry._remoteName = item.rawRemoteName();
 
     static qint64 minBlacklistTime(getMinBlacklistTime());
     static qint64 maxBlacklistTime(qMax(getMaxBlacklistTime(), minBlacklistTime));
