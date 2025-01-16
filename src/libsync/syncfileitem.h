@@ -247,6 +247,9 @@ public:
     QString localName() const { return _localName; }
     void setLocalName(const QString &newName) { _localName = newName; }
 
+    QString remoteName() const { return _remoteName.isEmpty() ? _localName : _remoteName; }
+    QString rawRemoteName() const { return _remoteName; }
+
 private:
     /** The syncfolder-relative filesystem path that the operation is about
      *
@@ -254,7 +257,12 @@ private:
      */
     QString _localName;
 
-    // QString _remoteName;
+    /**
+     * The remote file name, when the local unicode normalization differs from the remote
+     * normalization. When this string is empty, (and the local name is not), the normalization is
+     * the same, and the local name can be used.
+     */
+    QString _remoteName;
 
 public:
     /** for renames: the name _file should be renamed to
