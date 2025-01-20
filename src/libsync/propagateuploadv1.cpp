@@ -93,7 +93,7 @@ void PropagateUploadFileV1::startNextChunk()
     headers[QByteArrayLiteral("OC-Total-Length")] = QByteArray::number(fileSize);
     headers[QByteArrayLiteral("OC-Chunk-Size")] = QByteArray::number(chunkSize());
 
-    QString path = _item->localName();
+    QString path = _item->remoteName();
 
     qint64 chunkStart = 0;
     qint64 currentChunkSize = fileSize;

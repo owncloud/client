@@ -59,8 +59,8 @@ void PropagateRemoteMove::start()
     if (propagator()->_abortRequested)
         return;
 
-    QString origin = propagator()->adjustRenamedPath(_item->localName());
-    qCDebug(lcPropagateRemoteMove) << origin << _item->_renameTarget;
+    const QString origin = propagator()->adjustRenamedPath(_item->remoteName());
+    qCDebug(lcPropagateRemoteMove).nospace() << origin << " (local name: " << _item->localName() << ") " << _item->_renameTarget;
     if (origin == _item->_renameTarget) {
         // The parent has been renamed already so there is nothing more to do.
         finalize();

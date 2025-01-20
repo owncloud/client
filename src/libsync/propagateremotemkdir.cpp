@@ -34,8 +34,9 @@ Q_LOGGING_CATEGORY(lcPropagateRemoteMkdir, "sync.propagator.remotemkdir", QtInfo
 
 void PropagateRemoteMkdir::start()
 {
-    if (propagator()->_abortRequested)
+    if (propagator()->_abortRequested) {
         return;
+    }
 
     qCDebug(lcPropagateRemoteMkdir) << _item->localName();
 
@@ -45,19 +46,23 @@ void PropagateRemoteMkdir::start()
         return slotStartMkcolJob();
     }
 
-    _job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), this);
+    _job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->remoteName()), this);
     connect(qobject_cast<DeleteJob *>(_job), &DeleteJob::finishedSignal, this, &PropagateRemoteMkdir::slotStartMkcolJob);
     _job->start();
 }
 
 void PropagateRemoteMkdir::slotStartMkcolJob()
 {
-    if (propagator()->_abortRequested)
+    if (propagator()->_abortRequested) {
         return;
+    }
 
     qCDebug(lcPropagateRemoteMkdir) << _item->localName();
 
-    _job = new MkColJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), {}, this);
+    // Use the localName (not the remoteName), because it is a new local directory that gets propagated.
+    const QString newDirName = propagator()->fullRemotePath(_item->localName());
+
+    _job = new MkColJob(propagator()->account(), propagator()->webDavUrl(), newDirName, {}, this);
     connect(qobject_cast<MkColJob *>(_job), &MkColJob::finishedWithError, this, &PropagateRemoteMkdir::slotMkcolJobFinished);
     connect(qobject_cast<MkColJob *>(_job), &MkColJob::finishedWithoutError, this, &PropagateRemoteMkdir::slotMkcolJobFinished);
     _job->start();

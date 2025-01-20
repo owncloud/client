@@ -28,7 +28,7 @@ static const char checkSumHeaderC[] = "OC-Checksum";
 static const char contentMd5HeaderC[] = "Content-MD5";
 
 /**
- * @brief Declaration of the other propagation jobs
+ * @brief Remove (or move to the trash) a file or folder that was removed remotely
  * @ingroup libsync
  */
 class PropagateLocalRemove : public PropagateItemJob
@@ -47,7 +47,7 @@ private:
 };
 
 /**
- * @brief The PropagateLocalMkdir class
+ * @brief Make a local directory after discovering it on the server
  * @ingroup libsync
  */
 class PropagateLocalMkdir : public PropagateItemJob
@@ -74,7 +74,7 @@ private:
 };
 
 /**
- * @brief The PropagateLocalRename class
+ * @brief Rename a local file/directory after discovering a rename on the server
  * @ingroup libsync
  */
 class PropagateLocalRename : public PropagateItemJob

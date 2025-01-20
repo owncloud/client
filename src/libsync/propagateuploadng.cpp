@@ -328,7 +328,7 @@ void PropagateUploadFileNG::doFinalMove()
     _finished = true;
 
     // Finish with a MOVE
-    QString destination = QDir::cleanPath(propagator()->webDavUrl().path() + propagator()->fullRemotePath(_item->localName()));
+    QString destination = QDir::cleanPath(propagator()->webDavUrl().path() + propagator()->fullRemotePath(_item->remoteName()));
     auto headers = PropagateUploadFileCommon::headers();
 
     // "If-Match applies to the source, but we are interested in comparing the etag of the destination
