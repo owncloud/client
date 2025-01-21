@@ -238,6 +238,69 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/.foo")));
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/bar")));
     }
+
+    void testDirNameEncoding()
+    {
+        QSKIP("Known bug, is being worked on");
+
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        const unsigned char a_umlaut_composed_bytes[] = {0xc3, 0xa4, 0x00};
+        const QString a_umlaut_composed = QString::fromUtf8(reinterpret_cast<const char *>(a_umlaut_composed_bytes));
+        const QString a_umlaut_decomposed = a_umlaut_composed.normalized(QString::NormalizationForm_D);
+
+        FakeFolder fakeFolder({FileInfo{}}, vfsMode, filesAreDehydrated);
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P"));
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P/A"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("P/A/") + a_umlaut_decomposed);
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P/B") + a_umlaut_decomposed);
+        fakeFolder.remoteModifier().insert(QStringLiteral("P/B") + a_umlaut_decomposed + QStringLiteral("/b"));
+
+        LocalDiscoveryTracker tracker;
+        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        {
+            auto localState = fakeFolder.currentLocalState();
+            FileInfo *localFile = localState.find(QStringLiteral("P/A/") + a_umlaut_composed);
+            QVERIFY(localFile != nullptr); // check if the file exists
+        }
+        {
+            auto localState = fakeFolder.currentLocalState();
+            FileInfo *localFile = localState.find(QStringLiteral("P/B") + a_umlaut_composed + QStringLiteral("/b"));
+            QVERIFY(localFile != nullptr); // check if the file exists
+        }
+
+        qDebug() << "*** MARK";
+
+        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {QStringLiteral("P")});
+        tracker.startSyncFullDiscovery();
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        {
+            auto remoteState = fakeFolder.currentRemoteState();
+            FileInfo *remoteFile = remoteState.find(QStringLiteral("P/A/") + a_umlaut_composed);
+            QVERIFY(remoteFile == nullptr); // check if the file exists
+        }
+        {
+            auto remoteState = fakeFolder.currentRemoteState();
+            FileInfo *remoteFile = remoteState.find(QStringLiteral("P/A/") + a_umlaut_decomposed);
+            QVERIFY(remoteFile != nullptr); // check if the file exists
+        }
+        {
+            auto remoteState = fakeFolder.currentRemoteState();
+            FileInfo *remoteFile = remoteState.find(QStringLiteral("P/B") + a_umlaut_composed + QStringLiteral("/b"));
+            QVERIFY(remoteFile != nullptr); // check if the file exists
+        }
+        {
+            auto remoteState = fakeFolder.currentRemoteState();
+            FileInfo *remoteFile = remoteState.find(QStringLiteral("P/B") + a_umlaut_decomposed + QStringLiteral("/b"));
+            QVERIFY(remoteFile != nullptr); // check if the file exists
+        }
+    }
 };
 
 QTEST_GUILESS_MAIN(TestLocalDiscovery)
