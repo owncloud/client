@@ -238,6 +238,54 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/.foo")));
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/bar")));
     }
+
+    void testDirNameEncoding()
+    {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        const unsigned char a_umlaut_composed_bytes[] = {0xc3, 0xa4, 0x00};
+        const QString a_umlaut_composed = QString::fromUtf8(reinterpret_cast<const char *>(a_umlaut_composed_bytes));
+        const QString a_umlaut_decomposed = a_umlaut_composed.normalized(QString::NormalizationForm_D);
+
+        FakeFolder fakeFolder({FileInfo{}}, vfsMode, filesAreDehydrated);
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P"));
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P/A"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("P/A/") + a_umlaut_decomposed);
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P/B") + a_umlaut_decomposed);
+        fakeFolder.remoteModifier().insert(QStringLiteral("P/B") + a_umlaut_decomposed + QStringLiteral("/b"));
+
+        LocalDiscoveryTracker tracker;
+        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        {
+            auto localState = fakeFolder.currentLocalState();
+            FileInfo *localFile = localState.find(QStringLiteral("P/A/") + a_umlaut_composed);
+            QVERIFY(localFile != nullptr); // check if the file exists
+        }
+        {
+            auto localState = fakeFolder.currentLocalState();
+            FileInfo *localFile = localState.find(QStringLiteral("P/B") + a_umlaut_composed + QStringLiteral("/b"));
+            QVERIFY(localFile != nullptr); // check if the file exists
+        }
+
+        qDebug() << "*** MARK"; // Log marker to check if a PUT/DELETE shows up in the second sync
+
+        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {QStringLiteral("P")});
+        tracker.startSyncFullDiscovery();
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        auto remoteState = fakeFolder.currentRemoteState();
+        QVERIFY(remoteState.find(QStringLiteral("P/A/") + a_umlaut_decomposed) != nullptr); // check if the file still exists in the original normalization
+        QVERIFY(remoteState.find(QStringLiteral("P/A/") + a_umlaut_composed) == nullptr); // there should NOT be a file with another normalization
+        QVERIFY(remoteState.find(QStringLiteral("P/B") + a_umlaut_decomposed + QStringLiteral("/b"))
+            != nullptr); // check if the directory still exists in the original normalization
+        QVERIFY(remoteState.find(QStringLiteral("P/B") + a_umlaut_composed + QStringLiteral("/b"))
+            == nullptr); // there should NOT be a directory with another normalization
+    }
 };
 
 QTEST_GUILESS_MAIN(TestLocalDiscovery)
