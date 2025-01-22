@@ -1,6 +1,7 @@
 # Table of Contents
 
 * [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 5.3.2](#changelog-for-owncloud-desktop-client-532-2025-01-20)
 * [Changelog for 5.3.1](#changelog-for-owncloud-desktop-client-531-2024-06-11)
 * [Changelog for 5.3.0](#changelog-for-owncloud-desktop-client-530-2024-06-06)
 * [Changelog for 5.2.1](#changelog-for-owncloud-desktop-client-521-2024-01-04)
@@ -41,7 +42,7 @@
 The following sections list the changes in ownCloud Desktop Client unreleased relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v5.3.1...master
+[unreleased]: https://github.com/owncloud/client/compare/v5.3.2...master
 
 ## Summary
 
@@ -394,6 +395,49 @@ ownCloud admins and users.
 * Enhancement - Display how many spaces are un-synced: [#11760](https://github.com/owncloud/client/pull/11760)
 
    https://github.com/owncloud/client/pull/11760
+
+# Changelog for ownCloud Desktop Client [5.3.2] (2025-01-20)
+
+The following sections list the changes in ownCloud Desktop Client 5.3.2 relevant to
+ownCloud admins and users.
+
+[5.3.2]: https://github.com/owncloud/client/compare/v5.3.1...v5.3.2
+
+## Summary
+
+* Security - Fixing high security vulnerability in Windows Installer: [#12010](https://github.com/owncloud/client/issues/12010)
+* Bugfix - OAuth: Prevent logout when refreshing token: [#11980](https://github.com/owncloud/client/issues/11980)
+* Bugfix - Crash when checking the sync file status: [#11981](https://github.com/owncloud/client/issues/11981)
+
+## Details
+
+* Security - Fixing high security vulnerability in Windows Installer: [#12010](https://github.com/owncloud/client/issues/12010)
+
+   CVE and security advisory will follow.
+
+   https://github.com/owncloud/client/issues/12010
+
+* Bugfix - OAuth: Prevent logout when refreshing token: [#11980](https://github.com/owncloud/client/issues/11980)
+
+   Prevent the user being logged out when the network disappears during OAuth token
+   refresh.
+
+   https://github.com/owncloud/client/issues/11980
+   https://github.com/owncloud/client/pull/11984
+   https://github.com/owncloud/client/pull/12005
+
+* Bugfix - Crash when checking the sync file status: [#11981](https://github.com/owncloud/client/issues/11981)
+
+   Sometimes a `Folder` is created for a local path that we cannot sync (e.g. it's
+   not writable). This folder will not have a sync engine. If the engine of this
+   `Folder` is accessed, this will lead to a crash.
+
+   The fix is to check for the existence of a sync engine in the
+   `Folder::canSync()` method.
+
+   https://github.com/owncloud/client/issues/11981
+   https://github.com/owncloud/client/pull/11982
+   https://github.com/owncloud/client/pull/12000
 
 # Changelog for ownCloud Desktop Client [5.3.1] (2024-06-11)
 
