@@ -115,16 +115,16 @@ private:
         {
             return base.isEmpty() ? name : base + QLatin1Char('/') + name;
         }
-        PathTuple addName(const QString &name) const
+        PathTuple addName(const QString &localName, const QString &serverName) const
         {
             PathTuple result;
-            result._original = pathAppend(_original, name);
+            result._original = pathAppend(_original, localName);
             auto buildString = [&](const QString &other) {
                 // Optimize by trying to keep all string implicitly shared if they are the same (common case)
-                return other == _original ? result._original : pathAppend(other, name);
+                return other == _original ? result._original : pathAppend(other, localName);
             };
             result._target = buildString(_target);
-            result._server = buildString(_server);
+            result._server = localName == serverName ? buildString(_server) : pathAppend(_server, serverName);
             result._local = buildString(_local);
             return result;
         }

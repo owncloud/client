@@ -249,6 +249,12 @@ public:
 
     QString remoteName() const { return _remoteName.isEmpty() ? _localName : _remoteName; }
     QString rawRemoteName() const { return _remoteName; }
+    void maybeSetRemoteName(const QString &remoteName)
+    {
+        if (!remoteName.isEmpty() && remoteName != _localName) {
+            _remoteName = remoteName;
+        }
+    }
 
 private:
     /** The syncfolder-relative filesystem path that the operation is about

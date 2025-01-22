@@ -181,6 +181,8 @@ namespace FileSystem {
      */
     QString OCSYNC_EXPORT createPortableFileName(const QString &path, const QString &fileName, qsizetype reservedSize = 0);
 
+    QString OCSYNC_EXPORT localNormalizedFileName(const QString &name);
+
     /*
      * Replace path navigation elements from the string
      */

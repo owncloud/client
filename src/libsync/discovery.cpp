@@ -82,7 +82,15 @@ void ProcessDirectoryJob::process()
     };
     std::map<QString, Entries> entries;
     for (auto &e : _serverNormalQueryEntries) {
-        entries[e.name].serverEntry = std::move(e);
+        const QString localName = FileSystem::localNormalizedFileName(e.name);
+        auto it = entries.find(localName);
+        if (it == entries.end()) {
+            entries[localName].serverEntry = std::move(e);
+        } else {
+            // Normalization collision with another file
+            qCWarning(lcDisco) << "Normalization collision with another filename on the server for" << e.name;
+            // FIXME: generate an error for the user
+        }
     }
     _serverNormalQueryEntries.clear();
 
@@ -140,8 +148,7 @@ void ProcessDirectoryJob::process()
     for (const auto &f : entries) {
         const auto &e = f.second;
 
-        PathTuple path;
-        path = _currentFolder.addName(e.nameOverride.isEmpty() ? f.first : e.nameOverride);
+        PathTuple path = _currentFolder.addName(e.nameOverride.isEmpty() ? f.first : e.nameOverride, f.second.serverEntry.name);
 
         if (isVfsWithSuffix()) {
             // Without suffix vfs the paths would be good. But since the dbEntry and localEntry
@@ -336,6 +343,8 @@ void ProcessDirectoryJob::processFile(const PathTuple &path,
 
     auto item = SyncFileItem::fromSyncJournalFileRecord(dbEntry);
     item->setLocalName(path._target);
+    item->maybeSetRemoteName(path._server);
+
     item->_originalFile = path._original;
     item->_previousSize = dbEntry._fileSize;
     item->_previousModtime = dbEntry._modtime;

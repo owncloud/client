@@ -563,6 +563,15 @@ QString FileSystem::createPortableFileName(const QString &path, const QString &f
     return QDir::cleanPath(path + QLatin1Char('/') + tmp);
 }
 
+QString FileSystem::localNormalizedFileName(const QString &name)
+{
+    if (Utility::isMac()) {
+        return name.normalized(QString::NormalizationForm_C);
+    }
+
+    return name;
+}
+
 QString FileSystem::pathEscape(const QString &s)
 {
     QString tmp = s;
