@@ -178,8 +178,8 @@ void PropagateLocalMkdir::start()
         done(SyncFileItem::NormalError, tr("Can not create local folder %1 because of a local file name clash with %2").arg(newDirStr, QDir::toNativeSeparators(clash.get())));
         return;
     }
-    QDir localDir(propagator()->localPath());
-    if (!localDir.mkpath(_item->_file)) {
+
+    if (!FileSystem::mkpath(propagator()->localPath(), _item->_file)) {
         done(SyncFileItem::NormalError, tr("could not create folder %1").arg(newDirStr));
         return;
     }

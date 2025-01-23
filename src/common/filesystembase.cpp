@@ -26,6 +26,8 @@
 #include <QSettings>
 #include <QStorageInfo>
 
+#include <filesystem>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -359,6 +361,22 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
         re = QFileInfo::exists(filename);
     }
     return re;
+}
+
+bool FileSystem::mkpath(const QString &parent, const QString &newDir)
+{
+#ifdef Q_OS_WIN
+    return QDir(parent).mkpath(newDir);
+#else // POSIX
+    std::error_code err;
+    QString fullPath = parent;
+    if (!fullPath.endsWith(u'/')) {
+        fullPath += u'/';
+    }
+    fullPath += newDir;
+    std::filesystem::create_directories(newDir.toStdString(), err);
+    return err.value() == 0;
+#endif
 }
 
 QString FileSystem::fileSystemForPath(const QString &path)
