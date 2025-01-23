@@ -23,11 +23,9 @@
 
 #include "common/filesystembase.h"
 
-#include <QFile>
-
 #ifdef HAVE_UTIMES
 int c_utimes(const QString &uri, const struct timeval *times) {
-    int ret = utimes(QFile::encodeName(uri).constData(), times);
+    int ret = utimes(uri.toLocal8Bit().constData(), times);
     return ret;
 }
 #else // HAVE_UTIMES
