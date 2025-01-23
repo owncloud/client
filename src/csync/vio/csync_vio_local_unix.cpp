@@ -45,10 +45,19 @@ struct csync_vio_handle_t {
   QString path;
 };
 
+QByteArray csync_encode_name(const QString &fileName)
+{
+    return fileName.toLocal8Bit();
+}
+static QString csync_decode_name(const char *localFileName)
+{
+    return QString::fromLocal8Bit(localFileName);
+}
+
 csync_vio_handle_t *csync_vio_local_opendir(const QString &name) {
     std::unique_ptr<csync_vio_handle_t> handle(new csync_vio_handle_t{});
 
-    auto dirname = QFile::encodeName(name);
+    auto dirname = csync_encode_name(name);
 
     handle->dh = opendir(dirname.constData());
     if (!handle->dh) {
@@ -77,7 +86,7 @@ std::unique_ptr<csync_file_stat_t> csync_vio_local_readdir(csync_vio_handle_t *h
     } while (qstrcmp(dirent->d_name, ".") == 0 || qstrcmp(dirent->d_name, "..") == 0);
 
   file_stat.reset(new csync_file_stat_t);
-  file_stat->path = QFile::decodeName(dirent->d_name);
+  file_stat->path = csync_decode_name(dirent->d_name);
 
   /* Check for availability of d_type, see manpage. */
 #if defined(_DIRENT_HAVE_D_TYPE) || defined(__APPLE__)
@@ -120,7 +129,7 @@ int csync_vio_local_stat(const QString &uri, csync_file_stat_t *buf)
 {
     struct stat sb;
 
-    if (lstat(QFile::encodeName(uri).constData(), &sb) < 0) {
+    if (lstat(csync_encode_name(uri).constData(), &sb) < 0) {
         return -1;
     }
 
