@@ -49,6 +49,16 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFileSystem, "sync.filesystem", QtInfoMsg)
 
+QByteArray FileSystem::encodeFileName(const QString &fileName)
+{
+    return fileName.toLocal8Bit();
+}
+
+QString FileSystem::decodeFileName(const char *localFileName)
+{
+    return QString::fromLocal8Bit(localFileName);
+}
+
 QString FileSystem::longWinPath(const QString &inpath)
 {
 #ifndef Q_OS_WIN
