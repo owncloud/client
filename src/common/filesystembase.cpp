@@ -361,6 +361,26 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
     return re;
 }
 
+bool FileSystem::mkpath(const QString &parent, const QString &newDir)
+{
+#ifdef Q_OS_WIN
+    return QDir(parent).mkpath(newDir);
+#else // POSIX
+    auto parts = newDir.split(u'/');
+    QString parentIt = parent;
+    while (!parts.isEmpty()) {
+        auto part = parts.takeFirst();
+        parentIt.append(u'/' + part);
+        if (::mkdir(encodeFileName(QDir::toNativeSeparators(parentIt)).constData(), 0777) != 0) {
+            if (errno != EEXIST) {
+                return false;
+            }
+        }
+    }
+    return true;
+#endif
+}
+
 QString FileSystem::fileSystemForPath(const QString &path)
 {
     QString p = path;
