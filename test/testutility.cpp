@@ -308,6 +308,16 @@ private Q_SLOTS:
         QVERIFY(!Tags::get(fn, testKey).has_value());
     }
 
+    void testfileSystemForPath()
+    {
+#ifndef Q_OS_WIN
+        {
+            QString fs = OCC::FileSystem::fileSystemForPath(QStringLiteral("/foo/bar"));
+            QCOMPARE_NE(fs, QString());
+        }
+#endif
+    }
+
     void testDirMetaData()
     {
         using namespace OCC::TestUtils;

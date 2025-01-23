@@ -206,6 +206,7 @@ public:
      * @returns false if the journal could not be removed, true otherwise.
      */
     static bool ensureJournalGone(const QString &journalDbFile);
+    static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
     /// Produce text for use in the tray tooltip
     static QString trayTooltipStatusString(const SyncResult &result, bool paused);

@@ -22,9 +22,9 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QDir>
 #include <QFile>
 #include <QSettings>
+#include <QStorageInfo>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -200,7 +200,7 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
 #ifndef Q_OS_WIN
     bool success;
     QFile orig(originFileName);
-    // We want a rename that also overwites.  QFile::rename does not overwite.
+    // We want a rename that also overwrites.  QFile::rename does not overwrite.
     // Qt 5.1 has QSaveFile::renameOverwrite we could use.
     // ### FIXME
     success = true;
@@ -343,7 +343,7 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
 #endif
     bool re = fileInfo.exists();
     // if the filename is different from the filename in fileInfo, the fileInfo is
-    // not valid. There needs to be one initialised here. Otherwise the incoming
+    // not valid. There needs to be one initialised here. Otherwise, the incoming
     // fileInfo is re-used.
     if (fileInfo.filePath() != filename) {
         re = QFileInfo::exists(filename);
@@ -351,24 +351,25 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
     return re;
 }
 
-#ifdef Q_OS_WIN
 QString FileSystem::fileSystemForPath(const QString &path)
 {
-    // See also QStorageInfo (Qt >=5.4) and GetVolumeInformationByHandleW (>= Vista)
-    QString drive = path.left(2);
-    if (!drive.endsWith(QLatin1Char(':')))
-        return QString();
-    drive.append(QLatin1Char('\\'));
+    QString p = path;
+    while (true) {
+        if (!fileExists(p)) {
+            QFileInfo file(p);
+            p = file.absolutePath();
+            continue;
+        }
+        const QStorageInfo storage(p);
+        if (!storage.isValid() || !storage.isReady()) {
+            return {};
+        }
 
-    const size_t fileSystemBufferSize = 4096;
-    TCHAR fileSystemBuffer[fileSystemBufferSize];
-
-    if (!GetVolumeInformationW(reinterpret_cast<LPCWSTR>(drive.utf16()), nullptr, 0, nullptr, nullptr, nullptr, fileSystemBuffer, fileSystemBufferSize)) {
-        return QString();
+        return QString::fromUtf8(storage.fileSystemType());
     }
-    return QString::fromUtf16(reinterpret_cast<const char16_t *>(fileSystemBuffer));
 }
 
+#ifdef Q_OS_WIN
 bool FileSystem::longPathsEnabledOnWindows()
 {
     static std::optional<bool> longPathsEnabledCached = {};
