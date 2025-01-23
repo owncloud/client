@@ -108,6 +108,8 @@ namespace FileSystem {
      */
     bool OCSYNC_EXPORT fileExists(const QString &filename, const QFileInfo & = QFileInfo());
 
+    bool OCSYNC_EXPORT mkpath(const QString &parent, const QString &newDir);
+
     /**
      * @brief Rename the file \a originFileName to \a destinationFileName.
      *
