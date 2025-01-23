@@ -235,9 +235,7 @@ void SocketApi::slotReadSocket()
     static auto invalidListener = QSharedPointer<SocketListener>::create(nullptr);
     const auto listener = _listeners.value(socket, invalidListener);
     while (socket->canReadLine()) {
-        // Make sure to normalize the input from the socket to
-        // make sure that the path will match, especially on OS X.
-        QString line = QString::fromUtf8(socket->readLine()).normalized(QString::NormalizationForm_C);
+        QString line = QString::fromUtf8(socket->readLine());
         // Note: do NOT use QString::trimmed() here! That will also remove any trailing spaces (which _are_ part of the filename)!
         line.chop(1); // remove the '\n'
 
