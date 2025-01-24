@@ -35,6 +35,10 @@
 #include <io.h>
 #endif
 
+#ifdef Q_OS_MAC
+#include <CoreServices/CoreServices.h>
+#endif
+
 namespace {
 // Regarding
 // https://en.wikipedia.org/wiki/Comparison_of_file_systems#Limits
@@ -208,6 +212,17 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
 {
     Q_ASSERT(errorString);
 #ifndef Q_OS_WIN
+
+#ifdef Q_OS_MAC
+    // Don't use QFile::rename, it will normalize the destination filename to NFC
+    auto src = QFile::encodeName(originFileName);
+    auto dest = encodeFileName(destinationFileName);
+    if (::renameatx_np(AT_FDCWD, src.constData(), AT_FDCWD, dest.constData(), 0) != 0) {
+        *errorString = QString::fromLocal8Bit(strerror(errno));
+        qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
+        return false;
+    }
+#else
     bool success;
     QFile orig(originFileName);
     // We want a rename that also overwrites.  QFile::rename does not overwrite.
@@ -228,6 +243,7 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
         qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
         return false;
     }
+#endif
 
 #else //Q_OS_WIN
     // You can not overwrite a read-only file on windows.
