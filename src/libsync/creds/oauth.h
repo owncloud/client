@@ -55,7 +55,7 @@ class OWNCLOUDSYNC_EXPORT OAuth : public QObject
 public:
     enum Result { NotSupported, LoggedIn, Error, ErrorInsecureUrl };
     Q_ENUM(Result)
-    enum class TokenEndpointAuthMethods : char { client_secret_basic, client_secret_post };
+    enum class TokenEndpointAuthMethods : char { none, client_secret_basic, client_secret_post };
     Q_ENUM(TokenEndpointAuthMethods)
 
     enum class PromptValuesSupported : char { none = 0, consent = 1 << 0, select_account = 1 << 1 };
