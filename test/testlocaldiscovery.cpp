@@ -263,12 +263,12 @@ private Q_SLOTS:
 
         {
             auto localState = fakeFolder.currentLocalState();
-            FileInfo *localFile = localState.find(QStringLiteral("P/A/") + a_umlaut_composed);
+            FileInfo *localFile = localState.find(QStringLiteral("P/A/") + a_umlaut_decomposed);
             QVERIFY(localFile != nullptr); // check if the file exists
         }
         {
             auto localState = fakeFolder.currentLocalState();
-            FileInfo *localFile = localState.find(QStringLiteral("P/B") + a_umlaut_composed + QStringLiteral("/b"));
+            FileInfo *localFile = localState.find(QStringLiteral("P/B") + a_umlaut_decomposed + QStringLiteral("/b"));
             QVERIFY(localFile != nullptr); // check if the file exists
         }
 
