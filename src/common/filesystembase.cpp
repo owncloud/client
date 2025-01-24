@@ -209,28 +209,15 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
     QString *errorString)
 {
     Q_ASSERT(errorString);
+
 #ifndef Q_OS_WIN
-    bool success;
-    QFile orig(originFileName);
-    // We want a rename that also overwrites.  QFile::rename does not overwrite.
-    // Qt 5.1 has QSaveFile::renameOverwrite we could use.
-    // ### FIXME
-    success = true;
-    bool destExists = fileExists(destinationFileName);
-    if (destExists && !QFile::remove(destinationFileName)) {
-        *errorString = orig.errorString();
-        qCWarning(lcFileSystem) << "Target file could not be removed.";
-        success = false;
-    }
-    if (success) {
-        success = orig.rename(destinationFileName);
-    }
-    if (!success) {
-        *errorString = orig.errorString();
+    std::error_code err;
+    std::filesystem::rename(originFileName.toStdString(), destinationFileName.toStdString(), err);
+    if (err) {
+        *errorString = QString::fromStdString(err.message());
         qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
         return false;
     }
-
 #else //Q_OS_WIN
     // You can not overwrite a read-only file on windows.
 
