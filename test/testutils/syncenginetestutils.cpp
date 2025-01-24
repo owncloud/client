@@ -15,6 +15,7 @@
 #include "libsync/syncresult.h"
 
 #include <thread>
+#include <vio/csync_vio_local.h>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -1099,34 +1100,41 @@ void FakeFolder::toDisk(QDir &dir, const FileInfo &templateFi)
 
 void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
 {
-    const auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (const auto &diskChild : infoList) {
-        if (diskChild.isHidden() || diskChild.fileName().startsWith(QStringLiteral(".sync_"))) {
-            // Skip system files, sqlite db files, sync log, etc.
+    auto dh = csync_vio_local_opendir(dir.absolutePath());
+    if (!dh) {
+        return;
+    }
+    while (true) {
+        auto dirent = csync_vio_local_readdir(dh, nullptr);
+        if (!dirent)
+            break;
+        if (dirent->type == ItemTypeSkip)
             continue;
-        }
+        if (dirent->is_hidden || dirent->path.startsWith(QStringLiteral(".sync_")))
+            continue;
 
-        if (diskChild.isDir()) {
+        QString absolutePathItem = dir.absolutePath() + QDir::separator() + dirent->path;
+        if (dirent->type == ItemTypeDirectory) {
             QDir subDir = dir;
-            subDir.cd(diskChild.fileName());
-            FileInfo &subFi = templateFi.children[diskChild.fileName()] = FileInfo { diskChild.fileName() };
-            subFi.setLastModified(diskChild.lastModified());
+            subDir.cd(dirent->path);
+            FileInfo &subFi = templateFi.children[dirent->path] = FileInfo{dirent->path};
+            subFi.setLastModified(QDateTime::fromSecsSinceEpoch(dirent->modtime, QTimeZone::utc()));
             fromDisk(subDir, subFi);
         } else {
-            FileInfo fi(diskChild.fileName());
+            FileInfo fi(dirent->path);
             fi.isDir = false;
-            fi.fileSize = diskChild.size();
-            fi.isDehydratedPlaceholder = isDehydratedPlaceholder(diskChild.absoluteFilePath());
-            fi.setLastModified(diskChild.lastModified());
+            fi.fileSize = dirent->size;
+            fi.isDehydratedPlaceholder = isDehydratedPlaceholder(absolutePathItem);
+            fi.setLastModified(QDateTime::fromSecsSinceEpoch(dirent->modtime, QTimeZone::utc()));
             if (fi.isDehydratedPlaceholder) {
                 fi.contentChar = '\0';
                 fi.contentSize = 0;
             } else {
-                QFile f { diskChild.filePath() };
+                QFile f{absolutePathItem};
                 OC_ENFORCE(f.open(QFile::ReadOnly));
                 auto content = f.read(1);
                 if (content.size() == 0) {
-                    qWarning() << "Empty file at:" << diskChild.filePath();
+                    qWarning() << "Empty file at:" << dirent->path;
                     fi.contentChar = FileInfo::DefaultContentChar;
                 } else {
                     fi.contentChar = content.at(0);
