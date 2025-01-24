@@ -36,6 +36,7 @@
 #include "gui/spaces/spaceimageprovider.h"
 #include "guiutility.h"
 #include "libsync/graphapi/spacesmanager.h"
+#include "openfilemanager.h"
 #include "quotainfo.h"
 #include "scheduling/syncscheduler.h"
 #include "settingsdialog.h"
@@ -147,18 +148,15 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
         return;
     }
     // Add an action to open the folder in the system's file browser:
-    const QUrl folderUrl = QUrl::fromLocalFile(folder->path());
-    if (!folderUrl.isEmpty()) {
-        QAction *ac = menu->addAction(CommonStrings::showInFileBrowser(), [folderUrl]() {
-            qCInfo(lcAccountSettings) << "Opening local folder" << folderUrl;
-            if (!QDesktopServices::openUrl(folderUrl)) {
-                qCWarning(lcAccountSettings) << "QDesktopServices::openUrl failed for" << folderUrl;
-            }
-        });
-
-        if (!QFile::exists(folderUrl.toLocalFile())) {
-            ac->setEnabled(false);
+    QAction *showInFileManagerAction = menu->addAction(CommonStrings::showInFileBrowser(), [folder]() {
+        qCInfo(lcAccountSettings) << "Opening local folder" << folder->path();
+        if (QFileInfo::exists(folder->path())) {
+            showInFileManager(folder->path());
         }
+    });
+
+    if (!QFile::exists(folder->path())) {
+        showInFileManagerAction->setEnabled(false);
     }
 
     // Add an action to open the folder on the server in a webbrowser:
