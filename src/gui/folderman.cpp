@@ -303,6 +303,22 @@ bool FolderMan::ensureJournalGone(const QString &journalDbFile)
     return true;
 }
 
+bool FolderMan::ensureFilesystemSupported(const FolderDefinition &folderDefinition)
+{
+#ifndef Q_OS_MAC
+    return true;
+#endif
+
+    QString filesystemType = FileSystem::fileSystemForPath(folderDefinition.localPath());
+    if (filesystemType != QStringLiteral("apfs")) {
+        QMessageBox::warning(nullptr, tr("Unsupported filesystem"), tr("On MacOS only Apple File System is supported."), QMessageBox::Ok);
+
+        return false;
+    }
+
+    return true;
+}
+
 SocketApi *FolderMan::socketApi()
 {
     return _socketApi.get();
@@ -488,6 +504,10 @@ Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDe
     definition.journalPath = SyncJournalDb::makeDbName(folderDefinition.localPath());
 
     if (!ensureJournalGone(definition.absoluteJournalPath())) {
+        return nullptr;
+    }
+
+    if (!ensureFilesystemSupported(definition)) {
         return nullptr;
     }
 
