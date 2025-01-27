@@ -73,8 +73,12 @@ void ResourceJob::finished()
 
 QIcon ResourceJob::asIcon() const
 {
+    if (_cacheKey.isEmpty()) {
+        // This can happen when a network error occurred when retrieving the icon.
+        return {};
+    }
+
     // storing the file on disk enables Qt to apply some optimizations (e.g., caching of rendered pixmaps)
-    Q_ASSERT(!_cacheKey.isEmpty());
     return QIcon(_cache->path(_cacheKey));
 }
 
