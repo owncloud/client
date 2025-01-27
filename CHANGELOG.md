@@ -58,6 +58,7 @@ ownCloud admins and users.
 * Bugfix - Fix crash for folders that could not be initialized: [#11664](https://github.com/owncloud/client/pull/11664)
 * Bugfix - Make open account in browser accessible for keyboard navigation: [#11772](https://github.com/owncloud/client/issues/11772)
 * Bugfix - Don't log misleading error if dynamic registration failed: [#11839](https://github.com/owncloud/client/pull/11839)
+* Bugfix - Fix crash after resource job fails: [#12045](https://github.com/owncloud/client/pull/12045)
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 * Change - Make messages translatable that occur early in start-up: [#11142](https://github.com/owncloud/client/issues/11142)
 * Change - Remove unused command line option --language: [#11245](https://github.com/owncloud/client/issues/11245)
@@ -169,6 +170,14 @@ ownCloud admins and users.
 * Bugfix - Don't log misleading error if dynamic registration failed: [#11839](https://github.com/owncloud/client/pull/11839)
 
    https://github.com/owncloud/client/pull/11839
+
+* Bugfix - Fix crash after resource job fails: [#12045](https://github.com/owncloud/client/pull/12045)
+
+   When a network error occurs while fetching a resource (e.g. a space image), no
+   icon is available, and a crash would occur. This is fixed by returning an empty
+   icon.
+
+   https://github.com/owncloud/client/pull/12045
 
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 
