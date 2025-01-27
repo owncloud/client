@@ -21,7 +21,8 @@ private Q_SLOTS:
         QTest::addColumn<QString>("url");
         QTest::addColumn<OCUpdater::DownloadState>("result");
         // a redirect to attic
-        QTest::newRow("redirect") << "https://download.owncloud.com/desktop/stable/ownCloud-2.2.4.6408-setup.exe" << OCUpdater::DownloadComplete;
+        // TODO: disable this test case for the time being - file is not available at the moment
+        // QTest::newRow("redirect") << "https://download.owncloud.com/desktop/stable/ownCloud-2.2.4.6408-setup.exe" << OCUpdater::DownloadComplete;
         QTest::newRow("broken url") << "https://&" << OCUpdater::DownloadFailed;
     }
 
