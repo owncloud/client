@@ -637,75 +637,75 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
         <translation>Conexões de sincronização</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="299"/>
-        <location filename="../src/gui/accountsettings.cpp" line="338"/>
-        <location filename="../src/gui/accountsettings.cpp" line="674"/>
+        <location filename="../src/gui/accountsettings.cpp" line="297"/>
+        <location filename="../src/gui/accountsettings.cpp" line="336"/>
+        <location filename="../src/gui/accountsettings.cpp" line="672"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="93"/>
+        <location filename="../src/gui/accountsettings.cpp" line="94"/>
         <source>Remove</source>
         <translation>Remover</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="223"/>
-        <location filename="../src/gui/accountsettings.cpp" line="242"/>
+        <location filename="../src/gui/accountsettings.cpp" line="221"/>
+        <location filename="../src/gui/accountsettings.cpp" line="240"/>
         <source>Choose what to sync</source>
         <translation>Escolha o que quer sincronizar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="181"/>
+        <location filename="../src/gui/accountsettings.cpp" line="179"/>
         <source>Force sync now</source>
         <translation>Forçar sincronização agora</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="183"/>
+        <location filename="../src/gui/accountsettings.cpp" line="181"/>
         <source>Restart sync</source>
         <translation>Reiniciar a sincronização</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="129"/>
+        <location filename="../src/gui/accountsettings.cpp" line="130"/>
         <source>Remove folder sync connection</source>
         <translation>Remover a conexão de sincronização de pastas</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="88"/>
+        <location filename="../src/gui/accountsettings.cpp" line="89"/>
         <source>Account options menu</source>
         <translation>Menu de opções de conta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="90"/>
+        <location filename="../src/gui/accountsettings.cpp" line="91"/>
         <source>Reconnect</source>
         <translation>Reconectar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="134"/>
+        <location filename="../src/gui/accountsettings.cpp" line="135"/>
         <source>Sync options menu</source>
         <translation>Menu de opções de sincronização</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="140"/>
+        <location filename="../src/gui/accountsettings.cpp" line="141"/>
         <source>Folder is not ready yet</source>
         <translation>Pasta ainda não está pronta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="292"/>
+        <location filename="../src/gui/accountsettings.cpp" line="290"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Confirme a Remoção de Sincronização de Pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="298"/>
+        <location filename="../src/gui/accountsettings.cpp" line="296"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Remover a Conexão de Sincronização de pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="329"/>
+        <location filename="../src/gui/accountsettings.cpp" line="327"/>
         <source>Disable virtual file support?</source>
         <translation>Desativar o suporte a arquivos virtuais?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="330"/>
+        <location filename="../src/gui/accountsettings.cpp" line="328"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -718,142 +718,142 @@ A única vantagem de desativar o suporte a arquivos virtuais é que o recurso de
 Esta ação irá anular qualquer sincronização atualmente em execução.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="337"/>
+        <location filename="../src/gui/accountsettings.cpp" line="335"/>
         <source>Disable support</source>
         <translation>Desativar suporte</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="402"/>
+        <location filename="../src/gui/accountsettings.cpp" line="400"/>
         <source>Sync Running</source>
         <translation>Sincronização Acontecendo</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="402"/>
+        <location filename="../src/gui/accountsettings.cpp" line="400"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>The sync operation is running.&lt;br/&gt;Do you want to stop it?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="216"/>
+        <location filename="../src/gui/accountsettings.cpp" line="214"/>
         <source>Disable virtual file support</source>
         <translation>Desative o suporte a arquivos virtuais</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="202"/>
+        <location filename="../src/gui/accountsettings.cpp" line="200"/>
         <source>Enable virtual file support</source>
         <translation>Habilitar suporte a arquivos virtuais</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="419"/>
+        <location filename="../src/gui/accountsettings.cpp" line="417"/>
         <source>Sync paused by user</source>
         <translation>Sincronização pausada pelo usuário</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="434"/>
+        <location filename="../src/gui/accountsettings.cpp" line="432"/>
         <source>Internet connection is metered</source>
         <translation>A conexão com a Internet é medida</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="435"/>
+        <location filename="../src/gui/accountsettings.cpp" line="433"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>A sincronização está pausada porque a conexão com a Internet é limitada&lt;p&gt;Você realmente deseja forçar uma sincronização agora?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="459"/>
+        <location filename="../src/gui/accountsettings.cpp" line="457"/>
         <source>User triggered force sync</source>
         <translation>Sincronização forçada acionada pelo usuário</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="89"/>
+        <location filename="../src/gui/accountsettings.cpp" line="90"/>
         <source>Log in</source>
         <translation>Entrar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="493"/>
+        <location filename="../src/gui/accountsettings.cpp" line="491"/>
         <source>Connected</source>
         <translation>Conectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="502"/>
+        <location filename="../src/gui/accountsettings.cpp" line="500"/>
         <source>Server is temporarily unavailable</source>
         <translation>O servidor está temporariamente indisponível</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="505"/>
+        <location filename="../src/gui/accountsettings.cpp" line="503"/>
         <source>Server is currently in maintenance mode</source>
         <translation>O servidor está atualmente no modo de manutenção</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="508"/>
+        <location filename="../src/gui/accountsettings.cpp" line="506"/>
         <source>Signed out</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="511"/>
+        <location filename="../src/gui/accountsettings.cpp" line="509"/>
         <source>Updating credentials...</source>
         <translation>Atualizando credenciais ...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="516"/>
+        <location filename="../src/gui/accountsettings.cpp" line="514"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>O portal cativo impede as conexões com o servidor.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="518"/>
+        <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>A sincronização é interrompida devido a conexão com a Internet medida</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="520"/>
+        <location filename="../src/gui/accountsettings.cpp" line="518"/>
         <source>Connecting...</source>
         <translation>Conectando...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="524"/>
+        <location filename="../src/gui/accountsettings.cpp" line="522"/>
         <source>Server configuration error</source>
         <translation>Erro de configuração do servidor</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="530"/>
+        <location filename="../src/gui/accountsettings.cpp" line="528"/>
         <source>Disconnected</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="668"/>
+        <location filename="../src/gui/accountsettings.cpp" line="666"/>
         <source>Confirm Account Removal</source>
         <translation>Confirmar a Remoção da Conta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="669"/>
+        <location filename="../src/gui/accountsettings.cpp" line="667"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Você realmente deseja remover a conexão desta conta&lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; Isto &lt;b&gt;não&lt;/b&gt; irá deletar nenhum arquivo.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="673"/>
+        <location filename="../src/gui/accountsettings.cpp" line="671"/>
         <source>Remove connection</source>
         <translation>Remover conexão</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="89"/>
+        <location filename="../src/gui/accountsettings.cpp" line="90"/>
         <source>Log out</source>
         <translation>Sair</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="189"/>
+        <location filename="../src/gui/accountsettings.cpp" line="187"/>
         <source>Resume sync</source>
         <translation>Resumir sincronização</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="189"/>
+        <location filename="../src/gui/accountsettings.cpp" line="187"/>
         <source>Pause sync</source>
         <translation>Pausar sincronização</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="293"/>
+        <location filename="../src/gui/accountsettings.cpp" line="291"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Você realmente deseja para a sincronização desta pasta &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; Isto &lt;b&gt;não&lt;/b&gt; vai deletar qualquer arquivo.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="490"/>
+        <location filename="../src/gui/accountsettings.cpp" line="488"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>A versão do servidor %1 não é suportada! Prossiga por sua conta e risco.</translation>
     </message>
@@ -1244,92 +1244,102 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
         <translation>Uma velha revista de sincronização &apos;%1&apos; foi encontrada, mas não pôde ser removida. Por favor, certifique-se de que nenhuma aplicação está a usá-la.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="392"/>
+        <location filename="../src/gui/folderman.cpp" line="314"/>
+        <source>Unsupported filesystem</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="314"/>
+        <source>On MacOS only Apple File System is supported.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="408"/>
         <source>Account disconnected or paused</source>
         <translation>Conta desconectada ou pausada</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="602"/>
+        <location filename="../src/gui/folderman.cpp" line="622"/>
         <source>Folder is about to be removed</source>
         <translation>A pasta está prestes a ser removida</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="626"/>
+        <location filename="../src/gui/folderman.cpp" line="646"/>
         <source> (backup)</source>
         <translation> (backup)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="631"/>
+        <location filename="../src/gui/folderman.cpp" line="651"/>
         <source> (backup %1)</source>
         <translation> (backup %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="685"/>
+        <location filename="../src/gui/folderman.cpp" line="705"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>A sincronização foi bem-sucedida, conflitos não resolvidos.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="694"/>
+        <location filename="../src/gui/folderman.cpp" line="714"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (Pausa na Sincronização) </translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="726"/>
+        <location filename="../src/gui/folderman.cpp" line="746"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>A pasta &apos;%1&apos; já está em uso pelo aplicativo %2!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="741"/>
+        <location filename="../src/gui/folderman.cpp" line="761"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Pasta &apos;%1&apos; já está em uso por outra conta.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="756"/>
+        <location filename="../src/gui/folderman.cpp" line="776"/>
         <source>No valid folder selected!</source>
         <translation>Nenhuma pasta válida selecionada!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="778"/>
+        <location filename="../src/gui/folderman.cpp" line="798"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>A pasta %1 é usada em uma conexão de sincronização de pasta!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="820"/>
+        <location filename="../src/gui/folderman.cpp" line="840"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>A pasta local %1 já contém uma pasta usada em uma conexão de sincronização de pastas. Por favor, escolha outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="826"/>
+        <location filename="../src/gui/folderman.cpp" line="846"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>A pasta local %1 já está contida em uma pasta usada em uma conexão de sincronização de pastas. Por favor, escolha outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="834"/>
+        <location filename="../src/gui/folderman.cpp" line="854"/>
         <source>%1 Please pick another local folder!</source>
         <translation>%1 Por favor, escolha outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="774"/>
+        <location filename="../src/gui/folderman.cpp" line="794"/>
         <source>The selected path does not exist!</source>
         <translation>O caminho selecionado não existe!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="784"/>
+        <location filename="../src/gui/folderman.cpp" line="804"/>
         <source>The selected path is not a folder!</source>
         <translation>O caminho selecionado não é uma pasta!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="788"/>
+        <location filename="../src/gui/folderman.cpp" line="808"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>Voce não tem permissão para escrita na pasta selecionada!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="816"/>
+        <location filename="../src/gui/folderman.cpp" line="836"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>Já existe uma sincronização do servidor para esta pasta local. Por favor, escolha uma outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="894"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>

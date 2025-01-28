@@ -635,75 +635,75 @@ File synchronization desktop utility.</source>
         <translation>ئۇلىنىشلارنى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="299"/>
-        <location filename="../src/gui/accountsettings.cpp" line="338"/>
-        <location filename="../src/gui/accountsettings.cpp" line="674"/>
+        <location filename="../src/gui/accountsettings.cpp" line="297"/>
+        <location filename="../src/gui/accountsettings.cpp" line="336"/>
+        <location filename="../src/gui/accountsettings.cpp" line="672"/>
         <source>Cancel</source>
         <translation>ۋاز كەچ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="93"/>
+        <location filename="../src/gui/accountsettings.cpp" line="94"/>
         <source>Remove</source>
         <translation>چىقىرىۋەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="223"/>
-        <location filename="../src/gui/accountsettings.cpp" line="242"/>
+        <location filename="../src/gui/accountsettings.cpp" line="221"/>
+        <location filename="../src/gui/accountsettings.cpp" line="240"/>
         <source>Choose what to sync</source>
         <translation>ماسقەدەملەشنى تاللاڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="181"/>
+        <location filename="../src/gui/accountsettings.cpp" line="179"/>
         <source>Force sync now</source>
         <translation>ھازىر ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="183"/>
+        <location filename="../src/gui/accountsettings.cpp" line="181"/>
         <source>Restart sync</source>
         <translation>ماسقەدەملەشنى قايتا قوزغىتىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="129"/>
+        <location filename="../src/gui/accountsettings.cpp" line="130"/>
         <source>Remove folder sync connection</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="88"/>
+        <location filename="../src/gui/accountsettings.cpp" line="89"/>
         <source>Account options menu</source>
         <translation>ھېسابات تاللانمىلىرى تىزىملىكى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="90"/>
+        <location filename="../src/gui/accountsettings.cpp" line="91"/>
         <source>Reconnect</source>
         <translation>قايتا ئۇلاڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="134"/>
+        <location filename="../src/gui/accountsettings.cpp" line="135"/>
         <source>Sync options menu</source>
         <translation>ماسقەدەملەش تىزىملىكى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="140"/>
+        <location filename="../src/gui/accountsettings.cpp" line="141"/>
         <source>Folder is not ready yet</source>
         <translation>ھۆججەت قىسقۇچ تېخى تەييار ئەمەس</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="292"/>
+        <location filename="../src/gui/accountsettings.cpp" line="290"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="298"/>
+        <location filename="../src/gui/accountsettings.cpp" line="296"/>
         <source>Remove Folder Sync Connection</source>
         <translation>ھۆججەت قىسقۇچ ئۇلىنىشىنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="329"/>
+        <location filename="../src/gui/accountsettings.cpp" line="327"/>
         <source>Disable virtual file support?</source>
         <translation>مەۋھۇم ھۆججەت قوللاشنى چەكلەمسىز؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="330"/>
+        <location filename="../src/gui/accountsettings.cpp" line="328"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -716,142 +716,142 @@ This action will abort any currently running synchronization.</source>
 بۇ ھەرىكەت نۆۋەتتە ئىجرا قىلىنىۋاتقان ماس قەدەمنى ئەمەلدىن قالدۇرىدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="337"/>
+        <location filename="../src/gui/accountsettings.cpp" line="335"/>
         <source>Disable support</source>
         <translation>قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="402"/>
+        <location filename="../src/gui/accountsettings.cpp" line="400"/>
         <source>Sync Running</source>
         <translation>ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="402"/>
+        <location filename="../src/gui/accountsettings.cpp" line="400"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>ماسقەدەملەش مەشغۇلاتى ئىجرا بولۇۋاتىدۇ. &lt;br/&gt; ئۇنى توختاتماقچىمۇ؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="216"/>
+        <location filename="../src/gui/accountsettings.cpp" line="214"/>
         <source>Disable virtual file support</source>
         <translation>مەۋھۇم ھۆججەت قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="202"/>
+        <location filename="../src/gui/accountsettings.cpp" line="200"/>
         <source>Enable virtual file support</source>
         <translation>مەۋھۇم ھۆججەت قوللاشنى قوزغىتىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="419"/>
+        <location filename="../src/gui/accountsettings.cpp" line="417"/>
         <source>Sync paused by user</source>
         <translation>ئىشلەتكۈچى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="434"/>
+        <location filename="../src/gui/accountsettings.cpp" line="432"/>
         <source>Internet connection is metered</source>
         <translation>تور ئۇلىنىشى ئۆلچەم قىلىنغان</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="435"/>
+        <location filename="../src/gui/accountsettings.cpp" line="433"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>ئىنتېرنېت ئۇلىنىشى ئۆلچەملىك ئۇلىنىش بولغانلىقى ئۈچۈن ماس قەدەملىك توختىتىلىدۇ &lt;p&gt; ھازىر ماسقەدەملەشنى زورلىماقچىمۇ؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="459"/>
+        <location filename="../src/gui/accountsettings.cpp" line="457"/>
         <source>User triggered force sync</source>
         <translation>ئىشلەتكۈچى كۈچ ماسقەدەملەشنى قوزغىدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="89"/>
+        <location filename="../src/gui/accountsettings.cpp" line="90"/>
         <source>Log in</source>
         <translation>كىرىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="493"/>
+        <location filename="../src/gui/accountsettings.cpp" line="491"/>
         <source>Connected</source>
         <translation>ئۇلاندى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="502"/>
+        <location filename="../src/gui/accountsettings.cpp" line="500"/>
         <source>Server is temporarily unavailable</source>
         <translation>مۇلازىمېتىرنى ۋاقىتلىق ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="505"/>
+        <location filename="../src/gui/accountsettings.cpp" line="503"/>
         <source>Server is currently in maintenance mode</source>
         <translation>مۇلازىمېتىر ھازىر ئاسراش ھالىتىدە</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="508"/>
+        <location filename="../src/gui/accountsettings.cpp" line="506"/>
         <source>Signed out</source>
         <translation>تىزىملاتتى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="511"/>
+        <location filename="../src/gui/accountsettings.cpp" line="509"/>
         <source>Updating credentials...</source>
         <translation>كىنىشكىنى يېڭىلاش ...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="516"/>
+        <location filename="../src/gui/accountsettings.cpp" line="514"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>تۇتۇلغان ئېغىز مۇلازىمېتىرغا ئۇلىنىشنىڭ ئالدىنى ئالىدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="518"/>
+        <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>ماس قەدەملىك تور ئۇلىنىشى سەۋەبىدىن ماسقەدەملەش توختىتىلدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="520"/>
+        <location filename="../src/gui/accountsettings.cpp" line="518"/>
         <source>Connecting...</source>
         <translation>ئۇلىنىش ...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="524"/>
+        <location filename="../src/gui/accountsettings.cpp" line="522"/>
         <source>Server configuration error</source>
         <translation>مۇلازىمېتىر سەپلەش خاتالىقى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="530"/>
+        <location filename="../src/gui/accountsettings.cpp" line="528"/>
         <source>Disconnected</source>
         <translation>ئۈزۈلۈپ قالدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="668"/>
+        <location filename="../src/gui/accountsettings.cpp" line="666"/>
         <source>Confirm Account Removal</source>
         <translation>ھېسابات ئۆچۈرۈشنى جەزملەشتۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="669"/>
+        <location filename="../src/gui/accountsettings.cpp" line="667"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt; ھېساباتقا ئۇلىنىشنى &lt;i&gt;% 1 &lt;/i&gt; ئۆچۈرمەكچىمۇ؟ &lt;/p&gt; &lt;p&gt; &lt;b&gt; ئەسكەرتىش: &lt;/b&gt; بۇ &lt;b&gt; ئەمەس &lt;/b&gt; بولىدۇ. ھەرقانداق ھۆججەتنى ئۆچۈرۈڭ. &lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="673"/>
+        <location filename="../src/gui/accountsettings.cpp" line="671"/>
         <source>Remove connection</source>
         <translation>ئۇلىنىشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="89"/>
+        <location filename="../src/gui/accountsettings.cpp" line="90"/>
         <source>Log out</source>
         <translation>تىزىمدىن چىق</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="189"/>
+        <location filename="../src/gui/accountsettings.cpp" line="187"/>
         <source>Resume sync</source>
         <translation>ماسقەدەملەشنى ئەسلىگە كەلتۈرۈش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="189"/>
+        <location filename="../src/gui/accountsettings.cpp" line="187"/>
         <source>Pause sync</source>
         <translation>ماسقەدەملەشنى توختىتىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="293"/>
+        <location filename="../src/gui/accountsettings.cpp" line="291"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt; راستىنلا &lt;i&gt;% 1 &lt;/i&gt; ھۆججەت قىسقۇچنى ماسقەدەملەشنى توختاتماقچىمۇ؟ &lt;/p&gt; &lt;p&gt; &lt;b&gt; ئەسكەرتىش: &lt;/b&gt; بۇ &lt;b&gt; ئەمەس &lt;/b&gt; ئۆچۈرۈلىدۇ ھۆججەتلەر. &lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="490"/>
+        <location filename="../src/gui/accountsettings.cpp" line="488"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>مۇلازىمېتىر نۇسخىسى% 1 قوللىمايدۇ! ئۆزىڭىزنىڭ خەتىرىگە قاراپ ئىلگىرىلەڭ.</translation>
     </message>
@@ -1242,92 +1242,102 @@ This means that the synchronization client might not upload local changes immedi
         <translation>كونا ماس قەدەملىك ژۇرنال &apos;% 1&apos; تېپىلدى ، ئەمما ئۆچۈرگىلى بولمىدى. ھازىر ھېچقانداق قوللىنىشچان پروگراممىنىڭ ئىشلىتىلمەيدىغانلىقىنى جەزملەشتۈرۈڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="392"/>
+        <location filename="../src/gui/folderman.cpp" line="314"/>
+        <source>Unsupported filesystem</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="314"/>
+        <source>On MacOS only Apple File System is supported.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="408"/>
         <source>Account disconnected or paused</source>
         <translation>ھېسابات ئۈزۈلۈپ قالدى ياكى توختىتىلدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="602"/>
+        <location filename="../src/gui/folderman.cpp" line="622"/>
         <source>Folder is about to be removed</source>
         <translation>ھۆججەت قىسقۇچ ئۆچۈرۈلمەكچى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="626"/>
+        <location filename="../src/gui/folderman.cpp" line="646"/>
         <source> (backup)</source>
         <translation>(زاپاسلاش)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="631"/>
+        <location filename="../src/gui/folderman.cpp" line="651"/>
         <source> (backup %1)</source>
         <translation>(زاپاسلاش% 1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="685"/>
+        <location filename="../src/gui/folderman.cpp" line="705"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>ماس قەدەم مۇۋەپپەقىيەتلىك بولدى ، ھەل قىلىنمىغان زىددىيەتلەر.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="694"/>
+        <location filename="../src/gui/folderman.cpp" line="714"/>
         <source>%1 (Sync is paused)</source>
         <translation>% 1 (ماسقەدەملەش توختىتىلدى)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="726"/>
+        <location filename="../src/gui/folderman.cpp" line="746"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>«% 1» ھۆججەت قىسقۇچى ئاللىقاچان% 2 قوللىنىشچان پروگراممىدا ئىشلىتىلىپ بولدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="741"/>
+        <location filename="../src/gui/folderman.cpp" line="761"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ھۆججەت قىسقۇچى &apos;% 1&apos; ئاللىبۇرۇن باشقا ھېسابات تەرىپىدىن ئىشلىتىلگەن.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="756"/>
+        <location filename="../src/gui/folderman.cpp" line="776"/>
         <source>No valid folder selected!</source>
         <translation>ئىناۋەتلىك ھۆججەت قىسقۇچ تاللانمىدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="778"/>
+        <location filename="../src/gui/folderman.cpp" line="798"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدۇ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="820"/>
+        <location filename="../src/gui/folderman.cpp" line="840"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچنى ئۆز ئىچىگە ئالىدۇ. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="826"/>
+        <location filename="../src/gui/folderman.cpp" line="846"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك ھۆججەت قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچتا بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="834"/>
+        <location filename="../src/gui/folderman.cpp" line="854"/>
         <source>%1 Please pick another local folder!</source>
         <translation>% 1 باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="774"/>
+        <location filename="../src/gui/folderman.cpp" line="794"/>
         <source>The selected path does not exist!</source>
         <translation>تاللانغان يول مەۋجۇت ئەمەس!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="784"/>
+        <location filename="../src/gui/folderman.cpp" line="804"/>
         <source>The selected path is not a folder!</source>
         <translation>تاللانغان يول ھۆججەت قىسقۇچ ئەمەس!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="788"/>
+        <location filename="../src/gui/folderman.cpp" line="808"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا يېزىش ھوقۇقىڭىز يوق!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="816"/>
+        <location filename="../src/gui/folderman.cpp" line="836"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>مۇلازىمېتىردىن بۇ يەرلىك ھۆججەت قىسقۇچقا ماسقەدەملەش بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="894"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
