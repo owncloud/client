@@ -19,7 +19,7 @@
 namespace OCC {
 
 /**
- * @brief The PropagateRemoteMkdir class
+ * @brief Propagate a local mkdir to the server
  * @ingroup libsync
  */
 class PropagateRemoteMkdir : public PropagateItemJob

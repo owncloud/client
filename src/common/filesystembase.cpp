@@ -35,6 +35,10 @@
 #include <io.h>
 #endif
 
+#ifdef Q_OS_MAC
+#include <CoreServices/CoreServices.h>
+#endif
+
 namespace {
 // Regarding
 // https://en.wikipedia.org/wiki/Comparison_of_file_systems#Limits
@@ -48,6 +52,16 @@ constexpr auto replacementCharC = QLatin1Char('_');
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFileSystem, "sync.filesystem", QtInfoMsg)
+
+QByteArray FileSystem::encodeFileName(const QString &fileName)
+{
+    return fileName.toLocal8Bit();
+}
+
+QString FileSystem::decodeFileName(const char *localFileName)
+{
+    return QString::fromLocal8Bit(localFileName);
+}
 
 QString FileSystem::longWinPath(const QString &inpath)
 {
@@ -198,6 +212,17 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
 {
     Q_ASSERT(errorString);
 #ifndef Q_OS_WIN
+
+#ifdef Q_OS_MAC
+    // Don't use QFile::rename, it will normalize the destination filename to NFC
+    auto src = QFile::encodeName(originFileName);
+    auto dest = encodeFileName(destinationFileName);
+    if (::renameatx_np(AT_FDCWD, src.constData(), AT_FDCWD, dest.constData(), 0) != 0) {
+        *errorString = QString::fromLocal8Bit(strerror(errno));
+        qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
+        return false;
+    }
+#else
     bool success;
     QFile orig(originFileName);
     // We want a rename that also overwrites.  QFile::rename does not overwrite.
@@ -218,6 +243,7 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
         qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
         return false;
     }
+#endif
 
 #else //Q_OS_WIN
     // You can not overwrite a read-only file on windows.
@@ -349,6 +375,26 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
         re = QFileInfo::exists(filename);
     }
     return re;
+}
+
+bool FileSystem::mkpath(const QString &parent, const QString &newDir)
+{
+#ifdef Q_OS_WIN
+    return QDir(parent).mkpath(newDir);
+#else // POSIX
+    auto parts = newDir.split(u'/');
+    QString parentIt = parent;
+    while (!parts.isEmpty()) {
+        auto part = parts.takeFirst();
+        parentIt.append(u'/' + part);
+        if (::mkdir(encodeFileName(QDir::toNativeSeparators(parentIt)).constData(), 0777) != 0) {
+            if (errno != EEXIST) {
+                return false;
+            }
+        }
+    }
+    return true;
+#endif
 }
 
 QString FileSystem::fileSystemForPath(const QString &path)

@@ -47,6 +47,9 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcFileSystem)
 namespace FileSystem {
     OCSYNC_EXPORT Q_NAMESPACE;
 
+    QByteArray OCSYNC_EXPORT encodeFileName(const QString &fileName);
+    QString OCSYNC_EXPORT decodeFileName(const char *localFileName);
+
     /**
      * List of characters not allowd in filenames on Windows
      */
@@ -104,6 +107,8 @@ namespace FileSystem {
      * files, see above.
      */
     bool OCSYNC_EXPORT fileExists(const QString &filename, const QFileInfo & = QFileInfo());
+
+    bool OCSYNC_EXPORT mkpath(const QString &parent, const QString &newDir);
 
     /**
      * @brief Rename the file \a originFileName to \a destinationFileName.
