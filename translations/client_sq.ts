@@ -1245,12 +1245,12 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>Unsupported filesystem</source>
-        <translation type="unfinished"/>
+        <translation>Sistem kartelash që s’mbulohet</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On MacOS only Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>Në MacOS mbulohet vetëm Sistem Apple Kartelash.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>

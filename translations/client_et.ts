@@ -1244,12 +1244,12 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>Unsupported filesystem</source>
-        <translation type="unfinished"/>
+        <translation>Mittetoetatud failisüsteem</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On MacOS only Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>MacOS puhul on toetatud ainult Apple File System</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>
