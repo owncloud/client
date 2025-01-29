@@ -1145,6 +1145,7 @@ void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
             templateFi.children.insert(fi.name, fi);
         }
     }
+    csync_vio_local_closedir(dh);
 }
 
 FileInfo &findOrCreateDirs(FileInfo &base, const PathComponents &components)
