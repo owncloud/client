@@ -68,19 +68,19 @@ Result<Vfs::ConvertToPlaceholderResult, QString> VfsSuffix::updateMetadata(const
 {
     if (item._type == ItemTypeVirtualFileDehydration) {
         SyncFileItem virtualItem(item);
-        virtualItem.setLocalName(item._renameTarget);
+        virtualItem._file = item._renameTarget;
         auto r = createPlaceholder(virtualItem);
         if (!r) {
             return r.error();
         }
         // Move the item's pin state
-        auto pin = params().journal->internalPinStates().rawForPath(item.localName().toUtf8());
+        auto pin = params().journal->internalPinStates().rawForPath(item._file.toUtf8());
         if (pin && *pin != PinState::Inherited) {
             std::ignore = setPinState(item._renameTarget, *pin);
         }
-        if (item.localName() != item._renameTarget) { // can be the same when renaming foo -> foo.owncloud to dehydrate
+        if (item._file != item._renameTarget) { // can be the same when renaming foo -> foo.owncloud to dehydrate
             QString error;
-            if (!FileSystem::remove(params().filesystemPath + item.localName(), &error)) {
+            if (!FileSystem::remove(params().filesystemPath + item._file, &error)) {
                 return error;
             }
         }
@@ -100,7 +100,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> VfsSuffix::updateMetadata(const
 Result<void, QString> VfsSuffix::createPlaceholder(const SyncFileItem &item)
 {
     // The concrete shape of the placeholder is also used in isDehydratedPlaceholder() below
-    const QString fn = params().filesystemPath + item.localName();
+    const QString fn = params().filesystemPath + item._file;
     Q_ASSERT(fn.endsWith(fileSuffix()));
 
     QFile file(fn);
