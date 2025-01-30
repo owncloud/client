@@ -1103,30 +1103,30 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>%1 は読み込み可能ではありません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="502"/>
+        <location filename="../src/gui/folder.cpp" line="503"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 は削除されました。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="516"/>
+        <location filename="../src/gui/folder.cpp" line="517"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 が更新されました。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="523"/>
+        <location filename="../src/gui/folder.cpp" line="524"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 の名前が %2 に変更されました。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="530"/>
+        <location filename="../src/gui/folder.cpp" line="531"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 は %2 に移動しました。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="500"/>
+        <location filename="../src/gui/folder.cpp" line="501"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 と他 %n 個のファイルが削除されました。</numerusform></translation>
     </message>
@@ -1146,78 +1146,78 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>%1 は書き込み可能ではありません。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="507"/>
+        <location filename="../src/gui/folder.cpp" line="508"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 と %n 個の他のファイルが追加されました。</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="509"/>
+        <location filename="../src/gui/folder.cpp" line="510"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 が追加されました。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="514"/>
+        <location filename="../src/gui/folder.cpp" line="515"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 と他 %n 個のファイルが更新されました。</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="521"/>
+        <location filename="../src/gui/folder.cpp" line="522"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 の名前が %2 に変更され、他 %n 個のファイルの名前が変更されました。</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="528"/>
+        <location filename="../src/gui/folder.cpp" line="529"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 が %2 に移され、他 %n 個のファイルが移されました。</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="535"/>
+        <location filename="../src/gui/folder.cpp" line="536"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 とその他 %n 個のファイルが同期で衝突しました。</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="537"/>
+        <location filename="../src/gui/folder.cpp" line="538"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 が同期で衝突しています。コンフリクトファイルを確認してください。</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="542"/>
+        <location filename="../src/gui/folder.cpp" line="543"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>エラーにより、%1 と %n 個の他のファイルを同期できませんでした。ログで詳細を確認してください。</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="544"/>
+        <location filename="../src/gui/folder.cpp" line="545"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>エラーにより %1 が未同期です。ログで詳細を確認してください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="550"/>
+        <location filename="../src/gui/folder.cpp" line="551"/>
         <source>Sync Activity</source>
         <translation>同期アクティビティ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="784"/>
+        <location filename="../src/gui/folder.cpp" line="785"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>フォルダー &apos;%1&apos; の VFS モードを切り替えています</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="946"/>
+        <location filename="../src/gui/folder.cpp" line="947"/>
         <source>Could not read system exclude file</source>
         <translation>システム上の除外ファイルを読み込めません</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1166"/>
+        <location filename="../src/gui/folder.cpp" line="1167"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>フォルダ %1 は作成されましたが、以前は同期対象から外れていました。フォルダ内のデータは同期されません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1169"/>
+        <location filename="../src/gui/folder.cpp" line="1170"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>ファイル %1 は作成されましたが、以前は同期対象から外れていました。ファイルは同期されません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1181"/>
+        <location filename="../src/gui/folder.cpp" line="1182"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1735,7 +1735,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 <context>
     <name>OCC::IssuesWidget</name>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="364"/>
+        <location filename="../src/gui/issueswidget.cpp" line="365"/>
         <source>Filter</source>
         <translation>フィルター</translation>
     </message>
@@ -1755,27 +1755,27 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>コンフリクトが発生しました。解決方法については、ドキュメントを確認してください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="207"/>
+        <location filename="../src/gui/issueswidget.cpp" line="208"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
         <translation>名前が %2 によって予約されているため、ファイル %1 は無視されました</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="233"/>
+        <location filename="../src/gui/issueswidget.cpp" line="234"/>
         <source>Reset column sizes</source>
         <translation>カラムサイズのリセット</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="253"/>
+        <location filename="../src/gui/issueswidget.cpp" line="254"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
         <translation>コンフリクトが発生しました。 &lt;a href=&quot;%1&quot;&gt;解決方法については、ドキュメントを確認してください。&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="272"/>
+        <location filename="../src/gui/issueswidget.cpp" line="273"/>
         <source>Filter menu</source>
         <translation>フィルターメニュー</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="274"/>
+        <location filename="../src/gui/issueswidget.cpp" line="275"/>
         <source>Account</source>
         <translation>アカウント</translation>
     </message>
@@ -1850,12 +1850,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>すべて</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="292"/>
+        <location filename="../src/gui/issueswidget.cpp" line="293"/>
         <source>Reset Filters</source>
         <translation>フィルターをリセット</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="379"/>
+        <location filename="../src/gui/issueswidget.cpp" line="380"/>
         <source>Status Filter:</source>
         <translation>フィルターの状態:</translation>
     </message>
@@ -2172,7 +2172,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="761"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="765"/>
         <source>File %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
@@ -2180,72 +2180,72 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="235"/>
+        <location filename="../src/libsync/discovery.cpp" line="236"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>同期機能はシンボリックリンクをサポートしていません。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="244"/>
+        <location filename="../src/libsync/discovery.cpp" line="245"/>
         <source>File is listed on the ignore list.</source>
         <translation>ファイルは除外リストに登録されています。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="249"/>
+        <location filename="../src/libsync/discovery.cpp" line="250"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>末尾にピリオドを使うファイル名はサポートされていません</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="262"/>
+        <location filename="../src/libsync/discovery.cpp" line="263"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>ファイル名に使用できない文字列が含まれています: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="265"/>
+        <location filename="../src/libsync/discovery.cpp" line="266"/>
         <source>File name contains at least one invalid character</source>
         <translation>ファイル名に1文字以上の無効な文字が含まれています</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="267"/>
+        <location filename="../src/libsync/discovery.cpp" line="268"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>ファイル名はこのファイルシステムで予約されている名前です。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="276"/>
+        <location filename="../src/libsync/discovery.cpp" line="277"/>
         <source>Filename contains trailing spaces.</source>
         <translation>ファイル名末尾にスペースが含まれます。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="279"/>
+        <location filename="../src/libsync/discovery.cpp" line="280"/>
         <source>Filename is too long.</source>
         <translation>ファイル名が長すぎます</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="282"/>
+        <location filename="../src/libsync/discovery.cpp" line="283"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>隠しファイル/フォルダーのため無視されました</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="286"/>
+        <location filename="../src/libsync/discovery.cpp" line="287"/>
         <source>Stat failed.</source>
         <translation>情報取得エラー</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="289"/>
+        <location filename="../src/libsync/discovery.cpp" line="290"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>コンフリクト：サーバ側のバージョンをダウンロードしました。ローカル側は名前を変更してコピーされ、サーバへアップロードされませんでした。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="293"/>
+        <location filename="../src/libsync/discovery.cpp" line="294"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>ファイルシステムでファイル名をエンコードできません。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="296"/>
+        <location filename="../src/libsync/discovery.cpp" line="297"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>ファイル名がサーバーのブラックリストに登録されている。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="423"/>
+        <location filename="../src/libsync/discovery.cpp" line="424"/>
         <source>server reported no %1</source>
         <translation>サーバは %1 がないことを報告しました</translation>
     </message>
@@ -2270,7 +2270,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>そのフォルダーにサブフォルダーを追加する権限がありません</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="629"/>
+        <location filename="../src/libsync/discovery.cpp" line="630"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>名前変更処理中にエラーが発生しました。未処理のステータスコードは %1 です。</translation>
     </message>
@@ -2303,12 +2303,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1126"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1130"/>
         <source>Error updating metadata: %1</source>
         <translation>メタデータの更新エラー: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1129"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1133"/>
         <source>%1 the folder is currently in use</source>
         <translation>フォルダ %1 は現在使用中です</translation>
     </message>
@@ -2321,62 +2321,62 @@ Note that using any logging command line options will override the settings.</so
         <translation>領域解放に失敗しました。ファイル %1 は現在使用中です</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="459"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="542"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="458"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="539"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>ファイル %1 は、ローカルファイル名 %2 と衝突しているため、ダウンロードできません！</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="601"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="597"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>ダウンロードによりローカルディスクの空き容量が制限値以下になります</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="605"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="601"/>
         <source>Free space on disk is less than %1</source>
         <translation>ディスク空き容量が %1 よりも少なくなっています</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="730"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="727"/>
         <source>File was deleted from server</source>
         <translation>ファイルはサーバーから削除されました</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="789"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="786"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>復元処理中のファイルに対して、不具合なウェブサーバが、空のコンテンツ長を返しました。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="796"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="793"/>
         <source>The file could not be downloaded completely.</source>
         <translation>このファイルのダウンロードは完了しませんでした</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="803"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="800"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>サーバーが通知しているファイルは %1 であるべきですが、ダウンロードファイルは空でした。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="911"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="907"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>ファイル %1 は、ローカルファイル名 %2 と衝突しているため、保存できません！</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1030"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1025"/>
         <source>Error updating metadata: %1</source>
         <translation>メタデータの更新エラー: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="551"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="936"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="968"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1033"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="547"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="931"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="963"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1028"/>
         <source>The file %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="428"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="960"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="955"/>
         <source>File has changed since discovery</source>
         <translation>ファイルは発見以降に変更されました</translation>
     </message>
@@ -2384,7 +2384,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="236"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="239"/>
         <source>; Restoration Failed: %1</source>
         <translation>; 復元に失敗: %1</translation>
     </message>
@@ -2444,32 +2444,32 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateLocalRename</name>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="234"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="235"/>
         <source>File %1 can not be renamed to %2 because of a local file name clash</source>
         <translation>ファイル %1 はローカルファイル名が衝突しているため %2 に名前を変更できません</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="240"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="242"/>
         <source>Could not rename %1 to %2, the file is currently in use</source>
         <translation>%1 を %2 に名前変更できません、ファイルは現在使用中です</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="267"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="269"/>
         <source>Error updating metadata: %1</source>
         <translation>メタデータの更新エラー: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="270"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="272"/>
         <source>The file %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="276"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="278"/>
         <source>Failed to rename file</source>
         <translation>ファイル名の変更に失敗しました</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="282"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="284"/>
         <source>Error setting pin state</source>
         <translation>ピン状態設定エラー</translation>
     </message>
@@ -2477,7 +2477,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateRemoteDelete</name>
     <message>
-        <location filename="../src/libsync/propagateremotedelete.cpp" line="95"/>
+        <location filename="../src/libsync/propagateremotedelete.cpp" line="97"/>
         <source>Wrong HTTP code returned by server. Expected 204, but received &quot;%1 %2&quot;.</source>
         <translation>誤ったHTTPコードがサーバーから返されました。204のはずが、&quot;%1 %2&quot;が返りました。</translation>
     </message>
@@ -2485,17 +2485,17 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateRemoteMkdir</name>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="104"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="108"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
         <translation>誤ったHTTPコードがサーバーから返されました。201のはずが、&quot;%1 %2&quot;が返りました。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="139"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="143"/>
         <source>Error writing metadata to the database: %1</source>
         <translation>メタデータのデータベースへの書き込みに失敗 : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="181"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="185"/>
         <source>Setting file status failed due to file lock</source>
         <translation>ファイルロックによりファイルステータスの設定に失敗しました</translation>
     </message>
@@ -2536,12 +2536,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1309"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1314"/>
         <source>Could not update file : %1</source>
         <translation>ファイルを更新できませんでした : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1312"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1317"/>
         <source>The file %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
@@ -2549,18 +2549,18 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUploadFileCommon</name>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="126"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="125"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>ファイル %1 は、大文字と小文字の区別が違う同じ名前のファイルが存在するためアップロードできません</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="177"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="208"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="178"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="209"/>
         <source>%1 the file is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="243"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="244"/>
         <source>File Removed</source>
         <translation>ファイルを削除しました</translation>
     </message>
@@ -2570,18 +2570,18 @@ Note that using any logging command line options will override the settings.</so
         <translation>ローカルファイルが同期中に変更されました。再開されます。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="585"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="588"/>
         <source>The server did not provide the file permissions</source>
         <translation>サーバーはファイル権限を提供しませんでした</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="593"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="596"/>
         <source>Error updating metadata: %1</source>
         <translation>メタデータの更新エラー: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="137"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="480"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="136"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="483"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>%1 のアップロードがフォルダのクォータを超えています</translation>
     </message>
@@ -2594,27 +2594,27 @@ Note that using any logging command line options will override the settings.</so
         <translation>フォイル %1 は現在使用中です</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="459"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="461"/>
         <source>The local file was removed during sync.</source>
         <translation>ローカルファイルを同期中に削除します。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="506"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="508"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
         <translation>サーバーは削除されたレガシー機能（ポーリング）を要求した</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="511"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="513"/>
         <source>Unexpected return code from server (%1)</source>
         <translation>サーバー (%1) からの予期しない戻りコード</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="518"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="520"/>
         <source>Missing File ID from server</source>
         <translation>サーバーからファイルIDの戻りがありません</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="531"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="533"/>
         <source>Missing ETag from server</source>
         <translation>サーバーからETagの戻りがありません</translation>
     </message>

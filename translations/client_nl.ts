@@ -1102,30 +1102,30 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <translation>%1 is niet leesbaar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="502"/>
+        <location filename="../src/gui/folder.cpp" line="503"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is verwijderd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="516"/>
+        <location filename="../src/gui/folder.cpp" line="517"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is bijgewerkt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="523"/>
+        <location filename="../src/gui/folder.cpp" line="524"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 is hernoemd naar %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="530"/>
+        <location filename="../src/gui/folder.cpp" line="531"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 is verplaatst naar %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="500"/>
+        <location filename="../src/gui/folder.cpp" line="501"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
@@ -1145,78 +1145,78 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <translation>%1 is niet schrijfbaar.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="507"/>
+        <location filename="../src/gui/folder.cpp" line="508"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="509"/>
+        <location filename="../src/gui/folder.cpp" line="510"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is toegevoegd.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="514"/>
+        <location filename="../src/gui/folder.cpp" line="515"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="521"/>
+        <location filename="../src/gui/folder.cpp" line="522"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="528"/>
+        <location filename="../src/gui/folder.cpp" line="529"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="535"/>
+        <location filename="../src/gui/folder.cpp" line="536"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="537"/>
+        <location filename="../src/gui/folder.cpp" line="538"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 heeft een sync conflict. Controleer het conflict bestand!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="542"/>
+        <location filename="../src/gui/folder.cpp" line="543"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="544"/>
+        <location filename="../src/gui/folder.cpp" line="545"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 kon niet worden gesynchroniseerd door een fout. Bekijk het log voor details.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="550"/>
+        <location filename="../src/gui/folder.cpp" line="551"/>
         <source>Sync Activity</source>
         <translation>Synchronisatie-activiteit</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="784"/>
+        <location filename="../src/gui/folder.cpp" line="785"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>VFS-modus inschakelen in map &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="946"/>
+        <location filename="../src/gui/folder.cpp" line="947"/>
         <source>Could not read system exclude file</source>
         <translation>Kon het systeem-uitsluitingsbestand niet lezen</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1166"/>
+        <location filename="../src/gui/folder.cpp" line="1167"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>De map %1 werd aangemaakt maar eerder ook uitgesloten van synchronisatie. Data erin zullen niet worden gesynchroniseerd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1169"/>
+        <location filename="../src/gui/folder.cpp" line="1170"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Het bestand %1 is aangemaakt maar was eerder uitgesloten van synchronisatie. Dit bestand zal niet gesynchroniseerd worden.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1181"/>
+        <location filename="../src/gui/folder.cpp" line="1182"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1732,7 +1732,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
 <context>
     <name>OCC::IssuesWidget</name>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="364"/>
+        <location filename="../src/gui/issueswidget.cpp" line="365"/>
         <source>Filter</source>
         <translation>Filter</translation>
     </message>
@@ -1752,27 +1752,27 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         <translation>Er waren conflicten. Raadpleeg de documentatie om ze te verhelpen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="207"/>
+        <location filename="../src/gui/issueswidget.cpp" line="208"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
         <translation>Het bestand %1 is genegeerd, want de naam is gereserveerd door %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="233"/>
+        <location filename="../src/gui/issueswidget.cpp" line="234"/>
         <source>Reset column sizes</source>
         <translation>Kolom grootes terugzetten</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="253"/>
+        <location filename="../src/gui/issueswidget.cpp" line="254"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
         <translation>Er waren conflicten. &lt;a href=&quot;%1&quot;&gt;Raadpleeg de documentatie om ze te verhelpen.&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="272"/>
+        <location filename="../src/gui/issueswidget.cpp" line="273"/>
         <source>Filter menu</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="274"/>
+        <location filename="../src/gui/issueswidget.cpp" line="275"/>
         <source>Account</source>
         <translation>Account</translation>
     </message>
@@ -1847,12 +1847,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Alle</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="292"/>
+        <location filename="../src/gui/issueswidget.cpp" line="293"/>
         <source>Reset Filters</source>
         <translation>Reset Filters</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="379"/>
+        <location filename="../src/gui/issueswidget.cpp" line="380"/>
         <source>Status Filter:</source>
         <translation>Status Filter:</translation>
     </message>
@@ -2169,7 +2169,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="761"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="765"/>
         <source>File %1 is currently in use</source>
         <translation>Bestand %1 is in gebruik</translation>
     </message>
@@ -2177,72 +2177,72 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="235"/>
+        <location filename="../src/libsync/discovery.cpp" line="236"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>Symbolische links worden niet ondersteund bij het synchroniseren.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="244"/>
+        <location filename="../src/libsync/discovery.cpp" line="245"/>
         <source>File is listed on the ignore list.</source>
         <translation>Het bestand is opgenomen op de negeerlijst.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="249"/>
+        <location filename="../src/libsync/discovery.cpp" line="250"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>Bestandsnamen die eindigen met een punt worden niet ondersteund door het bestandssysteem.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="262"/>
+        <location filename="../src/libsync/discovery.cpp" line="263"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>Bestandsnamen met een &apos;%1&apos; symbool worden niet ondersteund door het bestandssysteem.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="265"/>
+        <location filename="../src/libsync/discovery.cpp" line="266"/>
         <source>File name contains at least one invalid character</source>
         <translation>De bestandsnaam bevat ten minste één ongeldig teken</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="267"/>
+        <location filename="../src/libsync/discovery.cpp" line="268"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>De bestandsnaam is een gereserveerde naam op dit bestandssysteem.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="276"/>
+        <location filename="../src/libsync/discovery.cpp" line="277"/>
         <source>Filename contains trailing spaces.</source>
         <translation>De bestandsnaam bevat spaties achteraan.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="279"/>
+        <location filename="../src/libsync/discovery.cpp" line="280"/>
         <source>Filename is too long.</source>
         <translation>De bestandsnaam is te lang.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="282"/>
+        <location filename="../src/libsync/discovery.cpp" line="283"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>Bestand/Map is genegeerd omdat het verborgen is. </translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="286"/>
+        <location filename="../src/libsync/discovery.cpp" line="287"/>
         <source>Stat failed.</source>
         <translation>Stat mislukt.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="289"/>
+        <location filename="../src/libsync/discovery.cpp" line="290"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>Conflict: Serverversie gedownload, lokale versie hernoemd en niet geüpload.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="293"/>
+        <location filename="../src/libsync/discovery.cpp" line="294"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>De bestandsnaam kan niet worden gecodeerd op jouw bestandssysteem.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="296"/>
+        <location filename="../src/libsync/discovery.cpp" line="297"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>De bestandsnaam staat op de zwarte lijst van de server.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="423"/>
+        <location filename="../src/libsync/discovery.cpp" line="424"/>
         <source>server reported no %1</source>
         <translation>Server vermeldde geen %1</translation>
     </message>
@@ -2267,7 +2267,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Niet toegestaan, omdat je geen permissies hebt om submappen aan die map toe te voegen</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="629"/>
+        <location filename="../src/libsync/discovery.cpp" line="630"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Er is een fout opgetreden bij het veranderen van de naam, de niet afgehandelde status code is: %1</translation>
     </message>
@@ -2300,12 +2300,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1126"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1130"/>
         <source>Error updating metadata: %1</source>
         <translation>Fout bij het bijwerken van de metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1129"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1133"/>
         <source>%1 the folder is currently in use</source>
         <translation>%1 de folder is op dit moment in gebruik</translation>
     </message>
@@ -2318,62 +2318,62 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Er kan geen ruimte gemaakt worden, bestand %1 is in gebuik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="459"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="542"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="458"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="539"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Kon bestand %1 niet downloaden vanwege een lokaal bestandsnaam conflict met %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="601"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="597"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>De download zal de vrije lokale schijfruimte reduceren tot onder het limiet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="605"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="601"/>
         <source>Free space on disk is less than %1</source>
         <translation>Vrije schijfruimte is minder dan %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="730"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="727"/>
         <source>File was deleted from server</source>
         <translation>Bestand was verwijderd van de server</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="789"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="786"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Kapotte webserver retourneerde een leeg antwoord voor een niet-leeg bestand bij het resumeren.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="796"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="793"/>
         <source>The file could not be downloaded completely.</source>
         <translation>Het bestand kon niet volledig worden gedownload.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="803"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="800"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>Het gedownloade bestand is leeg, hoewel de server meldde dat het %1 zou moeten zijn.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="911"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="907"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>Kon bestand %1 niet opslaan vanwege een lokaal bestandsconflict met %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1030"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1025"/>
         <source>Error updating metadata: %1</source>
         <translation>Fout bij het bijwerken van de metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="551"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="936"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="968"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="1033"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="547"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="931"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="963"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="1028"/>
         <source>The file %1 is currently in use</source>
         <translation>Bestand %1 is in gebruik</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="428"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="960"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="955"/>
         <source>File has changed since discovery</source>
         <translation>Het bestand is gewijzigd sinds het is gevonden</translation>
     </message>
@@ -2381,7 +2381,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="236"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="239"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Herstel mislukte: %1</translation>
     </message>
@@ -2441,32 +2441,32 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateLocalRename</name>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="234"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="235"/>
         <source>File %1 can not be renamed to %2 because of a local file name clash</source>
         <translation>Bestand %1 kan niet worden hernoemd naar %2, omdat de naam conflicteert met een lokaal bestand</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="240"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="242"/>
         <source>Could not rename %1 to %2, the file is currently in use</source>
         <translation>Kan %1 niet naar %2 verplaatsen, het bestand is in gebruik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="267"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="269"/>
         <source>Error updating metadata: %1</source>
         <translation>Fout bij het bijwerken van de metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="270"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="272"/>
         <source>The file %1 is currently in use</source>
         <translation>Bestand %1 is in gebruik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="276"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="278"/>
         <source>Failed to rename file</source>
         <translation>Kan bestand niet hernoemen</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="282"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="284"/>
         <source>Error setting pin state</source>
         <translation>Fout bij het instellen van pin staat</translation>
     </message>
@@ -2474,7 +2474,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateRemoteDelete</name>
     <message>
-        <location filename="../src/libsync/propagateremotedelete.cpp" line="95"/>
+        <location filename="../src/libsync/propagateremotedelete.cpp" line="97"/>
         <source>Wrong HTTP code returned by server. Expected 204, but received &quot;%1 %2&quot;.</source>
         <translation>Foutieve HTTP code ontvangen van de server. Verwacht was 204, maar ontvangen &quot;%1 %2&quot;.</translation>
     </message>
@@ -2482,17 +2482,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateRemoteMkdir</name>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="104"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="108"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
         <translation>Foutieve HTTP code ontvangen van de server. Verwacht was 201, maar ontvangen &quot;%1 %2&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="139"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="143"/>
         <source>Error writing metadata to the database: %1</source>
         <translation>Fout bij schrijven van Metadata naar de database: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="181"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="185"/>
         <source>Setting file status failed due to file lock</source>
         <translation>Kon een bestandsstatus niet zetten vanwege een bestandslock.</translation>
     </message>
@@ -2533,12 +2533,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1309"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1314"/>
         <source>Could not update file : %1</source>
         <translation>Kon bestand niet bijwerken : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1312"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1317"/>
         <source>The file %1 is currently in use</source>
         <translation>Bestand %1 is in gebruik</translation>
     </message>
@@ -2546,18 +2546,18 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::PropagateUploadFileCommon</name>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="126"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="125"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>Bestand %1 kan niet worden geüpload omdat er al een ander bestand met dezelfde naam bestaan, al verschillen hoofd/kleine letters</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="177"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="208"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="178"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="209"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 is in gebruik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="243"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="244"/>
         <source>File Removed</source>
         <translation>Bestand verwijderd</translation>
     </message>
@@ -2567,18 +2567,18 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Lokaal bestand gewijzigd bij sync. Het wordt opnieuw meegenomen.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="585"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="588"/>
         <source>The server did not provide the file permissions</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="593"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="596"/>
         <source>Error updating metadata: %1</source>
         <translation>Fout bij het bijwerken van de metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="137"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="480"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="136"/>
+        <location filename="../src/libsync/propagateupload.cpp" line="483"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Upload van %1 overtreft de quota van de folder</translation>
     </message>
@@ -2591,27 +2591,27 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>%1 is in gebruik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="459"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="461"/>
         <source>The local file was removed during sync.</source>
         <translation>Het lokale bestand werd verwijderd tijdens sync.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="506"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="508"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
         <translation>De server vroeg om een verwijderde legacy feature (polling).</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="511"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="513"/>
         <source>Unexpected return code from server (%1)</source>
         <translation>Onverwachte reactie van server (%1)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="518"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="520"/>
         <source>Missing File ID from server</source>
         <translation>Ontbrekende File ID van de server</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="531"/>
+        <location filename="../src/libsync/propagateuploadng.cpp" line="533"/>
         <source>Missing ETag from server</source>
         <translation>Ontbrekende ETag van de server</translation>
     </message>
