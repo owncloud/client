@@ -26,7 +26,7 @@
 #include <QTest>
 
 
-class TestLongWindowsPath : public QObject
+class TestFileSystem : public QObject
 {
     Q_OBJECT
 
@@ -139,5 +139,5 @@ private Q_SLOTS:
     }
 };
 
-QTEST_GUILESS_MAIN(TestLongWindowsPath)
-#include "testlongpath.moc"
+QTEST_GUILESS_MAIN(TestFileSystem)
+#include "testfilesystem.moc"
