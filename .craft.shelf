@@ -1,6 +1,6 @@
 [General]
 version = 2
-blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
+blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|fix/missing-import-os|
 
 [core/cacert]
 version = 2023-12-12
@@ -10,8 +10,7 @@ version = master
 revision = fdca754081357bce51abf038f53facc02d230b4d
 
 [craft/craft-blueprints-owncloud]
-version = master
-revision = e51cae2
+revision = 9e98ac2036d1b061630c16be4ba8d1f59ecc3648
 
 [craft/craft-core]
 version = master
