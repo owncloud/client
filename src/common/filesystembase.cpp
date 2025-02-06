@@ -361,7 +361,7 @@ bool FileSystem::mkpath(const QString &parent, const QString &newDir)
         fullPath += u'/';
     }
     fullPath += newDir;
-    std::filesystem::create_directories(newDir.toStdString(), err);
+    std::filesystem::create_directories(fullPath.toStdString(), err);
     return err.value() == 0;
 #endif
 }
