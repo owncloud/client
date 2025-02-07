@@ -26,6 +26,8 @@
 #include <QSettings>
 #include <QStorageInfo>
 
+#include <filesystem>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -48,6 +50,16 @@ constexpr auto replacementCharC = QLatin1Char('_');
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFileSystem, "sync.filesystem", QtInfoMsg)
+
+QByteArray FileSystem::encodeFileName(const QString &fileName)
+{
+    return fileName.toLocal8Bit();
+}
+
+QString FileSystem::decodeFileName(const char *localFileName)
+{
+    return QString::fromLocal8Bit(localFileName);
+}
 
 QString FileSystem::longWinPath(const QString &inpath)
 {
@@ -197,28 +209,15 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
     QString *errorString)
 {
     Q_ASSERT(errorString);
+
 #ifndef Q_OS_WIN
-    bool success;
-    QFile orig(originFileName);
-    // We want a rename that also overwrites.  QFile::rename does not overwrite.
-    // Qt 5.1 has QSaveFile::renameOverwrite we could use.
-    // ### FIXME
-    success = true;
-    bool destExists = fileExists(destinationFileName);
-    if (destExists && !QFile::remove(destinationFileName)) {
-        *errorString = orig.errorString();
-        qCWarning(lcFileSystem) << "Target file could not be removed.";
-        success = false;
-    }
-    if (success) {
-        success = orig.rename(destinationFileName);
-    }
-    if (!success) {
-        *errorString = orig.errorString();
+    std::error_code err;
+    std::filesystem::rename(originFileName.toStdString(), destinationFileName.toStdString(), err);
+    if (err) {
+        *errorString = QString::fromStdString(err.message());
         qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
         return false;
     }
-
 #else //Q_OS_WIN
     // You can not overwrite a read-only file on windows.
 
@@ -349,6 +348,22 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
         re = QFileInfo::exists(filename);
     }
     return re;
+}
+
+bool FileSystem::mkpath(const QString &parent, const QString &newDir)
+{
+#ifdef Q_OS_WIN
+    return QDir(parent).mkpath(newDir);
+#else // POSIX
+    std::error_code err;
+    QString fullPath = parent;
+    if (!fullPath.endsWith(u'/')) {
+        fullPath += u'/';
+    }
+    fullPath += newDir;
+    std::filesystem::create_directories(fullPath.toStdString(), err);
+    return err.value() == 0;
+#endif
 }
 
 QString FileSystem::fileSystemForPath(const QString &path)

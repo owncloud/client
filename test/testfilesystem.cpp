@@ -137,6 +137,74 @@ private Q_SLOTS:
 
         QVERIFY(tmp.remove());
     }
+
+    void testMkdir_data()
+    {
+        QTest::addColumn<QString>("name");
+
+        const unsigned char a_umlaut_composed_bytes[] = {0xc3, 0xa4, 0x00};
+        const QString a_umlaut_composed = QString::fromUtf8(reinterpret_cast<const char *>(a_umlaut_composed_bytes));
+        const QString a_umlaut_decomposed = a_umlaut_composed.normalized(QString::NormalizationForm_D);
+
+        QTest::newRow("a-umlaut composed") << a_umlaut_composed;
+        QTest::newRow("a-umlaut decomposed") << a_umlaut_decomposed;
+    }
+
+    // This is not a full test, it is meant to verify that no nomalization changes are done.
+    // The implementation of `OCC::FileSystem::mkpath` relies on either Qt (Windows) or
+    // `std::filesystem` (POSIX), which should be covered by tests of their own.
+    void testMkdir()
+    {
+        QFETCH(QString, name);
+
+        auto tmp = OCC::TestUtils::createTempDir();
+        QVERIFY(OCC::FileSystem::mkpath(tmp.path(), name));
+        csync_file_stat_t buf;
+        auto dh = csync_vio_local_opendir(tmp.path());
+        QVERIFY(dh);
+        while (auto fs = csync_vio_local_readdir(dh, nullptr)) {
+            QCOMPARE(fs->path, name);
+            QCOMPARE(fs->type, ItemTypeDirectory);
+        }
+        csync_vio_local_closedir(dh);
+    }
+
+    void testRename_data()
+    {
+        QTest::addColumn<QString>("name");
+
+        const unsigned char a_umlaut_composed_bytes[] = {0xc3, 0xa4, 0x00};
+        const QString a_umlaut_composed = QString::fromUtf8(reinterpret_cast<const char *>(a_umlaut_composed_bytes));
+        const QString a_umlaut_decomposed = a_umlaut_composed.normalized(QString::NormalizationForm_D);
+
+        QTest::newRow("a-umlaut composed") << a_umlaut_composed;
+        QTest::newRow("a-umlaut decomposed") << a_umlaut_decomposed;
+    }
+
+    // This is not a full test, it is meant to verify that no nomalization changes are done.
+    void testRename()
+    {
+        QFETCH(QString, name);
+
+        auto tmp = OCC::TestUtils::createTempDir();
+        QFile f(tmp.path() + u"/abc");
+        QVERIFY(f.open(QFile::WriteOnly));
+        QByteArray data("abc");
+        QCOMPARE(f.write(data), data.size());
+        f.close();
+
+        QString err;
+        QVERIFY(OCC::FileSystem::uncheckedRenameReplace(f.fileName(), tmp.path() + u'/' + name, &err));
+
+        csync_file_stat_t buf;
+        auto dh = csync_vio_local_opendir(tmp.path());
+        QVERIFY(dh);
+        while (auto fs = csync_vio_local_readdir(dh, nullptr)) {
+            QCOMPARE(fs->path, name);
+            QCOMPARE(fs->type, ItemTypeFile);
+        }
+        csync_vio_local_closedir(dh);
+    }
 };
 
 QTEST_GUILESS_MAIN(TestFileSystem)
