@@ -278,10 +278,10 @@ File synchronization desktop utility.</source>
 <context>
     <name>FileSystem</name>
     <message>
-        <location filename="../src/common/filesystembase.cpp" line="166"/>
-        <location filename="../src/common/filesystembase.cpp" line="168"/>
-        <location filename="../src/common/filesystembase.cpp" line="231"/>
-        <location filename="../src/common/filesystembase.cpp" line="236"/>
+        <location filename="../src/common/filesystembase.cpp" line="178"/>
+        <location filename="../src/common/filesystembase.cpp" line="180"/>
+        <location filename="../src/common/filesystembase.cpp" line="230"/>
+        <location filename="../src/common/filesystembase.cpp" line="235"/>
         <source>Can&apos;t rename %1, the file is currently in use</source>
         <translation>현재 사용되고 있는 파일 명으로 %1 을(를) 개명할 수 없습니다. </translation>
     </message>
@@ -3135,48 +3135,48 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="502"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="500"/>
         <source>Share with %1</source>
         <comment>parameter is ownCloud</comment>
         <translation>%1(으)로 공유하기</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="535"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="533"/>
         <source>Context menu share</source>
         <translation>컨텍스트 메뉴 공유</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="540"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="538"/>
         <source>Context menu share %1</source>
         <translation>컨텍스트 메뉴 공유 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="714"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="712"/>
         <source>Confirm deletion</source>
         <translation>삭제 확인</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="716"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="714"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
         <translation>&lt;i&gt;%1&lt;/i&gt; 디렉터리와 모든 콘텐츠를 영구적으로 삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="717"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="715"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
         <translation>&lt;i&gt;%1&lt;/i&gt; 파일을 영구적으로 삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="759"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="757"/>
         <source>Select new location...</source>
         <translation>새로운 경로 선택...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="769"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="767"/>
         <source>Error</source>
         <translation>오류</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="770"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="768"/>
         <source>Moving file failed:
 
 %1</source>
@@ -3185,90 +3185,90 @@ Note that using any logging command line options will override the settings.</so
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="845"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>I shared something with you</source>
         <translation>무언가를 여러분과 공유했습니다</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="888"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
         <source>Share...</source>
         <translation>공유...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="860"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="910"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="908"/>
         <source>Copy private link to clipboard</source>
         <translation>클립보드에 비밀 링크 복사</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Send private link by email...</source>
         <translation>이메일로 비밀 링크 보내기...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="884"/>
         <source>Resharing this file is not allowed</source>
         <translation>이 파일의 재 공유는 허용되지 않습니다</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="884"/>
         <source>Resharing this folder is not allowed</source>
         <translation>이 폴더는 재공유가 허가되지 않음</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="902"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="900"/>
         <source>Create and copy public link to clipboard</source>
         <translation>공공 링크를 생성하고 클립보드에 복사</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="905"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="903"/>
         <source>Manage public links</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="990"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="988"/>
         <source>Open in %1</source>
         <translation>%1에서 열기</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1001"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="999"/>
         <source>Show file versions in web browser</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1023"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1021"/>
         <source>Rename...</source>
         <translation>이름변경...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1026"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1024"/>
         <source>Rename and upload...</source>
         <translation>이름 변경 후 업로드...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1031"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1035"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1029"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1033"/>
         <source>Move and rename...</source>
         <translation>이동 + 이름변경...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1038"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1036"/>
         <source>Move, rename and upload...</source>
         <translation>이동, 개명과 업로드...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1041"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1039"/>
         <source>Delete local changes</source>
         <translation>로컬 변경 내용 삭제</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1046"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1044"/>
         <source>Move and upload...</source>
         <translation>이동과 업로드...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1047"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1045"/>
         <source>Delete</source>
         <translation>삭제</translation>
     </message>

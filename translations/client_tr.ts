@@ -278,10 +278,10 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
 <context>
     <name>FileSystem</name>
     <message>
-        <location filename="../src/common/filesystembase.cpp" line="166"/>
-        <location filename="../src/common/filesystembase.cpp" line="168"/>
-        <location filename="../src/common/filesystembase.cpp" line="231"/>
-        <location filename="../src/common/filesystembase.cpp" line="236"/>
+        <location filename="../src/common/filesystembase.cpp" line="178"/>
+        <location filename="../src/common/filesystembase.cpp" line="180"/>
+        <location filename="../src/common/filesystembase.cpp" line="230"/>
+        <location filename="../src/common/filesystembase.cpp" line="235"/>
         <source>Can&apos;t rename %1, the file is currently in use</source>
         <translation>%1 yeniden adlandırılamıyor, dosya şu anda kullanımda</translation>
     </message>
@@ -3136,48 +3136,48 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="502"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="500"/>
         <source>Share with %1</source>
         <comment>parameter is ownCloud</comment>
         <translation>%1 ile paylaş</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="535"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="533"/>
         <source>Context menu share</source>
         <translation>İçerik menüsü paylaşımı</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="540"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="538"/>
         <source>Context menu share %1</source>
         <translation>İçerik menüsü paylaşımı %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="714"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="712"/>
         <source>Confirm deletion</source>
         <translation>Silmeyi onayla</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="716"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="714"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
         <translation>&lt;i&gt;%1&lt;/i&gt; dizinini ve tüm içeriğini kalıcı olarak silmek istiyor musunuz?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="717"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="715"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
         <translation>&lt;i&gt;%1&lt;/i&gt; dosyasını kalıcı olarak silmek istiyor musunuz?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="759"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="757"/>
         <source>Select new location...</source>
         <translation>Yeni konum seçin...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="769"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="767"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="770"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="768"/>
         <source>Moving file failed:
 
 %1</source>
@@ -3186,90 +3186,90 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="845"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>I shared something with you</source>
         <translation>Seninle bir şey paylaştım</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="888"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
         <source>Share...</source>
         <translation>Paylaş...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="860"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="910"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="908"/>
         <source>Copy private link to clipboard</source>
         <translation>Özel bağlantıyı panoya kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Send private link by email...</source>
         <translation>Özel bağlantıyı e-posta ile gönder...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="884"/>
         <source>Resharing this file is not allowed</source>
         <translation>Bu dosyanın yeniden paylaşılmasına izin verilmiyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="884"/>
         <source>Resharing this folder is not allowed</source>
         <translation>Bu klasörün yeniden paylaşılmasına izin verilmiyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="902"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="900"/>
         <source>Create and copy public link to clipboard</source>
         <translation>Herkese açık bağlantı oluştur ve panoya kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="905"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="903"/>
         <source>Manage public links</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="990"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="988"/>
         <source>Open in %1</source>
         <translation>%1&apos;de Aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1001"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="999"/>
         <source>Show file versions in web browser</source>
         <translation>Dosya versiyonlarını web tarayıcıda göster</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1023"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1021"/>
         <source>Rename...</source>
         <translation>Yeniden adlandır...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1026"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1024"/>
         <source>Rename and upload...</source>
         <translation>Yeniden adlandır ve yükle...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1031"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1035"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1029"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1033"/>
         <source>Move and rename...</source>
         <translation>Taşı ve yeniden adlandır...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1038"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1036"/>
         <source>Move, rename and upload...</source>
         <translation>Taşı, yeniden adlandır ve yükle...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1041"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1039"/>
         <source>Delete local changes</source>
         <translation>Yerel değişiklikleri sil</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1046"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1044"/>
         <source>Move and upload...</source>
         <translation>Taşı ve yükle...</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1047"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1045"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
