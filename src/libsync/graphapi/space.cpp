@@ -97,14 +97,17 @@ void SpaceImage::update()
 
 QString Space::displayName() const
 {
-    auto hasManyPersonalSpaces = _spaceManager->account()->capabilities().spacesSupport().enabled;
+    // a system which provides multiple personal spaces the name of the drive is always used as display name
+    auto hasManyPersonalSpaces = _spaceManager->account()->capabilities().spacesSupport().hasMultiplePersonalSpaces;
     if (hasManyPersonalSpaces) {
         return _drive.getName();
     }
 
+    // other systems like oCIS have one personal and one shared space and their names are hard coded
     if (_drive.getDriveType() == personalC) {
         return tr("Personal");
-    } else if (_drive.getId() == sharesIdC) {
+    }
+    if (_drive.getId() == sharesIdC) {
         // don't call it ShareJail
         return tr("Shares");
     }
