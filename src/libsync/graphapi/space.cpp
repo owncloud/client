@@ -32,10 +32,11 @@ const auto personalC = QLatin1String("personal");
 const auto sharesIdC = QLatin1String("a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668");
 }
 
-Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive)
+Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const bool hasManyPersonalSpaces)
     : QObject(spacesManager)
     , _spaceManager(spacesManager)
     , _image(new SpaceImage(this))
+    , _hasManyPersonalSpaces(hasManyPersonalSpaces)
 {
     setDrive(drive);
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
@@ -97,9 +98,7 @@ void SpaceImage::update()
 
 QString Space::displayName() const
 {
-    // a system which provides multiple personal spaces the name of the drive is always used as display name
-    auto hasManyPersonalSpaces = _spaceManager->account()->capabilities().spacesSupport().hasMultiplePersonalSpaces;
-    if (hasManyPersonalSpaces) {
+    if (_hasManyPersonalSpaces) {
         return _drive.getName();
     }
 
