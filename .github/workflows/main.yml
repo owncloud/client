@@ -39,16 +39,6 @@ jobs:
               os: macos-latest
               container:
               useSonarCloud:
-            - name: macos-clang-arm64-debug
-              target: macos-clang-arm64-debug
-              os: macos-latest
-              container:
-              useSonarCloud:
-            - name: linux-gcc-x86_64
-              target: linux-64-gcc
-              os: ubuntu-latest
-              container: owncloudci/appimage-build:sles15-amd64
-              useSonarCloud:
 
     name: ${{ matrix.name }}
 
@@ -141,12 +131,6 @@ jobs:
     - name: Build
       if: ${{ !matrix.useSonarCloud }}
       run: |
-        if ("${{ matrix.target }}" -eq "macos-64-clang-debug" ) {
-            # https://api.kde.org/ecm/module/ECMEnableSanitizers.html
-            # address;leak;undefined
-            # clang: error: unsupported option '-fsanitize=leak' for target 'x86_64-apple-darwin21.6.0'
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set args="-DECM_ENABLE_SANITIZERS='address;undefined'" owncloud/owncloud-client
-        }
         if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
             # build with appimage updater and others
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client

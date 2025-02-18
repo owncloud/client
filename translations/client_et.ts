@@ -1645,12 +1645,12 @@ Vastasel juhul kaotad ligipääsu oma sünkroniseeritud kaustale!</translation>
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="106"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="107"/>
         <source>Personal</source>
         <translation>Isiklik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="109"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="111"/>
         <source>Shares</source>
         <translation>Jagamised</translation>
     </message>

@@ -1646,12 +1646,12 @@ Nëse nuk bëni kështu, do të humbni hyrje te dosja juaj e njëkohësuar!</tra
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="106"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="107"/>
         <source>Personal</source>
         <translation>Personale</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="109"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="111"/>
         <source>Shares</source>
         <translation>Pjesë</translation>
     </message>
