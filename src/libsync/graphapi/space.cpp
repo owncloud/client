@@ -32,10 +32,11 @@ const auto personalC = QLatin1String("personal");
 const auto sharesIdC = QLatin1String("a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668");
 }
 
-Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive)
+Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const bool hasManyPersonalSpaces)
     : QObject(spacesManager)
     , _spaceManager(spacesManager)
     , _image(new SpaceImage(this))
+    , _hasManyPersonalSpaces(hasManyPersonalSpaces)
 {
     // todo future refactoring: get this setDrive out of the ctr since it potentially kicks off a job for the SpaceImage before the Space is fully constructed
     // propose removing the drive arg from the ctr completely, and moving the call to setDrive to the spacesmanager such that any call to
@@ -70,15 +71,15 @@ void Space::setDrive(const OpenAPI::OAIDrive &drive)
 
 QString Space::displayName() const
 {
-    // why is this necessary? We call drive.getName anyway if the first two tests fail
-    auto hasManyPersonalSpaces = _spaceManager->account()->capabilities().spacesSupport().enabled;
-    if (hasManyPersonalSpaces) {
+    if (_hasManyPersonalSpaces) {
         return _drive.getName();
     }
 
+    // other systems like oCIS have one personal and one shared space and their names are hard coded
     if (_drive.getDriveType() == personalC) {
         return tr("Personal");
-    } else if (_drive.getId() == sharesIdC) {
+    }
+    if (_drive.getId() == sharesIdC) {
         // don't call it ShareJail
         return tr("Shares");
     }

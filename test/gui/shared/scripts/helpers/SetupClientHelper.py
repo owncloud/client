@@ -74,18 +74,11 @@ def set_current_user_sync_path(sync_path):
 
 def get_resource_path(resource='', user='', space=''):
     sync_path = get_config('currentUserSyncPath')
-    if not sync_path.startswith(get_config('tempFolderPath')):
-        if user:
-            sync_path = user
-        else:
-            user = parse_username_from_sync_path(sync_path)
-        if get_config('ocis'):
-            space = (
-                space
-                or get_config('syncConnectionName')
-                or get_displayname_for_user(user)
-            )
-            sync_path = join(sync_path, space)
+    if user:
+        sync_path = user
+    if get_config('ocis'):
+        space = space or get_config('syncConnectionName')
+        sync_path = join(sync_path, space)
     sync_path = join(get_config('clientRootSyncPath'), sync_path)
     resource = resource.replace(sync_path, '').strip('/').strip('\\')
     if is_windows():
@@ -94,10 +87,6 @@ def get_resource_path(resource='', user='', space=''):
         sync_path,
         resource,
     )
-
-
-def parse_username_from_sync_path(sync_path):
-    return sync_path.split('/').pop()
 
 
 def get_temp_resource_path(resource_name):
@@ -168,10 +157,12 @@ def generate_account_config(users, space='Personal'):
         server_url = get_config('localBackendUrl')
 
         if is_ocis := get_config('ocis'):
-            if space == 'Personal':
-                space = get_displayname_for_user(username)
+            set_config('syncConnectionName', space)
             sync_path = create_space_path(space)
-            dav_endpoint = url_join('dav/spaces', get_space_id(space, username))
+            space_name = space
+            if space == 'Personal':
+                space_name = get_displayname_for_user(username)
+            dav_endpoint = url_join('dav/spaces', get_space_id(space_name, username))
 
         args = {
             'url': url_join(server_url, dav_endpoint, ''),
@@ -199,10 +190,7 @@ def generate_account_config(users, space='Personal'):
     return sync_paths
 
 
-def setup_client(username, space=None):
-    if not space or space == 'Personal':
-        space = get_displayname_for_user(username)
-        set_config('syncConnectionName', space)
+def setup_client(username, space='Personal'):
     sync_paths = generate_account_config([username], space)
     start_client()
     for _, sync_path in sync_paths.items():
