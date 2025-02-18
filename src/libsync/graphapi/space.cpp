@@ -38,6 +38,9 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
     , _image(new SpaceImage(this))
     , _hasManyPersonalSpaces(hasManyPersonalSpaces)
 {
+    // todo future refactoring: get this setDrive out of the ctr since it potentially kicks off a job for the SpaceImage before the Space is fully constructed
+    // propose removing the drive arg from the ctr completely, and moving the call to setDrive to the spacesmanager such that any call to
+    // "new" space is immediately followed by setDrive.
     setDrive(drive);
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
 }
@@ -49,51 +52,21 @@ OpenAPI::OAIDrive Space::drive() const
 
 void Space::setDrive(const OpenAPI::OAIDrive &drive)
 {
+
+    // first config naturally has an empty drive - reality check that updated drives are always valid
+    Q_ASSERT(drive.isValid());
+
+    QString curTag = _drive.getRoot().getETag();
+    QString newTag = drive.getRoot().getETag();
+    Q_ASSERT(!newTag.isEmpty());
+    // the tag should change when the space is edited on the server. I verified that it changes on space rename as well
+    // as on changing the space image so we may have further wrinkles if there is an error in logic server side, but for now
+    // we want to reduce updates to "only when something changed" else everything is auto-refreshed periodically (eg every 30s)
+    if (curTag == newTag)
+        return;
+
     _drive = drive;
     _image->update();
-}
-
-SpaceImage::SpaceImage(Space *space)
-    : QObject(space)
-    , _space(space)
-{
-    update();
-}
-
-QIcon SpaceImage::image() const
-{
-    if (_image.isNull()) {
-        return Resources::getCoreIcon(QStringLiteral("space"));
-    }
-    return _image;
-}
-
-QUrl SpaceImage::qmlImageUrl() const
-{
-    if (!_image.isNull()) {
-        return QUrl(QStringLiteral("image://space/%1/%2").arg(etag(), _space->id()));
-    } else {
-        // invalid space id to display the placeholder
-        return QUrl(QStringLiteral("image://space/placeholder"));
-    }
-}
-
-void SpaceImage::update()
-{
-    const auto &special = _space->drive().getSpecial();
-    const auto img = std::find_if(special.cbegin(), special.cend(), [](const auto &it) { return it.getSpecialFolder().getName() == QLatin1String("image"); });
-    if (img != special.cend()) {
-        _url = QUrl(img->getWebDavUrl());
-        _etag = Utility::normalizeEtag(img->getETag());
-        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, {}, _space);
-        QObject::connect(job, &SimpleNetworkJob::finishedSignal, _space, [job, this] {
-            if (job->httpStatusCode() == 200) {
-                _image = job->asIcon();
-                Q_EMIT imageChanged();
-            }
-        });
-        job->start();
-    }
 }
 
 QString Space::displayName() const
@@ -142,4 +115,62 @@ QString Space::id() const
 QUrl Space::webdavUrl() const
 {
     return QUrl(_drive.getRoot().getWebDavUrl());
+}
+
+SpaceImage::SpaceImage(Space *space)
+    : QObject(space)
+    , _space(space)
+{
+}
+
+QIcon SpaceImage::image() const
+{
+    if (_image.isNull()) {
+        return Resources::getCoreIcon(QStringLiteral("space"));
+    }
+    return _image;
+}
+
+QUrl SpaceImage::qmlImageUrl() const
+{
+    if (!_image.isNull()) {
+        return QUrl(QStringLiteral("image://space/%1/%2").arg(etag(), _space->id()));
+    } else {
+        // invalid space id to display the placeholder
+        return QUrl(QStringLiteral("image://space/placeholder"));
+    }
+}
+
+void SpaceImage::update()
+{
+    const auto &special = _space->drive().getSpecial();
+    const auto img = std::find_if(special.cbegin(), special.cend(), [](const auto &it) { return it.getSpecialFolder().getName() == QLatin1String("image"); });
+    if (img != special.cend())
+    {
+        // ssue 12057: verified the image etag does change when the space's icon has been updated via the web interface
+        // check the etag before updating the members and creating the job. This should eliminate *many* pointless resource jobs which
+        // will exacerbate whatever is making the app crash when the space tries to clean up it's child jobs and one is already gone
+        QString newEtag = Utility::normalizeEtag(img->getETag());
+        if (_etag == newEtag)
+            return;
+
+        _etag = newEtag;
+        _url = QUrl(img->getWebDavUrl());
+        // issue 12057: I am leaving the space as the parent of the job just to avoid having confusion about "new" destructor crashes. At least
+        // we'll get any future crashes on the space still. I don't think that changing the parent is going to eliminate the associate crash - save
+        // this for a future refactoring
+        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, {}, _space);
+
+        // TODO: next problem = this routine is correctly run when the icon has changed on the server, but the icon in the gui does not get refreshed!
+        // The icon IS in the app cache, so it seems to have been brought back from the server correctly, but it is not shown until restart
+        // I did have a quick look at Resources::getCoreIcon - that is used in the SpaceImage::image function. Also sus is that I can't find any slot
+        // for the imageChanged signal but I think this may be connected in qml via the associated space image property.
+        QObject::connect(job, &SimpleNetworkJob::finishedSignal, _space, [job, this] {
+            if (job->httpStatusCode() == 200) {
+                _image = job->asIcon();
+                Q_EMIT imageChanged();
+            }
+        });
+        job->start();
+    }
 }
