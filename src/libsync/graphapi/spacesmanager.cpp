@@ -55,10 +55,14 @@ void SpacesManager::refresh()
     if (!_account->credentials()->ready()) {
         return;
     }
-    // TODO: leak the job until we fixed the onwership https://github.com/owncloud/client/issues/11203
+
+    // TODO: leak the job until we fixed the ownership https://github.com/owncloud/client/issues/11203
     auto drivesJob = new Drives(_account->sharedFromThis(), nullptr);
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {
+        // a system which provides multiple personal spaces the name of the drive is always used as display name
+        auto hasManyPersonalSpaces = this->account()->capabilities().spacesSupport().hasMultiplePersonalSpaces;
+
         drivesJob->deleteLater();
         if (drivesJob->httpStatusCode() == 200) {
             auto oldKeys = _spacesMap.keys();
@@ -66,7 +70,7 @@ void SpacesManager::refresh()
                 auto *space = this->space(dr.getId());
                 oldKeys.removeAll(dr.getId());
                 if (!space) {
-                    space = new Space(this, dr);
+                    space = new Space(this, dr, hasManyPersonalSpaces);
                     _spacesMap.insert(dr.getId(), space);
                 } else {
                     space->setDrive(dr);

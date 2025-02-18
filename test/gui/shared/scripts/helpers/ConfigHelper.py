@@ -100,7 +100,6 @@ CONFIG = {
     'ocis': False,
     'record_video_on_failure': False,
     'files_for_upload': os.path.join(CURRENT_DIR.parent.parent, 'files-for-upload'),
-    'syncConnectionName': '',
 }
 CONFIG.update(DEFAULT_PATH_CONFIG)
 
