@@ -819,7 +819,7 @@ void SyncEngine::abort(const QString &reason)
         disconnect(_discoveryPhase.get(), nullptr, this, nullptr);
     }
     if (aborting) {
-        qCInfo(lcEngine) << "Aborting sync";
+        qCInfo(lcEngine) << "Aborting sync, stated reason:" << reason;
         if (!_goingDown) {
             Q_EMIT syncError(tr("Aborted due to %1").arg(reason));
         }

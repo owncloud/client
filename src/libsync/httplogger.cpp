@@ -68,7 +68,6 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
 {
     static const bool redact = !qEnvironmentVariableIsSet("OWNCLOUD_HTTPLOGGER_NO_REDACT");
     const auto reply = qobject_cast<QNetworkReply *>(device);
-    const auto contentLength = device ? device->size() : 0;
 
     if (redact) {
         const QString authKey = QStringLiteral("Authorization");
@@ -103,7 +102,8 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
         info.insert(QStringLiteral("cached"), cached);
     }
 
-    QJsonObject body = {{QStringLiteral("length"), contentLength}};
+    const auto contentLength = device ? device->size() : 0;
+    QJsonObject body = {{QStringLiteral("length"), device ? QString::number(contentLength) : QStringLiteral("null")}};
     if (contentLength > 0) {
         QString contentType = header.value(QStringLiteral("Content-Type")).toString();
         if (contentType.isEmpty()) {
@@ -146,19 +146,24 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
 
     auto ctx = std::make_unique<HttpContext>(reply->request());
 
+    const auto logError = [reply, operation, id = ctx->id]() {
+        auto url = reply->request().url();
+        qCInfo(lcNetworkHttp).noquote().nospace() << "An error occurred for " << url.toDisplayString() << ": " << reply->errorString() << " (" << reply->error()
+                                                  << ", " << operation << "), request-id: " << id;
+    };
+
     // device should still exist, lets still use a qpointer to ensure we have valid data
-    const auto logSend = [ctx = ctx.get(), operation, reply, device = QPointer<QIODevice>(device), deviceRaw = device](bool cached = false) {
+    const auto logSend = [ctx = ctx.get(), operation, reply, device = QPointer<QIODevice>(device), deviceRaw = device, logError](bool cached = false) {
         Q_ASSERT(!deviceRaw || device);
         if (!ctx->send) {
             ctx->send = true;
             ctx->timer.reset();
-        } else {
+        } else if (ctx->lastUrl != reply->url()) {
             // this is a redirect
-            if (ctx->lastUrl != reply->url()) {
-                ctx->addRedirect(reply->url());
-            } else {
-                Q_UNREACHABLE();
-            }
+            ctx->addRedirect(reply->url());
+        } else {
+            // Probably an error (time-out?).
+            logError();
         }
 
         const auto request = reply->request();
@@ -169,6 +174,7 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
         logHttp(requestVerb(operation, request), ctx, std::move(header), device, cached);
     };
     QObject::connect(reply, &QNetworkReply::requestSent, reply, logSend, Qt::DirectConnection);
+    QObject::connect(reply, &QNetworkReply::errorOccurred, reply, logError, Qt::DirectConnection);
 
 
     QObject::connect(
