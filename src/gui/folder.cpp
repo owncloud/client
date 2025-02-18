@@ -155,7 +155,7 @@ Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accoun
         connect(_engine.data(), &SyncEngine::itemCompleted,
             _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotItemCompleted);
 
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, [this](GraphApi::Space *changedSpace) {
+        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
             if (_definition.spaceId() == changedSpace->id()) {
                 Q_EMIT spaceChanged();
             }
