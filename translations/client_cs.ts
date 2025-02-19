@@ -1633,12 +1633,12 @@ You are going to lose access to your sync folder if you do not do so!</source>
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="107"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="80"/>
         <source>Personal</source>
         <translation>Osobní</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="111"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="84"/>
         <source>Shares</source>
         <translation>Sdílení</translation>
     </message>
