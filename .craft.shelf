@@ -1,13 +1,12 @@
 [General]
 version = 2
-blueprintrepositories = https://github.com/DeepDiver1975/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
+blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
 
 [core/cacert]
 version = 2023-01-10
 
 [craft/craft-blueprints-kde]
 version = master
-revision = 9be073decbb06b7425655806c4e57ccc85ea2117
 
 [craft/craft-blueprints-owncloud]
 version = 5
