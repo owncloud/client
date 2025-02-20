@@ -29,7 +29,7 @@ __TODO__:
 ### Copy for Each Build (Beta/RC)
 
 * [ ] DEV: Tag (Beta or RC) and build [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Sprintbuild) for theme 'ownCloud' and 'testpilotcloud' (includes ChangeLog for the tag on https://github.com/owncloud/client/releases/)
-* [ ] QA: [Smoke test](https://owncloud.testrail.io/index.php?/cases/view/2469) (for public pre-release)
+* [ ] QA: [Smoke test](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21bc6b66c2-84e3-4a92-926c-c7fa2492f85e)
 * [ ] DEV: GitHub release
 * [ ] Beta/RC [Communication](https://confluence.owncloud.com/x/loJK)
     * [ ] Inform ``#updates`` that we have Beta/RC    
@@ -40,15 +40,15 @@ __TODO__:
      
 ### QA 
 
-* [ ] QA: [Antivirus scan](https://confluence.owncloud.com/display/OG/Virus+Scanning) the first RC
+* [ ] QA: [Antivirus scan](https://www.virustotal.com/gui/home/upload) the first RC
 * [ ] QA: [Upload](https://confluence.owncloud.com/display/OG/Upload+linux+gpg+keys+to+key+server) linux gpg keys to key server
 * [ ] QA: Check Crash reporter:  start 'owncloud --debug' on cmd line, system tray right click menu: 'Crash now - qt fatal' -> report window not empty, sending the report works
   * [ ] Windows  
   * [ ] macOS
   * [ ] AppImage (Linux)
-* [Automated tests](https://confluence.owncloud.com/display/OG/Automated+Tests) (for the first beta and the last RC):
+* [Automated tests](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21073f546f-59af-42f2-8a47-1480a051b6cc) (for the first beta and the last RC):
    * [ ] QA: GUI tests passed on a tag
-   * [ ] QA: All [Linux platform install](https://confluence.owncloud.com/display/OG/Automated+Tests#AutomatedTests-LinuxInstallTest)
+   * [ ] QA: All [Linux platform install](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21bd275422-5fff-414e-aa67-23cad9b4aac8)
 * Manual tests:
    * [ ] QA: [Changelog](https://github.com/owncloud/client/blob/master/CHANGELOG.md) test
    * [ ] QA: Regression test
@@ -57,20 +57,20 @@ __TODO__:
 ### Prerequisites for final release
 
 * [ ] DEV: Create vX.Y.Z release tag in client repo and everywhere else
-* [ ] DEV: bump VERSION.cmake in master to say 3.(x+1).x unless already done.
+* [ ] DEV: bump VERSION.cmake in master to say X.(Y+1).Z unless already done.
 
 ### Final Rebuild after QA Approval
 
 * [ ] QA: Inform on ``#documentation-internal`` that the tag for the final release will be set a day or at least half a day __before__ (only for a major/minor release). They'll merge docs PR before that.
-* [ ] DEV: Create final release tag (e.g., `v4.5.6`)
+* [ ] DEV: Create final release tag (e.g., `vX.Y.Z`)
 * [ ] DEV: Create [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Tags) for themes 'ownCloud' and 'testpilotcloud' for final release tag
 * [ ] DEV: Update version for future builds
-* [ ] QA: Check [squish tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Finalreleasestep) running successfully on [drone](https://drone.owncloud.com/owncloud/client) for the final tag v3.X.x
+* [ ] QA: Check [squish tests](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21073f546f-59af-42f2-8a47-1480a051b6cc) running successfully on [drone](https://drone.owncloud.com/owncloud/client) for the final tag vX.Y.Z
 * [ ] QA: Create a new release issue for a branded release if needed [Branded Client Release Template](https://github.com/owncloud/enterprise/blob/master/internal_release_templates/internal_client_release_template.md)
 
 ### Final Steps
 
-* [ ] QA: [Smoke test](https://confluence.owncloud.com/display/OG/Manual+Tests#ManualTests-SmokeTest)
+* [ ] QA: [Smoke test](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21bc6b66c2-84e3-4a92-926c-c7fa2492f85e)
 * [ ] DEV: Publish the release in GitHub
 * [ ] QA: Update lines 4 and 5 of [install docs](https://github.com/owncloud/docs-client-desktop/blob/master/modules/ROOT/pages/installing.adoc) with the final build number. Merge into master and backport to the respective branch
 * [ ] QA: Check that [documentation](https://doc.owncloud.com/desktop/next/) offers the new version
@@ -79,7 +79,7 @@ __TODO__:
 
 ### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
-* [ ] QA: Ping ``#marketing`` to update links on https://owncloud.com/desktop-app/ (provide links from GitHub releases) and @mfeilner to update [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576)) 
+* [ ] QA: Ping ``#marketing`` at marketing@owncloud.com; to update links on https://owncloud.com/desktop-app/ (provide links from GitHub releases) and [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576)) 
 * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
 * [ ] QA: Inform on ``#updates`` channel
 * [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
