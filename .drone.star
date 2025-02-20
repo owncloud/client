@@ -8,6 +8,7 @@
 DEFAULT_PHP_VERSION = "7.4"
 
 MYSQL = "mysql:8.0"
+PYTHON = "python:3.10.16"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_CLIENT = "owncloudci/client:latest"
@@ -23,7 +24,7 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-41-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-39-8.0.0-qt67x-linux64"
+OC_CI_SQUISH = "ishabaral/squish:latest"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3:1.4.0"
@@ -328,8 +329,9 @@ def lint_gui_test():
 def python_lint():
     return [{
         "name": "python-lint",
-        "image": OC_CI_SQUISH,
+        "image": PYTHON,
         "commands": [
+            "apt-get update && apt-get install -y libgirepository1.0-dev libcairo2-dev pkg-config",
             "make -C %s pip-install" % dir["guiTest"],
             "make -C %s python-lint" % dir["guiTest"],
         ],
@@ -615,9 +617,10 @@ def installPnpm():
 def install_python_modules():
     return [{
         "name": "install-python-modules",
-        "image": OC_CI_SQUISH,
+        "image": PYTHON,
         "user": "0:0",
         "commands": [
+            "apt-get update && apt-get install -y libgirepository1.0-dev libcairo2-dev pkg-config",
             "make -C %s pip-install" % dir["guiTest"],
         ],
         "volumes": pip_step_volume,
