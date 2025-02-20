@@ -163,10 +163,3 @@ endif()
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
-if(ECM_VERSION VERSION_GREATER_EQUAL 5.79)
-    message(STATUS "Suitable ECM ${ECM_VERSION} found, installing clang-format git hook")
-    include(KDEGitCommitHooks)
-    kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)
-else()
-    message(WARNING "ECM ${ECM_VERSION} too old, cannot install clang-format git hook")
-endif()
