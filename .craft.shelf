@@ -7,7 +7,7 @@ version = 2023-01-10
 
 [craft/craft-blueprints-kde]
 version = 5+openssl+dbus
-revision = a99ed6ddb981974b65945e70a943776511c03c9d
+revision = 0d9cbe209b1197e0c9f4e556597eaa526261b2e1
 
 [craft/craft-blueprints-owncloud]
 version = 5
