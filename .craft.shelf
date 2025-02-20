@@ -1,13 +1,12 @@
 [General]
 version = 2
-blueprintrepositories = https://github.com/DeepDiver1975/craft-blueprints-kde.git|5+openssl+dbus|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
+blueprintrepositories = https://github.com/DeepDiver1975/craft-blueprints-kde.git|5+openssl+dbus+pyimports|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
 
 [core/cacert]
 version = 2023-01-10
 
 [craft/craft-blueprints-kde]
-version = 5+openssl+dbus
-revision = 0d9cbe209b1197e0c9f4e556597eaa526261b2e1
+version = 5+openssl+dbus+pyimports
 
 [craft/craft-blueprints-owncloud]
 version = 5
