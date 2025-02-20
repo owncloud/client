@@ -19,7 +19,17 @@ defaults:
     shell: pwsh
 
 jobs:
-# ------------------------------------------------------------------------------------------------------------------------------------------
+  clazy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: MinyazevR/clazy-standalone-action@v0.2.1
+        with:
+          install-stable: true
+
   build:
     permissions:
       # actions/upload-artifact doesn't need contents: write
