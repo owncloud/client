@@ -58,12 +58,6 @@ jobs:
         fetch-depth: ${{ matrix.fetch-depth }}
         submodules: true
 
-    - name: Restore cache
-      uses: actions/cache@v4
-      with:
-        path: ~/cache
-        key: ${{ runner.os }}-${{ matrix.target }}
-
     - name: Clone CraftMaster
       run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
 
