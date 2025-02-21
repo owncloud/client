@@ -113,9 +113,6 @@ version = 3.3.2
 [libs/pcre2]
 version = 10.44
 
-[libs/python]
-version = 3.11.7
-
 [libs/runtime]
 version = 17
 
