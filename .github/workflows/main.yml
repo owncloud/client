@@ -105,7 +105,6 @@ jobs:
           if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
               # build with appimage updater and others
               & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client
-              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=true owncloud/owncloud-client
               & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
           }
           & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
@@ -138,7 +137,6 @@ jobs:
         if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
             # build with appimage updater and others
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=true owncloud/owncloud-client
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
         }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache owncloud/owncloud-client
@@ -167,10 +165,6 @@ jobs:
 
     - name: Package
       run: |
-        if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
-            # package without crash reporter
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=false owncloud/owncloud-client
-        }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --package owncloud/owncloud-client
 
     - name: Prepare artifacts
