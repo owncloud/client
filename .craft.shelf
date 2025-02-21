@@ -15,7 +15,6 @@ revision = dbfc069c0d6e679939b40e3c44d4aa825f149480
 
 [craft/craft-core]
 version = master
-revision = 57762d56b
 
 [dev-utils/7zip-base]
 version = 24.05
