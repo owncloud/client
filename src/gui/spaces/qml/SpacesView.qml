@@ -22,7 +22,7 @@ import org.ownCloud.libsync 1.0
 Pane {
     id: spacesView
     // TODO: not cool
-    readonly property real normalSize: 70
+    readonly property real normalSize: 170
 
     readonly property SpacesBrowser spacesBrowser: ocContext
     readonly property OCQuickWidget widget: ocQuickWidget
