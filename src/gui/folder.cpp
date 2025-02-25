@@ -388,11 +388,9 @@ QUrl Folder::webDavUrl() const
 QString Folder::remotePathTrailingSlash() const
 {
     const QString remote = remotePath();
-    if (remote == QLatin1Char('/')) {
-        return remote;
-    }
-    Q_ASSERT(!remote.endsWith(QLatin1Char('/')));
-    return remote + QLatin1Char('/');
+    if (!remote.endsWith((QLatin1Char('/'))))
+        return remote + QLatin1Char('/');
+    return remote;
 }
 
 QUrl Folder::remoteUrl() const
@@ -640,7 +638,8 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
     bool needSync = false;
     for (const auto &path : paths) {
         Q_ASSERT(FileSystem::isChildPathOf(path, this->path()));
-
+        if (!FileSystem::isChildPathOf(path, this->path()))
+            continue;
         const QString relativePath = path.mid(this->path().size());
         if (reason == ChangeReason::UnLock) {
             journalDb()->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
@@ -924,6 +923,9 @@ void Folder::startSync()
     Q_ASSERT(isReady());
     Q_ASSERT(_folderWatcher);
 
+    if (!isReady() || !_folderWatcher)
+        return;
+
     if (!OC_ENSURE(!isSyncRunning())) {
         qCCritical(lcFolder) << "ERROR sync is still running and new sync requested.";
         return;
@@ -984,6 +986,9 @@ void Folder::startSync()
 void Folder::setDirtyNetworkLimits()
 {
     Q_ASSERT(isReady());
+    if (!isReady())
+        return;
+
     ConfigFile cfg;
     int downloadLimit = -75; // 75%
     int useDownLimit = cfg.useDownloadLimit();
@@ -1332,7 +1337,6 @@ bool Folder::groupInSidebar() const
     if (_accountState->account()->hasDefaultSyncRoot()) {
         // QFileInfo is horrible and "/foo/" is treated different to "/foo"
         const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
-        Q_ASSERT(QFileInfo(parentDir) != QFileInfo(path()));
         // If parentDir == home, we would add a the home dir to the side bar.
         return QFileInfo(parentDir) != QFileInfo(QDir::homePath()) && FileSystem::isChildPathOf(parentDir, _accountState->account()->defaultSyncRoot());
     }
@@ -1365,6 +1369,8 @@ QString FolderDefinition::spaceId() const
     // we might call the function to check for the id
     // anyhow one of the conditions needs to be true
     Q_ASSERT(_webDavUrl.isValid() || !_spaceId.isEmpty());
+    if (!_webDavUrl.isValid() || _spaceId.isEmpty())
+        return QString();
     return _spaceId;
 }
 } // namespace OCC
