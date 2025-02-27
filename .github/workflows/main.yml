@@ -39,7 +39,11 @@ jobs:
               os: macos-latest
               container:
               useSonarCloud:
-
+            - name: linux-gcc-x86_64
+              target: linux-64-gcc
+              os: ubuntu-latest
+              container: owncloudci/appimage-build:sles15-amd64
+              useSonarCloud:
     name: ${{ matrix.name }}
 
     runs-on: ${{ matrix.os }}
