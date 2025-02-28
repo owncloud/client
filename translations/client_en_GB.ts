@@ -1245,12 +1245,12 @@ This means that the synchronisation client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>Unsupported filesystem</source>
-        <translation type="unfinished"/>
+        <translation>Unsupported filesystem</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On MacOS only Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>On MacOS only Apple File System is supported.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>
