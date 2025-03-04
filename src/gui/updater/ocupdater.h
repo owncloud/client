@@ -45,9 +45,9 @@ namespace OCC {
  * complex class design was set up:
  *
  * For Windows and Linux, the updaters are inherited from OCUpdater, while
- * the MacOSX SparkleUpdater directly uses the class Updater. On windows,
+ * the macOSX SparkleUpdater directly uses the class Updater. On windows,
  * NSISUpdater starts the update if a new version of the client is available.
- * On MacOSX, the sparkle framework handles the installation of the new
+ * On macOSX, the sparkle framework handles the installation of the new
  * version. On Linux, the update capabilities of the underlying linux distro
  * are relied on, and thus the PassiveUpdateNotifier just shows a notification
  * if there is a new version once at every start of the application.

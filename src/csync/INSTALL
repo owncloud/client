@@ -28,7 +28,7 @@ build and run csync successfully with an older version, please let us know.
 First, you need to configure the compilation, using CMake. Go inside the
 `build` dir. Create it if it doesn't exist.
 
-GNU/Linux and MacOS X:
+GNU/Linux and macOS X:
 
     cmake -DCMAKE_BUILD_TYPE=Debug ..
     make
@@ -38,7 +38,7 @@ Here is a list of the most interesting options provided out of the box by CMake.
 
 - CMAKE_BUILD_TYPE: The type of build (can be Debug Release MinSizeRel RelWithDebInfo)
 - CMAKE_INSTALL_PREFIX: The prefix to use when running make install (Default to
-  /usr/local on GNU/Linux and MacOS X)
+  /usr/local on GNU/Linux and macOS X)
 - CMAKE_C_COMPILER: The path to the C compiler
 - CMAKE_CXX_COMPILER: The path to the C++ compiler
 
@@ -59,7 +59,7 @@ CMake options using `cmakesetup` (Windows) or `ccmake` (GNU/Linux and MacOS X).
 
 - Go to the build dir
 - On Windows: run `cmakesetup`
-- On GNU/Linux and MacOS X: run `ccmake ..`
+- On GNU/Linux and macOS X: run `ccmake ..`
 
 ## Installing
 
