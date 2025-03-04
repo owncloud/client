@@ -74,7 +74,7 @@ ownCloud admins and users.
 * Change - Remove support for branded shell extensions on Linux: [#11743](https://github.com/owncloud/client/issues/11743)
 * Change - Only allow to add un-synced spaces: [#11752](https://github.com/owncloud/client/issues/11752)
 * Change - Rewrite of the login widget in QML: [#11856](https://github.com/owncloud/client/pull/11856)
-* Change - Only support APFS on MacOS: [#12044](https://github.com/owncloud/client/pull/12044)
+* Change - Only support APFS on macOS: [#12044](https://github.com/owncloud/client/pull/12044)
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 * Enhancement - Add option to move files to trash instead of deleting: [#9001](https://github.com/owncloud/client/issues/9001)
 * Enhancement - Prevent same default sync folder for multiple accounts with Spaces: [#11204](https://github.com/owncloud/client/issues/11204)
@@ -316,7 +316,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/11856
 
-* Change - Only support APFS on MacOS: [#12044](https://github.com/owncloud/client/pull/12044)
+* Change - Only support APFS on macOS: [#12044](https://github.com/owncloud/client/pull/12044)
 
    Apple File System in contrary to HFS+ is Unicode normalization preserving. To
    support this properly the upcoming version 6 of desktop client will support NFC
