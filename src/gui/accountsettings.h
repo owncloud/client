@@ -92,6 +92,7 @@ protected Q_SLOTS:
     void slotDisableVfsCurrentFolder(Folder *folder);
     void slotFolderWizardAccepted();
     void slotDeleteAccount();
+    void slotOpenAccountInBrowser();
     void slotToggleSignInState();
     void slotCustomContextMenuRequested(Folder *folder);
 
