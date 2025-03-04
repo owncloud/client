@@ -360,7 +360,7 @@ bool FolderMan::ensureFilesystemSupported(const FolderDefinition &folderDefiniti
 
     QString filesystemType = FileSystem::fileSystemForPath(folderDefinition.localPath());
     if (filesystemType != QStringLiteral("apfs")) {
-        QMessageBox::warning(nullptr, tr("Unsupported filesystem"), tr("On MacOS only Apple File System is supported."), QMessageBox::Ok);
+        QMessageBox::warning(nullptr, tr("Unsupported filesystem"), tr("On macOS, only the Apple File System is supported."), QMessageBox::Ok);
 
         return false;
     }

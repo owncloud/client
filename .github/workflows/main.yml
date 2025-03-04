@@ -39,7 +39,11 @@ jobs:
               os: macos-latest
               container:
               useSonarCloud:
-
+            - name: linux-gcc-x86_64
+              target: linux-64-gcc
+              os: ubuntu-latest
+              container: owncloudci/appimage-build:sles15-amd64
+              useSonarCloud:
     name: ${{ matrix.name }}
 
     runs-on: ${{ matrix.os }}
@@ -155,8 +159,8 @@ jobs:
     - name: Clang tidy
       if: github.event_name != 'pull_request'
       run: |
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm python-modules/pip
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m pip install clang-html
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
         $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.run-clang-tidy.ps1"
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m clang_html "${env:TMPDIR}/clang-tidy.log" -o "${env:GITHUB_WORKSPACE}/binaries/clang-tidy.html"

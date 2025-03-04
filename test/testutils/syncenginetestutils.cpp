@@ -657,7 +657,12 @@ void FakeGetReply::respond()
                 Q_EMIT readyRead();
             }
         }
-        Q_EMIT finished();
+        if (!isFinished()) {
+            // It can happen that this job is cancelled before the full data is read, and the job is aborted. This being the test framework, processing happens
+            // synchronously, so between the signals above and here, the job can get aborted, which emits the finished signal. So do NOT emit it again if
+            // this is the case.
+            Q_EMIT finished();
+        }
     }
 }
 

@@ -90,7 +90,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
         menu->addAction(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"), this, &AccountSettings::slotToggleSignInState);
         auto *reconnectAction = menu->addAction(tr("Reconnect"), this, [this] { _accountState->checkConnectivity(true); });
         reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-        menu->addAction(CommonStrings::showInWebBrowser(), this, [this] { QDesktopServices::openUrl(_accountState->account()->url()); });
+        menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountSettings::slotOpenAccountInBrowser);
         menu->addAction(tr("Remove"), this, &AccountSettings::slotDeleteAccount);
         menu->popup(mapToGlobal(ui->manageAccountButton->pos()));
 
@@ -110,6 +110,16 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this,
         [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->quickWidget); });
     ui->stackedWidget->setCurrentWidget(ui->quickWidget);
+}
+
+void AccountSettings::slotOpenAccountInBrowser()
+{
+    QUrl url = _accountState->account()->url();
+    if (!Theme::instance()->overrideServerPath().isEmpty()) {
+        // There is an override for the WebDAV endpoint. Remove it for normal web browsing.
+        url.setPath({});
+    }
+    QDesktopServices::openUrl(url);
 }
 
 void AccountSettings::slotToggleSignInState()
