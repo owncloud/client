@@ -19,12 +19,9 @@ __TODO__:
 * [ ] DEV: For a major release create `X` version branch
   * [ ] QA: In drone adjust the branch for nightly [GUI tests](https://confluence.owncloud.com/display/OG/Squish+Testing#SquishTesting-Prerequisite) @individual-it
 * [ ] QA: Communicate documentation changes  
-   * [ ] Inform ``#documentation-internal`` (@mmattel) about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
+   * [ ] Inform documentation team about the start of testing phase (latest a week before the release!). They'll prepare a PR with respective doc version
    * [ ] Open issues in ``docs-client-desktop`` repo for already known doc-relevant items and mark them accordingly, e.g. backport to 2.X.x necessary
 * [ ] Decide if the prerelease stage will be public or internal @DeepDiver1975 
-* [ ] Announce feature freeze in ``#release_coordination`` channel before Beta build
-* [ ] Announce string freeze in ``#release_coordination`` channel a few days later
-   * [ ] Inform ``#documentation-internal`` about it so that they can do the translations
   
 ### Copy for Each Build (Beta/RC)
 
@@ -32,8 +29,6 @@ __TODO__:
 * [ ] QA: [Smoke test](https://infinite.owncloud.com/f/31e6d44f-f373-557c-9ab3-1748fc0c650d$4994cd9c-1c17-4254-829a-f5ef6e1ff7e3%21bc6b66c2-84e3-4a92-926c-c7fa2492f85e)
 * [ ] DEV: GitHub release
 * [ ] Beta/RC [Communication](https://confluence.owncloud.com/x/loJK)
-    * [ ] Inform ``#updates`` that we have Beta/RC    
-    * [ ] For public prerelease: Inform ``#marketing`` and tell them to send email to beta testers
     * [ ] For public prerelease: Write/edit Central post https://central.owncloud.org/tags/c/news/desktop with link to GitHub release 
 * [ ] DEV: Prepare the update server for new version (AppImages included)
    * [ ] DEV: Provide 'testpilotcloud' on **Beta** update channel
@@ -61,7 +56,7 @@ __TODO__:
 
 ### Final Rebuild after QA Approval
 
-* [ ] QA: Inform on ``#documentation-internal`` that the tag for the final release will be set a day or at least half a day __before__ (only for a major/minor release). They'll merge docs PR before that.
+* [ ] QA: Inform documentation team that the tag for the final release will be set a day or at least half a day __before__ (only for a major/minor release). They'll merge docs PR before that.
 * [ ] DEV: Create final release tag (e.g., `vX.Y.Z`)
 * [ ] DEV: Create [builds](https://confluence.owncloud.com/display/OG/Build+and+Tags#BuildandTags-Tags) for themes 'ownCloud' and 'testpilotcloud' for final release tag
 * [ ] DEV: Update version for future builds
@@ -79,10 +74,8 @@ __TODO__:
 
 ### [Marketing and Communication](https://confluence.owncloud.com/display/OG/Marketing+and+Communication)
    
-* [ ] QA: Ping ``#marketing`` at marketing@owncloud.com; to update links on https://owncloud.com/desktop-app/ (provide links from GitHub releases) and [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576)) 
+* [ ] QA: Inform Kiteworks marketing to update links on https://owncloud.com/desktop-app/ (provide links from GitHub releases) and [wiki de](https://de.wikipedia.org/wiki/OwnCloud), [wiki en](https://en.wikipedia.org/wiki/OwnCloud), [wikidata](https://www.wikidata.org/wiki/Q20763576)) 
 * [ ] QA: Central post https://central.owncloud.org/tags/c/news/desktop
-* [ ] QA: Inform on ``#updates`` channel
-* [ ] QA: Inform [packagers](https://confluence.owncloud.com/x/QYLEAg)
 
 ### Infrastructure Check
 
