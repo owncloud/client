@@ -346,6 +346,9 @@ private:
     /// \returns false when a downgrade of the database is detected, true otherwise.
     bool setupFoldersHelper(QSettings &settings, AccountStatePtr account);
 
+    /// \returns true of the FolderDefinition was migrated, false if it was unchanged
+    bool migrateFolderDefinition(FolderDefinition &folderDef, AccountStatePtr account);
+
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;
     QString _folderConfigPath;
