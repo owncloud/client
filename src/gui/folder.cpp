@@ -911,11 +911,11 @@ bool Folder::reloadExcludes()
 
 void Folder::startSync()
 {
-    Q_ASSERT(isReady());
-    Q_ASSERT(_folderWatcher);
-
-    if (!isReady() || !_folderWatcher)
+    Q_ASSERT(isReady() && _folderWatcher);
+    if (!isReady() || !_folderWatcher) {
+        qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
         return;
+    }
 
     if (!OC_ENSURE(!isSyncRunning())) {
         qCCritical(lcFolder) << "ERROR sync is still running and new sync requested.";
@@ -977,8 +977,10 @@ void Folder::startSync()
 void Folder::setDirtyNetworkLimits()
 {
     Q_ASSERT(isReady());
-    if (!isReady())
+    if (!isReady()) {
+        qCWarning(lcFolder) << "Folder is not ready";
         return;
+    }
 
     ConfigFile cfg;
     int downloadLimit = -75; // 75%
@@ -1021,6 +1023,7 @@ void Folder::slotSyncFinished(bool success)
 {
     if (!isReady()) {
         // probably removing the folder
+        qCWarning(lcFolder) << "Folder not ready after sync finished";
         return;
     }
     qCInfo(lcFolder) << "Client version" << Theme::instance()->aboutVersions(Theme::VersionFormat::OneLiner);
@@ -1341,7 +1344,6 @@ bool FolderDefinition::isDeployed() const
 
 QUrl FolderDefinition::webDavUrl() const
 {
-    Q_ASSERT(_webDavUrl.isValid());
     return _webDavUrl;
 }
 
@@ -1357,11 +1359,6 @@ QString FolderDefinition::localPath() const
 
 QString FolderDefinition::spaceId() const
 {
-    // we might call the function to check for the id
-    // anyhow one of the conditions needs to be true
-    Q_ASSERT(_webDavUrl.isValid() || !_spaceId.isEmpty());
-    if (!_webDavUrl.isValid() || _spaceId.isEmpty())
-        return QString();
     return _spaceId;
 }
 } // namespace OCC

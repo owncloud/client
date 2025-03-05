@@ -260,10 +260,13 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
             qFatal("Could not load plugin");
         }
 
+        // this move is sus to me. basically the function just takes the def and passes it to the folder ctr via
+        // a const ref - essentially the def has to be copied into the folder member anyway?
+        // Lisa todo: discuss this with Erik
         if (Folder *f = addFolderInternal(std::move(folderDefinition), account, std::move(vfs))) {
             // save possible changes from the migration
             if (migrated) {
-                FolderDefinition::save(settings, folderDefinition);
+                FolderDefinition::save(settings, f->definition());
             }
             Q_EMIT folderSyncStateChange(f);
         }
@@ -278,7 +281,7 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
     // Lisa todo: remove ignoreHiddenFolders key if possible but remember config compatibility issues up AND down
 
     bool migrationPerformed = false;
-    //  const auto defaultJournalPath = [&account, folderDefinition] {
+
     // if we would have booth the 2.9.0 file name and the lagacy file
     // with the md5 infix we prefer the 2.9.0 version
     QString defaultJournalPath;
@@ -315,7 +318,7 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
     }
 
     // migration: 2.10 did not specify a WebDAV URL
-    if (folderDefinition.webDavUrl().isEmpty()) {
+    if (!folderDefinition.webDavUrl().isValid()) {
         folderDefinition.setWebDavUrl(account->account()->davUrl());
         migrationPerformed = true;
     }
