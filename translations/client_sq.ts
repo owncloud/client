@@ -1320,7 +1320,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On macOS, only the Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>Në macOS, mbulohet vetëm Apple File System.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="804"/>
