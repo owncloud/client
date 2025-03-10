@@ -120,6 +120,8 @@ public:
     void setPriority(uint32_t newPriority);
 
 private:
+    // Lisa todo: why???? is this private?
+    // WHY can't the ctr create the uuid internally and let the app just use a normal ctr instead of that CreateFolderDefinition nonsense?
     FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName);
 
     // oc10 and as cache for ocis
@@ -170,6 +172,8 @@ public:
      * The account the folder is configured on.
      */
     AccountStatePtr accountState() const { return _accountState; }
+
+    const FolderDefinition &definition() const { return _definition; }
 
     QByteArray id() const;
 
@@ -261,9 +265,9 @@ public:
     void reloadSyncOptions();
 
     /**
-      * Ignore syncing of hidden files or not. This is defined in the
-      * folder definition
-      */
+     * Ignore syncing of hidden files or not. This is defined in the
+     * folder definition
+     */
     bool ignoreHiddenFiles();
     void setIgnoreHiddenFiles(bool ignore);
 
@@ -335,10 +339,7 @@ public:
         return _definition.priority();
     }
 
-    void setPriority(uint32_t p)
-    {
-        return _definition.setPriority(p);
-    }
+    void setPriority(uint32_t p) { _definition.setPriority(p); }
 
     static Result<void, QString> checkPathLength(const QString &path);
 

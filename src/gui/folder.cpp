@@ -286,8 +286,6 @@ void Folder::prepareFolder(const QString &path)
         } else {
             qCInfo(lcFolder) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
         }
-
-        desktopIni.sync();
     }
 
     const QString longFolderPath = FileSystem::longWinPath(path);
@@ -345,8 +343,7 @@ QString Folder::shortGuiLocalPath() const
 
 bool Folder::ignoreHiddenFiles()
 {
-    bool re(_definition.ignoreHiddenFiles);
-    return re;
+    return _definition.ignoreHiddenFiles;
 }
 
 void Folder::setIgnoreHiddenFiles(bool ignore)
@@ -388,11 +385,9 @@ QUrl Folder::webDavUrl() const
 QString Folder::remotePathTrailingSlash() const
 {
     const QString remote = remotePath();
-    if (remote == QLatin1Char('/')) {
-        return remote;
-    }
-    Q_ASSERT(!remote.endsWith(QLatin1Char('/')));
-    return remote + QLatin1Char('/');
+    if (!remote.endsWith((QLatin1Char('/'))))
+        return remote + QLatin1Char('/');
+    return remote;
 }
 
 QUrl Folder::remoteUrl() const
@@ -640,7 +635,8 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
     bool needSync = false;
     for (const auto &path : paths) {
         Q_ASSERT(FileSystem::isChildPathOf(path, this->path()));
-
+        if (!FileSystem::isChildPathOf(path, this->path()))
+            continue;
         const QString relativePath = path.mid(this->path().size());
         if (reason == ChangeReason::UnLock) {
             journalDb()->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
@@ -741,6 +737,7 @@ void Folder::setVirtualFilesEnabled(bool enabled)
         // This is tested in TestSyncVirtualFiles::testWipeVirtualSuffixFiles, so for changes here, have them reflected in that test.
         const bool isPaused = _definition.paused;
         if (!isPaused) {
+            // Lisa todo: calls saveToSettings
             setSyncPaused(true);
         }
         auto finalizeVfsSwitch = [newMode, enabled, isPaused, this] {
@@ -774,8 +771,10 @@ void Folder::setVirtualFilesEnabled(bool enabled)
                     }
                 });
             }
+            // Lisa todo: my goodness yet a third possible saveToSettings in this one function!
             saveToSettings();
             if (!isPaused) {
+                // Lisa todo: calls saveToSettings
                 setSyncPaused(isPaused);
             }
             startVfs();
@@ -799,39 +798,30 @@ bool Folder::isDeployed() const
     return _definition.isDeployed();
 }
 
+// Ideally this goes away completely! It's needed in the near term to ensure "one off" property changes get saved to
+// settings. This needs to happen on demand to preserve state in case the app crashes :/ Path forward is to replace this with calls
+// to FolderDefinition::save so we can better control the lifetime of the settings instance and also reduce excessive syncs to file
 void Folder::saveToSettings() const
 {
-    auto definitionToSave = _definition;
+    auto settings = _accountState->settings();
+    auto id = QString::fromUtf8(_definition.id());
 
-    // migration
-    if (accountState()->supportsSpaces() && _definition.spaceId().isEmpty()) {
-        OC_DISABLE_DEPRECATED_WARNING
-        if (auto *space = accountState()->account()->spacesManager()->spaceByUrl(webDavUrl())) {
-            OC_ENABLE_DEPRECATED_WARNING
-            definitionToSave.setSpaceId(space->drive().getRoot().getId());
-        }
-    }
-    // with spaces we rely on the space id
-    // we save the dav URL nevertheless to have it available during startup
-    definitionToSave.setWebDavUrl(webDavUrl());
+    settings->beginGroup(QStringLiteral("Folders/%1").arg(id));
 
-    // keep the scope of the interaction with the settings limited to prevent possible loss of settings
-    [definitionToSave, settings = _accountState->settings(), id = QString::fromUtf8(definitionToSave.id())] {
-        // Remove first to make sure we don't get duplicates
-        removeFromSettings(settings.get(), id);
+    FolderDefinition::save(*settings.get(), _definition);
 
-        settings->beginGroup(QStringLiteral("Folders/%1").arg(id));
-        // Note: Each of these groups might have a "version" tag, but that's
-        //       currently unused.
-        FolderDefinition::save(*settings.get(), definitionToSave);
-
-        settings->sync();
-        qCInfo(lcFolder) << "Saved folder" << definitionToSave.localPath() << "to settings, status" << settings->status();
-    }();
+    // should not be necessary as the sync will happen when the settings go out of scope/are destructed
+    settings->sync();
+    qCInfo(lcFolder) << "Saved folder" << _definition.localPath() << "to settings, status" << settings->status();
 }
 
+// Lisa todo: should move these remove routines to FolderMan
 void Folder::removeFromSettings(QSettings *settings, const QString &id)
 {
+    // be careful about empty id here, as if it is empty the remove will apply to *all* Folders, Multifolders
+    // and FoldersWithPlaceholders
+    if (!settings || id.isEmpty())
+        return;
     settings->remove(QStringLiteral("Folders/%1").arg(id));
     settings->remove(QStringLiteral("Multifolders/%1").arg(id));
     settings->remove(QStringLiteral("FoldersWithPlaceholders/%1").arg(id));
@@ -921,8 +911,11 @@ bool Folder::reloadExcludes()
 
 void Folder::startSync()
 {
-    Q_ASSERT(isReady());
-    Q_ASSERT(_folderWatcher);
+    Q_ASSERT(isReady() && _folderWatcher);
+    if (!isReady() || !_folderWatcher) {
+        qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
+        return;
+    }
 
     if (!OC_ENSURE(!isSyncRunning())) {
         qCCritical(lcFolder) << "ERROR sync is still running and new sync requested.";
@@ -984,6 +977,11 @@ void Folder::startSync()
 void Folder::setDirtyNetworkLimits()
 {
     Q_ASSERT(isReady());
+    if (!isReady()) {
+        qCWarning(lcFolder) << "Folder is not ready";
+        return;
+    }
+
     ConfigFile cfg;
     int downloadLimit = -75; // 75%
     int useDownLimit = cfg.useDownloadLimit();
@@ -1025,6 +1023,7 @@ void Folder::slotSyncFinished(bool success)
 {
     if (!isReady()) {
         // probably removing the folder
+        qCWarning(lcFolder) << "Folder not ready after sync finished";
         return;
     }
     qCInfo(lcFolder) << "Client version" << Theme::instance()->aboutVersions(Theme::VersionFormat::OneLiner);
@@ -1332,7 +1331,6 @@ bool Folder::groupInSidebar() const
     if (_accountState->account()->hasDefaultSyncRoot()) {
         // QFileInfo is horrible and "/foo/" is treated different to "/foo"
         const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
-        Q_ASSERT(QFileInfo(parentDir) != QFileInfo(path()));
         // If parentDir == home, we would add a the home dir to the side bar.
         return QFileInfo(parentDir) != QFileInfo(QDir::homePath()) && FileSystem::isChildPathOf(parentDir, _accountState->account()->defaultSyncRoot());
     }
@@ -1346,7 +1344,6 @@ bool FolderDefinition::isDeployed() const
 
 QUrl FolderDefinition::webDavUrl() const
 {
-    Q_ASSERT(_webDavUrl.isValid());
     return _webDavUrl;
 }
 
@@ -1362,9 +1359,6 @@ QString FolderDefinition::localPath() const
 
 QString FolderDefinition::spaceId() const
 {
-    // we might call the function to check for the id
-    // anyhow one of the conditions needs to be true
-    Q_ASSERT(_webDavUrl.isValid() || !_spaceId.isEmpty());
     return _spaceId;
 }
 } // namespace OCC
