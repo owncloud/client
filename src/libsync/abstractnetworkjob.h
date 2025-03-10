@@ -74,7 +74,18 @@ public:
     void setForceIgnoreCredentialFailure(bool ignore);
     bool ignoreCredentialFailure() const;
 
+    /**
+     * @brief Returns the timestamp from the reply
+     *
+     * @return Empty if the job was aborted, or an error occurred and no response was received.
+     *         Otherwise the timestamp from the reply header. Note that the timestamp might be
+     *         absent if the reply didn't contain one.
+     */
     QByteArray responseTimestamp() const;
+    /**
+     * See responseTimestamp(), now converted to a QDateTime. If there was no response timestamp,
+     * return an invalid `QDateTime`.
+     */
     QDateTime responseQTimeStamp() const;
 
     int httpStatusCode() const;

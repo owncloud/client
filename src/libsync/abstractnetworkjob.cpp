@@ -238,7 +238,6 @@ void AbstractNetworkJob::slotFinished()
 
 QByteArray AbstractNetworkJob::responseTimestamp() const
 {
-    OC_ASSERT(!_responseTimestamp.isEmpty() || _aborted || (reply() && reply()->error() == QNetworkReply::RemoteHostClosedError));
     return _responseTimestamp;
 }
 
