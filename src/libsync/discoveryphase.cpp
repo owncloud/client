@@ -422,7 +422,14 @@ void DiscoverySingleDirectoryJob::lsJobFinishedWithoutErrorSlot()
         deleteLater();
         return;
     }
-    Q_EMIT etag(_firstEtag, _proFindJob->responseQTimeStamp());
+
+    auto lastResponse = _proFindJob->responseQTimeStamp();
+    if (!lastResponse.isValid()) {
+        // If the responose had no valid "Date" header, use "now", as the job just finished.
+        lastResponse = QDateTime::currentDateTimeUtc();
+    }
+
+    Q_EMIT etag(_firstEtag, lastResponse);
     Q_EMIT finished(_results);
     deleteLater();
 }
