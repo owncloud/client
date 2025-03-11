@@ -636,9 +636,9 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <translation>Sünkroniseeri ühendused</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="297"/>
-        <location filename="../src/gui/accountsettings.cpp" line="336"/>
-        <location filename="../src/gui/accountsettings.cpp" line="672"/>
+        <location filename="../src/gui/accountsettings.cpp" line="307"/>
+        <location filename="../src/gui/accountsettings.cpp" line="346"/>
+        <location filename="../src/gui/accountsettings.cpp" line="682"/>
         <source>Cancel</source>
         <translation>Loobu</translation>
     </message>
@@ -648,23 +648,23 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <translation>Eemalda</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="221"/>
-        <location filename="../src/gui/accountsettings.cpp" line="240"/>
+        <location filename="../src/gui/accountsettings.cpp" line="231"/>
+        <location filename="../src/gui/accountsettings.cpp" line="250"/>
         <source>Choose what to sync</source>
         <translation>Vali, mida sünkroniseerida</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="179"/>
+        <location filename="../src/gui/accountsettings.cpp" line="189"/>
         <source>Force sync now</source>
         <translation>Sünkroniseeri jõuga kohe</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="181"/>
+        <location filename="../src/gui/accountsettings.cpp" line="191"/>
         <source>Restart sync</source>
         <translation>Taaskäivita sünkroniseerimine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="130"/>
+        <location filename="../src/gui/accountsettings.cpp" line="140"/>
         <source>Remove folder sync connection</source>
         <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
     </message>
@@ -679,32 +679,32 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <translation>Ühendu uuesti</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="135"/>
+        <location filename="../src/gui/accountsettings.cpp" line="145"/>
         <source>Sync options menu</source>
         <translation>Sünkroniseerimise valikute menüü</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="141"/>
+        <location filename="../src/gui/accountsettings.cpp" line="151"/>
         <source>Folder is not ready yet</source>
         <translation>Kaust ei ole veel valmis</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="290"/>
+        <location filename="../src/gui/accountsettings.cpp" line="300"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Kinnita kaustade sünkroniseerimise ühenduse kustutamine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="296"/>
+        <location filename="../src/gui/accountsettings.cpp" line="306"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="327"/>
+        <location filename="../src/gui/accountsettings.cpp" line="337"/>
         <source>Disable virtual file support?</source>
         <translation>Lülita virtuaalse faili tugi välja?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="328"/>
+        <location filename="../src/gui/accountsettings.cpp" line="338"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -717,47 +717,47 @@ Ainus eelis virtuaalse faili toe väljalülitamisel on valikulise sünkroniseeri
 See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="335"/>
+        <location filename="../src/gui/accountsettings.cpp" line="345"/>
         <source>Disable support</source>
         <translation>Eemalda tugi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="400"/>
+        <location filename="../src/gui/accountsettings.cpp" line="410"/>
         <source>Sync Running</source>
         <translation>Sünkroniseerimine on käimas</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="400"/>
+        <location filename="../src/gui/accountsettings.cpp" line="410"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>Sünkroniseerimine käib. &lt;br/&gt; Kas soovid katkestada?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="214"/>
+        <location filename="../src/gui/accountsettings.cpp" line="224"/>
         <source>Disable virtual file support</source>
         <translation>Keela virtuaalse faili tugi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="200"/>
+        <location filename="../src/gui/accountsettings.cpp" line="210"/>
         <source>Enable virtual file support</source>
         <translation>Luba virtuaalse faili tugi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="417"/>
+        <location filename="../src/gui/accountsettings.cpp" line="427"/>
         <source>Sync paused by user</source>
         <translation>Sünkroniseerimine peatati kasutaja poolt</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="432"/>
+        <location filename="../src/gui/accountsettings.cpp" line="442"/>
         <source>Internet connection is metered</source>
         <translation>Internetiühendus on mahupõhine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="433"/>
+        <location filename="../src/gui/accountsettings.cpp" line="443"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>Sünkroniseerimine on peatatud, kuna interneti-ühendus on mahupõhine&lt;p&gt;Kas soovite tõesti sünkroniseerida?</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="457"/>
+        <location filename="../src/gui/accountsettings.cpp" line="467"/>
         <source>User triggered force sync</source>
         <translation>Kasutaja käivitas sunnitud sünkroniseerimise</translation>
     </message>
@@ -767,67 +767,67 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation>Logi sisse</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="491"/>
+        <location filename="../src/gui/accountsettings.cpp" line="501"/>
         <source>Connected</source>
         <translation>Ühendatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="500"/>
+        <location filename="../src/gui/accountsettings.cpp" line="510"/>
         <source>Server is temporarily unavailable</source>
         <translation>Server ei ole ajutiselt ligipääsetav</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="503"/>
+        <location filename="../src/gui/accountsettings.cpp" line="513"/>
         <source>Server is currently in maintenance mode</source>
         <translation>Server on hooldusrežiimil</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="506"/>
+        <location filename="../src/gui/accountsettings.cpp" line="516"/>
         <source>Signed out</source>
         <translation>Välja logitud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="509"/>
+        <location filename="../src/gui/accountsettings.cpp" line="519"/>
         <source>Updating credentials...</source>
         <translation>Uuendan kasutajatunnuseid...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="514"/>
+        <location filename="../src/gui/accountsettings.cpp" line="524"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>Piiratud portaal takistab ühendusi serverisse.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="516"/>
+        <location filename="../src/gui/accountsettings.cpp" line="526"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Sünkroniseerimine on peatatud mahupõhise internetiühenduse tõttu</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="518"/>
+        <location filename="../src/gui/accountsettings.cpp" line="528"/>
         <source>Connecting...</source>
         <translation>Ühendamine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="522"/>
+        <location filename="../src/gui/accountsettings.cpp" line="532"/>
         <source>Server configuration error</source>
         <translation>Serveri seadete viga</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="528"/>
+        <location filename="../src/gui/accountsettings.cpp" line="538"/>
         <source>Disconnected</source>
         <translation>Lahti ühendatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="666"/>
+        <location filename="../src/gui/accountsettings.cpp" line="676"/>
         <source>Confirm Account Removal</source>
         <translation>Kinnita konto eemaldamine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="667"/>
+        <location filename="../src/gui/accountsettings.cpp" line="677"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kas soovid tõesti ühenduse kontoga &lt;i&gt;%1&lt;/i&gt; eemaldada?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="671"/>
+        <location filename="../src/gui/accountsettings.cpp" line="681"/>
         <source>Remove connection</source>
         <translation>Eemalda ühendus</translation>
     </message>
@@ -837,22 +837,22 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation>Logi välja</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="187"/>
+        <location filename="../src/gui/accountsettings.cpp" line="197"/>
         <source>Resume sync</source>
         <translation>Jätka sünkroniseerimist</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="187"/>
+        <location filename="../src/gui/accountsettings.cpp" line="197"/>
         <source>Pause sync</source>
         <translation>Peata sünkroniseerimine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="291"/>
+        <location filename="../src/gui/accountsettings.cpp" line="301"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kas soovid tõesti katkestada kataloogi &lt;i&gt;%1&lt;/i&gt; sünkroniseerimist?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="488"/>
+        <location filename="../src/gui/accountsettings.cpp" line="498"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>Serveri versioon %1 ei ole toetatud! Jätkake omal vastutusel.</translation>
     </message>
@@ -1247,11 +1247,6 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
         <translation>Mittetoetatud failisüsteem</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="314"/>
-        <source>On MacOS only Apple File System is supported.</source>
-        <translation>MacOS puhul on toetatud ainult Apple File System</translation>
-    </message>
-    <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>
         <source>Account disconnected or paused</source>
         <translation>Ühendus kontoga on katkenud või peatatud</translation>
@@ -1320,6 +1315,11 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
         <location filename="../src/gui/folderman.cpp" line="794"/>
         <source>The selected path does not exist!</source>
         <translation>Valitud failirada ei eksisteeri!</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="314"/>
+        <source>On macOS, only the Apple File System is supported.</source>
+        <translation>MacOS puhul on toetatud ainult Apple File System</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="804"/>
@@ -3363,7 +3363,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/libsync/theme.cpp" line="323"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Versioon %1.  Lisainformatsiooni saamiseks külastage &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt; 3Teadaolevate vigade ja abi lugemiseks külastage: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Autorid: Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller jt.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Turustatud %4 poolt ja litsenseeritud vastavalt GNU General Public License (GPL) versioonile 2.0.&lt;br/&gt;%5 ja %5 logo on %4 registreeritud kaubamärgid USA-s, teistes riikides või mõlemas.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
