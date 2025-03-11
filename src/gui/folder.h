@@ -33,7 +33,6 @@
 
 #include <chrono>
 #include <memory>
-#include <set>
 
 class QThread;
 class QSettings;
@@ -53,23 +52,15 @@ class LocalDiscoveryTracker;
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
+    FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName);
+
+    // Lisa todo: just make this a normal public ctr. there is no reason to have this static create method, but it's used in several places so keeping it for
+    // now
     static auto createNewFolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {})
     {
         return FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName);
     }
 
-    /// path to the journal, usually relative to localPath
-    QString journalPath;
-
-    /// whether the folder is paused
-    bool paused = false;
-    /// whether the folder syncs hidden files
-    bool ignoreHiddenFiles = true;
-    /// Which virtual files setting the folder uses
-    Vfs::Mode virtualFilesMode = Vfs::Off;
-
-    /// Whether the vfs mode shall silently be updated if possible
-    bool upgradeVfsMode = false;
 
     /// Saves the folder definition into the current settings group.
     static void save(QSettings &settings, const FolderDefinition &folder);
@@ -77,31 +68,56 @@ public:
     /// Reads a folder definition from the current settings group.
     static FolderDefinition load(QSettings &settings, const QByteArray &id);
 
+    /// path to the journal, usually relative to localPath
+    QString journalPath() const { return _journalPath; }
+
+    void setJournalPath(const QString &newPath)
+    {
+        if (_journalPath != newPath)
+            _journalPath = newPath;
+    }
+
+    /// whether the folder is paused
+    bool paused() const { return _paused; }
+    void setPaused(bool pause) { _paused = pause; }
+
+    /// whether the folder syncs hidden files
+    bool ignoreHiddenFiles() const { return _ignoreHiddenFiles; }
+    void setIgnoreHiddenFiles(bool ignore) { _ignoreHiddenFiles = ignore; }
+
+    /// Which virtual files setting the folder uses
+    Vfs::Mode virtualFilesMode() const { return _virtualFilesMode; }
+    void setVirtualFilesMode(Vfs::Mode mode) { _virtualFilesMode = mode; }
+
+    /// Whether the vfs mode shall silently be updated if possible
+    bool upgradeVfsMode() const { return _upgradeVfsMode; }
+    void setUpgradeVfsMode(bool upgradeVfs) { _upgradeVfsMode = upgradeVfs; }
+
+
     /// Ensure / as separator and trailing /.
     void setLocalPath(const QString &path);
+    QString localPath() const { return _localPath; }
+
 
     /// Remove ending /, then ensure starting '/': so "/foo/bar" and "/".
     void setTargetPath(const QString &path);
+    QString targetPath() const { return _targetPath; }
 
     /// journalPath relative to localPath.
-    QString absoluteJournalPath() const;
+    QString absoluteJournalPath() const { return QDir(localPath()).filePath(_journalPath); }
 
-    QString localPath() const;
 
-    QString targetPath() const;
-
-    QUrl webDavUrl() const;
-
+    QUrl webDavUrl() const { return _webDavUrl; }
     // could change in the case of spaces
     void setWebDavUrl(const QUrl &url) { _webDavUrl = url; }
 
+
     // when using spaces we don't store the dav URL but the space id
     // this id is then used to look up the dav URL
-    QString spaceId() const;
-
+    QString spaceId() const { return _spaceId; }
     void setSpaceId(const QString &spaceId) { _spaceId = spaceId; }
 
-    const QByteArray &id() const;
+    const QByteArray &id() const { return _id; }
 
     QString displayName() const;
 
@@ -109,20 +125,28 @@ public:
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
      */
-    bool isDeployed() const;
+    bool isDeployed() const { return _deployed; }
 
     /**
      * Higher values mean more imortant
      * Used for sorting
      */
     uint32_t priority() const;
-
     void setPriority(uint32_t newPriority);
 
 private:
-    // Lisa todo: why???? is this private?
-    // WHY can't the ctr create the uuid internally and let the app just use a normal ctr instead of that CreateFolderDefinition nonsense?
-    FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName);
+    /// path to the journal, usually relative to localPath
+    QString _journalPath;
+
+    /// whether the folder is paused
+    bool _paused = false;
+    /// whether the folder syncs hidden files
+    bool _ignoreHiddenFiles = true;
+    /// Which virtual files setting the folder uses
+    Vfs::Mode _virtualFilesMode = Vfs::Off;
+
+    /// Whether the vfs mode shall silently be updated if possible
+    bool _upgradeVfsMode = false;
 
     // oc10 and as cache for ocis
     QUrl _webDavUrl;
@@ -139,7 +163,7 @@ private:
 
     uint32_t _priority = 0;
 
-    friend class FolderMan;
+// Lisa todo: eliminate this friend - refactor to use the public interface
     friend class SpaceMigration;
 };
 
@@ -175,9 +199,31 @@ public:
 
     const FolderDefinition &definition() const { return _definition; }
 
-    QByteArray id() const;
+    QByteArray id() const { return _definition.id(); }
 
+    /**
+     * Ignore syncing of hidden files or not. This is defined in the
+     * folder definition
+     *
+     * Lisa todo: refactor this as
+     * a) it's actually a global setting and
+     * b) the value only matters when it is passed to the engine
+     * it doesn't really need to be in the definition at all.
+     */
+    bool ignoreHiddenFiles() const { return _definition.ignoreHiddenFiles(); }
+
+    void setIgnoreHiddenFiles(bool ignore) { _definition.setIgnoreHiddenFiles(ignore); }
+
+    /**
+     * remote folder path, usually without trailing /, exception "/"
+     */
+    QString remotePath() const { return _definition.targetPath(); }
+
+    // may come from the definition, may come from the space. Lisa todo: review this as it appears questionable
     QString displayName() const;
+
+    // may come from definition, may come from space - Lisa todo: check this out
+    QUrl webDavUrl() const;
 
     /**
      * short local path to display on the GUI  (native separators)
@@ -187,7 +233,7 @@ public:
     /**
      * canonical local folder path, always ends with /
      */
-    QString path() const;
+    QString path() const { return _canonicalLocalPath; }
 
     /**
      * cleaned canonical folder path, like path() but never ends with a /
@@ -197,15 +243,6 @@ public:
      */
     QString cleanPath() const;
 
-    /**
-     * remote folder path, usually without trailing /, exception "/"
-     */
-    QString remotePath() const;
-
-    /**
-     * The full remote WebDAV URL
-     */
-    QUrl webDavUrl() const;
 
     /**
      * remote folder path, always with a trailing /
@@ -215,14 +252,14 @@ public:
     /**
      * remote folder path with server URL
      */
-    QUrl remoteUrl() const;
+    QUrl remoteUrl() const { return Utility::concatUrlPath(webDavUrl(), remotePath()); }
 
     /**
      * switch sync on or off
      */
     void setSyncPaused(bool);
 
-    bool syncPaused() const;
+    bool syncPaused() const { return _definition.paused(); }
 
     /**
      * Returns true when the folder may sync.
@@ -231,6 +268,8 @@ public:
 
     /**
      * Whether the folder is ready
+     *
+     * passthrough to _engine
      */
     bool isReady() const;
 
@@ -239,7 +278,7 @@ public:
         return _syncResult.status() == SyncResult::SetupError;
     }
 
-    void prepareToSync();
+    void prepareToSync() { setSyncState(SyncResult::NotYetStarted); }
 
     /** True if the folder is currently synchronizing */
     bool isSyncRunning() const;
@@ -247,7 +286,7 @@ public:
     /**
      * return the last sync result with error message and status
      */
-    SyncResult syncResult() const;
+    SyncResult syncResult() const { return _syncResult; }
 
     /**
       * This is called when the sync folder definition is removed. Do cleanups here.
@@ -264,12 +303,6 @@ public:
 
     void reloadSyncOptions();
 
-    /**
-     * Ignore syncing of hidden files or not. This is defined in the
-     * folder definition
-     */
-    bool ignoreHiddenFiles();
-    void setIgnoreHiddenFiles(bool ignore);
 
     // TODO: don't expose
     SyncJournalDb *journalDb()
@@ -334,10 +367,8 @@ public:
      */
     bool isDeployed() const;
 
-    auto priority()
-    {
-        return _definition.priority();
-    }
+    uint32_t priority() const { return _definition.priority(); }
+
 
     void setPriority(uint32_t p) { _definition.setPriority(p); }
 

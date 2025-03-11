@@ -129,24 +129,6 @@ const QVector<Folder *> &FolderMan::folders() const
     return _folders;
 }
 
-void FolderMan::unloadFolder(Folder *f)
-{
-    Q_ASSERT(f);
-
-    _folders.removeAll(f);
-    _socketApi->slotUnregisterPath(f);
-
-
-    if (!f->hasSetupError()) {
-        disconnect(f, nullptr, _socketApi.get(), nullptr);
-        disconnect(f, nullptr, this, nullptr);
-        disconnect(f, nullptr, &f->syncEngine().syncFileStatusTracker(), nullptr);
-        disconnect(&f->syncEngine(), nullptr, f, nullptr);
-        disconnect(
-            &f->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-    }
-}
-
 void FolderMan::unloadAndDeleteAllFolders()
 {
     // save all folder definitions using a single settings instance to avoid file write/read churn
@@ -179,7 +161,7 @@ void FolderMan::registerFolderWithSocketApi(Folder *folder)
         _socketApi->slotRegisterPath(folder);
 }
 
-std::optional<qsizetype> FolderMan::setupFolders()
+std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 {
     // is this really necessary? Do we actually re-set up folders at any point? when?
     unloadAndDeleteAllFolders();
@@ -202,26 +184,26 @@ std::optional<qsizetype> FolderMan::setupFolders()
 
         settings.beginGroup(accountId); // Process settings for this account.
 
-        auto process = [&](const QString &groupName) -> bool {
+        auto processByGroup = [&](const QString &groupName) -> bool {
             settings.beginGroup(groupName);
             bool success = setupFoldersHelper(settings, account);
             settings.endGroup();
             return success;
         };
 
-        if (!process(QStringLiteral("Folders"))) {
+        if (!processByGroup(QStringLiteral("Folders"))) {
             return {};
         }
 
         // removed in 5.0
         {
-            if (!process(QStringLiteral("FoldersWithPlaceholders"))) {
+            if (!processByGroup(QStringLiteral("FoldersWithPlaceholders"))) {
                 return {};
             }
 
             // We don't save to `Multifolders` anymore, but for backwards compatibility we will just
             // read it like it is a `Folders` entry.
-            if (!process(QStringLiteral("Multifolders"))) {
+            if (!processByGroup(QStringLiteral("Multifolders"))) {
                 return {};
             }
         }
@@ -241,34 +223,54 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
         settings.beginGroup(folderAlias);
         FolderDefinition folderDefinition = FolderDefinition::load(settings, folderAlias.toUtf8());
 
+        // this should NEVER happen
+        Q_ASSERT(!folderDefinition.id().isEmpty());
+
+        // Lisa todo: there is also a spaces migration routine...investigate whether that should be done in tandem with the
+        // config migration
+        // also note this migration should probably be done elsewhere but for now...baby steps.
         bool migrated = migrateFolderDefinition(folderDefinition, account);
 
         // ensure we don't add multiple legacy folders with the same id
-        // todo: why on earth do we have FolderDefinition::CreateFolderDefinition if we are just going to do this anyway?!
-        // Lisa todo: determine if this is ever actually needed
-        if (!OC_ENSURE(!folderDefinition.id().isEmpty() && !folder(folderDefinition.id()))) {
-            folderDefinition._id = QUuid::createUuid().toByteArray(QUuid::WithoutBraces);
+        // Lisa todo: is this really possible? I have very strong doubts.
+        // Setting a val on a given key in QSettings will overwrite previous val so I see no chance of
+        // having dupes in the config.
+        Folder *folderAlreadyExists = folder(folderDefinition.id());
+        if (folderAlreadyExists) {
+            // I can't imagine how this could happen, die if it does
+            Q_ASSERT(false);
+            continue;
         }
 
+        // Lisa todo: I think this only happens when loading from config - make sure
         if (SyncJournalDb::dbIsTooNewForClient(folderDefinition.absoluteJournalPath())) {
             return false;
         }
 
-        auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode);
+        auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
         if (!vfs) {
-            // TODO: Must do better error handling
-            qFatal("Could not load plugin");
+            qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode();
+            continue;
         }
 
-        // this move is sus to me. basically the function just takes the def and passes it to the folder ctr via
-        // a const ref - essentially the def has to be copied into the folder member anyway?
-        // Lisa todo: discuss this with Erik
-        if (Folder *f = addFolderInternal(std::move(folderDefinition), account, std::move(vfs))) {
-            // save possible changes from the migration
-            if (migrated) {
-                FolderDefinition::save(settings, f->definition());
-            }
-            Q_EMIT folderSyncStateChange(f);
+        // ehhh - the move for the folder def is more to show change of "ownership" than anything else. it's not an expensive copy
+        Folder *folder = new Folder(std::move(folderDefinition), account, std::move(vfs));
+
+        qCInfo(lcFolderMan) << "Adding folder to Folder Map on load folders from config " << folder << folder->path();
+        _folders.push_back(folder);
+        if (folder->syncPaused()) {
+            _disabledFolders.insert(folder);
+        }
+
+        // save possible changes from the migration - a bit of ick here is that the folder may be saving changes
+        // to the folder def during its internal setup, too.
+        if (migrated) {
+            FolderDefinition::save(settings, folder->definition());
+        }
+
+        if (!folder->hasSetupError()) {
+            connectFolder(folder);
+            Q_EMIT folderSyncStateChange(folder);
         }
         settings.endGroup();
     }
@@ -301,8 +303,8 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
     }
 
     // Migration: Old settings don't have journalPath
-    if (folderDefinition.journalPath.isEmpty()) {
-        folderDefinition.journalPath = defaultJournalPath;
+    if (folderDefinition.journalPath().isEmpty()) {
+        folderDefinition.setJournalPath(defaultJournalPath);
         migrationPerformed = true;
     }
 
@@ -311,9 +313,9 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
     // but the current default doesn't have the underscore, switch to the
     // new default if no db exists yet.
     // LR - I think this should be an else if related to last if?
-    if (folderDefinition.journalPath.startsWith(QLatin1String("._sync_")) && defaultJournalPath.startsWith(QLatin1String(".sync_"))
+    if (folderDefinition.journalPath().startsWith(QLatin1String("._sync_")) && defaultJournalPath.startsWith(QLatin1String(".sync_"))
         && !QFile::exists(folderDefinition.absoluteJournalPath())) {
-        folderDefinition.journalPath = defaultJournalPath;
+        folderDefinition.setJournalPath(defaultJournalPath);
         migrationPerformed = true;
     }
 
@@ -376,7 +378,7 @@ SocketApi *FolderMan::socketApi()
     return _socketApi.get();
 }
 
-void FolderMan::slotFolderSyncPaused(Folder *f, bool paused)
+void FolderMan::slotFolderSyncPauseChanged(Folder *f, bool paused)
 {
     if (!f) {
         qCCritical(lcFolderMan) << "slotFolderSyncPaused called with empty folder";
@@ -391,6 +393,8 @@ void FolderMan::slotFolderSyncPaused(Folder *f, bool paused)
     } else {
         _disabledFolders.insert(f);
     }
+
+    // Lisa todo: save the folder definition here - or better, in a separate slot for clarity - not in the folder
 }
 
 void FolderMan::slotFolderCanSyncChanged()
@@ -482,6 +486,10 @@ void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
 {
     QList<Folder *> foldersToRemove;
     // reserve a magic number
+    // Lisa todo: folder management would likely be a lot simpler and more efficient if we kept
+    // the folders in a hash or similar to make folder lookups by id simpler.
+    // We could solve the problem below by simply keeping a list of ids per account
+    // this magic number thing is not healthy
     foldersToRemove.reserve(16);
     for (auto *folder : std::as_const(_folders)) {
         if (folder->accountState() == accountState) {
@@ -489,7 +497,7 @@ void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
         }
     }
     for (const auto &f : foldersToRemove) {
-        removeFolder(f);
+        removeFolderSync(f);
     }
 }
 
@@ -551,10 +559,23 @@ void FolderMan::slotFolderSyncFinished(const SyncResult &)
 
 Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition)
 {
+    // Lisa todo: should we not check to see if the folder is already in _folders at this point?
+    // this is a diff from the handling of folders from config
+    // I don't think we ever want to have folders with dup id's but either way we should
+    // be consistent about it.
+
+
     // Choose a db filename
     auto definition = folderDefinition;
-    definition.journalPath = SyncJournalDb::makeDbName(folderDefinition.localPath());
+    if (definition.journalPath().isEmpty()) {
+        definition.setJournalPath(SyncJournalDb::makeDbName(folderDefinition.localPath()));
+    }
 
+    // Lisa todo: why are we doing this check when adding a folder?
+    // should it not happen on removing the sync?
+    // should the journal be removed even when loading from config? I don't think so but we
+    // want to eventually use just a single impl for "addFolder" and this is a potentially
+    // misplaced handling of the issue
     if (!ensureJournalGone(definition.absoluteJournalPath())) {
         return nullptr;
     }
@@ -563,51 +584,67 @@ Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDe
         return nullptr;
     }
 
-    auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode);
+    auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
     if (!vfs) {
-        qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode;
+        qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode();
         return nullptr;
     }
 
-    auto folder = addFolderInternal(definition, accountState, std::move(vfs));
+    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), this);
+
+    qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
+    // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
+    _folders.push_back(folder);
+    if (folder->syncPaused()) {
+        _disabledFolders.insert(folder);
+    }
+
+    if (!folder->hasSetupError()) {
+        connectFolder(folder);
+    }
 
     if (folder) {
         folder->saveToSettings();
+        // should we really emit sync change here or only if there are not setup errors?
         Q_EMIT folderSyncStateChange(folder);
+        // Lisa todo: this should be a smaller "folderAdded" signal. folderListChanged triggers rebuilding
+        // the whole item model for the gui - instead it should just add the new folder item to the model
         Q_EMIT folderListChanged();
     }
 
     return folder;
 }
 
-Folder *FolderMan::addFolderInternal(
-    FolderDefinition folderDefinition,
-    const AccountStatePtr &accountState,
-    std::unique_ptr<Vfs> vfs)
+void FolderMan::connectFolder(Folder *folder)
 {
-
-    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), this);
-
-    qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
-    _folders.push_back(folder);
-    if (folder->syncPaused()) {
-        _disabledFolders.insert(folder);
-    }
-
-    // See matching disconnects in unloadFolder().
-    if (!folder->hasSetupError()) {
+    // See matching disconnects in disconnectFolder().
+    if (folder && !folder->hasSetupError()) {
         connect(folder, &Folder::syncStateChange, _socketApi.get(), [folder, this] { _socketApi->slotUpdateFolderView(folder); });
         connect(folder, &Folder::syncStarted, this, &FolderMan::slotFolderSyncStarted);
         connect(folder, &Folder::syncFinished, this, &FolderMan::slotFolderSyncFinished);
         connect(folder, &Folder::syncStateChange, this, [folder, this] { Q_EMIT folderSyncStateChange(folder); });
-        connect(folder, &Folder::syncPausedChanged, this, &FolderMan::slotFolderSyncPaused);
+        connect(folder, &Folder::syncPausedChanged, this, &FolderMan::slotFolderSyncPauseChanged);
         connect(folder, &Folder::canSyncChanged, this, &FolderMan::slotFolderCanSyncChanged);
         connect(
             &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
         connect(folder, &Folder::watchedFileChangedExternally, &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::slotPathTouched);
+
         registerFolderWithSocketApi(folder);
     }
-    return folder;
+}
+
+void FolderMan::disconnectFolder(Folder *folder)
+{
+    if (folder && !folder->hasSetupError()) {
+        _socketApi->slotUnregisterPath(folder);
+
+        disconnect(folder, nullptr, _socketApi.get(), nullptr);
+        disconnect(folder, nullptr, this, nullptr);
+        disconnect(&folder->syncEngine(), nullptr, folder, nullptr);
+        disconnect(
+            &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
+        disconnect(folder, nullptr, &folder->syncEngine().syncFileStatusTracker(), nullptr);
+    }
 }
 
 Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
@@ -656,7 +693,7 @@ QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Acco
     return re;
 }
 
-void FolderMan::removeFolder(Folder *f)
+void FolderMan::removeFolderSync(Folder *f)
 {
     if (!OC_ENSURE(f)) {
         return;
@@ -676,7 +713,12 @@ void FolderMan::removeFolder(Folder *f)
     // remove the folder configuration
     f->removeFromSettings();
 
-    unloadFolder(f);
+    // Lisa todo: propose adding the call to remove the folder db here, not in addFolder
+
+    // highly suspicious - how can there be more than one instance?!
+    _folders.removeAll(f);
+
+    disconnectFolder(f);
 
     Q_EMIT folderRemoved(f);
     Q_EMIT folderListChanged();
@@ -1007,10 +1049,10 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
         return {};
     }
 
-    folderDefinition.ignoreHiddenFiles = ignoreHiddenFiles();
+    folderDefinition.setIgnoreHiddenFiles(ignoreHiddenFiles());
 
     if (useVfs) {
-        folderDefinition.virtualFilesMode = VfsPluginManager::instance().bestAvailableVfsMode();
+        folderDefinition.setVirtualFilesMode(VfsPluginManager::instance().bestAvailableVfsMode());
     }
 
     auto newFolder = addFolder(accountStatePtr, folderDefinition);

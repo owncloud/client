@@ -307,7 +307,7 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            FolderMan::instance()->removeFolder(folder);
+            FolderMan::instance()->removeFolderSync(folder);
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
     });

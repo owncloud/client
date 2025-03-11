@@ -142,13 +142,17 @@ public:
      * Helper to access the FolderMan instance
      * Warning: may be null in unit tests
      */
-    // TODO: use acces throug ocApp and remove that instance pointer
+    // TODO: eliminate FolderMan as globally available resource.
     static FolderMan *instance();
 
     /// \returns empty if a downgrade of a folder was detected, otherwise it will return the number
     ///          of folders that were set up (note: this can be zero when no folders were configured).
-    std::optional<qsizetype> setupFolders();
+    std::optional<qsizetype> setupFoldersFromConfig();
 
+    // Lisa todo: this function actually just returns the internal vector of folders. I do not see any evidence of
+    // what is docced here, at least related to this specific function.
+    // Propose changing the container to a hash or similar anyway to allow fast retrieval of folder by id and other
+    // maintenance activities.
     /** Find folder setting keys that need to be ignored or deleted for being too new.
      *
      * The client has a maximum supported version for the folders lists (maxFoldersVersion
@@ -179,8 +183,9 @@ public:
     Folder *addFolderFromWizard(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
     Folder *addFolderFromFolderWizardResult(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
 
-    /** Removes a folder */
-    void removeFolder(Folder *);
+    /** Removes a folder sync permanently in response to user request
+      Not for general folder cleanup */
+    void removeFolderSync(Folder *);
 
     /**
      * Returns the folder which the file or directory stored in path is in
@@ -315,7 +320,7 @@ public Q_SLOTS:
     void slotReloadSyncOptions();
 
 private Q_SLOTS:
-    void slotFolderSyncPaused(Folder *, bool paused);
+    void slotFolderSyncPauseChanged(Folder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
     void slotFolderSyncFinished(const SyncResult &);
@@ -327,20 +332,20 @@ private Q_SLOTS:
 private:
     explicit FolderMan();
 
-    /** Adds a new folder, does not add it to the account settings and
-     *  does not set an account on the new folder.
-      */
-    Folder *addFolderInternal(FolderDefinition folderDefinition,
-        const AccountStatePtr &accountState, std::unique_ptr<Vfs> vfs);
+    /** Connects a folder instance, provided it has no setup errors
+     */
+    void connectFolder(Folder *folder);
 
-    /* unloads a folder object, does not delete it */
-    void unloadFolder(Folder *);
+    /* disconnects a folder instance, provided it has no setup errors
+     */
+    void disconnectFolder(Folder *folder);
 
     // finds all folder configuration files
     // and create the folders
     QString getBackupName(QString fullPathName) const;
 
     // makes the folder known to the socket api
+    // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
     /// \returns false when a downgrade of the database is detected, true otherwise.

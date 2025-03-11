@@ -61,6 +61,10 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _uploadLimit(0)
     , _downloadLimit(0)
 {
+    // Lisa todo: reality check that we actually need to use these types in queued connections. if so,
+    // we should move to a one shot registration method a) to make it really easy to see which types may
+    // be passed between threads and b) to just call it once.
+    // suggest calling registration method in folderMan or one of the other single instance managers on startup.
     qRegisterMetaType<SyncFileItem>("SyncFileItem");
     qRegisterMetaType<SyncFileItemPtr>("SyncFileItemPtr");
     qRegisterMetaType<SyncFileItem::Status>("SyncFileItem::Status");
