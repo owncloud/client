@@ -508,12 +508,12 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>Abrir o navegador da web</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Reiniciar autenticação</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
@@ -1246,7 +1246,7 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>Unsupported filesystem</source>
-        <translation type="unfinished"/>
+        <translation>Sistema de arquivos não suportado</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>
@@ -1321,7 +1321,7 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On macOS, only the Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>No macOS, somente o sistema de arquivos Apple File System é suportado.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="804"/>
@@ -3414,7 +3414,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation type="unfinished"/>
+        <translation>Alterar o URL permanentemente para %1</translation>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3429,7 +3429,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation type="unfinished"/>
+        <translation>O URL de %1 mudou de %2 para %3. Você deseja aceitar o URL alterado?</translation>
     </message>
 </context>
 <context>
