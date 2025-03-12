@@ -577,17 +577,17 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="258"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="257"/>
         <source>Connection timed out</source>
         <translation>Ühendus aegus</translation>
     </message>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="259"/>
         <source>Unknown error: network reply was deleted</source>
         <translation>Tundmatu viga: võrguvastus kustutati</translation>
     </message>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="361"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="360"/>
         <source>Server replied &quot;%1 %2&quot; to &quot;%3 %4&quot;</source>
         <translation>Server vastas &quot;%3 %4&quot; päringule &quot;%1 %2&quot;</translation>
     </message>
