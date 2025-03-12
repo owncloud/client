@@ -351,6 +351,9 @@ private:
     /// \returns false when a downgrade of the database is detected, true otherwise.
     bool setupFoldersHelper(QSettings &settings, AccountStatePtr account);
 
+    // tests folder def for minimum reqs
+    bool validateFolderDefinition(const FolderDefinition &folderDefinition);
+
     /// \returns true of the FolderDefinition was migrated, false if it was unchanged
     bool migrateFolderDefinition(FolderDefinition &folderDef, AccountStatePtr account);
 

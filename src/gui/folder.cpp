@@ -864,12 +864,11 @@ void Folder::wipeForRemoval()
 
 bool Folder::reloadExcludes()
 {
-    // Lisa todo: why is this returning true of there is no engine?! There is no doc regarding
-    // what the return value means, but as far as I can tell the engine reloadExludes returns
-    // true *if the excludes were successfully reloaded*. If the engine is missing the excludes
-    // can't be reloaded so return here should be false?
+    // reloadExludes returns true *if the excludes were successfully reloaded*.
+    // If the engine is missing the excludes
+    // can't be reloaded so return here should be false? Erik agrees - caller never checks the value anyway
     if (!_engine) {
-        return true;
+        return false;
     }
     return _engine->reloadExcludes();
 }
@@ -909,6 +908,7 @@ void Folder::startSync()
     }
     // Lisa todo: why is this called every time a sync starts? the data seems to come from hard vals or the config.
     // How can it change between syncs?
+    // This is part of what Erik wants to ditch - having user settable bandwidth limits is fairly nuts
     setDirtyNetworkLimits();
 
     // get the latest touched files
@@ -939,6 +939,10 @@ void Folder::startSync()
     // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
     // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead
     // of saving this val for every folder in the config is just silly when it's defacto a global setting.
+    // Erik has no objections
+    // generally when we change settings we pause syncs, update whatever values,
+    // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode
+    // consider allowing the engine to run a "update routine" where it pauses and restarts itself.
     _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
     QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
 

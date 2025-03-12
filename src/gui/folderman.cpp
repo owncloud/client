@@ -211,6 +211,9 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
         settings.endGroup(); // Finished processing this account.
     }
 
+    // why not
+    settings.sync();
+
     Q_EMIT folderListChanged();
 
     return _folders.size();
@@ -221,8 +224,8 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
     const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
         settings.beginGroup(folderAlias);
-        FolderDefinition folderDefinition = FolderDefinition::load(settings, folderAlias.toUtf8());
 
+        FolderDefinition folderDefinition = FolderDefinition::load(settings, folderAlias.toUtf8());
         // this should NEVER happen
         Q_ASSERT(!folderDefinition.id().isEmpty());
 
@@ -231,47 +234,21 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
         // also note this migration should probably be done elsewhere but for now...baby steps.
         bool migrated = migrateFolderDefinition(folderDefinition, account);
 
-        // ensure we don't add multiple legacy folders with the same id
-        // Lisa todo: is this really possible? I have very strong doubts.
-        // Setting a val on a given key in QSettings will overwrite previous val so I see no chance of
-        // having dupes in the config.
-        Folder *folderAlreadyExists = folder(folderDefinition.id());
-        if (folderAlreadyExists) {
-            // I can't imagine how this could happen, die if it does
-            Q_ASSERT(false);
-            continue;
-        }
-
-        // Lisa todo: I think this only happens when loading from config - make sure
+        // this can only happen when loading from config
+        // does not belong in general addFolder routine
         if (SyncJournalDb::dbIsTooNewForClient(folderDefinition.absoluteJournalPath())) {
             return false;
         }
 
-        auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
-        if (!vfs) {
-            qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode();
-            continue;
-        }
+        Folder *folder = addFolder(account, folderDefinition);
 
-        // ehhh - the move for the folder def is more to show change of "ownership" than anything else. it's not an expensive copy
-        Folder *folder = new Folder(std::move(folderDefinition), account, std::move(vfs));
-
-        qCInfo(lcFolderMan) << "Adding folder to Folder Map on load folders from config " << folder << folder->path();
-        _folders.push_back(folder);
-        if (folder->syncPaused()) {
-            _disabledFolders.insert(folder);
-        }
 
         // save possible changes from the migration - a bit of ick here is that the folder may be saving changes
-        // to the folder def during its internal setup, too.
+        // to the folder def during its internal setup, too, but this save should catch everything.
         if (migrated) {
             FolderDefinition::save(settings, folder->definition());
         }
 
-        if (!folder->hasSetupError()) {
-            connectFolder(folder);
-            Q_EMIT folderSyncStateChange(folder);
-        }
         settings.endGroup();
     }
 
@@ -359,15 +336,13 @@ bool FolderMan::ensureJournalGone(const QString &journalDbFile)
 
 bool FolderMan::ensureFilesystemSupported(const FolderDefinition &folderDefinition)
 {
-#ifndef Q_OS_MAC
-    return true;
-#endif
+    if (Utility::isMac()) {
+        QString filesystemType = FileSystem::fileSystemForPath(folderDefinition.localPath());
+        if (filesystemType != QStringLiteral("apfs")) {
+            QMessageBox::warning(nullptr, tr("Unsupported filesystem"), tr("On macOS, only the Apple File System is supported."), QMessageBox::Ok);
 
-    QString filesystemType = FileSystem::fileSystemForPath(folderDefinition.localPath());
-    if (filesystemType != QStringLiteral("apfs")) {
-        QMessageBox::warning(nullptr, tr("Unsupported filesystem"), tr("On macOS, only the Apple File System is supported."), QMessageBox::Ok);
-
-        return false;
+            return false;
+        }
     }
 
     return true;
@@ -557,30 +532,24 @@ void FolderMan::slotFolderSyncFinished(const SyncResult &)
                         << f->accountState()->account()->displayNameWithHost() << "] with remote [" << f->remoteUrl().toDisplayString() << "]";
 }
 
+bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinition)
+{
+    if (folderDefinition.id().isEmpty() || folderDefinition.journalPath().isEmpty() || !ensureFilesystemSupported(folderDefinition))
+        return false;
+    return true;
+}
+
+
 Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition)
 {
-    // Lisa todo: should we not check to see if the folder is already in _folders at this point?
-    // this is a diff from the handling of folders from config
-    // I don't think we ever want to have folders with dup id's but either way we should
-    // be consistent about it.
-
-
-    // Choose a db filename
-    auto definition = folderDefinition;
-    if (definition.journalPath().isEmpty()) {
-        definition.setJournalPath(SyncJournalDb::makeDbName(folderDefinition.localPath()));
+    if (Folder *f = folder(folderDefinition.id())) {
+        Q_ASSERT_X(false, "addFolder", "Trying to addFolder but id is already found in the folder list");
+        qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
+        return f; // or return nullptr - talk to Erik
     }
 
-    // Lisa todo: why are we doing this check when adding a folder?
-    // should it not happen on removing the sync?
-    // should the journal be removed even when loading from config? I don't think so but we
-    // want to eventually use just a single impl for "addFolder" and this is a potentially
-    // misplaced handling of the issue
-    if (!ensureJournalGone(definition.absoluteJournalPath())) {
-        return nullptr;
-    }
-
-    if (!ensureFilesystemSupported(definition)) {
+    if (!validateFolderDefinition(folderDefinition)) {
+        qCWarning(lcFolderMan) << "Folder Defnition validation failed for folder" << folderDefinition.localPath();
         return nullptr;
     }
 
@@ -601,15 +570,7 @@ Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDe
 
     if (!folder->hasSetupError()) {
         connectFolder(folder);
-    }
-
-    if (folder) {
-        folder->saveToSettings();
-        // should we really emit sync change here or only if there are not setup errors?
         Q_EMIT folderSyncStateChange(folder);
-        // Lisa todo: this should be a smaller "folderAdded" signal. folderListChanged triggers rebuilding
-        // the whole item model for the gui - instead it should just add the new folder item to the model
-        Q_EMIT folderListChanged();
     }
 
     return folder;
@@ -1046,10 +1007,20 @@ bool FolderMan::checkVfsAvailability(const QString &path, Vfs::Mode mode) const
 Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, FolderDefinition &&folderDefinition, bool useVfs)
 {
     if (!FolderMan::prepareFolder(folderDefinition.localPath())) {
-        return {};
+        return nullptr;
     }
 
     folderDefinition.setIgnoreHiddenFiles(ignoreHiddenFiles());
+    folderDefinition.setJournalPath(SyncJournalDb::makeDbName(folderDefinition.localPath()));
+
+    // Lisa todo: why are we doing this check when adding a folder?
+    // should it not happen on removing the sync? Yes it should
+    // should the journal be removed even when loading from config? Not usually, but maybe if there was a migration?
+    // sticky part is old clients may not remove the old journal so we at least need a check, but ELSEWHERE
+    //
+    if (!ensureJournalGone(folderDefinition.absoluteJournalPath())) {
+        return nullptr;
+    }
 
     if (useVfs) {
         folderDefinition.setVirtualFilesMode(VfsPluginManager::instance().bestAvailableVfsMode());
@@ -1067,6 +1038,13 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     } else {
         qCWarning(lcFolderMan) << "Failed to create local sync folder!";
     }
+
+    // find best location with updates
+    newFolder->saveToSettings();
+
+    // should be moved to true originating caller
+    Q_EMIT folderListChanged();
+
     return newFolder;
 }
 

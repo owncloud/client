@@ -21,13 +21,10 @@
 #include "common/syncjournalfilerecord.h"
 #include "common/vfs.h"
 #include "configfile.h"
-#include "creds/abstractcredentials.h"
 #include "csync_exclude.h"
 #include "discovery.h"
 #include "discoveryphase.h"
-#include "filesystem.h"
 #include "owncloudpropagator.h"
-#include "propagatedownload.h"
 #include "propagateremotedelete.h"
 
 #include <chrono>

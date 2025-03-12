@@ -27,6 +27,7 @@ private:
         Q_ASSERT(localPath.startsWith(QLatin1Char('/')));
         d.setLocalPath(_tmp.path() + localPath);
         d.setTargetPath(remotePath);
+        d.setJournalPath(SyncJournalDb::makeDbName(d.localPath()));
         return TestUtils::folderMan()->addFolder(accountState, d);
     }
 
