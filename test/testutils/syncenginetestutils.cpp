@@ -426,18 +426,16 @@ FakePropfindReply::FakePropfindReply(FileInfo &remoteRootFileInfo, QNetworkAcces
 
 void FakePropfindReply::respond()
 {
-    if (isFinished()) {
-        return;
-    }
-
     setHeader(QNetworkRequest::ContentLengthHeader, payload.size());
     setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/xml; charset=utf-8"));
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 207);
-    setFinished(true);
     Q_EMIT metaDataChanged();
     if (bytesAvailable())
         Q_EMIT readyRead();
-    Q_EMIT finished();
+    if (!isFinished()) {
+        setFinished(true);
+        Q_EMIT finished();
+    }
 }
 
 void FakePropfindReply::respond404()
@@ -449,6 +447,7 @@ void FakePropfindReply::respond404()
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 404);
     setError(InternalServerError, QStringLiteral("Not Found"));
     Q_EMIT metaDataChanged();
+    setFinished(true);
     Q_EMIT finished();
 }
 
@@ -503,7 +502,10 @@ void FakePutReply::respond()
     setRawHeader("X-OC-MTime", "accepted"); // Prevents Q_ASSERT(!_runningNow) since we'll call PropagateItemJob::done twice in that case.
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 200);
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+    if (!isFinished()) {
+        setFinished(true);
+        Q_EMIT finished();
+    }
 }
 
 FakeMkcolReply::FakeMkcolReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
@@ -531,6 +533,10 @@ void FakeMkcolReply::respond()
         setRawHeader("OC-FileId", fileInfo->fileId);
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 201);
         Q_EMIT metaDataChanged();
+    }
+
+    if (!isFinished()) {
+        setFinished(true);
         Q_EMIT finished();
     }
 }
@@ -553,7 +559,11 @@ void FakeDeleteReply::respond()
 {
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 204);
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+
+    if (!isFinished()) {
+        setFinished(true);
+        Q_EMIT finished();
+    }
 }
 
 FakeMoveReply::FakeMoveReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
@@ -577,6 +587,10 @@ void FakeMoveReply::respond()
     if (error() == QNetworkReply::NoError) {
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 201);
         Q_EMIT metaDataChanged();
+    }
+
+    if (!isFinished()) {
+        setFinished(true);
         Q_EMIT finished();
     }
 }
@@ -778,7 +792,10 @@ void FakeChunkMoveReply::respond()
     setRawHeader("ETag", fileInfo->etag);
     setRawHeader("OC-FileId", fileInfo->fileId);
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+    if (!isFinished()) {
+        setFinished(true);
+        Q_EMIT finished();
+    }
 }
 
 void FakeChunkMoveReply::respondPreconditionFailed()
@@ -786,6 +803,7 @@ void FakeChunkMoveReply::respondPreconditionFailed()
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 412);
     setError(InternalServerError, QStringLiteral("Precondition Failed"));
     Q_EMIT metaDataChanged();
+    setFinished(true);
     Q_EMIT finished();
 }
 
@@ -807,8 +825,10 @@ void FakePayloadReply::respond()
         setHeader(QNetworkRequest::ContentLengthHeader, _body.size());
         Q_EMIT metaDataChanged();
         Q_EMIT readyRead();
-        setFinished(true);
-        Q_EMIT finished();
+        if (!isFinished()) {
+            setFinished(true);
+            Q_EMIT finished();
+        }
     }
 }
 
@@ -857,8 +877,10 @@ void FakeErrorReply::respond()
 
 void FakeErrorReply::slotSetFinished()
 {
-    setFinished(true);
-    Q_EMIT finished();
+    if (!isFinished()) {
+        setFinished(true);
+        Q_EMIT finished();
+    }
 }
 
 qint64 FakeErrorReply::readData(char *buf, qint64 max)
@@ -1244,8 +1266,8 @@ void FakeReply::abort()
 {
     if (!isFinished()) {
         setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
-        setFinished(true);
         Q_EMIT metaDataChanged();
+        setFinished(true);
         Q_EMIT finished();
     }
 }

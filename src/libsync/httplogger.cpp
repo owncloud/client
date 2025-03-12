@@ -14,8 +14,8 @@
 
 #include "httplogger.h"
 
+#include "common/asserts.h"
 #include "common/chronoelapsedtimer.h"
-#include "common/utility.h"
 
 #include <QBuffer>
 #include <QJsonArray>
@@ -180,6 +180,7 @@ void HttpLogger::logRequest(QNetworkReply *reply, QNetworkAccessManager::Operati
     QObject::connect(
         reply, &QNetworkReply::finished, reply,
         [reply, ctx = std::move(ctx), logSend] {
+            Q_ASSERT(reply->isFinished()); // Make sure the test framework set the state to finished before emitting the signal
             ctx->timer.stop();
             if (!ctx->send) {
                 logSend(true);

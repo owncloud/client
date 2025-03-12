@@ -53,7 +53,10 @@ public:
         if (aborted) {
             setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
             Q_EMIT metaDataChanged();
-            Q_EMIT finished();
+            if (!isFinished()) {
+                setFinished(true);
+                Q_EMIT finished();
+            }
             return;
         }
         setHeader(QNetworkRequest::ContentLengthHeader, payload->size());
@@ -61,7 +64,10 @@ public:
         Q_EMIT metaDataChanged();
         if (bytesAvailable())
             Q_EMIT readyRead();
-        Q_EMIT finished();
+        if (!isFinished()) {
+            setFinished(true);
+            Q_EMIT finished();
+        }
     }
 
     void abort() override {
