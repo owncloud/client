@@ -98,7 +98,7 @@ private Q_SLOTS:
         FolderMan::instance()->unloadAndDeleteAllFolders();
         QVERIFY(FolderMan::instance()->folders().isEmpty());
         // reload the folders from the settings
-        auto count = FolderMan::instance()->setupFolders();
+        auto count = FolderMan::instance()->setupFoldersFromConfig();
         QVERIFY(count.has_value());
         QCOMPARE(count.value(), expectedSize);
 
