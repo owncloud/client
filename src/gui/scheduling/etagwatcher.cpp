@@ -105,7 +105,12 @@ void ETagWatcher::startOC10EtagJob(Folder *f)
             connect(requestEtagJob, &RequestEtagJob::finishedSignal, this, [requestEtagJob, f, this] {
                 if (requestEtagJob->httpStatusCode() == 207) {
                     if (OC_ENSURE_NOT(requestEtagJob->etag().isEmpty())) {
-                        f->accountState()->tagLastSuccessfullETagRequest(requestEtagJob->responseQTimeStamp());
+                        auto lastResponse = requestEtagJob->responseQTimeStamp();
+                        if (!lastResponse.isValid()) {
+                            // If the responose had no valid "Date" header, use "now", as the job just finished.
+                            lastResponse = QDateTime::currentDateTimeUtc();
+                        }
+                        f->accountState()->tagLastSuccessfullETagRequest(lastResponse);
                         updateEtag(f, requestEtagJob->etag());
                     } else {
                         qCWarning(lcEtagWatcher) << "Invalid empty etag received for" << f->displayName() << f->path() << requestEtagJob;
