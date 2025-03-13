@@ -556,6 +556,11 @@ bool Theme::enableCernBranding() const
     return false;
 }
 
+bool Theme::spacesAreCalledFolders() const
+{
+    return false;
+}
+
 bool Theme::withCrashReporter() const
 {
 #ifdef WITH_CRASHREPORTER
