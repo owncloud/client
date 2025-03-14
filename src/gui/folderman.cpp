@@ -241,7 +241,9 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
         }
 
         Folder *folder = addFolder(account, folderDefinition);
-
+        if (!folder) {
+            continue;
+        }
 
         // save possible changes from the migration - a bit of ick here is that the folder may be saving changes
         // to the folder def during its internal setup, too, but this save should catch everything.
