@@ -315,17 +315,17 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>You are synchronizing %1 out of %n folder</numerusform>
+            <numerusform>You are synchronizing %1 out of %n folders</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>You are synchronizing %1 out of %n space</numerusform>
+            <numerusform>You are synchronizing %1 out of %n spaces</numerusform>
         </translation>
     </message>
 </context>
