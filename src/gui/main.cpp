@@ -484,7 +484,7 @@ int main(int argc, char **argv)
         // Setup the folders. This includes a downgrade-detection, in which case the return value
         // is empty. Note that the value 0 (zero) is a valid return value (non-empty), in which case
         // the dialog is not shown.
-        if (!FolderMan::instance()->setupFolders().has_value()) {
+        if (!FolderMan::instance()->setupFoldersFromConfig().has_value()) {
             // Empty return value: there was a downgrade detected on one of the databases
             showDowngradeDialog();
             return -1;

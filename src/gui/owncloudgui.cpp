@@ -56,6 +56,7 @@ namespace {
 
 using namespace OCC;
 
+// move this to FolderMan to streamline the loading of folders + Saving them to settings
 void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
 {
     auto folderMan = FolderMan::instance();
@@ -95,7 +96,7 @@ void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
                         auto folder = addFolder(folderName, {}, QUrl(space->drive().getRoot().getWebDavUrl()), space->drive().getRoot().getId(), name);
                         folder->setPriority(space->priority());
                         // save the new priority
-                        folder->saveToSettings();
+                         folder->saveToSettings();
                     }
                     finalize();
                 }
