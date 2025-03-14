@@ -309,10 +309,15 @@ File synchronization desktop utility.</source>
         <source>Add Folder</source>
         <translation>ھۆججەت قىسقۇچ قوشۇڭ</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation>سىز% 2 بوشلۇقنىڭ% 1 نى ماسقەدەملەۋاتىسىز</translation>
+        <source>You are synchronizing %1 out of %n folder(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <source>You are synchronizing %1 out of %n space(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -4127,12 +4132,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="573"/>
+        <location filename="../src/libsync/theme.cpp" line="578"/>
         <source>Username</source>
         <translation>ئىشلەتكۈچى ئاتى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="575"/>
+        <location filename="../src/libsync/theme.cpp" line="580"/>
         <source>E-mail address</source>
         <translation>ئېلېكترونلۇق خەت ئادرېسى</translation>
     </message>

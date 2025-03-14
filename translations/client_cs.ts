@@ -307,10 +307,15 @@ File synchronization desktop utility.</source>
         <source>Add Folder</source>
         <translation>Přidat složku</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <source>You are synchronizing %1 out of %n folder(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <source>You are synchronizing %1 out of %n space(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -4114,12 +4119,12 @@ Jste si jisti, že chcete pokračovat?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="573"/>
+        <location filename="../src/libsync/theme.cpp" line="578"/>
         <source>Username</source>
         <translation>Uživatelské jméno</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="575"/>
+        <location filename="../src/libsync/theme.cpp" line="580"/>
         <source>E-mail address</source>
         <translation>E-mailová adresa</translation>
     </message>

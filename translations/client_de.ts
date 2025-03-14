@@ -310,10 +310,15 @@ Anwendung zur Datei-Synchronisation.</translation>
         <source>Add Folder</source>
         <translation>Ordner hinzufügen</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation>%1 von %2 Spaces werden synchronisiert</translation>
+        <source>You are synchronizing %1 out of %n folder(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <source>You are synchronizing %1 out of %n space(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -4130,12 +4135,12 @@ Möchten Sie fortfahren?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="573"/>
+        <location filename="../src/libsync/theme.cpp" line="578"/>
         <source>Username</source>
         <translation>Benutzername</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="575"/>
+        <location filename="../src/libsync/theme.cpp" line="580"/>
         <source>E-mail address</source>
         <translation>E-Mail Adresse</translation>
     </message>

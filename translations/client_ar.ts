@@ -308,10 +308,15 @@ File synchronization desktop utility.</translation>
         <source>Add Folder</source>
         <translation>أضافة مجلد.</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <source>You are synchronizing %1 out of %n folder(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <source>You are synchronizing %1 out of %n space(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -4126,12 +4131,12 @@ Are you sure you want to proceed?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="573"/>
+        <location filename="../src/libsync/theme.cpp" line="578"/>
         <source>Username</source>
         <translation>اسم المستخدم</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="575"/>
+        <location filename="../src/libsync/theme.cpp" line="580"/>
         <source>E-mail address</source>
         <translation>E-mail address</translation>
     </message>

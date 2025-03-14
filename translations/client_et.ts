@@ -310,10 +310,15 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <source>Add Folder</source>
         <translation>Lisa kaust</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation>Oled sünkroniseerimas %1 ruumi %2-st</translation>
+        <source>You are synchronizing %1 out of %n folder(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <source>You are synchronizing %1 out of %n space(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -4129,12 +4134,12 @@ Kas olete kindel, et soovite jätkata?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="573"/>
+        <location filename="../src/libsync/theme.cpp" line="578"/>
         <source>Username</source>
         <translation>Kasutajanimi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="575"/>
+        <location filename="../src/libsync/theme.cpp" line="580"/>
         <source>E-mail address</source>
         <translation>E-posti aadress</translation>
     </message>
