@@ -80,6 +80,7 @@ class OWNCLOUDSYNC_EXPORT Theme : public QObject
     Q_PROPERTY(QColor brandedForegroundColor READ wizardHeaderTitleColor CONSTANT)
     Q_PROPERTY(QmlButtonColor primaryButtonColor READ primaryButtonColor CONSTANT)
     Q_PROPERTY(QmlButtonColor secondaryButtonColor READ secondaryButtonColor CONSTANT)
+    Q_PROPERTY(bool spacesAreCalledFolders READ spacesAreCalledFolders FINAL CONSTANT)
     QML_SINGLETON
     QML_ELEMENT
 public:
@@ -468,6 +469,13 @@ public:
      * - support for .sys.admin#recall#
      */
     bool enableCernBranding() const;
+
+    /**
+     * Whether to call spaces "Spaces" in the UI, or call them "Folders"
+     *
+     * Default: false
+     */
+    virtual bool spacesAreCalledFolders() const;
 
     bool withCrashReporter() const;
 
