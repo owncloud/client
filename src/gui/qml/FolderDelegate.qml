@@ -256,7 +256,7 @@ Pane {
                 Layout.fillWidth: true
             }
             Label {
-                text: (Theme.spacesAreCalledFolders ? qsTr("You are synchronizing %1 out of %2 folder(s)") : qsTr("You are synchronizing %1 out of %2 space(s)")).arg(accountSettings.syncedSpaces).arg(accountSettings.syncedSpaces + accountSettings.unsyncedSpaces)
+                text: (Theme.spacesAreCalledFolders ? qsTr("You are synchronizing %1 out of %n folder(s)", "", accountSettings.syncedSpaces + accountSettings.unsyncedSpaces) : qsTr("You are synchronizing %1 out of %n space(s)", "", accountSettings.syncedSpaces + accountSettings.unsyncedSpaces)).arg(accountSettings.syncedSpaces)
                 visible: accountSettings.accountState.supportsSpaces && accountSettings.accountState.state === AccountState.Connected
             }
         }
