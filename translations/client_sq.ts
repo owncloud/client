@@ -313,12 +313,12 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Po bëni njëkohësimin e %1 nga %n dosjeje</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %n dosjeve</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Po bëni njëkohësimin e %1 nga %n hapësire</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %2 hapësirave</numerusform></translation>
     </message>
 </context>
 <context>
