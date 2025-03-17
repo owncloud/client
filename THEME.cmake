@@ -18,6 +18,11 @@ endif()
 
 if (EXISTS "${OEM_THEME_DIR}/OEM.cmake")
     include("${OEM_THEME_DIR}/OEM.cmake")
+    if (DEFINED WITHOUT_AUTO_UPDATER)
+        set(WITH_AUTO_UPDATER OFF)
+        MESSAGE(STATUS "Branding: WITHOUT_AUTO_UPDATER was defined in the theme and therefore the auto updater has been disabled")
+    endif ()
+
 else()
     include ("${CMAKE_CURRENT_LIST_DIR}/OWNCLOUD.cmake")
 endif()
