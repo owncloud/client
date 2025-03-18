@@ -313,12 +313,12 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Oled sünkroniseerimas %1 kausta %n-st</numerusform><numerusform>Oled sünkroniseerimas %1 kausta %n-st</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Oled sünkroniseerimas %1 ruumi %n-st</numerusform><numerusform>Oled sünkroniseerimas %1 ruumi %n-st</numerusform></translation>
     </message>
 </context>
 <context>
