@@ -243,7 +243,11 @@ void Theme::setSystrayUseMonoIcons(bool mono)
 
 QUrl Theme::updateCheckUrl() const
 {
+#ifndef APPLICATION_UPDATE_URL
+    return QUrl(QString());
+#else
     return QUrl(QStringLiteral(APPLICATION_UPDATE_URL));
+#endif
 }
 
 bool Theme::wizardSkipAdvancedPage() const
