@@ -15,7 +15,6 @@
 #include "httplogger.h"
 
 #include "common/chronoelapsedtimer.h"
-#include "common/utility.h"
 
 #include <QBuffer>
 #include <QJsonArray>
