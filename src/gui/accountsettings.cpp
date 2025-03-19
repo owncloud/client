@@ -499,8 +499,8 @@ void AccountSettings::slotAccountStateChanged()
             icon = StatusIcon::Warning;
         }
         showConnectionLabel(tr("Connected"), icon, errors);
-        if (accountsState()->supportsSpaces()) {
-            connect(accountsState()->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
+        if (_accountState->supportsSpaces()) {
+            connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
                 Qt::UniqueConnection);
             slotSpacesUpdated();
         }
@@ -542,12 +542,12 @@ void AccountSettings::slotAccountStateChanged()
 
 void AccountSettings::slotSpacesUpdated()
 {
-    if (!accountsState()->supportsSpaces()) {
+    if (!_accountState || !_accountState->supportsSpaces()) {
         // oC10 does not support spaces, and there is no `SpacesManager` available.
         return;
     }
 
-    auto spaces = accountsState()->account()->spacesManager()->spaces();
+    auto spaces = _accountState->account()->spacesManager()->spaces();
     auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
     for (const auto &f : std::as_const(FolderMan::instance()->folders())) {
         unsycnedSpaces.erase(f->space());
@@ -556,13 +556,13 @@ void AccountSettings::slotSpacesUpdated()
     // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
     if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
         QTimer::singleShot(0, [this, unsycnedSpaces]() {
-            auto accountStatePtr = accountsState();
+            auto accountStatePtr = _accountState;
 
             for (GraphApi::Space *newSpace : unsycnedSpaces) {
                 // TODO: Problem: when a space is manually removed, this will re-add it!
                 qCInfo(lcAccountSettings) << "Adding sync connection for newly discovered space" << newSpace->displayName();
 
-                const QString localDir(accountsState()->account()->defaultSyncRoot());
+                const QString localDir(_accountState->account()->defaultSyncRoot());
                 const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
                     localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, accountStatePtr->account()->uuid());
 
@@ -577,7 +577,7 @@ void AccountSettings::slotSpacesUpdated()
             }
 
             _unsyncedSpaces = 0;
-            _syncedSpaces = accountsState()->account()->spacesManager()->spaces().size();
+            _syncedSpaces = _accountState->account()->spacesManager()->spaces().size();
             Q_EMIT unsyncedSpacesChanged();
             Q_EMIT syncedSpacesChanged();
         });
@@ -671,6 +671,10 @@ uint AccountSettings::syncedSpaces() const
 
 void AccountSettings::slotDeleteAccount()
 {
+    if (!_accountState) {
+        return;
+    }
+
     // Deleting the account potentially deletes 'this', so
     // the QMessageBox should be destroyed before that happens.
     auto messageBox = new QMessageBox(QMessageBox::Question, tr("Confirm Account Removal"),
