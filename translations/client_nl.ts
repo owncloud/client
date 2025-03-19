@@ -223,7 +223,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message numerus="yes">
         <location filename="../src/gui/commonstrings.cpp" line="48"/>
         <source>%n Filter(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n Filter</numerusform><numerusform>%n Filters</numerusform></translation>
     </message>
 </context>
 <context>
@@ -309,10 +309,15 @@ Bestandssynchronisatie desktop software tool.</translation>
         <source>Add Folder</source>
         <translation>Voeg map toe</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <source>You are synchronizing %1 out of %n folder(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <source>You are synchronizing %1 out of %n space(s)</source>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -344,12 +349,12 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="123"/>
         <source>, ⬇️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬇️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="126"/>
         <source>, ⬆️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬆️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="130"/>
@@ -492,7 +497,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Log in with your web browser</source>
-        <translation type="unfinished"/>
+        <translation>Login in uw browser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
@@ -502,22 +507,22 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Reopen web browser</source>
-        <translation type="unfinished"/>
+        <translation>Heropen in browser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>Open in browser</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Herstart authenticatie</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Kopiëren URL </translation>
     </message>
 </context>
 <context>
@@ -622,7 +627,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="73"/>
         <source>Manage Account</source>
-        <translation type="unfinished"/>
+        <translation>Beheer account</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="109"/>
@@ -632,7 +637,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="137"/>
         <source>Sync connections</source>
-        <translation type="unfinished"/>
+        <translation>Sync verbindingen</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="307"/>
@@ -914,7 +919,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="14"/>
         <source>Server activities</source>
-        <translation type="unfinished"/>
+        <translation>Server activiteiten</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="73"/>
@@ -924,7 +929,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="91"/>
         <source>Server activity table</source>
-        <translation type="unfinished"/>
+        <translation>Server activiteiten tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="100"/>
@@ -935,12 +940,12 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="147"/>
         <source>&amp;Server Activities</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Server activiteiten</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="148"/>
         <source>&amp;Notifications</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Meldingen</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="153"/>
@@ -1363,7 +1368,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="307"/>
         <source>%1 of %2 used</source>
-        <translation type="unfinished"/>
+        <translation>%1% van %2 gebruikt</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="387"/>
@@ -1562,7 +1567,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="55"/>
         <source>Start on Login</source>
-        <translation type="unfinished"/>
+        <translation>Bij inloggen starten</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="73"/>
@@ -1572,7 +1577,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="89"/>
         <source>Language selector</source>
-        <translation type="unfinished"/>
+        <translation>Taal selectie</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="112"/>
@@ -1739,7 +1744,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location filename="../src/gui/issueswidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>Problemen tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.ui" line="72"/>
@@ -1769,7 +1774,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="273"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filter menu</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="275"/>
@@ -2710,7 +2715,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/protocolwidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>Lokale activiteiten tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="62"/>
@@ -2721,12 +2726,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="96"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filter menu</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="111"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>Actie menu</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="153"/>
@@ -3360,7 +3365,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="323"/>
+        <location filename="../src/libsync/theme.cpp" line="327"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation type="unfinished"/>
     </message>
@@ -3661,7 +3666,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="43"/>
         <source>&lt; &amp;Back</source>
-        <translation type="unfinished"/>
+        <translation>&lt; &amp;Terug</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="49"/>
@@ -3682,7 +3687,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="107"/>
         <source>&amp;Finish</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Voltooien</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="108"/>
@@ -4024,7 +4029,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="116"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Annuleer</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="152"/>
@@ -4050,7 +4055,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="33"/>
         <source>Spaces list</source>
-        <translation type="unfinished"/>
+        <translation>Spaces lijst</translation>
     </message>
 </context>
 <context>
@@ -4058,7 +4063,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message>
         <location filename="../src/gui/spaces/qml/SpacesView.qml" line="31"/>
         <source>Spaces</source>
-        <translation type="unfinished"/>
+        <translation>Spaces</translation>
     </message>
 </context>
 <context>
@@ -4128,12 +4133,12 @@ Weet U zeker dat U verder wilt gaan?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="573"/>
+        <location filename="../src/libsync/theme.cpp" line="582"/>
         <source>Username</source>
         <translation>Gebruikersnaam</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="575"/>
+        <location filename="../src/libsync/theme.cpp" line="584"/>
         <source>E-mail address</source>
         <translation>&amp;E-mail adres</translation>
     </message>
@@ -4151,12 +4156,12 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n jaar</numerusform><numerusform>%n jaren</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n maand</numerusform><numerusform>%n maanden</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
@@ -4176,7 +4181,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n seconde</numerusform><numerusform>%n seconden</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
@@ -4213,7 +4218,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="307"/>
+        <location filename="../src/libsync/theme.cpp" line="311"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2 %7%8biliotheken Qt %3, %4%7Gebruikt virtuele bestandenplugin: %5%7%6</translation>
     </message>
@@ -4221,7 +4226,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="290"/>
+        <location filename="../src/libsync/theme.cpp" line="294"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (Gebouwd met Qt %2)</translation>
     </message>
@@ -4229,7 +4234,7 @@ Weet U zeker dat U verder wilt gaan?</translation>
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="295"/>
+        <location filename="../src/libsync/theme.cpp" line="299"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
