@@ -130,7 +130,7 @@ void SetupWizardWidget::displayPage(AbstractSetupWizardPage *page, SetupWizardSt
 
     connect(_currentPage, &AbstractSetupWizardPage::contentChanged, this, &SetupWizardWidget::slotUpdateNextButton);
 
-    QTimer::singleShot(0, [this]() {
+    QTimer::singleShot(0, this, [this]() {
         // this can optionally be overwritten by the page
         Q_EMIT _currentPage->pageDisplayed();
     });
