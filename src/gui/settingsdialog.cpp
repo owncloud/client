@@ -72,7 +72,7 @@ public:
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
     {
         const auto qmlIcon = OCC::Resources::QMLResources::parseIcon(id);
-        const auto accountState = OCC::AccountManager::instance()->accountState(QUuid::fromString(qmlIcon.iconName));
+        const auto accountState = OCC::AccountManager::instance()->account(QUuid::fromString(qmlIcon.iconName));
         return OCC::Resources::pixmap(requestedSize, accountState->account()->avatar(), qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
     }
 };

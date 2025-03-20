@@ -77,9 +77,9 @@ public:
     Q_DECL_DEPRECATED_X("Please use the uuid to specify the account") AccountStatePtr account(const QString &name);
 
     /**
-     * Return the accountState state pointer for an accountState identified by its display name
+     * Return the account state pointer for an account identified by its display name
      */
-    AccountStatePtr accountState(const QUuid uuid);
+    AccountStatePtr account(const QUuid uuid);
 
     /**
      * Delete the AccountState

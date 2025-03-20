@@ -50,7 +50,7 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
     }
 
     const auto &a = _finalList.at(index.row());
-    const AccountStatePtr accountState = AccountManager::instance()->accountState(a.accountUuid());
+    const AccountStatePtr accountState = AccountManager::instance()->account(a.accountUuid());
     if (!accountState) {
         return {};
     }
