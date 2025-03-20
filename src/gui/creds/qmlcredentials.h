@@ -78,6 +78,7 @@ Q_SIGNALS:
 
 
 private:
+    // Refactor todo: this could be dangerous per Erik's review
     QPointer<OAuth> _oauth = nullptr;
     bool _ready = false;
 };

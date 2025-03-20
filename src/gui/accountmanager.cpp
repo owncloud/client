@@ -269,20 +269,20 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
 
 QStringList AccountManager::accountNames() const
 {
-    QStringList accounts;
-    accounts.reserve(AccountManager::instance()->accounts().size());
-    for (const auto &a : AccountManager::instance()->accounts()) {
-        accounts << a->account()->displayNameWithHost();
+    QStringList accountNames;
+    accountNames.reserve(_accounts.count());
+    for (const auto &a : _accounts) {
+        accountNames << a->account()->displayNameWithHost();
     }
-    std::sort(accounts.begin(), accounts.end());
-    return accounts;
+    accountNames.sort();
+    return accountNames;
 }
 
 QList<AccountState *> AccountManager::accountsRaw() const
 {
     QList<AccountState *> out;
     out.reserve(_accounts.size());
-    for (auto &x : _accounts.values()) {
+    for (auto &x : _accounts) {
         out.append(x);
     }
     return out;
