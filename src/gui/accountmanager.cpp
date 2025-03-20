@@ -256,8 +256,11 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
     }
     settings->endGroup();
 
-    // save the account state
-    this->account(account->uuid())->writeToSettings(*settings);
+    // save the account state but only if it actually exists!!!
+    AccountStatePtr state = accountState(account->uuid());
+    if (state) {
+        state->writeToSettings(*settings);
+    }
     settings->endGroup();
 
     settings->sync();
@@ -334,7 +337,8 @@ AccountStatePtr AccountManager::account(const QString &name)
     return AccountStatePtr();
 }
 
-AccountStatePtr AccountManager::account(const QUuid uuid) {
+AccountStatePtr AccountManager::accountState(const QUuid uuid)
+{
     return _accounts.value(uuid);
 }
 
@@ -415,14 +419,20 @@ QString AccountManager::generateFreeAccountId() const
 
 AccountStatePtr AccountManager::addAccountState(std::unique_ptr<AccountState> &&accountState)
 {
-    auto *rawAccount = accountState->account().data();
+    AccountStatePtr statePtr = accountState.release();
+    if (!statePtr) // just bail. I have no idea why this is happening but fine. it's null and not usable
+        return statePtr;
+
+    _accounts.insert(statePtr->account()->uuid(), statePtr);
+
+    auto *rawAccount = statePtr->account().get();
+    // this slot can't be connected until the account state exists because saveAccount uses the state
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
         // persis the account, not the credentials, we don't know whether they are ready yet
+        // Refactor todo: how about we make those two completely different saves? then we can ditch this lambda
         saveAccount(rawAccount, false);
     });
 
-    AccountStatePtr statePtr = accountState.release();
-    _accounts.insert(statePtr->account()->uuid(), statePtr);
     Q_EMIT accountAdded(statePtr);
     Q_EMIT accountsChanged();
     return statePtr;
