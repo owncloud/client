@@ -1,0 +1,47 @@
+name: Build with conan
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-linux:
+    name: Build on Linux
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Conan
+      uses: conan-io/setup-conan@v1
+
+    # TODO: these should be conan recipies
+    - name: Install dependencies from Linux Packages
+      run: |
+        sudo apt-get install -y libre-graph-api-cpp-qt-client libkdsingleapplication-qt6-dev qtkeychain-qt6-dev
+
+    - name: Add local recipe repository & set conan config
+      shell: bash
+      run: |
+        conan config install ./vendor/.config/global.conf
+        conan remote add local ./vendor/
+
+    - name: Install dependencies with conan
+      shell: bash
+      run: |
+        conan install . --output-folder=build --build=missing
+
+    - name: Build the client
+      shell: bash
+      run: |
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
+
+
+  
