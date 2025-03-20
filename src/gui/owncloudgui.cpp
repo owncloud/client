@@ -29,7 +29,6 @@
 #include "guiutility.h"
 #include "libsync/theme.h"
 #include "logbrowser.h"
-#include "logger.h"
 #include "openfilemanager.h"
 #include "progressdispatcher.h"
 #include "settingsdialog.h"
@@ -595,12 +594,14 @@ void ownCloudGui::updateContextMenu()
     for (const auto &a : accountList) {
         if (a->isConnected()) {
             atLeastOneConnected = true;
+            break;
         }
     }
 
     for (auto *f : FolderMan::instance()->folders()) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
+            break;
         }
     }
 

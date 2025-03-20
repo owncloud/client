@@ -77,9 +77,9 @@ public:
     Q_DECL_DEPRECATED_X("Please use the uuid to specify the account") AccountStatePtr account(const QString &name);
 
     /**
-     * Return the account state pointer for an account identified by its display name
+     * Return the accountState state pointer for an accountState identified by its display name
      */
-    AccountStatePtr account(const QUuid uuid);
+    AccountStatePtr accountState(const QUuid uuid);
 
     /**
      * Delete the AccountState
@@ -121,6 +121,10 @@ public Q_SLOTS:
 Q_SIGNALS:
     void accountAdded(AccountStatePtr account);
     void accountRemoved(AccountStatePtr account);
+
+    // this signal is not formally connected anywhere, but it's used on the Q_PROPERTY declared for "accounts" above
+    // the accountManager::accounts prop is used as a model in AccountsBar.qml so the accounts are reevaluated in that gui
+    // any time the accountsChanged signal is emitted.
     void accountsChanged();
 
 private:

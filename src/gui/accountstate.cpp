@@ -18,7 +18,6 @@
 #include "application.h"
 #include "configfile.h"
 #include "fetchserversettings.h"
-#include "guiutility.h"
 
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/creds/httpcredentials.h"
@@ -29,7 +28,6 @@
 #include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
 
-#include "logger.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
 
@@ -288,9 +286,8 @@ void AccountState::setState(State state)
             _fetchCapabilitiesJob->start();
         });
     }
-    // don't anounce a state change from connected to connected
-    // https://github.com/owncloud/client/commit/2c6c21d7532f0cbba4b768fde47810f6673ed931
-    if (oldState != state || state != Connected) {
+
+    if (oldState != _state) {
         Q_EMIT stateChanged(_state);
     }
 }
@@ -493,7 +490,7 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         if (status == ConnectionValidator::Connected) {
             Q_ASSERT(_account->hasCapabilities());
             if (_account->capabilities().migration().space_migration.enabled) {
-                auto statePtr = AccountManager::instance()->account(_account->uuid());
+                auto statePtr = AccountManager::instance()->accountState(_account->uuid());
                 auto migration = new SpaceMigration(statePtr, _account->capabilities().migration().space_migration.endpoint, this);
                 connect(migration, &SpaceMigration::finished, this, [migration, this] {
                     migration->deleteLater();
