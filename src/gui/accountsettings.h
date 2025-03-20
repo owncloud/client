@@ -64,8 +64,6 @@ public:
     explicit AccountSettings(const AccountStatePtr &accountState, QWidget *parent = nullptr);
     ~AccountSettings() override;
 
-    AccountStatePtr accountsState() const { return _accountState; }
-
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
     void addModalWidget(AccountModalWidget *widget);
 
