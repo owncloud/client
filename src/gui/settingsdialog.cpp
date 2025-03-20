@@ -143,6 +143,8 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     setCurrentPage(SettingsPage::Settings);
     auto addAccount = [this](AccountStatePtr accountStatePtr) {
+        if (!accountStatePtr)
+            return;
         auto accountSettings = new AccountSettings(accountStatePtr, this);
         _ui->stack->addWidget(accountSettings);
         _widgetForAccount.insert(accountStatePtr->account().data(), accountSettings);
@@ -154,8 +156,13 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     for (const auto &accountState : AccountManager::instance()->accounts()) {
         addAccount(accountState);
     }
+    // Refactor todo: make these real functions. Naive abuse of lambdas obfuscates the responsibilities of the class as important
+    // functionality is hidden in the impl instead of being clearly visible in the interface. This is very bad practice and we
+    // need to start correcting that to support maintainability.
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, addAccount);
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr accountStatePtr) {
+        if (!accountStatePtr)
+            return;
         Account *acc = accountStatePtr->account().data();
         if (AccountSettings *asw = _widgetForAccount.value(acc)) {
             _ui->stack->removeWidget(asw);

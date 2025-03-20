@@ -63,7 +63,17 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 {
     ui->setupUi(this);
 
+    // as usual we do too many things in the ctr and we need to eval all the code paths to make sure they handle
+    // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
+    Q_ASSERT(_accountState);
+
+    // Refactor todo: devise a correct handling of null account state in this ctr.
+    // also move all this connect stuff to a "connect" method.
+    // also ditch the lambdas which should actually be functions (private if necessary)
+
     _model = new FolderStatusModel(this);
+
+    // see comments in this impl as it needs work
     _model->setAccountState(_accountState);
 
     auto weightedModel = new QSortFilterProxyModel(this);
@@ -114,6 +124,10 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 
 void AccountSettings::slotOpenAccountInBrowser()
 {
+    if (!_accountState) {
+        return;
+    }
+
     QUrl url = _accountState->account()->url();
     if (!Theme::instance()->overrideServerPath().isEmpty()) {
         // There is an override for the WebDAV endpoint. Remove it for normal web browsing.
@@ -124,6 +138,10 @@ void AccountSettings::slotOpenAccountInBrowser()
 
 void AccountSettings::slotToggleSignInState()
 {
+    if (!_accountState) {
+        return;
+    }
+
     if (_accountState->isSignedOut()) {
         _accountState->signIn();
     } else {
@@ -133,6 +151,12 @@ void AccountSettings::slotToggleSignInState()
 
 void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
 {
+    // Refactoring todo: we need to eval defensive handling of the account state QPointer in more depth, and I
+    // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
+    // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
+    // to id
+    Q_ASSERT(_accountState);
+
     // qpointer for async calls
     const auto isDeployed = folder->isDeployed();
     const auto addRemoveFolderAction = [isDeployed, folder, this](QMenu *menu) {
@@ -170,6 +194,8 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     }
 
     // Add an action to open the folder on the server in a webbrowser:
+    // Refactor todo: why are we using the folder accountState AND the local member? shouldn't the folder have the same account state
+    // as this settings panel?!
     if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
         QString path = folder->remotePathTrailingSlash();
         menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
@@ -240,6 +266,10 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
 
 void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 {
+    if (!_accountState) {
+        return;
+    }
+
     auto *selectiveSync = new SelectiveSyncWidget(_accountState->account(), this);
     selectiveSync->setDavUrl(folder->webDavUrl());
     bool ok;
@@ -258,6 +288,10 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 
 void AccountSettings::slotAddFolder()
 {
+    if (!_accountState) {
+        return;
+    }
+
     FolderMan::instance()->setSyncEnabled(false); // do not start more syncs.
 
     FolderWizard *folderWizard = new FolderWizard(_accountState, this);
@@ -275,6 +309,10 @@ void AccountSettings::slotAddFolder()
 
 void AccountSettings::slotFolderWizardAccepted()
 {
+    if (!_accountState) {
+        return;
+    }
+
     FolderWizard *folderWizard = qobject_cast<FolderWizard *>(sender());
     qCInfo(lcAccountSettings) << "Folder wizard completed";
 
@@ -479,8 +517,13 @@ void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
     FolderMan::instance()->scheduler()->start();
 }
 
+// Refactoring todo: the signal sends the new account state, refactor this to use that param
 void AccountSettings::slotAccountStateChanged()
 {
+    if (!_accountState) {
+        return;
+    }
+
     const AccountState::State state = _accountState->state();
     const AccountPtr account = _accountState->account();
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
@@ -502,6 +545,8 @@ void AccountSettings::slotAccountStateChanged()
         if (_accountState->supportsSpaces()) {
             connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
                 Qt::UniqueConnection);
+            // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
+            // triggering the slot? ie duplicate call to slotSpacesUpdated?
             slotSpacesUpdated();
         }
         break;
@@ -555,7 +600,8 @@ void AccountSettings::slotSpacesUpdated()
 
     // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
     if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-        QTimer::singleShot(0, [this, unsycnedSpaces]() {
+        QTimer::singleShot(0, this, [this, unsycnedSpaces]() {
+            // Refactor todo: I see zero reason to make a copy of the member. Just use the member!
             auto accountStatePtr = _accountState;
 
             for (GraphApi::Space *newSpace : unsycnedSpaces) {
@@ -637,6 +683,10 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
         qCWarning(lcAccountSettings) << "Missing WA_DeleteOnClose! (2)" << widget->metaObject() << widget;
     }
     Q_ASSERT(widget->testAttribute(Qt::WA_DeleteOnClose));
+
+    // Refactoring todo: eval this more completely
+    Q_ASSERT(_accountState);
+
     connect(widget, &QWidget::destroyed, this, [this, outerWidget] {
         outerWidget->deleteLater();
         if (!_goingDown) {
@@ -649,6 +699,10 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
 
 void AccountSettings::addModalWidget(AccountModalWidget *widget)
 {
+    if (!_accountState) {
+        return;
+    }
+
     ui->stackedWidget->addWidget(widget);
     ui->stackedWidget->setCurrentWidget(widget);
 
@@ -698,7 +752,7 @@ void AccountSettings::slotDeleteAccount()
 bool AccountSettings::event(QEvent *e)
 {
     if (e->type() == QEvent::Hide || e->type() == QEvent::Show) {
-        if (!_accountState->supportsSpaces()) {
+        if (_accountState && !_accountState->supportsSpaces()) {
             _accountState->quotaInfo()->setActive(isVisible());
         }
     }

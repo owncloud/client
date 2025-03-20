@@ -186,9 +186,18 @@ FolderStatusModel::~FolderStatusModel() { }
 
 void FolderStatusModel::setAccountState(const AccountStatePtr &accountState)
 {
+    // Refactor todo: what is the logic here? I especially don't understand why we are expecting current _accountState to
+    // be nullptr (via assert) when this is called.
+    // if this ptr should only be set once:
+    //      public setter must be removed
+    //      the ptr should be passed to the FolderStatusModel ctr as a one shot setting.
+    //      if useful, split the setup routine(s) into a "configure" method that can be called after the ctr.
+    //      I am also in favor of independent "connect" and "disconnect" functions to keep all that logic in one place
+    //      instead of spread out all over the place. call it after construction.
     beginResetModel();
     _folders.clear();
-    if (_accountState != accountState) {
+    // at least test to see if the "new" account state is legit before we go through all the setup
+    if (accountState && _accountState != accountState) {
         Q_ASSERT(!_accountState);
         _accountState = accountState;
 
