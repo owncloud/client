@@ -1705,32 +1705,31 @@ void SyncJournalDb::setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord
     query->exec();
 }
 
-QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, bool *ok)
+QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, bool &ok)
 {
     QSet<QString> result;
-    OC_ASSERT(ok);
 
     QMutexLocker locker(&_mutex);
     if (!checkConnect()) {
-        *ok = false;
+        ok = false;
         return result;
     }
 
     const auto query = _queryManager.get(PreparedSqlQueryManager::GetSelectiveSyncListQuery, QByteArrayLiteral("SELECT path FROM selectivesync WHERE type=?1"), _db);
     if (!query) {
-        *ok = false;
+        ok = false;
         return result;
     }
 
     query->bindValue(1, int(type));
     if (!query->exec()) {
-        *ok = false;
+        ok = false;
         return result;
     }
     while (true) {
         auto next = query->next();
         if (!next.ok) {
-            *ok = false;
+            ok = false;
             return result;
         }
         if (!next.hasData)
@@ -1742,7 +1741,7 @@ QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncLi
         }
         result.insert(entry);
     }
-    *ok = true;
+    ok = true;
 
     return result;
 }
