@@ -703,7 +703,7 @@ void Folder::setVirtualFilesEnabled(bool enabled)
         auto finalizeVfsSwitch = [newMode, enabled, isPaused, this] {
             // Wipe selective sync blacklist
             bool ok = false;
-            const auto oldBlacklist = journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+            const auto oldBlacklist = journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
             journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
 
             // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
@@ -1131,7 +1131,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
         return;
 
     bool ok = false;
-    auto blacklist = _journal.getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+    auto blacklist = _journal.getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (!ok)
         return;
     if (!blacklist.contains(path + QLatin1Char('/')))

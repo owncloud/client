@@ -231,7 +231,7 @@ bool PropagateRemoteMove::adjustSelectiveSync(SyncJournalDb *journal, const QStr
     bool ok;
     // We only care about preserving the blacklist.   The white list should anyway be empty.
     // And the undecided list will be repopulated on the next sync, if there is anything too big.
-    auto list = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+    auto list = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (!ok)
         return false;
 

@@ -274,7 +274,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
     selectiveSync->setDavUrl(folder->webDavUrl());
     bool ok;
     selectiveSync->setFolderInfo(
-        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok));
+        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok));
     Q_ASSERT(ok);
 
     auto *modalWidget = new AccountModalWidget(tr("Choose what to sync"), selectiveSync, this);
