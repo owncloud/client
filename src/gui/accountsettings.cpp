@@ -274,7 +274,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
     selectiveSync->setDavUrl(folder->webDavUrl());
     bool ok;
     selectiveSync->setFolderInfo(
-        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok));
+        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok));
     Q_ASSERT(ok);
 
     auto *modalWidget = new AccountModalWidget(tr("Choose what to sync"), selectiveSync, this);
@@ -345,7 +345,7 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            FolderMan::instance()->removeFolder(folder);
+            FolderMan::instance()->removeFolderSync(folder);
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
     });
