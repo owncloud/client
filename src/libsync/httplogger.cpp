@@ -110,7 +110,6 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
         }
         if (isTextBody(contentType)) {
             if (!device->isOpen()) {
-                Q_ASSERT(dynamic_cast<QBuffer *>(device));
                 // should we close it again?
                 device->open(QIODevice::ReadOnly);
             }
