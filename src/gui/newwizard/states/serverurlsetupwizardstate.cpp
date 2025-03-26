@@ -131,6 +131,12 @@ void ServerUrlSetupWizardState::evaluatePage()
                     }
 
                     const auto resolvedUrl = resolveJob->result().toUrl();
+                    if (resolvedUrl.hasQuery()) {
+                        QString errorMsg = tr("The requested URL failed with query value: ");
+                        errorMsg += resolvedUrl.query();
+                        Q_EMIT evaluationFailed(errorMsg);
+                        return;
+                    }
 
                     // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
                     // step we can skip it here therefore
