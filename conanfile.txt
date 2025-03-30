@@ -1,0 +1,18 @@
+[requires]
+extra-cmake-modules/6.2.0
+zlib/1.3.1
+sqlite3/3.49.1
+kdsingleapplication/1.1.0
+qtkeychain/0.15.0
+
+# Sparkle ?
+# AppImageUpdate ?
+qt/6.7.3
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[options]
+qt/*:qtdeclarative=True
+qt/*:with_dbus=True
