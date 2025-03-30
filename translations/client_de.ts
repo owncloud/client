@@ -313,12 +313,12 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Sie synchronisieren %1 von %n Ordner.</numerusform><numerusform>Sie synchronisieren %1 von %n Ordnern.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Sie synchronisieren %1 von %n Space.</numerusform><numerusform>Sie synchronisieren %1 von %n Spaces.</numerusform></translation>
     </message>
 </context>
 <context>
