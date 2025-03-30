@@ -38,4 +38,8 @@
 *.unison
 .nfs*
 
+# Relevant for Infinite Scale
+].space
+*.psec
+
 My Saved Places.
