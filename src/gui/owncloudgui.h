@@ -73,7 +73,7 @@ public:
     void runNewAccountWizard();
 
 Q_SIGNALS:
-    void setupProxy();
+    void requestSetUpSyncFoldersForAccount(AccountStatePtr account, bool useVfs);
 
 public Q_SLOTS:
     void setupContextMenu();
@@ -118,6 +118,9 @@ private:
     Systray *_tray;
     SettingsDialog *_settingsDialog;
     // tray's menu
+    // Refactoring todo: get rid of this scoped pointer - it is only reset on creating the menu and this seems to be used as the menu
+    // has no parent to clean it  up. Important: the system tray context menu should share the same parent (widget). see example impl
+    // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
     QScopedPointer<QMenu> _contextMenu;
 
     // Manually tracking whether the context menu is visible via aboutToShow

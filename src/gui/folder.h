@@ -171,6 +171,13 @@ private:
  * @brief The Folder class
  * @ingroup gui
  */
+// Refactoring todo: this class is overgrown and has too many responsibilities. Need to evaluate and refine it's core behaviors
+// and split out some of the responsibilities to new dedicated classes. Eg I already see some need for a folder sync handler, and/or
+// a folder scoped vfs controller. these could still be created/configured in the Folder (worst case!) but this class just does way too much
+// Refactoring the impls to be more modular will also allow us to refactor the ctr sensibly to avoid the excessive setup routines which are
+// invoked before the class is even fully built.
+// we also have weird split responsibility around instantiating the vfs - on creation the FolderMan instantiates vfs and passes it to
+// the ctr. But the folder resets the vfs with new instance sometimes as well. This is not healthy as responsibility is split/not clear
 class OWNCLOUDGUI_EXPORT Folder : public QObject
 {
     Q_OBJECT
@@ -486,6 +493,9 @@ private:
      *
      * May be called several times.
      */
+    // Refactoring todo: I would expect a "registration" function to take an arg for the thing that is supposed to be registered
+    // I also do not see evidence that this is called "several times" aside from the fact that it's called any time the
+    //
     void registerFolderWatcher();
 
     enum LogStatus {
@@ -538,16 +548,30 @@ private:
      *
      * Created by registerFolderWatcher(), triggers slotWatchedPathsChanged()
      */
+    // Refactor todo: I think this should just be a normal pointer since it's not passed around and is truly a child of the
+    // parent Folder instance, so will be destructed along with the folder. Why are we making this so complicated?
+    // Further, I'm not even sure it's safe to use a scoped pointer here since the whole purpose is to auto delete the pointer
+    // when it goes "out of scope" - eg when this parent folder is destructed. If we have some real reason to keep it,
+    // I think at the very least we need to be sure to use the QScopedPointerDeleteLater custom deleter as described in the docs:
+    // QScopedPointer<MyCustomClass, ScopedPointerCustomDeleter> customPointer(new MyCustomClass);
     QScopedPointer<FolderWatcher> _folderWatcher;
 
     /**
      * Keeps track of locally dirty files so we can skip local discovery sometimes.
      */
+    // Refactoring todo: as above, except we need to add the possibility to pass a parent to this class's ctr to allow auto-cleanup
+    // again: this should NOT be complicated
     QScopedPointer<LocalDiscoveryTracker> _localDiscoveryTracker;
 
     /**
      * The vfs mode instance (created by plugin) to use. Never null.
      */
+    // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
+    // to ensure we don't keep it alive outside of useable scope. Would probably be simplest to make it a QPointer for use with the
+    // SyncOptions and rely on normal qt parenting scheme to ensure correct cleanup timing if it's not explicitly deleted.
+    // it is also false that it is never null - it is reset in wipeForRemoval
+    // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
+    // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
     QSharedPointer<Vfs> _vfs;
 
     friend class SpaceMigration;

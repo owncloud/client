@@ -55,6 +55,11 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountSettings, "gui.account.settings", QtInfoMsg)
 
+// Refactoring todo: devise a correct handling of null account state in this ctr.
+// also move all this connect stuff to a "connect" method.
+// also ditch the lambdas which should actually be functions (private if necessary)
+// Also refactoring todo: split the controller behavior out into a controller. A widget should NOT contain
+// business or controller logic!
 AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AccountSettings)
@@ -67,9 +72,6 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
     Q_ASSERT(_accountState);
 
-    // Refactor todo: devise a correct handling of null account state in this ctr.
-    // also move all this connect stuff to a "connect" method.
-    // also ditch the lambdas which should actually be functions (private if necessary)
 
     _model = new FolderStatusModel(this);
 
@@ -93,6 +95,9 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
     slotAccountStateChanged();
 
+    // Refactoring todo: eval why this is created/destructed each time the user invokes the manageAccount button. 
+    // normal impl creates actions as members of either gui, or better, a controller, and controller updates action states
+    // in line with updates it receives.
     connect(ui->manageAccountButton, &QToolButton::clicked, this, [this] {
         QMenu *menu = new QMenu(this);
         menu->setAttribute(Qt::WA_DeleteOnClose);
@@ -318,16 +323,8 @@ void AccountSettings::slotFolderWizardAccepted()
 
     const auto config = folderWizard->result();
 
-    auto folder = FolderMan::instance()->addFolderFromFolderWizardResult(_accountState, config);
 
-    if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
-
-        // The user already accepted the selective sync dialog. everything is in the white list
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
-    }
-    FolderMan::instance()->setSyncEnabled(true);
-    FolderMan::instance()->scheduleAllFolders();
+    FolderMan::instance()->addFolderFromFolderWizardResult(_accountState, config);
 }
 
 void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
@@ -346,6 +343,12 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
             FolderMan::instance()->removeFolderSync(folder);
+            // Lisa todo: I don't understand why this is called when a folder is removed. the slot seems to be more
+            // geared to loading/adding newly discovered spaces *when the spaces manager notifies something has changed*
+            // instead we seem to "conveniently" recycle the meaning of the handler to cover other changes as well.
+            // also, I *really* don't understand why we are using a single shot timer to "schedule" this in the main event
+            // loop when we are already in the main event loop aren't we (ie we are IN a gui slot already)? I am seeing this
+            // a lot and so far have no explanation as to what the reason or intent is.
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
     });
@@ -599,19 +602,26 @@ void AccountSettings::slotSpacesUpdated()
     }
 
     // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
+    // Refactoring todo answer to above: we should not be loading spaces in any gui. Instead I would expect that the gui merely updates
+    // it's view/state in response to new or removed spaces. The clue is that the main actor here is FolderMan - connect FolderMan to whoever
+    // emits the newly discovered spaces (or whatever this is) and let it deal with it.
+    // A wrinkle here is that this slot is called in several places in the gui, apparently just to trigger refresh or similar? Not good!
     if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
+        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
+        // where does this slot run if not on the main thread?
+        // what needs to be processed "before" this loading routine that requires scheduling it for later?
+        // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
+        // event loop.
         QTimer::singleShot(0, this, [this, unsycnedSpaces]() {
-            // Refactor todo: I see zero reason to make a copy of the member. Just use the member!
-            auto accountStatePtr = _accountState;
-
             for (GraphApi::Space *newSpace : unsycnedSpaces) {
                 // TODO: Problem: when a space is manually removed, this will re-add it!
                 qCInfo(lcAccountSettings) << "Adding sync connection for newly discovered space" << newSpace->displayName();
 
                 const QString localDir(_accountState->account()->defaultSyncRoot());
                 const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
-                    localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, accountStatePtr->account()->uuid());
+                    localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, _accountState->account()->uuid());
 
+                // Lisa todo: I think this could go into a FolderDefinition then just pass it to addFolder?
                 FolderMan::SyncConnectionDescription fwr;
                 fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());
                 fwr.spaceId = newSpace->drive().getRoot().getId();
@@ -619,7 +629,7 @@ void AccountSettings::slotSpacesUpdated()
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
                 fwr.priority = newSpace->priority();
-                FolderMan::instance()->addFolderFromFolderWizardResult(accountStatePtr, fwr);
+                FolderMan::instance()->addFolderFromFolderWizardResult(_accountState, fwr);
             }
 
             _unsyncedSpaces = 0;

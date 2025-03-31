@@ -257,6 +257,69 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
     return true;
 }
 
+void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs)
+{
+    if (accountStatePtr->supportsSpaces()) {
+        // I'm not thrilled with this solution but it's *actually* a good use for a lambda, and it's also better than other
+        // options I considered to get the temp account state and useVfs in view.
+        QObject::connect(accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, this,
+            [this, accountStatePtr, useVfs] { loadSpacesWhenReady(accountStatePtr, useVfs); });
+        // this is questionable - basically if the spaces aren't ready it triggers "getting them ready" - there is no way to directly
+        // ask "are you ready?" - you have to call this function to get the ready signal, handled above
+        accountStatePtr->account()->spacesManager()->checkReady();
+    } else {
+        auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
+        def.setLocalPath(accountStatePtr->account()->defaultSyncRoot());
+        def.setTargetPath(Theme::instance()->defaultServerFolder());
+        addFolderFromWizard(accountStatePtr, std::move(def), useVfs);
+    }
+
+    // Lisa todo: these are allegedly required after the spaces are loaded, too, but I think will get called before that happens
+    // reality check: shouldn't checkConnectivity be called as the very first step of this slot? how can we get the spaces if
+    // the account is not available?!
+
+    // Refactoring todo:  who is actually responsible for calling this? I see it all over the place
+    accountStatePtr->checkConnectivity();
+    // Refactoring todo: reality check that this isn't already done elsewhere. I see this here and there and I just think there
+    // should be a "core" location for it. As it is now it looks like a "well if we add it enough places it's sure to work eventually"
+    // approach
+    FolderMan::instance()->setSyncEnabled(true);
+    FolderMan::instance()->scheduleAllFolders();
+}
+
+void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
+{
+    if (!accountState || !accountState->account())
+        return;
+
+    GraphApi::SpacesManager *spacesMgr = accountState->account()->spacesManager();
+    if (!spacesMgr)
+        return;
+
+    auto spaces = spacesMgr->spaces();
+    // we do not want to set up folder sync connections for disabled spaces (#10173)
+    spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
+
+    if (!spaces.isEmpty()) {
+        const QString localDir(spacesMgr->account()->defaultSyncRoot());
+        FileSystem::setFolderMinimumPermissions(localDir);
+        Folder::prepareFolder(localDir);
+        Utility::setupFavLink(localDir);
+        for (const auto *space : std::as_const(spaces)) {
+            FolderDefinition folderDef = FolderDefinition::createNewFolderDefinition(
+                QUrl(space->drive().getRoot().getWebDavUrl()), space->drive().getRoot().getId(), space->displayName());
+
+            folderDef.setPriority(space->priority());
+
+            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, spacesMgr->account()->uuid());
+            folderDef.setLocalPath(localPath);
+            folderDef.setTargetPath({});
+
+            addFolderFromWizard(accountState, std::move(folderDef), useVfs);
+        }
+    }
+}
+
 bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, AccountStatePtr account)
 {
     // Lisa todo: remove ignoreHiddenFolders key if possible but remember config compatibility issues up AND down
@@ -388,9 +451,7 @@ void FolderMan::slotFolderCanSyncChanged()
 Folder *FolderMan::folder(const QByteArray &id)
 {
     if (!id.isEmpty()) {
-        auto f = std::find_if(_folders.cbegin(), _folders.cend(), [id](auto f) {
-            return f->id() == id;
-        });
+        auto f = std::find_if(_folders.cbegin(), _folders.cend(), [id](auto f) { return f->id() == id; });
         if (f != _folders.cend()) {
             return *f;
         }
@@ -424,20 +485,17 @@ void FolderMan::slotIsConnectedChanged()
         qCInfo(lcFolderMan) << "Account" << accountName << "connected, scheduling its folders";
 
         for (auto *f : std::as_const(_folders)) {
-            if (f
-                && f->canSync()
-                && f->accountState() == accountState) {
+            if (f && f->canSync() && f->accountState() == accountState) {
                 scheduler()->enqueueFolder(f);
             }
         }
     } else {
-        qCInfo(lcFolderMan) << "Account" << accountName << "disconnected or paused, "
-                                                           "terminating or descheduling sync folders";
+        qCInfo(lcFolderMan) << "Account" << accountName
+                            << "disconnected or paused, "
+                               "terminating or descheduling sync folders";
 
         for (auto *f : std::as_const(_folders)) {
-            if (f
-                && f->isSyncRunning()
-                && f->accountState() == accountState) {
+            if (f && f->isSyncRunning() && f->accountState() == accountState) {
                 f->slotTerminateSync(tr("Account disconnected or paused"));
             }
         }
@@ -518,11 +576,11 @@ void FolderMan::slotFolderSyncStarted()
 }
 
 /*
-  * a folder indicates that its syncing is finished.
-  * Start the next sync after the system had some milliseconds to breath.
-  * This delay is particularly useful to avoid late file change notifications
-  * (that we caused ourselves by syncing) from triggering another spurious sync.
-  */
+ * a folder indicates that its syncing is finished.
+ * Start the next sync after the system had some milliseconds to breath.
+ * This delay is particularly useful to avoid late file change notifications
+ * (that we caused ourselves by syncing) from triggering another spurious sync.
+ */
 void FolderMan::slotFolderSyncFinished(const SyncResult &)
 {
     auto f = qobject_cast<Folder *>(sender());
@@ -587,6 +645,7 @@ void FolderMan::connectFolder(Folder *folder)
         connect(folder, &Folder::syncFinished, this, &FolderMan::slotFolderSyncFinished);
         connect(folder, &Folder::syncStateChange, this, [folder, this] { Q_EMIT folderSyncStateChange(folder); });
         connect(folder, &Folder::syncPausedChanged, this, &FolderMan::slotFolderSyncPauseChanged);
+        connect(folder, &Folder::syncPausedChanged, this, &FolderMan::saveFolder);
         connect(folder, &Folder::canSyncChanged, this, &FolderMan::slotFolderCanSyncChanged);
         connect(
             &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
@@ -608,6 +667,11 @@ void FolderMan::disconnectFolder(Folder *folder)
             &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
         disconnect(folder, nullptr, &folder->syncEngine().syncFileStatusTracker(), nullptr);
     }
+}
+
+void FolderMan::saveFolder(Folder *folder)
+{
+    // do it
 }
 
 Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
@@ -714,11 +778,9 @@ void FolderMan::setDirtyProxy()
 {
     for (auto *f : std::as_const(_folders)) {
         if (f) {
-            if (f->accountState() && f->accountState()->account()
-                && f->accountState()->account()->accessManager()) {
+            if (f->accountState() && f->accountState()->account() && f->accountState()->account()->accessManager()) {
                 // Need to do this so we do not use the old determined system proxy
-                f->accountState()->account()->accessManager()->setProxy(
-                    QNetworkProxy(QNetworkProxy::DefaultProxy));
+                f->accountState()->account()->accessManager()->setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
             }
         }
     }
@@ -747,8 +809,7 @@ TrayOverallStatusResult FolderMan::trayOverallStatus(const QVector<Folder *> &fo
     return result;
 }
 
-QString FolderMan::trayTooltipStatusString(
-    const SyncResult &result, bool paused)
+QString FolderMan::trayTooltipStatusString(const SyncResult &result, bool paused)
 {
     QString folderMessage;
     switch (result.status()) {
@@ -1018,7 +1079,8 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     // Lisa todo: why are we doing this check when adding a folder?
     // should it not happen on removing the sync? Yes it should
     // should the journal be removed even when loading from config? Not usually, but maybe if there was a migration?
-    // sticky part is old clients may not remove the old journal so we at least need a check, but ELSEWHERE
+    // sticky part is old clients may not remove the old journal. This is currently done in
+    //
     //
     if (!ensureJournalGone(folderDefinition.absoluteJournalPath())) {
         return nullptr;
@@ -1031,18 +1093,21 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     auto newFolder = addFolder(accountStatePtr, folderDefinition);
 
     if (newFolder) {
+        // could be moved from addFolderFromWizardResult
+        // Lisa todo: validate with Erik: this works for spaces too?
+        // newFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
+        // newFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
+
         // With spaces we only handle the main folder
         if (!newFolder->groupInSidebar()) {
             Utility::setupFavLink(folderDefinition.localPath());
         }
         qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";
-        newFolder->saveToSettings();
+        saveFolder(newFolder);
     } else {
         qCWarning(lcFolderMan) << "Failed to create local sync folder!";
     }
 
-    // find best location with updates
-    newFolder->saveToSettings();
 
     // should be moved to true originating caller
     Q_EMIT folderListChanged();
@@ -1055,13 +1120,28 @@ Folder *FolderMan::addFolderFromFolderWizardResult(const AccountStatePtr &accoun
     FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
     definition.setLocalPath(description.localPath);
     definition.setTargetPath(description.remotePath);
+    definition.setPriority(description.priority);
     auto f = addFolderFromWizard(accountStatePtr, std::move(definition), description.useVirtualFiles);
-    // this should be moved to addFolderFromWizard
+
+    // Lisa todo: reality check with Erik
+    /* this was in AccountSettings::slotFolderWizardAccepted
+    if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
+
+        // The user already accepted the selective sync dialog. everything is in the white list
+        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
+    }*/
+
+    // this should maybe be moved to addFolderFromWizard
     if (f) {
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
-        f->setPriority(description.priority);
-        f->saveToSettings();
+        // should this always be called?
+        f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
     }
+    // Lisa todo: this was also moved from AccountSettings::slotFolderWizardAccepted - discuss with Erik when these should be called
+    setSyncEnabled(true);
+    scheduleAllFolders();
+
     return f;
 }
 

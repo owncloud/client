@@ -93,6 +93,7 @@ public:
         SpacesFolder,
     };
 
+    // Refactoring todo: why does this duplicate most of the folder definition?
     struct SyncConnectionDescription
     {
         /***
@@ -148,6 +149,11 @@ public:
     /// \returns empty if a downgrade of a folder was detected, otherwise it will return the number
     ///          of folders that were set up (note: this can be zero when no folders were configured).
     std::optional<qsizetype> setupFoldersFromConfig();
+
+    /**
+     *  sets up sync folders/spaces after adding a new account via the gui
+     */
+    void setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs);
 
     // Lisa todo: this function actually just returns the internal vector of folders. I do not see any evidence of
     // what is docced here, at least related to this specific function.
@@ -329,6 +335,7 @@ private Q_SLOTS:
 
     void slotServerVersionChanged(Account *account);
 
+
 private:
     explicit FolderMan();
 
@@ -339,6 +346,13 @@ private:
     /* disconnects a folder instance, provided it has no setup errors
      */
     void disconnectFolder(Folder *folder);
+
+    /* saves folder using local instance of config settings
+     */
+    void saveFolder(Folder *folder);
+
+    // connected to spacesManager::ready signal - this is a bit weird as you have to ask if it's ready to get the signal.
+    void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
 
     // finds all folder configuration files
     // and create the folders

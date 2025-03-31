@@ -239,6 +239,7 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
         }
 
         // HACK: Save http_user also as user
+        // Refactoring todo: is this still valid? I don't find uses of httpUserC() aside from this instance
         if (account->_settingsMap.contains(httpUserC()))
             settings->setValue(userC(), account->_settingsMap.value(httpUserC()));
     }
