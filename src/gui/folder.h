@@ -62,7 +62,7 @@ public:
     }
 
 
-    /// Saves the folder definition into the current settings group.
+    /// Saves the folder definition into the given settings (group should be preconfigured)
     static void save(QSettings &settings, const FolderDefinition &folder);
 
     /// Reads a folder definition from the current settings group.
@@ -163,8 +163,6 @@ private:
 
     uint32_t _priority = 0;
 
-// Lisa todo: eliminate this friend - refactor to use the public interface
-    friend class SpaceMigration;
 };
 
 /**
@@ -332,8 +330,6 @@ public:
     std::chrono::milliseconds msecSinceLastSync() const { return std::chrono::milliseconds(_timeSinceLastSyncDone.elapsed()); }
     std::chrono::milliseconds msecLastSyncDuration() const { return _lastSyncDuration; }
 
-    /// Saves the folder data in the account's settings.
-    void saveToSettings() const;
     /// Removes the folder from the account's settings.
     static void removeFromSettings(QSettings *settings, const QString &id);
     void removeFromSettings() const;
@@ -394,6 +390,7 @@ Q_SIGNALS:
     void syncPausedChanged(Folder *, bool paused);
     void canSyncChanged();
     void spaceChanged();
+    void vfsModeChanged(Folder *f, Vfs::Mode newMode);
 
 
     /**
@@ -512,6 +509,8 @@ private:
         const QString &renameTarget = QString());
 
     void startVfs();
+
+    void changeVfsMode(Vfs::Mode newMode);
 
     AccountStatePtr _accountState;
     FolderDefinition _definition;

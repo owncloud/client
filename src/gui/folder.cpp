@@ -684,80 +684,87 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
     FolderMan::instance()->scheduler()->enqueueFolder(this);
 }
 
-// Lisa todo: try to clean this up for readability
 void Folder::setVirtualFilesEnabled(bool enabled)
 {
     Vfs::Mode newMode = _definition.virtualFilesMode();
+    // Lisa todo: something bugs me here...not sure what so have another look with fresh eyes
     if (enabled && _definition.virtualFilesMode() == Vfs::Off) {
         newMode = VfsPluginManager::instance().bestAvailableVfsMode();
     } else if (!enabled) {
         newMode = Vfs::Off;
     }
-
-    if (newMode != _definition.virtualFilesMode()) {
-        // This is tested in TestSyncVirtualFiles::testWipeVirtualSuffixFiles, so for changes here, have them reflected in that test.
-        const bool wasPaused = _definition.paused();
-        if (!wasPaused) {
-            setSyncPaused(true);
-        }
-        auto finalizeVfsSwitch = [newMode, enabled, wasPaused, this] {
-            // stash the previous blacklist
-            bool ok;
-            const auto oldBlacklist = journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
-
-            if (!ok) {
-                qCWarning(lcFolder) << "Unable to retrieve previous selective sync blacklist for folder: " << _definition.localPath();
-                return;
-            }
-            // clear previous blacklist
-            journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
-
-
-            // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
-            // are in the DB but not on disk, so the client assumes they are deleted, and removes them from the remote.
-            _vfs->wipeDehydratedVirtualFiles();
-
-            // Tear down and disconnect the VFS
-            _vfsIsReady = false;
-            _vfs->stop();
-            _vfs->unregisterFolder();
-            disconnect(_vfs.get(), nullptr, this, nullptr);
-            disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.get(), nullptr);
-
-            // _vfs is a shared pointer...
-            // Lisa todo: who is it shared with?! It appears to be shared with the SyncOptions. SyncOptions instance is then passed to the engine
-            _vfs.reset(VfsPluginManager::instance().createVfsFromPlugin(newMode).release());
-
-            // Restart VFS.
-            _definition.setVirtualFilesMode(newMode);
-
-            if (enabled) {
-                // schedule blacklisted folders for rediscovery
-                connect(_vfs.get(), &Vfs::started, this, [oldBlacklist, this] {
-                    for (const auto &entry : oldBlacklist) {
-                        journalDb()->schedulePathForRemoteDiscovery(entry);
-                        // Refactor todo: from what I can see, in 98% of cases the return val of setPinState is ingored
-                        // do we actually need that return value?! if so why aren't we using it?
-                        std::ignore = vfs().setPinState(entry, PinState::OnlineOnly);
-                    }
-                });
-            }
-            // Lisa todo: I think this exists to catch the change in vfs mode but need to verify
-            saveToSettings();
-            if (!wasPaused) {
-                setSyncPaused(wasPaused);
-            }
-            startVfs();
-        };
-        if (isSyncRunning()) {
-            connect(this, &Folder::syncFinished, this, finalizeVfsSwitch, Qt::SingleShotConnection);
-            slotTerminateSync(tr("Switching VFS mode on folder '%1'").arg(displayName()));
-        } else {
-            // Lisa todo: improve readability by dealing with this lambda - either put the impl here, which would be extremely normal for a one off impl,
-            // or move it to a new function.
-            finalizeVfsSwitch();
-        }
+    if (newMode == _definition.virtualFilesMode()) {
+        return;
     }
+    if (isSyncRunning()) {
+        connect(this, &Folder::syncFinished, this, [this, newMode] { changeVfsMode(newMode); }, Qt::SingleShotConnection);
+        slotTerminateSync(tr("Switching VFS mode on folder '%1'").arg(displayName()));
+    } else {
+        changeVfsMode(newMode);
+    }
+}
+
+void Folder::changeVfsMode(Vfs::Mode newMode)
+{
+    if (newMode == _definition.virtualFilesMode()) {
+        return;
+    }
+
+    // This is tested in TestSyncVirtualFiles::testWipeVirtualSuffixFiles, so for changes here, have them reflected in that test.
+    const bool wasPaused = _definition.paused();
+    if (!wasPaused) {
+        setSyncPaused(true);
+    }
+
+    // stash the previous blacklist
+    bool ok;
+    const auto oldBlacklist = journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+
+    if (!ok) {
+        qCWarning(lcFolder) << "Unable to retrieve previous selective sync blacklist for folder: " << _definition.localPath();
+        return;
+    }
+    // clear previous blacklist
+    journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
+
+
+    // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
+    // are in the DB but not on disk, so the client assumes they are deleted, and removes them from the remote.
+    _vfs->wipeDehydratedVirtualFiles();
+
+    // Tear down and disconnect the VFS
+    _vfsIsReady = false;
+    _vfs->stop();
+    _vfs->unregisterFolder();
+    disconnect(_vfs.get(), nullptr, this, nullptr);
+    disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.get(), nullptr);
+
+    // _vfs is a shared pointer...
+    // Lisa todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then passed to the engine
+    // it is not clear to me how/when the options vfs shared ptr gets updated to match this new/reset instance?
+    _vfs.reset(VfsPluginManager::instance().createVfsFromPlugin(newMode).release());
+
+    // Restart VFS.
+    _definition.setVirtualFilesMode(newMode);
+
+    if (newMode != Vfs::Off) {
+        // schedule blacklisted folders for rediscovery
+        connect(_vfs.get(), &Vfs::started, this, [oldBlacklist, this] {
+            for (const auto &entry : oldBlacklist) {
+                journalDb()->schedulePathForRemoteDiscovery(entry);
+                // Refactor todo: from what I can see, in 98% of cases the return val of setPinState is ingored
+                // do we actually need that return value?! if so why aren't we using it?
+                std::ignore = vfs().setPinState(entry, PinState::OnlineOnly);
+            }
+        });
+    }
+    if (!wasPaused) {
+        setSyncPaused(wasPaused);
+    }
+    startVfs();
+    // currently using this just to trigger folder def save in manager but it could be very useful
+    // in other contexts in future.
+    Q_EMIT vfsModeChanged(this, newMode);
 }
 
 bool Folder::supportsSelectiveSync() const
@@ -770,22 +777,6 @@ bool Folder::isDeployed() const
     return _definition.isDeployed();
 }
 
-// Ideally this goes away completely! It's needed in the near term to ensure "one off" property changes get saved to
-// settings. This needs to happen on demand to preserve state in case the app crashes :/ Path forward is to replace this with calls
-// to FolderDefinition::save so we can better control the lifetime of the settings instance and also reduce excessive syncs to file
-void Folder::saveToSettings() const
-{
-    auto settings = _accountState->settings();
-    auto id = QString::fromUtf8(_definition.id());
-
-    settings->beginGroup(QStringLiteral("Folders/%1").arg(id));
-
-    FolderDefinition::save(*settings.get(), _definition);
-
-    // should not be necessary as the sync will happen when the settings go out of scope/are destructed
-    settings->sync();
-    qCInfo(lcFolder) << "Saved folder" << _definition.localPath() << "to settings, status" << settings->status();
-}
 
 // Lisa todo: should move these remove routines to FolderMan
 void Folder::removeFromSettings(QSettings *settings, const QString &id)

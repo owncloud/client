@@ -100,8 +100,7 @@ FolderMan::FolderMan()
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
-    connect(AccountManager::instance(), &AccountManager::accountRemoved,
-        this, &FolderMan::slotRemoveFoldersForAccount);
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
         if (Folder *f = folderForPath(path)) {
@@ -132,17 +131,13 @@ const QVector<Folder *> &FolderMan::folders() const
 void FolderMan::unloadAndDeleteAllFolders()
 {
     // save all folder definitions using a single settings instance to avoid file write/read churn
-    auto settings = ConfigFile::makeQSettings();
+    // the settings will be synced to file when the instance goes out of scope, at the latest
+    QSettings settings = ConfigFile::makeQSettings();
     settings.beginGroup("Accounts");
     // clear the list of existing folders.
     const auto folders = std::move(_folders);
     for (auto *folder : folders) {
-        auto strId = QString::fromUtf8(folder->definition().id());
-        QString targetGroup = QStringLiteral("%1/Folders/%2").arg(folder->accountState()->account()->id(), strId);
-        settings.beginGroup(targetGroup);
-        FolderDefinition::save(settings, folder->definition());
-        settings.endGroup();
-
+        saveFolder(folder, settings);
         _socketApi->slotUnregisterPath(folder);
         folder->deleteLater();
     }
@@ -167,7 +162,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
     unloadAndDeleteAllFolders();
 
     auto settings = ConfigFile::makeQSettings();
-    settings.beginGroup(QStringLiteral("Accounts"));
+    settings.beginGroup("Accounts");
     const auto &accountsWithSettings = settings.childGroups();
 
     qCInfo(lcFolderMan) << "Setup folders from settings file";
@@ -245,8 +240,10 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
             continue;
         }
 
-        // save possible changes from the migration - a bit of ick here is that the folder may be saving changes
-        // to the folder def during its internal setup, too, but this save should catch everything.
+        // save possible changes from the migration.
+        // if there was no migration the config should already have all the correct data, because we just read it!
+        // note we don't want to use saveFolder here as we are already iterating through the settings and have the
+        // correct group for the id already set
         if (migrated) {
             FolderDefinition::save(settings, folder->definition());
         }
@@ -271,7 +268,10 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
         auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
         def.setLocalPath(accountStatePtr->account()->defaultSyncRoot());
         def.setTargetPath(Theme::instance()->defaultServerFolder());
-        addFolderFromWizard(accountStatePtr, std::move(def), useVfs);
+        Folder *folder = addFolderFromWizard(accountStatePtr, std::move(def), useVfs);
+        if (folder) {
+            saveFolder(folder);
+        }
     }
 
     // Lisa todo: these are allegedly required after the spaces are loaded, too, but I think will get called before that happens
@@ -301,6 +301,9 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
     spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
 
     if (!spaces.isEmpty()) {
+        QSettings settings = ConfigFile::makeQSettings();
+        settings.beginGroup("Accounts");
+
         const QString localDir(spacesMgr->account()->defaultSyncRoot());
         FileSystem::setFolderMinimumPermissions(localDir);
         Folder::prepareFolder(localDir);
@@ -315,7 +318,10 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
             folderDef.setLocalPath(localPath);
             folderDef.setTargetPath({});
 
-            addFolderFromWizard(accountState, std::move(folderDef), useVfs);
+            Folder *folder = addFolderFromWizard(accountState, std::move(folderDef), useVfs);
+            if (folder) {
+                saveFolder(folder, settings);
+            }
         }
     }
 }
@@ -605,7 +611,7 @@ Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDe
     if (Folder *f = folder(folderDefinition.id())) {
         Q_ASSERT_X(false, "addFolder", "Trying to addFolder but id is already found in the folder list");
         qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
-        return f; // or return nullptr - talk to Erik
+        return f; // or return nullptr - Lisa todo: talk to Erik
     }
 
     if (!validateFolderDefinition(folderDefinition)) {
@@ -645,7 +651,11 @@ void FolderMan::connectFolder(Folder *folder)
         connect(folder, &Folder::syncFinished, this, &FolderMan::slotFolderSyncFinished);
         connect(folder, &Folder::syncStateChange, this, [folder, this] { Q_EMIT folderSyncStateChange(folder); });
         connect(folder, &Folder::syncPausedChanged, this, &FolderMan::slotFolderSyncPauseChanged);
-        connect(folder, &Folder::syncPausedChanged, this, &FolderMan::saveFolder);
+        // format wants to move the pointer "*" one space away from the type which = clazy not normalized sig warning
+        // clang-format off
+        connect(folder, SIGNAL(syncPausedChanged(Folder*)), this, SLOT(saveFolder(Folder*)));
+        connect(folder, SIGNAL(vfsModeChanged(Folder*)), this, SLOT(saveFolder(Folder*)));
+        // clang-format on
         connect(folder, &Folder::canSyncChanged, this, &FolderMan::slotFolderCanSyncChanged);
         connect(
             &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
@@ -669,9 +679,22 @@ void FolderMan::disconnectFolder(Folder *folder)
     }
 }
 
+void FolderMan::saveFolder(Folder *folder, QSettings &settings)
+{
+    Q_ASSERT(settings.group() == QStringLiteral("Accounts"));
+
+    auto strId = QString::fromUtf8(folder->definition().id());
+    QString targetGroup = QStringLiteral("%1/Folders/%2").arg(folder->accountState()->account()->id(), strId);
+    settings.beginGroup(targetGroup);
+    FolderDefinition::save(settings, folder->definition());
+    settings.endGroup();
+}
+
 void FolderMan::saveFolder(Folder *folder)
 {
-    // do it
+    QSettings settings = ConfigFile::makeQSettings();
+    settings.beginGroup("Accounts");
+    saveFolder(folder, settings);
 }
 
 Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
@@ -1017,8 +1040,18 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     // Note that the setting will revert to 'true' if all folders
     // are deleted...
     for (auto *folder : std::as_const(_folders)) {
-        folder->setIgnoreHiddenFiles(ignore);
-        folder->saveToSettings();
+	// Lisa todo: finish this
+        if (folder->ignoreHiddenFiles() != ignore) {
+            folder->setIgnoreHiddenFiles(ignore);
+            // this is a lot of trouble. But unfortunately since we didn't get the change in for 6.0/Betelgeuse we will
+            // have to live with this a bit longer. When we fully fix it, it needs to be added
+            // to folder migration.
+            // possible solution: we move the setting to folderMan in general. forward migration = remove the folder settings
+            // for this param and store one of the folder vals to the general config settings which the folder man will use.
+            // if/when user wants to "downgrade" to previous version, the migration step can put the vals back into the
+            // folder config settings?
+            // saveFolder(folder);
+        }
     }
 }
 
@@ -1103,7 +1136,6 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
             Utility::setupFavLink(folderDefinition.localPath());
         }
         qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";
-        saveFolder(newFolder);
     } else {
         qCWarning(lcFolderMan) << "Failed to create local sync folder!";
     }
@@ -1132,8 +1164,11 @@ Folder *FolderMan::addFolderFromFolderWizardResult(const AccountStatePtr &accoun
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
     }*/
 
-    // this should maybe be moved to addFolderFromWizard
+
     if (f) {
+        saveFolder(f);
+
+        // this should maybe be moved to addFolderFromWizard - or use impl above? I really don't know
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         // should this always be called?
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});

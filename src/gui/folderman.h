@@ -335,6 +335,12 @@ private Q_SLOTS:
 
     void slotServerVersionChanged(Account *account);
 
+    // saves folder using an internally created QSettings instance. This is used for "one off" persistence operations
+    // that should be synced immediately - eg when the user adds a new folder sync from the gui or as slot to eg persist a property
+    // change
+    // see second version of saveFolder, below, for use when persisting many folders in a row
+    void saveFolder(Folder *folder);
+
 
 private:
     explicit FolderMan();
@@ -347,9 +353,12 @@ private:
      */
     void disconnectFolder(Folder *folder);
 
-    /* saves folder using local instance of config settings
+    /* saves folder using the given instance of config settings already set to group "Accounts"
+     * The main purpose of this version is to allow using a single settings instance to persist multiple folders
+     * in a row before syncing -> we save a lot of expensive file operations this way
      */
-    void saveFolder(Folder *folder);
+    void saveFolder(Folder *folder, QSettings &settings);
+
 
     // connected to spacesManager::ready signal - this is a bit weird as you have to ask if it's ready to get the signal.
     void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
