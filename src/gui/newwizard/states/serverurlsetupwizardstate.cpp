@@ -129,6 +129,23 @@ void ServerUrlSetupWizardState::evaluatePage()
                         Q_EMIT evaluationFailed(resolveJob->errorMessage());
                         return;
                     }
+                    // ensure response content type
+                    auto contentType = resolveJob->reply()->headers().value(QHttpHeaders::WellKnownHeader::ContentType);
+                    if (!comparesEqual(contentType, "application/json")) {
+                        Q_EMIT evaluationFailed("Unexpected response");
+                        return;
+                    }
+                    // ensure body can be parsed
+                    const QByteArray body = resolveJob->reply()->peek(4 * 1024);
+                    QJsonParseError error;
+                    auto status = QJsonDocument::fromJson(body, &error);
+                    // empty or invalid response
+                    if (error.error != QJsonParseError::NoError || status.isNull()) {
+                        qCWarning(lcSetupWizardServerUrlState())
+                            << "status.php from server is not valid JSON!" << body << resolveJob->reply()->request().url() << error.errorString();
+                        Q_EMIT evaluationFailed("Unexpected response");
+                        return;
+                    }
 
                     const auto resolvedUrl = resolveJob->result().toUrl();
 
