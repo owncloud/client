@@ -313,12 +313,12 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Sie synchronisieren %1 von %n Ordner.</numerusform><numerusform>Sie synchronisieren %1 von %n Ordnern.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Sie synchronisieren %1 von %n Space.</numerusform><numerusform>Sie synchronisieren %1 von %n Spaces.</numerusform></translation>
     </message>
 </context>
 <context>
@@ -3284,6 +3284,19 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>OCC::SpacesPage</name>
+    <message>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <source>Select a folder to sync it to your computer.</source>
+        <translation>Wählen Sie einen Ordner, um diesen mit Ihren Computer zu synchronisieren.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <source>Select a Space to sync it to your computer.</source>
+        <translation>Wählen Sie einen Space, um diesen mit Ihren Computer zu synchronisieren.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SyncEngine</name>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="154"/>
@@ -4050,12 +4063,7 @@ Möchten Sie fortfahren?</translation>
 <context>
     <name>SpacesPage</name>
     <message>
-        <location filename="../src/gui/folderwizard/spacespage.ui" line="17"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Space to sync it to your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wählen Sie einen Space, um diesen mit Ihren Computer zu synchronisieren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/spacespage.ui" line="33"/>
+        <location filename="../src/gui/folderwizard/spacespage.ui" line="36"/>
         <source>Spaces list</source>
         <translation>Liste der Spaces</translation>
     </message>

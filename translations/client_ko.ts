@@ -3279,6 +3279,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::SpacesPage</name>
+    <message>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <source>Select a folder to sync it to your computer.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <source>Select a Space to sync it to your computer.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::SyncEngine</name>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="154"/>
@@ -4045,12 +4058,7 @@ Are you sure you want to proceed?</source>
 <context>
     <name>SpacesPage</name>
     <message>
-        <location filename="../src/gui/folderwizard/spacespage.ui" line="17"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Space to sync it to your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/spacespage.ui" line="33"/>
+        <location filename="../src/gui/folderwizard/spacespage.ui" line="36"/>
         <source>Spaces list</source>
         <translation type="unfinished"/>
     </message>
