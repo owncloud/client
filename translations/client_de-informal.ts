@@ -3285,12 +3285,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Wähle einen Ordner aus, um diesen mit Deinem Computer zu synchronisieren.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Wähle einen Space aus, um diesen mit Deinem Computer zu synchronisieren.</translation>
     </message>
 </context>
 <context>
