@@ -850,7 +850,7 @@ void ownCloudGui::runNewAccountWizard()
                                         qCInfo(lcApplication) << "Folder wizard completed";
                                         const auto config = folderWizard->result();
 
-                                        std::ignore = folderMan->addFolderFromFolderWizardResult(accountStatePtr, config);
+                                        folderMan->addFolderFromGui(accountStatePtr, config);
 
                                         accountStatePtr->setSettingUp(false);
                                     });

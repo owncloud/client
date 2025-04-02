@@ -224,9 +224,7 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
         // this should NEVER happen
         Q_ASSERT(!folderDefinition.id().isEmpty());
 
-        // Lisa todo: there is also a spaces migration routine...investigate whether that should be done in tandem with the
-        // config migration
-        // also note this migration should probably be done elsewhere but for now...baby steps.
+        // note this migration should probably be done elsewhere but for now at least it's clearly contained...baby steps.
         bool migrated = migrateFolderDefinition(folderDefinition, account);
 
         // this can only happen when loading from config
@@ -276,7 +274,7 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
 
     // Lisa todo: these are allegedly required after the spaces are loaded, too, but I think will get called before that happens
     // reality check: shouldn't checkConnectivity be called as the very first step of this slot? how can we get the spaces if
-    // the account is not available?!
+    // the account is not available?! Erik please help
 
     // Refactoring todo:  who is actually responsible for calling this? I see it all over the place
     accountStatePtr->checkConnectivity();
@@ -328,8 +326,6 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
 
 bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, AccountStatePtr account)
 {
-    // Lisa todo: remove ignoreHiddenFolders key if possible but remember config compatibility issues up AND down
-
     bool migrationPerformed = false;
 
     // if we would have booth the 2.9.0 file name and the lagacy file
@@ -439,8 +435,6 @@ void FolderMan::slotFolderSyncPauseChanged(Folder *f, bool paused)
     } else {
         _disabledFolders.insert(f);
     }
-
-    // Lisa todo: save the folder definition here - or better, in a separate slot for clarity - not in the folder
 }
 
 void FolderMan::slotFolderCanSyncChanged()
@@ -525,9 +519,15 @@ void FolderMan::setSyncEnabled(bool enabled)
 
 void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
 {
+    if (!accountState) {
+        return;
+    }
+    QSettings settings = ConfigFile::makeQSettings();
+    QString accountGroup = QStringLiteral("Accounts/%1").arg(accountState->account()->id());
+    settings.beginGroup(accountGroup);
     QList<Folder *> foldersToRemove;
     // reserve a magic number
-    // Lisa todo: folder management would likely be a lot simpler and more efficient if we kept
+    // Refactoring todo: folder management would likely be a lot simpler and more efficient if we kept
     // the folders in a hash or similar to make folder lookups by id simpler.
     // We could solve the problem below by simply keeping a list of ids per account
     // this magic number thing is not healthy
@@ -538,8 +538,30 @@ void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
         }
     }
     for (const auto &f : foldersToRemove) {
+        removeFolderSettings(f, settings);
         removeFolderSync(f);
     }
+}
+
+void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
+{
+    if (!folder) {
+        return;
+    }
+    QString id = QString::fromUtf8(folder->definition().id());
+    if (id.isEmpty())
+        return;
+    settings.remove(QStringLiteral("Folders/%1").arg(id));
+    settings.remove(QStringLiteral("Multifolders/%1").arg(id));
+    settings.remove(QStringLiteral("FoldersWithPlaceholders/%1").arg(id));
+}
+
+void FolderMan::removeFolderSettings(Folder *folder)
+{
+    QSettings settings = ConfigFile::makeQSettings();
+    QString accountGroup = QStringLiteral("Accounts/%1").arg(folder->accountState()->account()->id());
+    settings.beginGroup(accountGroup);
+    removeFolderSettings(folder, settings);
 }
 
 void FolderMan::slotServerVersionChanged(Account *account)
@@ -758,12 +780,9 @@ void FolderMan::removeFolderSync(Folder *f)
     }
 
     f->setSyncPaused(true);
+
+    // this function includes the stuff to remove the database files.
     f->wipeForRemoval();
-
-    // remove the folder configuration
-    f->removeFromSettings();
-
-    // Lisa todo: propose adding the call to remove the folder db here, not in addFolder
 
     // highly suspicious - how can there be more than one instance?!
     _folders.removeAll(f);
@@ -1030,17 +1049,23 @@ bool FolderMan::ignoreHiddenFiles() const
     if (_folders.empty()) {
         return true;
     }
-    // Lisa todo: make this a var on FolderMan
+    // Refactoring todo: make this a var on FolderMan
     return _folders.first()->ignoreHiddenFiles();
 }
 
 void FolderMan::setIgnoreHiddenFiles(bool ignore)
 {
-    // Lisa TODO: this is crazy - it's a global setting so create a member for folder manager, and save it ONCE, not on each folder.
+    // Refactoring todo: this is crazy to save this val on each folder
+    // it's a global setting so we should treat it this way.
+    // create a member for folder manager, and save it ONCE, not on each folder.
+    // the val also needs to be passed to the engine as that is where it's actually used,
+    // but saving it in the Folder and FolderDescription is complete overkill
+
     // Note that the setting will revert to 'true' if all folders
     // are deleted...
+    QSettings settings = ConfigFile::makeQSettings();
+    settings.beginGroup("Accounts");
     for (auto *folder : std::as_const(_folders)) {
-	// Lisa todo: finish this
         if (folder->ignoreHiddenFiles() != ignore) {
             folder->setIgnoreHiddenFiles(ignore);
             // this is a lot of trouble. But unfortunately since we didn't get the change in for 6.0/Betelgeuse we will
@@ -1050,7 +1075,7 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
             // for this param and store one of the folder vals to the general config settings which the folder man will use.
             // if/when user wants to "downgrade" to previous version, the migration step can put the vals back into the
             // folder config settings?
-            // saveFolder(folder);
+            saveFolder(folder, settings);
         }
     }
 }
@@ -1109,12 +1134,8 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     folderDefinition.setIgnoreHiddenFiles(ignoreHiddenFiles());
     folderDefinition.setJournalPath(SyncJournalDb::makeDbName(folderDefinition.localPath()));
 
-    // Lisa todo: why are we doing this check when adding a folder?
-    // should it not happen on removing the sync? Yes it should
-    // should the journal be removed even when loading from config? Not usually, but maybe if there was a migration?
-    // sticky part is old clients may not remove the old journal. This is currently done in
-    //
-    //
+    // this is here because allegedly, old clients may not remove the old journal when the sync is removed.
+    // This is currently done in wipeForRemoval
     if (!ensureJournalGone(folderDefinition.absoluteJournalPath())) {
         return nullptr;
     }
@@ -1147,7 +1168,7 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     return newFolder;
 }
 
-Folder *FolderMan::addFolderFromFolderWizardResult(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &description)
+void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &description)
 {
     FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
     definition.setLocalPath(description.localPath);
@@ -1176,8 +1197,6 @@ Folder *FolderMan::addFolderFromFolderWizardResult(const AccountStatePtr &accoun
     // Lisa todo: this was also moved from AccountSettings::slotFolderWizardAccepted - discuss with Erik when these should be called
     setSyncEnabled(true);
     scheduleAllFolders();
-
-    return f;
 }
 
 QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)
@@ -1191,11 +1210,12 @@ bool FolderMan::prepareFolder(const QString &folder)
         if (!OC_ENSURE(QDir().mkpath(folder))) {
             return false;
         }
-        // Lisa todo: consider renaming these or maybe better, merge them into one function that handles "prepareFolder" in full.
-        // it appears these are always called together so to avoid errors, just roll it into one routine
+        // Refactoring todo: consider renaming these or maybe better, merge them into one function that handles "prepareFolder" in full.
+        // it appears these are always called together so to avoid errors, just roll it into one routine?
+
         // this is for mac
         FileSystem::setFolderMinimumPermissions(folder);
-        // this is for windows - it sets up a desktop.ini file and deals with persmissions.
+        // this is for windows - it sets up a desktop.ini file to handle the icon and deals with persmissions.
         Folder::prepareFolder(folder);
     }
     return true;

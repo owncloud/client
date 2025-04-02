@@ -187,7 +187,9 @@ public:
      * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
      */
     Folder *addFolderFromWizard(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
-    Folder *addFolderFromFolderWizardResult(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
+
+    // Refactoring todo: replace hard calls to this with signals to request to add the new folder and make this a slot, roughly.
+    void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
 
     /** Removes a folder sync permanently in response to user request
       Not for general folder cleanup */
@@ -292,6 +294,13 @@ public:
 
     [[nodiscard]] bool isSpaceSynced(GraphApi::Space *space) const;
 
+    // Refactoring todo: this is temporarily public - it should eventually be private once we have refactored accountSettings remove
+    // folder sync to be a signal/request instead of a local impl which uses the singleton
+    // In fact all of the folder persistence stuff should be handled by a third party persistence component that listens for, eg
+    // folderRemoved to trigger the removal from settings. That is a long way off, unfortunately, but at least we can collect all of that
+    // behavior here in the FolderMan to start
+    void removeFolderSettings(Folder *folder);
+
 Q_SIGNALS:
     /**
       * signal to indicate a folder has changed its sync state.
@@ -359,6 +368,8 @@ private:
      */
     void saveFolder(Folder *folder, QSettings &settings);
 
+    // used to reduce file operation overhead when removing multiple folders
+    void removeFolderSettings(Folder *folder, QSettings &settings);
 
     // connected to spacesManager::ready signal - this is a bit weird as you have to ask if it's ready to get the signal.
     void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);

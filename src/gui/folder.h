@@ -330,10 +330,6 @@ public:
     std::chrono::milliseconds msecSinceLastSync() const { return std::chrono::milliseconds(_timeSinceLastSyncDone.elapsed()); }
     std::chrono::milliseconds msecLastSyncDuration() const { return _lastSyncDuration; }
 
-    /// Removes the folder from the account's settings.
-    static void removeFromSettings(QSettings *settings, const QString &id);
-    void removeFromSettings() const;
-
     /**
       * Returns whether a file inside this folder should be excluded.
       */

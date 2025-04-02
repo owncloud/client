@@ -260,8 +260,6 @@ SyncOptions Folder::loadSyncOptions()
     ConfigFile cfgFile;
 
     opt._moveFilesToTrash = cfgFile.moveToTrash();
-    // Lisa todo: why is this needed, if we already passed it to the ctr?!
-    opt._vfs = _vfs;
     opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
     opt._initialChunkSize = cfgFile.chunkSize();
@@ -548,12 +546,14 @@ void Folder::startVfs()
             }
         });
         _vfsIsReady = true;
-        // Lisa todo: NO. Just no.
+        // Refactoring todo: NO. Just no.
         Q_EMIT FolderMan::instance()->folderListChanged();
         // we are setup, schedule ourselves if we can
         // if not the scheduler will take care of it later.
         if (canSync()) {
-            // Lisa todo: also no.
+            // Refactoring todo: also no. We need a general cleanup task to eval and fix all of these crossed triggers
+            // the only element that should emit FolderMan signals is FolderMan! same for any/all other classes
+            // I don't care if signals are now public: it is not correct for anyone but the owner to trigger them
             FolderMan::instance()->scheduler()->enqueueFolder(this);
         }
     });
@@ -687,7 +687,6 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
 void Folder::setVirtualFilesEnabled(bool enabled)
 {
     Vfs::Mode newMode = _definition.virtualFilesMode();
-    // Lisa todo: something bugs me here...not sure what so have another look with fresh eyes
     if (enabled && _definition.virtualFilesMode() == Vfs::Off) {
         newMode = VfsPluginManager::instance().bestAvailableVfsMode();
     } else if (!enabled) {
@@ -740,8 +739,9 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.get(), nullptr);
 
     // _vfs is a shared pointer...
-    // Lisa todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then passed to the engine
-    // it is not clear to me how/when the options vfs shared ptr gets updated to match this new/reset instance?
+    // Lisa todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then
+    // passed to the engine. It is not clear to me how/when the options vfs shared ptr gets updated to match this
+    // new/reset instance. Need Erik to help reality check my thinking here
     _vfs.reset(VfsPluginManager::instance().createVfsFromPlugin(newMode).release());
 
     // Restart VFS.
@@ -752,7 +752,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
         connect(_vfs.get(), &Vfs::started, this, [oldBlacklist, this] {
             for (const auto &entry : oldBlacklist) {
                 journalDb()->schedulePathForRemoteDiscovery(entry);
-                // Refactor todo: from what I can see, in 98% of cases the return val of setPinState is ingored
+                // Refactoring todo: from what I can see, in 98% of cases the return val of setPinState is ingored
                 // do we actually need that return value?! if so why aren't we using it?
                 std::ignore = vfs().setPinState(entry, PinState::OnlineOnly);
             }
@@ -762,8 +762,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
         setSyncPaused(wasPaused);
     }
     startVfs();
-    // currently using this just to trigger folder def save in manager but it could be very useful
-    // in other contexts in future.
+
     Q_EMIT vfsModeChanged(this, newMode);
 }
 
@@ -775,24 +774,6 @@ bool Folder::supportsSelectiveSync() const
 bool Folder::isDeployed() const
 {
     return _definition.isDeployed();
-}
-
-
-// Lisa todo: should move these remove routines to FolderMan
-void Folder::removeFromSettings(QSettings *settings, const QString &id)
-{
-    // be careful about empty id here, as if it is empty the remove will apply to *all* Folders, Multifolders
-    // and FoldersWithPlaceholders
-    if (!settings || id.isEmpty())
-        return;
-    settings->remove(QStringLiteral("Folders/%1").arg(id));
-    settings->remove(QStringLiteral("Multifolders/%1").arg(id));
-    settings->remove(QStringLiteral("FoldersWithPlaceholders/%1").arg(id));
-}
-
-void Folder::removeFromSettings() const
-{
-    Folder::removeFromSettings(_accountState->settings().get(), QString::fromUtf8(_definition.id()));
 }
 
 bool Folder::isFileExcludedAbsolute(const QString &fullPath) const
@@ -937,7 +918,7 @@ void Folder::startSync()
         _localDiscoveryTracker->startSyncFullDiscovery();
     }
 
-    // Lisa todo: why is this set for every sync instead of when the value actually changes?!
+    // Refactoring todo: why is this set for every sync instead of when the value actually changes?!
     // propose: remove the param from the def, and when Folder:setIgnoreHiddenFiles is called it updates the
     // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
     // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead

@@ -199,7 +199,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     }
 
     // Add an action to open the folder on the server in a webbrowser:
-    // Refactor todo: why are we using the folder accountState AND the local member? shouldn't the folder have the same account state
+    // Refactoring todo: why are we using the folder accountState AND the local member? shouldn't the folder have the same account state
     // as this settings panel?!
     if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
         QString path = folder->remotePathTrailingSlash();
@@ -324,7 +324,7 @@ void AccountSettings::slotFolderWizardAccepted()
     const auto config = folderWizard->result();
 
 
-    FolderMan::instance()->addFolderFromFolderWizardResult(_accountState, config);
+    FolderMan::instance()->addFolderFromGui(_accountState, config);
 }
 
 void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
@@ -342,8 +342,10 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
+            // Refactoring todo: this should just emit a signal to request removing the folder
+            FolderMan::instance()->removeFolderSettings(folder);
             FolderMan::instance()->removeFolderSync(folder);
-            // Lisa todo: I don't understand why this is called when a folder is removed. the slot seems to be more
+            // Refactoring todo: I don't understand why this is called when a folder is removed as the slot seems to be more
             // geared to loading/adding newly discovered spaces *when the spaces manager notifies something has changed*
             // instead we seem to "conveniently" recycle the meaning of the handler to cover other changes as well.
             // also, I *really* don't understand why we are using a single shot timer to "schedule" this in the main event
@@ -621,7 +623,6 @@ void AccountSettings::slotSpacesUpdated()
                 const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
                     localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, _accountState->account()->uuid());
 
-                // Lisa todo: I think this could go into a FolderDefinition then just pass it to addFolder?
                 FolderMan::SyncConnectionDescription fwr;
                 fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());
                 fwr.spaceId = newSpace->drive().getRoot().getId();
@@ -629,7 +630,7 @@ void AccountSettings::slotSpacesUpdated()
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
                 fwr.priority = newSpace->priority();
-                FolderMan::instance()->addFolderFromFolderWizardResult(_accountState, fwr);
+                FolderMan::instance()->addFolderFromGui(_accountState, fwr);
             }
 
             _unsyncedSpaces = 0;
