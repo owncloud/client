@@ -132,8 +132,7 @@ void ServerUrlSetupWizardState::evaluatePage()
 
                     const auto resolvedUrl = resolveJob->result().toUrl();
                     if (resolvedUrl.hasQuery()) {
-                        QString errorMsg = tr("The requested URL failed with query value: ");
-                        errorMsg += resolvedUrl.query();
+                        QString errorMsg = tr("The requested URL failed with query value: %1").arg(resolvedUrl.query());
                         Q_EMIT evaluationFailed(errorMsg);
                         return;
                     }
