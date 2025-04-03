@@ -161,7 +161,7 @@ public:
      *  it is up to the caller to connect the folder, save it to settings, etc.
      *
      *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
-     *  a standalone impl.
+     *  a complete/standalone impl.
      */
     Folder *addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition);
 

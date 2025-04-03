@@ -739,9 +739,10 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.get(), nullptr);
 
     // _vfs is a shared pointer...
-    // Lisa todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then
+    // Refactor todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then
     // passed to the engine. It is not clear to me how/when the options vfs shared ptr gets updated to match this
-    // new/reset instance. Need Erik to help reality check my thinking here
+    // new/reset instance but this should be high prio to work this out as wow this is dangerous. the todo is basically: eval the use of
+    // this _vfs pointer and make it consistent and SAFE across uses
     _vfs.reset(VfsPluginManager::instance().createVfsFromPlugin(newMode).release());
 
     // Restart VFS.
@@ -890,9 +891,11 @@ void Folder::startSync()
             this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
         return;
     }
-    // Lisa todo: why is this called every time a sync starts? the data seems to come from hard vals or the config.
-    // How can it change between syncs?
-    // This is part of what Erik wants to ditch - having user settable bandwidth limits is fairly nuts
+    // Refactoring todo: why is this called every time a sync starts? the data seems to come from hard vals or the config which means
+    // the config is queried on every sync - not great.
+    // if it does it should just be updated once, after notification that the user changed it.
+    // This is part of what Erik wants to ditch - having user settable bandwidth limits is fairly nuts but until it's
+    // removed completely this has to still be handled.
     setDirtyNetworkLimits();
 
     // get the latest touched files

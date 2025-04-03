@@ -179,23 +179,9 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 
         settings.beginGroup(accountId); // Process settings for this account.
 
+        // Lisa todo: review this now that the legacy groups are safely eliminated
         if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("Folders"))) {
             return {};
-        }
-
-        // removed in 5.0 - Lisa todo: ask Erik why we are still dealing with it if it's not legit?
-        // also I would expect this to be part of migration operation, oder? As it *is* migration,
-        // not normal handling, right?
-        {
-            if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("FoldersWithPlaceholders"))) {
-                return {};
-            }
-
-            // We don't save to `Multifolders` anymore, but for backwards compatibility we will just
-            // read it like it is a `Folders` entry.
-            if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("Multifolders"))) {
-                return {};
-            }
         }
 
         settings.endGroup(); // Finished processing this account.
@@ -259,6 +245,9 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
             [this, accountStatePtr, useVfs] { loadSpacesWhenReady(accountStatePtr, useVfs); });
         // this is questionable - basically if the spaces aren't ready it triggers "getting them ready" - there is no way to directly
         // ask "are you ready?" - you have to call this function to get the ready signal, handled above
+        // also Refactoring todo: this checkReady call can quasi fail because the spaces manager doesn't know if the
+        // account state is "connected" or not, and it really should. Basically if the account is not sufficiently "available" this won't
+        // trigger the ready signal in the spaces manager, as hoped. The impl here is very weak and needs improvement.
         accountStatePtr->account()->spacesManager()->checkReady();
     } else {
         auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
@@ -270,11 +259,9 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
         }
     }
 
-    // Lisa todo: these are allegedly required after the spaces are loaded, too, but I think will get called before that happens
-    // reality check: shouldn't checkConnectivity be called as the very first step of this slot? how can we get the spaces if
-    // the account is not available?! Erik please help
 
-    // Refactoring todo:  who is actually responsible for calling this? I see it all over the place
+    // Refactoring todo:  who is actually responsible for calling this? I see it all over the place and I really don't think it belongs here.
+    // should be part of the account connection routine not loading folders
     accountStatePtr->checkConnectivity();
     // Refactoring todo: reality check that this isn't already done elsewhere. I see this here and there and I just think there
     // should be a "core" location for it. As it is now it looks like a "well if we add it enough places it's sure to work eventually"
@@ -1188,12 +1175,14 @@ void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const S
     if (f) {
         saveFolder(f);
 
-        // this should maybe be moved to addFolderFromWizard - or use impl above? I really don't know
+        // this should maybe be moved to addFolderFromGui - or use impl above? I really don't know
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         // should this always be called?
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
     }
     // Lisa todo: this was also moved from AccountSettings::slotFolderWizardAccepted - discuss with Erik when these should be called
+    // I think it really needs to be relative to "major" activity -> important question: how does it relate to cases where
+    // setSyncEnabled(false) is invoked?
     setSyncEnabled(true);
     scheduleAllFolders();
 }
