@@ -146,16 +146,32 @@ public:
     // TODO: eliminate FolderMan as globally available resource.
     static FolderMan *instance();
 
-    /// \returns empty if a downgrade of a folder was detected, otherwise it will return the number
-    ///          of folders that were set up (note: this can be zero when no folders were configured).
+    /**
+     *  loads all folders from the config into the manager.
+     *
+     *  returns empty if a downgrade of a folder was detected
+     *  otherwise it will return the number of folders that were set up (this can be zero when no folders were previously configured).
+     */
     std::optional<qsizetype> setupFoldersFromConfig();
+
+    /**
+     *  core step in any add folder routine. it validates the definition, instantiates vfs, instantiates the folder and validates whether
+     *  it had setup errors.
+     *
+     *  it is up to the caller to connect the folder, save it to settings, etc.
+     *
+     *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
+     *  a standalone impl.
+     */
+    Folder *addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition);
+
 
     /**
      *  sets up sync folders/spaces after adding a new account via the gui
      */
     void setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs);
 
-    // Lisa todo: this function actually just returns the internal vector of folders. I do not see any evidence of
+    // Refactoring todo: this function actually just returns the internal vector of folders. I do not see any evidence of
     // what is docced here, at least related to this specific function.
     // Propose changing the container to a hash or similar anyway to allow fast retrieval of folder by id and other
     // maintenance activities.
@@ -178,21 +194,17 @@ public:
      */
     const QVector<Folder *> &folders() const;
 
-    /** Adds a folder for an account, ensures the journal is gone and saves it in the settings.
-      */
-    Folder *addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition);
 
     /**
-     * Adds a folder for an account. Used to be part of the wizard code base. Constructs the folder definition from the parameters.
-     * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
+     *  Removes a folder sync permanently in response to user request
+     *  Not for general folder cleanup
+     *  it is caller's responsibility to remove folder from settings if necessary.
      */
-    Folder *addFolderFromWizard(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
-
-    // Refactoring todo: replace hard calls to this with signals to request to add the new folder and make this a slot, roughly.
-    void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
-
-    /** Removes a folder sync permanently in response to user request
-      Not for general folder cleanup */
+    // Refactoring todo: this is called directly from the AccountSettings gui - instead the gui should signal a request to
+    // remove the folder.
+    // also, this function *is* used for general folder cleanup when an account is removed.
+    // we must develop concise, SINGLE impls for eg adding or removing folders instead of spreading the handling over multiple
+    // locations.
     void removeFolderSync(Folder *);
 
     /**
@@ -257,6 +269,10 @@ public:
      * at once.
      * These helper functions can be removed once it's properly per-folder.
      */
+    // Refactoring todo: when is the ability to switch ignoreHiddenFiles per folder going to happen? what does it
+    // depend on? if there is no change in sight for this, we should refactor the prop to be a general setting
+    // that applies to all folders, and is persisted in the General settings group of the config. The churn around
+    // moving this setting to the folder defs is absurd if it's not needed (and currently it's not actually needed)
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
 
@@ -268,7 +284,7 @@ public:
      */
     bool isAnySyncRunning() const;
 
-    /** Removes all folders */
+    /** Simple save and remove all folders on shut down */
     void unloadAndDeleteAllFolders();
 
     /**
@@ -294,11 +310,21 @@ public:
 
     [[nodiscard]] bool isSpaceSynced(GraphApi::Space *space) const;
 
+    /**
+     * adds a folder from a gui operation. this is a "presetup" step that converts the SycnConnectionDescription to a FolderDefinition
+     * and does a few other things uniquely required by the gui workflow.
+     *
+     * this handler also saves the new folder def that is created by user request
+     */
+    // Refactoring todo: try to replace the SyncConnectionDescription with FolderDefinition if reasonable
+    // also replace hard calls to this from the gui with signal to request to add the new folder and use this as a slot, roughly.
+    void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
+
     // Refactoring todo: this is temporarily public - it should eventually be private once we have refactored accountSettings remove
-    // folder sync to be a signal/request instead of a local impl which uses the singleton
-    // In fact all of the folder persistence stuff should be handled by a third party persistence component that listens for, eg
-    // folderRemoved to trigger the removal from settings. That is a long way off, unfortunately, but at least we can collect all of that
-    // behavior here in the FolderMan to start
+    // folder sync to be a signal/request instead of a local impl which calls directly into FolderMan
+    // In fact all of the folder persistence stuff should be handled by a third party persistence component that listens for relevant folder changes.
+    // That is a long way off, unfortunately, but at least we can collect all of that
+    // behavior here in the FolderMan to ensure it's done as efficiently as possible
     void removeFolderSettings(Folder *folder);
 
 Q_SIGNALS:
@@ -314,6 +340,9 @@ Q_SIGNALS:
      */
     void folderListChanged();
     void folderRemoved(Folder *folder);
+    // Refactoring todo: we need folderAdded too. The folder model should use that for normal folder updates instead of folderListChanged
+    // which causes full rebuild of the model -> crazy inefficient. Ideally folderListChanged should only be emitted for large operations (eg after loading
+    // folders from config or from new account)
 
 public Q_SLOTS:
 
@@ -354,6 +383,42 @@ private Q_SLOTS:
 private:
     explicit FolderMan();
 
+    /**
+     * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
+     * from some dynamic operation (eg folders from new account or via the gui add folder sync operations).
+     * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
+     */
+    // Lisa todo with Erik: what is this ref about returning null if SelectiveSync is used? I don't see that in the impl
+    // is it buried somewhere?
+    // also todo: discuss naming, I honestly could not come up with anything better, as this is exactly what it does
+    Folder *addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
+
+    /**
+     *  private handler connected to spacesManager::ready signal
+     *  this is a bit weird as you have to ask the manager if it's ready then wait for the signal before actually loading
+     *  the spaces. this function loads all the spaces into the FolderMan and saves them in an efficient manner
+     */
+    void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
+
+    /**
+     *  reads the folder defs from config and completes the setup.
+     *  it is important to use a preconfigured settings instance here instead of using a series of one-off instances, to improve efficiecy
+     *  by reducing file operations when loading many folders. The settings should be configured to account id already then passed
+     *  one of the known folder group names:
+     *      * Folders
+     *      * FoldersWithPlaceholders (deprecated)
+     *      * Multifolders (deprecated)
+     *
+     *  returns false when a downgrade of the database is detected, true otherwise.
+     */
+    bool addFoldersFromConfigGroup(QSettings &settings, AccountStatePtr account, const QString &groupName);
+
+    // tests folder def for minimum reqs
+    bool validateFolderDefinition(const FolderDefinition &folderDefinition);
+
+    /// \returns true of the FolderDefinition was migrated, false if it was unchanged
+    bool migrateFolderDefinition(FolderDefinition &folderDef, AccountStatePtr account);
+
     /** Connects a folder instance, provided it has no setup errors
      */
     void connectFolder(Folder *folder);
@@ -371,9 +436,6 @@ private:
     // used to reduce file operation overhead when removing multiple folders
     void removeFolderSettings(Folder *folder, QSettings &settings);
 
-    // connected to spacesManager::ready signal - this is a bit weird as you have to ask if it's ready to get the signal.
-    void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
-
     // finds all folder configuration files
     // and create the folders
     QString getBackupName(QString fullPathName) const;
@@ -381,15 +443,6 @@ private:
     // makes the folder known to the socket api
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
-
-    /// \returns false when a downgrade of the database is detected, true otherwise.
-    bool setupFoldersHelper(QSettings &settings, AccountStatePtr account);
-
-    // tests folder def for minimum reqs
-    bool validateFolderDefinition(const FolderDefinition &folderDefinition);
-
-    /// \returns true of the FolderDefinition was migrated, false if it was unchanged
-    bool migrateFolderDefinition(FolderDefinition &folderDef, AccountStatePtr account);
 
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;

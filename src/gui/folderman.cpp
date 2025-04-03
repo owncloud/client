@@ -179,26 +179,21 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 
         settings.beginGroup(accountId); // Process settings for this account.
 
-        auto processByGroup = [&](const QString &groupName) -> bool {
-            settings.beginGroup(groupName);
-            bool success = setupFoldersHelper(settings, account);
-            settings.endGroup();
-            return success;
-        };
-
-        if (!processByGroup(QStringLiteral("Folders"))) {
+        if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("Folders"))) {
             return {};
         }
 
-        // removed in 5.0
+        // removed in 5.0 - Lisa todo: ask Erik why we are still dealing with it if it's not legit?
+        // also I would expect this to be part of migration operation, oder? As it *is* migration,
+        // not normal handling, right?
         {
-            if (!processByGroup(QStringLiteral("FoldersWithPlaceholders"))) {
+            if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("FoldersWithPlaceholders"))) {
                 return {};
             }
 
             // We don't save to `Multifolders` anymore, but for backwards compatibility we will just
             // read it like it is a `Folders` entry.
-            if (!processByGroup(QStringLiteral("Multifolders"))) {
+            if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("Multifolders"))) {
                 return {};
             }
         }
@@ -214,8 +209,9 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
     return _folders.size();
 }
 
-bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
+bool FolderMan::addFoldersFromConfigGroup(QSettings &settings, AccountStatePtr account, const QString &groupName)
 {
+    settings.beginGroup(groupName);
     const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
         settings.beginGroup(folderAlias);
@@ -224,7 +220,8 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
         // this should NEVER happen
         Q_ASSERT(!folderDefinition.id().isEmpty());
 
-        // note this migration should probably be done elsewhere but for now at least it's clearly contained...baby steps.
+        // note this migration should probably be done elsewhere - ie before loading the config to folders -
+        // but for now at least it's clearly contained...baby steps.
         bool migrated = migrateFolderDefinition(folderDefinition, account);
 
         // this can only happen when loading from config
@@ -246,8 +243,9 @@ bool FolderMan::setupFoldersHelper(QSettings &settings, AccountStatePtr account)
             FolderDefinition::save(settings, folder->definition());
         }
 
-        settings.endGroup();
+        settings.endGroup(); // folderId
     }
+    settings.endGroup(); // group name
 
     return true;
 }
@@ -266,7 +264,7 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
         auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
         def.setLocalPath(accountStatePtr->account()->defaultSyncRoot());
         def.setTargetPath(Theme::instance()->defaultServerFolder());
-        Folder *folder = addFolderFromWizard(accountStatePtr, std::move(def), useVfs);
+        Folder *folder = addFolderFromScratch(accountStatePtr, std::move(def), useVfs);
         if (folder) {
             saveFolder(folder);
         }
@@ -316,7 +314,7 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
             folderDef.setLocalPath(localPath);
             folderDef.setTargetPath({});
 
-            Folder *folder = addFolderFromWizard(accountState, std::move(folderDef), useVfs);
+            Folder *folder = addFolderFromScratch(accountState, std::move(folderDef), useVfs);
             if (folder) {
                 saveFolder(folder, settings);
             }
@@ -1124,8 +1122,7 @@ bool FolderMan::checkVfsAvailability(const QString &path, Vfs::Mode mode) const
     return unsupportedConfiguration(path) && Vfs::checkAvailability(path, mode);
 }
 
-// Lisa todo: rename this - it obvs has no dependency on any wizard, it's just for creating a new folder on demand.
-Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, FolderDefinition &&folderDefinition, bool useVfs)
+Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&folderDefinition, bool useVfs)
 {
     if (!FolderMan::prepareFolder(folderDefinition.localPath())) {
         return nullptr;
@@ -1147,7 +1144,7 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     auto newFolder = addFolder(accountStatePtr, folderDefinition);
 
     if (newFolder) {
-        // could be moved from addFolderFromWizardResult
+        // could be moved from addFolderFromGui
         // Lisa todo: validate with Erik: this works for spaces too?
         // newFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         // newFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
@@ -1162,19 +1159,21 @@ Folder *FolderMan::addFolderFromWizard(const AccountStatePtr &accountStatePtr, F
     }
 
 
-    // should be moved to true originating caller
+    // Refactoring todo: this should probably be a simple folderAdded signal instead of the heavy FolderListChanged
+    // leave the folderListChanged for large operations like loading folders from config or from new account
     Q_EMIT folderListChanged();
 
     return newFolder;
 }
 
+// Refactoring todo: investigate whether it makes sense to just use a FolderDefinition in the gui instead of this SyncConnectionDescription
 void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &description)
 {
     FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
     definition.setLocalPath(description.localPath);
     definition.setTargetPath(description.remotePath);
     definition.setPriority(description.priority);
-    auto f = addFolderFromWizard(accountStatePtr, std::move(definition), description.useVirtualFiles);
+    auto f = addFolderFromScratch(accountStatePtr, std::move(definition), description.useVirtualFiles);
 
     // Lisa todo: reality check with Erik
     /* this was in AccountSettings::slotFolderWizardAccepted

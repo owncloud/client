@@ -342,7 +342,7 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            // Refactoring todo: this should just emit a signal to request removing the folder
+            // Refactoring todo: this should just emit a signal to request removing the folder - let the FolderMan do the right stuff
             FolderMan::instance()->removeFolderSettings(folder);
             FolderMan::instance()->removeFolderSync(folder);
             // Refactoring todo: I don't understand why this is called when a folder is removed as the slot seems to be more
