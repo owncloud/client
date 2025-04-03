@@ -91,7 +91,7 @@ void selectiveSyncFixup(OCC::SyncJournalDb *journal, const QSet<QString> &newLis
 
     bool ok;
 
-    const auto oldBlackListSet = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+    const auto oldBlackListSet = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (ok) {
         const auto changes = (oldBlackListSet - newListSet) + (newListSet - oldBlackListSet);
         for (const auto &it : changes) {

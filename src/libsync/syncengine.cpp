@@ -21,13 +21,10 @@
 #include "common/syncjournalfilerecord.h"
 #include "common/vfs.h"
 #include "configfile.h"
-#include "creds/abstractcredentials.h"
 #include "csync_exclude.h"
 #include "discovery.h"
 #include "discoveryphase.h"
-#include "filesystem.h"
 #include "owncloudpropagator.h"
-#include "propagatedownload.h"
 #include "propagateremotedelete.h"
 
 #include <chrono>
@@ -61,6 +58,11 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _uploadLimit(0)
     , _downloadLimit(0)
 {
+    // Refactoring todo: reality check that we actually need to use these types in queued connections. if so,
+    // we should move to a one shot registration method a) to make it really easy to see which types may
+    // be passed between threads and b) to just call it once.
+    // suggest calling registration method in FolderMan or one of the other single instance managers on startup
+    // one day it might belong in an app builder routine.
     qRegisterMetaType<SyncFileItem>("SyncFileItem");
     qRegisterMetaType<SyncFileItemPtr>("SyncFileItemPtr");
     qRegisterMetaType<SyncFileItem::Status>("SyncFileItem::Status");
@@ -383,7 +385,7 @@ void SyncEngine::startSync()
     }
 
     bool ok;
-    auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+    auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (ok) {
         bool usingSelectiveSync = (!selectiveSyncBlackList.isEmpty());
         qCInfo(lcEngine) << (usingSelectiveSync ? "Using Selective Sync" : "NOT Using Selective Sync");
@@ -413,7 +415,7 @@ void SyncEngine::startSync()
         _discoveryPhase->_remoteFolder+=QLatin1Char('/');
     _discoveryPhase->_shouldDiscoverLocaly = [this](const QString &s) { return shouldDiscoverLocally(s); };
     _discoveryPhase->setSelectiveSyncBlackList(selectiveSyncBlackList);
-    _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, &ok));
+    _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, ok));
     if (!ok) {
         qCWarning(lcEngine) << "Unable to read selective sync list, aborting.";
         Q_EMIT syncError(tr("Unable to read from the sync journal."));

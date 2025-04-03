@@ -94,8 +94,8 @@ private Q_SLOTS:
         std::ignore = TestUtils::folderMan();
         AccountManager::instance()->restore();
 
-        settings->beginGroup(QStringLiteral("0/Folders"));
-        TestUtils::folderMan()->setupFoldersHelper(*settings.get(), AccountManager::instance()->accounts().first());
+        settings->beginGroup(QStringLiteral("0"));
+        TestUtils::folderMan()->addFoldersFromConfigGroup(*settings.get(), AccountManager::instance()->accounts().first(), QStringLiteral("Folders"));
         settings->endGroup();
 
         QCOMPARE(journalPaths.first(), settings->value(QStringLiteral("0/Folders/1/journalPath")));

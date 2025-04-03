@@ -37,7 +37,6 @@
 #include <QFileInfo>
 #include <QUrl>
 
-#include <stdlib.h>
 
 namespace OCC {
 

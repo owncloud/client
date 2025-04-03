@@ -199,7 +199,7 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
             return;
         }
         case SetupWizardState::AccountConfiguredState: {
-            // Lisa todo: is that page guaranteed to be alive at this point? more: why on earth are we pulling data from the page?!
+            // Refactoring todo: is that page guaranteed to be alive at this point? more: why on earth are we pulling data from the page?!
             // that info should be transferred to the state or some other data model or dm owner
             // using a polymorphic impl for the states/pages is in theory good, but if you have to start casting to specific
             // impls that is a big code smell that indicates your abstraction is faulty

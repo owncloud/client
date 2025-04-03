@@ -633,10 +633,16 @@ bool AccountState::isSettingUp() const
     return _settingUp;
 }
 
+// Refactoring todo: We currently call this from owncloudgui to set the val true then false at a later point
+// actual consumer is in the AccountSettings gui - it shows a spinny from the time it's set to
+// true to when it switches to false. IMO this does NOT belong in the AccountState if it can't
+// manage the value itself. It needs to go elsewhere, ideally the owncloudgui can just call
+// into the account settings directly as any good controller would
 void AccountState::setSettingUp(bool settingUp)
 {
     if (_settingUp != settingUp) {
         _settingUp = settingUp;
+        // for goodness sake, just send the new value
         Q_EMIT isSettingUpChanged();
     }
 }

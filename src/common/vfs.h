@@ -123,7 +123,7 @@ public:
     };
     Q_ENUM(ConvertToPlaceholderResult)
 
-    static Optional<Mode> modeFromString(const QString &str);
+    static Mode modeFromString(const QString &str);
 
     static Result<void, QString> checkAvailability(const QString &path, OCC::Vfs::Mode mode);
 
