@@ -3669,6 +3669,11 @@ Are you sure you want to proceed?</source>
         <source>Insecure server rejected by user</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
+        <source>The requested URL failed with query value: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OCC::Wizard::SetupWizardController</name>
