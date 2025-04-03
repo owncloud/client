@@ -297,13 +297,11 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
         qint64 used{};
         qint64 total{};
         if (_accountState->supportsSpaces()) {
-            if (auto spacesManager = f->accountState()->account()->spacesManager()) {
-                if (auto *space = f->space()) {
-                    const auto quota = space->drive().getQuota();
-                    if (quota.isValid()) {
-                        used = quota.getUsed();
-                        total = quota.getTotal();
-                    }
+            if (auto *space = f->space()) {
+                const auto quota = space->drive().getQuota();
+                if (quota.isValid()) {
+                    used = quota.getUsed();
+                    total = quota.getTotal();
                 }
             }
         } else {
