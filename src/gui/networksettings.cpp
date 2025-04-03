@@ -101,6 +101,14 @@ NetworkSettings::NetworkSettings(QWidget *parent)
     checkAccountLocalhost();
 
     connect(_ui->pauseSyncWhenMeteredCheckbox, &QAbstractButton::clicked, this, &NetworkSettings::saveMeteredSettings);
+
+    ConfigFile config;
+    if (config.useUploadLimit() == 0 && config.useDownloadLimit() == 0) {
+        _ui->warningIcon->setVisible(false);
+        _ui->warningLabel->setVisible(false);
+        _ui->uploadBox->setVisible(false);
+        _ui->downloadBox->setVisible(false);
+    }
 }
 
 NetworkSettings::~NetworkSettings()
