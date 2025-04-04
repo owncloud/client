@@ -1368,27 +1368,27 @@ Palun kasuta kontekstimenüüd ja vali &quot;Keela virtuaalse faili tugi&quot;, 
 Vastasel juhul kaotad ligipääsu oma sünkroniseeritud kaustale!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="316"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
         <source>%1 of %2 used</source>
         <translation>%1 %2-st on kasutuses</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="394"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Kaugühenduse &apos;%1&apos; muutuste kontroll</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="398"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Kohaliku &apos;%1&apos; muutuste kontroll</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="402"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="400"/>
         <source>Reconciling changes</source>
         <translation>Muudatuste kooskõlastamine</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="442"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="440"/>
         <source>Queued</source>
         <translation>Järjekorras</translation>
     </message>
@@ -3283,6 +3283,19 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
 </context>
 <context>
+    <name>OCC::SpacesPage</name>
+    <message>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <source>Select a folder to sync it to your computer.</source>
+        <translation>Vali kaust oma arvutisse sünkroniseerimiseks.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <source>Select a Space to sync it to your computer.</source>
+        <translation>Vali ruum oma arvutisse sünkroniseerimiseks.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SyncEngine</name>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="154"/>
@@ -3641,6 +3654,11 @@ Kas olete kindel, et soovite jätkata?</translation>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="107"/>
         <source>Insecure server rejected by user</source>
         <translation>Ebaturvaline server on kasutaja poolt tagasi lükatud</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
+        <source>The requested URL failed with query value: %1</source>
+        <translation>Päring küsitud URL-ile ebaõnnestus päringu väärtusega: %1</translation>
     </message>
 </context>
 <context>
@@ -4049,12 +4067,7 @@ Kas olete kindel, et soovite jätkata?</translation>
 <context>
     <name>SpacesPage</name>
     <message>
-        <location filename="../src/gui/folderwizard/spacespage.ui" line="17"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Space to sync it to your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vali ruum oma arvutisse sünkroniseerimiseks.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/spacespage.ui" line="33"/>
+        <location filename="../src/gui/folderwizard/spacespage.ui" line="36"/>
         <source>Spaces list</source>
         <translation>Ruumide nimekiri</translation>
     </message>
