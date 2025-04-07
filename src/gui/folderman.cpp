@@ -629,10 +629,11 @@ void FolderMan::removeFolder(Folder *f)
     f->removeFromSettings();
 
     unloadFolder(f);
-    f->deleteLater();
 
     Q_EMIT folderRemoved(f);
     Q_EMIT folderListChanged();
+
+    f->deleteLater();
 }
 
 QString FolderMan::getBackupName(QString fullPathName) const

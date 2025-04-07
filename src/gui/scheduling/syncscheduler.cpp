@@ -26,6 +26,7 @@ using namespace OCC;
 
 Q_LOGGING_CATEGORY(lcSyncScheduler, "gui.scheduler.syncscheduler", QtInfoMsg)
 
+// Refactoring todo: no. put this in a real header/decl + def
 class FolderPriorityQueue
 {
 private:
@@ -103,6 +104,10 @@ private:
     std::unordered_map<Folder *, SyncScheduler::Priority> _scheduledFolders;
 };
 
+// Refactoring todo: I do not see where/how the syncs and etag watcher get updated when eg an account is removed.
+// the main dep here is on the FolderMan which means we rely on the folder list being updated and/or folders deleted
+// to disconnect this stuff, but afaik the accountStatePtr is ACTUALLY the first thing to do when an account is removed.
+// this scheduler/watcher combo needs deep investigation as it might be the source of "mysterious" crashes.
 SyncScheduler::SyncScheduler(FolderMan *parent)
     : QObject(parent)
     , _pauseSyncWhenMetered(ConfigFile().pauseSyncWhenMetered())
