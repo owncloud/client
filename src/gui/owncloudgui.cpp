@@ -782,9 +782,6 @@ void ownCloudGui::runNewAccountWizard()
         // we have to clean it up manually when finished() is emitted
         _wizardController = new Wizard::SetupWizardController(settingsDialog());
 
-        // while the wizard is shown, new syncs are disabled
-        FolderMan::instance()->setSyncEnabled(false);
-
         connect(_wizardController, &Wizard::SetupWizardController::finished, this,
             [this](AccountPtr newAccount, Wizard::SyncMode syncMode, const QVariantMap &dynamicRegistrationData) {
                 // note: while the wizard is shown, we disable the folder synchronization
@@ -857,7 +854,6 @@ void ownCloudGui::runNewAccountWizard()
 
                                     connect(folderWizard, &QDialog::rejected, [accountStatePtr]() {
                                         qCInfo(lcApplication) << "Folder wizard cancelled";
-                                        FolderMan::instance()->setSyncEnabled(true);
                                         accountStatePtr->setSettingUp(false);
                                     });
 
@@ -881,8 +877,6 @@ void ownCloudGui::runNewAccountWizard()
 
 
                     validator->checkServer();
-                } else {
-                    FolderMan::instance()->setSyncEnabled(true);
                 }
 
                 // make sure the wizard is cleaned up eventually

@@ -39,6 +39,8 @@ SpaceMigration::SpaceMigration(const AccountStatePtr &account, const QString &pa
 
 void SpaceMigration::start()
 {
+    // Refactoring todo: this should never be called by anyone but the FolderMan. In fact this spaces migration thing should
+    // probably be managed by the folder man since it is responsible for other migration tasks, but at the moment it's managed by the AccountState
     FolderMan::instance()->setSyncEnabled(false);
 
     QJsonArray folders;

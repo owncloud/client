@@ -297,15 +297,12 @@ void AccountSettings::slotAddFolder()
         return;
     }
 
-    FolderMan::instance()->setSyncEnabled(false); // do not start more syncs.
-
     FolderWizard *folderWizard = new FolderWizard(_accountState, this);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
     connect(folderWizard, &QDialog::rejected, this, [] {
         qCInfo(lcAccountSettings) << "Folder wizard cancelled";
-        FolderMan::instance()->setSyncEnabled(true);
     });
 
     addModalLegacyDialog(folderWizard, AccountSettings::ModalWidgetSizePolicy::Expanding);
@@ -319,11 +316,14 @@ void AccountSettings::slotFolderWizardAccepted()
     }
 
     FolderWizard *folderWizard = qobject_cast<FolderWizard *>(sender());
+    if (!folderWizard)
+        return;
+
     qCInfo(lcAccountSettings) << "Folder wizard completed";
 
     const auto config = folderWizard->result();
 
-
+    // Refactoring todo: turn this into a signal/requestAddFolder
     FolderMan::instance()->addFolderFromGui(_accountState, config);
 }
 
@@ -367,9 +367,6 @@ void AccountSettings::slotEnableVfsCurrentFolder(Folder *folder)
 
         // Change the folder vfs mode and load the plugin
         folder->setVirtualFilesEnabled(true);
-
-        // don't schedule the folder, it might not be ready yet.
-        // it will schedule its self once set up
     }
 }
 

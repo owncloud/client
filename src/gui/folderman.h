@@ -401,17 +401,15 @@ private:
     void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
 
     /**
-     *  reads the folder defs from config and completes the setup.
+     *  reads the folder defs from the config for a single account.
      *  it is important to use a preconfigured settings instance here instead of using a series of one-off instances, to improve efficiecy
-     *  by reducing file operations when loading many folders. The settings should be configured to account id already then passed
-     *  one of the known folder group names:
-     *      * Folders
-     *      * FoldersWithPlaceholders (deprecated)
-     *      * Multifolders (deprecated)
+     *  by reducing file operations when loading many folders.
+     *
+     *  The settings should be configured to group "Accounts" before it's passed to this function.
      *
      *  returns false when a downgrade of the database is detected, true otherwise.
      */
-    bool addFoldersFromConfigGroup(QSettings &settings, AccountStatePtr account, const QString &groupName);
+    bool addFoldersFromConfigByAccount(QSettings &settings, AccountStatePtr account);
 
     // tests folder def for minimum reqs
     bool validateFolderDefinition(const FolderDefinition &folderDefinition);

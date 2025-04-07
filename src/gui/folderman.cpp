@@ -158,6 +158,8 @@ void FolderMan::registerFolderWithSocketApi(Folder *folder)
 
 std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 {
+    setSyncEnabled(false);
+
     // is this really necessary? Do we actually re-set up folders at any point? when?
     unloadAndDeleteAllFolders();
 
@@ -177,27 +179,26 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
             continue;
         }
 
-        settings.beginGroup(accountId); // Process settings for this account.
-
-        // Lisa todo: review this now that the legacy groups are safely eliminated
-        if (!addFoldersFromConfigGroup(settings, account, QStringLiteral("Folders"))) {
+        // Process config for this account.
+        if (!addFoldersFromConfigByAccount(settings, account)) {
             return {};
         }
 
         settings.endGroup(); // Finished processing this account.
     }
 
-    // why not
-    settings.sync();
+    scheduleAllFolders();
+    setSyncEnabled(true);
 
     Q_EMIT folderListChanged();
 
     return _folders.size();
 }
 
-bool FolderMan::addFoldersFromConfigGroup(QSettings &settings, AccountStatePtr account, const QString &groupName)
+bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStatePtr account)
 {
-    settings.beginGroup(groupName);
+    settings.beginGroup(QStringLiteral("%1/Folders").arg(account->account()->id()));
+
     const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
         settings.beginGroup(folderAlias);
@@ -231,7 +232,7 @@ bool FolderMan::addFoldersFromConfigGroup(QSettings &settings, AccountStatePtr a
 
         settings.endGroup(); // folderId
     }
-    settings.endGroup(); // group name
+    settings.endGroup();
 
     return true;
 }
@@ -250,24 +251,22 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
         // trigger the ready signal in the spaces manager, as hoped. The impl here is very weak and needs improvement.
         accountStatePtr->account()->spacesManager()->checkReady();
     } else {
+        setSyncEnabled(false);
         auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
         def.setLocalPath(accountStatePtr->account()->defaultSyncRoot());
         def.setTargetPath(Theme::instance()->defaultServerFolder());
         Folder *folder = addFolderFromScratch(accountStatePtr, std::move(def), useVfs);
         if (folder) {
             saveFolder(folder);
+            _scheduler->enqueueFolder(folder, SyncScheduler::Priority::High);
         }
+        setSyncEnabled(true);
     }
 
 
     // Refactoring todo:  who is actually responsible for calling this? I see it all over the place and I really don't think it belongs here.
     // should be part of the account connection routine not loading folders
     accountStatePtr->checkConnectivity();
-    // Refactoring todo: reality check that this isn't already done elsewhere. I see this here and there and I just think there
-    // should be a "core" location for it. As it is now it looks like a "well if we add it enough places it's sure to work eventually"
-    // approach
-    FolderMan::instance()->setSyncEnabled(true);
-    FolderMan::instance()->scheduleAllFolders();
 }
 
 void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
@@ -284,6 +283,8 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
     spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
 
     if (!spaces.isEmpty()) {
+        setSyncEnabled(false);
+
         QSettings settings = ConfigFile::makeQSettings();
         settings.beginGroup("Accounts");
 
@@ -304,8 +305,10 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
             Folder *folder = addFolderFromScratch(accountState, std::move(folderDef), useVfs);
             if (folder) {
                 saveFolder(folder, settings);
+                _scheduler->enqueueFolder(folder, SyncScheduler::Priority::High);
             }
         }
+        setSyncEnabled(true);
     }
 }
 
@@ -1156,6 +1159,8 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
 // Refactoring todo: investigate whether it makes sense to just use a FolderDefinition in the gui instead of this SyncConnectionDescription
 void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &description)
 {
+    setSyncEnabled(false);
+
     FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
     definition.setLocalPath(description.localPath);
     definition.setTargetPath(description.remotePath);
@@ -1179,12 +1184,11 @@ void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const S
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         // should this always be called?
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
+
+
+        _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
     }
-    // Lisa todo: this was also moved from AccountSettings::slotFolderWizardAccepted - discuss with Erik when these should be called
-    // I think it really needs to be relative to "major" activity -> important question: how does it relate to cases where
-    // setSyncEnabled(false) is invoked?
     setSyncEnabled(true);
-    scheduleAllFolders();
 }
 
 QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)
@@ -1200,7 +1204,6 @@ bool FolderMan::prepareFolder(const QString &folder)
         }
         // Refactoring todo: consider renaming these or maybe better, merge them into one function that handles "prepareFolder" in full.
         // it appears these are always called together so to avoid errors, just roll it into one routine?
-
         // this is for mac
         FileSystem::setFolderMinimumPermissions(folder);
         // this is for windows - it sets up a desktop.ini file to handle the icon and deals with persmissions.
