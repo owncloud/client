@@ -1369,27 +1369,27 @@ You are going to lose access to your sync folder if you do not do so!</source>
 これを行わないと、同期フォルダーにアクセスできなくなります。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="316"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
         <source>%1 of %2 used</source>
         <translation>%2 の %1 を使用</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="394"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>リモートの &apos;%1&apos; の変更を確認しています。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="398"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>ローカルの &apos;%1&apos; の変更を確認しています。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="402"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="400"/>
         <source>Reconciling changes</source>
         <translation>変更の調整</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="442"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="440"/>
         <source>Queued</source>
         <translation>キューに入れられました</translation>
     </message>
