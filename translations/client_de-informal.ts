@@ -1367,27 +1367,27 @@ Bitte nutze das Kontextmenü und wähle „Unterstützung für virtuelle Dateien
 Andernfalls verlierst Du den Zugriff auf Deinen Synchronisierungsordner!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="316"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
         <source>%1 of %2 used</source>
         <translation>%1 von %2 verwendet</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="394"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Prüfe Änderungen der entfernten &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="398"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Prüfe Änderungen der lokalen &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="402"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="400"/>
         <source>Reconciling changes</source>
         <translation>Änderungen zusammenführen</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="442"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="440"/>
         <source>Queued</source>
         <translation>In Warteschlange gestellt</translation>
     </message>
@@ -3656,7 +3656,7 @@ Möchtest du fortfahren?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>Die angefragte URL hat mit folgender Abfrage einen Fehler zurückgemeldet: %1</translation>
     </message>
 </context>
 <context>
