@@ -613,11 +613,6 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
         <source>Form</source>
         <translation>Formulário</translation>
     </message>
-    <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
-        <source>GroupBox</source>
-        <translation>GroupBox</translation>
-    </message>
 </context>
 <context>
     <name>OCC::AccountSettings</name>
