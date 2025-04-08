@@ -610,11 +610,6 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
         <source>Form</source>
         <translation>Form</translation>
     </message>
-    <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
-        <source>GroupBox</source>
-        <translation type="unfinished"/>
-    </message>
 </context>
 <context>
     <name>OCC::AccountSettings</name>
