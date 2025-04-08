@@ -612,11 +612,6 @@ Datei Synchronisations-Applikation.</translation>
         <source>Form</source>
         <translation>Formular</translation>
     </message>
-    <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
-        <source>GroupBox</source>
-        <translation>Gruppenbox</translation>
-    </message>
 </context>
 <context>
     <name>OCC::AccountSettings</name>
@@ -3656,7 +3651,7 @@ Möchtest du fortfahren?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>Die angefragte URL hat mit folgender Abfrage einen Fehler zurückgemeldet: %1</translation>
     </message>
 </context>
 <context>

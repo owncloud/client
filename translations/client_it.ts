@@ -612,11 +612,6 @@ Utilità desktop per la sincronizzazione dei file.</translation>
         <source>Form</source>
         <translation>Modulo</translation>
     </message>
-    <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
-        <source>GroupBox</source>
-        <translation>GroupBox</translation>
-    </message>
 </context>
 <context>
     <name>OCC::AccountSettings</name>

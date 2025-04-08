@@ -612,11 +612,6 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <source>Form</source>
         <translation>Formular</translation>
     </message>
-    <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
-        <source>GroupBox</source>
-        <translation type="unfinished"/>
-    </message>
 </context>
 <context>
     <name>OCC::AccountSettings</name>
