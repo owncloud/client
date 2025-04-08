@@ -35,10 +35,12 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
     : QObject(parent)
     , _folderMan(folderMan)
 {
+    // Refactoring todo: where/when are info's for removed folders cleaned up? or adds? really only on full folder list changed?
+    // this can/should be incrementally managed instead of constantly moving entries around like this
     connect(folderMan, &FolderMan::folderListChanged, this, [this] {
         decltype(_lastEtagJob) intersection;
         for (auto *f : _folderMan->folders()) {
-            if (f->isReady()) {
+            if (f->accountState() && f->isReady()) {
                 auto it = _lastEtagJob.find(f);
                 if (it != _lastEtagJob.cend()) {
                     intersection[f] = std::move(it->second);
@@ -48,7 +50,9 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
                         auto &info = _lastEtagJob[f];
                         info.etag = etag;
                         info.lastUpdate.reset();
-                        f->accountState()->tagLastSuccessfullETagRequest(time);
+                        if (f->accountState()) {
+                            f->accountState()->tagLastSuccessfullETagRequest(time);
+                        }
                     });
                 }
             }
@@ -62,7 +66,7 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
     connect(pollTimer, &QTimer::timeout, this, [this] {
         for (auto &info : _lastEtagJob) {
             // for spaces we use the etag provided by the SpaceManager
-            if (info.first->accountState()->supportsSpaces()) {
+            if (info.first->accountState() && info.first->accountState()->supportsSpaces()) {
                 // we could also connect to the spaceChanged signal but for now this will keep it closer to oc10
                 // ensure we already know about the space (startup)
                 if (auto *space = info.first->space()) {
@@ -95,7 +99,7 @@ void ETagWatcher::updateEtag(Folder *f, const QString &etag)
 
 void ETagWatcher::startOC10EtagJob(Folder *f)
 {
-    if (f->accountState()->state() == AccountState::State::Connected) {
+    if (f->accountState() && f->accountState()->state() == AccountState::State::Connected) {
         ConfigFile cfg;
         const auto account = f->accountState()->account();
         const auto polltime = cfg.remotePollInterval(account->capabilities().remotePollInterval());
@@ -103,6 +107,10 @@ void ETagWatcher::startOC10EtagJob(Folder *f)
             auto *requestEtagJob = new RequestEtagJob(account, f->webDavUrl(), f->remotePath(), f);
             requestEtagJob->setTimeout(pollTimeoutC);
             connect(requestEtagJob, &RequestEtagJob::finishedSignal, this, [requestEtagJob, f, this] {
+                if (!f->accountState()) {
+                    qCWarning(lcEtagWatcher) << "folder account state null for folder " << f->displayName();
+                    return;
+                }
                 if (requestEtagJob->httpStatusCode() == 207) {
                     if (OC_ENSURE_NOT(requestEtagJob->etag().isEmpty())) {
                         auto lastResponse = requestEtagJob->responseQTimeStamp();
