@@ -612,11 +612,6 @@ Anwendung zur Datei-Synchronisation.</translation>
         <source>Form</source>
         <translation>Formular</translation>
     </message>
-    <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="26"/>
-        <source>GroupBox</source>
-        <translation>Gruppenbox</translation>
-    </message>
 </context>
 <context>
     <name>OCC::AccountSettings</name>
