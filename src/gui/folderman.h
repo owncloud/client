@@ -296,9 +296,6 @@ public:
     SyncScheduler *scheduler() { return _scheduler; }
 
 
-    /** Queues all folders for syncing. */
-    void scheduleAllFolders();
-
     void setDirtyProxy();
     void setDirtyNetworkLimits();
 
@@ -433,6 +430,9 @@ private:
 
     // used to reduce file operation overhead when removing multiple folders
     void removeFolderSettings(Folder *folder, QSettings &settings);
+
+    /** Queues all folders for syncing. */
+    void scheduleAllFolders();
 
     // finds all folder configuration files
     // and create the folders

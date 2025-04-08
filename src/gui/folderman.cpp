@@ -621,7 +621,7 @@ Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDe
     if (Folder *f = folder(folderDefinition.id())) {
         Q_ASSERT_X(false, "addFolder", "Trying to addFolder but id is already found in the folder list");
         qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
-        return f; // or return nullptr - Lisa todo: talk to Erik
+        return f;
     }
 
     if (!validateFolderDefinition(folderDefinition)) {
@@ -1134,10 +1134,6 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
     auto newFolder = addFolder(accountStatePtr, folderDefinition);
 
     if (newFolder) {
-        // could be moved from addFolderFromGui
-        // Lisa todo: validate with Erik: this works for spaces too?
-        // newFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
-        // newFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
 
         // With spaces we only handle the main folder
         if (!newFolder->groupInSidebar()) {
@@ -1167,22 +1163,11 @@ void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const S
     definition.setPriority(description.priority);
     auto f = addFolderFromScratch(accountStatePtr, std::move(definition), description.useVirtualFiles);
 
-    // Lisa todo: reality check with Erik
-    /* this was in AccountSettings::slotFolderWizardAccepted
-    if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
-
-        // The user already accepted the selective sync dialog. everything is in the white list
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
-    }*/
-
 
     if (f) {
         saveFolder(f);
 
-        // this should maybe be moved to addFolderFromGui - or use impl above? I really don't know
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
-        // should this always be called?
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
 
 

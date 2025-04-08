@@ -845,7 +845,13 @@ void ownCloudGui::runNewAccountWizard()
                                         FolderMan *folderMan = FolderMan::instance();
 
                                         qCInfo(lcApplication) << "Folder wizard completed";
-                                        const auto config = folderWizard->result();
+                                        auto config = folderWizard->result();
+
+                                        // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
+                                        // originally in play here so...keep it just in case.
+                                        if (config.useVirtualFiles && !config.selectiveSyncBlackList.empty()) {
+                                            config.selectiveSyncBlackList.clear();
+                                        }
 
                                         folderMan->addFolderFromGui(accountStatePtr, config);
 
