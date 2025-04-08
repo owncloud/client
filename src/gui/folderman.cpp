@@ -160,13 +160,13 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 {
     setSyncEnabled(false);
 
-    // is this really necessary? Do we actually re-set up folders at any point? when?
+    // Refactoring todo: is this really necessary? Do we actually re-set up folders at any point? when?
     unloadAndDeleteAllFolders();
 
     auto settings = ConfigFile::makeQSettings();
     settings.beginGroup("Accounts");
-    const auto &accountsWithSettings = settings.childGroups();
 
+    const auto &accountsWithSettings = settings.childGroups();
     qCInfo(lcFolderMan) << "Setup folders from settings file";
 
     for (const auto &account : AccountManager::instance()->accounts()) {
@@ -174,6 +174,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
         // the account instances. It looks fragile to me but Erik said "don't touch it!" I'm guessing it would
         // require some migration step at least to switch from this id to the preferred uuid
         const auto accountId = account->account()->id();
+        Q_ASSERT(!accountId.isEmpty());
         if (!accountsWithSettings.contains(accountId)) {
             qCWarning(lcFolderMan) << "Account id from account manager is missing from Config";
             continue;
@@ -183,9 +184,8 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
         if (!addFoldersFromConfigByAccount(settings, account)) {
             return {};
         }
-
-        settings.endGroup(); // Finished processing this account.
     }
+    settings.endGroup(); // "Accounts"
 
     scheduleAllFolders();
     setSyncEnabled(true);
@@ -230,9 +230,9 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStateP
             FolderDefinition::save(settings, folder->definition());
         }
 
-        settings.endGroup(); // folderId
+        settings.endGroup(); // folderAlias
     }
-    settings.endGroup();
+    settings.endGroup(); // accountId\Folders
 
     return true;
 }
@@ -663,8 +663,8 @@ void FolderMan::connectFolder(Folder *folder)
         connect(folder, &Folder::syncPausedChanged, this, &FolderMan::slotFolderSyncPauseChanged);
         // format wants to move the pointer "*" one space away from the type which = clazy not normalized sig warning
         // clang-format off
-        connect(folder, SIGNAL(syncPausedChanged(Folder*)), this, SLOT(saveFolder(Folder*)));
-        connect(folder, SIGNAL(vfsModeChanged(Folder*)), this, SLOT(saveFolder(Folder*)));
+        connect(folder, SIGNAL(syncPausedChanged(Folder*,bool)), this, SLOT(saveFolder(Folder*)));
+        connect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
         // clang-format on
         connect(folder, &Folder::canSyncChanged, this, &FolderMan::slotFolderCanSyncChanged);
         connect(

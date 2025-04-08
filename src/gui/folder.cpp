@@ -703,6 +703,12 @@ void Folder::setVirtualFilesEnabled(bool enabled)
     }
 }
 
+// Refactoring todo: this still causes THREE saves to config file which is potentially excessive for large
+// sets.
+// I think the best way to fix it is to avoid calling setSyncPaused as that emits a couple of changes,
+// which may be overkill for this temp setting change (ie running to paused and back to running)
+// needs a deeper look. For the moment most of the pain related to this is avoided because we now only
+// connect the folder after it's set up, so the saves during setup are avoided = huge improvement already.
 void Folder::changeVfsMode(Vfs::Mode newMode)
 {
     if (newMode == _definition.virtualFilesMode()) {
