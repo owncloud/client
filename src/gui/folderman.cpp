@@ -1056,12 +1056,12 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     for (auto *folder : std::as_const(_folders)) {
         if (folder->ignoreHiddenFiles() != ignore) {
             folder->setIgnoreHiddenFiles(ignore);
-            // this is a lot of trouble. But unfortunately since we didn't get the change in for 6.0/Betelgeuse we will
-            // have to live with this a bit longer. When we fully fix it, it needs to be added
-            // to folder migration.
-            // possible solution: we move the setting to folderMan in general. forward migration = remove the folder settings
+            // Refactoring todo: this is a lot of trouble. But unfortunately since we didn't get the change in for 6.0 first issue
+            // we will have to live with this a bit longer.
+            // That means When we fully fix it, it needs to be added to folder migration.
+            // possible solution: we move the setting to folderMan in general. Forward migration = remove the folder settings
             // for this param and store one of the folder vals to the general config settings which the folder man will use.
-            // if/when user wants to "downgrade" to previous version, the migration step can put the vals back into the
+            // If/when user wants to "downgrade" to previous version, the migration step can put the vals back into the
             // folder config settings?
             saveFolder(folder, settings);
         }
@@ -1134,7 +1134,6 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
     auto newFolder = addFolder(accountStatePtr, folderDefinition);
 
     if (newFolder) {
-
         // With spaces we only handle the main folder
         if (!newFolder->groupInSidebar()) {
             Utility::setupFavLink(folderDefinition.localPath());
@@ -1143,7 +1142,6 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
     } else {
         qCWarning(lcFolderMan) << "Failed to create local sync folder!";
     }
-
 
     // Refactoring todo: this should probably be a simple folderAdded signal instead of the heavy FolderListChanged
     // leave the folderListChanged for large operations like loading folders from config or from new account
