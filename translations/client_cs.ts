@@ -1902,11 +1902,6 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Poznámka: nastavení proxy nemá vliv na účty z localhostu</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="270"/>
-        <source>Bandwith limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/gui/networksettings.ui" line="287"/>
         <source>Download Bandwidth</source>
         <translation>Rychlost stahování</translation>
@@ -1936,6 +1931,11 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networksettings.ui" line="270"/>
+        <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
         <translation type="unfinished"/>
     </message>
     <message>

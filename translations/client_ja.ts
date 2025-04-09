@@ -1918,11 +1918,6 @@ Note that using any logging command line options will override the settings.</so
         <translation>注：プロキシ設定は、localhost上のアカウントには影響しません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="270"/>
-        <source>Bandwith limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/gui/networksettings.ui" line="287"/>
         <source>Download Bandwidth</source>
         <translation>ダウンロード帯域制限</translation>
@@ -1953,6 +1948,11 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
         <translation>プロキシの種類</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networksettings.ui" line="270"/>
+        <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>

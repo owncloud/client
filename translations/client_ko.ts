@@ -1913,11 +1913,6 @@ Note that using any logging command line options will override the settings.</so
         <translation>주의: 프록시 설정은 localhost에 있는 계정에는 효과가 없습니다</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="270"/>
-        <source>Bandwith limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/gui/networksettings.ui" line="287"/>
         <source>Download Bandwidth</source>
         <translation>다운로드 대역폭</translation>
@@ -1947,6 +1942,11 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networksettings.ui" line="270"/>
+        <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
         <translation type="unfinished"/>
     </message>
     <message>

@@ -1918,11 +1918,6 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <translation>Nota: le impostazioni del proxy non hanno effetti per gli account su localhost</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="270"/>
-        <source>Bandwith limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/gui/networksettings.ui" line="287"/>
         <source>Download Bandwidth</source>
         <translation>Ampiezza di banda in entrata</translation>
@@ -1953,6 +1948,11 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
         <translation>Tipo di Proxy</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networksettings.ui" line="270"/>
+        <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
