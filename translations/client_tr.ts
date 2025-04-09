@@ -1914,24 +1914,29 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Not: Proxy ayarlarının localhost üzerindeki hesaplar için hiçbir etkisi yoktur</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="240"/>
+        <location filename="../src/gui/networksettings.ui" line="270"/>
+        <source>Bandwith limits are deprecated and will be removed in a future release!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networksettings.ui" line="287"/>
         <source>Download Bandwidth</source>
         <translation>İndirme Bant Genişliği</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="360"/>
+        <location filename="../src/gui/networksettings.ui" line="407"/>
         <source>Upload bandwidth in kilobytes per second</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="291"/>
-        <location filename="../src/gui/networksettings.ui" line="376"/>
+        <location filename="../src/gui/networksettings.ui" line="338"/>
+        <location filename="../src/gui/networksettings.ui" line="423"/>
         <source>KBytes/s</source>
         <translation>KBayt/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="246"/>
-        <location filename="../src/gui/networksettings.ui" line="328"/>
+        <location filename="../src/gui/networksettings.ui" line="293"/>
+        <location filename="../src/gui/networksettings.ui" line="375"/>
         <source>No limit</source>
         <translation>Sınır yok</translation>
     </message>
@@ -1946,30 +1951,30 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="256"/>
-        <location filename="../src/gui/networksettings.ui" line="338"/>
+        <location filename="../src/gui/networksettings.ui" line="303"/>
+        <location filename="../src/gui/networksettings.ui" line="385"/>
         <source>Limit to 3/4 of estimated bandwidth</source>
         <translation>Tahmini bant genişliğinin 3/4&apos;ü ile sınırla</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="268"/>
-        <location filename="../src/gui/networksettings.ui" line="350"/>
+        <location filename="../src/gui/networksettings.ui" line="315"/>
+        <location filename="../src/gui/networksettings.ui" line="397"/>
         <source>Manual limit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="278"/>
+        <location filename="../src/gui/networksettings.ui" line="325"/>
         <source>Download bandwidth in kilobytes per second</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="322"/>
+        <location filename="../src/gui/networksettings.ui" line="369"/>
         <source>Upload Bandwidth</source>
         <translation>Gönderme Bant Genişliği</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="259"/>
-        <location filename="../src/gui/networksettings.ui" line="341"/>
+        <location filename="../src/gui/networksettings.ui" line="306"/>
+        <location filename="../src/gui/networksettings.ui" line="388"/>
         <source>Limit automatically</source>
         <translation>Otomatik sınırla</translation>
     </message>

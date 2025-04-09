@@ -267,7 +267,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Bandwith limits are deprecated and will be removed in a future release!</string>
+        <string>Bandwidth limits are deprecated and will be removed in a future release!</string>
        </property>
       </widget>
      </item>
