@@ -1913,24 +1913,29 @@ Note that using any logging command line options will override the settings.</so
         <translation>주의: 프록시 설정은 localhost에 있는 계정에는 효과가 없습니다</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="240"/>
+        <location filename="../src/gui/networksettings.ui" line="270"/>
+        <source>Bandwith limits are deprecated and will be removed in a future release!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networksettings.ui" line="287"/>
         <source>Download Bandwidth</source>
         <translation>다운로드 대역폭</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="360"/>
+        <location filename="../src/gui/networksettings.ui" line="407"/>
         <source>Upload bandwidth in kilobytes per second</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="291"/>
-        <location filename="../src/gui/networksettings.ui" line="376"/>
+        <location filename="../src/gui/networksettings.ui" line="338"/>
+        <location filename="../src/gui/networksettings.ui" line="423"/>
         <source>KBytes/s</source>
         <translation>KBytes/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="246"/>
-        <location filename="../src/gui/networksettings.ui" line="328"/>
+        <location filename="../src/gui/networksettings.ui" line="293"/>
+        <location filename="../src/gui/networksettings.ui" line="375"/>
         <source>No limit</source>
         <translation>제한 없음</translation>
     </message>
@@ -1945,30 +1950,30 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="256"/>
-        <location filename="../src/gui/networksettings.ui" line="338"/>
+        <location filename="../src/gui/networksettings.ui" line="303"/>
+        <location filename="../src/gui/networksettings.ui" line="385"/>
         <source>Limit to 3/4 of estimated bandwidth</source>
         <translation>예상 대역폭의 3/4으로 제한</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="268"/>
-        <location filename="../src/gui/networksettings.ui" line="350"/>
+        <location filename="../src/gui/networksettings.ui" line="315"/>
+        <location filename="../src/gui/networksettings.ui" line="397"/>
         <source>Manual limit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="278"/>
+        <location filename="../src/gui/networksettings.ui" line="325"/>
         <source>Download bandwidth in kilobytes per second</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="322"/>
+        <location filename="../src/gui/networksettings.ui" line="369"/>
         <source>Upload Bandwidth</source>
         <translation>업로드 대역폭</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="259"/>
-        <location filename="../src/gui/networksettings.ui" line="341"/>
+        <location filename="../src/gui/networksettings.ui" line="306"/>
+        <location filename="../src/gui/networksettings.ui" line="388"/>
         <source>Limit automatically</source>
         <translation>자동 제한</translation>
     </message>
