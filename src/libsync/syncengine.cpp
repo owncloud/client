@@ -615,7 +615,7 @@ void SyncEngine::setNetworkLimits(int upload, int download)
                 _propagator->_bandwidthManager = new BandwidthManager(_propagator.data());
             }
         }
-        // this might set the limit to 0 but only the next sync will have no bandwithd manager set
+        // this might set the limit to 0 but only the next sync will have no bandwidth manager set
         if (_propagator->_bandwidthManager) {
             _propagator->_bandwidthManager->setCurrentDownloadLimit(download);
             _propagator->_bandwidthManager->setCurrentUploadLimit(upload);
