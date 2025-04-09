@@ -1257,62 +1257,62 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ھۆججەت قىسقۇچ ئۆچۈرۈلمەكچى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="646"/>
+        <location filename="../src/gui/folderman.cpp" line="647"/>
         <source> (backup)</source>
         <translation>(زاپاسلاش)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="651"/>
+        <location filename="../src/gui/folderman.cpp" line="652"/>
         <source> (backup %1)</source>
         <translation>(زاپاسلاش% 1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="705"/>
+        <location filename="../src/gui/folderman.cpp" line="706"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>ماس قەدەم مۇۋەپپەقىيەتلىك بولدى ، ھەل قىلىنمىغان زىددىيەتلەر.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="714"/>
+        <location filename="../src/gui/folderman.cpp" line="715"/>
         <source>%1 (Sync is paused)</source>
         <translation>% 1 (ماسقەدەملەش توختىتىلدى)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="746"/>
+        <location filename="../src/gui/folderman.cpp" line="747"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>«% 1» ھۆججەت قىسقۇچى ئاللىقاچان% 2 قوللىنىشچان پروگراممىدا ئىشلىتىلىپ بولدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="761"/>
+        <location filename="../src/gui/folderman.cpp" line="762"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ھۆججەت قىسقۇچى &apos;% 1&apos; ئاللىبۇرۇن باشقا ھېسابات تەرىپىدىن ئىشلىتىلگەن.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="776"/>
+        <location filename="../src/gui/folderman.cpp" line="777"/>
         <source>No valid folder selected!</source>
         <translation>ئىناۋەتلىك ھۆججەت قىسقۇچ تاللانمىدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="798"/>
+        <location filename="../src/gui/folderman.cpp" line="799"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدۇ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="840"/>
+        <location filename="../src/gui/folderman.cpp" line="841"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچنى ئۆز ئىچىگە ئالىدۇ. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="846"/>
+        <location filename="../src/gui/folderman.cpp" line="847"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك ھۆججەت قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچتا بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="854"/>
+        <location filename="../src/gui/folderman.cpp" line="855"/>
         <source>%1 Please pick another local folder!</source>
         <translation>% 1 باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="794"/>
+        <location filename="../src/gui/folderman.cpp" line="795"/>
         <source>The selected path does not exist!</source>
         <translation>تاللانغان يول مەۋجۇت ئەمەس!</translation>
     </message>
@@ -1322,22 +1322,22 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="804"/>
+        <location filename="../src/gui/folderman.cpp" line="805"/>
         <source>The selected path is not a folder!</source>
         <translation>تاللانغان يول ھۆججەت قىسقۇچ ئەمەس!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="808"/>
+        <location filename="../src/gui/folderman.cpp" line="809"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا يېزىش ھوقۇقىڭىز يوق!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="836"/>
+        <location filename="../src/gui/folderman.cpp" line="837"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>مۇلازىمېتىردىن بۇ يەرلىك ھۆججەت قىسقۇچقا ماسقەدەملەش بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="914"/>
+        <location filename="../src/gui/folderman.cpp" line="915"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -2242,57 +2242,57 @@ Note that using any logging command line options will override the settings.</so
         <translation>ھۆججەت ئىسمى مۇلازىمېتىردا قارا تىزىملىككە كىرگۈزۈلگەن.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="424"/>
+        <location filename="../src/libsync/discovery.cpp" line="423"/>
         <source>server reported no %1</source>
         <translation>مۇلازىمېتىر% 1 نى دوكلات قىلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1185"/>
+        <location filename="../src/libsync/discovery.cpp" line="1184"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: ئۇنىڭ يولى تاللانغانلىقى ئۈچۈن سەل قارىلىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1259"/>
+        <location filename="../src/libsync/discovery.cpp" line="1258"/>
         <source>Moved to invalid target, restoring</source>
         <translation>ئىناۋەتسىز نىشانغا يۆتكەلدى ، ئەسلىگە كەلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1272"/>
+        <location filename="../src/libsync/discovery.cpp" line="1271"/>
         <source>Not allowed to remove, restoring</source>
         <translation>چىقىرىۋېتىشكە ، ئەسلىگە كەلتۈرۈشكە بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1218"/>
+        <location filename="../src/libsync/discovery.cpp" line="1217"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>رۇخسەت قىلىنمايدۇ ، چۈنكى بۇ قىسقۇچقا تارماق ھۆججەت قىسقۇچ قوشۇشقا ئىجازەت يوق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="630"/>
+        <location filename="../src/libsync/discovery.cpp" line="629"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>ئىسمىنى ئۆزگەرتكەندە خاتالىق ، كونترول قىلىنمىغان ھالەت كودى:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1223"/>
+        <location filename="../src/libsync/discovery.cpp" line="1222"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>رۇخسەت قىلىنمايدۇ ، چۈنكى ئۇ ھۆججەت قىسقۇچقا ھۆججەت قوشۇش ھوقۇقىڭىز يوق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1236"/>
+        <location filename="../src/libsync/discovery.cpp" line="1235"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>بۇ ھۆججەتنى يۈكلەشكە بولمايدۇ ، چۈنكى ئۇ پەقەت مۇلازىمېتىردىلا ئوقۇلىدۇ ، ئەسلىگە كېلىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1382"/>
+        <location filename="../src/libsync/discovery.cpp" line="1381"/>
         <source>Error while reading the database</source>
         <translation>سانداننى ئوقۇغاندا خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1430"/>
+        <location filename="../src/libsync/discovery.cpp" line="1429"/>
         <source>This Space is currently unavailable</source>
         <translation>بۇ بوشلۇقنى ھازىر ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1451"/>
+        <location filename="../src/libsync/discovery.cpp" line="1450"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>مۇلازىمېتىر &apos;% 1&apos; مۇندەرىجىسىنى ئوقۇغاندا خاتالىق بىلەن جاۋاب بەردى:% 2</translation>
     </message>
