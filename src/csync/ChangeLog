@@ -83,7 +83,7 @@ version 0.90.0  (released 2013-09-04, ownCloud Client 1.4.0)
   * Many fixes found by a Coverity check.
   * Fix: use correct stat struct on all platforms
   * Fix: download resuming.
-  * ownCloud module: Bandwith limitation added.
+  * ownCloud module: Bandwidth limitation added.
   * Added ability to remove ignored files automatically.
   * Fix: Use int64_t and friends
   * Fix: Removed all compile warnings.
