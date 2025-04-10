@@ -1950,7 +1950,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Bandbreitenbeschränkungen sind veraltet und werden in einer zukünftigen Version entfernt!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
