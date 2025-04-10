@@ -47,19 +47,7 @@ using namespace std::chrono_literals;
 namespace {
 qsizetype numberOfSyncJournals(const QString &path)
 {
-    return QDir(path).entryList({ QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db") }, QDir::Hidden | QDir::Files).size();
-}
-
-QString makeLegacyDbName(const OCC::FolderDefinition &def, const OCC::AccountPtr &account)
-{
-    // ensure https://demo.owncloud.org/ matches https://demo.owncloud.org
-    // the empty path was the legacy formating before 2.9
-    auto legacyUrl = account->url();
-    if (legacyUrl.path() == QLatin1String("/")) {
-        legacyUrl.setPath(QString());
-    }
-    const QString key = QStringLiteral("%1@%2:%3").arg(account->credentials()->user(), legacyUrl.toString(), def.targetPath());
-    return OCC::SyncJournalDb::makeDbName(def.localPath(), QString::fromUtf8(QCryptographicHash::hash(key.toUtf8(), QCryptographicHash::Md5).left(6).toHex()));
+    return QDir(path).entryList({QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db")}, QDir::Hidden | QDir::Files).size();
 }
 }
 
@@ -187,8 +175,10 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
     }
     settings.endGroup(); // "Accounts"
 
-    scheduleAllFolders();
-    setSyncEnabled(true);
+    if (!_folders.empty()) {
+        scheduleAllFolders();
+        setSyncEnabled(true);
+    }
 
     Q_EMIT folderListChanged();
 
@@ -316,42 +306,19 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
 {
     bool migrationPerformed = false;
 
-    // if we would have booth the 2.9.0 file name and the lagacy file
-    // with the md5 infix we prefer the 2.9.0 version
-    QString defaultJournalPath;
-    const QDir info(folderDefinition.localPath());
-    QString defaultPath = SyncJournalDb::makeDbName(folderDefinition.localPath());
-    QString legacyPath = makeLegacyDbName(folderDefinition, account->account());
-
-    if (info.exists(defaultPath))
-        defaultJournalPath = defaultPath;
-    else if (info.exists(legacyPath))
-        defaultJournalPath = legacyPath;
-    // pre 2.6
-    else {
-        legacyPath.replace(QLatin1String(".sync_"), QLatin1String("._sync_"));
-        if (info.exists(legacyPath))
-            defaultJournalPath = legacyPath;
-    }
-
-    // Migration: Old settings don't have journalPath
+    // Migration: settings don't have journalPath - should not happen! but has with some qa tests.
+    // Refactoring todo: it should be safe to remove this after https://github.com/owncloud/client/issues/12136 has been resolved
+    // the todo's below should also be evaluated at that time.
     if (folderDefinition.journalPath().isEmpty()) {
-        folderDefinition.setJournalPath(defaultJournalPath);
-        migrationPerformed = true;
-    }
-
-    // Migration: ._ files sometimes can't be created.
-    // So if the configured journalPath has a dot-underscore ("._sync_*.db")
-    // but the current default doesn't have the underscore, switch to the
-    // new default if no db exists yet.
-    // LR - I think this should be an else if related to last if?
-    if (folderDefinition.journalPath().startsWith(QLatin1String("._sync_")) && defaultJournalPath.startsWith(QLatin1String(".sync_"))
-        && !QFile::exists(folderDefinition.absoluteJournalPath())) {
-        folderDefinition.setJournalPath(defaultJournalPath);
+        qCWarning(lcFolderMan) << "journalPath setting is missing from config for folder: " << folderDefinition.localPath();
+        QString defaultPath = SyncJournalDb::makeDbName(folderDefinition.localPath());
+        folderDefinition.setJournalPath(defaultPath);
         migrationPerformed = true;
     }
 
     // migration: 2.10 did not specify a WebDAV URL
+    // Refactoring todo: also investigate this one. It could be kept as a safety net too, but any of these magic fixes may hide
+    // other bugs or strange behavior so needs a deep think
     if (!folderDefinition.webDavUrl().isValid()) {
         folderDefinition.setWebDavUrl(account->account()->davUrl());
         migrationPerformed = true;
@@ -359,6 +326,8 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
 
     // Lisa tocheck: I moved this out of Folder::saveToSettings since it appears to be migration related so should be here, not there on
     // every save
+    // Refactoring todo: as above, the squish tests use dummy configs that do not contain space id's so for now we keep this
+    // as a safety net.
     if (account->supportsSpaces() && folderDefinition.spaceId().isEmpty()) {
         OC_DISABLE_DEPRECATED_WARNING
         if (auto *space = account->account()->spacesManager()->spaceByUrl(folderDefinition.webDavUrl())) {
