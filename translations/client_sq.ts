@@ -1952,7 +1952,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Kufijtë për gjerësi bande janë nxjerrë nga përdorimi dhe do të hiqen në një hedhje të ardhshme në qarkullim!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
