@@ -1951,7 +1951,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Ribalaiuse piirangud on aegunud ning eemaldatakse rakenduse tulevases väljalaskes!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
