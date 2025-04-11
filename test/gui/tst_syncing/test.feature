@@ -264,10 +264,13 @@ Feature: Syncing files
 
 
     Scenario: Verify pre existing folders in local (Desktop client) are copied over to the server
+        Given user "Alice" has set up a client with default settings
+        When the user quits the client
         Given user "Alice" has created a folder "Folder1" inside the sync folder
         And user "Alice" has created a folder "Folder1/subFolder1" inside the sync folder
         And user "Alice" has created a folder "Folder1/subFolder1/subFolder2" inside the sync folder
-        And user "Alice" has set up a client with default settings
+        When the user starts the client
+        And the user waits for folder "Folder1/subFolder1/subFolder2" to be synced
         Then as "Alice" folder "Folder1" should exist in the server
         And as "Alice" folder "Folder1/subFolder1" should exist in the server
         And as "Alice" folder "Folder1/subFolder1/subFolder2" should exist in the server
