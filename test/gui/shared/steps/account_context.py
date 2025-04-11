@@ -51,8 +51,6 @@ def step(context, username):
     account_details = get_client_details(
         [['server', '%local_server%'], ['user', username], ['password', password]]
     )
-    print("....................")
-    print(account_details)
     start_client()
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
