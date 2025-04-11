@@ -47,18 +47,17 @@ QString Vfs::underlyingFileName(const QString &fileName) const
 
 Vfs::~Vfs() = default;
 
-Optional<Vfs::Mode> Vfs::modeFromString(const QString &str)
+Vfs::Mode Vfs::modeFromString(const QString &str)
 {
     // Note: Strings are used for config and must be stable
     // keep in sync with: QString Utility::enumToString(Vfs::Mode mode)
-    if (str == QLatin1String("off")) {
-        return Off;
-    } else if (str == QLatin1String("suffix")) {
+    // which is defined BELOW
+    if (str == QLatin1String("suffix")) {
         return WithSuffix;
     } else if (str == QLatin1String("wincfapi")) {
         return WindowsCfApi;
     }
-    return {};
+    return Off;
 }
 
 template <>
@@ -72,9 +71,9 @@ QString Utility::enumToString(Vfs::Mode mode)
     case Vfs::Mode::WindowsCfApi:
         return QStringLiteral("wincfapi");
     case Vfs::Mode::Off:
+    default:
         return QStringLiteral("off");
     }
-    Q_UNREACHABLE();
 }
 
 Result<void, QString> Vfs::checkAvailability(const QString &path, Vfs::Mode mode)
@@ -242,7 +241,8 @@ Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
     } else if (isVfsPluginAvailable(Vfs::Off)) {
         return Vfs::Off;
     }
-    Q_UNREACHABLE();
+
+    return Vfs::Off;
 }
 
 std::unique_ptr<Vfs> OCC::VfsPluginManager::createVfsFromPlugin(Vfs::Mode mode) const

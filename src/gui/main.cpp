@@ -481,19 +481,11 @@ int main(int argc, char **argv)
             return -1;
         }
 
-        // Setup the folders. This includes a downgrade-detection, in which case the return value
-        // is empty. Note that the value 0 (zero) is a valid return value (non-empty), in which case
-        // the dialog is not shown.
-        if (!FolderMan::instance()->setupFolders().has_value()) {
-            // Empty return value: there was a downgrade detected on one of the databases
-            showDowngradeDialog();
-            return -1;
-        }
-
         auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
 
         QObject::connect(platform.get(), &Platform::requestAttention, ocApp->gui(), &ownCloudGui::slotShowSettings);
 
+        // Refactoring todo: convert lambda to function
         QObject::connect(&singleApplication, &KDSingleApplication::messageReceived, ocApp.get(), [&](const QByteArray &message) {
             const QString msg = QString::fromUtf8(message);
             qCInfo(lcMain) << Q_FUNC_INFO << msg;
@@ -521,10 +513,18 @@ int main(int argc, char **argv)
         }
 #endif
 
-        // Enable syncing. We cannot do this earlier, because the UI needs to be set up in order to
+
+        // We cannot do this earlier, because the UI needs to be set up in order to
         // show sync errors. We also want to wait for the auto-updater to finish, in case it needs
         // to install an update.
-        folderManager->setSyncEnabled(true);
+        // Setup the folders and start syncing. This includes a downgrade-detection, in which case the return value
+        // is empty. Note that the value 0 (zero) is a valid return value (non-empty), in which case
+        // the dialog is not shown.
+        if (!FolderMan::instance()->setupFoldersFromConfig().has_value()) {
+            // Empty return value: there was a downgrade detected on one of the databases
+            showDowngradeDialog();
+            return -1;
+        }
 
         if (options.show) {
             ocApp->gui()->slotShowSettings();

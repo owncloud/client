@@ -39,12 +39,14 @@ namespace TestUtils {
         return {OCC::AccountManager::instance()->addAccount(acc).get(), &TestUtilsPrivate::accountStateDeleter};
     }
 
+    // We have more than one of these?
     FolderDefinition createDummyFolderDefinition(const AccountPtr &account, const QString &path)
     {
         // TODO: legacy
         auto d = OCC::FolderDefinition::createNewFolderDefinition(account->davUrl(), {});
         d.setLocalPath(path);
         d.setTargetPath(path);
+        d.setJournalPath(SyncJournalDb::makeDbName(d.localPath()));
         return d;
     }
 

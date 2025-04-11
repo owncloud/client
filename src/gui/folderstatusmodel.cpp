@@ -186,7 +186,7 @@ FolderStatusModel::~FolderStatusModel() { }
 
 void FolderStatusModel::setAccountState(const AccountStatePtr &accountState)
 {
-    // Refactor todo: what is the logic here? I especially don't understand why we are expecting current _accountState to
+    // Refactoring todo: what is the logic here? I especially don't understand why we are expecting current _accountState to
     // be nullptr (via assert) when this is called.
     // if this ptr should only be set once:
     //      public setter must be removed

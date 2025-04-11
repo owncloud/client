@@ -35,7 +35,6 @@
 #include "setupwizardcontroller.h"
 #include "sharedialog.h"
 
-#include "libsync/graphapi/space.h"
 #include "libsync/graphapi/spacesmanager.h"
 
 #include "resources/resources.h"
@@ -50,63 +49,6 @@
 #endif
 
 using namespace std::chrono_literals;
-
-namespace {
-
-using namespace OCC;
-
-void setUpInitialSyncFolder(AccountStatePtr accountStatePtr, bool useVfs)
-{
-    auto folderMan = FolderMan::instance();
-
-    // saves a bit of duplicate code
-    auto addFolder = [folderMan, accountStatePtr, useVfs](const QString &localFolder, const QString &remotePath, const QUrl &davUrl,
-                         const QString &spaceId = {}, const QString &displayName = {}) {
-        auto def = FolderDefinition::createNewFolderDefinition(davUrl, spaceId, displayName);
-        def.setLocalPath(localFolder);
-        def.setTargetPath(remotePath);
-        return folderMan->addFolderFromWizard(accountStatePtr, std::move(def), useVfs);
-    };
-
-    auto finalize = [accountStatePtr] {
-        accountStatePtr->checkConnectivity();
-        FolderMan::instance()->setSyncEnabled(true);
-        FolderMan::instance()->scheduleAllFolders();
-    };
-
-    if (accountStatePtr->supportsSpaces()) {
-        QObject::connect(
-            accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, accountStatePtr,
-            [accountStatePtr, addFolder, finalize] {
-                auto spaces = accountStatePtr->account()->spacesManager()->spaces();
-                // we do not want to set up folder sync connections for disabled spaces (#10173)
-                spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
-
-                if (!spaces.isEmpty()) {
-                    const QString localDir(accountStatePtr->account()->defaultSyncRoot());
-                    FileSystem::setFolderMinimumPermissions(localDir);
-                    Folder::prepareFolder(localDir);
-                    Utility::setupFavLink(localDir);
-                    for (const auto *space : spaces) {
-                        const QString name = space->displayName();
-                        const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
-                            localDir, name, FolderMan::NewFolderType::SpacesFolder, accountStatePtr->account()->uuid());
-                        auto folder = addFolder(folderName, {}, QUrl(space->drive().getRoot().getWebDavUrl()), space->drive().getRoot().getId(), name);
-                        folder->setPriority(space->priority());
-                        // save the new priority
-                        folder->saveToSettings();
-                    }
-                    finalize();
-                }
-            },
-            Qt::SingleShotConnection);
-        accountStatePtr->account()->spacesManager()->checkReady();
-    } else {
-        addFolder(accountStatePtr->account()->defaultSyncRoot(), Theme::instance()->defaultServerFolder(), accountStatePtr->account()->davUrl());
-        finalize();
-    }
-}
-}
 
 namespace OCC {
 
@@ -126,6 +68,12 @@ ownCloudGui::ownCloudGui(Application *parent)
     // init systry
     slotComputeOverallSyncStatus();
     _tray->show();
+
+    // Refactoring todo: we have a very nasty habit of connecting to globally available managers, etc inside constructors or similar.
+    // this should only happen when we are dealing with a formal dependency: eg a dep passed by injection and kept as member,
+    // or a dep that is instantiated inside the class (also with a member kept)
+    // in cases like this one, the external deps should be instantiated externally and connected externally. This is normally part
+    // of an app building routine. The global singletons have to go and this is an important step to achieving that.
 
     ProgressDispatcher *pd = ProgressDispatcher::instance();
     connect(pd, &ProgressDispatcher::progressInfo, this,
@@ -834,10 +782,7 @@ void ownCloudGui::runNewAccountWizard()
         // we have to clean it up manually when finished() is emitted
         _wizardController = new Wizard::SetupWizardController(settingsDialog());
 
-        // while the wizard is shown, new syncs are disabled
-        FolderMan::instance()->setSyncEnabled(false);
-
-        connect(_wizardController, &Wizard::SetupWizardController::finished, ocApp(),
+        connect(_wizardController, &Wizard::SetupWizardController::finished, this,
             [this](AccountPtr newAccount, Wizard::SyncMode syncMode, const QVariantMap &dynamicRegistrationData) {
                 // note: while the wizard is shown, we disable the folder synchronization
                 // previously we could perform this just here, but now we have to postpone this depending on whether selective sync was chosen
@@ -856,7 +801,7 @@ void ownCloudGui::runNewAccountWizard()
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
 
                     QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(),
-                        [accountStatePtr, syncMode, dynamicRegistrationData](ConnectionValidator::Status status, const QStringList &) {
+                        [accountStatePtr, syncMode, dynamicRegistrationData, this](ConnectionValidator::Status status, const QStringList &) {
                             switch (status) {
                             // a server we no longer support but that might work
                             case ConnectionValidator::ServerVersionMismatch:
@@ -873,13 +818,16 @@ void ownCloudGui::runNewAccountWizard()
                                 }
 
                                 // the account is now ready, emulate a normal account loading and Q_EMIT that the credentials are ready
+                                // Refactoring todo: no. the account should emit this when it meets some internal state, not the gui controller!!!!
                                 Q_EMIT accountStatePtr->account()->credentialsFetched();
 
                                 switch (syncMode) {
                                 case Wizard::SyncMode::SyncEverything:
                                 case Wizard::SyncMode::UseVfs: {
                                     bool useVfs = syncMode == Wizard::SyncMode::UseVfs;
-                                    setUpInitialSyncFolder(accountStatePtr, useVfs);
+                                    // Refactoring example: don't handle complicated stuff locally, REQUEST that it be performed by some entity
+                                    // more properly responsible for the task
+                                    Q_EMIT requestSetUpSyncFoldersForAccount(accountStatePtr, useVfs);
                                     accountStatePtr->setSettingUp(false);
                                     break;
                                 }
@@ -891,29 +839,27 @@ void ownCloudGui::runNewAccountWizard()
 
                                     // TODO: duplication of AccountSettings
                                     // adapted from AccountSettings::slotFolderWizardAccepted()
-                                    connect(folderWizard, &QDialog::accepted, [accountStatePtr, folderWizard]() {
+                                    // Refactoring todo: the way to fix this is to have a single controller dedicated to the FolderWizard, which will handle
+                                    // signals from that gui regardless of where it's "installed".
+                                    connect(folderWizard, &QDialog::accepted, this, [accountStatePtr, folderWizard]() {
                                         FolderMan *folderMan = FolderMan::instance();
 
                                         qCInfo(lcApplication) << "Folder wizard completed";
-                                        const auto config = folderWizard->result();
+                                        auto config = folderWizard->result();
 
-                                        auto folder = folderMan->addFolderFromFolderWizardResult(accountStatePtr, config);
-
-                                        if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
-                                            folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
-
-                                            // The user already accepted the selective sync dialog. everything is in the white list
-                                            folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
+                                        // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
+                                        // originally in play here so...keep it just in case.
+                                        if (config.useVirtualFiles && !config.selectiveSyncBlackList.empty()) {
+                                            config.selectiveSyncBlackList.clear();
                                         }
 
-                                        folderMan->setSyncEnabled(true);
-                                        folderMan->scheduleAllFolders();
+                                        folderMan->addFolderFromGui(accountStatePtr, config);
+
                                         accountStatePtr->setSettingUp(false);
                                     });
 
                                     connect(folderWizard, &QDialog::rejected, [accountStatePtr]() {
                                         qCInfo(lcApplication) << "Folder wizard cancelled";
-                                        FolderMan::instance()->setSyncEnabled(true);
                                         accountStatePtr->setSettingUp(false);
                                     });
 
@@ -937,8 +883,6 @@ void ownCloudGui::runNewAccountWizard()
 
 
                     validator->checkServer();
-                } else {
-                    FolderMan::instance()->setSyncEnabled(true);
                 }
 
                 // make sure the wizard is cleaned up eventually

@@ -24,6 +24,7 @@
 #include "libsync/graphapi/jobs/drives.h"
 
 #include <QJsonArray>
+#include <QSettings>
 
 Q_LOGGING_CATEGORY(lcMigration, "gui.migration.spaces", QtInfoMsg)
 
@@ -38,6 +39,8 @@ SpaceMigration::SpaceMigration(const AccountStatePtr &account, const QString &pa
 
 void SpaceMigration::start()
 {
+    // Refactoring todo: this should never be called by anyone but the FolderMan. In fact this spaces migration thing should
+    // probably be managed by the folder man since it is responsible for other migration tasks, but at the moment it's managed by the AccountState
     FolderMan::instance()->setSyncEnabled(false);
 
     QJsonArray folders;
@@ -70,8 +73,16 @@ void SpaceMigration::start()
 void SpaceMigration::migrate(const QJsonObject &folders)
 {
     auto drivesJob = new GraphApi::Drives(_accountState->account(), this);
-    connect(drivesJob, &GraphApi::Drives::finishedSignal, [drivesJob, folders, this] {
+    // refactoring todo: clean up
+    connect(drivesJob, &GraphApi::Drives::finishedSignal, this, [drivesJob, folders, this] {
         const auto drives = drivesJob->drives();
+        // note this is going to sync when it goes out of scope. We do *not* want to
+        // sync after each folder def save as it's file access is a relatively expensive operation
+        // and it's overkill to do it every time, especially if there are loads of folders.
+        // concerning some case where it crashes mid-migration, I don't think there is any value
+        // at all in having some subset of the migration saved if it didn't finish successfully, is there?
+        auto settings = _accountState->settings();
+        settings->beginGroup(QStringLiteral("Folders"));
         for (auto &folder : _migrationFolders) {
             if (folder) {
                 const auto obj = folders.value(folder->remotePath()).toObject();
@@ -83,11 +94,14 @@ void SpaceMigration::migrate(const QJsonObject &folders)
                     const auto it = std::find_if(drives.cbegin(), drives.cend(), [space_id](auto it) { return it.getId() == space_id; });
 
                     if (it != drives.cend()) {
-                        qCDebug(lcMigration) << "Migrating:" << folder->path() << "davUrl:" << folder->_definition._webDavUrl << "->"
-                                             << it->getRoot().getWebDavUrl() << "remotPath:" << folder->_definition._targetPath << "->" << newPath;
-                        folder->_definition._webDavUrl = QUrl(it->getRoot().getWebDavUrl());
-                        folder->_definition._targetPath = newPath;
-                        folder->saveToSettings();
+                        qCDebug(lcMigration) << "Migrating:" << folder->path() << "davUrl:" << folder->_definition.webDavUrl() << "->"
+                                             << it->getRoot().getWebDavUrl() << "remotPath:" << folder->_definition.targetPath() << "->" << newPath;
+                        folder->_definition.setWebDavUrl(QUrl(it->getRoot().getWebDavUrl()));
+                        folder->_definition.setTargetPath(newPath);
+                        auto id = QString::fromUtf8(folder->_definition.id());
+                        settings->beginGroup(id);
+                        FolderDefinition::save(*(settings.get()), folder->definition());
+                        settings->endGroup();
                     }
                 } else {
                     qCInfo(lcMigration) << "No migration of" << folder->remotePath() << "reason:" << error;

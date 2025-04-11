@@ -239,6 +239,7 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
         }
 
         // HACK: Save http_user also as user
+        // Refactoring todo: is this still valid? I don't find uses of httpUserC() aside from this instance
         if (account->_settingsMap.contains(httpUserC()))
             settings->setValue(userC(), account->_settingsMap.value(httpUserC()));
     }
@@ -429,7 +430,7 @@ AccountStatePtr AccountManager::addAccountState(std::unique_ptr<AccountState> &&
     // this slot can't be connected until the account state exists because saveAccount uses the state
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
         // persis the account, not the credentials, we don't know whether they are ready yet
-        // Refactor todo: how about we make those two completely different saves? then we can ditch this lambda
+        // Refactoring todo: how about we make those two completely different saves? then we can ditch this lambda
         saveAccount(rawAccount, false);
     });
 

@@ -44,8 +44,6 @@ if (WITH_AUTO_UPDATER)
     owncloud_add_test(Updater)
 endif()
 
-owncloud_add_test(FolderMigration)
-
 owncloud_add_test(FolderWatcher)
 
 if( UNIX AND NOT APPLE )
