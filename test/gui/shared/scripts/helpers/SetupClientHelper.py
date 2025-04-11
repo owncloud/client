@@ -37,6 +37,8 @@ def get_client_details(details):
         'sync_folder': '',
         'oauth': False,
     }
+    print(".......................................................")
+    print(details)
     for row in details:
         row[1] = substitute_inline_codes(row[1])
         if row[0] == 'server':
