@@ -29,7 +29,7 @@ def substitute_inline_codes(value):
     return value
 
 
-def get_client_details(context):
+def get_client_details(details):
     client_details = {
         'server': '',
         'user': '',
@@ -37,7 +37,7 @@ def get_client_details(context):
         'sync_folder': '',
         'oauth': False,
     }
-    for row in context.table[0:]:
+    for row in details:
         row[1] = substitute_inline_codes(row[1])
         if row[0] == 'server':
             client_details.update({'server': row[1]})
