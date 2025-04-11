@@ -19,7 +19,7 @@ from helpers.ConfigHelper import get_config, is_windows, is_linux
 
 @When('the user adds the following user credentials:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     AccountConnectionWizard.add_user_credentials(
         account_details['user'], account_details['password']
     )
@@ -51,6 +51,8 @@ def step(context, username):
     account_details = get_client_details(
         [['server', '%local_server%'], ['user', username], ['password', password]]
     )
+    print("....................")
+    print(account_details)
     start_client()
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
@@ -93,7 +95,7 @@ def step(context):
 
 @When('the user adds the following account:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
     wait_for_initial_sync_to_complete(get_resource_path('/', account_details['user']))
@@ -101,7 +103,8 @@ def step(context):
 
 @Given('the user has entered the following account information:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
+    print(account_details)
     AccountConnectionWizard.add_account_information(account_details)
 
 
@@ -268,7 +271,7 @@ def step(context):
 
 @When('the user adds the following oauth2 account:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     account_details.update({'oauth': True})
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
