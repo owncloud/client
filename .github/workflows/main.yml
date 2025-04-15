@@ -28,6 +28,11 @@ jobs:
         fail-fast: true
         matrix:
             include:
+            - name: windows-cl-msvc2022-arm64
+              target: windows-cl-msvc2022-arm64
+              os: windows-11-arm
+              container:
+              useSonarCloud:
             - name: windows-cl-x86_64
               target: windows-cl-msvc2022-x86_64
               os: windows-latest
