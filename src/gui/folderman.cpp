@@ -313,13 +313,6 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
         migrationPerformed = true;
     }
 
-    // migration: 2.10 did not specify a WebDAV URL
-    // this is going away next commit
-    if (!folderDefinition.webDavUrl().isValid()) {
-        folderDefinition.setWebDavUrl(account->account()->davUrl());
-        migrationPerformed = true;
-    }
-
     // todo: #5
     if (account && account->supportsSpaces() && folderDefinition.spaceId().isEmpty()) {
         OC_DISABLE_DEPRECATED_WARNING

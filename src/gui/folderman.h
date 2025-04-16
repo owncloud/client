@@ -132,7 +132,7 @@ public:
     };
 
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
-    [[nodiscard]] static bool prepareFolder(const QString &folder);
+
 
     static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
 
@@ -377,13 +377,17 @@ private:
     explicit FolderMan();
 
     /**
+     * @brief prepareFolder sets up the folder with mac and windows specific operations
+     * @param folder path
+     * @return true if the folder path exists or can be successfully created
+     */
+    [[nodiscard]] static bool prepareFolder(const QString &folder);
+
+    /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
      * from some dynamic operation (eg folders from new account or via the gui add folder sync operations).
      * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
      */
-    // Lisa todo with Erik: what is this ref about returning null if SelectiveSync is used? I don't see that in the impl
-    // is it buried somewhere?
-    // also todo: discuss naming, I honestly could not come up with anything better, as this is exactly what it does
     Folder *addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
 
     /**

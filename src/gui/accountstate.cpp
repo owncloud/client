@@ -25,7 +25,6 @@
 #include "gui/networkinformation.h"
 #include "gui/quotainfo.h"
 #include "gui/settingsdialog.h"
-#include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
 
 #include "socketapi/socketapi.h"
@@ -488,18 +487,9 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
 
     if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
         if (status == ConnectionValidator::Connected) {
-            Q_ASSERT(_account->hasCapabilities());
-            if (_account->capabilities().migration().space_migration.enabled) {
-                auto statePtr = AccountManager::instance()->accountState(_account->uuid());
-                auto migration = new SpaceMigration(statePtr, _account->capabilities().migration().space_migration.endpoint, this);
-                connect(migration, &SpaceMigration::finished, this, [migration, this] {
-                    migration->deleteLater();
-                    setState(Connected);
-                });
-                migration->start();
-                return;
+            setState(Connected);
+            return;
             }
-        }
     }
     switch (status) {
     case ConnectionValidator::Connected:
