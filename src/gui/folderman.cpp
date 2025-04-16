@@ -148,7 +148,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 {
     setSyncEnabled(false);
 
-    // Refactoring todo: is this really necessary? Do we actually re-set up folders at any point? when?
+    // todo: #9
     unloadAndDeleteAllFolders();
 
     auto settings = ConfigFile::makeQSettings();
@@ -230,15 +230,11 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStateP
 void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs)
 {
     if (accountStatePtr->supportsSpaces()) {
-        // I'm not thrilled with this solution but it's *actually* a good use for a lambda, and it's also better than other
-        // options I considered to get the temp account state and useVfs in view.
         QObject::connect(accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, this,
             [this, accountStatePtr, useVfs] { loadSpacesWhenReady(accountStatePtr, useVfs); });
-        // this is questionable - basically if the spaces aren't ready it triggers "getting them ready" - there is no way to directly
-        // ask "are you ready?" - you have to call this function to get the ready signal, handled above
-        // also Refactoring todo: this checkReady call can quasi fail because the spaces manager doesn't know if the
-        // account state is "connected" or not, and it really should. Basically if the account is not sufficiently "available" this won't
-        // trigger the ready signal in the spaces manager, as hoped. The impl here is very weak and needs improvement.
+        // this is questionable - basically if the spaces aren't ready requesting "checkReady" triggers "getting them ready" - there is no way to directly
+        // ask "are you ready?" - in all cases you have to call this function to get the ready signal which is handled here
+        // todo: #10
         accountStatePtr->account()->spacesManager()->checkReady();
     } else {
         setSyncEnabled(false);
@@ -254,8 +250,7 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
     }
 
 
-    // Refactoring todo:  who is actually responsible for calling this? I see it all over the place and I really don't think it belongs here.
-    // should be part of the account connection routine not loading folders
+    // todo: #11
     accountStatePtr->checkConnectivity();
 }
 
@@ -278,10 +273,14 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
         QSettings settings = ConfigFile::makeQSettings();
         settings.beginGroup("Accounts");
 
+        // prepare the root - reality check this as I think the user can change this from default?
         const QString localDir(spacesMgr->account()->defaultSyncRoot());
-        FileSystem::setFolderMinimumPermissions(localDir);
-        Folder::prepareFolder(localDir);
+        if (!prepareFolder(localDir)) {
+            return;
+        }
+
         Utility::setupFavLink(localDir);
+
         for (const auto *space : std::as_const(spaces)) {
             FolderDefinition folderDef = FolderDefinition::createNewFolderDefinition(
                 QUrl(space->drive().getRoot().getWebDavUrl()), space->drive().getRoot().getId(), space->displayName());
@@ -306,9 +305,7 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
 {
     bool migrationPerformed = false;
 
-    // Migration: settings don't have journalPath - should not happen! but has with some qa tests.
-    // Refactoring todo: it should be safe to remove this after https://github.com/owncloud/client/issues/12136 has been resolved
-    // the todo's below should also be evaluated at that time.
+    // todo: #5
     if (folderDefinition.journalPath().isEmpty()) {
         qCWarning(lcFolderMan) << "journalPath setting is missing from config for folder: " << folderDefinition.localPath();
         QString defaultPath = SyncJournalDb::makeDbName(folderDefinition.localPath());
@@ -317,18 +314,14 @@ bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, Acco
     }
 
     // migration: 2.10 did not specify a WebDAV URL
-    // Refactoring todo: also investigate this one. It could be kept as a safety net too, but any of these magic fixes may hide
-    // other bugs or strange behavior so needs a deep think
+    // this is going away next commit
     if (!folderDefinition.webDavUrl().isValid()) {
         folderDefinition.setWebDavUrl(account->account()->davUrl());
         migrationPerformed = true;
     }
 
-    // Lisa tocheck: I moved this out of Folder::saveToSettings since it appears to be migration related so should be here, not there on
-    // every save
-    // Refactoring todo: as above, the squish tests use dummy configs that do not contain space id's so for now we keep this
-    // as a safety net.
-    if (account->supportsSpaces() && folderDefinition.spaceId().isEmpty()) {
+    // todo: #5
+    if (account && account->supportsSpaces() && folderDefinition.spaceId().isEmpty()) {
         OC_DISABLE_DEPRECATED_WARNING
         if (auto *space = account->account()->spacesManager()->spaceByUrl(folderDefinition.webDavUrl())) {
             OC_ENABLE_DEPRECATED_WARNING
@@ -484,10 +477,7 @@ void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
     settings.beginGroup(accountGroup);
     QList<Folder *> foldersToRemove;
     // reserve a magic number
-    // Refactoring todo: folder management would likely be a lot simpler and more efficient if we kept
-    // the folders in a hash or similar to make folder lookups by id simpler.
-    // We could solve the problem below by simply keeping a list of ids per account
-    // this magic number thing is not healthy
+    // todo: #6
     foldersToRemove.reserve(16);
     for (auto *folder : std::as_const(_folders)) {
         if (folder->accountState() == accountState) {
@@ -1001,23 +991,18 @@ QString FolderMan::findGoodPathForNewSyncFolder(
     return canonicalPath(normalisedPath);
 }
 
+// todo: #7
 bool FolderMan::ignoreHiddenFiles() const
 {
     if (_folders.empty()) {
         return true;
     }
-    // Refactoring todo: make this a var on FolderMan
     return _folders.first()->ignoreHiddenFiles();
 }
 
+// todo: #7
 void FolderMan::setIgnoreHiddenFiles(bool ignore)
 {
-    // Refactoring todo: this is crazy to save this val on each folder
-    // it's a global setting so we should treat it this way.
-    // create a member for folder manager, and save it ONCE, not on each folder.
-    // the val also needs to be passed to the engine as that is where it's actually used,
-    // but saving it in the Folder and FolderDescription is complete overkill
-
     // Note that the setting will revert to 'true' if all folders
     // are deleted...
     QSettings settings = ConfigFile::makeQSettings();
@@ -1025,13 +1010,6 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     for (auto *folder : std::as_const(_folders)) {
         if (folder->ignoreHiddenFiles() != ignore) {
             folder->setIgnoreHiddenFiles(ignore);
-            // Refactoring todo: this is a lot of trouble. But unfortunately since we didn't get the change in for 6.0 first issue
-            // we will have to live with this a bit longer.
-            // That means When we fully fix it, it needs to be added to folder migration.
-            // possible solution: we move the setting to folderMan in general. Forward migration = remove the folder settings
-            // for this param and store one of the folder vals to the general config settings which the folder man will use.
-            // If/when user wants to "downgrade" to previous version, the migration step can put the vals back into the
-            // folder config settings?
             saveFolder(folder, settings);
         }
     }
@@ -1112,14 +1090,13 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
         qCWarning(lcFolderMan) << "Failed to create local sync folder!";
     }
 
-    // Refactoring todo: this should probably be a simple folderAdded signal instead of the heavy FolderListChanged
-    // leave the folderListChanged for large operations like loading folders from config or from new account
+    // todo: #8 - emit folderAdded
     Q_EMIT folderListChanged();
 
     return newFolder;
 }
 
-// Refactoring todo: investigate whether it makes sense to just use a FolderDefinition in the gui instead of this SyncConnectionDescription
+// todo: #1
 void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &description)
 {
     setSyncEnabled(false);
@@ -1154,9 +1131,7 @@ bool FolderMan::prepareFolder(const QString &folder)
         if (!OC_ENSURE(QDir().mkpath(folder))) {
             return false;
         }
-        // Refactoring todo: consider renaming these or maybe better, merge them into one function that handles "prepareFolder" in full.
-        // it appears these are always called together so to avoid errors, just roll it into one routine?
-        // this is for mac
+        // mac only
         FileSystem::setFolderMinimumPermissions(folder);
         // this is for windows - it sets up a desktop.ini file to handle the icon and deals with persmissions.
         Folder::prepareFolder(folder);

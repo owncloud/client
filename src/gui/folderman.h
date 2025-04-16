@@ -313,15 +313,11 @@ public:
      *
      * this handler also saves the new folder def that is created by user request
      */
-    // Refactoring todo: try to replace the SyncConnectionDescription with FolderDefinition if reasonable
-    // also replace hard calls to this from the gui with signal to request to add the new folder and use this as a slot, roughly.
+    // todo: #1
+    // todo: #2
     void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
 
-    // Refactoring todo: this is temporarily public - it should eventually be private once we have refactored accountSettings remove
-    // folder sync to be a signal/request instead of a local impl which calls directly into FolderMan
-    // In fact all of the folder persistence stuff should be handled by a third party persistence component that listens for relevant folder changes.
-    // That is a long way off, unfortunately, but at least we can collect all of that
-    // behavior here in the FolderMan to ensure it's done as efficiently as possible
+    // todo: #3
     void removeFolderSettings(Folder *folder);
 
 Q_SIGNALS:
