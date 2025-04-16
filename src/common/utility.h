@@ -49,6 +49,11 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
  */
     namespace Utility
 {
+    /**
+     * @brief setupFavLink is a mac only impl that is defined in utility_mac.mm
+     * It's a noop on windows.
+     * @param folder is the folder path you want to add the fav link to
+     */
     OCSYNC_EXPORT void setupFavLink(const QString &folder);
     OCSYNC_EXPORT QString octetsToString(qint64 octets);
     OCSYNC_EXPORT QByteArray userAgentString();
