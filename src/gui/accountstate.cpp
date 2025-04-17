@@ -14,7 +14,6 @@
 
 #include "accountstate.h"
 #include "account.h"
-#include "accountmanager.h"
 #include "application.h"
 #include "configfile.h"
 #include "fetchserversettings.h"
@@ -90,20 +89,62 @@ AccountState::AccountState(AccountPtr account)
     qRegisterMetaType<AccountState *>("AccountState*");
 
     connectAccount();
+    connectNetworkInformation();
 
-    // What is this about? Why do we have two dup sets of connections, one explicitly queued, one not?
-    connect(account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog);
-    connect(this, &AccountState::urlUpdated, this, [this] {
-        checkConnectivity(false);
+    if (NetworkInformation::instance()->isBehindCaptivePortal()) {
+        _queueGuard.block();
+    }
+
+    // as a fallback and to recover after server issues we also poll
+    auto timer = new QTimer(this);
+    timer->setInterval(ConnectionValidator::DefaultCallingInterval);
+    connect(timer, &QTimer::timeout, this, [this] { checkConnectivity(false); });
+    timer->start();
+
+    connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
+        setState(State::SignedOut);
     });
 
-    connect(account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog, Qt::QueuedConnection);
-    connect(
-        this, &AccountState::urlUpdated, this, [this] {
-            checkConnectivity(false);
-        },
-        Qt::QueuedConnection);
+    if (FolderMan::instance()) {
+        FolderMan::instance()->socketApi()->registerAccount(account);
+    }
+}
 
+AccountState::~AccountState()
+{
+    resetConnectionValidator();
+    // disconnect NetworkInformation
+    // do we also need to disconnect the account, since it's shared? no idea. I hate this stuff
+}
+
+void AccountState::connectAccount()
+{
+    if (!_account) {
+        qCWarning(lcAccountState) << "Account pointer is null when trying to set up AccountState";
+        return;
+    }
+    connect(_account.data(), &Account::invalidCredentials, this, &AccountState::slotInvalidCredentials);
+    connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
+    connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
+    connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
+
+    // todo: #14 Erik is going to take this one
+    connect(_account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog);
+    connect(this, &AccountState::urlUpdated, this, [this] { checkConnectivity(false); });
+
+    connect(_account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog, Qt::QueuedConnection);
+    connect(this, &AccountState::urlUpdated, this, [this] { checkConnectivity(false); }, Qt::QueuedConnection);
+
+    connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->gui()->settingsDialog());
+        msgBox->setAttribute(Qt::WA_DeleteOnClose);
+        ownCloudGui::raise();
+        msgBox->open();
+    });
+}
+
+void AccountState::connectNetworkInformation()
+{
     connect(NetworkInformation::instance(), &NetworkInformation::reachabilityChanged, this, [this](NetworkInformation::Reachability reachability) {
         switch (reachability) {
         case NetworkInformation::Reachability::Online:
@@ -160,52 +201,7 @@ AccountState::AccountState(AccountPtr account)
         // todo: #11, #12
         QTimer::singleShot(0, this, [this] { checkConnectivity(false); });
     });
-    if (NetworkInformation::instance()->isBehindCaptivePortal()) {
-        _queueGuard.block();
-    }
-
-    // as a fallback and to recover after server issues we also poll
-    auto timer = new QTimer(this);
-    timer->setInterval(ConnectionValidator::DefaultCallingInterval);
-    connect(timer, &QTimer::timeout, this, [this] { checkConnectivity(false); });
-    timer->start();
-
-    connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
-        setState(State::SignedOut);
-    });
-
-    if (FolderMan::instance()) {
-        FolderMan::instance()->socketApi()->registerAccount(account);
-    }
-
-    connect(account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->gui()->settingsDialog());
-        msgBox->setAttribute(Qt::WA_DeleteOnClose);
-        ownCloudGui::raise();
-        msgBox->open();
-    });
 }
-
-AccountState::~AccountState()
-{
-    resetConnectionValidator();
-    // disconnect NetworkInformation
-    // do we also need to disconnect the account, since it's shared? no idea. I hate this stuff
-}
-
-void AccountState::connectAccount()
-{
-    if (!_account) {
-        qCWarning(lcAccountState) << "Account pointer is null when trying to set up AccountState";
-        return;
-    }
-    connect(_account.data(), &Account::invalidCredentials, this, &AccountState::slotInvalidCredentials);
-    connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
-    connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
-    connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
-}
-
-void AccountState::connectNetworkInformation() { }
 
 std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
 {
@@ -349,6 +345,7 @@ void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)
 
 void AccountState::checkConnectivity(bool blockJobs)
 {
+    //>>>>> These are all pre-checks that may effectively cancel the check
     if (isSignedOut() || _waitingForNewCredentials) {
         return;
     }
@@ -360,8 +357,6 @@ void AccountState::checkConnectivity(bool blockJobs)
         qCDebug(lcAccountState) << "Skip checkConnectivity, waiting for tls dialog";
         return;
     }
-
-
     if (_connectionValidator && blockJobs && !_queueGuard.queue()->isBlocked()) {
         // abort already running non blocking validator
         resetConnectionValidator();
@@ -372,6 +367,7 @@ void AccountState::checkConnectivity(bool blockJobs)
         return;
     }
 
+    // >>>>> beginning here are pre-check updates (or so)
     // If we never fetched credentials, do that now - otherwise connection attempts
     // make little sense.
     if (!account()->credentials()->wasFetched()) {
@@ -397,10 +393,12 @@ void AccountState::checkConnectivity(bool blockJobs)
         _queueGuard.block();
     }
 
+    // >>>>>>>> here we setup the ConnectionValidator
     // todo: #13
-    _connectionValidator = new ConnectionValidator(account());
-    connect(_connectionValidator, &ConnectionValidator::connectionResult,
-        this, &AccountState::slotConnectionValidatorResult);
+    // setupNewConnectionValidator();
+
+    _connectionValidator = new ConnectionValidator(_account);
+    connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
 
     connect(_connectionValidator, &ConnectionValidator::sslErrors, this, [blockJobs, this](const QList<QSslError> &errors) {
         if (NetworkInformation::instance()->isBehindCaptivePortal()) {
@@ -426,15 +424,15 @@ void AccountState::checkConnectivity(bool blockJobs)
                     }
                     checkConnectivity(blockJobs);
                 });
-                connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() {
-                    setState(SignedOut);
-                });
+                connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() { setState(SignedOut); });
 
                 ownCloudGui::raise();
                 _tlsDialog->open();
             }
         }
     });
+
+    // >>>>> do some configuration related to the new validator
     ConnectionValidator::ValidationMode mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
     if (isConnected()) {
         // Use a small authed propfind as a minimal ping when we're
@@ -454,6 +452,7 @@ void AccountState::checkConnectivity(bool blockJobs)
             mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
         }
     }
+    // >>>>> and FINALLY we start the check
     _connectionValidator->checkServer(mode);
 }
 
@@ -466,8 +465,55 @@ void AccountState::resetConnectionValidator()
         soonToDie->deleteLater();
     }
 }
+
+void AccountState::setupNewConnectionValidator()
+{
+    Q_ASSERT(_account);
+    Q_ASSERT(!_connectionValidator);
+
+    /* _connectionValidator = new ConnectionValidator(_account);
+     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
+
+     connect(_connectionValidator, &ConnectionValidator::sslErrors, this, [blockJobs, this](const QList<QSslError> &errors) {
+         if (NetworkInformation::instance()->isBehindCaptivePortal()) {
+             return;
+         }
+         if (!_tlsDialog) {
+             // ignore errors for already accepted certificates
+             auto filteredErrors = _account->accessManager()->filterSslErrors(errors);
+             if (!filteredErrors.isEmpty()) {
+                 _tlsDialog = new TlsErrorDialog(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
+                 _tlsDialog->setAttribute(Qt::WA_DeleteOnClose);
+                 QSet<QSslCertificate> certs;
+                 certs.reserve(filteredErrors.size());
+                 for (const auto &error : std::as_const(filteredErrors)) {
+                     certs << error.certificate();
+                 }
+                 connect(_tlsDialog, &TlsErrorDialog::accepted, _tlsDialog, [certs, blockJobs, this]() {
+                     _account->addApprovedCerts(certs);
+                     _tlsDialog.clear();
+                     // force a new _connectionValidator
+                     if (_connectionValidator) {
+                         resetConnectionValidator();
+                     }
+                     checkConnectivity(blockJobs);
+                 });
+                 connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() { setState(SignedOut); });
+
+                 ownCloudGui::raise();
+                 _tlsDialog->open();
+             }
+         }
+     });
+  */
+}
+
 void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors)
 {
+    // the ConnectionValidator used to delete itself which was really not healthy.
+    // that was removed so now we are *fully* responsible and also able to safely clean the pointer up
+    resetConnectionValidator();
+
     if (isSignedOut()) {
         qCWarning(lcAccountState) << "Signed out, ignoring" << status << _account->url().toString();
         return;
@@ -478,7 +524,6 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         // this code should only be needed when upgrading from a < 3.0 release where capabilities where not cached
         // The last check was _waitingForNewCredentials = true so we only checked ValidateServer
         // now check again and fetch capabilities
-        resetConnectionValidator();
         checkConnectivity();
         return;
     }

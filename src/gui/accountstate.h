@@ -199,6 +199,7 @@ private:
 
     ConnectionValidator *_connectionValidator;
     void resetConnectionValidator();
+    void setupNewConnectionValidator();
 
     void connectAccount();
     void connectNetworkInformation();
