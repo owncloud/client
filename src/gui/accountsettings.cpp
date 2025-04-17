@@ -348,15 +348,10 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            // Refactoring todo: this should just emit a signal to request removing the folder - let the FolderMan do the right stuff
+            // todo: #3
             FolderMan::instance()->removeFolderSettings(folder);
             FolderMan::instance()->removeFolderSync(folder);
-            // Refactoring todo: I don't understand why this is called when a folder is removed as the slot seems to be more
-            // geared to loading/adding newly discovered spaces *when the spaces manager notifies something has changed*
-            // instead we seem to "conveniently" recycle the meaning of the handler to cover other changes as well.
-            // also, I *really* don't understand why we are using a single shot timer to "schedule" this in the main event
-            // loop when we are already in the main event loop aren't we (ie we are IN a gui slot already)? I am seeing this
-            // a lot and so far have no explanation as to what the reason or intent is.
+            // todo:#4
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
     });

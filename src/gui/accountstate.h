@@ -214,9 +214,9 @@ private:
     QuotaInfo *_quotaInfo = nullptr;
 
     QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
+
     void resetConnectionValidator();
 
-    friend class SpaceMigration;
 };
 }
 

@@ -80,8 +80,6 @@ set(client_SRCS
     models/models.cpp
     models/protocolitemmodel.cpp
 
-    spacemigration.cpp
-
     scheduling/syncscheduler.cpp
     scheduling/etagwatcher.cpp
 

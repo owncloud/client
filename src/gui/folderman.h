@@ -132,7 +132,7 @@ public:
     };
 
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
-    [[nodiscard]] static bool prepareFolder(const QString &folder);
+
 
     static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
 
@@ -313,15 +313,11 @@ public:
      *
      * this handler also saves the new folder def that is created by user request
      */
-    // Refactoring todo: try to replace the SyncConnectionDescription with FolderDefinition if reasonable
-    // also replace hard calls to this from the gui with signal to request to add the new folder and use this as a slot, roughly.
+    // todo: #1
+    // todo: #2
     void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
 
-    // Refactoring todo: this is temporarily public - it should eventually be private once we have refactored accountSettings remove
-    // folder sync to be a signal/request instead of a local impl which calls directly into FolderMan
-    // In fact all of the folder persistence stuff should be handled by a third party persistence component that listens for relevant folder changes.
-    // That is a long way off, unfortunately, but at least we can collect all of that
-    // behavior here in the FolderMan to ensure it's done as efficiently as possible
+    // todo: #3
     void removeFolderSettings(Folder *folder);
 
 Q_SIGNALS:
@@ -381,13 +377,17 @@ private:
     explicit FolderMan();
 
     /**
+     * @brief prepareFolder sets up the folder with mac and windows specific operations
+     * @param folder path
+     * @return true if the folder path exists or can be successfully created
+     */
+    [[nodiscard]] static bool prepareFolder(const QString &folder);
+
+    /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
      * from some dynamic operation (eg folders from new account or via the gui add folder sync operations).
      * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
      */
-    // Lisa todo with Erik: what is this ref about returning null if SelectiveSync is used? I don't see that in the impl
-    // is it buried somewhere?
-    // also todo: discuss naming, I honestly could not come up with anything better, as this is exactly what it does
     Folder *addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
 
     /**
