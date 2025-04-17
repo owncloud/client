@@ -220,7 +220,6 @@ private:
 
     QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
 
-    friend class SpaceMigration;
 };
 }
 

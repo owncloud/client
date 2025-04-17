@@ -25,7 +25,6 @@
 #include "gui/networkinformation.h"
 #include "gui/quotainfo.h"
 #include "gui/settingsdialog.h"
-#include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
 
 #include "socketapi/socketapi.h"
@@ -90,20 +89,14 @@ AccountState::AccountState(AccountPtr account)
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
-    connect(account.data(), &Account::invalidCredentials,
-        this, &AccountState::slotInvalidCredentials);
-    connect(account.data(), &Account::credentialsFetched,
-        this, &AccountState::slotCredentialsFetched);
-    connect(account.data(), &Account::credentialsAsked,
-        this, &AccountState::slotCredentialsAsked);
-    connect(account.data(), &Account::unknownConnectionState,
-        this, [this] {
-            checkConnectivity(true);
-        });
+    connectAccount();
+
+    // What is this about? Why do we have two dup sets of connections, one explicitly queued, one not?
     connect(account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog);
     connect(this, &AccountState::urlUpdated, this, [this] {
         checkConnectivity(false);
     });
+
     connect(account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog, Qt::QueuedConnection);
     connect(
         this, &AccountState::urlUpdated, this, [this] {
@@ -144,6 +137,7 @@ AccountState::AccountState(AccountPtr account)
         }
     });
 
+    // todo: #12
     connect(NetworkInformation::instance(), &NetworkInformation::isBehindCaptivePortalChanged, this, [this](bool onoff) {
         if (onoff) {
             // Block jobs from starting: they will fail because of the captive portal.
@@ -163,6 +157,7 @@ AccountState::AccountState(AccountPtr account)
         // would become the `verifyServerState` argument to `checkConnectivity`.
         // The call is also made for when we "go behind" a captive portal. That ensures that not
         // only the status is set to `Connecting`, but also makes the UI show that syncing is paused.
+        // todo: #11, #12
         QTimer::singleShot(0, this, [this] { checkConnectivity(false); });
     });
     if (NetworkInformation::instance()->isBehindCaptivePortal()) {
@@ -198,7 +193,17 @@ AccountState::~AccountState()
     // do we also need to disconnect the account, since it's shared? no idea. I hate this stuff
 }
 
-void AccountState::connectAccount() { }
+void AccountState::connectAccount()
+{
+    if (!_account) {
+        qCWarning(lcAccountState) << "Account pointer is null when trying to set up AccountState";
+        return;
+    }
+    connect(_account.data(), &Account::invalidCredentials, this, &AccountState::slotInvalidCredentials);
+    connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
+    connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
+    connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
+}
 
 void AccountState::connectNetworkInformation() { }
 
@@ -473,8 +478,7 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         // this code should only be needed when upgrading from a < 3.0 release where capabilities where not cached
         // The last check was _waitingForNewCredentials = true so we only checked ValidateServer
         // now check again and fetch capabilities
-        _connectionValidator->deleteLater();
-        _connectionValidator.clear();
+        resetConnectionValidator();
         checkConnectivity();
         return;
     }
@@ -504,21 +508,6 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
     }
     _connectionErrors = errors;
 
-    if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
-        if (status == ConnectionValidator::Connected) {
-            Q_ASSERT(_account->hasCapabilities());
-            if (_account->capabilities().migration().space_migration.enabled) {
-                auto statePtr = AccountManager::instance()->accountState(_account->uuid());
-                auto migration = new SpaceMigration(statePtr, _account->capabilities().migration().space_migration.endpoint, this);
-                connect(migration, &SpaceMigration::finished, this, [migration, this] {
-                    migration->deleteLater();
-                    setState(Connected);
-                });
-                migration->start();
-                return;
-            }
-        }
-    }
     switch (status) {
     case ConnectionValidator::Connected:
         setState(Connected);
@@ -612,8 +601,7 @@ void AccountState::slotCredentialsAsked()
     if (_connectionValidator) {
         // When new credentials become available we always want to restart the
         // connection validation, even if it's currently running.
-        _connectionValidator->deleteLater();
-        _connectionValidator.clear();
+        resetConnectionValidator();
     }
 
     checkConnectivity();

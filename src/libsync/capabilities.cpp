@@ -32,7 +32,6 @@ Capabilities::Capabilities(const QUrl &url, const QVariantMap &capabilities)
     , _appProviders(AppProviders::findVersion(
           url, _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("app_providers")).toList(), QVersionNumber({1, 1, 0})))
     , _filesSharing(_fileSharingCapabilities)
-    , _migration(_capabilities.value(QStringLiteral("migration")).toMap())
 {
 }
 
@@ -345,18 +344,6 @@ const FilesSharing &Capabilities::filesSharing() const
 FilesSharing::FilesSharing(const QVariantMap &filesSharing)
     : sharing_roles(filesSharing.value(QStringLiteral("sharing_roles"), false).toBool())
 {
-}
-
-OCC::Migration::Migration(const QVariantMap &data)
-{
-    const auto spaces = data.value(QStringLiteral("space_migration")).toMap();
-    space_migration.enabled = spaces.value(QStringLiteral("enabled")).toBool();
-    space_migration.endpoint = spaces.value(QStringLiteral("endpoint")).toString();
-}
-
-const Migration &Capabilities::migration() const
-{
-    return _migration;
 }
 
 } // namespace OCC
