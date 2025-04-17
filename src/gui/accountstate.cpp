@@ -353,7 +353,7 @@ void AccountState::checkConnectivity(bool blockJobs)
         _connectionValidator->deleteLater();
         _connectionValidator.clear();
     }
-    if (_connectionValidator) {
+    if (_connectionValidator != nullptr) {
         qCWarning(lcAccountState) << "ConnectionValidator already running, ignoring" << account()->displayNameWithHost()
                                   << "Queue is blocked:" << _queueGuard.queue()->isBlocked();
         return;
@@ -383,8 +383,8 @@ void AccountState::checkConnectivity(bool blockJobs)
     if (blockJobs) {
         _queueGuard.block();
     }
-    // Q_ASSERT(_connectionValidator == nullptr);
 
+    // todo: #13
     _connectionValidator = new ConnectionValidator(account());
     connect(_connectionValidator, &ConnectionValidator::connectionResult,
         this, &AccountState::slotConnectionValidatorResult);
@@ -445,6 +445,15 @@ void AccountState::checkConnectivity(bool blockJobs)
     _connectionValidator->checkServer(mode);
 }
 
+void AccountState::resetConnectionValidator()
+{
+    if (_connectionValidator) {
+        // we should look at this to be really sure deleteLater is required.
+        ConnectionValidator *soonToDie = _connectionValidator;
+        _connectionValidator = nullptr;
+        soonToDie->deleteLater();
+    }
+}
 void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors)
 {
     if (isSignedOut()) {
