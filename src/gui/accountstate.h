@@ -214,8 +214,6 @@ private:
     QuotaInfo *_quotaInfo = nullptr;
 
     QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
-
-    friend class SpaceMigration;
 };
 }
 

@@ -25,7 +25,6 @@
 #include "gui/networkinformation.h"
 #include "gui/quotainfo.h"
 #include "gui/settingsdialog.h"
-#include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
 
 #include "socketapi/socketapi.h"
@@ -143,6 +142,7 @@ AccountState::AccountState(AccountPtr account)
         }
     });
 
+    // todo: #12
     connect(NetworkInformation::instance(), &NetworkInformation::isBehindCaptivePortalChanged, this, [this](bool onoff) {
         if (onoff) {
             // Block jobs from starting: they will fail because of the captive portal.
@@ -162,6 +162,7 @@ AccountState::AccountState(AccountPtr account)
         // would become the `verifyServerState` argument to `checkConnectivity`.
         // The call is also made for when we "go behind" a captive portal. That ensures that not
         // only the status is set to `Connecting`, but also makes the UI show that syncing is paused.
+        // todo: #11, #12
         QTimer::singleShot(0, this, [this] { checkConnectivity(false); });
     });
     if (NetworkInformation::instance()->isBehindCaptivePortal()) {
@@ -486,21 +487,6 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
     }
     _connectionErrors = errors;
 
-    if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
-        if (status == ConnectionValidator::Connected) {
-            Q_ASSERT(_account->hasCapabilities());
-            if (_account->capabilities().migration().space_migration.enabled) {
-                auto statePtr = AccountManager::instance()->accountState(_account->uuid());
-                auto migration = new SpaceMigration(statePtr, _account->capabilities().migration().space_migration.endpoint, this);
-                connect(migration, &SpaceMigration::finished, this, [migration, this] {
-                    migration->deleteLater();
-                    setState(Connected);
-                });
-                migration->start();
-                return;
-            }
-        }
-    }
     switch (status) {
     case ConnectionValidator::Connected:
         setState(Connected);
