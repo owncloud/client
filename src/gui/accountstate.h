@@ -192,12 +192,17 @@ private:
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
-    QPointer<ConnectionValidator> _connectionValidator;
     QPointer<UpdateUrlDialog> _updateUrlDialog;
     QPointer<TlsErrorDialog> _tlsDialog;
     bool _supportsSpaces = true;
-
     bool _settingUp = false;
+
+    ConnectionValidator *_connectionValidator;
+    void resetConnectionValidator();
+
+    void connectAccount();
+    void connectNetworkInformation();
+
 
     /**
      * Starts counting when the server starts being back up after 503 or
@@ -214,7 +219,6 @@ private:
     QuotaInfo *_quotaInfo = nullptr;
 
     QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
-    void resetConnectionValidator();
 
     friend class SpaceMigration;
 };

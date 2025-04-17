@@ -85,6 +85,7 @@ AccountState::AccountState(AccountPtr account)
     , _state(AccountState::Disconnected)
     , _connectionStatus(ConnectionValidator::Undefined)
     , _waitingForNewCredentials(false)
+    , _connectionValidator(nullptr)
     , _maintenanceToConnectedDelay(1min + minutes(QRandomGenerator::global()->generate() % 4)) // 1-5min delay
 {
     qRegisterMetaType<AccountState *>("AccountState*");
@@ -190,7 +191,16 @@ AccountState::AccountState(AccountPtr account)
     });
 }
 
-AccountState::~AccountState() { }
+AccountState::~AccountState()
+{
+    resetConnectionValidator();
+    // disconnect NetworkInformation
+    // do we also need to disconnect the account, since it's shared? no idea. I hate this stuff
+}
+
+void AccountState::connectAccount() { }
+
+void AccountState::connectNetworkInformation() { }
 
 std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
 {
@@ -258,8 +268,7 @@ void AccountState::setState(State state)
             // Check if we are actually down for maintenance.
             // To do this we must clear the connection validator that just
             // produced the 503. It's finished anyway and will delete itself.
-            _connectionValidator->deleteLater();
-            _connectionValidator.clear();
+            resetConnectionValidator();
             checkConnectivity();
         } else if (_state == Connected) {
             if ((NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())
@@ -350,8 +359,7 @@ void AccountState::checkConnectivity(bool blockJobs)
 
     if (_connectionValidator && blockJobs && !_queueGuard.queue()->isBlocked()) {
         // abort already running non blocking validator
-        _connectionValidator->deleteLater();
-        _connectionValidator.clear();
+        resetConnectionValidator();
     }
     if (_connectionValidator != nullptr) {
         qCWarning(lcAccountState) << "ConnectionValidator already running, ignoring" << account()->displayNameWithHost()
@@ -409,8 +417,7 @@ void AccountState::checkConnectivity(bool blockJobs)
                     _tlsDialog.clear();
                     // force a new _connectionValidator
                     if (_connectionValidator) {
-                        _connectionValidator->deleteLater();
-                        _connectionValidator.clear();
+                        resetConnectionValidator();
                     }
                     checkConnectivity(blockJobs);
                 });
