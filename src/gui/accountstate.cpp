@@ -366,7 +366,7 @@ void AccountState::checkConnectivity(bool blockJobs)
         // abort already running non blocking validator
         resetConnectionValidator();
     }
-    if (_connectionValidator != nullptr) {
+    if (_connectionValidator) {
         qCWarning(lcAccountState) << "ConnectionValidator already running, ignoring" << account()->displayNameWithHost()
                                   << "Queue is blocked:" << _queueGuard.queue()->isBlocked();
         return;
