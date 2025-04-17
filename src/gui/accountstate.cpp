@@ -383,6 +383,8 @@ void AccountState::checkConnectivity(bool blockJobs)
     if (blockJobs) {
         _queueGuard.block();
     }
+    // Q_ASSERT(_connectionValidator == nullptr);
+
     _connectionValidator = new ConnectionValidator(account());
     connect(_connectionValidator, &ConnectionValidator::connectionResult,
         this, &AccountState::slotConnectionValidatorResult);
