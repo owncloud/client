@@ -1953,7 +1953,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Limites de largura de banda foram descontinuados e serão removidos num futuro lançamento!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
@@ -3289,12 +3289,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Selecione uma pasta para sincronizar ao seu computador.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Selecione um Espaço para sincronizar com o seu computador.</translation>
     </message>
 </context>
 <context>
@@ -3661,7 +3661,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>A URL solicitada falhou com o seguinte valor: %1</translation>
     </message>
 </context>
 <context>
