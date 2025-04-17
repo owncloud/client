@@ -275,7 +275,6 @@ void ConnectionValidator::reportResult(Status status)
         _finished = true;
         qCDebug(lcConnectionValidator) << status << _duration.duration();
         Q_EMIT connectionResult(status, _errors);
-        deleteLater();
     }
 }
 

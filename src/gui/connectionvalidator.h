@@ -137,6 +137,12 @@ protected Q_SLOTS:
     void slotAuthSuccess();
 
 private:
+    /**
+     *  important update: this used to delete ITSELF after emitting connectionResult which was not only undocumented, but flies in the
+     *  face of any sensible RAII impl = whoever creates the resource is responsible for cleaning it up, unless this responsibility
+     *  is EXPLICITLY passed to a third party. So whoever instantiates the ConnectionValidator now has to clean it up in line with healthy
+     *  memory management strategies.
+     */
     void reportResult(Status status);
 
     QStringList _errors;
