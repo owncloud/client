@@ -10,8 +10,8 @@ version = master
 revision = 4a6f0200
 
 [craft/craft-blueprints-owncloud]
-version = master
-revision = 7fd3e4e
+version = 6
+revision = ba6feae525ff8f7115b9a094d2b574e2b21221dd
 
 [craft/craft-core]
 version = master
