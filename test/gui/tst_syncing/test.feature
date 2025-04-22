@@ -452,6 +452,7 @@ Feature: Syncing files
             | file2.txt | file   | Test file2 |
         And user "Alice" has set up a client with default settings
         When user "Alice" moves file "archive.zip" from the temp folder into the sync folder
+        And the user waits for the files to sync
         And user "Alice" unzips the zip file "archive.zip" inside the sync root
         And the user waits for the files to sync
         Then as "Alice" folder "folder1" should exist in the server

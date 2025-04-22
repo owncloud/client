@@ -109,7 +109,6 @@ def step(context):
 @Given('the user has entered the following account information:')
 def step(context):
     account_details = get_client_details(context.table)
-    print(account_details)
     AccountConnectionWizard.add_account_information(account_details)
 
 

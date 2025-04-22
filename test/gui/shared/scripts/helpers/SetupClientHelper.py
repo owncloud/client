@@ -1,4 +1,3 @@
-import uuid
 import os
 import subprocess
 from urllib.parse import urlparse
@@ -8,11 +7,7 @@ import test
 import psutil
 import squish
 
-from helpers.SpaceHelper import get_space_id
 from helpers.ConfigHelper import get_config, set_config, is_windows
-from helpers.SyncHelper import listen_sync_status_for_item
-from helpers.api.utils import url_join
-from helpers.UserHelper import get_displayname_for_user
 from helpers.ReportHelper import is_video_enabled
 
 
@@ -115,88 +110,6 @@ def start_client():
         )
 
 
-def get_polling_interval():
-    polling_interval = '''
-[ownCloud]
-remotePollInterval={polling_interval}
-'''
-    args = {'polling_interval': 5000}
-    polling_interval = polling_interval.format(**args)
-    return polling_interval
-
-
-def generate_account_config(users, space='Personal'):
-    sync_paths = {}
-    user_setting = ''
-    for idx, username in enumerate(users):
-        user_setting += '''
-{user_index}/Folders/{uuid_v4}/davUrl={url}
-{user_index}/Folders/{uuid_v4}/ignoreHiddenFiles=true
-{user_index}/Folders/{uuid_v4}/localPath={client_sync_path}
-{user_index}/Folders/{uuid_v4}/displayString={displayString}
-{user_index}/Folders/{uuid_v4}/paused=false
-{user_index}/Folders/{uuid_v4}/targetPath=/
-{user_index}/Folders/{uuid_v4}/version=13
-{user_index}/Folders/{uuid_v4}/virtualFilesMode=off
-{user_index}/dav_user={davUserName}
-{user_index}/display-name={displayUserName}
-{user_index}/http_CredentialVersion=1
-{user_index}/http_oauth={oauth}
-{user_index}/http_user={davUserName}
-{user_index}/url={local_server}
-{user_index}/user={displayUserFirstName}
-{user_index}/supportsSpaces={supportsSpaces}
-{user_index}/version=13
-'''
-        if not idx:
-            user_setting = '[Accounts]' + user_setting
-
-        sync_path = create_user_sync_path(username)
-        dav_endpoint = url_join('remote.php/dav/files', username)
-
-        server_url = get_config('localBackendUrl')
-
-        if is_ocis := get_config('ocis'):
-            set_config('syncConnectionName', space)
-            sync_path = create_space_path(space)
-            space_name = space
-            if space == 'Personal':
-                space_name = get_displayname_for_user(username)
-            dav_endpoint = url_join('dav/spaces', get_space_id(space_name, username))
-
-        args = {
-            'url': url_join(server_url, dav_endpoint, ''),
-            'displayString': get_config('syncConnectionName'),
-            'displayUserName': get_displayname_for_user(username),
-            'davUserName': username if is_ocis else username.lower(),
-            'displayUserFirstName': get_displayname_for_user(username).split()[0],
-            'client_sync_path': sync_path,
-            'local_server': server_url,
-            'oauth': 'true' if is_ocis else 'false',
-            'vfs': 'wincfapi' if is_windows() else 'off',
-            'supportsSpaces': 'true' if is_ocis else 'false',
-            'user_index': idx,
-            'uuid_v4': generate_uuidv4(),
-        }
-        user_setting = user_setting.format(**args)
-        sync_paths.update({username: sync_path})
-    # append extra configs
-    user_setting += 'version=13'
-    user_setting = user_setting + get_polling_interval()
-
-    with open(get_config('clientConfigFile'), 'a+', encoding='utf-8') as config_file:
-        config_file.write(user_setting)
-
-    return sync_paths
-
-
-def setup_client(username, space='Personal'):
-    sync_paths = generate_account_config([username], space)
-    start_client()
-    for _, sync_path in sync_paths.items():
-        listen_sync_status_for_item(sync_path)
-
-
 def is_app_killed(pid):
     try:
         psutil.Process(pid)
@@ -213,10 +126,6 @@ def wait_until_app_killed(pid=0):
     )
     if not killed:
         test.log(f'Application was not terminated within {timeout} milliseconds')
-
-
-def generate_uuidv4():
-    return str(uuid.uuid4())
 
 
 # sometimes the keyring is locked during the test execution, and we need to unlock it
