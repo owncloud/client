@@ -19,6 +19,11 @@ from helpers.SetupClientHelper import (
 )
 
 
+@When('using sync connection folder "|any|"')
+def step(context, sync_folder):
+    set_config('syncConnectionName', sync_folder)
+
+
 @Given('the user has paused the file sync')
 def step(context):
     SyncConnection.pause_sync()

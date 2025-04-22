@@ -7,6 +7,7 @@ Feature: Project spaces
     Background:
         Given user "Alice" has been created in the server with default attributes
         And the administrator has created a space "Project101"
+        When using sync connection folder "Project101"
 
 
     Scenario: User with Viewer role can open the file
