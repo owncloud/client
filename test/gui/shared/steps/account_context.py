@@ -13,6 +13,7 @@ from helpers.SetupClientHelper import (
 from helpers.UserHelper import get_displayname_for_user, get_password_for_user
 from helpers.SyncHelper import (
     wait_for_initial_sync_to_complete,
+    listen_sync_status_for_item,
 )
 from helpers.ConfigHelper import get_config, is_windows, is_linux
 
@@ -84,6 +85,12 @@ def step(context):
 @When('the user starts the client')
 def step(context):
     start_client()
+
+
+@When('user "|any|" starts the client')
+def step(context, user):
+    start_client()
+    listen_sync_status_for_item(get_resource_path('/', user))
 
 
 @When('the user opens the add-account dialog')

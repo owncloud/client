@@ -269,8 +269,8 @@ Feature: Syncing files
         Given user "Alice" has created a folder "Folder1" inside the sync folder
         And user "Alice" has created a folder "Folder1/subFolder1" inside the sync folder
         And user "Alice" has created a folder "Folder1/subFolder1/subFolder2" inside the sync folder
-        When the user starts the client
-        And the user waits for folder "Folder1/subFolder1/subFolder2" to be synced
+        When user "Alice" starts the client
+        And the user waits for the files to sync
         Then as "Alice" folder "Folder1" should exist in the server
         And as "Alice" folder "Folder1/subFolder1" should exist in the server
         And as "Alice" folder "Folder1/subFolder1/subFolder2" should exist in the server
