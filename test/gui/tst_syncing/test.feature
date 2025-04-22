@@ -492,13 +492,25 @@ Feature: Syncing files
         And the folder "test-folder/sub-folder2" should exist on the file system
         And the folder "test-folder/sub-folder1" should not exist on the file system
 
-    @issue-11814
-    Scenario: remove folder sync connection
+    @issue-11814 @skipOnOC10
+    Scenario: remove folder sync connection (oCIS)
         Given user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has set up a client with default settings
         When the user selects remove folder sync connection option
         And the user cancels the folder sync connection removal dialog
-        And the user removes the folder sync connection
+        And the user removes the "Shares" folder sync connection
+        And the user removes the "Personal" folder sync connection
+        Then the sync folder list should be empty
+        And the folder "simple-folder" should exist on the file system
+        And as "Alice" folder "simple-folder" should exist in the server
+
+    @issue-11814 @skipOnOCIS
+    Scenario: remove folder sync connection (oC10)
+        Given user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has set up a client with default settings
+        When the user selects remove folder sync connection option
+        And the user cancels the folder sync connection removal dialog
+        And the user removes the "ownCloud" folder sync connection
         Then the sync folder list should be empty
         And the folder "simple-folder" should exist on the file system
         And as "Alice" folder "simple-folder" should exist in the server
