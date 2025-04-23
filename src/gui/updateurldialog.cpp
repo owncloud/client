@@ -15,7 +15,6 @@
 #include "updateurldialog.h"
 
 #include <QMessageBox>
-#include <QTimer>
 
 namespace OCC {
 
@@ -24,18 +23,6 @@ UpdateUrlDialog::UpdateUrlDialog(const QString &title, const QString &content, c
     , _oldUrl(oldUrl)
     , _newUrl(newUrl)
 {
-    // this special dialog deletes itself after use
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    if (Utility::urlEqual(_oldUrl, _newUrl)) {
-        // need to show the dialog before accepting the change
-        // hence using a timer to run the code on the main loop
-        QTimer::singleShot(0, [this]() {
-            accept();
-        });
-        return;
-    }
-
     addButton(tr("Change URL permanently to %1").arg(_newUrl.toString()), QMessageBox::AcceptRole);
     addButton(tr("Reject"), QMessageBox::RejectRole);
 }

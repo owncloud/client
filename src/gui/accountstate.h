@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include "gui/networkinformation.h"
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
@@ -45,7 +46,6 @@ class OWNCLOUDGUI_EXPORT AccountState : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Account *account READ accountForQml CONSTANT)
-    Q_PROPERTY(bool supportsSpaces READ supportsSpaces NOTIFY supportsSpacesChanged)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
     Q_PROPERTY(AccountState::State state READ state NOTIFY stateChanged)
     QML_ELEMENT
@@ -150,7 +150,6 @@ public:
      *  was not so long ago.
      */
     void tagLastSuccessfullETagRequest(const QDateTime &tp);
-    UpdateUrlDialog *updateUrlDialog(const QUrl &newUrl);
 
     /***
      * The account is setup for the first time, this may take some time
@@ -158,11 +157,9 @@ public:
     bool isSettingUp() const;
     void setSettingUp(bool settingUp);
 
-public Q_SLOTS:
-    /// Triggers a ping to the server to update state and
-    /// connection status and errors.
-    /// verifyServerState indicates that we must check the server
-    void checkConnectivity(bool verifyServerState = false);
+    /// Triggers a ping to the server to update state, connection status and errors.
+    /// blockJobs determines if we block the job queue while the connection is checked
+    void checkConnectivity(bool blockJobs = false);
 
 private:
     /// Use the account as parent
@@ -173,9 +170,7 @@ private:
 Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
-    void urlUpdated();
     void isSettingUpChanged();
-    void supportsSpacesChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
@@ -192,7 +187,6 @@ private:
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
-    QPointer<UpdateUrlDialog> _updateUrlDialog;
     QPointer<TlsErrorDialog> _tlsDialog;
     bool _supportsSpaces = true;
     bool _settingUp = false;
@@ -204,6 +198,13 @@ private:
     void connectAccount();
     void connectNetworkInformation();
 
+    void onNetworkReachabilityChanged(NetworkInformation::Reachability reachability);
+    void onNetworkMeteredChanged(bool isMetered);
+    void onBehindCaptivePortalChanged(bool isCaptive);
+
+    // this doesn't completely thrill me because it has dependencies on the rest of the gui but for now, it's
+    // ok and making it private is pretty sweet, too.
+    void confirmUrlUpdate(const QUrl &newUrl);
 
     /**
      * Starts counting when the server starts being back up after 503 or
