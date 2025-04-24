@@ -190,13 +190,11 @@ private:
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
-    QPointer<TlsErrorDialog> _tlsDialog;
     bool _supportsSpaces = true;
     bool _settingUp = false;
 
     ConnectionValidator *_connectionValidator;
     void resetConnectionValidator();
-    void setupNewConnectionValidator();
 
     void connectAccount();
     void connectNetworkInformation();

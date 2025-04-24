@@ -130,7 +130,7 @@ void AccountState::connectAccount()
     connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
 
-    // todo: #14 Erik is going to take this one. He thinks the queued connection is "correct" based on the PR it's associated with:
+    // todo: #14 Erik thinks the queued connection is "correct" based on the PR it's associated with:
     // https://github.com/owncloud/client/pull/9202
     // My gut tells me that using a queued connection is in line with all the unexplained uses of one shot timer (no timeout) to "schedule"
     // activity on the main event loop. If that is the root of using queued connection here (in hope that something else happens before we call
@@ -305,10 +305,6 @@ void AccountState::checkConnectivity(bool blockJobs)
     if (_state != Connected) {
         setState(Connecting);
     }
-    if (_tlsDialog) {
-        qCDebug(lcAccountState) << "Skip checkConnectivity, waiting for tls dialog";
-        return;
-    }
     if (_connectionValidator && blockJobs && !_queueGuard.queue()->isBlocked()) {
         // abort already running non blocking validator
         resetConnectionValidator();
@@ -463,56 +459,12 @@ void AccountState::onBehindCaptivePortalChanged(bool isCaptive)
         _queueGuard.unblock();
     }
 
-    // A direct connect is not possible, because then the state parameter of `isBehindCaptivePortalChanged`
-    // would become the `verifyServerState` argument to `checkConnectivity`.
     // The call is also made for when we "go behind" a captive portal. That ensures that not
     // only the status is set to `Connecting`, but also makes the UI show that syncing is paused.
     // todo: #11, #12
     // todo: decide if the value to checkConnectivity should depend on value of isCaptive
     // checkConnectivity does different things depending on whether behindCaptivePortal is true, including blocking the queue guard :/
     checkConnectivity();
-}
-
-void AccountState::setupNewConnectionValidator()
-{
-    Q_ASSERT(_account);
-    Q_ASSERT(!_connectionValidator);
-
-    /* _connectionValidator = new ConnectionValidator(_account);
-     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
-
-     connect(_connectionValidator, &ConnectionValidator::sslErrors, this, [blockJobs, this](const QList<QSslError> &errors) {
-         if (NetworkInformation::instance()->isBehindCaptivePortal()) {
-             return;
-         }
-         if (!_tlsDialog) {
-             // ignore errors for already accepted certificates
-             auto filteredErrors = _account->accessManager()->filterSslErrors(errors);
-             if (!filteredErrors.isEmpty()) {
-                 _tlsDialog = new TlsErrorDialog(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
-                 _tlsDialog->setAttribute(Qt::WA_DeleteOnClose);
-                 QSet<QSslCertificate> certs;
-                 certs.reserve(filteredErrors.size());
-                 for (const auto &error : std::as_const(filteredErrors)) {
-                     certs << error.certificate();
-                 }
-                 connect(_tlsDialog, &TlsErrorDialog::accepted, _tlsDialog, [certs, blockJobs, this]() {
-                     _account->addApprovedCerts(certs);
-                     _tlsDialog.clear();
-                     // force a new _connectionValidator
-                     if (_connectionValidator) {
-                         resetConnectionValidator();
-                     }
-                     checkConnectivity(blockJobs);
-                 });
-                 connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() { setState(SignedOut); });
-
-                 ownCloudGui::raise();
-                 _tlsDialog->open();
-             }
-         }
-     });
-  */
 }
 
 void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors)
