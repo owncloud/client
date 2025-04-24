@@ -23,6 +23,7 @@
 
 #include "account.h"
 #include "common/asserts.h"
+#include "common/vfs.h"
 #include "gui/application.h"
 #include "gui/settingsdialog.h"
 #include "theme.h"
@@ -73,21 +74,26 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, const AccountStatePtr 
     : q_ptr(q)
     , _account(account)
     , _folderWizardSourcePage(new FolderWizardLocalPath(this))
-    , _folderWizardSelectiveSyncPage(new FolderWizardSelectiveSync(this))
+    , _folderWizardSelectiveSyncPage(nullptr)
 {
     if (account->supportsSpaces()) {
         _spacesPage = new SpacesPage(account->account(), q);
         q->setPage(FolderWizard::Page_Space, _spacesPage);
     }
+
     q->setPage(FolderWizard::Page_Source, _folderWizardSourcePage);
 
-    // for now spaces are meant to be synced as a whole
     if (!_account->supportsSpaces() && !Theme::instance()->singleSyncFolder()) {
         _folderWizardTargetPage = new FolderWizardRemotePath(this);
         q->setPage(FolderWizard::Page_Target, _folderWizardTargetPage);
     }
 
-    q->setPage(FolderWizard::Page_SelectiveSync, _folderWizardSelectiveSyncPage);
+    // When VFS is available (currently only with Windows' CFApi), and it is forced on, Spaces are meant to be synced as a whole.
+    const bool showPage = VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi || !Theme::instance()->forceVirtualFilesOption();
+    if (showPage) {
+        _folderWizardSelectiveSyncPage = new FolderWizardSelectiveSync(this);
+        q->setPage(FolderWizard::Page_SelectiveSync, _folderWizardSelectiveSyncPage);
+    }
 }
 
 QString FolderWizardPrivate::initialLocalPath() const
@@ -151,7 +157,7 @@ const AccountStatePtr &FolderWizardPrivate::accountState()
 bool FolderWizardPrivate::useVirtualFiles() const
 {
     const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
-    const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode == Vfs::WindowsCfApi) || (_folderWizardSelectiveSyncPage->useVirtualFiles());
+    const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode == Vfs::WindowsCfApi) || (_folderWizardSelectiveSyncPage && _folderWizardSelectiveSyncPage->useVirtualFiles());
     if (useVirtualFiles) {
         const auto availability = Vfs::checkAvailability(initialLocalPath(), mode);
         if (!availability) {
@@ -192,16 +198,18 @@ FolderMan::SyncConnectionDescription FolderWizard::result()
         }
     }
 
+    // clang-format off
     return {
-        d->davUrl(), //
-        d->spaceId(), //
-        localPath, //
-        d->remotePath(), //
-        d->displayName(), //
-        d->useVirtualFiles(), //
-        d->priority(), //
-        d->_folderWizardSelectiveSyncPage ? d->_folderWizardSelectiveSyncPage->selectiveSyncBlackList() : QSet<QString>{} //
+        d->davUrl(),
+        d->spaceId(),
+        localPath,
+        d->remotePath(),
+        d->displayName(),
+        d->useVirtualFiles(),
+        d->priority(),
+        d->_folderWizardSelectiveSyncPage ? d->_folderWizardSelectiveSyncPage->selectiveSyncBlackList() : QSet<QString>{}
     };
+    // clang-format on
 }
 
 } // end namespace
