@@ -209,6 +209,12 @@ private:
     // ok and making it private is pretty sweet, too.
     void confirmUrlUpdate(const QUrl &newUrl);
 
+    // handles ssl errors from the ConnectionValidator
+    // if there are ssl errors it will pop a dialog asking user to accept new certificate.
+    // if that is accepted, we update the certificate on the account, then rerun checkConnection using jobsWereBlocked,
+    // which is what was in play during the connection check that produced the error(s)
+    void handleSslConnectionErrors(const QList<QSslError> &errors, bool jobsWereBlocked);
+
     /**
      * Starts counting when the server starts being back up after 503 or
      * maintenance mode. The account will only become connected once this
@@ -224,7 +230,6 @@ private:
     QuotaInfo *_quotaInfo = nullptr;
 
     QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
-
 };
 }
 

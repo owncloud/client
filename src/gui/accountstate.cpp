@@ -345,44 +345,12 @@ void AccountState::checkConnectivity(bool blockJobs)
         _queueGuard.block();
     }
 
-    // >>>>>>>> here we setup the ConnectionValidator
-    // todo: #13
-    // setupNewConnectionValidator();
+    // >>>>>>>> here we setup a new ConnectionValidator
 
     _connectionValidator = new ConnectionValidator(_account);
     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
-
-    connect(_connectionValidator, &ConnectionValidator::sslErrors, this, [blockJobs, this](const QList<QSslError> &errors) {
-        if (NetworkInformation::instance()->isBehindCaptivePortal()) {
-            return;
-        }
-        if (!_tlsDialog) {
-            // ignore errors for already accepted certificates
-            auto filteredErrors = _account->accessManager()->filterSslErrors(errors);
-            if (!filteredErrors.isEmpty()) {
-                _tlsDialog = new TlsErrorDialog(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
-                _tlsDialog->setAttribute(Qt::WA_DeleteOnClose);
-                QSet<QSslCertificate> certs;
-                certs.reserve(filteredErrors.size());
-                for (const auto &error : std::as_const(filteredErrors)) {
-                    certs << error.certificate();
-                }
-                connect(_tlsDialog, &TlsErrorDialog::accepted, _tlsDialog, [certs, blockJobs, this]() {
-                    _account->addApprovedCerts(certs);
-                    _tlsDialog.clear();
-                    // force a new _connectionValidator
-                    if (_connectionValidator) {
-                        resetConnectionValidator();
-                    }
-                    checkConnectivity(blockJobs);
-                });
-                connect(_tlsDialog, &TlsErrorDialog::rejected, this, [certs, this]() { setState(SignedOut); });
-
-                ownCloudGui::raise();
-                _tlsDialog->open();
-            }
-        }
-    });
+    connect(_connectionValidator, &ConnectionValidator::sslErrors, this,
+        [blockJobs, this](const QList<QSslError> &errors) { handleSslConnectionErrors(errors, blockJobs); });
 
     // >>>>> do some configuration related to the new validator
     ConnectionValidator::ValidationMode mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
@@ -406,6 +374,33 @@ void AccountState::checkConnectivity(bool blockJobs)
     }
     // >>>>> and FINALLY we start the check
     _connectionValidator->checkServer(mode);
+}
+
+void AccountState::handleSslConnectionErrors(const QList<QSslError> &errors, bool jobsWereBlocked)
+{
+    if (NetworkInformation::instance()->isBehindCaptivePortal()) {
+        return;
+    }
+    // ignore errors for already accepted certificates
+    auto filteredErrors = _account->accessManager()->filterSslErrors(errors);
+    if (!filteredErrors.isEmpty()) {
+        QSet<QSslCertificate> certs;
+        certs.reserve(filteredErrors.size());
+        for (const auto &error : std::as_const(filteredErrors)) {
+            certs << error.certificate();
+        }
+        TlsErrorDialog tlsDlg(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
+        ownCloudGui::raise();
+        int res = tlsDlg.exec();
+        if (res == TlsErrorDialog::Accepted) {
+            _account->addApprovedCerts(certs);
+            // force a new _connectionValidator
+            if (_connectionValidator) {
+                resetConnectionValidator();
+            }
+            checkConnectivity(jobsWereBlocked);
+        }
+    }
 }
 
 void AccountState::resetConnectionValidator()
