@@ -103,6 +103,8 @@ private:
     bool event(QEvent *) override;
     void doForceSyncCurrentFolder(Folder *selectedFolder);
 
+    void buildManageAccountMenu();
+
     Ui::AccountSettings *ui;
 
     FolderStatusModel *_model;
