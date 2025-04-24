@@ -23,6 +23,7 @@ Pane {
     id: folderSyncPanel
     // TODO: not cool
     readonly property real normalSize: 170
+    // todo: #16
     readonly property AccountSettings accountSettings: ocContext
     readonly property OCQuickWidget widget: ocQuickWidget
 
@@ -238,6 +239,7 @@ Pane {
                 onClicked: {
                     accountSettings.slotAddFolder();
                 }
+                //todo: #16
                 enabled: (accountSettings.accountState.state === AccountState.Connected) && (accountSettings.unsyncedSpaces || !accountSettings.accountState.supportsSpaces)
 
                 // with Spaces Theme.singleSyncFolder hast no effect

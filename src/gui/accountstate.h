@@ -47,6 +47,8 @@ class OWNCLOUDGUI_EXPORT AccountState : public QObject
     Q_OBJECT
     Q_PROPERTY(Account *account READ accountForQml CONSTANT)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
+    // todo: #16
+    Q_PROPERTY(bool supportsSpaces READ supportsSpaces NOTIFY supportsSpacesChanged)
     Q_PROPERTY(AccountState::State state READ state NOTIFY stateChanged)
     QML_ELEMENT
     QML_UNCREATABLE("Only created by AccountManager")
@@ -171,6 +173,7 @@ Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
     void isSettingUpChanged();
+    void supportsSpacesChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
