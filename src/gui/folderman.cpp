@@ -488,6 +488,7 @@ void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
     if (!folder) {
         return;
     }
+    disconnectAutoSave(folder);
     QString id = QString::fromUtf8(folder->definition().id());
     if (id.isEmpty())
         return;
@@ -613,18 +614,26 @@ void FolderMan::connectFolder(Folder *folder)
         connect(folder, &Folder::syncFinished, this, &FolderMan::slotFolderSyncFinished);
         connect(folder, &Folder::syncStateChange, this, [folder, this] { Q_EMIT folderSyncStateChange(folder); });
         connect(folder, &Folder::syncPausedChanged, this, &FolderMan::slotFolderSyncPauseChanged);
+        connect(folder, &Folder::canSyncChanged, this, &FolderMan::slotFolderCanSyncChanged);
         // format wants to move the pointer "*" one space away from the type which = clazy not normalized sig warning
         // clang-format off
         connect(folder, SIGNAL(syncPausedChanged(Folder*,bool)), this, SLOT(saveFolder(Folder*)));
         connect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
-        // clang-format on
-        connect(folder, &Folder::canSyncChanged, this, &FolderMan::slotFolderCanSyncChanged);
+        // clang-format on  
         connect(
             &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
         connect(folder, &Folder::watchedFileChangedExternally, &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::slotPathTouched);
 
         registerFolderWithSocketApi(folder);
     }
+}
+
+void FolderMan::disconnectAutoSave(Folder *folder)
+{
+    // clang-format off
+    disconnect(folder, SIGNAL(syncPausedChanged(Folder*,bool)), this, SLOT(saveFolder(Folder*)));
+    disconnect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
+    // clang-format on  
 }
 
 void FolderMan::disconnectFolder(Folder *folder)
