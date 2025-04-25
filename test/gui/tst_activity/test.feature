@@ -21,8 +21,8 @@ Feature: filter activity for user
 
     Scenario: filter not synced activities
         Given user "Alice" has been created in the server with default attributes
-        And user "Alice" has created a folder "Folder1" inside the sync folder
         And user "Alice" has set up a client with default settings
+        And user "Alice" has created a folder "Folder1" inside the sync folder
         When user "Alice" creates the following files inside the sync folder:
             | files             |
             | /.htaccess        |

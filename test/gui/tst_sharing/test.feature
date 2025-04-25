@@ -89,12 +89,12 @@ Feature: Sharing
         And user "Alice" has created folder "OwnFolder" in the server
         And user "Alice" has set up a client with default settings
         When the user opens the sharing dialog of "textfile.txt" using the client-UI
-        And the user selects "Alice Hansen" as collaborator of resource "textfile.txt" using the client-UI
-        Then the error "Can't share with yourself" should be displayed in the sharing dialog
+        And the user searches for collaborator with autocomplete characters "Alice Hansen" using the client-UI
+        Then the error "No results for 'Alice Hansen'" should be displayed in the sharing dialog
         When the user closes the sharing dialog
         And the user opens the sharing dialog of "OwnFolder" using the client-UI
-        And the user selects "Alice Hansen" as collaborator of resource "OwnFolder" using the client-UI
-        Then the error "Can't share with yourself" should be displayed in the sharing dialog
+        And the user searches for collaborator with autocomplete characters "Alice Hansen" using the client-UI
+        Then the error "No results for 'Alice Hansen'" should be displayed in the sharing dialog
         And the user closes the sharing dialog
 
 
