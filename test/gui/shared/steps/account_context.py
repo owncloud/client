@@ -5,11 +5,9 @@ from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
 
 from helpers.SetupClientHelper import (
-    setup_client,
     start_client,
     substitute_inline_codes,
     get_client_details,
-    generate_account_config,
     get_resource_path,
 )
 from helpers.UserHelper import get_displayname_for_user, get_password_for_user
@@ -22,7 +20,7 @@ from helpers.ConfigHelper import get_config, is_windows, is_linux
 
 @When('the user adds the following user credentials:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     AccountConnectionWizard.add_user_credentials(
         account_details['user'], account_details['password']
     )
@@ -51,40 +49,32 @@ def step(context, displayname, host):
 @Given('user "|any|" has set up a client with default settings')
 def step(context, username):
     password = get_password_for_user(username)
-    setup_client(username)
-    enter_password = EnterPassword()
-    if get_config('ocis'):
-        enter_password.accept_certificate()
-
-    enter_password.login_after_setup(username, password)
-
+    account_details = get_client_details(
+        [['server', '%local_server%'], ['user', username], ['password', password]]
+    )
+    start_client()
+    AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
-    wait_for_initial_sync_to_complete(get_resource_path('/', username))
+    wait_for_initial_sync_to_complete(get_resource_path('/', account_details['user']))
 
 
 @Given('the user has set up the following accounts with default settings:')
 def step(context):
     users = []
-    for row in context.table:
-        users.append(row[0])
-    sync_paths = generate_account_config(users)
     start_client()
-    if get_config('ocis'):
-        # accept certificate for each user
-        for idx, _ in enumerate(users):
-            enter_password = EnterPassword(len(users) - idx)
-            enter_password.accept_certificate()
-
-    for idx, _ in enumerate(sync_paths.values()):
-        # login from last dialog
-        account_idx = len(sync_paths) - idx
-        enter_password = EnterPassword(account_idx)
-        username = enter_password.get_username()
+    for idx, row in enumerate(context.table):
+        username = row[0]
         password = get_password_for_user(username)
-        listen_sync_status_for_item(sync_paths[username])
-        enter_password.login_after_setup(username, password)
+        account_details = get_client_details(
+            [['server', '%local_server%'], ['user', username], ['password', password]]
+        )
+        if idx > 0:
+            Toolbar.open_new_account_setup()
+        AccountConnectionWizard.add_account(account_details)
         # wait for files to sync
-        wait_for_initial_sync_to_complete(sync_paths[username])
+        wait_for_initial_sync_to_complete(
+            get_resource_path('/', account_details['user'])
+        )
 
 
 @Given('the user has started the client')
@@ -97,6 +87,12 @@ def step(context):
     start_client()
 
 
+@When('user "|any|" starts the client')
+def step(context, user):
+    start_client()
+    listen_sync_status_for_item(get_resource_path('/', user))
+
+
 @When('the user opens the add-account dialog')
 def step(context):
     Toolbar.open_new_account_setup()
@@ -104,7 +100,7 @@ def step(context):
 
 @When('the user adds the following account:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
     wait_for_initial_sync_to_complete(get_resource_path('/', account_details['user']))
@@ -112,7 +108,7 @@ def step(context):
 
 @Given('the user has entered the following account information:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     AccountConnectionWizard.add_account_information(account_details)
 
 
@@ -279,7 +275,7 @@ def step(context):
 
 @When('the user adds the following oauth2 account:')
 def step(context):
-    account_details = get_client_details(context)
+    account_details = get_client_details(context.table)
     account_details.update({'oauth': True})
     AccountConnectionWizard.add_account(account_details)
     # wait for files to sync
