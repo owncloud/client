@@ -2,6 +2,8 @@ import names
 import squish
 import object  # pylint: disable=redefined-builtin
 
+from helpers.ConfigHelper import get_config
+
 
 class SyncConnection:
     FOLDER_SYNC_CONNECTION_LIST = {
@@ -14,6 +16,12 @@ class SyncConnection:
         "name": "_folderList",
         "type": "QListView",
         "visible": 1,
+    }
+    FOLDER_SYNC_CONNECTION_LABEL = {
+        "container": names.quickWidget_scrollView_ScrollView,
+        "type": "Label",
+        "unnamed": 1,
+        "visible": True,
     }
     FOLDER_SYNC_CONNECTION_MENU_BUTTON = {
         "checkable": False,
@@ -55,15 +63,30 @@ class SyncConnection:
     }
 
     @staticmethod
-    def open_menu():
-        menu_button = squish.waitForObject(
-            SyncConnection.FOLDER_SYNC_CONNECTION_MENU_BUTTON
-        )
+    def open_menu(sync_folder=""):
+        if get_config("ocis") and not sync_folder:
+            sync_folder = "Personal"
+        elif not sync_folder:
+            sync_folder = "ownCloud"
+        selector = SyncConnection.FOLDER_SYNC_CONNECTION_LABEL.copy()
+        selector.update({"text": sync_folder})
+
+        menu_button = None
+
+        # get the parent of the sync folder label
+        parent = object.parent(
+            squish.waitForObject(selector)
+        ).parent.parent.parent.parent.parent
+        children = object.children(squish.waitForObject(parent))
+        for obj in children:
+            # get sync folder menu button
+            if obj.id == "moreButton":
+                menu_button = squish.waitForObject(obj)
         squish.mouseClick(menu_button)
 
     @staticmethod
-    def perform_action(action):
-        SyncConnection.open_menu()
+    def perform_action(action, sync_folder=""):
+        SyncConnection.open_menu(sync_folder)
         squish.activateItem(squish.waitForObjectItem(SyncConnection.MENU, action))
 
     @staticmethod
@@ -138,8 +161,8 @@ class SyncConnection:
         return squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_LIST).count
 
     @staticmethod
-    def remove_folder_sync_connection():
-        SyncConnection.perform_action("Remove folder sync connection")
+    def remove_folder_sync_connection(sync_folder=""):
+        SyncConnection.perform_action("Remove folder sync connection", sync_folder)
 
     @staticmethod
     def cancel_folder_sync_connection_removal():
