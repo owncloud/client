@@ -422,6 +422,15 @@ private:
      */
     void disconnectFolder(Folder *folder);
 
+    /* disconnects the signals that trigger autosave
+     * this is a bit dirty imo but we need to disconnect the autosave handling when a folder is removed from the settings
+     * because in the subsequent step where the folder is removed from the folder man, we will get a stray signal or two that causes it
+     * to be written back to the config again.
+     * we can't call removeFromSettings after removeFolderSync as the folder is deleted in that step
+     * in future when we have a better encapsulation on the folder manager this small detail will be easier to manage.
+     */
+    void disconnectAutoSave(Folder *folder);
+
     /* saves folder using the given instance of config settings already set to group "Accounts"
      * The main purpose of this version is to allow using a single settings instance to persist multiple folders
      * in a row before syncing -> we save a lot of expensive file operations this way
@@ -429,6 +438,7 @@ private:
     void saveFolder(Folder *folder, QSettings &settings);
 
     // used to reduce file operation overhead when removing multiple folders
+    // impl detail: we also disconnect the folder from autosave here!
     void removeFolderSettings(Folder *folder, QSettings &settings);
 
     /** Queues all folders for syncing. */
