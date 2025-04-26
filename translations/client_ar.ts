@@ -1251,67 +1251,67 @@ This means that the synchronization client might not upload local changes immedi
         <translation>Account disconnected or paused</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="719"/>
+        <location filename="../src/gui/folderman.cpp" line="728"/>
         <source>Folder is about to be removed</source>
         <translation>Folder is about to be removed</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="746"/>
+        <location filename="../src/gui/folderman.cpp" line="755"/>
         <source> (backup)</source>
         <translation> (النسخ الاحتياطي)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="751"/>
+        <location filename="../src/gui/folderman.cpp" line="760"/>
         <source> (backup %1)</source>
         <translation> (النسخ الاحتياطي %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="802"/>
+        <location filename="../src/gui/folderman.cpp" line="811"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>المزامنة ناجحة، ولم يتم حل التعارضات.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="811"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (المزامنة متوقفة مؤقتًا)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="843"/>
+        <location filename="../src/gui/folderman.cpp" line="852"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>Folder &apos;%1&apos; is already in use by application %2!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="858"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="873"/>
+        <location filename="../src/gui/folderman.cpp" line="882"/>
         <source>No valid folder selected!</source>
         <translation>لم يتم تحديد مجلد صالح!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="895"/>
+        <location filename="../src/gui/folderman.cpp" line="904"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>The folder %1 is used in a folder sync connection!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="937"/>
+        <location filename="../src/gui/folderman.cpp" line="946"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="943"/>
+        <location filename="../src/gui/folderman.cpp" line="952"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="951"/>
+        <location filename="../src/gui/folderman.cpp" line="960"/>
         <source>%1 Please pick another local folder!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="900"/>
         <source>The selected path does not exist!</source>
         <translation>المسار المحدد غير موجود!</translation>
     </message>
@@ -1321,22 +1321,22 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="901"/>
+        <location filename="../src/gui/folderman.cpp" line="910"/>
         <source>The selected path is not a folder!</source>
         <translation>المسار المحدد ليس مجلدًا!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="905"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>ليس لديك الصلاحية للكتابة في المجلد المحدد!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="933"/>
+        <location filename="../src/gui/folderman.cpp" line="942"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>تم إجراء مزامنة من الخادم إلى المجلد المحلي هذا بالفعل. يُرجى اختيار مجلد محلي آخر!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1017"/>
+        <location filename="../src/gui/folderman.cpp" line="1026"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
