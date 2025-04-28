@@ -297,7 +297,7 @@ void AccountState::tagLastSuccessfulETagRequest(const QDateTime &tp)
 
 void AccountState::checkConnectivity(bool blockJobs)
 {
-    //>>>>> These are all pre-checks that may effectively cancel the check
+    // =======  These are all pre-checks that may effectively cancel the check
     if (isSignedOut() || _waitingForNewCredentials) {
         return;
     }
@@ -315,7 +315,7 @@ void AccountState::checkConnectivity(bool blockJobs)
         return;
     }
 
-    // >>>>> beginning here are pre-check updates (or so)
+    // ======= beginning here are pre-check updates (or so)
     // If we never fetched credentials, do that now - otherwise connection attempts
     // make little sense.
     if (!account()->credentials()->wasFetched()) {
@@ -341,14 +341,14 @@ void AccountState::checkConnectivity(bool blockJobs)
         _queueGuard.block();
     }
 
-    // >>>>>>>> here we setup a new ConnectionValidator
+    // =======  here we setup a new ConnectionValidator
 
     _connectionValidator = new ConnectionValidator(_account);
     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
     connect(_connectionValidator, &ConnectionValidator::sslErrors, this,
         [blockJobs, this](const QList<QSslError> &errors) { handleSslConnectionErrors(errors, blockJobs); });
 
-    // >>>>> do some configuration related to the new validator
+    // =======  do some configuration related to the new validator
     ConnectionValidator::ValidationMode mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
     if (isConnected()) {
         // Use a small authed propfind as a minimal ping when we're
@@ -368,7 +368,7 @@ void AccountState::checkConnectivity(bool blockJobs)
             mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
         }
     }
-    // >>>>> and FINALLY we start the check
+    // =======  and FINALLY we start the check
     _connectionValidator->checkServer(mode);
 }
 

@@ -802,7 +802,6 @@ void ownCloudGui::runNewAccountWizard()
                     // that can do this job
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
 
-                    // Refactoring todo: ARE YOU FREAKING KIDDING ME?!
                     QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(),
                         [accountStatePtr, syncMode, dynamicRegistrationData, validator, this](ConnectionValidator::Status status, const QStringList &) {
                             switch (status) {
