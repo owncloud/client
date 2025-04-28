@@ -1253,67 +1253,67 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Konto getrennt oder pausiert</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="719"/>
+        <location filename="../src/gui/folderman.cpp" line="728"/>
         <source>Folder is about to be removed</source>
         <translation>Ordner wird entfernt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="746"/>
+        <location filename="../src/gui/folderman.cpp" line="755"/>
         <source> (backup)</source>
         <translation>(Sicherung)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="751"/>
+        <location filename="../src/gui/folderman.cpp" line="760"/>
         <source> (backup %1)</source>
         <translation>(Sicherung %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="802"/>
+        <location filename="../src/gui/folderman.cpp" line="811"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>Synchronisation war erfolgreich, ungelöste Konflikte. </translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="811"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (Synchronisation ist pausiert)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="843"/>
+        <location filename="../src/gui/folderman.cpp" line="852"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>Ordner &apos;%1&apos; wird bereits von Anwendung %2 verwendet!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="858"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Der Ordner &apos;%1&apos; wird bereits von einem anderen Konto verwendet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="873"/>
+        <location filename="../src/gui/folderman.cpp" line="882"/>
         <source>No valid folder selected!</source>
         <translation>Kein gültiger Ordner gewählt!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="895"/>
+        <location filename="../src/gui/folderman.cpp" line="904"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>Der Ordner %1 wird bereits als Synchronisationsordner benutzt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="937"/>
+        <location filename="../src/gui/folderman.cpp" line="946"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>Der lokale Ordner %1 enthält bereits einen Ordner, der in einer Ordnersynchronisierungsverbindung verwendet wird. Bitte wählen Sie einen anderen lokalen Ordner!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="943"/>
+        <location filename="../src/gui/folderman.cpp" line="952"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>Der lokale Ordner %1 ist bereits in einem Ordner enthalten, der in einer Ordnersynchronisierungsverbindung verwendet wird. Bitte wählen Sie einen anderen lokalen Ordner!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="951"/>
+        <location filename="../src/gui/folderman.cpp" line="960"/>
         <source>%1 Please pick another local folder!</source>
         <translation>%1 Bitte wähle einen anderen lokalen Ordner!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="900"/>
         <source>The selected path does not exist!</source>
         <translation>Der gewählte Pfad existiert nicht.</translation>
     </message>
@@ -1323,22 +1323,22 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Unter macOS wird nur das Apple File System unterstützt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="901"/>
+        <location filename="../src/gui/folderman.cpp" line="910"/>
         <source>The selected path is not a folder!</source>
         <translation>Der gewählte Pfad ist kein Ordner.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="905"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>Sie haben keine Schreibberechtigung für den ausgewählten Ordner.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="933"/>
+        <location filename="../src/gui/folderman.cpp" line="942"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>Es existiert bereits eine Synchronisation vom Server zu diesem lokalen Ordner. Bitte einen anderen lokalen Ordner wählen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1017"/>
+        <location filename="../src/gui/folderman.cpp" line="1026"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>

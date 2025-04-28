@@ -1253,67 +1253,67 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
         <translation>Account disconnesso o messo in pausa</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="719"/>
+        <location filename="../src/gui/folderman.cpp" line="728"/>
         <source>Folder is about to be removed</source>
         <translation>La cartella sta per essere rimossa</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="746"/>
+        <location filename="../src/gui/folderman.cpp" line="755"/>
         <source> (backup)</source>
         <translation>(copia di sicurezza)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="751"/>
+        <location filename="../src/gui/folderman.cpp" line="760"/>
         <source> (backup %1)</source>
         <translation>(copia di sicurezza %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="802"/>
+        <location filename="../src/gui/folderman.cpp" line="811"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>La sincronia ha avuto successo, nessun conflitto.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="811"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>%1 (Sync is paused)</source>
         <translation> %1 (La sincronizzazione è sospesa)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="843"/>
+        <location filename="../src/gui/folderman.cpp" line="852"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>La cartella &apos;%1&apos; è già utilizzata dall&apos;applicazione %2!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="858"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>La cartella &apos;%1&apos; è già utilizzata da un altro account.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="873"/>
+        <location filename="../src/gui/folderman.cpp" line="882"/>
         <source>No valid folder selected!</source>
         <translation>Nessuna cartella valida selezionata!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="895"/>
+        <location filename="../src/gui/folderman.cpp" line="904"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>La cartella %1 è utilizzata in una sincronizzazione!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="937"/>
+        <location filename="../src/gui/folderman.cpp" line="946"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>La cartella locale %1 contiene già una cartella utilizzata in una connessione di sincronizzazione delle cartelle. Selezionane un&apos;altra!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="943"/>
+        <location filename="../src/gui/folderman.cpp" line="952"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>La cartella locale %1 contiene già una cartella utilizzata in una connessione di sincronizzazione delle cartelle. Selezionane un&apos;altra!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="951"/>
+        <location filename="../src/gui/folderman.cpp" line="960"/>
         <source>%1 Please pick another local folder!</source>
         <translation>%1 Scegli un&apos;altra cartella locale!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="900"/>
         <source>The selected path does not exist!</source>
         <translation>Il percorso selezionato non esiste!</translation>
     </message>
@@ -1323,22 +1323,22 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="901"/>
+        <location filename="../src/gui/folderman.cpp" line="910"/>
         <source>The selected path is not a folder!</source>
         <translation>Il percorso selezionato non è una cartella!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="905"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>Non hai i permessi di scrittura per la cartella selezionata!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="933"/>
+        <location filename="../src/gui/folderman.cpp" line="942"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>Esiste già una sincronizzazione dal server a questa cartella locale. Seleziona un&apos;altra cartella locale!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1017"/>
+        <location filename="../src/gui/folderman.cpp" line="1026"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>

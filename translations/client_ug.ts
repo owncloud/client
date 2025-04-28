@@ -1252,67 +1252,67 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ھېسابات ئۈزۈلۈپ قالدى ياكى توختىتىلدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="719"/>
+        <location filename="../src/gui/folderman.cpp" line="728"/>
         <source>Folder is about to be removed</source>
         <translation>ھۆججەت قىسقۇچ ئۆچۈرۈلمەكچى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="746"/>
+        <location filename="../src/gui/folderman.cpp" line="755"/>
         <source> (backup)</source>
         <translation>(زاپاسلاش)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="751"/>
+        <location filename="../src/gui/folderman.cpp" line="760"/>
         <source> (backup %1)</source>
         <translation>(زاپاسلاش% 1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="802"/>
+        <location filename="../src/gui/folderman.cpp" line="811"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>ماس قەدەم مۇۋەپپەقىيەتلىك بولدى ، ھەل قىلىنمىغان زىددىيەتلەر.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="811"/>
+        <location filename="../src/gui/folderman.cpp" line="820"/>
         <source>%1 (Sync is paused)</source>
         <translation>% 1 (ماسقەدەملەش توختىتىلدى)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="843"/>
+        <location filename="../src/gui/folderman.cpp" line="852"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>«% 1» ھۆججەت قىسقۇچى ئاللىقاچان% 2 قوللىنىشچان پروگراممىدا ئىشلىتىلىپ بولدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="858"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ھۆججەت قىسقۇچى &apos;% 1&apos; ئاللىبۇرۇن باشقا ھېسابات تەرىپىدىن ئىشلىتىلگەن.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="873"/>
+        <location filename="../src/gui/folderman.cpp" line="882"/>
         <source>No valid folder selected!</source>
         <translation>ئىناۋەتلىك ھۆججەت قىسقۇچ تاللانمىدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="895"/>
+        <location filename="../src/gui/folderman.cpp" line="904"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدۇ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="937"/>
+        <location filename="../src/gui/folderman.cpp" line="946"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچنى ئۆز ئىچىگە ئالىدۇ. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="943"/>
+        <location filename="../src/gui/folderman.cpp" line="952"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك ھۆججەت قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچتا بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="951"/>
+        <location filename="../src/gui/folderman.cpp" line="960"/>
         <source>%1 Please pick another local folder!</source>
         <translation>% 1 باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="900"/>
         <source>The selected path does not exist!</source>
         <translation>تاللانغان يول مەۋجۇت ئەمەس!</translation>
     </message>
@@ -1322,22 +1322,22 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="901"/>
+        <location filename="../src/gui/folderman.cpp" line="910"/>
         <source>The selected path is not a folder!</source>
         <translation>تاللانغان يول ھۆججەت قىسقۇچ ئەمەس!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="905"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا يېزىش ھوقۇقىڭىز يوق!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="933"/>
+        <location filename="../src/gui/folderman.cpp" line="942"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>مۇلازىمېتىردىن بۇ يەرلىك ھۆججەت قىسقۇچقا ماسقەدەملەش بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1017"/>
+        <location filename="../src/gui/folderman.cpp" line="1026"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
