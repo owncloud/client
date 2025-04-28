@@ -65,7 +65,7 @@ void AccountState::confirmUrlUpdate(const QUrl &newUrl)
     UpdateUrlDialog *updateUrlDialog = UpdateUrlDialog::fromAccount(_account, newUrl, ocApp()->gui()->settingsDialog());
 
     ownCloudGui::raise();
-    // I see no reason to use open here - exec is also modal but it's blocking until the user makes a choice. thus we
+    // I see no reason to use open here - exec is also modal, but it's blocking until the user makes a choice. thus we
     // don't need to create a slot or any other nonsense -> just get the job done!
     int res = updateUrlDialog->exec();
     if (res == QMessageBox::Accepted) {
@@ -236,7 +236,7 @@ void AccountState::setState(State state)
         QTimer::singleShot(0, this, [this, oldState] {
             // ensure the connection validator is done
             _queueGuard.unblock();
-            // update capabilites and fetch relevant settings
+            // update capabilities and fetch relevant settings
             _fetchCapabilitiesJob = new FetchServerSettingsJob(account(), this);
             connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
                 if (oldState == Connected || _state == Connected) {
@@ -290,7 +290,7 @@ bool AccountState::isConnected() const
     return _state == Connected;
 }
 
-void AccountState::tagLastSuccessfullETagRequest(const QDateTime &tp)
+void AccountState::tagLastSuccessfulETagRequest(const QDateTime &tp)
 {
     _timeOfLastETagCheck = tp;
 }

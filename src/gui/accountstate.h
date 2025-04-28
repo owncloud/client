@@ -151,10 +151,10 @@ public:
      *  the server to validate the connection if the last successful etag job
      *  was not so long ago.
      */
-    void tagLastSuccessfullETagRequest(const QDateTime &tp);
+    void tagLastSuccessfulETagRequest(const QDateTime &tp);
 
     /***
-     * The account is setup for the first time, this may take some time
+     * The account is set up for the first time, this may take some time
      */
     bool isSettingUp() const;
     void setSettingUp(bool settingUp);

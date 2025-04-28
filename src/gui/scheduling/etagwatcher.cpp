@@ -51,7 +51,7 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
                         info.etag = etag;
                         info.lastUpdate.reset();
                         if (f->accountState()) {
-                            f->accountState()->tagLastSuccessfullETagRequest(time);
+                            f->accountState()->tagLastSuccessfulETagRequest(time);
                         }
                     });
                 }
@@ -118,7 +118,7 @@ void ETagWatcher::startOC10EtagJob(Folder *f)
                             // If the responose had no valid "Date" header, use "now", as the job just finished.
                             lastResponse = QDateTime::currentDateTimeUtc();
                         }
-                        f->accountState()->tagLastSuccessfullETagRequest(lastResponse);
+                        f->accountState()->tagLastSuccessfulETagRequest(lastResponse);
                         updateEtag(f, requestEtagJob->etag());
                     } else {
                         qCWarning(lcEtagWatcher) << "Invalid empty etag received for" << f->displayName() << f->path() << requestEtagJob;
