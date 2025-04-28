@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include "gui/networkinformation.h"
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
@@ -45,8 +46,9 @@ class OWNCLOUDGUI_EXPORT AccountState : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Account *account READ accountForQml CONSTANT)
-    Q_PROPERTY(bool supportsSpaces READ supportsSpaces NOTIFY supportsSpacesChanged)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
+    // todo: #16
+    Q_PROPERTY(bool supportsSpaces READ supportsSpaces NOTIFY supportsSpacesChanged)
     Q_PROPERTY(AccountState::State state READ state NOTIFY stateChanged)
     QML_ELEMENT
     QML_UNCREATABLE("Only created by AccountManager")
@@ -149,20 +151,17 @@ public:
      *  the server to validate the connection if the last successful etag job
      *  was not so long ago.
      */
-    void tagLastSuccessfullETagRequest(const QDateTime &tp);
-    UpdateUrlDialog *updateUrlDialog(const QUrl &newUrl);
+    void tagLastSuccessfulETagRequest(const QDateTime &tp);
 
     /***
-     * The account is setup for the first time, this may take some time
+     * The account is set up for the first time, this may take some time
      */
     bool isSettingUp() const;
     void setSettingUp(bool settingUp);
 
-public Q_SLOTS:
-    /// Triggers a ping to the server to update state and
-    /// connection status and errors.
-    /// verifyServerState indicates that we must check the server
-    void checkConnectivity(bool verifyServerState = false);
+    /// Triggers a ping to the server to update state, connection status and errors.
+    /// blockJobs determines if we block the job queue while the connection is checked
+    void checkConnectivity(bool blockJobs = false);
 
 private:
     /// Use the account as parent
@@ -173,7 +172,6 @@ private:
 Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
-    void urlUpdated();
     void isSettingUpChanged();
     void supportsSpacesChanged();
 
@@ -192,12 +190,28 @@ private:
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
-    QPointer<ConnectionValidator> _connectionValidator;
-    QPointer<UpdateUrlDialog> _updateUrlDialog;
-    QPointer<TlsErrorDialog> _tlsDialog;
     bool _supportsSpaces = true;
-
     bool _settingUp = false;
+
+    ConnectionValidator *_connectionValidator;
+    void resetConnectionValidator();
+
+    void connectAccount();
+    void connectNetworkInformation();
+
+    void onNetworkReachabilityChanged(NetworkInformation::Reachability reachability);
+    void onNetworkMeteredChanged(bool isMetered);
+    void onBehindCaptivePortalChanged(bool isCaptive);
+
+    // this doesn't completely thrill me because it has dependencies on the rest of the gui but for now, it's
+    // ok and making it private is pretty sweet, too.
+    void confirmUrlUpdate(const QUrl &newUrl);
+
+    // handles ssl errors from the ConnectionValidator
+    // if there are ssl errors it will pop a dialog asking user to accept new certificate.
+    // if that is accepted, we update the certificate on the account, then rerun checkConnection using jobsWereBlocked,
+    // which is what was in play during the connection check that produced the error(s)
+    void handleSslConnectionErrors(const QList<QSslError> &errors, bool jobsWereBlocked);
 
     /**
      * Starts counting when the server starts being back up after 503 or

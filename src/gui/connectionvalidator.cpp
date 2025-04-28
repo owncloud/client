@@ -163,6 +163,8 @@ void ConnectionValidator::slotStatusFound(const QUrl &url, const QJsonObject &in
     if (_account->url() != url) {
         qCInfo(lcConnectionValidator()) << "status.php was redirected to" << url.toString() << "asking user to accept and abort for now";
         Q_EMIT _account->requestUrlUpdate(url);
+        // refactoring todo: if this really was a redirect, the result should probably not be "notFound", especially when the slot is
+        // handling the case "found". So confusing.
         reportResult(StatusNotFound);
         return;
     }
@@ -275,7 +277,6 @@ void ConnectionValidator::reportResult(Status status)
         _finished = true;
         qCDebug(lcConnectionValidator) << status << _duration.duration();
         Q_EMIT connectionResult(status, _errors);
-        deleteLater();
     }
 }
 

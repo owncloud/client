@@ -798,10 +798,12 @@ void ownCloudGui::runNewAccountWizard()
                     _settingsDialog->setCurrentAccount(accountStatePtr->account().data());
 
                     // ensure we are connected and fetch the capabilities
+                    // refactoring todo: WHAT is this doing here? we have a "legit" account state pointer. it has a checkConnection
+                    // that can do this job
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
 
                     QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(),
-                        [accountStatePtr, syncMode, dynamicRegistrationData, this](ConnectionValidator::Status status, const QStringList &) {
+                        [accountStatePtr, syncMode, dynamicRegistrationData, validator, this](ConnectionValidator::Status status, const QStringList &) {
                             switch (status) {
                             // a server we no longer support but that might work
                             case ConnectionValidator::ServerVersionMismatch:
@@ -879,8 +881,8 @@ void ownCloudGui::runNewAccountWizard()
                             default:
                                 Q_UNREACHABLE();
                             }
+                            validator->deleteLater();
                         });
-
 
                     validator->checkServer();
                 }

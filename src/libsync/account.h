@@ -236,6 +236,7 @@ Q_SIGNALS:
     void credentialsAsked();
 
     // e.g. when the approved SSL certificates changed
+    // todo: #15
     void wantsAccountSaved(Account *acc);
 
     void serverVersionChanged();
