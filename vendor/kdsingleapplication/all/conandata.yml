@@ -1,0 +1,10 @@
+sources:
+  "1.1.0":
+    url:
+    - "https://github.com/KDAB/KDSingleApplication/archive/refs/tags/v1.1.0.zip"
+    sha256: "5024fb8f7dcf7e42a1dd3218bd1f1f0be038abe91d35fd8aa594efaa6d58eae8"
+patches:
+  "1.1.0":
+    - patch_file: "patches/fbff57202b91c6214360803b7397cf7d607c2fbf.patch"
+      patch_description: "fix Qt6 link target"
+      patch_type: "conan"

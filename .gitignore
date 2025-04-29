@@ -4,6 +4,7 @@
 CMakeLists.txt.user*
 .vs/
 CMakeSettings.json
+CMakeUserPresets.json
 *~
 *.autosave
 doc/_build/*
