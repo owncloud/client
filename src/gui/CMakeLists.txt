@@ -73,7 +73,6 @@ set(client_SRCS
     translations.cpp
     creds/httpcredentialsgui.cpp
     creds/qmlcredentials.cpp
-    updateurldialog.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp

@@ -21,11 +21,12 @@
 #include "connectionvalidator.h"
 #include "creds/abstractcredentials.h"
 #include "jobqueue.h"
-#include "updateurldialog.h"
+
 #include <QByteArray>
 #include <QElapsedTimer>
 #include <QPointer>
 #include <memory>
+#include <qqmlintegration.h>
 
 class QDialog;
 class QMessageBox;

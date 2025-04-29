@@ -37,6 +37,7 @@ namespace OCC {
  *
  * We cannot use the capabilities call to test the login and the password because of
  * https://github.com/owncloud/core/issues/12930
+ * TODO: that issue is apparently no longer an issue. Should we start using the capabilities in that case?
  *
  * Here follows the state machine
 
@@ -76,11 +77,15 @@ namespace OCC {
 
     \endcode
  */
+
+class CoreJob;
+
 class OWNCLOUDGUI_EXPORT ConnectionValidator : public QObject
 {
     Q_OBJECT
 public:
     explicit ConnectionValidator(AccountPtr account, QObject *parent = nullptr);
+    ~ConnectionValidator() override;
 
     enum class ValidationMode {
         ValidateServer,
@@ -89,6 +94,7 @@ public:
     };
     Q_ENUM(ValidationMode)
 
+    // todo: should we add a status for attempted redirect?
     enum Status {
         Undefined,
         Connected,
@@ -131,8 +137,6 @@ protected Q_SLOTS:
     void checkAuthentication();
     void slotCheckServerAndAuth();
 
-    void slotStatusFound(const QUrl &url, const QJsonObject &info);
-
     void slotAuthFailed();
     void slotAuthSuccess();
 
@@ -145,12 +149,17 @@ private:
      */
     void reportResult(Status status);
 
+    void statusFound(const QUrl &url, const QJsonObject &info);
+    void checkServerJobFinished();
+
     QStringList _errors;
     AccountPtr _account;
     bool _clearCookies = false;
 
     Utility::ChronoElapsedTimer _duration;
     bool _finished = false;
+
+    CoreJob *_checkServerJob;
 
     ConnectionValidator::ValidationMode _mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;
 };
