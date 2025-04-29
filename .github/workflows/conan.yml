@@ -20,11 +20,6 @@ jobs:
     - name: Install Conan
       uses: conan-io/setup-conan@v1
 
-    # TODO: these should be conan recipies
-    - name: Install dependencies from Linux Packages
-      run: |
-        sudo apt-get install -y libre-graph-api-cpp-qt-client libkdsingleapplication-qt6-dev qtkeychain-qt6-dev
-
     - name: Add local recipe repository & set conan config
       shell: bash
       run: |
