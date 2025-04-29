@@ -6,6 +6,7 @@ qt/6.7.3
 nlohmann_json/3.11.3
 kdsingleapplication/1.1.0
 qtkeychain/0.15.0
+libregraphapi/1.0.4
 
 # Sparkle ?
 # AppImageUpdate ?

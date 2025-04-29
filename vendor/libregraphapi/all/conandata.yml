@@ -1,0 +1,4 @@
+sources:
+  "1.0.4":
+    url: "https://github.com/owncloud/libre-graph-api-cpp-qt-client/archive/refs/tags/v1.0.4.zip"
+    sha256: "7aeb1500f546ac885c7170861d878b037ff5cfcc7f0c28ab774329bb8b4208b8"
