@@ -246,8 +246,6 @@ Q_SIGNALS:
 
     void unknownConnectionState();
 
-    void requestUrlUpdate(const QUrl &newUrl);
-
     // the signal exists on the Account object as the Approvider itself can change during runtime
     void appProviderErrorOccured(const QString &error);
 

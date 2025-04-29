@@ -19,7 +19,6 @@
 #include "gui/owncloudgui.h"
 #include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
-#include "gui/updateurldialog.h"
 
 #include <QApplication>
 #include <QNetworkReply>
@@ -41,7 +40,7 @@ ResolveUrlJobFactory::ResolveUrlJobFactory(QNetworkAccessManager *nam)
 CoreJob *ResolveUrlJobFactory::startJob(const QUrl &url, QObject *parent)
 {
     QNetworkRequest req(Utility::concatUrlPath(url, QStringLiteral("status.php")));
-    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
 
     auto *job = new CoreJob(nam()->get(req), parent);
 
@@ -62,32 +61,9 @@ CoreJob *ResolveUrlJobFactory::startJob(const QUrl &url, QObject *parent)
             const auto newUrl = reply->url().adjusted(QUrl::RemoveFilename);
 
             if (newUrl != oldUrl) {
-                qCInfo(lcResolveUrl) << oldUrl << "was redirected to" << newUrl;
-
-                if (newUrl.scheme() == QLatin1String("https") && oldUrl.host() == newUrl.host()) {
-                    qCInfo(lcResolveUrl()) << "redirect accepted automatically";
-                    setJobResult(job, newUrl);
-                } else {
-                    auto *dialog = new UpdateUrlDialog(
-                        QStringLiteral("Confirm new URL"),
-                        QStringLiteral(
-                            "While accessing the server, we were redirected from %1 to another URL: %2\n\n"
-                            "Do you wish to permanently use the new URL?")
-                            .arg(oldUrl.toString(), newUrl.toString()),
-                        oldUrl,
-                        newUrl,
-                        nullptr);
-
-                    QObject::connect(dialog, &UpdateUrlDialog::accepted, job, [=]() {
-                        setJobResult(job, newUrl);
-                    });
-
-                    QObject::connect(dialog, &UpdateUrlDialog::rejected, job, [=]() {
-                        setJobError(job, QApplication::translate("ResolveUrlJobFactory", "User rejected redirect from %1 to %2").arg(oldUrl.toDisplayString(), newUrl.toDisplayString()));
-                    });
-
-                    dialog->show();
-                }
+                qCWarning(lcResolveUrl) << oldUrl << " redirect to " << newUrl << " is rejected";
+                setJobError(job,
+                    QApplication::translate("ResolveUrlJobFactory", "Rejected redirect from %1 to %2").arg(oldUrl.toDisplayString(), newUrl.toDisplayString()));
             } else {
                 setJobResult(job, newUrl);
             }

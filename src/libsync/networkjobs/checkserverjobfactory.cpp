@@ -34,11 +34,6 @@ class CheckServerCoreJob : OCC::CoreJob
 public:
     using OCC::CoreJob::CoreJob;
 
-private:
-    // doesn't concern users of the job factory
-    // we just need a place to maintain these variables, but the factory is likely deleted before the job has finished
-    bool _redirectDistinct;
-    bool _firstTry;
 };
 
 }
@@ -65,6 +60,14 @@ QUrl CheckServerJobResult::serverUrl() const
     return _serverUrl;
 }
 
+// thinking out loud here:
+// it may be we can turn this into a job adapter.
+// consider:
+// adapter::createFromAccount returns the adapter
+// adapter::startJob -> returns nothing!
+// could signal out "finished" with a copy of the result?
+// once "finished" it could delete the job, woopie do!
+// caller could keep an adapter around as member for re-use if needed, or hit and quit.
 CheckServerJobFactory CheckServerJobFactory::createFromAccount(const AccountPtr &account, bool clearCookies, QObject *parent)
 {
     // in order to receive all ssl erorrs we need a fresh QNam
@@ -85,22 +88,22 @@ CoreJob *CheckServerJobFactory::startJob(const QUrl &url, QObject *parent)
 
     auto req = makeRequest(Utility::concatUrlPath(url, QStringLiteral("status.php")));
 
-    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
+    // We never want to follow any redirects. At least until proven otherwise.
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     req.setRawHeader(QByteArrayLiteral("OC-Connection-Validator"), QByteArrayLiteral("desktop"));
-    req.setMaximumRedirectsAllowed(_maxRedirectsAllowed);
+    req.setMaximumRedirectsAllowed(0);
 
     auto job = new CheckServerCoreJob(nam()->get(req), parent);
 
-    QObject::connect(job->reply(), &QNetworkReply::redirected, job, [job] {
-        const auto code = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        if (code == 302 || code == 307) {
-            job->_redirectDistinct = false;
-        }
-    });
+    // make this handle maintenance mode - only if necessary
+    /*  QObject::connect(job->reply(), &QNetworkReply::redirected, job, [job] {
+          //  const auto code = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+          // if (code == 302 || code == 307) {
+          // job->_redirectDistinct = false;
+          //}
+      });*/
 
     QObject::connect(job->reply(), &QNetworkReply::finished, job, [url, job] {
-        // need a mutable copy
-        auto serverUrl = url;
 
         const QUrl targetUrl = job->reply()->url().adjusted(QUrl::RemoveFilename);
 
@@ -111,21 +114,10 @@ CoreJob *CheckServerJobFactory::startJob(const QUrl &url, QObject *parent)
             qCWarning(lcCheckServerJob) << "No SSL session identifier / session ticket is used, this might impact sync performance negatively.";
         }
 
-        if (!Utility::urlEqual(serverUrl, targetUrl)) {
-            if (job->_redirectDistinct) {
-                serverUrl = targetUrl;
-            } else {
-                if (job->_firstTry) {
-                    qCWarning(lcCheckServerJob) << "Server might have moved, retry";
-                    job->_firstTry = false;
-                    job->_redirectDistinct = true;
-
-                    // FIXME
-                } else {
-                    qCWarning(lcCheckServerJob) << "We got a temporary moved server aborting";
-                    setJobError(job, QStringLiteral("Illegal redirect by server"));
-                }
-            }
+        // I'm not sure this can even happen when using ManualRedirectPolicy
+        if (!Utility::urlEqual(url, targetUrl)) {
+            qCWarning(lcCheckServerJob) << "We got a redirect from " << url << " to " << targetUrl << ", aborting";
+            setJobError(job, QStringLiteral("Redirect from server"));
         }
 
         const int httpStatus = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -147,7 +139,7 @@ CoreJob *CheckServerJobFactory::startJob(const QUrl &url, QObject *parent)
             qCInfo(lcCheckServerJob) << "status.php returns: " << status << " " << job->reply()->error() << " Reply: " << job->reply();
 
             if (status.object().contains(QStringLiteral("installed"))) {
-                CheckServerJobResult result(status.object(), serverUrl);
+                CheckServerJobResult result(status.object(), url);
                 setJobResult(job, QVariant::fromValue(result));
             } else {
                 qCWarning(lcCheckServerJob) << "No proper answer on " << job->reply()->url();

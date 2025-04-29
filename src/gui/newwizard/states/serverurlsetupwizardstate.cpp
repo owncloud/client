@@ -116,6 +116,8 @@ void ServerUrlSetupWizardState::evaluatePage()
         // therefore, we run the corresponding discovery job
         auto checkWebFingerAuthJob = Jobs::DiscoverWebFingerServiceJobFactory(_context->accessManager()).startJob(serverUrl, this);
 
+        // proposal: wrap this as a new adapter class a la the connection validator
+        // important: the adapter probably needs to be a member
         connect(checkWebFingerAuthJob, &CoreJob::finished, this, [job = checkWebFingerAuthJob, serverUrl, this]() {
             // in case any kind of error occurs, we assume the WebFinger service is not available
             if (!job->success()) {
