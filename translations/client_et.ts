@@ -296,27 +296,27 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
 <context>
     <name>FolderDelegate</name>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="31"/>
         <source>Folder Sync</source>
         <translation>Kaustade sünkroonimine</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Space</source>
         <translation>Lisa ruum</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Folder</source>
         <translation>Lisa kaust</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
         <translation><numerusform>Oled sünkroniseerimas %1 kausta %n-st</numerusform><numerusform>Oled sünkroniseerimas %1 kausta %n-st</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
         <translation><numerusform>Oled sünkroniseerimas %1 ruumi %n-st</numerusform><numerusform>Oled sünkroniseerimas %1 ruumi %n-st</numerusform></translation>
     </message>
@@ -1012,7 +1012,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
         <translation>Ühtegi ownCloud kontot pole seadistatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Palun uuenda server viimasele versioonile ning taaskäivita klient.</translation>
     </message>
@@ -1027,12 +1027,12 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
         <translation>aegumine</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="217"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
         <source>The provided credentials are not correct</source>
         <translation>Sisestatud kasutajatunnused pole õiged</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>The configured server for this client is too old.</source>
         <translation>Selle kliendi jaoks seadistatud server on liiga vana.</translation>
     </message>
@@ -3428,22 +3428,22 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::UpdateUrlDialog</name>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="39"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
         <source>Change URL permanently to %1</source>
         <translation>Vaheta URL püsivalt %1-ks</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="40"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
         <source>Reject</source>
         <translation>Lükka tagasi</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="45"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
         <source>Url update requested for %1</source>
         <translation>Url&apos;i uuendus %1 jaoks küsitud</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="46"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
         <translation>URL %1 vahetati %2-st %3-ks, kas nõustud muudetud URL-iga?</translation>
     </message>
@@ -3925,7 +3925,7 @@ Kas olete kindel, et soovite jätkata?</translation>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="903"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="905"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>Kasutaja peatas konto &apos;%1&apos; sünkroniseerimise</translation>
     </message>

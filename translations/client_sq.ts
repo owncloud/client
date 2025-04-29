@@ -296,27 +296,27 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>FolderDelegate</name>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="31"/>
         <source>Folder Sync</source>
         <translation>Njëkohësim Dosjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Space</source>
         <translation>Shtoni Hapësirë</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Folder</source>
         <translation>Shtoni Dosje</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
         <translation><numerusform>Po bëni njëkohësimin e %1 nga %n dosjeje</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %n dosjeve</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
         <translation><numerusform>Po bëni njëkohësimin e %1 nga %n hapësire</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %2 hapësirave</numerusform></translation>
     </message>
@@ -1012,7 +1012,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <translation>Nuk ka llogari ownCloud të formësuar</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Ju lutemi, përditësoni shërbyesin me versionin më të ri dhe rinisni klientin.</translation>
     </message>
@@ -1027,12 +1027,12 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <translation>mbarim kohe</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="217"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
         <source>The provided credentials are not correct</source>
         <translation>Kredencialet e dhëna s’janë të sakta</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>The configured server for this client is too old.</source>
         <translation>Shërbyesi i formësuar për këtë klient është shumë i vjetër.</translation>
     </message>
@@ -3429,22 +3429,22 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UpdateUrlDialog</name>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="39"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
         <source>Change URL permanently to %1</source>
         <translation>Ndryshoje URL-në përgjithnjë në %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="40"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
         <source>Reject</source>
         <translation>Hidheni tej</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="45"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
         <source>Url update requested for %1</source>
         <translation>U kërkua përditësim URL-je për %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="46"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
         <translation>URL-ja për %1 ndryshoi nga %2 në %3, doni të pranohet URL-ja e ndryshuar?</translation>
     </message>
@@ -3926,7 +3926,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="903"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="905"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>Përdoruesi ndali njëkohësimin për llogarinë “%1”</translation>
     </message>

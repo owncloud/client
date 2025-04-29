@@ -296,27 +296,27 @@ Utilità desktop per la sincronizzazione dei file.</translation>
 <context>
     <name>FolderDelegate</name>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="31"/>
         <source>Folder Sync</source>
         <translation>Sincronizzazione cartella</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Space</source>
         <translation>Aggiungi Spazio</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Folder</source>
         <translation>Aggiungi cartella</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
@@ -1012,7 +1012,7 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
         <translation>Nessun account ownCloud configurato.</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Aggiorna all&apos;ultima versione del server e riavvia il client.</translation>
     </message>
@@ -1027,12 +1027,12 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
         <translation>timeout</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="217"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
         <source>The provided credentials are not correct</source>
         <translation>Le credenziali fornite non sono corrette</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>The configured server for this client is too old.</source>
         <translation>Il server configurato per questo client è troppo vecchio.</translation>
     </message>
@@ -3429,22 +3429,22 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::UpdateUrlDialog</name>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="39"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
         <source>Change URL permanently to %1</source>
         <translation>Cambia URL permanentemente a %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="40"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
         <source>Reject</source>
         <translation>Rifiuta</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="45"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
         <source>Url update requested for %1</source>
         <translation>Aggiornamento dell&apos;URL richiesto per %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="46"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
         <translation>La URL per %1 è è stata modificata da %2 a %3, accetti la modifica alla URL?</translation>
     </message>
@@ -3926,7 +3926,7 @@ Vuoi procedere comunque?</translation>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="903"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="905"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>L&apos;utente ha sospeso la sincronizzazione dell&apos;account &apos;%1&apos;</translation>
     </message>

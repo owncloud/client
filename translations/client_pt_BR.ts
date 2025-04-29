@@ -296,27 +296,27 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
 <context>
     <name>FolderDelegate</name>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="31"/>
         <source>Folder Sync</source>
         <translation>Sincronização de Pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Space</source>
         <translation>Add Space</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
         <source>Add Folder</source>
         <translation>Adicionar Pasta</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
         <translation><numerusform>Você está sincronizando %1 de %n pasta</numerusform><numerusform>Você está sincronizando %1 de %n pastas</numerusform><numerusform>Você está sincronizando %1 de %n pastas</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
         <translation><numerusform>Você está sincronizando %1 de %n espaço</numerusform><numerusform>Você está sincronizando %1 de %n espaços</numerusform><numerusform>Você está sincronizando %1 de %n espaços</numerusform></translation>
     </message>
@@ -1013,7 +1013,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
         <translation>Nenhuma conta ownCloud configurada</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Por favor, atualize para o último servidor e reinicie o cliente.</translation>
     </message>
@@ -1028,12 +1028,12 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
         <translation>tempo limite</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="217"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
         <source>The provided credentials are not correct</source>
         <translation>As credenciais fornecidas não estão corretas</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="240"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
         <source>The configured server for this client is too old.</source>
         <translation>O servidor configurado para este cliente é muito antigo.</translation>
     </message>
@@ -3430,22 +3430,22 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
 <context>
     <name>OCC::UpdateUrlDialog</name>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="39"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
         <source>Change URL permanently to %1</source>
         <translation>Alterar o URL permanentemente para %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="40"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
         <source>Reject</source>
         <translation>Rejeitar </translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="45"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
         <source>Url update requested for %1</source>
         <translation>A atualização do URL foi solicitada para %1 </translation>
     </message>
     <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="46"/>
+        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
         <translation>O URL de %1 mudou de %2 para %3. Você deseja aceitar o URL alterado?</translation>
     </message>
@@ -3928,7 +3928,7 @@ Tem certeza de que deseja continuar?</translation>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="903"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="905"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>O usuário pausou a sincronização da conta &apos;%1&apos;</translation>
     </message>
