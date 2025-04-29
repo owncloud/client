@@ -27,6 +27,7 @@
 #include "resources/resources.h"
 #include "theme.h"
 
+#include <QMessageBox>
 #include <QScreen>
 #include <QWindow>
 

@@ -22,11 +22,14 @@
 #include "creds/abstractcredentials.h"
 #include "jobqueue.h"
 
+#include "account.h"
+
 #include <QByteArray>
 #include <QElapsedTimer>
 #include <QPointer>
 #include <memory>
 #include <qqmlintegration.h>
+
 
 class QDialog;
 class QMessageBox;
@@ -34,7 +37,6 @@ class QSettings;
 
 namespace OCC {
 
-class Account;
 class QuotaInfo;
 class TlsErrorDialog;
 class FetchServerSettingsJob;
