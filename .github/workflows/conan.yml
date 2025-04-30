@@ -35,7 +35,7 @@ jobs:
       shell: bash
       run: |
         cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DWITH_APPIMAGEUPDATER=OFF
         cmake --build .
 
 
