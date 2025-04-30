@@ -23,7 +23,7 @@ class PackageConan(ConanFile):
         "fPIC": [True, False],
     }
     default_options = {
-        "shared": False,
+        "shared": True,
         "fPIC": True,
     }
 
@@ -80,4 +80,5 @@ class PackageConan(ConanFile):
         rmdir(self, os.path.join(self.package_folder, "lib", "cmake"))
 
     def package_info(self):
-        self.cpp_info.libs = ["qt6keychain"]
+        self.cpp_info.set_property("cmake_file_name", "Qt6Keychain")
+        self.cpp_info.set_property("cmake_target_name", "Qt6Keychain::Qt6Keychain")
