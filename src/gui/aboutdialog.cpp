@@ -17,6 +17,8 @@
 #include "gui/guiutility.h"
 #include "libsync/theme.h"
 
+#include <QMessageBox>
+
 #ifdef WITH_AUTO_UPDATER
 #include "libsync/configfile.h"
 #include "updater/ocupdater.h"
