@@ -114,8 +114,7 @@ void ConnectionValidator::slotCheckServerAndAuth()
 {
     Q_ASSERT(_checkServerJob == nullptr);
     auto checkServerFactory = CheckServerJobFactory::createFromAccount(_account, _clearCookies, this);
-    // todo: ask Erik about this - how does this work? that we create the job as part of a start operation, THEN connect the signals? How do we know the
-    // connection completes before the signal is sent?
+
     _checkServerJob = checkServerFactory.startJob(_account->url(), this);
 
     connect(_checkServerJob->reply()->manager(), &AccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
@@ -175,12 +174,10 @@ void ConnectionValidator::statusFound(const QUrl &url, const QJsonObject &info)
                                   << url << " with version "
                                   << info.value(QLatin1String("versionstring")).toString();
 
-    // Update server URL in case of redirection
+    // this should never happen since we now use QNetworkRequest::ManualRedirectPolicy in the request - the result should be "not found" before we even
+    // get here, but leaving this in place as a safety net
     if (_account->url() != url) {
-        qCWarning(lcConnectionValidator()) << "status.php was redirected to" << url.toString() << "asking user to accept and abort for now";
-
-        //  Q_EMIT _account->requestUrlUpdate(url);
-        // but this should never happen - the result should be "not found" before we even get here.
+        qCWarning(lcConnectionValidator()) << "status.php was redirected to" << url.toString() << "redirects are not accepted";
         reportResult(StatusNotFound);
         return;
     }
