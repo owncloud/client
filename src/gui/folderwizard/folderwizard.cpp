@@ -36,6 +36,7 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QUrl>
 
 

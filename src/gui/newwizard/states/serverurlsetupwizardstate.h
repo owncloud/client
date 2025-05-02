@@ -29,6 +29,9 @@ public:
     [[nodiscard]] SetupWizardState state() const override;
 
     void evaluatePage() override;
+
+private:
+    QUrl calculateUrl() const;
 };
 
 } // OCC::Wizard

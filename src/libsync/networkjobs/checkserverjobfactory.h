@@ -49,8 +49,6 @@ public:
 
     CoreJob *startJob(const QUrl &url, QObject *parent) override;
 
-private:
-    int _maxRedirectsAllowed = 5;
 };
 
 } // OCC

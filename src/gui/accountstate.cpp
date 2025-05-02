@@ -13,7 +13,6 @@
  */
 
 #include "accountstate.h"
-#include "account.h"
 #include "application.h"
 #include "configfile.h"
 
@@ -30,6 +29,7 @@
 #include "theme.h"
 
 #include <QFontMetrics>
+#include <QMessageBox>
 #include <QRandomGenerator>
 #include <QSettings>
 #include <QTimer>
@@ -52,31 +52,6 @@ auto supportsSpacesC()
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountState, "gui.account.state", QtInfoMsg)
-
-
-void AccountState::confirmUrlUpdate(const QUrl &newUrl)
-{
-    // guard to prevent multiple dialogs
-    if (newUrl == _account->url()) {
-        return;
-    }
-
-    // todo: fix this so we can create it on stack or heap. this is gross.
-    UpdateUrlDialog *updateUrlDialog = UpdateUrlDialog::fromAccount(_account, newUrl, ocApp()->gui()->settingsDialog());
-
-    ownCloudGui::raise();
-    // I see no reason to use open here - exec is also modal, but it's blocking until the user makes a choice. thus we
-    // don't need to create a slot or any other nonsense -> just get the job done!
-    int res = updateUrlDialog->exec();
-    if (res == QMessageBox::Accepted) {
-        _account->setUrl(newUrl);
-        // todo: #15
-        Q_EMIT _account->wantsAccountSaved(_account.data());
-        checkConnectivity();
-    }
-    delete updateUrlDialog;
-}
-
 
 AccountState::AccountState(AccountPtr account)
     : QObject()
@@ -129,16 +104,6 @@ void AccountState::connectAccount()
     connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
     connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
-
-    // todo: #14 Erik thinks the queued connection is "correct" based on the PR it's associated with:
-    // https://github.com/owncloud/client/pull/9202
-    // My gut tells me that using a queued connection is in line with all the unexplained uses of one shot timer (no timeout) to "schedule"
-    // activity on the main event loop. If that is the root of using queued connection here (in hope that something else happens before we call
-    // this slot) we are in BIG trouble. I need to test this "normal" impl before making any final decision.
-
-    connect(_account.data(), &Account::requestUrlUpdate, this, &AccountState::confirmUrlUpdate);
-
-    //   connect(_account.data(), &Account::requestUrlUpdate, this, &AccountState::updateUrlDialog, Qt::QueuedConnection);
 
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->gui()->settingsDialog());
