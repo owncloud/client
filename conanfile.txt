@@ -22,6 +22,8 @@ CMakeToolchain
 [options]
 qt/*:shared=True
 qt/*:qtdeclarative=True
+qt/*:qtquickcontrols2=True
+qt/*:qtshadertools=True
 qt/*:qttools=True
 qt/*:gui=True
 qt/*:widgets=True
