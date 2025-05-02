@@ -1,0 +1,66 @@
+From 03abcbabbd4caa11048d19d95b23f165cd7a5361 Mon Sep 17 00:00:00 2001
+From: Seth Parker <csparker247@gmail.com>
+Date: Wed, 31 Mar 2021 15:34:10 -0400
+Subject: [PATCH] macdeployqt: Fix plugin resolution bugs for non-standard
+ installs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Uses QLibraryInfo to resolve plugins at installed locations.
+
+[ChangeLog][macOS][macdeployqt] Uses QLibraryInfo to resolve plugins at install locations.
+
+Fixes: QTBUG-91644
+Change-Id: Ie309061024abd7a58ea62d707716342c99897c26
+Reviewed-by: Morten Johan Sørvig <morten.sorvig@qt.io>
+---
+ src/macdeployqt/macdeployqt/main.cpp | 30 ++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/src/macdeployqt/macdeployqt/main.cpp b/src/macdeployqt/macdeployqt/main.cpp
+index 8914e835b..628a71378 100644
+--- a/src/macdeployqt/macdeployqt/main.cpp
++++ b/src/macdeployqt/macdeployqt/main.cpp
+@@ -27,6 +27,7 @@
+ ****************************************************************************/
+ #include <QCoreApplication>
+ #include <QDir>
++#include <QLibraryInfo>
+
+ #include "../shared/shared.h"
+
+@@ -236,10 +237,28 @@ int main(int argc, char **argv)
+     }
+
+-    if (plugins && !deploymentInfo.qtPath.isEmpty()) {
+-        deploymentInfo.pluginPath = deploymentInfo.qtPath + "/plugins";
+-        LogNormal();
+-        deployPlugins(appBundlePath, deploymentInfo, useDebugLibs);
+-        createQtConf(appBundlePath);
++    // Handle plugins
++    if (plugins) {
++        // Set the plugins search directory
++        deploymentInfo.pluginPath = QLibraryInfo::location(QLibraryInfo::PluginsPath);
++
++        // Sanity checks
++        if (deploymentInfo.pluginPath.isEmpty()) {
++            LogError() << "Missing Qt plugins path\n";
++            return 1;
++        }
++
++        if (!QDir(deploymentInfo.pluginPath).exists()) {
++            LogError() << "Plugins path does not exist" << deploymentInfo.pluginPath << "\n";
++            return 1;
++        }
++
++        // Deploy plugins
++        Q_ASSERT(!deploymentInfo.pluginPath.isEmpty());
++        if (!deploymentInfo.pluginPath.isEmpty()) {
++            LogNormal();
++            deployPlugins(appBundlePath, deploymentInfo, useDebugLibs);
++            createQtConf(appBundlePath);
++        }
+     }
+
+     if (runStripEnabled)

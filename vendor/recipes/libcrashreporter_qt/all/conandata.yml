@@ -1,0 +1,4 @@
+sources:
+  "0.1.0":
+    url: "https://github.com/DeepDiver1975/libcrashreporter-qt/releases/download/v0.1.0/libcrashreporter-qt-0.1.0.tar.gz"
+    sha256: "abdc6d2df3db8d3baecb9480ad9325f7775d4f7f31f4ee86104b8c02542a99d2"

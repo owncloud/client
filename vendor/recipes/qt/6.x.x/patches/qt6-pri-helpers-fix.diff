@@ -1,0 +1,15 @@
+--- QtPriHelpers.cmake.original	2021-08-03 23:38:06.343653948 +0300
++++ QtPriHelpers.cmake	2021-08-03 23:26:24.483637483 +0300
+@@ -30,7 +30,11 @@
+                 if(lib_target_type STREQUAL "INTERFACE_LIBRARY")
+                     get_target_property(iface_libs ${lib_target} INTERFACE_LINK_LIBRARIES)
+                     if(iface_libs)
+-                        list(PREPEND lib_targets ${iface_libs})
++                        foreach (iface_lib ${iface_libs})
++                            if (NOT "${iface_lib}" STREQUAL "${lib_target}")
++                                list(PREPEND lib_targets ${iface_lib})
++                            endif ()
++                        endforeach ()
+                     endif()
+                 else()
+                     list(APPEND lib_libs "$<TARGET_LINKER_FILE:${lib_target}>")

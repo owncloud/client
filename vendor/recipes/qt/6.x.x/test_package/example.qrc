@@ -1,0 +1,5 @@
+<RCC>
+    <qresource>
+        <file>resource.txt</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,28 @@
+From b404930e122013e76ba8fe165f3432288c051438 Mon Sep 17 00:00:00 2001
+From: shjiu <shanheng.jiu@qt.io>
+Date: Fri, 17 Nov 2023 09:41:31 +0900
+Subject: [PATCH] Fix build error with lambda on GCC 9.2
+
+This patch is specific to the return type of updatePtrSimd function as boolean to avoid the bug of GCC 9.2.
+
+Fixes: QTBUG-112920
+Pick-to: 6.7 6.6 6.5
+Change-Id: I21cb1f6dda34448b2290ab72ec280b6b2a3732c9
+Reviewed-by: Volker Hilsheimer <volker.hilsheimer@qt.io>
+---
+ src/corelib/text/qstring.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/corelib/text/qstring.cpp b/src/corelib/text/qstring.cpp
+index 2dc415584f3..d9e89f8e5bb 100644
+--- a/src/corelib/text/qstring.cpp
++++ b/src/corelib/text/qstring.cpp
+@@ -471,7 +471,7 @@ static bool simdTestMask(const char *&ptr, const char *end, quint32 maskval)
+     if constexpr (UseSse4_1) {
+ #  ifndef Q_OS_QNX              // compiler fails in the code below
+         __m128i mask;
+-        auto updatePtrSimd = [&](__m128i data) {
++        auto updatePtrSimd = [&](__m128i data) -> bool {
+             __m128i masked = _mm_and_si128(mask, data);
+             __m128i comparison = _mm_cmpeq_epi16(masked, _mm_setzero_si128());
+             uint result = _mm_movemask_epi8(comparison);

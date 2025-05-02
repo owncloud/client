@@ -1,0 +1,13 @@
+diff --git a/chromium/base/strings/utf_string_conversions.cc b/chromium/base/strings/utf_string_conversions.cc
+index 12ed1f3e0..004ac6855 100644
+--- a/chromium/base/strings/utf_string_conversions.cc
++++ b/chromium/base/strings/utf_string_conversions.cc
+@@ -15,7 +15,7 @@
+ #include "base/third_party/icu/icu_utf.h"
+ #include "build/build_config.h"
+ 
+-#if defined(OS_MAC)
++#if defined(OS_MAC) && __MAC_OS_X_VERSION_MAX_ALLOWED < 120300
+ namespace std {
+ inline namespace __1 {
+ template class basic_string<base::char16, base::string16_internals::string16_char_traits>;

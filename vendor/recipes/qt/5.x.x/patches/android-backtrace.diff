@@ -1,0 +1,19 @@
+diff --git a/src/corelib/global/qlogging.cpp b/src/corelib/global/qlogging.cpp
+index 89f49324c..dedf78fe5 100644
+--- a/src/corelib/global/qlogging.cpp
++++ b/src/corelib/global/qlogging.cpp
+@@ -107,7 +107,13 @@
+ #      define QLOGGING_HAVE_BACKTRACE
+ #    endif
+ #  elif (defined(__GLIBC__) && defined(__GLIBCXX__)) || (__has_include(<cxxabi.h>) && __has_include(<execinfo.h>))
+-#    define QLOGGING_HAVE_BACKTRACE
++#    ifdef __ANDROID_API__
++#      if __ANDROID_API__ >= 33
++#        define QLOGGING_HAVE_BACKTRACE
++#      endif
++#    else
++#      define QLOGGING_HAVE_BACKTRACE
++#    endif
+ #  endif
+ #endif
+ 
