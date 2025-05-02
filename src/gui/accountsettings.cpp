@@ -540,9 +540,16 @@ void AccountSettings::buildManageAccountMenu()
         // to work in ~60% of the cases. If it doesn't work, select e.g settings, switch back, and try
         // again.
         connect(ui->manageAccountButton, &QPushButton::clicked, this, [menu, logInOutAction, button = ui->manageAccountButton] {
-            auto pos = button->mapToGlobal(QPoint(0, button->height()));
-            menu->popup(pos);
-            menu->setActiveAction(logInOutAction);
+            if (Utility::isLinux()) {
+                menu->popup(QCursor::pos());
+                menu->setActiveAction(logInOutAction);
+                menu->setFocus();
+            } else {
+                // Windows
+                auto pos = button->mapToGlobal(QPoint(0, button->height()));
+                menu->popup(pos);
+                menu->setActiveAction(logInOutAction);
+            }
         });
     }
 }
