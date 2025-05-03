@@ -390,22 +390,22 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Veateade:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Hoiatus:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Veateade:&lt;/b&gt; &lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Hoiatus:&lt;/b&gt; &lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -549,32 +549,32 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <translation>Versioonid</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="91"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="93"/>
         <source>beta</source>
         <translation>beeta</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="159"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>Change update channel?</source>
         <translation>Muuda uuenduskanalit?</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="162"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
         <translation>&lt;html&gt;Uuenduste kanal otsustab, milliseid kliendiuuendusi paigaldamiseks pakutakse.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; sisaldab ainult uuendusi, mida peetakse töökindlateks&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; sisaldab ainult uuendusi, mida peetakse töökindlateks, kuid &lt;b&gt;eemaldab toe &quot;ownCloud 10&quot;-le&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Vanemale versioonile tagasiminek ei ole toetatud. Kui lülitud stabiilsele kanalile, siis rakendatakse see ainult koos järgmise suurema uuendusega.&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="167"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
         <translation>&lt;li&gt;&quot;beta&quot; võib sisaldada uuemaid võimalusi ja veaparandusi, kuid ei ole veel täielikult testitud&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Change update channel</source>
         <translation>Uuenduskanali muutmine</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
         <source>Cancel</source>
         <translation>Loobu</translation>
     </message>
@@ -1008,32 +1008,32 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="66"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="75"/>
         <source>No ownCloud account configured</source>
         <translation>Ühtegi ownCloud kontot pole seadistatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Palun uuenda server viimasele versioonile ning taaskäivita klient.</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="145"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="161"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>Autentimise viga: kasutajanimi või parool on vale</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="127"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="143"/>
         <source>timeout</source>
         <translation>aegumine</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
         <source>The provided credentials are not correct</source>
         <translation>Sisestatud kasutajatunnused pole õiged</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>The configured server for this client is too old.</source>
         <translation>Selle kliendi jaoks seadistatud server on liiga vana.</translation>
     </message>
@@ -1413,17 +1413,17 @@ Vastasel juhul kaotad ligipääsu oma sünkroniseeritud kaustale!</translation>
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="164"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Virtuaalsed failid ei ole valitud kausta jaoks saadaval</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="177"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>Lisa kaustade sünkroniseerimise ühendus</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="179"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>Lisa sünkroniseerimisühendus</translation>
     </message>
@@ -2797,22 +2797,22 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="96"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="97"/>
         <source>Hide</source>
         <translation>Peida</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="105"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
         <source>Quit %1</source>
         <translation>Lõpeta %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Kas olete kindel, et soovite %1-st väljuda?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="138"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="139"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
@@ -3427,29 +3427,6 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
 </context>
 <context>
-    <name>OCC::UpdateUrlDialog</name>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
-        <source>Change URL permanently to %1</source>
-        <translation>Vaheta URL püsivalt %1-ks</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
-        <source>Reject</source>
-        <translation>Lükka tagasi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
-        <source>Url update requested for %1</source>
-        <translation>Url&apos;i uuendus %1 jaoks küsitud</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
-        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation>URL %1 vahetati %2-st %3-ks, kas nõustud muudetud URL-iga?</translation>
-    </message>
-</context>
-<context>
     <name>OCC::UpdaterScheduler</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
@@ -3630,34 +3607,34 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
         <source>Invalid server URL</source>
         <translation>Vigane serveri URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
         <source>Insecure connection</source>
         <translation>Ebaturvaline ühendus</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="97"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>Ühendus %1 on ebaturvaline. 
 Kas olete kindel, et soovite jätkata?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="104"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
         <source>Confirm</source>
         <translation>Kinnita</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="107"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
         <source>Insecure server rejected by user</source>
         <translation>Ebaturvaline server on kasutaja poolt tagasi lükatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Päring küsitud URL-ile ebaõnnestus päringu väärtusega: %1</translation>
     </message>
@@ -3973,22 +3950,22 @@ Kas olete kindel, et soovite jätkata?</translation>
 <context>
     <name>ResolveUrlJobFactory</name>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Ühilduvat serverit asukohas %1 ei õnnestunud tuvastada</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
-        <source>User rejected redirect from %1 to %2</source>
-        <translation>Kasutaja lükkas tagasi ümbersuunamise asukohast %1 asukohta %2</translation>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
         <source>SSL Error: %1</source>
         <translation>SSL viga: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
         <source>User rejected invalid SSL certificate</source>
         <translation>Kasutaja lükkas tagasi vigase SSL sertifikaadi</translation>
     </message>
