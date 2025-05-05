@@ -1,0 +1,56 @@
+From fb103459151fcf02706dd5abda95c716a934d610 Mon Sep 17 00:00:00 2001
+From: Allan Sandfeld Jensen <allan.jensen@qt.io>
+Date: Mon, 9 May 2022 10:32:24 +0200
+Subject: [PATCH] Find fontconfig using pkg-config
+
+We already verify that it can be found like that during configure
+
+Task-number: QTBUG-61158
+Change-Id: I569590e96a490c4ed6e6dc560fbd110d86d77956
+Reviewed-by: Michal Klocek <michal.klocek@qt.io>
+(cherry picked from commit 357dcbf7d9510b5282a18e8211e2494f353b4e5e)
+Reviewed-by: Qt Cherry-pick Bot <cherrypick_bot@qt-project.org>
+(cherry picked from commit 43329f9d7f38a5092a9c054c5d450072b236c6f8)
+---
+ chromium/components/services/font/BUILD.gn | 1 +
+ chromium/third_party/fontconfig/BUILD.gn   | 5 +++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git chromium/components/services/font/BUILD.gn chromium/components/services/font/BUILD.gn
+index b065131e035..f3e544ed29f 100644
+--- chromium/components/services/font/BUILD.gn
++++ chromium/components/services/font/BUILD.gn
+@@ -42,6 +42,7 @@ if ((is_linux || is_chromeos) && enable_plugins) {
+       "//base:base",
+       "//ppapi/buildflags:buildflags",
+       "//ppapi/c",
++      "//third_party/fontconfig",
+     ]
+   }
+ }
+diff --git chromium/third_party/fontconfig/BUILD.gn chromium/third_party/fontconfig/BUILD.gn
+index 1bee7acb6b9..4cc32d62774 100644
+--- chromium/third_party/fontconfig/BUILD.gn
++++ chromium/third_party/fontconfig/BUILD.gn
+@@ -3,6 +3,7 @@
+ # found in the LICENSE file.
+ 
+ import("//build/config/sanitizers/sanitizers.gni")
++import("//build/config/linux/pkg_config.gni")
+ import("//third_party/fontconfig/fontconfig.gni")
+ 
+ assert(is_linux || is_chromeos)
+@@ -110,8 +111,8 @@ if (use_bundled_fontconfig) {
+     }
+   }
+ } else {
+-  config("fontconfig_config") {
+-    libs = [ "fontconfig" ]
++  pkg_config("fontconfig_config") {
++    packages = [ "fontconfig" ]
+   }
+ 
+   group("fontconfig") {
+-- 
+2.36.1
+
