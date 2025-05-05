@@ -1,5 +1,6 @@
 #include "setupwizardcontroller.h"
 
+#include "gui/accountmanager.h"
 #include "gui/application.h"
 #include "pages/accountconfiguredwizardpage.h"
 #include "states/abstractsetupwizardstate.h"
@@ -184,14 +185,20 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
             connect(fetchUserInfoJob, &CoreJob::finished, this, [this, fetchUserInfoJob] {
                 if (fetchUserInfoJob->success()) {
                     auto result = fetchUserInfoJob->result().value<FetchUserInfoResult>();
-                    _context->accountBuilder().setDisplayName(result.displayName());
-                    _context->accountBuilder().authenticationStrategy()->setDavUser(result.userName());
-                    changeStateTo(SetupWizardState::AccountConfiguredState);
+
+                    if (AccountManager::instance()->accountForLoginExists(_context->accountBuilder().serverUrl(), result.userName())) {
+                        _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials."));
+                        changeStateTo(_currentState->state());
+                    } else {
+                        _context->accountBuilder().setDisplayName(result.displayName());
+                        _context->accountBuilder().authenticationStrategy()->setDavUser(result.userName());
+                        changeStateTo(SetupWizardState::AccountConfiguredState);
+                    }
                 } else if (fetchUserInfoJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 401) {
-                    _context->window()->showErrorMessage(tr("Invalid credentials"));
+                    _context->window()->showErrorMessage(tr("Invalid credentials."));
                     changeStateTo(_currentState->state());
                 } else {
-                    _context->window()->showErrorMessage(tr("Failed to retrieve user information from server"));
+                    _context->window()->showErrorMessage(tr("Failed to retrieve user information from server."));
                     changeStateTo(_currentState->state());
                 }
             });
@@ -205,6 +212,7 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
             // impls that is a big code smell that indicates your abstraction is faulty
             const auto *pagePtr = qobject_cast<AccountConfiguredWizardPage *>(_currentState->page());
             Q_ASSERT(pagePtr);
+
             auto account = _context->accountBuilder().build();
             Q_ASSERT(account != nullptr);
             if (pagePtr && account) {
