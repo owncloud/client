@@ -24,8 +24,6 @@
 #include <QObject>
 #include <QQueue>
 
-class TestFolderMigration;
-
 namespace OCC {
 
 class FolderMan;
@@ -411,9 +409,6 @@ private:
     // tests folder def for minimum reqs
     bool validateFolderDefinition(const FolderDefinition &folderDefinition);
 
-    /// \returns true of the FolderDefinition was migrated, false if it was unchanged
-    bool migrateFolderDefinition(FolderDefinition &folderDef, AccountStatePtr account);
-
     /** Connects a folder instance, provided it has no setup errors
      */
     void connectFolder(Folder *folder);
@@ -471,7 +466,6 @@ private:
 
     static FolderMan *_instance;
     friend class OCC::Application;
-    friend class ::TestFolderMigration;
 };
 
 } // namespace OCC

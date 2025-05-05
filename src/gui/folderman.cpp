@@ -197,10 +197,6 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStateP
         // this should NEVER happen
         Q_ASSERT(!folderDefinition.id().isEmpty());
 
-        // note this migration should probably be done elsewhere - ie before loading the config to folders -
-        // but for now at least it's clearly contained...baby steps.
-        bool migrated = migrateFolderDefinition(folderDefinition, account);
-
         // this can only happen when loading from config
         // does not belong in general addFolder routine
         if (SyncJournalDb::dbIsTooNewForClient(folderDefinition.absoluteJournalPath())) {
@@ -210,14 +206,6 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStateP
         Folder *folder = addFolder(account, folderDefinition);
         if (!folder) {
             continue;
-        }
-
-        // save possible changes from the migration.
-        // if there was no migration the config should already have all the correct data, because we just read it!
-        // note we don't want to use saveFolder here as we are already iterating through the settings and have the
-        // correct group for the id already set
-        if (migrated) {
-            FolderDefinition::save(settings, folder->definition());
         }
 
         settings.endGroup(); // folderAlias
@@ -299,31 +287,6 @@ void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
         }
         setSyncEnabled(true);
     }
-}
-
-bool FolderMan::migrateFolderDefinition(FolderDefinition &folderDefinition, AccountStatePtr account)
-{
-    bool migrationPerformed = false;
-
-    // todo: #5
-    if (folderDefinition.journalPath().isEmpty()) {
-        qCWarning(lcFolderMan) << "journalPath setting is missing from config for folder: " << folderDefinition.localPath();
-        QString defaultPath = SyncJournalDb::makeDbName(folderDefinition.localPath());
-        folderDefinition.setJournalPath(defaultPath);
-        migrationPerformed = true;
-    }
-
-    // todo: #5
-    if (account && account->supportsSpaces() && folderDefinition.spaceId().isEmpty()) {
-        OC_DISABLE_DEPRECATED_WARNING
-        if (auto *space = account->account()->spacesManager()->spaceByUrl(folderDefinition.webDavUrl())) {
-            OC_ENABLE_DEPRECATED_WARNING
-            folderDefinition.setSpaceId(space->drive().getRoot().getId());
-            migrationPerformed = true;
-        }
-    }
-
-    return migrationPerformed;
 }
 
 bool FolderMan::ensureJournalGone(const QString &journalDbFile)

@@ -65,7 +65,7 @@ CoreJob *DetermineAuthTypeJobFactory::startJob(const QUrl &url, QObject *parent)
                 if (authChallenge.isEmpty()) {
                     qCWarning(lcDetermineAuthTypeJob) << "Did not receive WWW-Authenticate reply to auth-test PROPFIND";
                 }
-
+                // todo: #18 - if not OAuth this should most likely be Unknown
                 return AuthType::Basic;
             }
         }();
