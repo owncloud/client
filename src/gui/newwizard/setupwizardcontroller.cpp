@@ -187,7 +187,7 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
                     auto result = fetchUserInfoJob->result().value<FetchUserInfoResult>();
 
                     if (AccountManager::instance()->accountForLoginExists(_context->accountBuilder().serverUrl(), result.userName())) {
-                        _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials"));
+                        _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials."));
                         changeStateTo(_currentState->state());
                     } else {
                         _context->accountBuilder().setDisplayName(result.displayName());
@@ -195,10 +195,10 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
                         changeStateTo(SetupWizardState::AccountConfiguredState);
                     }
                 } else if (fetchUserInfoJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 401) {
-                    _context->window()->showErrorMessage(tr("Invalid credentials"));
+                    _context->window()->showErrorMessage(tr("Invalid credentials."));
                     changeStateTo(_currentState->state());
                 } else {
-                    _context->window()->showErrorMessage(tr("Failed to retrieve user information from server"));
+                    _context->window()->showErrorMessage(tr("Failed to retrieve user information from server."));
                     changeStateTo(_currentState->state());
                 }
             });
