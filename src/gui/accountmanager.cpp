@@ -279,6 +279,19 @@ QStringList AccountManager::accountNames() const
     return accountNames;
 }
 
+bool AccountManager::accountForLoginExists(const QUrl &url, const QString &davUser) const
+{
+    for (const auto &state : _accounts) {
+        if (state) {
+            AccountPtr account = state->account();
+            if (account && account->url() == url && account->davUser() == davUser) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 QList<AccountState *> AccountManager::accountsRaw() const
 {
     QList<AccountState *> out;

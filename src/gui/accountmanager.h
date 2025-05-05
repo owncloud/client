@@ -69,7 +69,7 @@ public:
     /**
      * Return a list of all accounts.
      */
-    const QList<AccountStatePtr> accounts() { return _accounts.values(); }
+    const QList<AccountStatePtr> accounts() const { return _accounts.values(); }
 
     /**
      * Return the account state pointer for an account identified by its display name
@@ -97,6 +97,8 @@ public:
      * Returns a sorted list of displayNames
      */
     QStringList accountNames() const;
+
+    bool accountForLoginExists(const QUrl &url, const QString &davUser) const;
 
 private:
     // expose raw pointers to qml
