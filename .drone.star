@@ -33,13 +33,14 @@ TOOLHIPPIE_CALENS = "toolhippie/calens:0.4.0"
 # npm packages to install
 NPM_GHERLINT = "@gherlint/gherlint@1.1.0"
 
+S3_PUBLIC_CACHE_SERVER = "https://cache.owncloud.com"
+S3_PUBLIC_CACHE_BUCKET = "public"
+
 # secrets used in the pipeline
 secrets = {
     "SQUISH_LICENSEKEY": "squish_license_server",
     "GITHUB_USERNAME": "github_username",
     "GITHUB_TOKEN": "github_token",  # not available for PRs
-    "CACHE_ENDPOINT": "cache_public_s3_server",
-    "CACHE_BUCKET": "cache_public_s3_bucket",
     "AWS_ACCESS_KEY_ID": "cache_public_s3_access_key",
     "AWS_SECRET_ACCESS_KEY": "cache_public_s3_secret_key",
     "ROCKETCHAT_WEBHOOK": "rocketchat_talk_webhook",
@@ -418,8 +419,8 @@ def notification():
         "name": "create-template",
         "image": OC_CI_ALPINE,
         "environment": {
-            "CACHE_ENDPOINT": from_secret("CACHE_ENDPOINT"),
-            "CACHE_BUCKET": from_secret("CACHE_BUCKET"),
+            "CACHE_ENDPOINT": S3_PUBLIC_CACHE_SERVER,
+            "CACHE_BUCKET": S3_PUBLIC_CACHE_BUCKET,
         },
         "commands": [
             "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
@@ -651,8 +652,8 @@ def uploadGuiTestLogs(ctx, server_type = "oc10"):
         "name": "upload-gui-test-result",
         "image": PLUGINS_S3,
         "settings": {
-            "bucket": from_secret("CACHE_BUCKET"),
-            "endpoint": from_secret("CACHE_ENDPOINT"),
+            "bucket": S3_PUBLIC_CACHE_BUCKET,
+            "endpoint": S3_PUBLIC_CACHE_SERVER,
             "path_style": True,
             "source": "%s/**/*" % dir["guiTestReport"],
             "strip_prefix": "%s" % dir["guiTestReport"],
