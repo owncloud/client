@@ -390,22 +390,22 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Erro:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Alerta:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Erro:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Alerta:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -550,32 +550,32 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
         <translation>Versões</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="91"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="93"/>
         <source>beta</source>
         <translation>beta</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="159"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>Change update channel?</source>
         <translation>Alterar canal de atualização?</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="162"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
         <translation>&lt;html&gt; O canal de atualização determina quais atualizações do cliente serão oferecidas para instalação.&lt;html&gt;&lt;html&gt; &quot;OwnCloud 10 LTS&quot; contém apenas atualizações consideradas confiáveis ​​&lt;html&gt;&lt;html&gt; &quot;OwnCloud Infinite Scale Stable&quot; contém apenas atualizações consideradas confiáveis, mas o suporte &lt;html&gt;-Removes para &quot;OwnCloud 10&quot; &lt;html&gt;%1&lt;html&gt;&lt;html&gt; ⚠️DownGrades não são suportados. Se você mudar para um canal estável, essa alteração será aplicada apenas com a próxima grande versão.&lt;html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="167"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
         <translation>&lt;li&gt;&quot;beta&quot; pode conter recursos e bugs mais recentes, mas ainda não foram testados minuciosamente&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Change update channel</source>
         <translation>Alterar canal de atualização</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
@@ -1009,32 +1009,32 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="66"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="75"/>
         <source>No ownCloud account configured</source>
         <translation>Nenhuma conta ownCloud configurada</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Por favor, atualize para o último servidor e reinicie o cliente.</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="145"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="161"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>Erro de autenticação. Ou nome de usuário ou senha está errada.</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="127"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="143"/>
         <source>timeout</source>
         <translation>tempo limite</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
         <source>The provided credentials are not correct</source>
         <translation>As credenciais fornecidas não estão corretas</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>The configured server for this client is too old.</source>
         <translation>O servidor configurado para este cliente é muito antigo.</translation>
     </message>
@@ -1415,17 +1415,17 @@ Você vai perder o acesso à sua pasta de sincronização se não o fizer!</tran
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="164"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Arquivos virtuais não estão disponíveis para a pasta selecionada</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="177"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>Adicionar Conexão de Sincronização de pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="179"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>Adicionar Conexão de Sincronização</translation>
     </message>
@@ -2799,22 +2799,22 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="96"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="97"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="105"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
         <source>Quit %1</source>
         <translation>Sair %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Você tem certeza que deseja sair %1?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="138"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="139"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
@@ -3429,29 +3429,6 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     </message>
 </context>
 <context>
-    <name>OCC::UpdateUrlDialog</name>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
-        <source>Change URL permanently to %1</source>
-        <translation>Alterar o URL permanentemente para %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
-        <source>Reject</source>
-        <translation>Rejeitar </translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
-        <source>Url update requested for %1</source>
-        <translation>A atualização do URL foi solicitada para %1 </translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
-        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation>O URL de %1 mudou de %2 para %3. Você deseja aceitar o URL alterado?</translation>
-    </message>
-</context>
-<context>
     <name>OCC::UpdaterScheduler</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
@@ -3633,34 +3610,34 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
         <source>Invalid server URL</source>
         <translation>URL do servidor inválido</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
         <source>Insecure connection</source>
         <translation>Conexão insegura</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="97"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>A conexão com %1 é insegura.
 Tem certeza de que deseja continuar?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="104"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
         <source>Confirm</source>
         <translation>Confirmar</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="107"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
         <source>Insecure server rejected by user</source>
         <translation>Servidor inseguro rejeitado pelo usuário</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>A URL solicitada falhou com o seguinte valor: %1</translation>
     </message>
@@ -3976,22 +3953,22 @@ Tem certeza de que deseja continuar?</translation>
 <context>
     <name>ResolveUrlJobFactory</name>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Não foi possível detectar o servidor compatível em %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
-        <source>User rejected redirect from %1 to %2</source>
-        <translation>O usuário rejeitou o redirecionamento de %1 para %2</translation>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
         <source>SSL Error: %1</source>
         <translation>Erro de SSL: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
         <source>User rejected invalid SSL certificate</source>
         <translation>O usuário rejeitou o certificado SSL inválido</translation>
     </message>

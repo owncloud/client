@@ -390,22 +390,22 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;エラー:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;警告:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;エラー:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;警告:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -549,32 +549,32 @@ File synchronization desktop utility.</source>
         <translation>バージョン</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="91"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="93"/>
         <source>beta</source>
         <translation>ベータ</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="159"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>Change update channel?</source>
         <translation>アップデートチャンネルを変更しますか？</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="162"/>
         <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
         <translation>&lt;html&gt;Updateチャネルによって、インストールに提供されるクライアント更新が決定されます。&lt;ul&gt;&lt;li&gt;「ownCloud 10 LTS」には、信頼性が高いとみなされるアップグレードのみが含まれます。&lt;/li&gt;&lt;li&gt;「ownCloud Infinite Scale stable」には、信頼性が高いとみなされるアップグレードのみが含まれます。 &lt;b&gt;しかしながら「ownCloud 10」のサポートは削除されます。&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️ダウングレードはサポートされていません。Stableチャネルに切り替えると、この変更は次のメジャー リリースでのみ適用されます。&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="167"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
         <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
         <translation>&lt;li&gt;「ベータ版」には新しい機能やバグ修正が含まれている可能性があり、まだ十分にテストされていません&lt;/li&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Change update channel</source>
         <translation>Change update channel</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
+        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
@@ -1008,32 +1008,32 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="66"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="75"/>
         <source>No ownCloud account configured</source>
         <translation>ownCloudアカウントが設定されていません</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>サーバーを最新にアップデートして、クライアントを再起動してください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="145"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="161"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>認証エラー: ユーザー名またはパスワードが間違っています。</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="127"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="143"/>
         <source>timeout</source>
         <translation>タイムアウト</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="219"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
         <source>The provided credentials are not correct</source>
         <translation>入力された資格情報が正しくありません</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="242"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>The configured server for this client is too old.</source>
         <translation>このクライアントに設定されているサーバーが古すぎます。</translation>
     </message>
@@ -1414,17 +1414,17 @@ You are going to lose access to your sync folder if you do not do so!</source>
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="164"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>選択したフォルダーで仮想ファイルが利用できません</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="177"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>同期フォルダーを追加</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="179"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>同期接続を追加</translation>
     </message>
@@ -2798,22 +2798,22 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="96"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="97"/>
         <source>Hide</source>
         <translation>非表示</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="105"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
         <source>Quit %1</source>
         <translation>%1 を終了</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>%1 を終了してもよろしいですか?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="138"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="139"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
@@ -3428,29 +3428,6 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::UpdateUrlDialog</name>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="26"/>
-        <source>Change URL permanently to %1</source>
-        <translation>URL を %1 に完全に変更します</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="27"/>
-        <source>Reject</source>
-        <translation>拒否</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="32"/>
-        <source>Url update requested for %1</source>
-        <translation>URL の更新が %1 に要求されました</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/updateurldialog.cpp" line="33"/>
-        <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation>%1 の URL が %2 から %3 に変更されました。変更された URL を受け入れますか？</translation>
-    </message>
-</context>
-<context>
     <name>OCC::UpdaterScheduler</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
@@ -3631,34 +3608,34 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
         <source>Invalid server URL</source>
         <translation>無効なサーバー URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
         <source>Insecure connection</source>
         <translation>安全でない接続</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="97"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>%1 への接続は安全ではありません。
 続行してもよろしいですか?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="104"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
         <source>Confirm</source>
         <translation>確認</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="107"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
         <source>Insecure server rejected by user</source>
         <translation>安全でないサーバーがユーザーによって拒否されました</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3974,22 +3951,22 @@ Are you sure you want to proceed?</source>
 <context>
     <name>ResolveUrlJobFactory</name>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
         <source>Could not detect compatible server at %1</source>
         <translation>%1 で互換性のあるサーバーを検出できませんでした。</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
-        <source>User rejected redirect from %1 to %2</source>
-        <translation>ユーザーは %1 から %2 へのリダイレクトを拒否しました。</translation>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
         <source>SSL Error: %1</source>
         <translation>SSL エラー: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
+        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
         <source>User rejected invalid SSL certificate</source>
         <translation>ユーザーが無効なSSL証明書を拒否しました</translation>
     </message>
