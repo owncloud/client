@@ -14,29 +14,58 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install Conan
-      uses: conan-io/setup-conan@v1
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
 
-    - name: Add local recipe repository & set conan config
-      shell: bash
-      run: |
-        conan config install ./vendor/.config/global.conf
-        conan remote add local ./vendor/
+      - name: Add local recipe repository & set conan config
+        shell: bash
+        run: |
+          conan config install ./vendor/.config/global.conf
+          conan remote add local ./vendor/
 
-    - name: Install dependencies with conan
-      shell: bash
-      run: |
-        conan install . --output-folder=build --build=missing
+      - name: Install dependencies with conan
+        shell: bash
+        run: |
+          conan install . --output-folder=build --build=missing
 
-    - name: Build the client
-      shell: bash
-      run: |
-        cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-        cmake --build .
+      - name: Build the client
+        shell: bash
+        run: |
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build .
+
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+
+      - name: Add local recipe repository & set conan config
+        shell: cmd
+        run: |
+          conan config install ./vendor/.config/global.conf
+          conan remote add local ./vendor/
+
+      - name: Install dependencies with conan
+        shell: cmd
+        run: |
+          conan install . --output-folder=build --build=missing
+
+      - name: Build the client
+        shell: cmd
+        run: |
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build .
 
 
   
