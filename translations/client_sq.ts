@@ -3645,17 +3645,17 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="190"/>
         <source>You are already connected to an account with these credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Jeni tashmë i lidhur te një llogari me këto kredenciale.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="198"/>
         <source>Invalid credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Kredenciale të pavlefshme.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="201"/>
         <source>Failed to retrieve user information from server.</source>
-        <translation type="unfinished"/>
+        <translation>S’u arri të merreshin hollësi përdoruesi nga shërbyesi.</translation>
     </message>
 </context>
 <context>
