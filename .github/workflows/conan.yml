@@ -9,9 +9,12 @@ on:
       - master
 
 jobs:
-  build-linux:
-    name: Build on Linux
-    runs-on: ubuntu-latest
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout repository
@@ -21,80 +24,25 @@ jobs:
         uses: conan-io/setup-conan@v1
 
       - name: Add local recipe repository & set conan config
-        shell: bash
         run: |
           conan config install ./vendor/.config/global.conf
           conan remote add local ./vendor/
+          conan profile show
+
+      - name: Create build directory
+        run: mkdir build
 
       - name: Install dependencies with conan
-        shell: bash
+        working-directory: ./build
         run: |
-          conan install . --output-folder=build --build=missing
+          conan install .. --build=missing --settings "compiler.cppstd=17"
 
       - name: Build the client
-        shell: bash
+        working-directory: ./build
         run: |
-          cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
 
-  build-macos:
-    name: Build on Linux
-    runs-on: macos-15
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install Conan
-        uses: conan-io/setup-conan@v1
-
-      - name: Add local recipe repository & set conan config
-        shell: bash
-        run: |
-          conan config install ./vendor/.config/global.conf
-          conan remote add local ./vendor/
-
-      - name: Install dependencies with conan
-        shell: bash
-        run: |
-          conan install . --output-folder=build --build=missing
-
-      - name: Build the client
-        shell: bash
-        run: |
-          cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build .
-
-  build-windows:
-    name: Build on Windows
-    runs-on: windows-2025
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Install Conan
-        uses: conan-io/setup-conan@v1
-
-      - name: Add local recipe repository & set conan config
-        shell: cmd
-        run: |
-          conan config install ./vendor/.config/global.conf
-          conan remote add local ./vendor/
-
-      - name: Install dependencies with conan
-        shell: cmd
-        run: |
-          conan install . --output-folder=build --build=missing
-
-      - name: Build the client
-        shell: cmd
-        run: |
-          cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build .
-
-
-  
+      - name: Run tests
+        working-directory: ./build
+        run: ctest --output-on-failure
