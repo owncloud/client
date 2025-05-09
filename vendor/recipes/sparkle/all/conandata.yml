@@ -1,0 +1,4 @@
+sources:
+  "2.7.0":
+    url: "https://github.com/sparkle-project/Sparkle/archive/refs/tags/2.7.0.tar.gz"
+    sha256: "b1395ba0102e31bc27952fbde140101f47cd97016a63c5c5df70e2c5ea979933"
