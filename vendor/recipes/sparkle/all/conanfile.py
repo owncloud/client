@@ -30,4 +30,4 @@ class sparkleRecipe(ConanFile):
         copy(self, pattern="*", src=os.path.join(self.build_folder, "Sparkle.framework.dSym"), dst=os.path.join(self.package_folder, "lib"))
 
     def package_info(self):
-        self.cpp_info.libs = ["sparkle"]
+        self.cpp_info.set_property("cmake_target_name", "sparkle::sparkle")
