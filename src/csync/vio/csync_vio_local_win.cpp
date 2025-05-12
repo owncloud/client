@@ -136,6 +136,8 @@ std::unique_ptr<csync_file_stat_t> csync_vio_local_readdir(csync_vio_handle_t *h
 
     if (vfs && vfs->statTypeVirtualFile(file_stat.get(), &handle->ffd)) {
         // all good
+    } else if (handle->ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        file_stat->type = ItemTypeDirectory;
     } else if (handle->ffd.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
         // Detect symlinks, and treat junctions as symlinks too.
         if (handle->ffd.dwReserved0 == IO_REPARSE_TAG_SYMLINK
@@ -150,8 +152,6 @@ std::unique_ptr<csync_file_stat_t> csync_vio_local_readdir(csync_vio_handle_t *h
     } else if (handle->ffd.dwFileAttributes & FILE_ATTRIBUTE_DEVICE
         || handle->ffd.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE) {
         file_stat->type = ItemTypeSkip;
-    } else if (handle->ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-        file_stat->type = ItemTypeDirectory;
     } else {
         file_stat->type = ItemTypeFile;
     }

@@ -19,6 +19,11 @@ from helpers.SetupClientHelper import (
 )
 
 
+@When('using sync connection folder "|any|"')
+def step(context, sync_folder):
+    set_config('syncConnectionName', sync_folder)
+
+
 @Given('the user has paused the file sync')
 def step(context):
     SyncConnection.pause_sync()
@@ -299,9 +304,9 @@ def step(context):
     SyncConnection.cancel_folder_sync_connection_removal()
 
 
-@When('the user removes the folder sync connection')
-def step(context):
-    SyncConnection.remove_folder_sync_connection()
+@When('the user removes the "|any|" folder sync connection')
+def step(context, sync_folder):
+    SyncConnection.remove_folder_sync_connection(sync_folder)
     SyncConnection.confirm_folder_sync_connection_removal()
 
 

@@ -123,7 +123,7 @@ public:
     };
     Q_ENUM(ConvertToPlaceholderResult)
 
-    static Optional<Mode> modeFromString(const QString &str);
+    static Mode modeFromString(const QString &str);
 
     static Result<void, QString> checkAvailability(const QString &path, OCC::Vfs::Mode mode);
 
@@ -155,6 +155,9 @@ public:
     /** Initializes interaction with the VFS provider.
      *
      * The plugin-specific work is done in startImpl().
+     *
+     * \warning Please read the comments to \a startImpl() about the
+     *          asynchronous behaviour!
      */
     void start(const VfsSetupParams &params);
 
@@ -267,6 +270,16 @@ protected:
      *
      * Usually some registration needs to be done with the backend. This function
      * should take care of it if necessary.
+     *
+     * \note The implementation is allowed to run asynchronously, meaning the method
+     *       can return before the start is fully complete. On completion, the
+     *       \a started() signal is emitted.
+     * \warning For VFS implementations: the rest of the code in the client assumes
+     *          that it is safe to do multiple calls to this method, EVEN IF A PREVIOUS
+     *          START IS NOT FULLY FINISHED. If ANY synchronization needs to be done
+     *          (e.g. reading/writing to the Windows registry, or searching for
+     *          StorageProvider information), this has to be implemented in the
+     *          plugin itself.
      */
     virtual void startImpl(const VfsSetupParams &params) = 0;
 

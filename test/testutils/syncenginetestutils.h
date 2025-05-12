@@ -309,10 +309,13 @@ public:
     using QNetworkReply::setAttribute;
     using QNetworkReply::setRawHeader;
 
+    void checkedFinished();
+
     virtual void abort() override;
 };
 
 class FakePropfindReply : public FakeReply
+
 {
     Q_OBJECT
 
@@ -710,6 +713,11 @@ inline char *printDbData(const FileInfo &fi)
     return QTest::toString(QStringLiteral("FileInfo with %1 files(%2)").arg(files.size()).arg(files.join(QStringLiteral(", "))));
 }
 
+/**
+ * @brief Utility class that count the number of GET/PUT/MOVE/DELETE operations during a sync.
+ *
+ * This can be used for subsequent syncs, but the counters need to be reset.
+ */
 struct OperationCounter
 {
     int nGET = 0;
@@ -717,7 +725,7 @@ struct OperationCounter
     int nMOVE = 0;
     int nDELETE = 0;
 
-    OperationCounter() {};
+    OperationCounter() { }
     OperationCounter(const OperationCounter &) = delete;
     OperationCounter(OperationCounter &&) = delete;
     void operator=(OperationCounter const &) = delete;

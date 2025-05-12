@@ -51,35 +51,40 @@ SetupWizardState ServerUrlSetupWizardState::state() const
     return SetupWizardState::ServerUrlState;
 }
 
+QUrl ServerUrlSetupWizardState::calculateUrl() const
+{
+    if (!_page)
+        return QUrl();
+
+    auto serverUrlSetupWizardPage = qobject_cast<ServerUrlSetupWizardPage *>(_page);
+    Q_ASSERT(serverUrlSetupWizardPage != nullptr);
+
+    QString userProvidedUrl = serverUrlSetupWizardPage->userProvidedUrl();
+
+    // fix scheme if necessary
+    // using HTTPS as a default is a real ly good idea nowadays, users can still enter http:// explicitly if they wish to
+    if (!std::any_of(supportedUrlSchemesC.begin(), supportedUrlSchemesC.end(),
+            [userProvidedUrl](const QString &scheme) { return userProvidedUrl.startsWith(scheme); })) {
+        qInfo(lcSetupWizardServerUrlState) << "no URL scheme provided, prepending default URL scheme" << defaultUrlSchemeC;
+        userProvidedUrl.prepend(defaultUrlSchemeC);
+    }
+
+    auto url = QUrl::fromUserInput(userProvidedUrl).adjusted(QUrl::RemoveUserInfo);
+    const QString serverPathOverride = Theme::instance()->overrideServerPath();
+    if (!serverPathOverride.isEmpty()) {
+        url.setPath(serverPathOverride);
+    }
+
+    return url;
+}
+
 void ServerUrlSetupWizardState::evaluatePage()
 {
     // we don't want to store any unnecessary certificates for this account when the user returns to the first page
     // the easiest way is to just reset the account builder
     _context->resetAccountBuilder();
 
-    auto serverUrlSetupWizardPage = qobject_cast<ServerUrlSetupWizardPage *>(_page);
-    Q_ASSERT(serverUrlSetupWizardPage != nullptr);
-
-    const QUrl serverUrl = [serverUrlSetupWizardPage]() {
-        QString userProvidedUrl = serverUrlSetupWizardPage->userProvidedUrl();
-
-        // fix scheme if necessary
-        // using HTTPS as a default is a real ly good idea nowadays, users can still enter http:// explicitly if they wish to
-        if (!std::any_of(supportedUrlSchemesC.begin(), supportedUrlSchemesC.end(), [userProvidedUrl](const QString &scheme) {
-                return userProvidedUrl.startsWith(scheme);
-            })) {
-            qInfo(lcSetupWizardServerUrlState) << "no URL scheme provided, prepending default URL scheme" << defaultUrlSchemeC;
-            userProvidedUrl.prepend(defaultUrlSchemeC);
-        }
-
-        auto url = QUrl::fromUserInput(userProvidedUrl).adjusted(QUrl::RemoveUserInfo);
-        const QString serverPathOverride = Theme::instance()->overrideServerPath();
-        if (!serverPathOverride.isEmpty()) {
-            url.setPath(serverPathOverride);
-        }
-
-        return url;
-    }();
+    const QUrl serverUrl = calculateUrl();
 
     // (ab)use the account builder as temporary storage for the URL we are about to probe (after sanitation)
     // in case of errors, the user can just edit the previous value
@@ -115,7 +120,7 @@ void ServerUrlSetupWizardState::evaluatePage()
         // since classic WebFinger is not enabled, we need to check whether modern (oCIS) WebFinger is available
         // therefore, we run the corresponding discovery job
         auto checkWebFingerAuthJob = Jobs::DiscoverWebFingerServiceJobFactory(_context->accessManager()).startJob(serverUrl, this);
-
+        // todo: #17
         connect(checkWebFingerAuthJob, &CoreJob::finished, this, [job = checkWebFingerAuthJob, serverUrl, this]() {
             // in case any kind of error occurs, we assume the WebFinger service is not available
             if (!job->success()) {
@@ -131,6 +136,11 @@ void ServerUrlSetupWizardState::evaluatePage()
                     }
 
                     const auto resolvedUrl = resolveJob->result().toUrl();
+                    if (resolvedUrl.hasQuery()) {
+                        QString errorMsg = tr("The requested URL failed with query value: %1").arg(resolvedUrl.query());
+                        Q_EMIT evaluationFailed(errorMsg);
+                        return;
+                    }
 
                     // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
                     // step we can skip it here therefore

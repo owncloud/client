@@ -44,8 +44,6 @@ if (WITH_AUTO_UPDATER)
     owncloud_add_test(Updater)
 endif()
 
-owncloud_add_test(FolderMigration)
-
 owncloud_add_test(FolderWatcher)
 
 if( UNIX AND NOT APPLE )
@@ -53,7 +51,7 @@ if( UNIX AND NOT APPLE )
 endif(UNIX AND NOT APPLE)
 
 
-owncloud_add_test(LongPath)
+owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
@@ -64,8 +62,5 @@ configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYO
 
 owncloud_add_test(JobQueue)
 
-# cern only
-owncloud_add_test(SpacesMigration)
-target_sources(SpacesMigrationTest PRIVATE ${PROJECT_SOURCE_DIR}/src/gui/spacemigration.cpp)
 
 add_subdirectory(modeltests)

@@ -27,6 +27,7 @@
 #include "resources/resources.h"
 #include "theme.h"
 
+#include <QMessageBox>
 #include <QScreen>
 #include <QWindow>
 
@@ -72,7 +73,7 @@ public:
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
     {
         const auto qmlIcon = OCC::Resources::QMLResources::parseIcon(id);
-        const auto accountState = OCC::AccountManager::instance()->account(QUuid::fromString(qmlIcon.iconName));
+        const auto accountState = OCC::AccountManager::instance()->accountState(QUuid::fromString(qmlIcon.iconName));
         return OCC::Resources::pixmap(requestedSize, accountState->account()->avatar(), qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
     }
 };
@@ -143,6 +144,8 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     setCurrentPage(SettingsPage::Settings);
     auto addAccount = [this](AccountStatePtr accountStatePtr) {
+        if (!accountStatePtr)
+            return;
         auto accountSettings = new AccountSettings(accountStatePtr, this);
         _ui->stack->addWidget(accountSettings);
         _widgetForAccount.insert(accountStatePtr->account().data(), accountSettings);
@@ -154,12 +157,22 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     for (const auto &accountState : AccountManager::instance()->accounts()) {
         addAccount(accountState);
     }
+    // Refactoring todo: make these real functions. Naive abuse of lambdas obfuscates the responsibilities of the class as important
+    // functionality is hidden in the impl instead of being clearly visible in the interface. This is very bad practice and we
+    // need to start correcting that to support maintainability.
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, addAccount);
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr accountStatePtr) {
-        _ui->stack->removeWidget(accountSettings(accountStatePtr->account().data()));
-        // go to the settings page if the last account was removed
-        if (_widgetForAccount.isEmpty()) {
-            _ui->stack->setCurrentWidget(_generalSettings);
+        if (!accountStatePtr)
+            return;
+        Account *acc = accountStatePtr->account().data();
+        if (AccountSettings *asw = _widgetForAccount.value(acc)) {
+            _ui->stack->removeWidget(asw);
+            _widgetForAccount.remove(acc);
+            asw->deleteLater();
+            // go to the settings page if the last account was removed
+            if (_widgetForAccount.isEmpty()) {
+                _ui->stack->setCurrentWidget(_generalSettings);
+            }
         }
     });
 }

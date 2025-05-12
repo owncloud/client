@@ -45,6 +45,7 @@ namespace {
 ConnectionValidator::ConnectionValidator(AccountPtr account, QObject *parent)
     : QObject(parent)
     , _account(account)
+    , _checkServerJob(nullptr)
 {
     // TODO: 6.0 abort validator on 5min timeout
     auto timer = new QTimer(this);
@@ -52,6 +53,14 @@ ConnectionValidator::ConnectionValidator(AccountPtr account, QObject *parent)
     connect(timer, &QTimer::timeout, this,
         [this] { qCInfo(lcConnectionValidator) << "ConnectionValidator" << _account->displayNameWithHost() << "still running after" << _duration.duration(); });
     timer->start();
+}
+
+ConnectionValidator::~ConnectionValidator()
+{
+    if (_checkServerJob) {
+        delete _checkServerJob;
+        _checkServerJob = nullptr;
+    }
 }
 
 void ConnectionValidator::setClearCookies(bool clearCookies)
@@ -77,6 +86,7 @@ void ConnectionValidator::checkServer(ConnectionValidator::ValidationMode mode)
     } else {
         // We want to reset the QNAM proxy so that the global proxy settings are used (via ClientProxy settings)
         _account->accessManager()->setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
+        // todo: what is this trying to accomplish?
         // use a queued invocation so we're as asynchronous as with the other code path
         QMetaObject::invokeMethod(this, &ConnectionValidator::slotCheckServerAndAuth, Qt::QueuedConnection);
     }
@@ -102,67 +112,72 @@ void ConnectionValidator::systemProxyLookupDone(const QNetworkProxy &proxy)
 // The actual check
 void ConnectionValidator::slotCheckServerAndAuth()
 {
+    Q_ASSERT(_checkServerJob == nullptr);
     auto checkServerFactory = CheckServerJobFactory::createFromAccount(_account, _clearCookies, this);
-    auto checkServerJob = checkServerFactory.startJob(_account->url(), this);
 
-    connect(checkServerJob->reply()->manager(), &AccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
+    _checkServerJob = checkServerFactory.startJob(_account->url(), this);
+
+    connect(_checkServerJob->reply()->manager(), &AccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
         Q_UNUSED(reply)
         Q_EMIT sslErrors(errors);
     });
 
-    connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
-        if (checkServerJob->success()) {
-            const auto result = checkServerJob->result().value<CheckServerJobResult>();
-
-            // adopt the new cookies
-            _account->accessManager()->setCookieJar(checkServerJob->reply()->manager()->cookieJar());
-
-            slotStatusFound(result.serverUrl(), result.statusObject());
-        } else {
-            switch (checkServerJob->reply()->error()) {
-            case QNetworkReply::OperationCanceledError:
-                [[fallthrough]];
-            case QNetworkReply::TimeoutError:
-                qCWarning(lcConnectionValidator) << checkServerJob;
-                _errors.append(tr("timeout"));
-                reportResult(Timeout);
-                return;
-            case QNetworkReply::SslHandshakeFailedError:
-                reportResult(NetworkInformation::instance()->isBehindCaptivePortal() ? CaptivePortal : SslError);
-                return;
-            case QNetworkReply::TooManyRedirectsError:
-                reportResult(MaintenanceMode);
-                return;
-            case QNetworkReply::ContentAccessDenied:
-                reportResult(ClientUnsupported);
-                return;
-            default:
-                break;
-            }
-
-            if (!_account->credentials()->stillValid(checkServerJob->reply())) {
-                // Note: Why would this happen on a status.php request?
-                _errors.append(tr("Authentication error: Either username or password are wrong."));
-            } else {
-                //_errors.append(tr("Unable to connect to %1").arg(_account->url().toString()));
-                _errors.append(checkServerJob->errorMessage());
-            }
-            reportResult(StatusNotFound);
-        }
-    });
+    connect(_checkServerJob, &CoreJob::finished, this, &ConnectionValidator::checkServerJobFinished);
 }
 
-void ConnectionValidator::slotStatusFound(const QUrl &url, const QJsonObject &info)
+void ConnectionValidator::checkServerJobFinished()
+{
+    if (_checkServerJob->success()) {
+        const auto result = _checkServerJob->result().value<CheckServerJobResult>();
+
+        // adopt the new cookies
+        _account->accessManager()->setCookieJar(_checkServerJob->reply()->manager()->cookieJar());
+
+        statusFound(result.serverUrl(), result.statusObject());
+    } else {
+        switch (_checkServerJob->reply()->error()) {
+        case QNetworkReply::OperationCanceledError:
+            [[fallthrough]];
+        case QNetworkReply::TimeoutError:
+            qCWarning(lcConnectionValidator) << _checkServerJob;
+            _errors.append(tr("timeout"));
+            reportResult(Timeout);
+            return;
+        case QNetworkReply::SslHandshakeFailedError:
+            reportResult(NetworkInformation::instance()->isBehindCaptivePortal() ? CaptivePortal : SslError);
+            return;
+        case QNetworkReply::TooManyRedirectsError:
+            reportResult(MaintenanceMode);
+            return;
+        case QNetworkReply::ContentAccessDenied:
+            reportResult(ClientUnsupported);
+            return;
+        default:
+            break;
+        }
+
+        if (!_account->credentials()->stillValid(_checkServerJob->reply())) {
+            // Note: Why would this happen on a status.php request?
+            _errors.append(tr("Authentication error: Either username or password are wrong."));
+        } else {
+            //_errors.append(tr("Unable to connect to %1").arg(_account->url().toString()));
+            _errors.append(_checkServerJob->errorMessage());
+        }
+        reportResult(StatusNotFound);
+    }
+}
+
+void ConnectionValidator::statusFound(const QUrl &url, const QJsonObject &info)
 {
     // status.php was found.
     qCInfo(lcConnectionValidator) << "** Application: ownCloud found: "
                                   << url << " with version "
                                   << info.value(QLatin1String("versionstring")).toString();
 
-    // Update server URL in case of redirection
+    // this should never happen since we now use QNetworkRequest::ManualRedirectPolicy in the request - the result should be "not found" before we even
+    // get here, but leaving this in place as a safety net
     if (_account->url() != url) {
-        qCInfo(lcConnectionValidator()) << "status.php was redirected to" << url.toString() << "asking user to accept and abort for now";
-        Q_EMIT _account->requestUrlUpdate(url);
+        qCWarning(lcConnectionValidator()) << "status.php was redirected to" << url.toString() << "redirects are not accepted";
         reportResult(StatusNotFound);
         return;
     }
@@ -274,8 +289,11 @@ void ConnectionValidator::reportResult(Status status)
     if (OC_ENSURE(!_finished)) {
         _finished = true;
         qCDebug(lcConnectionValidator) << status << _duration.duration();
+        if (_checkServerJob) {
+            delete _checkServerJob;
+            _checkServerJob = nullptr;
+        }
         Q_EMIT connectionResult(status, _errors);
-        deleteLater();
     }
 }
 

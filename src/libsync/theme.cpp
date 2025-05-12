@@ -243,7 +243,11 @@ void Theme::setSystrayUseMonoIcons(bool mono)
 
 QUrl Theme::updateCheckUrl() const
 {
+#ifndef APPLICATION_UPDATE_URL
+    return QUrl(QString());
+#else
     return QUrl(QStringLiteral(APPLICATION_UPDATE_URL));
+#endif
 }
 
 bool Theme::wizardSkipAdvancedPage() const
@@ -325,7 +329,7 @@ QString Theme::about() const
               "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
               " Jan-Christoph Borchardt, Thomas Müller,<br>"
               "Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.</small></p>"
-              "<p>Copyright ownCloud GmbH</p>"
+              "<p>Copyright ownCloud GmbH (A Kiteworks Company)</p>"
               "<p>Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.<br/>"
               "%5 and the %5 logo are registered trademarks of %4 in the "
               "United States, other countries, or both.</p>"
@@ -552,6 +556,11 @@ bool Theme::syncNewlyDiscoveredSpaces() const
 }
 
 bool Theme::enableCernBranding() const
+{
+    return false;
+}
+
+bool Theme::spacesAreCalledFolders() const
 {
     return false;
 }

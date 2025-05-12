@@ -59,7 +59,7 @@ void PropagateRemoteMove::start()
     if (propagator()->_abortRequested)
         return;
 
-    QString origin = propagator()->adjustRenamedPath(_item->localName());
+    QString origin = propagator()->adjustRenamedPath(_item->_file);
     qCDebug(lcPropagateRemoteMove) << origin << _item->_renameTarget;
     if (origin == _item->_renameTarget) {
         // The parent has been renamed already so there is nothing more to do.
@@ -205,7 +205,7 @@ void PropagateRemoteMove::finalize()
         done(SyncFileItem::FatalError, tr("Error updating metadata: %1").arg(result.error()));
         return;
     } else if (result.get() == Vfs::ConvertToPlaceholderResult::Locked) {
-        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(newItem.localName()));
+        done(SyncFileItem::SoftError, tr("The file %1 is currently in use").arg(newItem._file));
         return;
     }
     if (pinState && *pinState != PinState::Inherited
@@ -215,8 +215,8 @@ void PropagateRemoteMove::finalize()
     }
 
     if (_item->isDirectory()) {
-        propagator()->_renamedDirectories.insert(_item->localName(), _item->_renameTarget);
-        if (!adjustSelectiveSync(propagator()->_journal, _item->localName(), _item->_renameTarget)) {
+        propagator()->_renamedDirectories.insert(_item->_file, _item->_renameTarget);
+        if (!adjustSelectiveSync(propagator()->_journal, _item->_file, _item->_renameTarget)) {
             done(SyncFileItem::FatalError, tr("Error writing metadata to the database"));
             return;
         }
@@ -231,7 +231,7 @@ bool PropagateRemoteMove::adjustSelectiveSync(SyncJournalDb *journal, const QStr
     bool ok;
     // We only care about preserving the blacklist.   The white list should anyway be empty.
     // And the undecided list will be repopulated on the next sync, if there is anything too big.
-    auto list = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+    auto list = journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (!ok)
         return false;
 

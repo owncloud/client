@@ -68,7 +68,7 @@ Feature: Syncing files
             | user     | Alice          |
             | password | 1234           |
         When the user selects manual sync folder option in advanced section
-        And the user selects "Alice Hansen" space in sync connection wizard
+        And the user selects "Personal" space in sync connection wizard
         And the user sets the sync path in sync connection wizard
         And the user navigates back in the sync connection wizard
         And the user sets the temp folder "localSyncFolder" as local sync path in sync connection wizard
@@ -97,7 +97,7 @@ Feature: Syncing files
             | user     | Alice          |
             | password | 1234           |
         When the user selects manual sync folder option in advanced section
-        And the user selects "Alice Hansen" space in sync connection wizard
+        And the user selects "Personal" space in sync connection wizard
         And the user sets the sync path in sync connection wizard
         And the user selects "ownCloud" as a remote destination folder
         And the user disables VFS support for Windows
@@ -133,7 +133,7 @@ Feature: Syncing files
             | user     | Alice          |
             | password | 1234           |
         When the user selects manual sync folder option in advanced section
-        And the user selects "Alice Hansen" space in sync connection wizard
+        And the user selects "Personal" space in sync connection wizard
         And the user sets the sync path in sync connection wizard
         And the user selects "ownCloud" as a remote destination folder
         And the user disables VFS support for Windows
@@ -264,10 +264,13 @@ Feature: Syncing files
 
 
     Scenario: Verify pre existing folders in local (Desktop client) are copied over to the server
+        Given user "Alice" has set up a client with default settings
+        When the user quits the client
         Given user "Alice" has created a folder "Folder1" inside the sync folder
         And user "Alice" has created a folder "Folder1/subFolder1" inside the sync folder
         And user "Alice" has created a folder "Folder1/subFolder1/subFolder2" inside the sync folder
-        And user "Alice" has set up a client with default settings
+        When user "Alice" starts the client
+        And the user waits for the files to sync
         Then as "Alice" folder "Folder1" should exist in the server
         And as "Alice" folder "Folder1/subFolder1" should exist in the server
         And as "Alice" folder "Folder1/subFolder1/subFolder2" should exist in the server
@@ -449,6 +452,7 @@ Feature: Syncing files
             | file2.txt | file   | Test file2 |
         And user "Alice" has set up a client with default settings
         When user "Alice" moves file "archive.zip" from the temp folder into the sync folder
+        And the user waits for the files to sync
         And user "Alice" unzips the zip file "archive.zip" inside the sync root
         And the user waits for the files to sync
         Then as "Alice" folder "folder1" should exist in the server
@@ -471,7 +475,7 @@ Feature: Syncing files
             | user     | Alice          |
             | password | 1234           |
         When the user selects manual sync folder option in advanced section
-        And the user selects "Alice Hansen" space in sync connection wizard
+        And the user selects "Personal" space in sync connection wizard
         And the user sets the temp folder "~`!@#$^&()-_=+{[}];',)PRN%" as local sync path in sync connection wizard
         And the user selects "ownCloud" as a remote destination folder
         And the user disables VFS support for Windows
@@ -489,13 +493,25 @@ Feature: Syncing files
         And the folder "test-folder/sub-folder2" should exist on the file system
         And the folder "test-folder/sub-folder1" should not exist on the file system
 
-    @issue-11814
-    Scenario: remove folder sync connection
+    @issue-11814 @skipOnOC10
+    Scenario: remove folder sync connection (oCIS)
         Given user "Alice" has created folder "simple-folder" in the server
         And user "Alice" has set up a client with default settings
         When the user selects remove folder sync connection option
         And the user cancels the folder sync connection removal dialog
-        And the user removes the folder sync connection
+        And the user removes the "Shares" folder sync connection
+        And the user removes the "Personal" folder sync connection
+        Then the sync folder list should be empty
+        And the folder "simple-folder" should exist on the file system
+        And as "Alice" folder "simple-folder" should exist in the server
+
+    @issue-11814 @skipOnOCIS
+    Scenario: remove folder sync connection (oC10)
+        Given user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has set up a client with default settings
+        When the user selects remove folder sync connection option
+        And the user cancels the folder sync connection removal dialog
+        And the user removes the "ownCloud" folder sync connection
         Then the sync folder list should be empty
         And the folder "simple-folder" should exist on the file system
         And as "Alice" folder "simple-folder" should exist in the server

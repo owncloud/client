@@ -36,6 +36,7 @@
 #include "gui/spaces/spaceimageprovider.h"
 #include "guiutility.h"
 #include "libsync/graphapi/spacesmanager.h"
+#include "openfilemanager.h"
 #include "quotainfo.h"
 #include "scheduling/syncscheduler.h"
 #include "settingsdialog.h"
@@ -54,6 +55,11 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountSettings, "gui.account.settings", QtInfoMsg)
 
+// Refactoring todo: devise a correct handling of null account state in this ctr.
+// also move all this connect stuff to a "connect" method.
+// also ditch the lambdas which should actually be functions (private if necessary)
+// Also refactoring todo: split the controller behavior out into a controller. A widget should NOT contain
+// business or controller logic!
 AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AccountSettings)
@@ -62,7 +68,14 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 {
     ui->setupUi(this);
 
+    // as usual we do too many things in the ctr and we need to eval all the code paths to make sure they handle
+    // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
+    Q_ASSERT(_accountState);
+
+
     _model = new FolderStatusModel(this);
+
+    // see comments in this impl as it needs work
     _model->setAccountState(_accountState);
 
     auto weightedModel = new QSortFilterProxyModel(this);
@@ -82,20 +95,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
     slotAccountStateChanged();
 
-    connect(ui->manageAccountButton, &QToolButton::clicked, this, [this] {
-        QMenu *menu = new QMenu(this);
-        menu->setAttribute(Qt::WA_DeleteOnClose);
-        menu->setAccessibleName(tr("Account options menu"));
-        menu->addAction(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"), this, &AccountSettings::slotToggleSignInState);
-        auto *reconnectAction = menu->addAction(tr("Reconnect"), this, [this] { _accountState->checkConnectivity(true); });
-        reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-        menu->addAction(CommonStrings::showInWebBrowser(), this, [this] { QDesktopServices::openUrl(_accountState->account()->url()); });
-        menu->addAction(tr("Remove"), this, &AccountSettings::slotDeleteAccount);
-        menu->popup(mapToGlobal(ui->manageAccountButton->pos()));
-
-        // set the focus for accessability
-        menu->setFocus();
-    });
+    buildManageAccountMenu();
 
     connect(_accountState.get(), &AccountState::isSettingUpChanged, this, [this] {
         if (_accountState->isSettingUp()) {
@@ -111,8 +111,26 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     ui->stackedWidget->setCurrentWidget(ui->quickWidget);
 }
 
+void AccountSettings::slotOpenAccountInBrowser()
+{
+    if (!_accountState) {
+        return;
+    }
+
+    QUrl url = _accountState->account()->url();
+    if (!Theme::instance()->overrideServerPath().isEmpty()) {
+        // There is an override for the WebDAV endpoint. Remove it for normal web browsing.
+        url.setPath({});
+    }
+    QDesktopServices::openUrl(url);
+}
+
 void AccountSettings::slotToggleSignInState()
 {
+    if (!_accountState) {
+        return;
+    }
+
     if (_accountState->isSignedOut()) {
         _accountState->signIn();
     } else {
@@ -122,6 +140,12 @@ void AccountSettings::slotToggleSignInState()
 
 void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
 {
+    // Refactoring todo: we need to eval defensive handling of the account state QPointer in more depth, and I
+    // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
+    // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
+    // to id
+    Q_ASSERT(_accountState);
+
     // qpointer for async calls
     const auto isDeployed = folder->isDeployed();
     const auto addRemoveFolderAction = [isDeployed, folder, this](QMenu *menu) {
@@ -147,21 +171,20 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
         return;
     }
     // Add an action to open the folder in the system's file browser:
-    const QUrl folderUrl = QUrl::fromLocalFile(folder->path());
-    if (!folderUrl.isEmpty()) {
-        QAction *ac = menu->addAction(CommonStrings::showInFileBrowser(), [folderUrl]() {
-            qCInfo(lcAccountSettings) << "Opening local folder" << folderUrl;
-            if (!QDesktopServices::openUrl(folderUrl)) {
-                qCWarning(lcAccountSettings) << "QDesktopServices::openUrl failed for" << folderUrl;
-            }
-        });
-
-        if (!QFile::exists(folderUrl.toLocalFile())) {
-            ac->setEnabled(false);
+    QAction *showInFileManagerAction = menu->addAction(CommonStrings::showInFileBrowser(), [folder]() {
+        qCInfo(lcAccountSettings) << "Opening local folder" << folder->path();
+        if (QFileInfo::exists(folder->path())) {
+            showInFileManager(folder->path());
         }
+    });
+
+    if (!QFile::exists(folder->path())) {
+        showInFileManagerAction->setEnabled(false);
     }
 
     // Add an action to open the folder on the server in a webbrowser:
+    // Refactoring todo: why are we using the folder accountState AND the local member? shouldn't the folder have the same account state
+    // as this settings panel?!
     if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
         QString path = folder->remotePathTrailingSlash();
         menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
@@ -232,11 +255,15 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
 
 void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 {
+    if (!_accountState) {
+        return;
+    }
+
     auto *selectiveSync = new SelectiveSyncWidget(_accountState->account(), this);
     selectiveSync->setDavUrl(folder->webDavUrl());
     bool ok;
     selectiveSync->setFolderInfo(
-        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok));
+        folder->remotePath(), folder->displayName(), folder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok));
     Q_ASSERT(ok);
 
     auto *modalWidget = new AccountModalWidget(tr("Choose what to sync"), selectiveSync, this);
@@ -250,7 +277,9 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 
 void AccountSettings::slotAddFolder()
 {
-    FolderMan::instance()->setSyncEnabled(false); // do not start more syncs.
+    if (!_accountState) {
+        return;
+    }
 
     FolderWizard *folderWizard = new FolderWizard(_accountState, this);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
@@ -258,7 +287,6 @@ void AccountSettings::slotAddFolder()
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
     connect(folderWizard, &QDialog::rejected, this, [] {
         qCInfo(lcAccountSettings) << "Folder wizard cancelled";
-        FolderMan::instance()->setSyncEnabled(true);
     });
 
     addModalLegacyDialog(folderWizard, AccountSettings::ModalWidgetSizePolicy::Expanding);
@@ -267,21 +295,26 @@ void AccountSettings::slotAddFolder()
 
 void AccountSettings::slotFolderWizardAccepted()
 {
+    if (!_accountState) {
+        return;
+    }
+
     FolderWizard *folderWizard = qobject_cast<FolderWizard *>(sender());
+    if (!folderWizard)
+        return;
+
     qCInfo(lcAccountSettings) << "Folder wizard completed";
 
-    const auto config = folderWizard->result();
+    auto config = folderWizard->result();
 
-    auto folder = FolderMan::instance()->addFolderFromFolderWizardResult(_accountState, config);
-
-    if (!config.selectiveSyncBlackList.isEmpty() && OC_ENSURE(folder && !config.useVirtualFiles)) {
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, config.selectiveSyncBlackList);
-
-        // The user already accepted the selective sync dialog. everything is in the white list
-        folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
+    // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
+    // originally in play here so...keep it just in case.
+    if (config.useVirtualFiles && !config.selectiveSyncBlackList.empty()) {
+        config.selectiveSyncBlackList.clear();
     }
-    FolderMan::instance()->setSyncEnabled(true);
-    FolderMan::instance()->scheduleAllFolders();
+
+    // Refactoring todo: turn this into a signal/requestAddFolder
+    FolderMan::instance()->addFolderFromGui(_accountState, config);
 }
 
 void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
@@ -299,7 +332,10 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            FolderMan::instance()->removeFolder(folder);
+            // todo: #3
+            FolderMan::instance()->removeFolderSettings(folder);
+            FolderMan::instance()->removeFolderSync(folder);
+            // todo:#4
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
     });
@@ -316,9 +352,6 @@ void AccountSettings::slotEnableVfsCurrentFolder(Folder *folder)
 
         // Change the folder vfs mode and load the plugin
         folder->setVirtualFilesEnabled(true);
-
-        // don't schedule the folder, it might not be ready yet.
-        // it will schedule its self once set up
     }
 }
 
@@ -471,8 +504,56 @@ void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
     FolderMan::instance()->scheduler()->start();
 }
 
+void AccountSettings::buildManageAccountMenu()
+{
+    QMenu *menu = new QMenu(this);
+    menu->setAccessibleName(tr("Account options menu"));
+
+    auto *logInOutAction = menu->addAction(tr("Log in"), this, &AccountSettings::slotToggleSignInState);
+    auto *reconnectAction = menu->addAction(tr("Reconnect"), this, [this] { _accountState->checkConnectivity(true); });
+    reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
+    connect(_accountState, &AccountState::stateChanged, this, [logInOutAction, reconnectAction, this]() {
+        logInOutAction->setText(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"));
+        reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
+    });
+
+    menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountSettings::slotOpenAccountInBrowser);
+    menu->addAction(tr("Remove"), this, &AccountSettings::slotDeleteAccount);
+
+    if (Utility::isMac()) {
+        // VoiceOver will read the button as a "menu button", clearly indicating that this is not a normal
+        // button, and that a menu will appear. Using the Windows/Linux work-around results in the button
+        // being read as "button" (no indication of the menu), and the setActiveAction doesn't help either.
+        //
+        // Bug in Qt: the menu somehow is not added to the a11y chain, VoiceOver doesn't "see" it, even
+        // when navigating around inside it with the arrow keys.
+        ui->manageAccountButton->setMenu(menu);
+        ui->manageAccountButton->setPopupMode(QToolButton::InstantPopup);
+    } else {
+        // Windows: when using a button-with-a-menu, Narrator will not notice the menu. Manually showing
+        // and placing it, and then setting the first item as active, will have Narrator read this as
+        // "Account options menu, window, Log in, menu item".
+        //
+        // Linux with Gnome: place the menu BELOW the button. If this is omitted, the click event that
+        // opened the menu will be forwarded to the menu, resulting in selecting the first action (!!!),
+        // and immediately close the menu. The work-around is to manually call "popup", which seems
+        // to work in ~60% of the cases. If it doesn't work, select e.g settings, switch back, and try
+        // again.
+        connect(ui->manageAccountButton, &QPushButton::clicked, this, [menu, logInOutAction, button = ui->manageAccountButton] {
+            auto pos = button->mapToGlobal(QPoint(0, button->height()));
+            menu->popup(pos);
+            menu->setActiveAction(logInOutAction);
+        });
+    }
+}
+
+// Refactoring todo: the signal sends the new account state, refactor this to use that param
 void AccountSettings::slotAccountStateChanged()
 {
+    if (!_accountState) {
+        return;
+    }
+
     const AccountState::State state = _accountState->state();
     const AccountPtr account = _accountState->account();
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
@@ -491,9 +572,11 @@ void AccountSettings::slotAccountStateChanged()
             icon = StatusIcon::Warning;
         }
         showConnectionLabel(tr("Connected"), icon, errors);
-        if (accountsState()->supportsSpaces()) {
-            connect(accountsState()->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
+        if (_accountState->supportsSpaces()) {
+            connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
                 Qt::UniqueConnection);
+            // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
+            // triggering the slot? ie duplicate call to slotSpacesUpdated?
             slotSpacesUpdated();
         }
         break;
@@ -534,29 +617,36 @@ void AccountSettings::slotAccountStateChanged()
 
 void AccountSettings::slotSpacesUpdated()
 {
-    if (!accountsState()->supportsSpaces()) {
+    if (!_accountState || !_accountState->supportsSpaces()) {
         // oC10 does not support spaces, and there is no `SpacesManager` available.
         return;
     }
 
-    auto spaces = accountsState()->account()->spacesManager()->spaces();
+    auto spaces = _accountState->account()->spacesManager()->spaces();
     auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
     for (const auto &f : std::as_const(FolderMan::instance()->folders())) {
         unsycnedSpaces.erase(f->space());
     }
 
     // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
+    // Refactoring todo answer to above: we should not be loading spaces in any gui. Instead I would expect that the gui merely updates
+    // it's view/state in response to new or removed spaces. The clue is that the main actor here is FolderMan - connect FolderMan to whoever
+    // emits the newly discovered spaces (or whatever this is) and let it deal with it.
+    // A wrinkle here is that this slot is called in several places in the gui, apparently just to trigger refresh or similar? Not good!
     if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-        QTimer::singleShot(0, [this, unsycnedSpaces]() {
-            auto accountStatePtr = accountsState();
-
+        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
+        // where does this slot run if not on the main thread?
+        // what needs to be processed "before" this loading routine that requires scheduling it for later?
+        // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
+        // event loop.
+        QTimer::singleShot(0, this, [this, unsycnedSpaces]() {
             for (GraphApi::Space *newSpace : unsycnedSpaces) {
                 // TODO: Problem: when a space is manually removed, this will re-add it!
                 qCInfo(lcAccountSettings) << "Adding sync connection for newly discovered space" << newSpace->displayName();
 
-                const QString localDir(accountsState()->account()->defaultSyncRoot());
+                const QString localDir(_accountState->account()->defaultSyncRoot());
                 const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
-                    localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, accountStatePtr->account()->uuid());
+                    localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, _accountState->account()->uuid());
 
                 FolderMan::SyncConnectionDescription fwr;
                 fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());
@@ -565,11 +655,11 @@ void AccountSettings::slotSpacesUpdated()
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
                 fwr.priority = newSpace->priority();
-                FolderMan::instance()->addFolderFromFolderWizardResult(accountStatePtr, fwr);
+                FolderMan::instance()->addFolderFromGui(_accountState, fwr);
             }
 
             _unsyncedSpaces = 0;
-            _syncedSpaces = accountsState()->account()->spacesManager()->spaces().size();
+            _syncedSpaces = _accountState->account()->spacesManager()->spaces().size();
             Q_EMIT unsyncedSpacesChanged();
             Q_EMIT syncedSpacesChanged();
         });
@@ -629,6 +719,10 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
         qCWarning(lcAccountSettings) << "Missing WA_DeleteOnClose! (2)" << widget->metaObject() << widget;
     }
     Q_ASSERT(widget->testAttribute(Qt::WA_DeleteOnClose));
+
+    // Refactoring todo: eval this more completely
+    Q_ASSERT(_accountState);
+
     connect(widget, &QWidget::destroyed, this, [this, outerWidget] {
         outerWidget->deleteLater();
         if (!_goingDown) {
@@ -641,6 +735,10 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
 
 void AccountSettings::addModalWidget(AccountModalWidget *widget)
 {
+    if (!_accountState) {
+        return;
+    }
+
     ui->stackedWidget->addWidget(widget);
     ui->stackedWidget->setCurrentWidget(widget);
 
@@ -663,6 +761,10 @@ uint AccountSettings::syncedSpaces() const
 
 void AccountSettings::slotDeleteAccount()
 {
+    if (!_accountState) {
+        return;
+    }
+
     // Deleting the account potentially deletes 'this', so
     // the QMessageBox should be destroyed before that happens.
     auto messageBox = new QMessageBox(QMessageBox::Question, tr("Confirm Account Removal"),
@@ -686,7 +788,7 @@ void AccountSettings::slotDeleteAccount()
 bool AccountSettings::event(QEvent *e)
 {
     if (e->type() == QEvent::Hide || e->type() == QEvent::Show) {
-        if (!_accountState->supportsSpaces()) {
+        if (_accountState && !_accountState->supportsSpaces()) {
             _accountState->quotaInfo()->setActive(isVisible());
         }
     }

@@ -77,7 +77,7 @@ namespace GraphApi {
         OpenAPI::OAIDrive drive() const;
 
         /***
-         * Asign a priority to a drive, used for sorting
+         * Assign a priority to a drive, used for sorting
          */
         uint32_t priority() const;
 
@@ -94,13 +94,15 @@ namespace GraphApi {
         void imageChanged();
 
     private:
-        Space(SpacesManager *spaceManager, const OpenAPI::OAIDrive &drive);
+        Space(SpacesManager *spaceManager, const OpenAPI::OAIDrive &drive, bool hasManyPersonalSpaces);
         void setDrive(const OpenAPI::OAIDrive &drive);
 
         SpacesManager *_spaceManager;
         OpenAPI::OAIDrive _drive;
 
         SpaceImage *_image;
+
+        bool _hasManyPersonalSpaces;
 
         friend class SpacesManager;
         friend class SpaceImage;

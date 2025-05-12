@@ -37,7 +37,7 @@ void PropagateRemoteMkdir::start()
     if (propagator()->_abortRequested)
         return;
 
-    qCDebug(lcPropagateRemoteMkdir) << _item->localName();
+    qCDebug(lcPropagateRemoteMkdir) << _item->_file;
 
     propagator()->_activeJobList.append(this);
 
@@ -45,7 +45,9 @@ void PropagateRemoteMkdir::start()
         return slotStartMkcolJob();
     }
 
-    _job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), this);
+    _job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(),
+        propagator()->fullRemotePath(_item->_file),
+        this);
     connect(qobject_cast<DeleteJob *>(_job), &DeleteJob::finishedSignal, this, &PropagateRemoteMkdir::slotStartMkcolJob);
     _job->start();
 }
@@ -55,9 +57,11 @@ void PropagateRemoteMkdir::slotStartMkcolJob()
     if (propagator()->_abortRequested)
         return;
 
-    qCDebug(lcPropagateRemoteMkdir) << _item->localName();
+    qCDebug(lcPropagateRemoteMkdir) << _item->_file;
 
-    _job = new MkColJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->localName()), {}, this);
+    _job = new MkColJob(propagator()->account(), propagator()->webDavUrl(),
+        propagator()->fullRemotePath(_item->_file), {},
+        this);
     connect(qobject_cast<MkColJob *>(_job), &MkColJob::finishedWithError, this, &PropagateRemoteMkdir::slotMkcolJobFinished);
     connect(qobject_cast<MkColJob *>(_job), &MkColJob::finishedWithoutError, this, &PropagateRemoteMkdir::slotMkcolJobFinished);
     _job->start();

@@ -15,6 +15,7 @@
 #include "libsync/syncresult.h"
 
 #include <thread>
+#include <vio/csync_vio_local.h>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -425,18 +426,13 @@ FakePropfindReply::FakePropfindReply(FileInfo &remoteRootFileInfo, QNetworkAcces
 
 void FakePropfindReply::respond()
 {
-    if (isFinished()) {
-        return;
-    }
-
     setHeader(QNetworkRequest::ContentLengthHeader, payload.size());
     setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/xml; charset=utf-8"));
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 207);
-    setFinished(true);
     Q_EMIT metaDataChanged();
     if (bytesAvailable())
         Q_EMIT readyRead();
-    Q_EMIT finished();
+    checkedFinished();
 }
 
 void FakePropfindReply::respond404()
@@ -448,7 +444,7 @@ void FakePropfindReply::respond404()
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 404);
     setError(InternalServerError, QStringLiteral("Not Found"));
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+    checkedFinished();
 }
 
 qint64 FakePropfindReply::bytesAvailable() const
@@ -502,7 +498,7 @@ void FakePutReply::respond()
     setRawHeader("X-OC-MTime", "accepted"); // Prevents Q_ASSERT(!_runningNow) since we'll call PropagateItemJob::done twice in that case.
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 200);
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+    checkedFinished();
 }
 
 FakeMkcolReply::FakeMkcolReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
@@ -530,8 +526,9 @@ void FakeMkcolReply::respond()
         setRawHeader("OC-FileId", fileInfo->fileId);
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 201);
         Q_EMIT metaDataChanged();
-        Q_EMIT finished();
     }
+
+    checkedFinished();
 }
 
 FakeDeleteReply::FakeDeleteReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
@@ -552,7 +549,8 @@ void FakeDeleteReply::respond()
 {
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 204);
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+
+    checkedFinished();
 }
 
 FakeMoveReply::FakeMoveReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
@@ -576,8 +574,9 @@ void FakeMoveReply::respond()
     if (error() == QNetworkReply::NoError) {
         setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 201);
         Q_EMIT metaDataChanged();
-        Q_EMIT finished();
     }
+
+    checkedFinished();
 }
 
 FakeGetReply::FakeGetReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
@@ -656,7 +655,7 @@ void FakeGetReply::respond()
                 Q_EMIT readyRead();
             }
         }
-        Q_EMIT finished();
+        checkedFinished();
     }
 }
 
@@ -771,7 +770,7 @@ void FakeChunkMoveReply::respond()
     setRawHeader("ETag", fileInfo->etag);
     setRawHeader("OC-FileId", fileInfo->fileId);
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+    checkedFinished();
 }
 
 void FakeChunkMoveReply::respondPreconditionFailed()
@@ -779,7 +778,7 @@ void FakeChunkMoveReply::respondPreconditionFailed()
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 412);
     setError(InternalServerError, QStringLiteral("Precondition Failed"));
     Q_EMIT metaDataChanged();
-    Q_EMIT finished();
+    checkedFinished();
 }
 
 FakePayloadReply::FakePayloadReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, const QByteArray &body, QObject *parent)
@@ -800,8 +799,7 @@ void FakePayloadReply::respond()
         setHeader(QNetworkRequest::ContentLengthHeader, _body.size());
         Q_EMIT metaDataChanged();
         Q_EMIT readyRead();
-        setFinished(true);
-        Q_EMIT finished();
+        checkedFinished();
     }
 }
 
@@ -850,8 +848,7 @@ void FakeErrorReply::respond()
 
 void FakeErrorReply::slotSetFinished()
 {
-    setFinished(true);
-    Q_EMIT finished();
+    checkedFinished();
 }
 
 qint64 FakeErrorReply::readData(char *buf, qint64 max)
@@ -1099,34 +1096,41 @@ void FakeFolder::toDisk(QDir &dir, const FileInfo &templateFi)
 
 void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
 {
-    const auto infoList = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
-    for (const auto &diskChild : infoList) {
-        if (diskChild.isHidden() || diskChild.fileName().startsWith(QStringLiteral(".sync_"))) {
-            // Skip system files, sqlite db files, sync log, etc.
+    auto dh = csync_vio_local_opendir(dir.absolutePath());
+    if (!dh) {
+        return;
+    }
+    while (true) {
+        auto dirent = csync_vio_local_readdir(dh, nullptr);
+        if (!dirent)
+            break;
+        if (dirent->type == ItemTypeSkip)
             continue;
-        }
+        if (dirent->is_hidden || dirent->path.startsWith(QStringLiteral(".sync_")))
+            continue;
 
-        if (diskChild.isDir()) {
+        QString absolutePathItem = dir.absolutePath() + QDir::separator() + dirent->path;
+        if (dirent->type == ItemTypeDirectory) {
             QDir subDir = dir;
-            subDir.cd(diskChild.fileName());
-            FileInfo &subFi = templateFi.children[diskChild.fileName()] = FileInfo { diskChild.fileName() };
-            subFi.setLastModified(diskChild.lastModified());
+            subDir.cd(dirent->path);
+            FileInfo &subFi = templateFi.children[dirent->path] = FileInfo{dirent->path};
+            subFi.setLastModified(QDateTime::fromSecsSinceEpoch(dirent->modtime, QTimeZone::utc()));
             fromDisk(subDir, subFi);
         } else {
-            FileInfo fi(diskChild.fileName());
+            FileInfo fi(dirent->path);
             fi.isDir = false;
-            fi.fileSize = diskChild.size();
-            fi.isDehydratedPlaceholder = isDehydratedPlaceholder(diskChild.absoluteFilePath());
-            fi.setLastModified(diskChild.lastModified());
+            fi.fileSize = dirent->size;
+            fi.isDehydratedPlaceholder = isDehydratedPlaceholder(absolutePathItem);
+            fi.setLastModified(QDateTime::fromSecsSinceEpoch(dirent->modtime, QTimeZone::utc()));
             if (fi.isDehydratedPlaceholder) {
                 fi.contentChar = '\0';
                 fi.contentSize = 0;
             } else {
-                QFile f { diskChild.filePath() };
+                QFile f{absolutePathItem};
                 OC_ENFORCE(f.open(QFile::ReadOnly));
                 auto content = f.read(1);
                 if (content.size() == 0) {
-                    qWarning() << "Empty file at:" << diskChild.filePath();
+                    qWarning() << "Empty file at:" << dirent->path;
                     fi.contentChar = FileInfo::DefaultContentChar;
                 } else {
                     fi.contentChar = content.at(0);
@@ -1137,6 +1141,7 @@ void FakeFolder::fromDisk(QDir &dir, FileInfo &templateFi)
             templateFi.children.insert(fi.name, fi);
         }
     }
+    csync_vio_local_closedir(dh);
 }
 
 FileInfo &findOrCreateDirs(FileInfo &base, const PathComponents &components)
@@ -1225,13 +1230,23 @@ FakeReply::FakeReply(QObject *parent)
 
 FakeReply::~FakeReply() { }
 
+void FakeReply::checkedFinished()
+{
+    // It can happen that this job is cancelled before the full data is read, and the job is aborted. This being the test framework, processing happens
+    // synchronously, so between the signals above and here, the job can get aborted, which emits the finished signal. So do NOT emit it again if
+    // this is the case.
+    if (!isFinished()) {
+        setFinished(true);
+        Q_EMIT finished();
+    }
+}
+
 void FakeReply::abort()
 {
     if (!isFinished()) {
         setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
-        setFinished(true);
         Q_EMIT metaDataChanged();
-        Q_EMIT finished();
+        checkedFinished();
     }
 }
 

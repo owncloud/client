@@ -47,6 +47,9 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcFileSystem)
 namespace FileSystem {
     OCSYNC_EXPORT Q_NAMESPACE;
 
+    QByteArray OCSYNC_EXPORT encodeFileName(const QString &fileName);
+    QString OCSYNC_EXPORT decodeFileName(const char *localFileName);
+
     /**
      * List of characters not allowd in filenames on Windows
      */
@@ -105,6 +108,8 @@ namespace FileSystem {
      */
     bool OCSYNC_EXPORT fileExists(const QString &filename, const QFileInfo & = QFileInfo());
 
+    bool OCSYNC_EXPORT mkpath(const QString &parent, const QString &newDir);
+
     /**
      * @brief Rename the file \a originFileName to \a destinationFileName.
      *
@@ -154,11 +159,11 @@ namespace FileSystem {
 
     bool OCSYNC_EXPORT longPathsEnabledOnWindows();
 
+#endif
     /**
      * Returns the file system used at the given path.
      */
     QString OCSYNC_EXPORT fileSystemForPath(const QString &path);
-#endif
 
     /**
      * Returns whether the file is a shortcut file (ends with .lnk)

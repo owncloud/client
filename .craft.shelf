@@ -1,24 +1,24 @@
 [General]
 version = 2
-blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
+blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|6|
 
 [core/cacert]
 version = 2023-12-12
 
 [craft/craft-blueprints-kde]
 version = master
-revision = fdca754081357bce51abf038f53facc02d230b4d
+revision = 4a6f0200
 
 [craft/craft-blueprints-owncloud]
-version = master
-revision = e51cae2
+version = 6
+revision = ba6feae525ff8f7115b9a094d2b574e2b21221dd
 
 [craft/craft-core]
 version = master
-revision = 57762d56b
+revision = 53eb56b4e
 
 [dev-utils/7zip-base]
-version = 24.05
+version = 24.09
 
 [dev-utils/cmake]
 version = latest
@@ -33,8 +33,7 @@ version = 0.32.3
 version = 1_1_3
 
 [dev-utils/kshimgen]
-version = append
-revision = 9ec9e93
+version = 0.6.1
 
 [dev-utils/nasm]
 version = 2.15.05
@@ -51,17 +50,14 @@ version = 5.38.2
 [dev-utils/pkg-config]
 version = 0.29.2
 
-[dev-utils/python3]
-version = 3
-
 [dev-utils/symsorter]
 version = 0.7.0
 
 [kde/frameworks/extra-cmake-modules]
-version = 6.7.0
+version = 6.11.0
 
 [kde/frameworks/tier1/syntax-highlighting]
-version = 6.7.0
+version = 6.11.0
 
 [libs/brotli]
 version = 1.1.0
@@ -82,7 +78,10 @@ version = 5.2.1
 version = 2.7.2
 
 [libs/kdsingleapplication]
-version = 1.0.0
+version = 1.1.0
+
+[libs/libb2]
+version = 0.98.1
 
 [libs/libbzip2]
 version = 1.0.6
@@ -91,13 +90,13 @@ version = 1.0.6
 version = 3.4.6
 
 [libs/libjpeg-turbo]
-version = 2.1.5.1
+version = 3.0.3
 
 [libs/liblzma]
 version = 5.2.3
 
 [libs/libpng]
-version = 1.6.43
+version = 1.6.45
 
 [libs/libre-graph-api-cpp-qt-client]
 version = 1.0.4
@@ -111,6 +110,9 @@ version = 2.12.7
 [libs/libzstd]
 version = 1.5.6
 
+[libs/llvm]
+version = 18.1.8
+
 [libs/nlohmann-json]
 version = 3.11.2
 
@@ -122,6 +124,33 @@ version = 10.44
 
 [libs/python]
 version = 3.11.7
+
+[libs/qt6/qtbase]
+version = 6.8.0
+
+[libs/qt6/qtdeclarative]
+version = 6.8.0
+
+[libs/qt6/qtimageformats]
+version = 6.8.0
+
+[libs/qt6/qtlanguageserver]
+version = 6.8.0
+
+[libs/qt6/qtscxml]
+version = 6.8.0
+
+[libs/qt6/qtshadertools]
+version = 6.8.0
+
+[libs/qt6/qtsvg]
+version = 6.8.0
+
+[libs/qt6/qttools]
+version = 6.8.0
+
+[libs/qt6/qttranslations]
+version = 6.8.0
 
 [libs/runtime]
 version = 17
@@ -142,14 +171,14 @@ version = 1.3.1
 version = master
 revision = 96da290
 
-[python-modules/pip]
+[qt-apps/gammaray]
 version = master
+revision = 680a36946
 
-[python-modules/pip-system]
+[qt-apps/kdstatemachineeditor]
 version = master
-
-[python-modules/virtualenv]
-version = master
+revision = 4ae88f3
 
 [qt-libs/qtkeychain]
-version = 0.14.3
+version = 0.15.0
+

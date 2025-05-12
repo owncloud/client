@@ -53,7 +53,7 @@ const QString systemThemesC()
 }
 
 namespace OCC {
-
+// important: this is mac only, hence the empty impl here
 void Utility::setupFavLink(const QString &)
 {
 }

@@ -33,7 +33,7 @@ public:
 };
 
 /**
- * @brief The PropagateRemoteDelete class
+ * @brief Propagate a local delete to the server
  * @ingroup libsync
  */
 class PropagateRemoteDelete : public PropagateItemJob

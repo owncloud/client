@@ -23,6 +23,7 @@ Pane {
     id: folderSyncPanel
     // TODO: not cool
     readonly property real normalSize: 170
+    // todo: #16
     readonly property AccountSettings accountSettings: ocContext
     readonly property OCQuickWidget widget: ocQuickWidget
 
@@ -231,13 +232,14 @@ Pane {
 
             Button {
                 id: addSyncButton
-                text: accountSettings.accountState.supportsSpaces ? qsTr("Add Space") : qsTr("Add Folder")
+                text: accountSettings.accountState.supportsSpaces && !Theme.spacesAreCalledFolders ? qsTr("Add Space") : qsTr("Add Folder")
                 // this should have no effect, but without it the highlight is not displayed in Qt 6.7 on Windows
                 palette.highlight: folderSyncPanel.palette.highlight
 
                 onClicked: {
                     accountSettings.slotAddFolder();
                 }
+                //todo: #16
                 enabled: (accountSettings.accountState.state === AccountState.Connected) && (accountSettings.unsyncedSpaces || !accountSettings.accountState.supportsSpaces)
 
                 // with Spaces Theme.singleSyncFolder hast no effect
@@ -256,7 +258,7 @@ Pane {
                 Layout.fillWidth: true
             }
             Label {
-                text: qsTr("You are synchronizing %1 out of %2 spaces").arg(accountSettings.syncedSpaces).arg(accountSettings.syncedSpaces + accountSettings.unsyncedSpaces)
+                text: (Theme.spacesAreCalledFolders ? qsTr("You are synchronizing %1 out of %n folder(s)", "", accountSettings.syncedSpaces + accountSettings.unsyncedSpaces) : qsTr("You are synchronizing %1 out of %n space(s)", "", accountSettings.syncedSpaces + accountSettings.unsyncedSpaces)).arg(accountSettings.syncedSpaces)
                 visible: accountSettings.accountState.supportsSpaces && accountSettings.accountState.state === AccountState.Connected
             }
         }

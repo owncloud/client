@@ -21,13 +21,10 @@
 #include "common/syncjournalfilerecord.h"
 #include "common/vfs.h"
 #include "configfile.h"
-#include "creds/abstractcredentials.h"
 #include "csync_exclude.h"
 #include "discovery.h"
 #include "discoveryphase.h"
-#include "filesystem.h"
 #include "owncloudpropagator.h"
-#include "propagatedownload.h"
 #include "propagateremotedelete.h"
 
 #include <chrono>
@@ -61,6 +58,11 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _uploadLimit(0)
     , _downloadLimit(0)
 {
+    // Refactoring todo: reality check that we actually need to use these types in queued connections. if so,
+    // we should move to a one shot registration method a) to make it really easy to see which types may
+    // be passed between threads and b) to just call it once.
+    // suggest calling registration method in FolderMan or one of the other single instance managers on startup
+    // one day it might belong in an app builder routine.
     qRegisterMetaType<SyncFileItem>("SyncFileItem");
     qRegisterMetaType<SyncFileItemPtr>("SyncFileItemPtr");
     qRegisterMetaType<SyncFileItem::Status>("SyncFileItem::Status");
@@ -96,7 +98,7 @@ bool SyncEngine::checkErrorBlacklisting(SyncFileItem &item)
         return false;
     }
 
-    SyncJournalErrorBlacklistRecord entry = _journal->errorBlacklistEntry(item.localName());
+    SyncJournalErrorBlacklistRecord entry = _journal->errorBlacklistEntry(item._file);
     item._hasBlacklistEntry = false;
 
     if (!entry.isValid()) {
@@ -108,7 +110,7 @@ bool SyncEngine::checkErrorBlacklisting(SyncFileItem &item)
     // If duration has expired, it's not blacklisted anymore
     time_t now = Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc());
     if (now >= entry._lastTryTime + entry._ignoreDuration) {
-        qCInfo(lcEngine) << "blacklist entry for " << item.localName() << " has expired!";
+        qCInfo(lcEngine) << "blacklist entry for " << item._file << " has expired!";
         return false;
     }
 
@@ -118,19 +120,19 @@ bool SyncEngine::checkErrorBlacklisting(SyncFileItem &item)
         if (item._modtime == 0 || entry._lastTryModtime == 0) {
             return false;
         } else if (item._modtime != entry._lastTryModtime) {
-            qCInfo(lcEngine) << item.localName() << " is blacklisted, but has changed mtime!";
+            qCInfo(lcEngine) << item._file << " is blacklisted, but has changed mtime!";
             return false;
         } else if (item._renameTarget != entry._renameTarget) {
-            qCInfo(lcEngine) << item.localName() << " is blacklisted, but rename target changed from" << entry._renameTarget;
+            qCInfo(lcEngine) << item._file << " is blacklisted, but rename target changed from" << entry._renameTarget;
             return false;
         }
     } else if (item._direction == SyncFileItem::Down) {
         // download, check the etag.
         if (item._etag.isEmpty() || entry._lastTryEtag.isEmpty()) {
-            qCInfo(lcEngine) << item.localName() << "one ETag is empty, no blacklisting";
+            qCInfo(lcEngine) << item._file << "one ETag is empty, no blacklisting";
             return false;
         } else if (item._etag.toUtf8() != entry._lastTryEtag) {
-            qCInfo(lcEngine) << item.localName() << " is blacklisted, but has changed etag!";
+            qCInfo(lcEngine) << item._file << " is blacklisted, but has changed etag!";
             return false;
         }
     }
@@ -174,7 +176,7 @@ void SyncEngine::deleteStaleDownloadInfos(const SyncFileItemSet &syncItems)
     QSet<QString> download_file_paths;
     for (const auto &it : syncItems) {
         if (it->_direction == SyncFileItem::Down && it->_type == ItemTypeFile && isFileTransferInstruction(it->instruction())) {
-            download_file_paths.insert(it->localName());
+            download_file_paths.insert(it->_file);
         }
     }
 
@@ -194,7 +196,7 @@ void SyncEngine::deleteStaleUploadInfos(const SyncFileItemSet &syncItems)
     QSet<QString> upload_file_paths;
     for (const auto &it : syncItems) {
         if (it->_direction == SyncFileItem::Up && it->_type == ItemTypeFile && isFileTransferInstruction(it->instruction())) {
-            upload_file_paths.insert(it->localName());
+            upload_file_paths.insert(it->_file);
         }
     }
 
@@ -217,7 +219,7 @@ void SyncEngine::deleteStaleErrorBlacklistEntries(const SyncFileItemSet &syncIte
     QSet<QString> blacklist_file_paths;
     for (const auto &it : syncItems) {
         if (it->_hasBlacklistEntry)
-            blacklist_file_paths.insert(it->localName());
+            blacklist_file_paths.insert(it->_file);
     }
 
     // Delete from journal.
@@ -266,10 +268,10 @@ void SyncEngine::conflictRecordMaintenance()
 
 void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 {
-    if (Utility::isConflictFile(item->localName()))
-        _seenConflictFiles.insert(item->localName());
+    if (Utility::isConflictFile(item->_file))
+        _seenConflictFiles.insert(item->_file);
     if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
-        if (_account->capabilities().uploadConflictFiles() && Utility::isConflictFile(item->localName())) {
+        if (_account->capabilities().uploadConflictFiles() && Utility::isConflictFile(item->_file)) {
             // For uploaded conflict files, files with no action performed on them should
             // be displayed: but we mustn't overwrite the instruction if something happens
             // to the file!
@@ -289,7 +291,7 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
         const auto it = _syncItems.find(item);
         if (it != _syncItems.cend()) {
             const auto &item2 = it->get();
-            qCWarning(lcEngine) << "We already have an item for " << item2->localName() << ":" << item2->instruction() << item2->_direction << "|"
+            qCWarning(lcEngine) << "We already have an item for " << item2->_file << ":" << item2->instruction() << item2->_direction << "|"
                                 << item->instruction() << item->_direction;
             return false;
         }
@@ -300,7 +302,7 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
     slotNewItem(item);
 
     if (item->isDirectory()) {
-        slotFolderDiscovered(item->_etag.isEmpty(), item->localName());
+        slotFolderDiscovered(item->_etag.isEmpty(), item->_file);
     }
 }
 
@@ -383,7 +385,7 @@ void SyncEngine::startSync()
     }
 
     bool ok;
-    auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, &ok);
+    auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (ok) {
         bool usingSelectiveSync = (!selectiveSyncBlackList.isEmpty());
         qCInfo(lcEngine) << (usingSelectiveSync ? "Using Selective Sync" : "NOT Using Selective Sync");
@@ -413,7 +415,7 @@ void SyncEngine::startSync()
         _discoveryPhase->_remoteFolder+=QLatin1Char('/');
     _discoveryPhase->_shouldDiscoverLocaly = [this](const QString &s) { return shouldDiscoverLocally(s); };
     _discoveryPhase->setSelectiveSyncBlackList(selectiveSyncBlackList);
-    _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, &ok));
+    _discoveryPhase->setSelectiveSyncWhiteList(_journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, ok));
     if (!ok) {
         qCWarning(lcEngine) << "Unable to read selective sync list, aborting.";
         Q_EMIT syncError(tr("Unable to read from the sync journal."));
@@ -526,11 +528,11 @@ void SyncEngine::slotDiscoveryFinished()
         if (regex.isValid()) {
             QSet<QStringView> names;
             for (auto &i : _syncItems) {
-                if (regex.match(i->localName()).hasMatch()) {
+                if (regex.match(i->_file).hasMatch()) {
                     int index = -1;
                     QStringView ref;
                     do {
-                        ref = QStringView(i->localName()).mid(0, index);
+                        ref = QStringView(i->_file).mid(0, index);
                         names.insert(ref);
                         index = ref.lastIndexOf(QLatin1Char('/'));
                     } while (index > 0);
@@ -549,7 +551,7 @@ void SyncEngine::slotDiscoveryFinished()
                 }
                 return old_size - c.size();
             };
-            erase_if(_syncItems, [&names](const SyncFileItemPtr &i) { return !names.contains(QStringView{i->localName()}); });
+            erase_if(_syncItems, [&names](const SyncFileItemPtr &i) { return !names.contains(QStringView{i->_file}); });
         }
 
         qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) ####################################################" << _duration.duration();
@@ -615,7 +617,7 @@ void SyncEngine::setNetworkLimits(int upload, int download)
                 _propagator->_bandwidthManager = new BandwidthManager(_propagator.data());
             }
         }
-        // this might set the limit to 0 but only the next sync will have no bandwithd manager set
+        // this might set the limit to 0 but only the next sync will have no bandwidth manager set
         if (_propagator->_bandwidthManager) {
             _propagator->_bandwidthManager->setCurrentDownloadLimit(download);
             _propagator->_bandwidthManager->setCurrentUploadLimit(upload);
@@ -713,11 +715,11 @@ void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
 
         switch ((*it)->instruction()) {
         case CSYNC_INSTRUCTION_SYNC:
-            qCWarning(lcEngine) << "restoreOldFiles: RESTORING" << (*it)->localName();
+            qCWarning(lcEngine) << "restoreOldFiles: RESTORING" << (*it)->_file;
             (*it)->setInstruction(CSYNC_INSTRUCTION_CONFLICT);
             break;
         case CSYNC_INSTRUCTION_REMOVE:
-            qCWarning(lcEngine) << "restoreOldFiles: RESTORING" << (*it)->localName();
+            qCWarning(lcEngine) << "restoreOldFiles: RESTORING" << (*it)->_file;
             (*it)->setInstruction(CSYNC_INSTRUCTION_NEW);
             (*it)->_direction = SyncFileItem::Up;
             break;
@@ -819,7 +821,7 @@ void SyncEngine::abort(const QString &reason)
         disconnect(_discoveryPhase.get(), nullptr, this, nullptr);
     }
     if (aborting) {
-        qCInfo(lcEngine) << "Aborting sync";
+        qCInfo(lcEngine) << "Aborting sync, stated reason:" << reason;
         if (!_goingDown) {
             Q_EMIT syncError(tr("Aborted due to %1").arg(reason));
         }

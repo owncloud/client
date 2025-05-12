@@ -32,7 +32,8 @@ RestartManager::RestartManager(std::function<int(int, char **)> &&main)
     : _main(main)
 {
     Q_ASSERT(!_instance);
-    _instance = this;
+    if (!_instance)
+        _instance = this;
 }
 
 RestartManager::~RestartManager()
@@ -59,6 +60,9 @@ int RestartManager::exec(int argc, char **argv) const
 void RestartManager::requestRestart()
 {
     Q_ASSERT(_instance);
+    if (!_instance)
+        return;
+
     qCInfo(lcRestart) << "Restarting application with PID" << QCoreApplication::applicationPid();
 
     QString pathToLaunch = QCoreApplication::applicationFilePath();

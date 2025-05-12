@@ -73,14 +73,11 @@ set(client_SRCS
     translations.cpp
     creds/httpcredentialsgui.cpp
     creds/qmlcredentials.cpp
-    updateurldialog.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
-
-    spacemigration.cpp
 
     scheduling/syncscheduler.cpp
     scheduling/etagwatcher.cpp

@@ -238,6 +238,83 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/.foo")));
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/bar")));
     }
+
+    void testNameNormalization_data()
+    {
+        QTest::addColumn<QString>("correct");
+        QTest::addColumn<QString>("incorrect");
+
+        const unsigned char a_umlaut_composed_bytes[] = {0xc3, 0xa4, 0x00};
+        const QString a_umlaut_composed = QString::fromUtf8(reinterpret_cast<const char *>(a_umlaut_composed_bytes));
+        const QString a_umlaut_decomposed = a_umlaut_composed.normalized(QString::NormalizationForm_D);
+
+        QTest::newRow("a_umlaut decomposed") << a_umlaut_decomposed << a_umlaut_composed;
+        QTest::newRow("a_umlaut composed") << a_umlaut_composed << a_umlaut_decomposed;
+    }
+
+    // Test that when a file/directory name on the remote is encoded in NFC, the local name is encoded
+    // in the same way, and that a subsequent sync does not change anything. And the same for NFD.
+    void testNameNormalization()
+    {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        QFETCH(QString, correct);
+        QFETCH(QString, incorrect);
+
+        // Create an empty remote folder
+        FakeFolder fakeFolder({FileInfo{}}, vfsMode, filesAreDehydrated);
+        OperationCounter counter(fakeFolder);
+
+        // Create a file with an a-umlout in the "correct" normalization:
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P"));
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P/A"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("P/A/") + correct);
+
+        // Same for a directory, holding a "normal" file:
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("P/B") + correct);
+        fakeFolder.remoteModifier().insert(QStringLiteral("P/B") + correct + QStringLiteral("/b"));
+
+        LocalDiscoveryTracker tracker;
+        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+
+        // First sync: discover that there are files/directories on the server that are not yet synced to the local end
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        // Check that locally we have the file and the directory with the correct names:
+        {
+            auto localState = fakeFolder.currentLocalState();
+            QVERIFY(localState.find(QStringLiteral("P/A/") + correct) != nullptr); // check if the file exists
+            QVERIFY(localState.find(QStringLiteral("P/B") + correct + QStringLiteral("/b")) != nullptr); // check if the file exists
+        }
+
+        counter.reset();
+
+        qDebug() << "*** MARK"; // Log marker to check if a PUT/DELETE shows up in the second sync
+
+        // Force a full local discovery on the next sync, which forces a walk of the (local) file system, reading back names (and file sizes/mtimes/etc.)...
+        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {QStringLiteral("P")});
+        tracker.startSyncFullDiscovery();
+
+        // ... and start the second sync:
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        // If the normalization of the file/directory name did not change, no rename/move/etc. should have been detected, so check that the client didn't issue
+        // any of these operations:
+        QCOMPARE(counter.nDELETE, 0);
+        QCOMPARE(counter.nMOVE, 0);
+        QCOMPARE(counter.nPUT, 0);
+
+        // Check that the remote names are unchanged, and that no "incorrect" names have been introduced:
+        FileInfo &remoteState = fakeFolder.currentRemoteState();
+        QVERIFY(remoteState.find(QStringLiteral("P/A/") + correct) != nullptr); // check if the file still exists in the original normalization
+        QVERIFY(remoteState.find(QStringLiteral("P/A/") + incorrect) == nullptr); // there should NOT be a file with another normalization
+        QVERIFY(remoteState.find(QStringLiteral("P/B") + correct + QStringLiteral("/b"))
+            != nullptr); // check if the directory still exists in the original normalization
+        QVERIFY(remoteState.find(QStringLiteral("P/B") + incorrect + QStringLiteral("/b"))
+            == nullptr); // there should NOT be a directory with another normalization
+    }
 };
 
 QTEST_GUILESS_MAIN(TestLocalDiscovery)

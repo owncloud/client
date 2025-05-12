@@ -168,8 +168,11 @@ public:
     };
     Q_ENUM(SelectiveSyncListType)
 
-    /* return the specified list from the database */
-    QSet<QString> getSelectiveSyncList(SelectiveSyncListType type, bool *ok);
+    /* return the specified list from the database
+     * ok param holds value indicating "success" of the operation. If the sync list cannot be retrieved ok will be false
+     */
+    QSet<QString> getSelectiveSyncList(SelectiveSyncListType type, bool &ok);
+
     /* Write the selective sync list (remove all other entries of that list */
     void setSelectiveSyncList(SelectiveSyncListType type, const QSet<QString> &list);
 

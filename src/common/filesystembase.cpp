@@ -22,9 +22,11 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QDir>
 #include <QFile>
 #include <QSettings>
+#include <QStorageInfo>
+
+#include <filesystem>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -48,6 +50,16 @@ constexpr auto replacementCharC = QLatin1Char('_');
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFileSystem, "sync.filesystem", QtInfoMsg)
+
+QByteArray FileSystem::encodeFileName(const QString &fileName)
+{
+    return fileName.toLocal8Bit();
+}
+
+QString FileSystem::decodeFileName(const char *localFileName)
+{
+    return QString::fromLocal8Bit(localFileName);
+}
 
 QString FileSystem::longWinPath(const QString &inpath)
 {
@@ -197,28 +209,15 @@ bool FileSystem::uncheckedRenameReplace(const QString &originFileName,
     QString *errorString)
 {
     Q_ASSERT(errorString);
+
 #ifndef Q_OS_WIN
-    bool success;
-    QFile orig(originFileName);
-    // We want a rename that also overwites.  QFile::rename does not overwite.
-    // Qt 5.1 has QSaveFile::renameOverwrite we could use.
-    // ### FIXME
-    success = true;
-    bool destExists = fileExists(destinationFileName);
-    if (destExists && !QFile::remove(destinationFileName)) {
-        *errorString = orig.errorString();
-        qCWarning(lcFileSystem) << "Target file could not be removed.";
-        success = false;
-    }
-    if (success) {
-        success = orig.rename(destinationFileName);
-    }
-    if (!success) {
-        *errorString = orig.errorString();
+    std::error_code err;
+    std::filesystem::rename(originFileName.toStdString(), destinationFileName.toStdString(), err);
+    if (err) {
+        *errorString = QString::fromStdString(err.message());
         qCWarning(lcFileSystem) << "Renaming temp file to final failed: " << *errorString;
         return false;
     }
-
 #else //Q_OS_WIN
     // You can not overwrite a read-only file on windows.
 
@@ -343,7 +342,7 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
 #endif
     bool re = fileInfo.exists();
     // if the filename is different from the filename in fileInfo, the fileInfo is
-    // not valid. There needs to be one initialised here. Otherwise the incoming
+    // not valid. There needs to be one initialised here. Otherwise, the incoming
     // fileInfo is re-used.
     if (fileInfo.filePath() != filename) {
         re = QFileInfo::exists(filename);
@@ -351,24 +350,41 @@ bool FileSystem::fileExists(const QString &filename, const QFileInfo &fileInfo)
     return re;
 }
 
-#ifdef Q_OS_WIN
-QString FileSystem::fileSystemForPath(const QString &path)
+bool FileSystem::mkpath(const QString &parent, const QString &newDir)
 {
-    // See also QStorageInfo (Qt >=5.4) and GetVolumeInformationByHandleW (>= Vista)
-    QString drive = path.left(2);
-    if (!drive.endsWith(QLatin1Char(':')))
-        return QString();
-    drive.append(QLatin1Char('\\'));
-
-    const size_t fileSystemBufferSize = 4096;
-    TCHAR fileSystemBuffer[fileSystemBufferSize];
-
-    if (!GetVolumeInformationW(reinterpret_cast<LPCWSTR>(drive.utf16()), nullptr, 0, nullptr, nullptr, nullptr, fileSystemBuffer, fileSystemBufferSize)) {
-        return QString();
+#ifdef Q_OS_WIN
+    return QDir(parent).mkpath(newDir);
+#else // POSIX
+    std::error_code err;
+    QString fullPath = parent;
+    if (!fullPath.endsWith(u'/')) {
+        fullPath += u'/';
     }
-    return QString::fromUtf16(reinterpret_cast<const char16_t *>(fileSystemBuffer));
+    fullPath += newDir;
+    std::filesystem::create_directories(fullPath.toStdString(), err);
+    return err.value() == 0;
+#endif
 }
 
+QString FileSystem::fileSystemForPath(const QString &path)
+{
+    QString p = path;
+    while (true) {
+        if (!fileExists(p)) {
+            QFileInfo file(p);
+            p = file.absolutePath();
+            continue;
+        }
+        const QStorageInfo storage(p);
+        if (!storage.isValid() || !storage.isReady()) {
+            return {};
+        }
+
+        return QString::fromUtf8(storage.fileSystemType());
+    }
+}
+
+#ifdef Q_OS_WIN
 bool FileSystem::longPathsEnabledOnWindows()
 {
     static std::optional<bool> longPathsEnabledCached = {};

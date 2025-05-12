@@ -49,7 +49,6 @@ jobs:
               os: ubuntu-latest
               container: owncloudci/appimage-build:sles15-amd64
               useSonarCloud:
-
     name: ${{ matrix.name }}
 
     runs-on: ${{ matrix.os }}
@@ -71,6 +70,11 @@ jobs:
     - name: Check out latest commit
       if: ${{ !matrix.useSonarCloud && matrix.name  != 'linux-gcc-x86_64' }}
       uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      if: matrix.name  == 'windows-cl-x86_64'
+      with:
+        python-version: '3.12'
 
     - name: Restore cache
       uses: actions/cache@v4
@@ -166,8 +170,8 @@ jobs:
     - name: Clang tidy
       if: github.event_name != 'pull_request'
       run: |
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm python-modules/pip
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m pip install clang-html
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
         $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.run-clang-tidy.ps1"
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m clang_html "${env:TMPDIR}/clang-tidy.log" -o "${env:GITHUB_WORKSPACE}/binaries/clang-tidy.html"

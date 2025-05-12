@@ -37,7 +37,7 @@ public:
 };
 
 /**
- * @brief The PropagateRemoteMove class
+ * @brief Propagate a local move (or rename) to the server
  * @ingroup libsync
  */
 class PropagateRemoteMove : public PropagateItemJob

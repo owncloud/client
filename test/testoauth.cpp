@@ -53,7 +53,7 @@ public:
         if (aborted) {
             setError(OperationCanceledError, QStringLiteral("Operation Canceled"));
             Q_EMIT metaDataChanged();
-            Q_EMIT finished();
+            checkedFinished();
             return;
         }
         setHeader(QNetworkRequest::ContentLengthHeader, payload->size());
@@ -61,12 +61,20 @@ public:
         Q_EMIT metaDataChanged();
         if (bytesAvailable())
             Q_EMIT readyRead();
-        Q_EMIT finished();
+        checkedFinished();
     }
 
     void abort() override {
         aborted = true;
     }
+
+    void checkedFinished() {
+        if (!isFinished()) {
+            setFinished(true);
+            Q_EMIT finished();
+        }
+    }
+
     qint64 bytesAvailable() const override {
         if (aborted)
             return 0;
@@ -760,7 +768,7 @@ private Q_SLOTS:
                 return new FakePayloadReply(op, request, {}, fakeAm);
             }
 
-            virtual void test()
+            void test() override
             {
                 oauth = prepareOauth();
                 oauth->saveDynamicRegistrationDataForAccount(account, {});

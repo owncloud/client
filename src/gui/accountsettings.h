@@ -64,8 +64,6 @@ public:
     explicit AccountSettings(const AccountStatePtr &accountState, QWidget *parent = nullptr);
     ~AccountSettings() override;
 
-    AccountStatePtr accountsState() const { return _accountState; }
-
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
     void addModalWidget(AccountModalWidget *widget);
 
@@ -92,6 +90,7 @@ protected Q_SLOTS:
     void slotDisableVfsCurrentFolder(Folder *folder);
     void slotFolderWizardAccepted();
     void slotDeleteAccount();
+    void slotOpenAccountInBrowser();
     void slotToggleSignInState();
     void slotCustomContextMenuRequested(Folder *folder);
 
@@ -103,6 +102,8 @@ private:
 
     bool event(QEvent *) override;
     void doForceSyncCurrentFolder(Folder *selectedFolder);
+
+    void buildManageAccountMenu();
 
     Ui::AccountSettings *ui;
 

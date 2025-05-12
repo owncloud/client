@@ -69,7 +69,7 @@ ColumnLayout {
             Layout.fillWidth: true
             ErrorItem {
                 Layout.fillWidth: true
-                text: errorMessages
+                text: errorMessages[0]
                 maximumLineCount: 1
             }
             Label {

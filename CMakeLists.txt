@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Set this before the first project definition
+set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0" CACHE STRING "Minimum macOS deployment version" FORCE)
+
 include(VERSION.cmake)
 project(owncloud-client LANGUAGES CXX C VERSION ${MIRALL_VERSION_MAJOR}.${MIRALL_VERSION_MINOR}.${MIRALL_VERSION_PATCH})
 include(FeatureSummary)
@@ -163,10 +166,3 @@ endif()
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
-if(ECM_VERSION VERSION_GREATER_EQUAL 5.79)
-    message(STATUS "Suitable ECM ${ECM_VERSION} found, installing clang-format git hook")
-    include(KDEGitCommitHooks)
-    kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)
-else()
-    message(WARNING "ECM ${ECM_VERSION} too old, cannot install clang-format git hook")
-endif()
