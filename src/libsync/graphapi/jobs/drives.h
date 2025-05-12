@@ -15,23 +15,19 @@
 
 #include "networkjobs/jsonjob.h"
 
+#include "openapi/OAIDrive.h"
 #include "owncloudlib.h"
-#include <OAIDrive.h>
 
-namespace OCC {
-namespace GraphApi {
+namespace OCC::GraphApi {
+class OWNCLOUDSYNC_EXPORT Drives : public JsonJob
+{
+    Q_OBJECT
+public:
+    Drives(const AccountPtr &account, QObject *parent = nullptr);
+    ~Drives();
+    const QList<OpenAPI::OAIDrive> &drives() const;
 
-
-    class OWNCLOUDSYNC_EXPORT Drives : public JsonJob
-    {
-        Q_OBJECT
-    public:
-        Drives(const AccountPtr &account, QObject *parent = nullptr);
-        ~Drives();
-        const QList<OpenAPI::OAIDrive> &drives() const;
-
-    private:
-        mutable QList<OpenAPI::OAIDrive> _drives;
-    };
-}
+private:
+    mutable QList<OpenAPI::OAIDrive> _drives;
+};
 }

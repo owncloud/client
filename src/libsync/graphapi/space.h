@@ -18,7 +18,7 @@
 
 #include "libsync/accountfwd.h"
 
-#include <OAIDrive.h>
+#include "openapi/OAIDrive.h"
 
 #include <QIcon>
 #include <QtQmlIntegration>

@@ -1,10 +1,3 @@
-find_package(LibreGraphAPI 1.0.4 REQUIRED)
-set_package_properties(LibreGraphAPI PROPERTIES
-        URL https://github.com/owncloud/libre-graph-api-cpp-qt-client.git
-        DESCRIPTION "Libre Graph is a free API for cloud collaboration inspired by the MS Graph API."
-        TYPE OPTIONAL
-)
-
 set(libsync_SRCS
     account.cpp
     bandwidthmanager.cpp
@@ -109,7 +102,6 @@ set_source_files_properties(configfile.cpp
         COMPILE_DEFINITIONS EXCLUDE_FILE_NAME="${EXCLUDE_FILE_NAME}"
 )
 
-target_link_libraries(libsync PUBLIC $<BUILD_INTERFACE:OpenAPI::LibreGraphAPI>)
 add_subdirectory(graphapi)
 
 if ( APPLE )

@@ -19,11 +19,7 @@
 #include "libsync/accountfwd.h"
 #include "libsync/graphapi/space.h"
 
-#include <OAIDrive.h>
-
 #include <algorithm>
-
-#include <QFuture>
 
 class QTimer;
 
