@@ -49,7 +49,7 @@ CoreJob *DiscoverWebFingerServiceJobFactory::startJob(const QUrl &url, QObject *
         }
 
         const QString contentTypeHeader = job->reply()->header(QNetworkRequest::ContentTypeHeader).toString();
-        if (!contentTypeHeader.toLower().contains(QStringLiteral("application/json"))) {
+        if (!contentTypeHeader.contains(QStringLiteral("application/json"), Qt::CaseInsensitive)) {
             qCWarning(lcDiscoverWebFingerService) << "server sent invalid content type:" << contentTypeHeader;
             setInvalidReplyError();
             return;

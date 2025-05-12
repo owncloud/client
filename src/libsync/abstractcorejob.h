@@ -107,6 +107,7 @@ public:
     /**
      * Send network request and return associated job.
      * @param url URL to send request to
+	 * @param parent becomes the parent of the job for auto-cleanup
      * @return job
      */
     virtual CoreJob *startJob(const QUrl &url, QObject *parent) = 0;
