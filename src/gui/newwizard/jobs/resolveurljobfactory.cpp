@@ -104,6 +104,7 @@ CoreJob *ResolveUrlJobFactory::startJob(const QUrl &url, QObject *parent)
         }
     });
 
+    // is this actually important?
     makeRequest();
 
     return job;
