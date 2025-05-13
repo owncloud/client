@@ -189,9 +189,10 @@ def teardown_client():
         # so to work around that, remove the account connection
         close_dialogs()
         close_widgets()
-        accounts, _ = Toolbar.get_accounts()
-        for account in accounts:
-            Toolbar.open_account(account["displayname"])
+        accounts, selectors = Toolbar.get_accounts()
+        for display_name in selectors.values():
+            _, account_objects = Toolbar.get_accounts()
+            squish.mouseClick(squish.waitForObject(account_objects[display_name]))
             AccountSetting.remove_account_connection()
         if accounts:
             squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
