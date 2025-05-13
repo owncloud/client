@@ -1,0 +1,27 @@
+From 49f62e8c5a8aef4c0b7fd6867a30e653d2f5dd98 Mon Sep 17 00:00:00 2001
+From: Alexey Edelev <alexey.edelev@qt.io>
+Date: Mon, 21 Nov 2022 15:03:17 +0100
+Subject: [PATCH] Remove QMAKE_RANLIB and QMAKE_LINK_SHLIB from android/default_pre.prf
+
+The values should come from android-clang mkspecs. The hardcoded
+values don't work correctly with recent Android NDKs.
+
+Pick-to: 6.4 6.2 5.15
+Fixes: QTBUG-108662
+Change-Id: Ie153a50ee0c49bd4f0704b588a4e2c87a05c1063
+Reviewed-by: Assam Boudjelthia <assam.boudjelthia@qt.io>
+---
+
+diff --git a/mkspecs/features/android/default_pre.prf b/mkspecs/features/android/default_pre.prf
+index 9f90dcb..2328b72 100644
+--- a/mkspecs/features/android/default_pre.prf
++++ b/mkspecs/features/android/default_pre.prf
+@@ -76,8 +76,6 @@
+ else: equals(QT_ARCH, arm64-v8a): CROSS_COMPILE = $$NDK_LLVM_PATH/bin/aarch64-linux-android-
+ else: CROSS_COMPILE = $$NDK_LLVM_PATH/bin/arm-linux-androideabi-
+ 
+-QMAKE_RANLIB            = $${CROSS_COMPILE}ranlib
+-QMAKE_LINK_SHLIB        = $$QMAKE_LINK
+ QMAKE_LFLAGS            =
+ 
+ QMAKE_LIBS_PRIVATE      = -llog -lz -lm -ldl -lc

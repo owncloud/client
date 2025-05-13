@@ -1,0 +1,39 @@
+From 337f28c9abb12f28538cfe2f49e5afc460578b32 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tor=20Arne=20Vestb=C3=B8?= <tor.arne.vestbo@qt.io>
+Date: Tue, 5 Jul 2022 15:38:33 +0200
+Subject: Darwin: Replace deprecated symbol kIOMasterPortDefault with
+ equivalent
+
+We can't use the replacement kIOMainPortDefault yet, as it's not
+available in operating system versions we still support, but the
+kIOMasterPortDefault documentation explicitly says that passing
+NULL as a port argument indicates "use the default".
+
+As the underlying type of a mach_port_t is potentially either
+a pointer or an unsigned int, we initialize the default to 0.
+
+Pick-to: 6.2 6.3 6.4 5.15
+Change-Id: I288aa94b8f2fbda47fd1cbaf329799db7ab988a0
+Reviewed-by: Alexandru Croitor <alexandru.croitor@qt.io>
+---
+ src/corelib/global/qglobal.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+(limited to 'src/corelib/global/qglobal.cpp')
+
+diff --git a/src/corelib/global/qglobal.cpp b/src/corelib/global/qglobal.cpp
+index 738e39658f..c894471ad6 100644
+--- a/src/corelib/global/qglobal.cpp
++++ b/src/corelib/global/qglobal.cpp
+@@ -3077,7 +3077,8 @@ QByteArray QSysInfo::machineUniqueId()
+ {
+ #if defined(Q_OS_DARWIN) && __has_include(<IOKit/IOKitLib.h>)
+     char uuid[UuidStringLen + 1];
+-    io_service_t service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
++    static const mach_port_t defaultPort = 0; // Effectively kIOMasterPortDefault/kIOMainPortDefault
++    io_service_t service = IOServiceGetMatchingService(defaultPort, IOServiceMatching("IOPlatformExpertDevice"));
+     QCFString stringRef = (CFStringRef)IORegistryEntryCreateCFProperty(service, CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0);
+     CFStringGetCString(stringRef, uuid, sizeof(uuid), kCFStringEncodingMacRoman);
+     return QByteArray(uuid);
+-- 
+cgit v1.2.1

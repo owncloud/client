@@ -1,0 +1,13 @@
+diff --git a/mkspecs/features/gn_generator.prf b/mkspecs/features/gn_generator.prf
+index 306e58db1..a42059e82 100644
+--- a/mkspecs/features/gn_generator.prf
++++ b/mkspecs/features/gn_generator.prf
+@@ -166,7 +166,7 @@ for (flag, GN_FLAGS): GN_CONTENTS += "    \"$$flag\","
+         unix:!macos: GN_CONTENTS += "    \"-Wl,-rpath=$${rpath}\","
+     }
+ }
+-!isEmpty(QMAKE_RPATHLINKDIR): GN_CONTENTS += "    \"-Wl,-rpath-link=$${QMAKE_RPATHLINKDIR}\","
++!isEmpty(QMAKE_LFLAGS_RPATHLINK):!isEmpty(QMAKE_RPATHLINKDIR): GN_CONTENTS += "    \"-Wl,-rpath-link=$${QMAKE_RPATHLINKDIR}\","
+ GN_CONTENTS += "  ]"
+ 
+ GN_CONTENTS += "  lib_dirs = ["

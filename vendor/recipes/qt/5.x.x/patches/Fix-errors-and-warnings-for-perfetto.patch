@@ -1,0 +1,101 @@
+From 851cd7c7a079fa5da63770c49724036e8338e813 Mon Sep 17 00:00:00 2001
+From: Michal Klocek <michal.klocek@qt.io>
+Date: Wed, 20 Sep 2023 07:45:29 +0200
+Subject: [PATCH] Fix errors and warnings for perfetto
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
+
+It seems newest msvc compiler does not like perfetto circualar queue
+const iterator, which ends in issues with std::swap of std::sort.
+Make sure it is non const.
+
+Fix warnings.
+
+Deals with: "error C2672: 'swap': no matching overloaded function
+found."
+
+Fixes: QTBUG-117073
+Change-Id: I02901e61a1bb8863d72ca02a0ccd841e54309d6e
+Reviewed-on: https://codereview.qt-project.org/c/qt/qtwebengine-chromium/+/505412
+Reviewed-by: Martin Negyokru <negyokru@inf.u-szeged.hu>
+Reviewed-by: Michael BrÃ¼ning <michael.bruning@qt.io>
+---
+ .../perfetto/include/perfetto/ext/base/circular_queue.h          | 9 ++-------
+ .../third_party/perfetto/src/trace_processor/storage/metadata.h  | 2 ++
+ .../third_party/perfetto/src/trace_processor/storage/stats.h     | 2 ++
+ .../perfetto/src/trace_processor/tables/macros_internal.h        | 2 ++
+ 4 files changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/chromium/third_party/perfetto/include/perfetto/ext/base/circular_queue.h b/chromium/third_party/perfetto/include/perfetto/ext/base/circular_queue.h
+index 18ca7702614..ec46e69f817 100644
+--- a/chromium/third_party/perfetto/include/perfetto/ext/base/circular_queue.h
++++ b/chromium/third_party/perfetto/include/perfetto/ext/base/circular_queue.h
+@@ -67,19 +67,14 @@ class CircularQueue {
+       ignore_result(generation);
+     }
+ 
+-    T* operator->() {
++    T* operator->() const {
+ #if PERFETTO_DCHECK_IS_ON()
+       PERFETTO_DCHECK(generation_ == queue_->generation());
+ #endif
+       return queue_->Get(pos_);
+     }
+ 
+-    const T* operator->() const {
+-      return const_cast<CircularQueue<T>::Iterator*>(this)->operator->();
+-    }
+-
+-    T& operator*() { return *(operator->()); }
+-    const T& operator*() const { return *(operator->()); }
++    T& operator*() const { return *(operator->()); }
+ 
+     value_type& operator[](difference_type i) { return *(*this + i); }
+ 
+diff --git a/chromium/third_party/perfetto/src/trace_processor/storage/metadata.h b/chromium/third_party/perfetto/src/trace_processor/storage/metadata.h
+index 4796ae4edcd..30e534b216b 100644
+--- a/chromium/third_party/perfetto/src/trace_processor/storage/metadata.h
++++ b/chromium/third_party/perfetto/src/trace_processor/storage/metadata.h
+@@ -59,8 +59,10 @@ namespace metadata {
+   F(kMulti,  "multi")
+ // clang-format
+ 
++#if PERFETTO_BUILDFLAG(PERFETTO_COMPILER_GCC)
+ // Ignore GCC warning about a missing argument for a variadic macro parameter.
+ #pragma GCC system_header
++#endif
+ 
+ #define PERFETTO_TP_META_TYPE_ENUM(varname, ...) varname
+ enum class KeyType : size_t {
+diff --git a/chromium/third_party/perfetto/src/trace_processor/storage/stats.h b/chromium/third_party/perfetto/src/trace_processor/storage/stats.h
+index 7f14803244e..30b56c62544 100644
+--- a/chromium/third_party/perfetto/src/trace_processor/storage/stats.h
++++ b/chromium/third_party/perfetto/src/trace_processor/storage/stats.h
+@@ -189,7 +189,9 @@ enum Source {
+ };
+ 
+ // Ignore GCC warning about a missing argument for a variadic macro parameter.
++#if PERFETTO_BUILDFLAG(PERFETTO_COMPILER_GCC)
+ #pragma GCC system_header
++#endif
+ 
+ // Declares an enum of literals (one for each stat). The enum values of each
+ // literal corresponds to the string index in the arrays below.
+diff --git a/chromium/third_party/perfetto/src/trace_processor/tables/macros_internal.h b/chromium/third_party/perfetto/src/trace_processor/tables/macros_internal.h
+index 875efd62e0d..1ca5068cc32 100644
+--- a/chromium/third_party/perfetto/src/trace_processor/tables/macros_internal.h
++++ b/chromium/third_party/perfetto/src/trace_processor/tables/macros_internal.h
+@@ -140,7 +140,9 @@ class MacroTable : public Table {
+ }  // namespace macros_internal
+ 
+ // Ignore GCC warning about a missing argument for a variadic macro parameter.
++#if PERFETTO_BUILDFLAG(PERFETTO_COMPILER_GCC)
+ #pragma GCC system_header
++#endif
+ 
+ // Basic helper macros.
+ #define PERFETTO_TP_NOOP(...)
+-- 
+2.16.3
+

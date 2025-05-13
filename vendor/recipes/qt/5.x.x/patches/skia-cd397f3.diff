@@ -1,0 +1,25 @@
+From cd397f3c4738beb61cfd1c611544d096a6f4fa36 Mon Sep 17 00:00:00 2001
+From: Jordan Williams <jordan@jwillikers.com>
+Date: Tue, 26 Apr 2022 11:44:31 -0500
+Subject: [PATCH] Add missing include for std::begin and std::end in SkParseColor.cpp
+
+Change-Id: I51f6766271cfcc2dff7fc30e3f7439c4580cbb6a
+Reviewed-on: https://skia-review.googlesource.com/c/skia/+/533981
+Reviewed-by: Brian Salomon <bsalomon@google.com>
+Commit-Queue: Brian Salomon <bsalomon@google.com>
+---
+
+ # Trusted service accounts.
+ Recipe roller SA <recipe-mega-autoroller@chops-service-accounts.iam.gserviceaccount.com>
+diff --git a/src/utils/SkParseColor.cpp b/src/utils/SkParseColor.cpp
+index 3164650..0dc3497 100644
+--- a/src/utils/SkParseColor.cpp
++++ b/src/utils/SkParseColor.cpp
+@@ -9,6 +9,7 @@
+ #include "include/utils/SkParse.h"
+ 
+ #include <algorithm> // std::lower_bound
++#include <iterator>
+ 
+ static constexpr const char* gColorNames[] = {
+     "aliceblue",
