@@ -66,7 +66,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 
         if (!_context->accountBuilder().webFingerAuthenticationServerUrl().isEmpty()) {
             WebFingerLookupAdapter lookup(_context->accessManager(), token, _context->accountBuilder().serverUrl(), nullptr);
-            WebFingerLookupResult webfingerResult = lookup.getResult();
+            const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {
                 Q_EMIT evaluationFailed(QStringLiteral("Failed to look up instances: %1").arg(webfingerResult.error));
             } else {

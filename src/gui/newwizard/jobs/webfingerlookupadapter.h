@@ -14,7 +14,7 @@ struct WebFingerLookupResult
     QString error;
     QList<QUrl> urls;
 
-    bool success() { return error.isEmpty() && !urls.isEmpty(); }
+    bool success() const { return error.isEmpty() && !urls.isEmpty(); }
 };
 
 class WebFingerLookupAdapter : public QObject
