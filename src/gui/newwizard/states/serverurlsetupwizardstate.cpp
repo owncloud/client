@@ -14,9 +14,8 @@
 
 #include "serverurlsetupwizardstate.h"
 #include "determineauthtypejobfactory.h"
+#include "gui/networkadapters/resolveurladapter.h"
 #include "jobs/discoverwebfingerservicejobfactory.h"
-#include "jobs/resolveurladapter.h"
-#include "jobs/resolveurljobfactory.h"
 #include "theme.h"
 
 

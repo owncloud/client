@@ -13,7 +13,7 @@
  */
 
 #include "oauthcredentialssetupwizardstate.h"
-#include "jobs/webfingerlookupadapter.h"
+#include "gui/networkadapters/webfingerlookupadapter.h"
 
 namespace OCC::Wizard {
 

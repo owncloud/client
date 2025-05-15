@@ -36,18 +36,8 @@ add_library(newwizard STATIC
     navigation.cpp
     navigation.h
 
-    jobs/resolveurljobfactory.cpp
-    jobs/resolveurljobfactory.h
-    jobs/resolveurladapter.cpp
-    jobs/resolveurladapter.h
-
     jobs/discoverwebfingerservicejobfactory.cpp
     jobs/discoverwebfingerservicejobfactory.h
-
-    jobs/webfingeruserinfojobfactory.cpp
-    jobs/webfingeruserinfojobfactory.h
-    jobs/webfingerlookupadapter.h
-    jobs/webfingerlookupadapter.cpp
 
     postfixlineedit.cpp
 
