@@ -14,6 +14,7 @@
 
 #include "resolveurladapter.h"
 
+#include "abstractcorejob.h"
 #include "common/utility.h"
 #include "gui/application.h"
 #include "gui/owncloudgui.h"
@@ -41,10 +42,7 @@ ResolveUrlAdapter::ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url
 
 ResolveUrlResult ResolveUrlAdapter::getResult()
 {
-    // this tracks with the original impl where no timeout was added to the req (via AbstractCoreJobFactory::makeRequest)
-    // I think it is probably best to not have a timeout here, as the certificates dialog might cause it to expire even though everything
-    // is ok? Discuss
-    QNetworkRequest req(Utility::concatUrlPath(_url, QStringLiteral("status.php")));
+    QNetworkRequest req = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, QStringLiteral("status.php")));
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
 
     QEventLoop waitLoop;
