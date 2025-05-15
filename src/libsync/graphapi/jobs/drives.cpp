@@ -16,8 +16,8 @@
 
 #include "account.h"
 
-#include <OAICollection_of_drives.h>
-#include <OAIDrive.h>
+#include "openapi/OAICollection_of_drives.h"
+#include "openapi/OAIDrive.h"
 
 
 using namespace OCC;
