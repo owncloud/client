@@ -146,7 +146,7 @@ void ServerUrlSetupWizardState::evaluatePage()
                     _context->accessManager()->addCustomTrustedCaCertificates(result.acceptedCertificates);
 
                     // the account maintains a list, too, which is also saved in the config file
-                    for (auto cert : result.acceptedCertificates)
+                    for (const auto &cert : result.acceptedCertificates)
                         _context->accountBuilder().addCustomTrustedCaCertificate(cert);
                 }
 
