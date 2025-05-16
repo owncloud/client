@@ -135,9 +135,9 @@ generate_export_header(owncloudGui
         EXPORT_FILE_NAME owncloudguilib.h
         STATIC_DEFINE OWNCLOUD_BUILT_AS_STATIC
 )
+
 add_subdirectory(spaces)
-
-
+add_subdirectory(networkadapters)
 add_subdirectory(socketapi)
 
 target_include_directories(owncloudGui PUBLIC

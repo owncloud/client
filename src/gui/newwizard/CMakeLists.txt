@@ -36,15 +36,6 @@ add_library(newwizard STATIC
     navigation.cpp
     navigation.h
 
-    jobs/resolveurljobfactory.cpp
-    jobs/resolveurljobfactory.h
-
-    jobs/discoverwebfingerservicejobfactory.cpp
-    jobs/discoverwebfingerservicejobfactory.h
-
-    jobs/webfingeruserinfojobfactory.cpp
-    jobs/webfingeruserinfojobfactory.h
-
     postfixlineedit.cpp
 
     states/abstractsetupwizardstate.cpp
@@ -55,7 +46,9 @@ add_library(newwizard STATIC
     states/accountconfiguredsetupwizardstate.cpp
 
     setupwizardcontext.cpp
+
 )
+
 target_link_libraries(newwizard PUBLIC Qt::Widgets libsync owncloudResources)
 set_target_properties(newwizard PROPERTIES AUTOUIC ON AUTORCC ON)
 target_include_directories(newwizard PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

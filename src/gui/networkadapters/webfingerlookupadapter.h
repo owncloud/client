@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Fabian Müller <fmueller@owncloud.com>
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,35 @@
 
 #pragma once
 
-#include "abstractcorejob.h"
-namespace OCC::Wizard::Jobs {
+#include <QObject>
+#include <QUrl>
 
-class WebFingerInstanceLookupJobFactory : public AbstractCoreJobFactory
+
+class QNetworkAccessManager;
+
+namespace OCC {
+
+
+struct WebFingerLookupResult
 {
-public:
-    WebFingerInstanceLookupJobFactory(QNetworkAccessManager *nam, const QString &bearerToken);
+    QString error;
+    QList<QUrl> urls;
 
-    CoreJob *startJob(const QUrl &url, QObject *parent) override;
-
-private:
-    QString _authorizationHeader;
+    bool success() const { return error.isEmpty() && !urls.isEmpty(); }
 };
 
-} // OCC::Wizard::Jobs
+class WebFingerLookupAdapter : public QObject
+{
+    Q_OBJECT
+public:
+    explicit WebFingerLookupAdapter(QNetworkAccessManager *nam, const QString &authToken, const QUrl &url, QObject *parent);
+
+    WebFingerLookupResult getResult();
+
+private:
+    QNetworkAccessManager *_nam;
+    QUrl _url;
+
+    QString _authorizationHeader;
+};
+}

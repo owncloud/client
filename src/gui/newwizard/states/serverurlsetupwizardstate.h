@@ -32,6 +32,7 @@ public:
 
 private:
     QUrl calculateUrl() const;
+    void onCertificateAccepted(QUrl url);
 };
 
 } // OCC::Wizard

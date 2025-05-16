@@ -14,6 +14,8 @@
 
 #include "basiccredentialssetupwizardstate.h"
 
+// todo: #19 - this whole class should go
+
 namespace OCC::Wizard {
 
 BasicCredentialsSetupWizardState::BasicCredentialsSetupWizardState(SetupWizardContext *context)
