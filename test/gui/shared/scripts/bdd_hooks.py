@@ -190,7 +190,7 @@ def teardown_client():
         close_dialogs()
         close_widgets()
         accounts, selectors = Toolbar.get_accounts()
-        for display_name in selectors.values():
+        for display_name in selectors:
             _, account_objects = Toolbar.get_accounts()
             squish.mouseClick(squish.waitForObject(account_objects[display_name]))
             AccountSetting.remove_account_connection()
