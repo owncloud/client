@@ -36,9 +36,6 @@ add_library(newwizard STATIC
     navigation.cpp
     navigation.h
 
-    jobs/discoverwebfingerservicejobfactory.cpp
-    jobs/discoverwebfingerservicejobfactory.h
-
     postfixlineedit.cpp
 
     states/abstractsetupwizardstate.cpp

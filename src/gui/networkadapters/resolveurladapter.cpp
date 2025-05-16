@@ -21,7 +21,6 @@
 #include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 
-#include <QApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -54,22 +53,21 @@ ResolveUrlResult ResolveUrlAdapter::getResult()
     ResolveUrlResult result;
 
     if (!_sslErrors.isEmpty()) {
-        result.error = QApplication::translate("ResolveUrlAdapter", "SSL failure when connecting to server at %1").arg(_url.toDisplayString());
+        result.error = tr("SSL failure when connecting to server at %1").arg(_url.toDisplayString());
         // the "deleted" char* ctrs for QString and QChar are way way way out of hand. This is just stupid.
         QString allErrors = _sslErrors.join(QStringLiteral("\n"));
         qCritical(lcResolveUrlAdapter) << QStringLiteral("Attempt to resolve Url: %1 failed with SSL errors: %2.").arg(_url.toDisplayString(), allErrors);
     } else if (reply->error() != QNetworkReply::NoError) {
-        result.error = QApplication::translate("ResolveUrlAdapter", "Could not detect compatible server at %1").arg(_url.toDisplayString());
+        result.error = tr("Could not detect compatible server at %1").arg(_url.toDisplayString());
         qCritical(lcResolveUrlAdapter) << QStringLiteral("Network error when resolving Url %1: %2.").arg(_url.toDisplayString(), reply->errorString());
     } else {
         const auto newUrl = reply->url().adjusted(QUrl::RemoveFilename);
 
         if (!newUrl.isValid()) {
-            result.error = QApplication::translate("ResolveUrlAdapter", "Resolved url is invalid %1").arg(newUrl.toDisplayString());
+            result.error = tr("Resolved url is invalid %1").arg(newUrl.toDisplayString());
         } else if (newUrl != _url) {
             qCWarning(lcResolveUrlAdapter) << _url << " redirect to " << newUrl << " is rejected";
-            result.error =
-                QApplication::translate("ResolveUrlAdapter", "Rejected redirect from %1 to %2").arg(_url.toDisplayString(), newUrl.toDisplayString());
+            result.error = tr("Rejected redirect from %1 to %2").arg(_url.toDisplayString(), newUrl.toDisplayString());
         } else {
             result.resolvedUrl = newUrl;
         }

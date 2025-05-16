@@ -14,8 +14,8 @@
 
 #include "serverurlsetupwizardstate.h"
 #include "determineauthtypejobfactory.h"
+#include "gui/networkadapters/discoverwebfingerserviceadapter.h"
 #include "gui/networkadapters/resolveurladapter.h"
-#include "jobs/discoverwebfingerservicejobfactory.h"
 #include "theme.h"
 
 
@@ -120,64 +120,63 @@ void ServerUrlSetupWizardState::evaluatePage()
 
         // since classic WebFinger is not enabled, we need to check whether modern (oCIS) WebFinger is available
         // therefore, we run the corresponding discovery job
-        auto checkWebFingerAuthJob = Jobs::DiscoverWebFingerServiceJobFactory(_context->accessManager()).startJob(serverUrl, this);
-        // todo: #17
-        connect(checkWebFingerAuthJob, &CoreJob::finished, this, [job = checkWebFingerAuthJob, serverUrl, this]() {
-            // in case any kind of error occurs, we assume the WebFinger service is not available
-            if (!job->success()) {
-                // first, we must resolve the actual server URL
-                ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl, nullptr);
-                const ResolveUrlResult result = urlResolver.getResult();
+        DiscoverWebFingerServiceAdapter webfingerServiceAdapter(_context->accessManager(), serverUrl, nullptr);
+        const DiscoverWebFingerServiceResult webfingerServiceResult = webfingerServiceAdapter.getResult();
 
-                if (!result.success()) {
-                    Q_EMIT evaluationFailed(result.error);
-                    return;
-                }
+        // in case any kind of error occurs, we assume the WebFinger service is not available
+        if (!webfingerServiceResult.success()) {
+            // first, we must resolve the actual server URL
+            ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl, nullptr);
+            const ResolveUrlResult result = urlResolver.getResult();
 
-                if (result.resolvedUrl.hasQuery()) {
-                    QString errorMsg = tr("The requested URL failed with query value: %1").arg(result.resolvedUrl.query());
-                    Q_EMIT evaluationFailed(errorMsg);
-                    return;
-                }
-
-                if (!result.acceptedCertificates.isEmpty()) {
-                    // future requests made through this access manager should accept the certificate
-                    _context->accessManager()->addCustomTrustedCaCertificates(result.acceptedCertificates);
-
-                    // the account maintains a list, too, which is also saved in the config file
-                    for (const auto &cert : result.acceptedCertificates)
-                        _context->accountBuilder().addCustomTrustedCaCertificate(cert);
-                }
-
-                // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
-                // step we can skip it here therefore
-                if (Theme::instance()->wizardEnableWebfinger()) {
-                    _context->accountBuilder().setLegacyWebFingerServerUrl(result.resolvedUrl);
-                    Q_EMIT evaluationSuccessful();
-                    return;
-                }
-
-                    // next, we need to find out which kind of authentication page we have to present to the user
-                auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(result.resolvedUrl, this);
-                // ffs I HATE lambdas!!!!
-                QUrl url = result.resolvedUrl;
-                connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, url]() {
-                    if (authTypeJob->result().isNull()) {
-                        Q_EMIT evaluationFailed(authTypeJob->errorMessage());
-                        return;
-                    }
-
-                    _context->accountBuilder().setServerUrl(url, qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
-                    Q_EMIT evaluationSuccessful();
-                });
-
-
-            } else {
-                _context->accountBuilder().setWebFingerAuthenticationServerUrl(job->result().toUrl());
-                Q_EMIT evaluationSuccessful();
+            if (!result.success()) {
+                Q_EMIT evaluationFailed(result.error);
+                return;
             }
+
+            if (result.resolvedUrl.hasQuery()) {
+                QString errorMsg = tr("The requested URL failed with query value: %1").arg(result.resolvedUrl.query());
+                Q_EMIT evaluationFailed(errorMsg);
+                return;
+            }
+
+            if (!result.acceptedCertificates.isEmpty()) {
+                // future requests made through this access manager should accept the certificate
+                _context->accessManager()->addCustomTrustedCaCertificates(result.acceptedCertificates);
+
+                // the account maintains a list, too, which is also saved in the config file
+                for (const auto &cert : result.acceptedCertificates)
+                    _context->accountBuilder().addCustomTrustedCaCertificate(cert);
+            }
+
+            // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
+            // step we can skip it here therefore
+            if (Theme::instance()->wizardEnableWebfinger()) {
+                _context->accountBuilder().setLegacyWebFingerServerUrl(result.resolvedUrl);
+                Q_EMIT evaluationSuccessful();
+                return;
+            }
+
+            // next, we need to find out which kind of authentication page we have to present to the user
+            auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(result.resolvedUrl, this);
+            // ffs I HATE lambdas!!!!
+            QUrl url = result.resolvedUrl;
+            connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, url]() {
+                if (authTypeJob->result().isNull()) {
+                    Q_EMIT evaluationFailed(authTypeJob->errorMessage());
+                    return;
+                }
+
+                _context->accountBuilder().setServerUrl(url, qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
+                Q_EMIT evaluationSuccessful();
+            });
+
+
+        } else {
+            _context->accountBuilder().setWebFingerAuthenticationServerUrl(QUrl(webfingerServiceResult.href));
+            Q_EMIT evaluationSuccessful();
+        }
         });
-    });
 
     // instead of defining a lambda that we could call from here as well as the message box, we can put the
     // handler into the accepted() signal handler, and Q_EMIT that signal here

@@ -13,7 +13,6 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 
-#include <QApplication>
 #include <QStringLiteral>
 
 namespace OCC {
@@ -49,15 +48,14 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
 
     Q_ASSERT(reply->isFinished());
     WebFingerLookupResult result;
-    // OCC::Result<QVector<QUrl>, QString> result{};
-    const auto data = reply->readAll();
-    // qCDebug(lcWebFingerUserInfoJob) << data;
+
     const auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     if (reply->error() != QNetworkReply::NoError || statusCode != 200) {
-        result.error = QApplication::translate("WebFingerLookupAdapter", "Failed to retrieve user info");
+        result.error = tr("Failed to retrieve user info");
     }
 
+    const auto data = reply->readAll();
     QJsonParseError error = {};
     const auto json = QJsonDocument::fromJson(data, &error);
 
@@ -65,11 +63,7 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
         result.error = error.errorString();
     }
 
-    //   qCDebug(lcWebFingerUserInfoJob) << "retrieved instances list for user" << json.object().value(QStringLiteral("subject")).toString();
-
     const auto links = json.object().value(QStringLiteral("links")).toArray();
-
-    //  qCDebug(lcWebFingerUserInfoJob) << "found links:" << links;
 
     for (const auto &link : links) {
         const auto linkObject = link.toObject();
@@ -78,14 +72,13 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
         const QString href = linkObject.value(QStringLiteral("href")).toString();
 
         if (rel != QStringLiteral("http://webfinger.owncloud/rel/server-instance")) {
-            // qCDebug(lcWebFingerUserInfoJob) << "skipping invalid link" << href << "with rel" << rel;
             continue;
         }
 
         result.urls.append(QUrl::fromUserInput(href));
     }
     if (result.urls.isEmpty())
-        result.error = QApplication::translate("WebFingerLookupAdapter", "WebFinger lookup returned no links");
+        result.error = tr("WebFinger lookup returned no links");
 
     delete reply;
     return result;
