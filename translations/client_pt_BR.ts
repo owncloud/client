@@ -1235,112 +1235,112 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="334"/>
+        <location filename="../src/gui/folderman.cpp" line="297"/>
         <source>Could not reset folder state</source>
         <translation>Não foi possível redefinir o estado da pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="335"/>
+        <location filename="../src/gui/folderman.cpp" line="298"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>Uma velha revista de sincronização &apos;%1&apos; foi encontrada, mas não pôde ser removida. Por favor, certifique-se de que nenhuma aplicação está a usá-la.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="352"/>
+        <location filename="../src/gui/folderman.cpp" line="315"/>
         <source>Unsupported filesystem</source>
         <translation>Sistema de arquivos não suportado</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="442"/>
+        <location filename="../src/gui/folderman.cpp" line="405"/>
         <source>Account disconnected or paused</source>
         <translation>Conta desconectada ou pausada</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="728"/>
+        <location filename="../src/gui/folderman.cpp" line="691"/>
         <source>Folder is about to be removed</source>
         <translation>A pasta está prestes a ser removida</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="755"/>
+        <location filename="../src/gui/folderman.cpp" line="718"/>
         <source> (backup)</source>
         <translation> (backup)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="760"/>
+        <location filename="../src/gui/folderman.cpp" line="723"/>
         <source> (backup %1)</source>
         <translation> (backup %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="811"/>
+        <location filename="../src/gui/folderman.cpp" line="774"/>
         <source>Sync was successful, unresolved conflicts.</source>
         <translation>A sincronização foi bem-sucedida, conflitos não resolvidos.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="820"/>
+        <location filename="../src/gui/folderman.cpp" line="783"/>
         <source>%1 (Sync is paused)</source>
         <translation>%1 (Pausa na Sincronização) </translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="852"/>
+        <location filename="../src/gui/folderman.cpp" line="815"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>A pasta &apos;%1&apos; já está em uso pelo aplicativo %2!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="867"/>
+        <location filename="../src/gui/folderman.cpp" line="830"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Pasta &apos;%1&apos; já está em uso por outra conta.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="882"/>
+        <location filename="../src/gui/folderman.cpp" line="845"/>
         <source>No valid folder selected!</source>
         <translation>Nenhuma pasta válida selecionada!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="904"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>A pasta %1 é usada em uma conexão de sincronização de pasta!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="946"/>
+        <location filename="../src/gui/folderman.cpp" line="909"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>A pasta local %1 já contém uma pasta usada em uma conexão de sincronização de pastas. Por favor, escolha outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="952"/>
+        <location filename="../src/gui/folderman.cpp" line="915"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>A pasta local %1 já está contida em uma pasta usada em uma conexão de sincronização de pastas. Por favor, escolha outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="960"/>
+        <location filename="../src/gui/folderman.cpp" line="923"/>
         <source>%1 Please pick another local folder!</source>
         <translation>%1 Por favor, escolha outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="900"/>
+        <location filename="../src/gui/folderman.cpp" line="863"/>
         <source>The selected path does not exist!</source>
         <translation>O caminho selecionado não existe!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="352"/>
+        <location filename="../src/gui/folderman.cpp" line="315"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>No macOS, somente o sistema de arquivos Apple File System é suportado.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="910"/>
+        <location filename="../src/gui/folderman.cpp" line="873"/>
         <source>The selected path is not a folder!</source>
         <translation>O caminho selecionado não é uma pasta!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="914"/>
+        <location filename="../src/gui/folderman.cpp" line="877"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>Voce não tem permissão para escrita na pasta selecionada!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="942"/>
+        <location filename="../src/gui/folderman.cpp" line="905"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>Já existe uma sincronização do servidor para esta pasta local. Por favor, escolha uma outra pasta local!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1026"/>
+        <location filename="../src/gui/folderman.cpp" line="989"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -3645,14 +3645,19 @@ Tem certeza de que deseja continuar?</translation>
 <context>
     <name>OCC::Wizard::SetupWizardController</name>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="191"/>
-        <source>Invalid credentials</source>
-        <translation>Credenciais inválidas</translation>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="190"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translation>Você já está conectado a uma conta com essas credenciais.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
-        <source>Failed to retrieve user information from server</source>
-        <translation>Falha ao recuperar as informações do usuário do servidor</translation>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="198"/>
+        <source>Invalid credentials.</source>
+        <translation>Credenciais inválidas.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="201"/>
+        <source>Failed to retrieve user information from server.</source>
+        <translation>Falha ao recuperar informações do usuário do servidor.</translation>
     </message>
 </context>
 <context>
@@ -3960,7 +3965,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
         <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Redirecionamento rejeitado de %1 para %2</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
