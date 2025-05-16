@@ -103,7 +103,8 @@ private:
     bool event(QEvent *) override;
     void doForceSyncCurrentFolder(Folder *selectedFolder);
 
-    void buildManageAccountMenu();
+    std::pair<QMenu *, QAction *> buildManageAccountMenu();
+    void configureManageAccountMenu();
 
     Ui::AccountSettings *ui;
 
