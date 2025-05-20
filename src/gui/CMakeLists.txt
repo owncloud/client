@@ -105,7 +105,7 @@ set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
 target_include_directories(owncloudGui PRIVATE models spaces creds)
 target_link_libraries(owncloudGui
     PUBLIC
-        Qt6::Widgets Qt6::Network Qt6::Xml Qt::Quick Qt6::QuickWidgets Qt::QuickControls2
+        Qt6::Widgets Qt6::Network Qt6::Xml Qt6::Quick Qt6::QuickWidgets Qt::QuickControls2
         newwizard folderwizard
         libsync
         Qt6Keychain::Qt6Keychain
