@@ -29,7 +29,7 @@
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcDiscoverWebFingerServiceAdapter, "gui.networkadapter.discoverwebfingerserviceadapter");
+Q_LOGGING_CATEGORY(lcDiscoverWebFingerServiceAdapter, "gui.networkadapters.discoverwebfingerserviceadapter");
 
 DiscoverWebFingerServiceAdapter::DiscoverWebFingerServiceAdapter(QNetworkAccessManager *nam, const QUrl &url, QObject *parent)
     : QObject(parent)
@@ -40,6 +40,12 @@ DiscoverWebFingerServiceAdapter::DiscoverWebFingerServiceAdapter(QNetworkAccessM
 
 DiscoverWebFingerServiceResult DiscoverWebFingerServiceAdapter::getResult()
 {
+    DiscoverWebFingerServiceResult result;
+
+    if (!_nam) {
+        return result;
+    }
+
     // this first request needs to be done without any authentication, since our goal is to find a server to authenticate to before the actual (authenticated)
     // WebFinger request
     QNetworkRequest req = AbstractCoreJobFactory::makeRequest(
@@ -50,23 +56,24 @@ DiscoverWebFingerServiceResult DiscoverWebFingerServiceAdapter::getResult()
     QEventLoop waitLoop;
     QObject::connect(reply, &QNetworkReply::finished, &waitLoop, &QEventLoop::quit);
 
-    DiscoverWebFingerServiceResult result = processReply(reply);
+    result = processReply(reply);
 
     delete reply;
     return result;
 }
 
-// for async we can do something like:
-/*QNetworkRequest req = AbstractCoreJobFactory::makeRequest(
-    Utility::concatUrlPath(_url, QStringLiteral("/.well-known/webfinger"), {{QStringLiteral("resource"), _url.toString()}}));
+/* for future async version of the adapter we can do something like:
+
+DiscoverWebfingerServiceAdapter::runAsync() {
+QNetworkRequest req = ....
 
 QNetworkReply *reply = _nam->get(req);
 connect(reply, reply::finished, this, [this, reply] () {
 emit done(processReply(reply));
 reply->deleteLater
 }
-or try executing getResult via qtConcurrent - though! this may actually add a bit of overhead related to the thread management which isn't
-really *needed* for a simple one shot network operation. we should look into that.
+
+In theory we could call getResult using QtConcurrent but I think this would add more overhead than it's worth for just a single operation.
 */
 
 DiscoverWebFingerServiceResult DiscoverWebFingerServiceAdapter::processReply(QNetworkReply *reply)

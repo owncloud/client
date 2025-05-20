@@ -143,13 +143,13 @@ void ServerUrlSetupWizardState::evaluatePage()
 
     // since classic WebFinger is not enabled, we need to check whether modern (oCIS) WebFinger is available
     // therefore, we run the corresponding discovery job
-    DiscoverWebFingerServiceAdapter webfingerServiceAdapter(_context->accessManager(), serverUrl, nullptr);
+    DiscoverWebFingerServiceAdapter webfingerServiceAdapter(_context->accessManager(), serverUrl);
     const DiscoverWebFingerServiceResult webfingerServiceResult = webfingerServiceAdapter.getResult();
 
     // in case any kind of error occurs, we assume the WebFinger service is not available
     if (!webfingerServiceResult.success()) {
         // first, we must resolve the actual server URL
-        ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl, nullptr);
+        ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl);
         const ResolveUrlResult result = urlResolver.getResult();
 
         if (!result.success()) {
@@ -181,6 +181,7 @@ void ServerUrlSetupWizardState::evaluatePage()
         }
 
         // next, we need to find out which kind of authentication page we have to present to the user
+        // todo: #18
         auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(result.resolvedUrl, this);
         QUrl url = result.resolvedUrl;
         connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, url]() {

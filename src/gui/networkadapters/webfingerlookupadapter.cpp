@@ -17,6 +17,8 @@
 
 namespace OCC {
 
+Q_LOGGING_CATEGORY(lcWebFingerLookupAdapter, "gui.networkadapters.webfingerlookupadapter");
+
 WebFingerLookupAdapter::WebFingerLookupAdapter(QNetworkAccessManager *nam, const QString &authToken, const QUrl &url, QObject *parent)
     : QObject{parent}
     , _nam(nam)
@@ -25,9 +27,14 @@ WebFingerLookupAdapter::WebFingerLookupAdapter(QNetworkAccessManager *nam, const
 {
 }
 
-// AFAIK we can run this function using QtConcurrent if we want avoid blocking
 WebFingerLookupResult WebFingerLookupAdapter::getResult()
 {
+    WebFingerLookupResult result;
+
+    if (!_nam) {
+        return result;
+    }
+
     const QString resource = QStringLiteral("acct:me@%1").arg(_url.host());
 
     auto req =
@@ -47,7 +54,6 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
     waitLoop.exec();
 
     Q_ASSERT(reply->isFinished());
-    WebFingerLookupResult result;
 
     const auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 

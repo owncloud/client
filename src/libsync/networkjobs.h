@@ -190,6 +190,7 @@ class OWNCLOUDSYNC_EXPORT DetermineAuthTypeJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
+    // todo: #18 - remove "Basic" value
     enum class AuthType {
         Basic, // also the catch-all fallback for backwards compatibility reasons
         OAuth,

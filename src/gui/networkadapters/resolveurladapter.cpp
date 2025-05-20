@@ -26,11 +26,9 @@
 #include <QNetworkRequest>
 
 
-namespace {
-Q_LOGGING_CATEGORY(lcResolveUrlAdapter, "gui.wizard.resolveurladapter")
-}
-
 namespace OCC {
+
+Q_LOGGING_CATEGORY(lcResolveUrlAdapter, "gui.networkadapters.resolveurladapter")
 
 ResolveUrlAdapter::ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QObject *parent)
     : QObject(parent)
@@ -41,6 +39,12 @@ ResolveUrlAdapter::ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url
 
 ResolveUrlResult ResolveUrlAdapter::getResult()
 {
+    ResolveUrlResult result;
+
+    if (!_nam) {
+        return result;
+    }
+
     QNetworkRequest req = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, QStringLiteral("status.php")));
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
 
@@ -49,8 +53,6 @@ ResolveUrlResult ResolveUrlAdapter::getResult()
     connect(reply, &QNetworkReply::sslErrors, this, &ResolveUrlAdapter::handleSslErrors);
     connect(reply, &QNetworkReply::finished, &waitLoop, &QEventLoop::quit);
     waitLoop.exec();
-
-    ResolveUrlResult result;
 
     if (!_sslErrors.isEmpty()) {
         result.error = tr("SSL failure when connecting to server at %1").arg(_url.toDisplayString());

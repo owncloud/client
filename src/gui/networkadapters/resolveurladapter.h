@@ -23,6 +23,12 @@ class QNetworkAccessManager;
 
 namespace OCC {
 
+/**
+ * @brief The ResolveUrlResult struct is a simple container to collect the result of the network request
+ * error holds the error message if the operation failed
+ * resolvedUrl holds the final resolved url
+ * acceptedCertificats is a list of certificates the user accepted in the course of resolving the url
+ */
 struct ResolveUrlResult
 {
     QString error;
@@ -36,8 +42,22 @@ class ResolveUrlAdapter : public QObject
     Q_OBJECT
 
 public:
-    explicit ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QObject *parent);
+    /**
+     * @brief ResolveUrlAdapter
+     * @param nam is the network access manager provided by the caller
+     * @param url is the url for the request
+     * @param parent fits normal QObject parenting concept. The intent of the adapter is to create an instance on the stack and
+     * let it naturally go out of scope after getResult has completed, so a parent should not be required in normal use
+     */
+    explicit ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QObject *parent = nullptr);
 
+    /**
+     * @brief getResult executes a network request asynchronously
+     * @return the result of the request
+     *
+     * Important detail: if the reply contains certificates the user will be asked to accept them before this function returns.
+     * If the user rejects the certificates, the net result is a ssl failure which will be reported as such.
+     */
     ResolveUrlResult getResult();
 
 private:
