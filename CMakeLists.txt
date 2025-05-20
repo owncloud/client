@@ -89,9 +89,6 @@ option(NO_MSG_HANDLER "Don't redirect QDebug outputs to the log window/file" OFF
 # this option builds the shell integration
 option(BUILD_SHELL_INTEGRATION "BUILD_SHELL_INTEGRATION" ON)
 
-# build the GUI component, when disabled only owncloudcmd is built
-option(BUILD_GUI "BUILD_GUI" ON)
-
 # build the auto updater component
 option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" OFF)
 
