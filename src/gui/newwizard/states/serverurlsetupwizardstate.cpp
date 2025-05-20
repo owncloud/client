@@ -22,12 +22,6 @@
 #include <QDebug>
 #include <QMessageBox>
 
-namespace {
-
-const QString defaultUrlSchemeC = QStringLiteral("https");
-const QStringList supportedUrlSchemesC({ defaultUrlSchemeC, QStringLiteral("http://") });
-
-}
 
 namespace OCC::Wizard {
 
@@ -36,13 +30,13 @@ Q_LOGGING_CATEGORY(lcSetupWizardServerUrlState, "gui.setupwizard.states.serverur
 ServerUrlSetupWizardState::ServerUrlSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    auto serverUrl = [this]() {
-        if (Theme::instance()->wizardEnableWebfinger()) {
-            return _context->accountBuilder().legacyWebFingerServerUrl();
-        } else {
-            return _context->accountBuilder().serverUrl();
-        }
-    }();
+    // how can the context already have a server url if it has not been set up?
+    QUrl serverUrl;
+    if (Theme::instance()->wizardEnableWebfinger()) {
+        serverUrl = _context->accountBuilder().legacyWebFingerServerUrl();
+    } else {
+        serverUrl = _context->accountBuilder().serverUrl();
+    }
 
     _page = new ServerUrlSetupWizardPage(serverUrl);
 }
@@ -62,19 +56,30 @@ QUrl ServerUrlSetupWizardState::calculateUrl() const
 
     QString userProvidedUrl = serverUrlSetupWizardPage->userProvidedUrl();
 
-    QUrl testUrl(userProvidedUrl); // this really is not useful.
+    // we need to check the scheme to be sure it's not there, but using the old "string matching" technique was not great
+    // because it added https:// to urls that had valid schemes but which did not match http or https. That was more complicating
+    // than useful so now we only add https if there really is no valid scheme to start with.
+    // the caller should decide which schemes are allowed and take whatever action it sees fit
+
+    // strict mode really does not appear to be useful wrt catching malformed urls but hey, why not.
+    QUrl testUrl(userProvidedUrl, QUrl::StrictMode);
     QString scheme = testUrl.scheme();
     if (scheme.isEmpty()) {
-        qInfo(lcSetupWizardServerUrlState) << "no URL scheme provided, prepending default URL scheme" << defaultUrlSchemeC;
+        qInfo(lcSetupWizardServerUrlState) << "no URL scheme provided, prepending default URL scheme: https://";
         userProvidedUrl.prepend(QStringLiteral("https://"));
-        testUrl.setScheme(defaultUrlSchemeC); // so far I don't see this coming back as invalid even if it should be but it seems reasonable to set it anyway.
-        // we catch it later using a new url after reconstructing it with the default scheme added
+        testUrl.setScheme(QStringLiteral("https"));
+        // so far I don't see testUrl coming back as invalid even if it should be but it seems reasonable to set the scheme anyway before testing validity.
+        // we catch the invalid condition later using a new url after reconstructing it with the default scheme added to the input string. see comment below.
+        // no I can't explain this behavior - it's a Qt mystery
     }
-    if (!testUrl.isValid()) // let the caller figure out how to report this
+    if (!testUrl.isValid()) {
+        // if it's already dead, stop trying
         return testUrl;
+    }
 
     // we can't recycle the testUrl because for reasons completely unknown to me, if you try to adjust it or set the path it destroys
-    // the host so we get https:///kwdav/ every time, even if the URL was completely valid from the start
+    // the host so we get https:///kwdav/ every time, even if the testUrl was valid
+    // solution = instantiate a new url <shrug>
     QUrl finalUrl(userProvidedUrl);
 
     if (finalUrl.isValid()) {
@@ -82,10 +87,8 @@ QUrl ServerUrlSetupWizardState::calculateUrl() const
         const QString serverPathOverride = Theme::instance()->overrideServerPath();
         if (!serverPathOverride.isEmpty()) {
             finalUrl.setPath(serverPathOverride);
-            testUrl.setPath(serverPathOverride);
         }
     }
-
     return finalUrl;
 }
 
@@ -97,21 +100,24 @@ void ServerUrlSetupWizardState::evaluatePage()
 
     const QUrl serverUrl = calculateUrl();
 
-    // (ab)use the account builder as temporary storage for the URL we are about to probe (after sanitation)
-    // in case of errors, the user can just edit the previous value
 
-    // this only works if the url is valid but not found. if it's invalid the original query text is wiped out and I don't
-    // see an easy way to put it back because...erm...it wants to take the text from a url but it's invalid. I'll check the gui
-    // to see if we can just not delete the orig text if the account builder has an invalid url.
-    _context->accountBuilder().setServerUrl(serverUrl, DetermineAuthTypeJob::AuthType::Unknown);
-
-    // TODO: perform some better validation - indeed, we should be using a regex as QUrl SUCKS wrt identifying bad formatting
+    // TODO: perform some better validation
+    // todo: #21
     if (!serverUrl.isValid()) {
-        Q_EMIT evaluationFailed(tr("Invalid server URL: %1").arg(serverUrl.errorString()));
+        QString fullError = serverUrl.errorString();
+        QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
+        // it might be too much to print both the error and the source string - eval with input from others.
+        Q_EMIT evaluationFailed(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
         return;
     }
 
-    //  _context->accountBuilder().setServerUrl(serverUrl, DetermineAuthTypeJob::AuthType::Unknown);
+    // (ab)use the account builder as temporary storage for the URL we are about to probe (after sanitation)
+    // in case of errors, the user can just edit the previous value
+
+    // this only works if the url is valid. If it's invalid the original query text is wiped out from the QUrl instance and I don't
+    // see an easy way to put it back because...erm...it wants to take the text from a url but it's invalid so the original text is gone.
+    // I improved the error message to extract the original input in case it helps, but this new behavior should be reviewed.
+    _context->accountBuilder().setServerUrl(serverUrl, DetermineAuthTypeJob::AuthType::Unknown);
 
     if (serverUrl.scheme() == QStringLiteral("http")) {
         auto *messageBox = new QMessageBox(QMessageBox::Warning, tr("Insecure connection"),
