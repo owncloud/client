@@ -1,0 +1,39 @@
+From fbff57202b91c6214360803b7397cf7d607c2fbf Mon Sep 17 00:00:00 2001
+From: re2zero <yangwu@uniontech.com>
+Date: Wed, 25 Sep 2024 09:13:15 +0800
+Subject: [PATCH] fix: Fix build configure
+
+It miss the Qt MAJOR version if build with Qt5.
+
+Log: Fix build configure.
+---
+ examples/widgetsingleapplication/CMakeLists.txt | 2 +-
+ src/CMakeLists.txt                              | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/examples/widgetsingleapplication/CMakeLists.txt b/examples/widgetsingleapplication/CMakeLists.txt
+index 3e4a0a9..21ffb26 100644
+--- a/examples/widgetsingleapplication/CMakeLists.txt
++++ b/examples/widgetsingleapplication/CMakeLists.txt
+@@ -12,5 +12,5 @@ add_executable(
+     ${widgetsingleapplication_SRCS}
+ )
+ target_link_libraries(
+-    widgetsingleapplication Qt::Widgets kdsingleapplication
++    widgetsingleapplication Qt${QT_VERSION_MAJOR}::Widgets kdsingleapplication
+ )
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 01a804d..794f425 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -40,8 +40,8 @@ if(WIN32)
+ endif()
+ target_link_libraries(
+     kdsingleapplication
+-    PUBLIC Qt::Core
+-    PRIVATE Qt::Network
++    PUBLIC Qt${QT_VERSION_MAJOR}::Core
++    PRIVATE Qt${QT_VERSION_MAJOR}::Network
+ )
+ 
+ install(

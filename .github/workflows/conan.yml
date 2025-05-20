@@ -1,0 +1,48 @@
+name: Build with conan
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+
+      - name: Add local recipe repository & set conan config
+        run: |
+          conan config install ./vendor/.config/global.conf
+          conan remote add local ./vendor/
+          conan profile show
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Install dependencies with conan
+        working-directory: ./build
+        run: |
+          conan install .. --build=missing --settings "compiler.cppstd=17"
+
+      - name: Build the client
+        working-directory: ./build
+        run: |
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build .
+
+      - name: Run tests
+        working-directory: ./build
+        run: ctest --output-on-failure
