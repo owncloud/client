@@ -58,7 +58,7 @@ public:
     enum class TokenEndpointAuthMethods : char { client_secret_basic, client_secret_post };
     Q_ENUM(TokenEndpointAuthMethods)
 
-    enum class PromptValuesSupported : char { none = 0, consent = 1 << 0, select_account = 1 << 1 };
+    enum class PromptValuesSupported : char { none = 0, consent = 1 << 0, select_account = 1 << 1, login = 1 << 2 };
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
