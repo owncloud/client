@@ -402,6 +402,7 @@ ownCloud admins and users.
    We implemented support for idP's to specify the supported prompt values.
 
    https://github.com/owncloud/client/pull/11729
+   https://github.com/owncloud/client/pull/12163
 
 * Enhancement - New branding option: automatically sync new spaces: [#11751](https://github.com/owncloud/client/issues/11751)
 
