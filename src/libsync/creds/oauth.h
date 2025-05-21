@@ -121,7 +121,7 @@ private:
     QByteArray _state;
 
     TokenEndpointAuthMethods _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
-    PromptValuesSupportedFlags _supportedPromtValues = {PromptValuesSupported::consent, PromptValuesSupported::select_account};
+    PromptValuesSupportedFlags _supportedPromptValues = {PromptValuesSupported::consent, PromptValuesSupported::select_account};
 };
 
 /**
@@ -153,4 +153,4 @@ private:
 
 QString OWNCLOUDSYNC_EXPORT toString(OAuth::PromptValuesSupportedFlags s);
 Q_DECLARE_OPERATORS_FOR_FLAGS(OAuth::PromptValuesSupportedFlags)
-} // namespce OCC
+} // namespace OCC
