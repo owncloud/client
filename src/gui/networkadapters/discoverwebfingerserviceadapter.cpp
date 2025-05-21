@@ -55,6 +55,7 @@ DiscoverWebFingerServiceResult DiscoverWebFingerServiceAdapter::getResult()
 
     QEventLoop waitLoop;
     QObject::connect(reply, &QNetworkReply::finished, &waitLoop, &QEventLoop::quit);
+    waitLoop.exec();
 
     result = processReply(reply);
 
@@ -78,11 +79,7 @@ In theory we could call getResult using QtConcurrent but I think this would add 
 
 DiscoverWebFingerServiceResult DiscoverWebFingerServiceAdapter::processReply(QNetworkReply *reply)
 {
-    switch (reply->error()) {
-    case QNetworkReply::NoError:
-        // all good, perform additional checks below
-        break;
-    default:
+    if (reply->error() != QNetworkReply::NoError) {
         return formatError(reply->errorString());
     }
 
