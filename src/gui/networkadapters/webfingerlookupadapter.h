@@ -56,7 +56,7 @@ public:
      * have the required data to move on.
      * @return the result of the network request
      *
-     * it is safe to call get result repeatedly, so long as the parameters passed the the adapter on construction are still valid.
+     * it is safe to call get result repeatedly, so long as the parameters passed to the adapter on construction are still valid.
      */
     WebFingerLookupResult getResult();
 

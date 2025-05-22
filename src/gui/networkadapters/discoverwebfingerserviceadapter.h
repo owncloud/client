@@ -40,7 +40,7 @@ struct DiscoverWebFingerServiceResult
  *  This adapter allows the caller to find a webfinger service synchronously, which is very useful when called from a gui
  *  because we can't continue until the required values are known.
  *
- *  In future we may also extend the adapter to run in asycn mode as well, but for now it's not needed.
+ *  In future we may also extend the adapter to run in async mode as well, but for now it's not needed.
  *
  *  A key benefit to using this impl is that the adapter can simply be allocated on the stack so there are no
  *  memory management concerns. It also simplifies and improves readability in the caller.
