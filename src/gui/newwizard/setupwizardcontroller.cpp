@@ -226,7 +226,6 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
     });
 
     connect(_currentState, &AbstractSetupWizardState::evaluationFailed, this, [this](const QString &errorMessage) {
-        _currentState->deleteLater();
         _context->window()->showErrorMessage(errorMessage);
         changeStateTo(_currentState->state(), ChangeReason::EvaluationFailed);
     });

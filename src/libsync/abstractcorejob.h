@@ -107,9 +107,24 @@ public:
     /**
      * Send network request and return associated job.
      * @param url URL to send request to
+	 * @param parent becomes the parent of the job for auto-cleanup
      * @return job
      */
     virtual CoreJob *startJob(const QUrl &url, QObject *parent) = 0;
+
+    /**
+     * Factory to create QNetworkRequests with properly set timeout.
+     */
+    template <typename... Params>
+    static QNetworkRequest makeRequest(Params... params)
+    {
+        auto request = QNetworkRequest(params...);
+
+        const auto timeoutMilliseconds = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(AbstractNetworkJob::httpTimeout).count());
+        request.setTransferTimeout(timeoutMilliseconds);
+
+        return request;
+    }
 
 protected:
     [[nodiscard]] QNetworkAccessManager *nam() const;
@@ -126,20 +141,6 @@ protected:
      * @param errorMessage network error or other suitable error message
      */
     static void setJobError(CoreJob *job, const QString &errorMessage);
-
-    /**
-     * Factory to create QNetworkRequests with properly set timeout.
-     */
-    template <typename... Params>
-    static QNetworkRequest makeRequest(Params... params)
-    {
-        auto request = QNetworkRequest(params...);
-
-        const auto timeoutMilliseconds = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(AbstractNetworkJob::httpTimeout).count());
-        request.setTransferTimeout(timeoutMilliseconds);
-
-        return request;
-    }
 
 private:
     QNetworkAccessManager *_nam;

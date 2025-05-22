@@ -27,6 +27,7 @@ class ServerUrlSetupWizardPage : public AbstractSetupWizardPage
 
 public:
     ServerUrlSetupWizardPage(const QUrl &serverUrl);
+    ~ServerUrlSetupWizardPage() override;
 
     QString userProvidedUrl() const;
 
@@ -34,8 +35,5 @@ public:
 
 private:
     ::Ui::ServerUrlSetupWizardPage *_ui;
-
-public:
-    ~ServerUrlSetupWizardPage() noexcept override;
 };
 }

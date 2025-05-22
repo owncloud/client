@@ -14,19 +14,14 @@
 
 #include "serverurlsetupwizardstate.h"
 #include "determineauthtypejobfactory.h"
-#include "jobs/discoverwebfingerservicejobfactory.h"
-#include "jobs/resolveurljobfactory.h"
+#include "gui/networkadapters/discoverwebfingerserviceadapter.h"
+#include "gui/networkadapters/resolveurladapter.h"
 #include "theme.h"
+
 
 #include <QDebug>
 #include <QMessageBox>
 
-namespace {
-
-const QString defaultUrlSchemeC = QStringLiteral("https://");
-const QStringList supportedUrlSchemesC({ defaultUrlSchemeC, QStringLiteral("http://") });
-
-}
 
 namespace OCC::Wizard {
 
@@ -35,13 +30,13 @@ Q_LOGGING_CATEGORY(lcSetupWizardServerUrlState, "gui.setupwizard.states.serverur
 ServerUrlSetupWizardState::ServerUrlSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    auto serverUrl = [this]() {
-        if (Theme::instance()->wizardEnableWebfinger()) {
-            return _context->accountBuilder().legacyWebFingerServerUrl();
-        } else {
-            return _context->accountBuilder().serverUrl();
-        }
-    }();
+    // how can the context already have a server url if it has not been set up?
+    QUrl serverUrl;
+    if (Theme::instance()->wizardEnableWebfinger()) {
+        serverUrl = _context->accountBuilder().legacyWebFingerServerUrl();
+    } else {
+        serverUrl = _context->accountBuilder().serverUrl();
+    }
 
     _page = new ServerUrlSetupWizardPage(serverUrl);
 }
@@ -61,21 +56,40 @@ QUrl ServerUrlSetupWizardState::calculateUrl() const
 
     QString userProvidedUrl = serverUrlSetupWizardPage->userProvidedUrl();
 
-    // fix scheme if necessary
-    // using HTTPS as a default is a real ly good idea nowadays, users can still enter http:// explicitly if they wish to
-    if (!std::any_of(supportedUrlSchemesC.begin(), supportedUrlSchemesC.end(),
-            [userProvidedUrl](const QString &scheme) { return userProvidedUrl.startsWith(scheme); })) {
-        qInfo(lcSetupWizardServerUrlState) << "no URL scheme provided, prepending default URL scheme" << defaultUrlSchemeC;
-        userProvidedUrl.prepend(defaultUrlSchemeC);
+    // we need to check the scheme to be sure it's not there, but using the old "string matching" technique was not great
+    // because it added https:// to urls that had valid schemes but which did not match http or https. That was more complicating
+    // than useful so now we only add https if there really is no valid scheme to start with.
+    // the caller should decide which schemes are allowed and take whatever action it sees fit
+
+    // strict mode really does not appear to be useful wrt catching malformed urls but hey, why not.
+    QUrl testUrl(userProvidedUrl, QUrl::StrictMode);
+    QString scheme = testUrl.scheme();
+    if (scheme.isEmpty()) {
+        qInfo(lcSetupWizardServerUrlState) << "no URL scheme provided, prepending default URL scheme: https://";
+        userProvidedUrl.prepend(QStringLiteral("https://"));
+        testUrl.setScheme(QStringLiteral("https"));
+        // so far I don't see testUrl coming back as invalid even if it should be but it seems reasonable to set the scheme anyway before testing validity.
+        // we catch the invalid condition later using a new url after reconstructing it with the default scheme added to the input string. see comment below.
+        // no I can't explain this behavior - it's a Qt mystery
+    }
+    if (!testUrl.isValid()) {
+        // if it's already dead, stop trying
+        return testUrl;
     }
 
-    auto url = QUrl::fromUserInput(userProvidedUrl).adjusted(QUrl::RemoveUserInfo);
-    const QString serverPathOverride = Theme::instance()->overrideServerPath();
-    if (!serverPathOverride.isEmpty()) {
-        url.setPath(serverPathOverride);
-    }
+    // we can't recycle the testUrl because for reasons completely unknown to me, if you try to adjust it or set the path it destroys
+    // the host so we get https:///kwdav/ every time, even if the testUrl was valid
+    // solution = instantiate a new url <shrug>
+    QUrl finalUrl(userProvidedUrl);
 
-    return url;
+    if (finalUrl.isValid()) {
+        finalUrl = finalUrl.adjusted(QUrl::RemoveUserInfo | QUrl::RemoveQuery);
+        const QString serverPathOverride = Theme::instance()->overrideServerPath();
+        if (!serverPathOverride.isEmpty()) {
+            finalUrl.setPath(serverPathOverride);
+        }
+    }
+    return finalUrl;
 }
 
 void ServerUrlSetupWizardState::evaluatePage()
@@ -86,109 +100,104 @@ void ServerUrlSetupWizardState::evaluatePage()
 
     const QUrl serverUrl = calculateUrl();
 
-    // (ab)use the account builder as temporary storage for the URL we are about to probe (after sanitation)
-    // in case of errors, the user can just edit the previous value
-    _context->accountBuilder().setServerUrl(serverUrl, DetermineAuthTypeJob::AuthType::Unknown);
 
     // TODO: perform some better validation
+    // todo: #21
     if (!serverUrl.isValid()) {
-        Q_EMIT evaluationFailed(tr("Invalid server URL"));
+        QString fullError = serverUrl.errorString();
+        QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
+        // it might be too much to print both the error and the source string - eval with input from others.
+        Q_EMIT evaluationFailed(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
         return;
     }
 
-    auto *messageBox = new QMessageBox(
-        QMessageBox::Warning,
-        tr("Insecure connection"),
-        tr("The connection to %1 is insecure.\nAre you sure you want to proceed?").arg(serverUrl.toString()),
-        QMessageBox::NoButton,
-        _context->window());
+    // (ab)use the account builder as temporary storage for the URL we are about to probe (after sanitation)
+    // in case of errors, the user can just edit the previous value
 
-    messageBox->setAttribute(Qt::WA_DeleteOnClose);
+    // this only works if the url is valid. If it's invalid the original query text is wiped out from the QUrl instance and I don't
+    // see an easy way to put it back because...erm...it wants to take the text from a url but it's invalid so the original text is gone.
+    // I improved the error message to extract the original input in case it helps, but this new behavior should be reviewed.
+    _context->accountBuilder().setServerUrl(serverUrl, DetermineAuthTypeJob::AuthType::Unknown);
 
-    messageBox->addButton(QMessageBox::Cancel);
-    messageBox->addButton(tr("Confirm"), QMessageBox::YesRole);
+    if (serverUrl.scheme() == QStringLiteral("http")) {
+        auto *messageBox = new QMessageBox(QMessageBox::Warning, tr("Insecure connection"),
+            tr("The connection to %1 is insecure.\nAre you sure you want to proceed?").arg(serverUrl.toString()), QMessageBox::NoButton, _context->window());
 
-    connect(messageBox, &QMessageBox::rejected, this, [this]() {
-        Q_EMIT evaluationFailed(tr("Insecure server rejected by user"));
-    });
+        messageBox->setAttribute(Qt::WA_DeleteOnClose);
+        messageBox->addButton(QMessageBox::Cancel);
+        messageBox->addButton(tr("Confirm"), QMessageBox::YesRole);
+        int messageResult = messageBox->exec();
+        if (messageResult == QMessageBox::Cancel) {
+            Q_EMIT evaluationFailed(tr("Insecure server rejected by user"));
+            return;
+        }
+    } else if (serverUrl.scheme().isEmpty() || serverUrl.scheme() != QStringLiteral("https")) // scheme should not be empty but who knows
+    {
+        Q_EMIT evaluationFailed(tr("Invalid URL scheme. Only http and https are accepted."));
+        return;
+    }
 
-    connect(messageBox, &QMessageBox::accepted, this, [this, serverUrl]() {
-        // when moving back to this page (or retrying a failed credentials check), we need to make sure existing cookies
-        // and certificates are deleted from the access manager
-        _context->resetAccessManager();
+    // when moving back to this page (or retrying a failed credentials check), we need to make sure existing cookies
+    // and certificates are deleted from the access manager
+    _context->resetAccessManager();
 
-        // since classic WebFinger is not enabled, we need to check whether modern (oCIS) WebFinger is available
-        // therefore, we run the corresponding discovery job
-        auto checkWebFingerAuthJob = Jobs::DiscoverWebFingerServiceJobFactory(_context->accessManager()).startJob(serverUrl, this);
-        // todo: #17
-        connect(checkWebFingerAuthJob, &CoreJob::finished, this, [job = checkWebFingerAuthJob, serverUrl, this]() {
-            // in case any kind of error occurs, we assume the WebFinger service is not available
-            if (!job->success()) {
-                // first, we must resolve the actual server URL
-                auto resolveJob = Jobs::ResolveUrlJobFactory(_context->accessManager()).startJob(serverUrl, this);
+    // since classic WebFinger is not enabled, we need to check whether modern (oCIS) WebFinger is available
+    // therefore, we run the corresponding discovery job
+    DiscoverWebFingerServiceAdapter webfingerServiceAdapter(_context->accessManager(), serverUrl);
+    const DiscoverWebFingerServiceResult webfingerServiceResult = webfingerServiceAdapter.getResult();
 
-                connect(resolveJob, &CoreJob::finished, resolveJob, [this, resolveJob]() {
-                    resolveJob->deleteLater();
+    // in case any kind of error occurs, we assume the WebFinger service is not available
+    if (!webfingerServiceResult.success()) {
+        // first, we must resolve the actual server URL
+        ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl);
+        const ResolveUrlResult result = urlResolver.getResult();
 
-                    if (!resolveJob->success()) {
-                        Q_EMIT evaluationFailed(resolveJob->errorMessage());
-                        return;
-                    }
+        if (!result.success()) {
+            Q_EMIT evaluationFailed(result.error);
+            return;
+        }
 
-                    const auto resolvedUrl = resolveJob->result().toUrl();
-                    if (resolvedUrl.hasQuery()) {
-                        QString errorMsg = tr("The requested URL failed with query value: %1").arg(resolvedUrl.query());
-                        Q_EMIT evaluationFailed(errorMsg);
-                        return;
-                    }
+        if (result.resolvedUrl.hasQuery()) {
+            QString errorMsg = tr("The requested URL failed with query value: %1").arg(result.resolvedUrl.query());
+            Q_EMIT evaluationFailed(errorMsg);
+            return;
+        }
 
-                    // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
-                    // step we can skip it here therefore
-                    if (Theme::instance()->wizardEnableWebfinger()) {
-                        _context->accountBuilder().setLegacyWebFingerServerUrl(resolvedUrl);
-                        Q_EMIT evaluationSuccessful();
-                        return;
-                    }
+        if (!result.acceptedCertificates.isEmpty()) {
+            // future requests made through this access manager should accept the certificate
+            _context->accessManager()->addCustomTrustedCaCertificates(result.acceptedCertificates);
 
-                    // next, we need to find out which kind of authentication page we have to present to the user
-                    auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(resolvedUrl, this);
+            // the account maintains a list, too, which is also saved in the config file
+            for (const auto &cert : result.acceptedCertificates)
+                _context->accountBuilder().addCustomTrustedCaCertificate(cert);
+        }
 
-                    connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, resolvedUrl]() {
-                        authTypeJob->deleteLater();
+        // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
+        // step we can skip it here therefore
+        if (Theme::instance()->wizardEnableWebfinger()) {
+            _context->accountBuilder().setLegacyWebFingerServerUrl(result.resolvedUrl);
+            Q_EMIT evaluationSuccessful();
+            return;
+        }
 
-                        if (authTypeJob->result().isNull()) {
-                            Q_EMIT evaluationFailed(authTypeJob->errorMessage());
-                            return;
-                        }
-
-                        _context->accountBuilder().setServerUrl(resolvedUrl, qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
-                        Q_EMIT evaluationSuccessful();
-                    });
-                });
-
-                connect(
-                    resolveJob, &CoreJob::caCertificateAccepted, this,
-                    [this](const QSslCertificate &caCertificate) {
-                        // future requests made through this access manager should accept the certificate
-                        _context->accessManager()->addCustomTrustedCaCertificates({caCertificate});
-
-                        // the account maintains a list, too, which is also saved in the config file
-                        _context->accountBuilder().addCustomTrustedCaCertificate(caCertificate);
-                    },
-                    Qt::DirectConnection);
-            } else {
-                _context->accountBuilder().setWebFingerAuthenticationServerUrl(job->result().toUrl());
-                Q_EMIT evaluationSuccessful();
+        // next, we need to find out which kind of authentication page we have to present to the user
+        // todo: #18
+        auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(result.resolvedUrl, this);
+        QUrl url = result.resolvedUrl;
+        connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, url]() {
+            if (authTypeJob->result().isNull()) {
+                Q_EMIT evaluationFailed(authTypeJob->errorMessage());
+                return;
             }
-        });
-    });
 
-    // instead of defining a lambda that we could call from here as well as the message box, we can put the
-    // handler into the accepted() signal handler, and Q_EMIT that signal here
-    if (serverUrl.scheme() == QStringLiteral("https")) {
-        Q_EMIT messageBox->accepted();
+            _context->accountBuilder().setServerUrl(url, qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
+            Q_EMIT evaluationSuccessful();
+        });
+
+
     } else {
-        messageBox->show();
+        _context->accountBuilder().setWebFingerAuthenticationServerUrl(QUrl(webfingerServiceResult.href));
+        Q_EMIT evaluationSuccessful();
     }
 }
 

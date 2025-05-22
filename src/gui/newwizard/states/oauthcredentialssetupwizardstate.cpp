@@ -13,7 +13,7 @@
  */
 
 #include "oauthcredentialssetupwizardstate.h"
-#include "jobs/webfingeruserinfojobfactory.h"
+#include "gui/networkadapters/webfingerlookupadapter.h"
 
 namespace OCC::Wizard {
 
@@ -64,26 +64,15 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
             }
         };
 
-        // we run this job here so that it runs during the transition state
-        // sure, it's not the cleanest ever approach, but currently it's good enough
         if (!_context->accountBuilder().webFingerAuthenticationServerUrl().isEmpty()) {
-            auto *job = Jobs::WebFingerInstanceLookupJobFactory(_context->accessManager(), token).startJob(_context->accountBuilder().serverUrl(), this);
-
-            connect(job, &CoreJob::finished, this, [=]() {
-                if (!job->success()) {
-                    Q_EMIT evaluationFailed(QStringLiteral("Failed to look up instances: %1").arg(job->errorMessage()));
-                } else {
-                    const auto instanceUrls = qvariant_cast<QVector<QUrl>>(job->result());
-
-                    if (instanceUrls.isEmpty()) {
-                        Q_EMIT evaluationFailed(QStringLiteral("Server returned empty list of instances"));
-                    } else {
-                        _context->accountBuilder().setWebFingerInstances(instanceUrls);
-                    }
-                }
-
-                finish();
-            });
+            WebFingerLookupAdapter lookup(_context->accessManager(), token, _context->accountBuilder().serverUrl());
+            const WebFingerLookupResult webfingerResult = lookup.getResult();
+            if (!webfingerResult.success()) {
+                Q_EMIT evaluationFailed(QStringLiteral("Failed to look up instances: %1").arg(webfingerResult.error));
+            } else {
+                _context->accountBuilder().setWebFingerInstances(webfingerResult.urls);
+            }
+            finish();
         } else {
             finish();
         }
