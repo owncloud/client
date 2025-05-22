@@ -44,7 +44,7 @@ namespace {
 
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 
-const auto defaultOauthPromtValue()
+const auto defaultOauthPromptValue()
 {
     static const auto promptValue = [] {
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
@@ -250,7 +250,7 @@ OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManage
     , _clientId(Theme::instance()->oauthClientId())
     , _clientSecret(Theme::instance()->oauthClientSecret())
     , _redirectUrl(Theme::instance()->oauthLocalhost())
-    , _supportedPromtValues(defaultOauthPromtValue())
+    , _supportedPromptValues(defaultOauthPromptValue())
 {
 }
 
@@ -445,7 +445,7 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
 
 QByteArray OAuth::generateRandomString(size_t size) const
 {
-    // TODO: do we need a varaible size?
+    // TODO: do we need a variable size?
     std::vector<quint32> buffer(size, 0);
     QRandomGenerator::global()->fillRange(buffer.data(), static_cast<qsizetype>(size));
     return QByteArray(reinterpret_cast<char *>(buffer.data()), static_cast<int>(size * sizeof(quint32))).toBase64(QByteArray::Base64UrlEncoding);
@@ -462,7 +462,7 @@ QUrl OAuth::authorisationLink() const
         {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_server.serverPort()))},
         {QStringLiteral("code_challenge"), QString::fromLatin1(code_challenge)}, {QStringLiteral("code_challenge_method"), QStringLiteral("S256")},
         {QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes()))},
-        {QStringLiteral("prompt"), QString::fromUtf8(QUrl::toPercentEncoding(toString(_supportedPromtValues)))},
+        {QStringLiteral("prompt"), QString::fromUtf8(QUrl::toPercentEncoding(toString(_supportedPromptValues)))},
         {QStringLiteral("state"), QString::fromUtf8(_state)}};
 
     if (!_davUser.isEmpty()) {
@@ -493,7 +493,7 @@ void OAuth::updateDynamicRegistration()
         qCDebug(lcOauth) << "dynamic registration disabled by theme";
     } else if (!_registrationEndpoint.isValid()) {
         qCDebug(lcOauth) << "registration endpoint not provided or empty:" << _registrationEndpoint.toString()
-                         << "we asume dynamic registration is not supported by the server";
+                         << "we assume dynamic registration is not supported by the server";
     } else {
         auto registerJob = new RegisterClientJob(_networkAccessManager, _dynamicRegistrationData, _registrationEndpoint, this);
         connect(registerJob, &RegisterClientJob::finished, this,
@@ -560,14 +560,14 @@ void OAuth::fetchWellKnown()
                 } else {
                     OC_ASSERT_X(false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
                 }
-                const auto promtValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
-                if (!promtValuesSupported.isEmpty()) {
-                    _supportedPromtValues = PromptValuesSupported::none;
-                    for (const auto &x : promtValuesSupported) {
+                const auto promptValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
+                if (!promptValuesSupported.isEmpty()) {
+                    _supportedPromptValues = PromptValuesSupported::none;
+                    for (const auto &x : promptValuesSupported) {
                         const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
                         // only use flags present in Theme::instance()->openIdConnectPrompt()
-                        if (flag & defaultOauthPromtValue())
-                            _supportedPromtValues |= flag;
+                        if (flag & defaultOauthPromptValue())
+                            _supportedPromptValues |= flag;
                     }
                 }
 
