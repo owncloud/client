@@ -262,14 +262,6 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     </message>
 </context>
 <context>
-    <name>DiscoverWebFingerServiceJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
-        <source>Invalid reply received from server</source>
-        <translation>U mor përgjigje e pavlefshme nga shërbyesi</translation>
-    </message>
-</context>
-<context>
     <name>FetchUserInfoJobFactory</name>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="67"/>
@@ -1013,7 +1005,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <translation>Nuk ka llogari ownCloud të formësuar</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Ju lutemi, përditësoni shërbyesin me versionin më të ri dhe rinisni klientin.</translation>
     </message>
@@ -1028,12 +1020,12 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <translation>mbarim kohe</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="231"/>
         <source>The provided credentials are not correct</source>
         <translation>Kredencialet e dhëna s’janë të sakta</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>The configured server for this client is too old.</source>
         <translation>Shërbyesi i formësuar për këtë klient është shumë i vjetër.</translation>
     </message>
@@ -1044,6 +1036,14 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <location filename="../src/libsync/creds/credentialmanager.cpp" line="221"/>
         <source>Failed to parse credentials %1</source>
         <translation>S’u arrit të përtypen kredencialet %1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::DiscoverWebFingerServiceAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
+        <source>Invalid reply received from server.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2754,6 +2754,29 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
 </context>
 <context>
+    <name>OCC::ResolveUrlAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
+        <source>SSL failure when connecting to server at %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
+        <source>Could not detect compatible server at %1</source>
+        <translation>S’u pikas dot shërbyes i përputhshmë te %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
+        <source>Resolved url is invalid %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation>U hodh poshtë ridrejtim nga %1 te %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
@@ -3470,6 +3493,19 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
 </context>
 <context>
+    <name>OCC::WebFingerLookupAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="75"/>
+        <source>Failed to retrieve user info</source>
+        <translation>S’u arrit të merren hollësi përdoruesi</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
+        <source>WebFinger lookup returned no links</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::WindowsUpdater</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
@@ -3541,7 +3577,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Wizard::BasicCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
+        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="43"/>
         <source>Invalid credentials</source>
         <translation>Kredenciale të pavlefshme</translation>
     </message>
@@ -3608,34 +3644,39 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
-        <source>Invalid server URL</source>
-        <translation>URL e pavlefshme shërbyesi</translation>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
+        <source>Invalid server URL: %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
         <source>Insecure connection</source>
         <translation>Lidhje jo e siguruar</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="124"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>Lidhja me %1 është jo e siguruar.
 Jeni i sigurt se doni të ecet më tej?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="128"/>
         <source>Confirm</source>
         <translation>Ripohojeni</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
         <source>Insecure server rejected by user</source>
         <translation>Shërbyes jo i siguruar i hedhur tej nga përdoruesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
+        <source>Invalid URL scheme. Only http and https are accepted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3954,29 +3995,6 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     </message>
 </context>
 <context>
-    <name>ResolveUrlJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
-        <source>Could not detect compatible server at %1</source>
-        <translation>S’u pikas dot shërbyes i përputhshmë te %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
-        <source>Rejected redirect from %1 to %2</source>
-        <translation>U hodh poshtë ridrejtim nga %1 te %2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
-        <source>SSL Error: %1</source>
-        <translation>Gabim SSL: %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
-        <source>User rejected invalid SSL certificate</source>
-        <translation>Përdoruesi hodhi poshtë dëshmi SSL të pavlefshme</translation>
-    </message>
-</context>
-<context>
     <name>ServerUrlSetupWizardPage</name>
     <message>
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.ui" line="14"/>
@@ -4190,14 +4208,6 @@ Jeni i sigurt se doni të ecet më tej?</translation>
         <location filename="../src/libsync/platform_win.cpp" line="111"/>
         <source>Shutting down %1</source>
         <translation>Po fiket %1</translation>
-    </message>
-</context>
-<context>
-    <name>WebFingerUserInfoJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
-        <source>Failed to retrieve user info</source>
-        <translation>S’u arrit të merren hollësi përdoruesi</translation>
     </message>
 </context>
 <context>

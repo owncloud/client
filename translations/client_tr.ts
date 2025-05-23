@@ -260,14 +260,6 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
     </message>
 </context>
 <context>
-    <name>DiscoverWebFingerServiceJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
-        <source>Invalid reply received from server</source>
-        <translation>Sunucudan geçersiz yanıt alındı</translation>
-    </message>
-</context>
-<context>
     <name>FetchUserInfoJobFactory</name>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="67"/>
@@ -1011,7 +1003,7 @@ Güncelleme arka planda gerçekleştirilecek ve mevcut AppImage dosyasının üz
         <translation>Hiçbir ownCloud hesabı yapılandırılmamış</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Lütfen en son sunucuya güncelleyin veya istemciyi yeniden başlatın</translation>
     </message>
@@ -1026,12 +1018,12 @@ Güncelleme arka planda gerçekleştirilecek ve mevcut AppImage dosyasının üz
         <translation>zaman aşımı</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="231"/>
         <source>The provided credentials are not correct</source>
         <translation>Sağlanan kimlik bilgileri doğru değil</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>The configured server for this client is too old.</source>
         <translation>Bu istemci için yapılandırılmış sunucu çok eski.</translation>
     </message>
@@ -1042,6 +1034,14 @@ Güncelleme arka planda gerçekleştirilecek ve mevcut AppImage dosyasının üz
         <location filename="../src/libsync/creds/credentialmanager.cpp" line="221"/>
         <source>Failed to parse credentials %1</source>
         <translation>%1 kimlik bilgileri ayrıştırılamadı</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::DiscoverWebFingerServiceAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
+        <source>Invalid reply received from server.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2750,6 +2750,29 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     </message>
 </context>
 <context>
+    <name>OCC::ResolveUrlAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
+        <source>SSL failure when connecting to server at %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
+        <source>Could not detect compatible server at %1</source>
+        <translation>%1 konumunda uyumlu sunucu algılanamadı</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
+        <source>Resolved url is invalid %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
@@ -3466,6 +3489,19 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     </message>
 </context>
 <context>
+    <name>OCC::WebFingerLookupAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="75"/>
+        <source>Failed to retrieve user info</source>
+        <translation>Kullanıcı bilgileri alınamadı</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
+        <source>WebFinger lookup returned no links</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::WindowsUpdater</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
@@ -3537,7 +3573,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::Wizard::BasicCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
+        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="43"/>
         <source>Invalid credentials</source>
         <translation>Geçersiz kimlik bilgileri</translation>
     </message>
@@ -3604,34 +3640,39 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
-        <source>Invalid server URL</source>
-        <translation>Geçersiz sunucu URL&apos;i</translation>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
+        <source>Invalid server URL: %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
         <source>Insecure connection</source>
         <translation>Güvensiz bağlantı</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="124"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>%1 bağlantısı güvenli değil.
 Devam etmek istediğinizden emin misiniz?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="128"/>
         <source>Confirm</source>
         <translation>Onayla</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
         <source>Insecure server rejected by user</source>
         <translation>Güvensiz sunucu, kullanıcı tarafından reddedildi</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
+        <source>Invalid URL scheme. Only http and https are accepted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3950,29 +3991,6 @@ Devam etmek istediğinizden emin misiniz?</translation>
     </message>
 </context>
 <context>
-    <name>ResolveUrlJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
-        <source>Could not detect compatible server at %1</source>
-        <translation>%1 konumunda uyumlu sunucu algılanamadı</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
-        <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
-        <source>SSL Error: %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
-        <source>User rejected invalid SSL certificate</source>
-        <translation>Kullanıcı geçersiz SSL sertifikasını reddetti</translation>
-    </message>
-</context>
-<context>
     <name>ServerUrlSetupWizardPage</name>
     <message>
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.ui" line="14"/>
@@ -4186,14 +4204,6 @@ Devam etmek istediğinizden emin misiniz?</translation>
         <location filename="../src/libsync/platform_win.cpp" line="111"/>
         <source>Shutting down %1</source>
         <translation>Kapatılıyor %1</translation>
-    </message>
-</context>
-<context>
-    <name>WebFingerUserInfoJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
-        <source>Failed to retrieve user info</source>
-        <translation>Kullanıcı bilgileri alınamadı</translation>
     </message>
 </context>
 <context>

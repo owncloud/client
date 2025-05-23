@@ -260,14 +260,6 @@ Cliente de escritorio para la sincronización de archivos.</translation>
     </message>
 </context>
 <context>
-    <name>DiscoverWebFingerServiceJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
-        <source>Invalid reply received from server</source>
-        <translation>Respuesta recibida del servidor no válida</translation>
-    </message>
-</context>
-<context>
     <name>FetchUserInfoJobFactory</name>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="67"/>
@@ -1011,7 +1003,7 @@ La actualización se realizará en segundo plano, y sobreescribirá el actual fi
         <translation>No se ha configurado ninguna cuenta de ownCloud</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Por favor, actualice a la última versión del servidor y reinicie el cliente</translation>
     </message>
@@ -1026,12 +1018,12 @@ La actualización se realizará en segundo plano, y sobreescribirá el actual fi
         <translation>tiempo de espera</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="231"/>
         <source>The provided credentials are not correct</source>
         <translation>Las credenciales proporcionadas no son correctas</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>The configured server for this client is too old.</source>
         <translation>El servidor configurado para este cliente es demasiado antiguo.</translation>
     </message>
@@ -1042,6 +1034,14 @@ La actualización se realizará en segundo plano, y sobreescribirá el actual fi
         <location filename="../src/libsync/creds/credentialmanager.cpp" line="221"/>
         <source>Failed to parse credentials %1</source>
         <translation>Ha fallado la comprobación de credenciales %1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::DiscoverWebFingerServiceAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
+        <source>Invalid reply received from server.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2749,6 +2749,29 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     </message>
 </context>
 <context>
+    <name>OCC::ResolveUrlAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
+        <source>SSL failure when connecting to server at %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
+        <source>Could not detect compatible server at %1</source>
+        <translation>No se pudo detectar un servidor compatible en %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
+        <source>Resolved url is invalid %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
@@ -3465,6 +3488,19 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     </message>
 </context>
 <context>
+    <name>OCC::WebFingerLookupAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="75"/>
+        <source>Failed to retrieve user info</source>
+        <translation>Error al obtener información del usuario</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
+        <source>WebFinger lookup returned no links</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::WindowsUpdater</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
@@ -3536,7 +3572,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::Wizard::BasicCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
+        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="43"/>
         <source>Invalid credentials</source>
         <translation>Credenciales incorrectas</translation>
     </message>
@@ -3603,34 +3639,39 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
-        <source>Invalid server URL</source>
-        <translation>URL de servidor incorrecta</translation>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
+        <source>Invalid server URL: %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
         <source>Insecure connection</source>
         <translation>Conexión insegura</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="124"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>La conexión a %1 no es segura.
 Está seguro que quiere continuar?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="128"/>
         <source>Confirm</source>
         <translation>Confirmar</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
         <source>Insecure server rejected by user</source>
         <translation>Servidor no seguro fue rechazado por el usuario</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
+        <source>Invalid URL scheme. Only http and https are accepted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3949,29 +3990,6 @@ Está seguro que quiere continuar?</translation>
     </message>
 </context>
 <context>
-    <name>ResolveUrlJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
-        <source>Could not detect compatible server at %1</source>
-        <translation>No se pudo detectar un servidor compatible en %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
-        <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
-        <source>SSL Error: %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
-        <source>User rejected invalid SSL certificate</source>
-        <translation>El usuario rechazó certificado SSL inválido</translation>
-    </message>
-</context>
-<context>
     <name>ServerUrlSetupWizardPage</name>
     <message>
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.ui" line="14"/>
@@ -4185,14 +4203,6 @@ Está seguro que quiere continuar?</translation>
         <location filename="../src/libsync/platform_win.cpp" line="111"/>
         <source>Shutting down %1</source>
         <translation>Apagando %1</translation>
-    </message>
-</context>
-<context>
-    <name>WebFingerUserInfoJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
-        <source>Failed to retrieve user info</source>
-        <translation>Error al obtener información del usuario</translation>
     </message>
 </context>
 <context>

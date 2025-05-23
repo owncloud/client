@@ -260,14 +260,6 @@ File synchronization desktop utility.</source>
     </message>
 </context>
 <context>
-    <name>DiscoverWebFingerServiceJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
-        <source>Invalid reply received from server</source>
-        <translation>От сървъра е получен невалиден отговор</translation>
-    </message>
-</context>
-<context>
     <name>FetchUserInfoJobFactory</name>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="67"/>
@@ -1011,7 +1003,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>Няма конфигуриран ownCloud профил</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>Моля, актуализирайте сървъра до последната версия и рестартирайте клиента</translation>
     </message>
@@ -1026,12 +1018,12 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>изчакване</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="231"/>
         <source>The provided credentials are not correct</source>
         <translation>Предоставените идентификационни данни са неправилни</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
         <source>The configured server for this client is too old.</source>
         <translation>Конфигурираният сървър за този клиент е твърде стар.</translation>
     </message>
@@ -1042,6 +1034,14 @@ The update will be performed in the background, and overwrite the current AppIma
         <location filename="../src/libsync/creds/credentialmanager.cpp" line="221"/>
         <source>Failed to parse credentials %1</source>
         <translation>Неуспешно анализиране на идентификационни данни %1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::DiscoverWebFingerServiceAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
+        <source>Invalid reply received from server.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2750,6 +2750,29 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::ResolveUrlAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
+        <source>SSL failure when connecting to server at %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
+        <source>Could not detect compatible server at %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
+        <source>Resolved url is invalid %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
+        <source>Rejected redirect from %1 to %2</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
@@ -3466,6 +3489,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::WebFingerLookupAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="75"/>
+        <source>Failed to retrieve user info</source>
+        <translation>Неуспешно извличане на информация за потребителя</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
+        <source>WebFinger lookup returned no links</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::WindowsUpdater</name>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
@@ -3537,7 +3573,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Wizard::BasicCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
+        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="43"/>
         <source>Invalid credentials</source>
         <translation>Невалидни идентификационни данни</translation>
     </message>
@@ -3604,34 +3640,39 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="95"/>
-        <source>Invalid server URL</source>
-        <translation>Невалиден URL адрес на сървъра</translation>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
+        <source>Invalid server URL: %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="101"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
         <source>Insecure connection</source>
         <translation>Незащитена връзка</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="102"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="124"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>Връзката с %1 е незащитена.
 Сигурни ли сте, че искате да продължите?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="109"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="128"/>
         <source>Confirm</source>
         <translation>Потвърдете</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="112"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
         <source>Insecure server rejected by user</source>
         <translation>Несигурният сървър е отхвърлен от потребителя</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="140"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
+        <source>Invalid URL scheme. Only http and https are accepted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3950,29 +3991,6 @@ Are you sure you want to proceed?</source>
     </message>
 </context>
 <context>
-    <name>ResolveUrlJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="56"/>
-        <source>Could not detect compatible server at %1</source>
-        <translation>Не може да се открие съвместим сървър на %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="66"/>
-        <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="84"/>
-        <source>SSL Error: %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="100"/>
-        <source>User rejected invalid SSL certificate</source>
-        <translation>Потребителят отхвърли невалиден SSL сертификат</translation>
-    </message>
-</context>
-<context>
     <name>ServerUrlSetupWizardPage</name>
     <message>
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.ui" line="14"/>
@@ -4186,14 +4204,6 @@ Are you sure you want to proceed?</source>
         <location filename="../src/libsync/platform_win.cpp" line="111"/>
         <source>Shutting down %1</source>
         <translation>Изключване на %1</translation>
-    </message>
-</context>
-<context>
-    <name>WebFingerUserInfoJobFactory</name>
-    <message>
-        <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
-        <source>Failed to retrieve user info</source>
-        <translation>Неуспешно извличане на информация за потребителя</translation>
     </message>
 </context>
 <context>
