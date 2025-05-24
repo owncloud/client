@@ -1043,7 +1043,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
         <source>Invalid reply received from server.</source>
-        <translation type="unfinished"/>
+        <translation>U mor përgjigje e pavlefshme nga shërbyesi.</translation>
     </message>
 </context>
 <context>
@@ -2758,7 +2758,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
         <source>SSL failure when connecting to server at %1</source>
-        <translation type="unfinished"/>
+        <translation>Dështim SSL-je kur lidhet me shërbyesin te %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
@@ -2768,7 +2768,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"/>
+        <translation>URL-ja e ftilluar është %1 e pavlefshme</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
@@ -3312,12 +3312,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Përzgjidhni një dosje që të njëkohësohet me kompjuterin tuaj.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Përzgjidhni një Hapësirë që të njëkohësohet me kompjuterin tuaj.</translation>
     </message>
 </context>
 <context>
@@ -3502,7 +3502,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"/>
+        <translation>Kërkimi WebFinger s’dha ndonjë lidhje</translation>
     </message>
 </context>
 <context>
@@ -3646,7 +3646,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
+        <translation>URL e pavlefshme shërbyesi: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
@@ -3673,7 +3673,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
         <source>Invalid URL scheme. Only http and https are accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Skemë e pavlefshme URL-je. Pranohen vetëm http dhe https.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>

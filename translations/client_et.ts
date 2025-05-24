@@ -1043,7 +1043,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message>
         <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
         <source>Invalid reply received from server.</source>
-        <translation type="unfinished"/>
+        <translation>Serverilt saabus vigane vastus.</translation>
     </message>
 </context>
 <context>
@@ -2757,7 +2757,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
         <source>SSL failure when connecting to server at %1</source>
-        <translation type="unfinished"/>
+        <translation>SSL viga kui ühenduti serveriga aadressil %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
@@ -2767,7 +2767,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"/>
+        <translation>Lahendatud url on vigane %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
@@ -3501,7 +3501,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"/>
+        <translation>WebFinger otsing ei tagastanud ühtegi linki</translation>
     </message>
 </context>
 <context>
@@ -3645,7 +3645,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
+        <translation>Vigane serveri URL: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
@@ -3672,7 +3672,7 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
         <source>Invalid URL scheme. Only http and https are accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Vigane URL skeem. Ainult http ja https on lubatud.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
@@ -3685,17 +3685,17 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="190"/>
         <source>You are already connected to an account with these credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Oled juba käesolevate kasutajatunnustega kontoga ühendatud.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="198"/>
         <source>Invalid credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Vigane(sed) kasutajatunnus(ed).</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="201"/>
         <source>Failed to retrieve user information from server.</source>
-        <translation type="unfinished"/>
+        <translation>Kasutajainfo saamine serverist ebaõnnestus.</translation>
     </message>
 </context>
 <context>

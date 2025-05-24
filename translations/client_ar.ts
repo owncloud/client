@@ -2759,7 +2759,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished"/>
+        <translation>Could not detect compatible server at %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
