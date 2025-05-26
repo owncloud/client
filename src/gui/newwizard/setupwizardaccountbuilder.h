@@ -114,22 +114,6 @@ public:
     void setServerUrl(const QUrl &serverUrl, AuthenticationType workflowType);
     QUrl serverUrl() const;
 
-    /**
-     * Set URL of WebFinger server used to look up the user's server.
-     * Only used when WebFinger support is enabled by the theme.
-     * @param webFingerServerUrl URL to WebFinger server
-     */
-    void setLegacyWebFingerServerUrl(const QUrl &webFingerServerUrl);
-    QUrl legacyWebFingerServerUrl() const;
-
-    /**
-     * Set URL of WebFinger server used to look up the user's server.
-     * Only used when WebFinger support is enabled by the theme.
-     * @param username
-     */
-    void setLegacyWebFingerUsername(const QString &username);
-    QString legacyWebFingerUsername() const;
-
     // TODO: move this out of the class's state
     AuthenticationType authType();
 
@@ -183,9 +167,6 @@ public:
 
 private:
     QUrl _serverUrl;
-
-    QString _legacyWebFingerUsername;
-    QUrl _legacyWebFingerServerUrl;
 
     QUrl _webFingerAuthenticationServerUrl;
     QVector<QUrl> _webFingerInstances;

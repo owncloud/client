@@ -44,7 +44,7 @@ namespace {
 
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 
-const auto defaultOauthPromptValue()
+auto defaultOauthPromptValue()
 {
     static const auto promptValue = [] {
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
@@ -76,13 +76,13 @@ QString renderHttpTemplate(const QString &title, const QString &content)
         });
 }
 
-auto defaultTimeout()
+seconds defaultTimeout()
 {
     // as the OAuth process can be interactive we don't want 5min of inactivity
     return qMin(30s, OCC::AbstractNetworkJob::httpTimeout);
 }
 
-auto defaultTimeoutMs()
+int defaultTimeoutMs()
 {
     return static_cast<int>(duration_cast<milliseconds>(defaultTimeout()).count());
 }
@@ -241,6 +241,8 @@ void logCredentialsJobResult(CredentialJob *credentialsJob)
 }
 }
 
+// todo: #18 - determine if the dynamic registration data is ever actually passed here. Also eval the use case below re: AccountBasedOauth which seems to
+// be the only case where the davUser is passed
 OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, const QVariantMap &dynamicRegistrationData, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)

@@ -31,13 +31,7 @@ ServerUrlSetupWizardState::ServerUrlSetupWizardState(SetupWizardContext *context
     : AbstractSetupWizardState(context)
 {
     // how can the context already have a server url if it has not been set up?
-    QUrl serverUrl;
-    if (Theme::instance()->wizardEnableWebfinger()) {
-        serverUrl = _context->accountBuilder().legacyWebFingerServerUrl();
-    } else {
-        serverUrl = _context->accountBuilder().serverUrl();
-    }
-
+    QUrl serverUrl = _context->accountBuilder().serverUrl();
     _page = new ServerUrlSetupWizardPage(serverUrl);
 }
 
@@ -171,14 +165,6 @@ void ServerUrlSetupWizardState::evaluatePage()
             // the account maintains a list, too, which is also saved in the config file
             for (const auto &cert : resolveUrlResult.acceptedCertificates)
                 _context->accountBuilder().addCustomTrustedCaCertificate(cert);
-        }
-
-        // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
-        // step we can skip it here therefore
-        if (Theme::instance()->wizardEnableWebfinger()) {
-            _context->accountBuilder().setLegacyWebFingerServerUrl(finalUrl);
-            Q_EMIT evaluationSuccessful();
-            return;
         }
 
         // next, we need to find out which kind of authentication page we have to present to the user

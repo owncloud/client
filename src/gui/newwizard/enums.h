@@ -24,11 +24,7 @@ Q_NAMESPACE
 enum class SetupWizardState {
     ServerUrlState,
     FirstState = ServerUrlState,
-
-    LegacyWebFingerState,
-
     CredentialsState,
-
     AccountConfiguredState,
     FinalState = AccountConfiguredState,
 };

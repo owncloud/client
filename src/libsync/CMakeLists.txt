@@ -43,7 +43,6 @@ set(libsync_SRCS
     creds/credentialmanager.cpp
     creds/abstractcredentials.cpp
     creds/oauth.cpp
-    creds/webfinger.cpp
 
     networkjobs/fetchuserinfojobfactory.cpp
     networkjobs/checkserverjobfactory.cpp

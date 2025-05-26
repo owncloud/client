@@ -54,9 +54,9 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
     waitLoop.exec();
 
     if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
-        const QByteArray rawHeader = reply->rawHeader(QByteArrayLiteral("WWW-Authenticate")).toLower();
+        // the header key is case insensitive per debug testing
+        const QByteArray rawHeader = reply->rawHeader(QByteArrayLiteral("www-authenticate")).toLower();
 
-        // we fall back to basic in any case
         if (rawHeader.contains(QByteArrayLiteral("bearer "))) {
             res.type = AuthenticationType::OAuth;
         } else {

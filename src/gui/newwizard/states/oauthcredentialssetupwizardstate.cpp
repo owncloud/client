@@ -20,15 +20,9 @@ namespace OCC::Wizard {
 OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    const auto authServerUrl = [this]() {
-        auto authServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
-        if (!authServerUrl.isEmpty()) {
-            return authServerUrl;
-        }
-        return _context->accountBuilder().serverUrl();
-    }();
+    QUrl authServerUrl = _context->accountBuilder().serverUrl();
 
-    auto oAuth = new OAuth(authServerUrl, _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
+    auto oAuth = new OAuth(authServerUrl, {}, _context->accessManager(), {}, this);
     connect(oAuth, &OAuth::dynamicRegistrationDataReceived, this,
         [this](const QVariantMap &dynamicRegistrationData) { _context->accountBuilder().setDynamicRegistrationData(dynamicRegistrationData); });
 

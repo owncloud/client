@@ -439,7 +439,7 @@ public:
     /**
      * Enable Webfinger page in setup wizard.
      */
-    virtual bool wizardEnableWebfinger() const;
+    [[deprecated("Legacy web finger support has been removed starting with client 7.0.")]] virtual bool wizardEnableWebfinger() const;
 
     /**
      * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.
