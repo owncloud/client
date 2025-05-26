@@ -15,7 +15,6 @@
 #include "setupwizardaccountbuilder.h"
 
 #include "gui/guiutility.h"
-#include "networkjobs/fetchuserinfojobfactory.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -89,7 +88,7 @@ FetchUserInfoJobFactory OAuth2AuthenticationStrategy::makeFetchUserInfoJobFactor
 
 SetupWizardAccountBuilder::SetupWizardAccountBuilder() = default;
 
-void SetupWizardAccountBuilder::setServerUrl(const QUrl &serverUrl, DetermineAuthTypeJob::AuthType authType)
+void SetupWizardAccountBuilder::setServerUrl(const QUrl &serverUrl, AuthenticationType authType)
 {
     _serverUrl = serverUrl;
     _authType = authType;
@@ -104,7 +103,7 @@ QUrl SetupWizardAccountBuilder::serverUrl() const
     return _serverUrl;
 }
 
-DetermineAuthTypeJob::AuthType SetupWizardAccountBuilder::authType()
+AuthenticationType SetupWizardAccountBuilder::authType()
 {
     return _authType;
 }
@@ -224,7 +223,7 @@ QVariantMap SetupWizardAccountBuilder::dynamicRegistrationData() const
 void SetupWizardAccountBuilder::setWebFingerAuthenticationServerUrl(const QUrl &url)
 {
     _webFingerAuthenticationServerUrl = url;
-    _authType = DetermineAuthTypeJob::AuthType::OAuth;
+    _authType = AuthenticationType::OAuth;
 }
 
 QUrl SetupWizardAccountBuilder::webFingerAuthenticationServerUrl() const

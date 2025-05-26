@@ -51,7 +51,6 @@ set(libsync_SRCS
     networkjobs/resources.cpp
 
     abstractcorejob.cpp
-    determineauthtypejobfactory.cpp
 
     appprovider.cpp
 )

@@ -119,10 +119,10 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
     }
     case SetupWizardState::CredentialsState: {
         switch (_context->accountBuilder().authType()) {
-        case DetermineAuthTypeJob::AuthType::Basic:
+        case OCC::AuthenticationType::Basic:
             _currentState = new BasicCredentialsSetupWizardState(_context);
             break;
-        case DetermineAuthTypeJob::AuthType::OAuth:
+        case OCC::AuthenticationType::OAuth:
             _currentState = new OAuthCredentialsSetupWizardState(_context);
             break;
         default:

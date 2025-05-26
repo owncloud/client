@@ -16,8 +16,11 @@
 
 #include "account.h"
 #include "gui/creds/httpcredentialsgui.h"
-#include "networkjobs.h"
 #include "networkjobs/fetchuserinfojobfactory.h"
+
+// this temporarily holds the AuthenticationType enum
+#include "gui/networkadapters/determineauthtypeadapter.h"
+
 
 namespace OCC::Wizard {
 
@@ -108,7 +111,7 @@ public:
      * Set ownCloud server URL as well as the authentication type that needs to be used with this server.
      * @param serverUrl URL to server
      */
-    void setServerUrl(const QUrl &serverUrl, DetermineAuthTypeJob::AuthType workflowType);
+    void setServerUrl(const QUrl &serverUrl, AuthenticationType workflowType);
     QUrl serverUrl() const;
 
     /**
@@ -128,7 +131,7 @@ public:
     QString legacyWebFingerUsername() const;
 
     // TODO: move this out of the class's state
-    DetermineAuthTypeJob::AuthType authType();
+    AuthenticationType authType();
 
     void setAuthenticationStrategy(AbstractAuthenticationStrategy *strategy);
     AbstractAuthenticationStrategy *authenticationStrategy() const;
@@ -188,7 +191,7 @@ private:
     QVector<QUrl> _webFingerInstances;
     QUrl _webFingerSelectedInstance;
 
-    DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
+    AuthenticationType _authType = AuthenticationType::Unknown;
 
     std::unique_ptr<AbstractAuthenticationStrategy> _authenticationStrategy;
 

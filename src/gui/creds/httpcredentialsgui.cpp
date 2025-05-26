@@ -53,6 +53,7 @@ void HttpCredentialsGui::askFromUser()
         if (isUsingOAuth()) {
             startOAuth();
         } else {
+            // todo: #18 or #19
             // First, we will check what kind of auth we need.
             auto job = new DetermineAuthTypeJob(_account->sharedFromThis(), this);
             QObject::connect(job, &DetermineAuthTypeJob::authType, this, [this](DetermineAuthTypeJob::AuthType type) {
@@ -153,7 +154,7 @@ void HttpCredentialsGui::startOAuth()
         _modalWidget->reject();
         _modalWidget.clear();
         _asyncAuth.reset();
-        requestLogout();
+        Q_EMIT requestLogout();
     });
     connect(oauthCredentials, &QmlOAuthCredentials::requestRestart, this, [this] {
         _modalWidget->reject();

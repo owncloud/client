@@ -14,8 +14,10 @@
 
 #include "legacywebfingersetupwizardstate.h"
 #include "creds/webfinger.h"
-#include "determineauthtypejobfactory.h"
+#include "gui/networkadapters/determineauthtypeadapter.h"
 #include "pages/legacywebfingersetupwizardpage.h"
+
+// this class is marked for death as we will no longer support legacy web finger 
 
 namespace OCC::Wizard {
 
@@ -48,20 +50,20 @@ void LegacyWebFingerSetupWizardState::evaluatePage()
         qDebug() << "WebFinger server sent href" << webFinger->href();
 
         // next, we need to find out which kind of authentication page we have to present to the user
-        auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(webFinger->href(), this);
+        /*     auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(webFinger->href(), this);
 
-        connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, webFingerSetupWizardPage, webFinger]() {
-            authTypeJob->deleteLater();
+             connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, webFingerSetupWizardPage, webFinger]() {
+                 authTypeJob->deleteLater();
 
-            if (authTypeJob->result().isNull()) {
-                Q_EMIT evaluationFailed(authTypeJob->errorMessage());
-                return;
-            }
+                 if (authTypeJob->result().isNull()) {
+                     Q_EMIT evaluationFailed(authTypeJob->errorMessage());
+                     return;
+                 }
 
-            _context->accountBuilder().setLegacyWebFingerUsername(webFingerSetupWizardPage->username());
-            _context->accountBuilder().setServerUrl(webFinger->href(), qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
-            Q_EMIT evaluationSuccessful();
-        });
+                 _context->accountBuilder().setLegacyWebFingerUsername(webFingerSetupWizardPage->username());
+                 _context->accountBuilder().setServerUrl(webFinger->href(), qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
+                 Q_EMIT evaluationSuccessful();
+             });*/
     });
 
     webFinger->start(_context->accountBuilder().legacyWebFingerServerUrl(), resource);
