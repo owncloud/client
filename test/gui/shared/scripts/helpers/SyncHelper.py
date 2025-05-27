@@ -87,6 +87,10 @@ SYNC_PATTERNS = {
     'error': [SYNC_STATUS['ERROR']],
 }
 
+if is_windows():
+    SYNC_PATTERNS['initial'].append([SYNC_STATUS['REGISTER'], SYNC_STATUS['UPDATE']])
+    SYNC_PATTERNS['initial'].append([SYNC_STATUS['UPDATE'], SYNC_STATUS['UPDATE']])
+
 
 def get_socket_connection():
     global SOCKET_CONNECT
