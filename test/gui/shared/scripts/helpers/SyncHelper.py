@@ -87,8 +87,8 @@ SYNC_PATTERNS = {
     'error': [SYNC_STATUS['ERROR']],
 }
 
+# checking initial sync of Personal sync shows these sync status
 if is_windows():
-    SYNC_PATTERNS['initial'].append([SYNC_STATUS['REGISTER'], SYNC_STATUS['UPDATE']])
     SYNC_PATTERNS['initial'].append([SYNC_STATUS['UPDATE'], SYNC_STATUS['UPDATE']])
 
 
@@ -189,7 +189,7 @@ def filter_messages_for_item(messages, item):
     for msg in messages:
         msg = msg.rstrip('/').rstrip('\\')
         item = item.rstrip('/').rstrip('\\')
-        if msg.endswith(item):
+        if msg.endswith(item) and not msg.startswith(SYNC_STATUS['NOP']):
             filtered_messages.append(msg)
     return filtered_messages
 
