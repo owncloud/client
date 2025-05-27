@@ -114,6 +114,20 @@ public:
     void setServerUrl(const QUrl &serverUrl, AuthenticationType workflowType);
     QUrl serverUrl() const;
 
+    void setWebFingerAuthenticationServerUrl(const QUrl &url);
+    QUrl webFingerAuthenticationServerUrl() const;
+
+    /**
+     * @brief effectiveAuthenticationServerUrl is the authentication url "in play"
+     * @return if webfinger is in use, return the webfinger url, else return the standard url.
+     */
+    QUrl effectiveAuthenticationServerUrl() const
+    {
+        if (!_webFingerAuthenticationServerUrl.isEmpty())
+            return _webFingerAuthenticationServerUrl;
+        return _serverUrl;
+    }
+
     // TODO: move this out of the class's state
     AuthenticationType authType();
 
@@ -155,9 +169,6 @@ public:
      * @return built account or null if information is still missing
      */
     AccountPtr build();
-
-    void setWebFingerAuthenticationServerUrl(const QUrl &url);
-    QUrl webFingerAuthenticationServerUrl() const;
 
     void setWebFingerInstances(const QVector<QUrl> &instancesList);
     QVector<QUrl> webFingerInstances() const;

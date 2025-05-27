@@ -20,7 +20,7 @@ namespace OCC::Wizard {
 OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    QUrl authServerUrl = _context->accountBuilder().serverUrl();
+    const QUrl authServerUrl = _context->accountBuilder().effectiveAuthenticationServerUrl();
 
     auto oAuth = new OAuth(authServerUrl, {}, _context->accessManager(), {}, this);
     connect(oAuth, &OAuth::dynamicRegistrationDataReceived, this,
@@ -59,6 +59,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
         };
 
         if (!_context->accountBuilder().webFingerAuthenticationServerUrl().isEmpty()) {
+            // Lisa todo: why do we use the serverUrl here instead of the effective url?!
             WebFingerLookupAdapter lookup(_context->accessManager(), token, _context->accountBuilder().serverUrl());
             const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {

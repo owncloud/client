@@ -21,7 +21,7 @@ class QNetworkAccessManager;
 
 namespace OCC {
 
-enum class AuthenticationType { Unknown = 0, Basic, OAuth };
+enum class AuthenticationType { Unknown = 0, OAuth, Basic };
 
 
 struct DetermineAuthTypeResult
@@ -32,8 +32,12 @@ struct DetermineAuthTypeResult
 };
 
 /**
- * @brief The DetermineAuthTypeAdapter class allows us to determine the authentication type for the server using a synchronous call.
- * This is intended for use in the gui only.
+ * @brief The DetermineAuthTypeAdapter class allows us to validate that a given server URL supports oauth authentication.
+ * If oauth is not supported, the authentication type will be reported as unknown. It is up to the caller to report an
+ * error or handle this condition in some responsible manner.
+ *
+ * This routine used to identify basic http server authentication as well but the Basic type is obsolete after client 6.0
+ *
  */
 class DetermineAuthTypeAdapter : public QObject
 {
