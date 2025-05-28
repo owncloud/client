@@ -16,19 +16,14 @@
 #define OWNCLOUDPROPAGATOR_H
 
 #include <QHash>
-#include <QObject>
 #include <QMap>
-#include <QElapsedTimer>
+#include <QObject>
 #include <QTimer>
-#include <QPointer>
-#include <QIODevice>
-#include <QMutex>
 
+#include "accountfwd.h"
+#include "common/syncjournaldb.h"
 #include "csync.h"
 #include "syncfileitem.h"
-#include "common/syncjournaldb.h"
-#include "bandwidthmanager.h"
-#include "accountfwd.h"
 #include "syncoptions.h"
 
 namespace OCC {
@@ -120,14 +115,14 @@ public:
 public Q_SLOTS:
     /*
      * Asynchronous abort requires Q_EMIT of abortFinished() signal,
-     * while synchronous is expected to abort immedietaly.
+     * while synchronous is expected to abort immediately.
      */
     virtual void abort(PropagatorJob::AbortType abortType) {
         if (abortType == AbortType::Asynchronous)
             Q_EMIT abortFinished();
     }
 
-    /** Starts this job, or a new subjob
+    /** Starts this job, or a new sub job
      * returns true if a job was started.
      */
     virtual bool scheduleSelfOrChild() = 0;
@@ -186,7 +181,7 @@ public Q_SLOTS:
 };
 
 /**
- * @brief Job that runs subjobs. It becomes finished only when all subjobs are finished.
+ * @brief Job that runs sub jobs. It becomes finished only when all sub jobs are finished.
  * @ingroup libsync
  */
 class PropagatorCompositeJob : public PropagatorJob
@@ -213,7 +208,7 @@ public:
 
     /*
      * Abort synchronously or asynchronously - some jobs
-     * require to be finished without immediete abort (abort on job might
+     * require to be finished without immediate abort (abort on job might
      * cause conflicts/duplicated files - owncloud/client/issues/5949)
      */
     void abort(PropagatorJob::AbortType abortType) override
@@ -383,13 +378,13 @@ class OWNCLOUDSYNC_EXPORT OwncloudPropagator : public QObject
     Q_OBJECT
 public:
     SyncJournalDb *const _journal;
-    bool _finishedEmited; // used to ensure that finished is only emitted once
+    bool _finishedEmitted; // used to ensure that finished is only emitted once
 
 public:
-    OwncloudPropagator(AccountPtr account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir,
-        const QString &remoteFolder, SyncJournalDb *progressDb)
+    OwncloudPropagator(
+        AccountPtr account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder, SyncJournalDb *progressDb)
         : _journal(progressDb)
-        , _finishedEmited(false)
+        , _finishedEmitted(false)
         , _anotherSyncNeeded(false)
         , _chunkSize(options._initialChunkSize)
         , _account(account)
@@ -407,14 +402,12 @@ public:
 
     const SyncOptions &syncOptions() const;
 
-    QPointer<BandwidthManager> _bandwidthManager;
-
     bool _abortRequested = false;
 
     /** The list of currently active jobs.
-        This list contains the jobs that are currently using ressources and is used purely to
+        This list contains the jobs that are currently using resources and is used purely to
         know how many jobs there is currently running for the scheduler.
-        Jobs add themself to the list when they do an assynchronous operation.
+        Jobs add themselves to the list when they do an asynchronous operation.
         Jobs can be several time on the list (example, when several chunks are uploaded in parallel)
      */
     QList<PropagateItemJob *> _activeJobList;
@@ -424,7 +417,7 @@ public:
 
     /** Per-folder quota guesses.
      *
-     * This starts out empty. When an upload in a folder fails due to insufficent
+     * This starts out empty. When an upload in a folder fails due to insufficient
      * remote quota, the quota guess is updated to be attempted_size-1 at maximum.
      *
      * Note that it will usually just an upper limit for the actual quota - but
@@ -533,7 +526,7 @@ public:
     Result<Vfs::ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &item);
 
 
-    /** Update the the placeholder and takes over some metadata from replacesFile
+    /** Update the placeholder and takes over some metadata from replacesFile
      *
      * Will also trigger a Vfs::updateMetadata.
      */
@@ -550,9 +543,9 @@ private Q_SLOTS:
     /** Emit the finished signal and make sure it is only emitted once */
     void emitFinished(SyncFileItem::Status status)
     {
-        if (!_finishedEmited)
+        if (!_finishedEmitted)
             Q_EMIT finished(status == SyncFileItem::Success);
-        _finishedEmited = true;
+        _finishedEmitted = true;
     }
 
     void scheduleNextJobImpl();

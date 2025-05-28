@@ -190,18 +190,11 @@ void GETFileJob::start()
 
     sendRequest("GET", req);
 
-    qCDebug(lcGetJob) << _bandwidthManager << _bandwidthChoked << _bandwidthLimited;
-    if (_bandwidthManager) {
-        _bandwidthManager->registerDownloadJob(this);
-    }
     AbstractNetworkJob::start();
 }
 
 void GETFileJob::finished()
 {
-    if (_bandwidthManager) {
-        _bandwidthManager->unregisterDownloadJob(this);
-    }
     if (reply()->bytesAvailable() && _httpOk) {
         // we were throttled, write out the remaining data
         slotReadyRead();
@@ -312,34 +305,6 @@ void GETFileJob::slotMetaDataChanged()
     connect(reply(), &QIODevice::readyRead, this, &GETFileJob::slotReadyRead);
 }
 
-void GETFileJob::setBandwidthManager(BandwidthManager *bwm)
-{
-    _bandwidthManager = bwm;
-}
-
-void GETFileJob::setChoked(bool c)
-{
-    if (c != _bandwidthChoked) {
-        _bandwidthChoked = c;
-        QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
-    }
-}
-
-void GETFileJob::setBandwidthLimited(bool b)
-{
-    if (_bandwidthLimited != b) {
-        _bandwidthLimited = b;
-        QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
-    }
-}
-
-void GETFileJob::giveBandwidthQuota(qint64 q)
-{
-    _bandwidthQuota = q;
-    qCDebug(lcGetJob) << "Got" << q << "bytes";
-    QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
-}
-
 qint64 GETFileJob::currentDownloadPosition()
 {
     if (_device && _device->pos() > 0 && _device->pos() > qint64(_resumeStart)) {
@@ -359,20 +324,7 @@ void GETFileJob::slotReadyRead()
     QByteArray buffer(bufferSize, Qt::Uninitialized);
 
     while (reply()->bytesAvailable() > 0) {
-        if (_bandwidthChoked) {
-            qCWarning(lcGetJob) << "Download choked";
-            break;
-        }
         qint64 toRead = bufferSize;
-        if (_bandwidthLimited) {
-            toRead = std::min<qint64>(bufferSize, _bandwidthQuota);
-            if (toRead == 0) {
-                qCWarning(lcGetJob) << "Out of badnwidth quota";
-                break;
-            }
-            _bandwidthQuota -= toRead;
-        }
-
         const qint64 read = reply()->read(buffer.data(), toRead);
         if (read < 0) {
             _errorString = networkReplyErrorString(*reply());
@@ -390,14 +342,6 @@ void GETFileJob::slotReadyRead()
             abort();
             return;
         }
-    }
-}
-
-
-GETFileJob::~GETFileJob()
-{
-    if (_bandwidthManager) {
-        _bandwidthManager->unregisterDownloadJob(this);
     }
 }
 
@@ -644,7 +588,6 @@ void PropagateDownloadFile::startFullDownload()
             {},
             &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
     }
-    _job->setBandwidthManager(propagator()->_bandwidthManager);
     _job->setExpectedContentLength(_item->_size - _resumeStart);
 
     connect(_job.data(), &GETFileJob::finishedSignal, this, &PropagateDownloadFile::slotGetFinished);
@@ -696,7 +639,7 @@ void PropagateDownloadFile::slotGetFinished()
             qCWarning(lcPropagateDownload) << "server replied 404, assuming file was deleted";
         }
 
-        // Don't keep the temporary file if it is empty or we
+        // Don't keep the temporary file if it is empty, or we
         // used a bad range header or the file's not on the server anymore.
         if (_tmpFile.exists() && (_tmpFile.size() == 0 || badRangeHeader || fileNotFound)) {
             _tmpFile.close();
@@ -976,7 +919,7 @@ void PropagateDownloadFile::downloadFinished()
     FileSystem::setFileHidden(fn, false);
 
     // Maybe we downloaded a newer version of the file than we thought we would...
-    // Get up to date information for the journal.
+    // Get up-to-date information for the journal.
     _item->_size = FileSystem::getSize(QFileInfo{fn});
 
     // Maybe what we downloaded was a conflict file? If so, set a conflict record.
