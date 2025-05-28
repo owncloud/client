@@ -37,6 +37,12 @@ struct WebFingerLookupResult
     bool success() const { return error.isEmpty() && !urls.isEmpty(); }
 };
 
+/**
+ * @brief The WebFingerLookupAdapter class is used to retrieve the URLs associated with a webfinger provider.
+ * Prior authentication is required.
+ * If the result is successful, we take the first entry from the URL list as the de facto url for the account.
+ */
+
 class WebFingerLookupAdapter : public QObject
 {
     Q_OBJECT
@@ -45,7 +51,8 @@ public:
      * @brief WebFingerLookupAdapter
      * @param nam the network manager
      * @param authToken the token to use with the request
-     * @param url the url for the request
+     * @param url for the request. Note this value should be the original server url, not the webfinger url (if it exists). I still do
+     * not fully understand why that is but will find out.
      * @param parent is used for the standard QObject parenting scheme. This param should not be needed in most cases as the intent is
      * to create the adapter on the stack then just let it go out of scope, no parenting required.
      */
@@ -54,7 +61,7 @@ public:
     /**
      * @brief getResult runs the network request synchronously and is intended for use in a gui, where it makes sense to block until we
      * have the required data to move on.
-     * @return the result of the network request
+     * @return the result of the network request. If successful the result contains a list of webfinger links.
      *
      * it is safe to call get result repeatedly, so long as the parameters passed to the adapter on construction are still valid.
      */

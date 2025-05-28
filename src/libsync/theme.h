@@ -365,7 +365,7 @@ public:
      *
      * @return QPair<OAuth access endpoint, OAuth token endpoint>
      */
-    virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
+    [[deprecated("oauth url override support has been removed as of client 7.0")]] virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
      * List of ports to use for the local redirect server
@@ -439,7 +439,7 @@ public:
     /**
      * Enable Webfinger page in setup wizard.
      */
-    virtual bool wizardEnableWebfinger() const;
+    [[deprecated("Legacy web finger support has been removed starting with client 7.0.")]] virtual bool wizardEnableWebfinger() const;
 
     /**
      * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.

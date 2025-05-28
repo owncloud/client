@@ -84,6 +84,7 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, const AccountStatePtr 
 
     q->setPage(FolderWizard::Page_Source, _folderWizardSourcePage);
 
+    // apparently also oc10 only per deprecation message on singleSyncFolder()
     if (!_account->supportsSpaces() && !Theme::instance()->singleSyncFolder()) {
         _folderWizardTargetPage = new FolderWizardRemotePath(this);
         q->setPage(FolderWizard::Page_Target, _folderWizardTargetPage);

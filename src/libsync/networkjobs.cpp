@@ -419,7 +419,7 @@ void DetermineAuthTypeJob::start()
 void DetermineAuthTypeJob::finished()
 {
     auto authChallenge = reply()->rawHeader("WWW-Authenticate").toLower();
-    auto result = AuthType::Basic;
+    auto result = AuthType::Unknown;
     if (authChallenge.contains("bearer ")) {
         result = AuthType::OAuth;
     } else if (authChallenge.isEmpty()) {

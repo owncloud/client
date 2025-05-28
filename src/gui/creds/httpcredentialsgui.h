@@ -33,20 +33,18 @@ class HttpCredentialsGui : public HttpCredentials
 public:
     HttpCredentialsGui() = default;
 
-    HttpCredentialsGui(const QString &loginUser, const QString &password);
-
     HttpCredentialsGui(const QString &davUser, const QString &password, const QString &refreshToken);
 
     /**
      * This will query the server and either uses OAuth via _asyncAuth->start()
      * or call showDialog to ask the password
      */
+    // todo: #18 most of this impl will go away, consider renaming it if it's even needed
     void askFromUser() override;
 
 
 private Q_SLOTS:
     void asyncAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken);
-    void showDialog();
 
 Q_SIGNALS:
     void oAuthLoginAccepted();
@@ -56,6 +54,8 @@ private:
     void startOAuth();
 
     QScopedPointer<AccountBasedOAuth, QScopedPointerObjectDeleteLater<AccountBasedOAuth>> _asyncAuth;
+    // we need to keep this as it hosts the authentication dialog for oauth via web interface
+    // -> the one that has "open web browser", "copy link" and "log out" options
     QPointer<AccountModalWidget> _modalWidget;
 };
 

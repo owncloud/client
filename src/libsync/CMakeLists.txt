@@ -42,7 +42,6 @@ set(libsync_SRCS
     creds/credentialmanager.cpp
     creds/abstractcredentials.cpp
     creds/oauth.cpp
-    creds/webfinger.cpp
 
     networkjobs/fetchuserinfojobfactory.cpp
     networkjobs/checkserverjobfactory.cpp
@@ -50,7 +49,6 @@ set(libsync_SRCS
     networkjobs/resources.cpp
 
     abstractcorejob.cpp
-    determineauthtypejobfactory.cpp
 
     appprovider.cpp
 )

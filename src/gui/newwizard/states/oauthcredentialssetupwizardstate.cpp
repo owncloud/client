@@ -20,15 +20,9 @@ namespace OCC::Wizard {
 OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardContext *context)
     : AbstractSetupWizardState(context)
 {
-    const auto authServerUrl = [this]() {
-        auto authServerUrl = _context->accountBuilder().webFingerAuthenticationServerUrl();
-        if (!authServerUrl.isEmpty()) {
-            return authServerUrl;
-        }
-        return _context->accountBuilder().serverUrl();
-    }();
+    const QUrl authServerUrl = _context->accountBuilder().effectiveAuthenticationServerUrl();
 
-    auto oAuth = new OAuth(authServerUrl, _context->accountBuilder().legacyWebFingerUsername(), _context->accessManager(), {}, this);
+    auto oAuth = new OAuth(authServerUrl, {}, _context->accessManager(), {}, this);
     connect(oAuth, &OAuth::dynamicRegistrationDataReceived, this,
         [this](const QVariantMap &dynamicRegistrationData) { _context->accountBuilder().setDynamicRegistrationData(dynamicRegistrationData); });
 
@@ -65,6 +59,7 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
         };
 
         if (!_context->accountBuilder().webFingerAuthenticationServerUrl().isEmpty()) {
+            // Lisa todo: why do we use the serverUrl here instead of the effective url?!
             WebFingerLookupAdapter lookup(_context->accessManager(), token, _context->accountBuilder().serverUrl());
             const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {

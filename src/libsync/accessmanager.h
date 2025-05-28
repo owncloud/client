@@ -35,7 +35,7 @@ class OWNCLOUDSYNC_EXPORT AccessManager : public QNetworkAccessManager
 public:
     static QByteArray generateRequestId();
 
-    AccessManager(QObject *parent = nullptr);
+    AccessManager(QObject *parent);
 
     QSet<QSslCertificate> customTrustedCaCertificates();
 

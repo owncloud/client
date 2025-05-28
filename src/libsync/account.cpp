@@ -204,7 +204,7 @@ void Account::setCredentials(AbstractCredentials *cred)
     _credentials.reset(cred);
     cred->setAccount(this);
 
-    _am = _credentials->createAM();
+    _am = _credentials->createAccessManager();
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
@@ -298,6 +298,10 @@ QString Account::hostName() const
 QVariant Account::credentialSetting(const QString &key) const
 {
     if (_credentials) {
+        // Lisa todo: this prefix is confusing and I think misleading because it has nothing to do with
+        // other "authType" values - eg oauth, basic or unknown. instead it seems to be hard coded to "http"
+        // for anything that uses the HttpCredentials, which is everything (aside from tests) at the moment.
+        // ick.
         QString prefix = _credentials->authType();
         QVariant value = _settingsMap.value(prefix + QLatin1Char('_') + key);
         if (value.isNull()) {
@@ -308,7 +312,7 @@ QVariant Account::credentialSetting(const QString &key) const
     return QVariant();
 }
 
-void Account::setCredentialSetting(const QString &key, const QVariant &value)
+void Account::addCredentialSetting(const QString &key, const QVariant &value)
 {
     if (_credentials) {
         QString prefix = _credentials->authType();
