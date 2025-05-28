@@ -33,37 +33,6 @@ void AbstractAuthenticationStrategy::setDavUser(const QString &user)
     _davUser = user;
 }
 
-HttpBasicAuthenticationStrategy::HttpBasicAuthenticationStrategy(const QString &username, const QString &password)
-    : _loginUser(username)
-    , _password(password)
-{
-}
-
-HttpCredentialsGui *HttpBasicAuthenticationStrategy::makeCreds()
-{
-    return new HttpCredentialsGui(loginUser(), _password);
-}
-
-bool HttpBasicAuthenticationStrategy::isValid()
-{
-    return !loginUser().isEmpty() && !_password.isEmpty();
-}
-
-QString HttpBasicAuthenticationStrategy::password() const
-{
-    return _password;
-}
-
-QString HttpBasicAuthenticationStrategy::loginUser() const
-{
-    return _loginUser;
-}
-
-FetchUserInfoJobFactory HttpBasicAuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
-{
-    return FetchUserInfoJobFactory::fromBasicAuthCredentials(nam, loginUser(), _password);
-}
-
 OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken)
     : _token(token)
     , _refreshToken(refreshToken)

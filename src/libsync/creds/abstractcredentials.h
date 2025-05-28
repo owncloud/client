@@ -46,7 +46,7 @@ public:
 
     virtual QString authType() const = 0;
     virtual QString user() const = 0;
-    virtual AccessManager *createAM() const = 0;
+    virtual AccessManager *createAccessManager() const = 0;
 
     /** Whether there are credentials that can be used for a connection attempt. */
     virtual bool ready() const = 0;

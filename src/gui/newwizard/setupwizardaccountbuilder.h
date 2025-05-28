@@ -58,30 +58,6 @@ private:
     QString _davUser;
 };
 
-class HttpBasicAuthenticationStrategy : public AbstractAuthenticationStrategy
-{
-public:
-    explicit HttpBasicAuthenticationStrategy(const QString &username, const QString &password);
-
-    HttpCredentialsGui *makeCreds() override;
-
-    bool isValid() override;
-
-    // access is needed to be able to check these credentials against the server
-    QString password() const;
-
-    /**
-     *  The user name used for authentication
-     */
-    QString loginUser() const;
-
-    FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) override;
-
-private:
-    QString _loginUser;
-    QString _password;
-};
-
 class OAuth2AuthenticationStrategy : public AbstractAuthenticationStrategy
 {
 public:

@@ -365,7 +365,7 @@ public:
      *
      * @return QPair<OAuth access endpoint, OAuth token endpoint>
      */
-    virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
+    [[deprecated("oauth url override support has been removed as of client 7.0")]] virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
      * List of ports to use for the local redirect server

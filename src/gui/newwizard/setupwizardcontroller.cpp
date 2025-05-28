@@ -4,7 +4,6 @@
 #include "pages/accountconfiguredwizardpage.h"
 #include "states/abstractsetupwizardstate.h"
 #include "states/accountconfiguredsetupwizardstate.h"
-#include "states/basiccredentialssetupwizardstate.h"
 #include "states/oauthcredentialssetupwizardstate.h"
 #include "states/serverurlsetupwizardstate.h"
 
@@ -99,18 +98,8 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
         break;
     }
     case SetupWizardState::CredentialsState: {
-        switch (_context->accountBuilder().authType()) {
-        case OCC::AuthenticationType::Basic:
-            _currentState = new BasicCredentialsSetupWizardState(_context);
-            break;
-        case OCC::AuthenticationType::OAuth:
             _currentState = new OAuthCredentialsSetupWizardState(_context);
             break;
-        default:
-            Q_UNREACHABLE();
-        }
-
-        break;
     }
     case SetupWizardState::AccountConfiguredState: {
         _currentState = new AccountConfiguredSetupWizardState(_context);
