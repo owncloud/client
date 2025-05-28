@@ -190,7 +190,6 @@ void GETFileJob::start()
 
     sendRequest("GET", req);
 
-    qCDebug(lcGetJob) << _bandwidthChoked << _bandwidthLimited;
     AbstractNetworkJob::start();
 }
 
@@ -306,29 +305,6 @@ void GETFileJob::slotMetaDataChanged()
     connect(reply(), &QIODevice::readyRead, this, &GETFileJob::slotReadyRead);
 }
 
-void GETFileJob::setChoked(bool c)
-{
-    if (c != _bandwidthChoked) {
-        _bandwidthChoked = c;
-        QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
-    }
-}
-
-void GETFileJob::setBandwidthLimited(bool b)
-{
-    if (_bandwidthLimited != b) {
-        _bandwidthLimited = b;
-        QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
-    }
-}
-
-void GETFileJob::giveBandwidthQuota(qint64 q)
-{
-    _bandwidthQuota = q;
-    qCDebug(lcGetJob) << "Got" << q << "bytes";
-    QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
-}
-
 qint64 GETFileJob::currentDownloadPosition()
 {
     if (_device && _device->pos() > 0 && _device->pos() > qint64(_resumeStart)) {
@@ -348,20 +324,7 @@ void GETFileJob::slotReadyRead()
     QByteArray buffer(bufferSize, Qt::Uninitialized);
 
     while (reply()->bytesAvailable() > 0) {
-        if (_bandwidthChoked) {
-            qCWarning(lcGetJob) << "Download choked";
-            break;
-        }
         qint64 toRead = bufferSize;
-        if (_bandwidthLimited) {
-            toRead = std::min<qint64>(bufferSize, _bandwidthQuota);
-            if (toRead == 0) {
-                qCWarning(lcGetJob) << "Out of bandwidth quota";
-                break;
-            }
-            _bandwidthQuota -= toRead;
-        }
-
         const qint64 read = reply()->read(buffer.data(), toRead);
         if (read < 0) {
             _errorString = networkReplyErrorString(*reply());

@@ -50,12 +50,6 @@ public:
     bool isSequential() const override;
     bool seek(qint64 pos) override;
 
-    void setBandwidthLimited(bool);
-    bool isBandwidthLimited() { return _bandwidthLimited; }
-    void setChoked(bool);
-    bool isChoked() { return _choked; }
-    void giveBandwidthQuota(qint64 bwq);
-
 Q_SIGNALS:
 
 private:
@@ -68,14 +62,6 @@ private:
     qint64 _size = 0;
     /// Position between _start and _start+_size
     qint64 _read = 0;
-
-    // Bandwidth manager related
-    qint64 _bandwidthQuota;
-    qint64 _readWithProgress;
-    bool _bandwidthLimited; // if _bandwidthQuota will be used
-    bool _choked; // if upload is paused (readData() will return 0)
-public Q_SLOTS:
-    void slotJobUploadProgress(qint64 sent, qint64 t);
 };
 
 /**
@@ -259,7 +245,7 @@ private:
 /**
  * @ingroup libsync
  *
- * Propagation job, impementing the old chunking agorithm
+ * Propagation job, implementing the old chunking algorithm
  *
  */
 class PropagateUploadFileV1 : public PropagateUploadFileCommon
@@ -306,7 +292,7 @@ private Q_SLOTS:
 /**
  * @ingroup libsync
  *
- * Propagation job, impementing the new chunking agorithm
+ * Propagation job, implementing the new chunking algorithm
  *
  */
 class PropagateUploadFileNG : public PropagateUploadFileCommon
@@ -363,7 +349,7 @@ private:
      * Finds the range starting at 'start' in _rangesToUpload and removes the first
      * 'size' bytes from it. If it becomes empty, remove the range.
      *
-     * Retuns false if no matching range was found.
+     * Returns false if no matching range was found.
      */
     bool markRangeAsDone(qint64 start, qint64 size);
 
