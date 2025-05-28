@@ -137,12 +137,10 @@ void PropagateUploadFileV1::startNextChunk()
     }
 
     // job takes ownership of device via a QScopedPointer. Job deletes itself when finishing
-    auto devicePtr = device.get(); // for connections later
     PUTFileJob *job = new PUTFileJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(path), std::move(device), headers, _currentChunk, this);
     addChildJob(job);
     connect(job, &PUTFileJob::finishedSignal, this, &PropagateUploadFileV1::slotPutFinished);
     connect(job, &PUTFileJob::uploadProgress, this, &PropagateUploadFileV1::slotUploadProgress);
-    connect(job, &PUTFileJob::uploadProgress, devicePtr, &UploadDevice::slotJobUploadProgress);
     if (isFinalChunk)
         adjustLastJobTimeout(job, fileSize);
     job->start();

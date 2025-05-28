@@ -57,10 +57,6 @@ public:
     qint64 expectedContentLength() const { return _expectedContentLength; }
     void setExpectedContentLength(qint64 size) { _expectedContentLength = size; }
 
-    void setChoked(bool c);
-    void setBandwidthLimited(bool b);
-    void giveBandwidthQuota(qint64 q);
-
     QString &etag() { return _etag; }
     time_t lastModified() { return _lastModified; }
 
@@ -83,9 +79,6 @@ protected:
     time_t _lastModified = 0;
     QString _errorString;
     SyncFileItem::Status _errorStatus = SyncFileItem::NoStatus;
-    bool _bandwidthLimited = false; // if _bandwidthQuota will be used
-    bool _bandwidthChoked = false; // if download is paused (won't read on readyRead())
-    qint64 _bandwidthQuota = 0;
     bool _httpOk = false;
 };
 

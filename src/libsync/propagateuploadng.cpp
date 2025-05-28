@@ -381,14 +381,10 @@ void PropagateUploadFileNG::startNextChunk()
     }
 
     // job takes ownership of device via a QScopedPointer. Job deletes itself when finishing
-    auto devicePtr = device.get(); // for connections later
     PUTFileJob *job = new PUTFileJob(propagator()->account(), propagator()->account()->url(), chunkPath(_currentChunkOffset), std::move(device), {}, 0, this);
     addChildJob(job);
     connect(job, &PUTFileJob::finishedSignal, this, &PropagateUploadFileNG::slotPutFinished);
-    connect(job, &PUTFileJob::uploadProgress,
-        this, &PropagateUploadFileNG::slotUploadProgress);
-    connect(job, &PUTFileJob::uploadProgress,
-        devicePtr, &UploadDevice::slotJobUploadProgress);
+    connect(job, &PUTFileJob::uploadProgress, this, &PropagateUploadFileNG::slotUploadProgress);
     job->start();
     propagator()->_activeJobList.append(this);
 }
@@ -538,7 +534,7 @@ void PropagateUploadFileNG::slotMoveJobFinished()
 void PropagateUploadFileNG::slotUploadProgress(qint64 sent, qint64 total)
 {
     // Completion is signaled with sent=0, total=0; avoid accidentally
-    // resetting progress due to the sent being zero by ignoring it.
+    // resetting progress due to sent bytes being zero by ignoring it.
     // finishedSignal() is bound to be emitted soon anyway.
     // See https://bugreports.qt.io/browse/QTBUG-44782.
     if (sent == 0 && total == 0) {

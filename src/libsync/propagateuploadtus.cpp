@@ -167,7 +167,6 @@ void PropagateUploadFileTUS::startNextChunk()
     addChildJob(job);
     connect(job, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileTUS::slotChunkFinished);
     job->addNewReplyHook([device, this](QNetworkReply *reply) {
-        connect(reply, &QNetworkReply::uploadProgress, device, &UploadDevice::slotJobUploadProgress);
         connect(reply, &QNetworkReply::uploadProgress, this, [this](qint64 bytesSent, qint64) {
             propagator()->reportProgress(*_item, _currentOffset + bytesSent);
         });

@@ -268,10 +268,6 @@ UploadDevice::UploadDevice(const QString &fileName, qint64 start, qint64 size)
     , _start(start)
     , _size(size)
     , _read(0)
-    , _bandwidthQuota(0)
-    , _readWithProgress(0)
-    , _bandwidthLimited(false)
-    , _choked(false)
 {
 }
 
@@ -317,16 +313,6 @@ qint64 UploadDevice::readData(char *data, qint64 maxlen)
     if (maxlen <= 0) {
         return 0;
     }
-    if (isChoked()) {
-        return 0;
-    }
-    if (isBandwidthLimited()) {
-        maxlen = qMin(maxlen, _bandwidthQuota);
-        if (maxlen <= 0) { // no quota
-            return 0;
-        }
-        _bandwidthQuota -= maxlen;
-    }
 
     auto c = _file.read(data, maxlen);
     if (c < 0) {
@@ -335,15 +321,6 @@ qint64 UploadDevice::readData(char *data, qint64 maxlen)
     }
     _read += c;
     return c;
-}
-
-void UploadDevice::slotJobUploadProgress(qint64 sent, qint64 t)
-{
-    if (sent == 0 || t == 0) {
-        return;
-    }
-    // used by the BandwidthManager
-    _readWithProgress = sent;
 }
 
 bool UploadDevice::atEnd() const
@@ -378,30 +355,6 @@ bool UploadDevice::seek(qint64 pos)
     _read = pos;
     _file.seek(_start + pos);
     return true;
-}
-
-void UploadDevice::giveBandwidthQuota(qint64 bwq)
-{
-    if (!atEnd()) {
-        _bandwidthQuota = bwq;
-        QMetaObject::invokeMethod(this, &UploadDevice::readyRead, Qt::QueuedConnection); // tell QNAM that we have quota
-    }
-}
-
-void UploadDevice::setBandwidthLimited(bool b)
-{
-    if (_bandwidthLimited != b) {
-        _bandwidthLimited = b;
-        QMetaObject::invokeMethod(this, &UploadDevice::readyRead, Qt::QueuedConnection);
-    }
-}
-
-void UploadDevice::setChoked(bool b)
-{
-    _choked = b;
-    if (!_choked) {
-        QMetaObject::invokeMethod(this, &UploadDevice::readyRead, Qt::QueuedConnection);
-    }
 }
 
 void PropagateUploadFileCommon::done(SyncFileItem::Status status, const QString &errorString)
@@ -515,12 +468,12 @@ QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
         // (albeit users are not supposed to mess up with it)
 
         // We use a special tag header so that the server may decide to store this file away in some admin stage area
-        // And not directly in the user's area (which would trigger redownloads etc).
+        // And not directly in the user's area (which would trigger redownloads etc.).
         headers["OC-Tag"] = ".sys.admin#recall#";
     }
 
     if (!_item->_etag.isEmpty() && _item->_etag != QLatin1String("empty_etag")
-        && (_item->instruction() & ~(CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_TYPE_CHANGE)) // On new files never send a If-Match
+        && (_item->instruction() & ~(CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_TYPE_CHANGE)) // On new files never send an "If-Match"
         && !_deleteExisting) {
         // We add quotes because the owncloud server always adds quotes around the etag, and
         //  csync_owncloud.c's owncloud_file_id always strips the quotes.
