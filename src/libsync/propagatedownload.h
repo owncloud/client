@@ -17,7 +17,6 @@
 #include "networkjobs.h"
 #include "owncloudpropagator.h"
 
-#include <QBuffer>
 #include <QFile>
 
 namespace OCC {
@@ -39,10 +38,8 @@ class OWNCLOUDSYNC_EXPORT GETFileJob : public AbstractNetworkJob
 public:
     // DOES NOT take ownership of the device.
     // For directDownloadUrl:
-    explicit GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device,
-        const QMap<QByteArray, QByteArray> &headers, const QString &expectedEtagForResume,
-        qint64 resumeStart, QObject *parent = nullptr);
-    virtual ~GETFileJob();
+    explicit GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device, const QMap<QByteArray, QByteArray> &headers,
+        const QString &expectedEtagForResume, qint64 resumeStart, QObject *parent = nullptr);
 
     qint64 currentDownloadPosition();
 
@@ -63,7 +60,6 @@ public:
     void setChoked(bool c);
     void setBandwidthLimited(bool b);
     void giveBandwidthQuota(qint64 q);
-    void setBandwidthManager(BandwidthManager *bwm);
 
     QString &etag() { return _etag; }
     time_t lastModified() { return _lastModified; }
@@ -91,7 +87,6 @@ protected:
     bool _bandwidthChoked = false; // if download is paused (won't read on readyRead())
     qint64 _bandwidthQuota = 0;
     bool _httpOk = false;
-    QPointer<BandwidthManager> _bandwidthManager = nullptr;
 };
 
 /**

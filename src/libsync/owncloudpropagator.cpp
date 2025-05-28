@@ -82,7 +82,7 @@ OwncloudPropagator::~OwncloudPropagator()
 
 int OwncloudPropagator::maximumActiveTransferJob()
 {
-    if (_bandwidthManager || !_syncOptions._parallelNetworkJobs) {
+    if (!_syncOptions._parallelNetworkJobs) {
         // disable parallelism when there is a network limit.
         return 1;
     }
@@ -305,7 +305,7 @@ void PropagateItemJob::done(SyncFileItem::Status statusArg, const QString &error
         Q_ASSERT(!_item->_relevantDirectoyInstruction || qobject_cast<PropagateDirectory *>(this));
         Q_EMIT propagator()->itemCompleted(_item);
     } else {
-        // the directoy needs to call done() in PropagateDirectory::slotSubJobsFinished
+        // the directory needs to call done() in PropagateDirectory::slotSubJobsFinished
         // we don't notify itemCompleted yet as the directory is only complete once its child items are complete.
         _item->_relevantDirectoyInstruction = true;
     }
@@ -430,7 +430,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
     // Due to the ordering of the items, it can happen that we have the following list:
     //  - remove directory A
     //  - remove file A/a
-    //  - etc
+    //  - etc.
     // So when we find a have a sync instruction to remove a directory, we remember it in the
     // `currentRemoveDirectoryJob` variable, so we know/see it when processing the next item
     // in the list.
@@ -438,7 +438,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
 
     // We skip items inside conflict directories. So, when we see an item that's marked as such,
     // remember its name to see if in the next iteration, we will hit an item for that directory.
-    // See the `else` statment in the second step.
+    // See the `else` statement in the second step.
     QString maybeConflictDirectory;
 
     for (const auto &item : std::as_const(items)) {
@@ -449,7 +449,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 // already taken care of. (by the removal of the parent directory)
 
                 if (auto delDirJob = qobject_cast<PropagateDirectory *>(currentRemoveDirectoryJob)) {
-                    // increase the number of subjobs that would be there.
+                    // increase the number of sub jobs that would be there.
                     delDirJob->increaseAffectedCount();
                 }
                 continue;
@@ -458,7 +458,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 // etag was not fetched properly on the previous sync because the sync was aborted
                 // while uploading this directory (which is now removed).  We can ignore it.
                 if (auto delDirJob = qobject_cast<PropagateDirectory *>(currentRemoveDirectoryJob)) {
-                    // increase the number of subjobs that would be there.
+                    // increase the number of sub jobs that would be there.
                     delDirJob->increaseAffectedCount();
                 }
                 continue;
@@ -487,7 +487,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
             }
         }
 
-        // Thirth step: pop the directory stack when we're finished there.
+        // Third step: pop the directory stack when we're finished there.
         // For example, we were processing directory `A/B`, which means that the
         // `PropagateDirectory` job for `B` is on top of the stack. If we now have
         // an item `A/c`, then we're back to processing directory `A`, so we have
@@ -595,7 +595,7 @@ Result<QString, bool> OwncloudPropagator::localFileNameClash(const QString &relF
             }
         }
 #else
-        // On Linux, the file system is case sensitive, but this code is useful for testing.
+        // On Linux, the file system is case-sensitive, but this code is useful for testing.
         // Just check that there is no other file with the same name and different casing.
         const QString fn = fileInfo.fileName();
         const QStringList list = fileInfo.dir().entryList({ fn });
@@ -822,7 +822,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlace
     Q_ASSERT([&] {
         if (item._type == ItemTypeVirtualFileDehydration) {
             // when dehydrating the file must not be pinned
-            // don't use destinatio() with suffix placeholder
+            // don't use destination() with suffix placeholder
             const auto pin = syncOptions()._vfs->pinState(item._file);
             if (pin && pin.get() == PinState::AlwaysLocal) {
                 return false;
@@ -949,11 +949,11 @@ bool PropagatorCompositeJob::scheduleSelfOrChild()
         return possiblyRunNextJob(nextJob);
     }
 
-    // If neither us or our children had stuff left to do we could hang. Make sure
+    // If neither us nor our children had stuff left to do we could hang. Make sure
     // we mark this job as finished so that the propagator can schedule a new one.
     if (_jobsToDo.isEmpty() && _tasksToDo.empty() && _runningJobs.isEmpty()) {
         // Our parent jobs are already iterating over their running jobs, post to the event loop
-        // to avoid removing ourself from that list while they iterate.
+        // to avoid removing ourselves from that list while they iterate.
         QMetaObject::invokeMethod(this, &PropagatorCompositeJob::finalize, Qt::QueuedConnection);
     }
     return false;
@@ -1095,10 +1095,10 @@ void PropagateDirectory::slotFirstJobFinished(SyncFileItem::Status status)
 void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
 {
     if (OC_ENSURE(!_item->isEmpty())) {
-        // report an error if the acutal action on the folder failed
+        // report an error if the actual action on the folder failed
         if (_item->_relevantDirectoyInstruction && _item->_status != SyncFileItem::Success) {
             Q_ASSERT(_item->_status != SyncFileItem::NoStatus);
-            qCWarning(lcDirectory) << "PropagateDirectory completed with" << status << "the dirctory job itself is marked as" << _item->_status;
+            qCWarning(lcDirectory) << "PropagateDirectory completed with" << status << "the directory job itself is marked as" << _item->_status;
             done(_item->_status);
             return;
         }
@@ -1117,9 +1117,9 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
                 OC_ASSERT(FileSystem::setModTime(propagator()->fullLocalPath(_item->destination()), _item->_modtime));
             }
             // For new directories we always want to update the etag once
-            // the directory has been propagated. Otherwise the directory
+            // the directory has been propagated. Otherwise, the directory
             // could appear locally without being added to the database.
-            // Additionally we need to convert those folders to placeholders with cfapi vfs.
+            // Additionally, we need to convert those folders to placeholders with cfapi vfs.
             if (_item->instruction() & (CSYNC_INSTRUCTION_RENAME | CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_UPDATE_METADATA)) {
                 // metatdata changes are relevant
                 _item->_relevantDirectoyInstruction = true;
@@ -1141,8 +1141,8 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
         }
     }
 
-    // don't call done, we only propagate the state of the child items
-    // and we don't want error handling for this folder for an error that happend on a child
+    // don't call done, we only propagate the state of the child items,
+    // and we don't want error handling for this folder for an error that happened on a child
     Q_ASSERT(state() != Finished);
     setState(Finished);
     Q_EMIT finished(status);

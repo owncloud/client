@@ -60,7 +60,7 @@ UploadDevice *PropagateUploadFileTUS::prepareDevice(const quint64 &chunkSize)
         abortWithError(SyncFileItem::SoftError, tr("%1 the file is currently in use").arg(localFileName));
         return nullptr;
     }
-    auto device = std::make_unique<UploadDevice>(localFileName, _currentOffset, chunkSize, propagator()->_bandwidthManager);
+    auto device = std::make_unique<UploadDevice>(localFileName, _currentOffset, chunkSize);
     if (!device->open(QIODevice::ReadOnly)) {
         qCWarning(lcPropagateUploadTUS) << "Could not prepare upload device: " << device->errorString();
 
@@ -81,7 +81,7 @@ SimpleNetworkJob *PropagateUploadFileTUS::makeCreationWithUploadJob(QNetworkRequ
     QByteArrayList encodedMetaData;
     auto addMetaData = [&encodedMetaData](const QByteArray &key, const QByteArray &value) { encodedMetaData << key + ' ' + value.toBase64(); };
     addMetaData(QByteArrayLiteral("filename"), propagator()->fullRemotePath(_item->_file).toUtf8());
-    // in difference to the old protocol the algrithm and the value are space seperated
+    // in difference to the old protocol the algorithm and the value are space seperated
     addMetaData(QByteArrayLiteral("checksum"), Utility::enumToString(checksumHeader.type()).toUtf8() + ' ' + checksumHeader.checksum());
     addMetaData(QByteArrayLiteral("mtime"), QByteArray::number(static_cast<int64_t>(_item->_modtime)));
 
@@ -190,7 +190,7 @@ void PropagateUploadFileTUS::slotChunkFinished()
         // try to get the offset if possible, only try once
         if (err == QNetworkReply::TimeoutError && !_location.isEmpty() && HttpLogger::requestVerb(*job->reply())  != "HEAD")
         {
-            qCWarning(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->_file) << "Encountered a timeout -> get progrss for" << _location;
+            qCWarning(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->_file) << "Encountered a timeout -> get progress for" << _location;
             QNetworkRequest req;
             setTusVersionHeader(req);
             auto updateJob = new SimpleNetworkJob(propagator()->account(), propagator()->webDavUrl(), _location.path(), "HEAD", {}, req, this);

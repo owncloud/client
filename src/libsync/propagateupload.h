@@ -29,8 +29,6 @@ Q_DECLARE_LOGGING_CATEGORY(lcPropagateUpload)
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadV1)
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadNG)
 
-class BandwidthManager;
-
 /**
  * @brief The UploadDevice class
  * @ingroup libsync
@@ -39,8 +37,7 @@ class UploadDevice : public QIODevice
 {
     Q_OBJECT
 public:
-    UploadDevice(const QString &fileName, qint64 start, qint64 size, BandwidthManager *bwm);
-    ~UploadDevice() override;
+    UploadDevice(const QString &fileName, qint64 start, qint64 size);
 
     bool open(QIODevice::OpenMode mode) override;
     void close() override;
@@ -73,12 +70,10 @@ private:
     qint64 _read = 0;
 
     // Bandwidth manager related
-    QPointer<BandwidthManager> _bandwidthManager;
     qint64 _bandwidthQuota;
     qint64 _readWithProgress;
     bool _bandwidthLimited; // if _bandwidthQuota will be used
     bool _choked; // if upload is paused (readData() will return 0)
-    friend class BandwidthManager;
 public Q_SLOTS:
     void slotJobUploadProgress(qint64 sent, qint64 t);
 };
@@ -207,7 +202,7 @@ public:
 
     /***
      * Add job to the list of children
-     * The job is automatically removed from the children once its done.
+     * The job is automatically removed from the children once it's done.
      * It is important that this function is called before any connects.
      */
     void addChildJob(AbstractNetworkJob *job);
@@ -288,8 +283,8 @@ private:
     uint _transferId = 0; /// transfer id (part of the url)
 
     qint64 chunkSize() const {
-        // Old chunking does not use dynamic chunking algorithm, and does not adjusts the chunk size respectively,
-        // thus this value should be used as the one classifing item to be chunked
+        // Old chunking does not use dynamic chunking algorithm, and does not adjust the chunk size respectively,
+        // thus this value should be used as the one classifying item to be chunked
         return propagator()->syncOptions()._initialChunkSize;
     }
 

@@ -207,7 +207,7 @@ void PropagateUploadFileNG::slotPropfindFinished()
         _removeJobError = false;
 
         // Make sure that if there is a "hole" and then a few more chunks, on the server
-        // we should remove the later chunks. Otherwise when we do dynamic chunk sizing, we may end up
+        // we should remove the later chunks. Otherwise, when we do dynamic chunk sizing, we may end up
         // with corruptions if there are too many chunks, or if we abort and there are still stale chunks.
         for (auto it = _serverChunks.begin(); it != _serverChunks.end(); ++it) {
             auto job = new DeleteJob(propagator()->account(), propagator()->account()->url(), chunkPath() + QLatin1Char('/') + it->originalName, this);
@@ -333,7 +333,7 @@ void PropagateUploadFileNG::doFinalMove()
         + propagator()->fullRemotePath(_item->_file));
     auto headers = PropagateUploadFileCommon::headers();
 
-    // "If-Match applies to the source, but we are interested in comparing the etag of the destination
+    // "If-Match" applies to the source, but we are interested in comparing the etag of the destination
     auto ifMatch = headers.take(QByteArrayLiteral("If-Match"));
     if (!ifMatch.isEmpty()) {
         headers[QByteArrayLiteral("If")] = "<" + QUrl::toPercentEncoding(destination, "/") + "> ([" + ifMatch + "])";
@@ -372,8 +372,7 @@ void PropagateUploadFileNG::startNextChunk()
     _currentChunkSize = qMin(propagator()->_chunkSize, _rangesToUpload.first().size);
 
     const QString fileName = propagator()->fullLocalPath(_item->_file);
-    auto device = std::make_unique<UploadDevice>(fileName, _currentChunkOffset, _currentChunkSize,
-        propagator()->_bandwidthManager);
+    auto device = std::make_unique<UploadDevice>(fileName, _currentChunkOffset, _currentChunkSize);
     if (!device->open(QIODevice::ReadOnly)) {
         qCWarning(lcPropagateUploadNG) << "Could not prepare upload device: " << device->errorString();
         // Soft error because this is likely caused by the user modifying his files while syncing
@@ -440,7 +439,7 @@ void PropagateUploadFileNG::slotPutFinished()
         // the chunk sizes a bit.
         qint64 targetSize = propagator()->_chunkSize / 2 + predictedGoodSize / 2;
 
-        // Adjust the dynamic chunk size _chunkSize used for sizing of the item's chunks to be send
+        // Adjust the dynamic chunk size _chunkSize used for sizing of the item's chunks to be sent
         propagator()->_chunkSize = qBound(
             propagator()->syncOptions()._minChunkSize,
             targetSize,

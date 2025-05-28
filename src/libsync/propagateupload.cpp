@@ -227,8 +227,8 @@ void PropagateUploadFileCommon::slotComputeTransmissionChecksum(CheckSums::Algor
 
 void PropagateUploadFileCommon::slotStartUpload(CheckSums::Algorithm transmissionChecksumType, const QByteArray &transmissionChecksum)
 {
-    // Remove ourselfs from the list of active job, before any posible call to done()
-    // When we start chunks, we will add it again, once for every chunks.
+    // Remove ourselves from the list of active job, before any possible call to done()
+    // When we start chunks, we will add it again, once for every chunk.
     propagator()->_activeJobList.removeOne(this);
 
     _transmissionChecksumHeader = ChecksumHeader(transmissionChecksumType, transmissionChecksum).makeChecksumHeader();
@@ -263,28 +263,16 @@ void PropagateUploadFileCommon::slotStartUpload(CheckSums::Algorithm transmissio
     doStartUpload();
 }
 
-UploadDevice::UploadDevice(const QString &fileName, qint64 start, qint64 size, BandwidthManager *bwm)
+UploadDevice::UploadDevice(const QString &fileName, qint64 start, qint64 size)
     : _file(fileName)
     , _start(start)
     , _size(size)
     , _read(0)
-    , _bandwidthManager(bwm)
     , _bandwidthQuota(0)
     , _readWithProgress(0)
     , _bandwidthLimited(false)
     , _choked(false)
 {
-    if (_bandwidthManager) {
-        _bandwidthManager->registerUploadDevice(this);
-    }
-}
-
-
-UploadDevice::~UploadDevice()
-{
-    if (_bandwidthManager) {
-        _bandwidthManager->unregisterUploadDevice(this);
-    }
 }
 
 bool UploadDevice::open(QIODevice::OpenMode mode)
@@ -323,10 +311,6 @@ qint64 UploadDevice::writeData(const char *, qint64)
 qint64 UploadDevice::readData(char *data, qint64 maxlen)
 {
     if (_size - _read <= 0) {
-        // at end
-        if (_bandwidthManager) {
-            _bandwidthManager->unregisterUploadDevice(this);
-        }
         return -1;
     }
     maxlen = qMin(maxlen, _size - _read);
@@ -498,7 +482,7 @@ void PropagateUploadFileCommon::adjustLastJobTimeout(AbstractNetworkJob *job, qi
     }
 }
 
-// This function is used whenever there is an error occuring and jobs might be in progress
+// This function is used whenever there is an error occurring and jobs might be in progress
 void PropagateUploadFileCommon::abortWithError(SyncFileItem::Status status, const QString &error)
 {
     qCWarning(lcPropagateUpload) << Q_FUNC_INFO << _item->_file << error;
@@ -652,7 +636,7 @@ void PropagateUploadFileCommon::abortNetworkJobs(
 
         // Abort the job
         if (abortType == AbortType::Asynchronous) {
-            // Connect to finished signal of job reply to asynchonously finish the abort
+            // Connect to finished signal of job reply to asynchronously finish the abort
             connect(reply, &QNetworkReply::finished, this, oneAbortFinished);
         }
         job->abort();

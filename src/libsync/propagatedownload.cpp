@@ -190,18 +190,12 @@ void GETFileJob::start()
 
     sendRequest("GET", req);
 
-    qCDebug(lcGetJob) << _bandwidthManager << _bandwidthChoked << _bandwidthLimited;
-    if (_bandwidthManager) {
-        _bandwidthManager->registerDownloadJob(this);
-    }
+    qCDebug(lcGetJob) << _bandwidthChoked << _bandwidthLimited;
     AbstractNetworkJob::start();
 }
 
 void GETFileJob::finished()
 {
-    if (_bandwidthManager) {
-        _bandwidthManager->unregisterDownloadJob(this);
-    }
     if (reply()->bytesAvailable() && _httpOk) {
         // we were throttled, write out the remaining data
         slotReadyRead();
@@ -312,11 +306,6 @@ void GETFileJob::slotMetaDataChanged()
     connect(reply(), &QIODevice::readyRead, this, &GETFileJob::slotReadyRead);
 }
 
-void GETFileJob::setBandwidthManager(BandwidthManager *bwm)
-{
-    _bandwidthManager = bwm;
-}
-
 void GETFileJob::setChoked(bool c)
 {
     if (c != _bandwidthChoked) {
@@ -367,7 +356,7 @@ void GETFileJob::slotReadyRead()
         if (_bandwidthLimited) {
             toRead = std::min<qint64>(bufferSize, _bandwidthQuota);
             if (toRead == 0) {
-                qCWarning(lcGetJob) << "Out of badnwidth quota";
+                qCWarning(lcGetJob) << "Out of bandwidth quota";
                 break;
             }
             _bandwidthQuota -= toRead;
@@ -390,14 +379,6 @@ void GETFileJob::slotReadyRead()
             abort();
             return;
         }
-    }
-}
-
-
-GETFileJob::~GETFileJob()
-{
-    if (_bandwidthManager) {
-        _bandwidthManager->unregisterDownloadJob(this);
     }
 }
 
@@ -644,7 +625,6 @@ void PropagateDownloadFile::startFullDownload()
             {},
             &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
     }
-    _job->setBandwidthManager(propagator()->_bandwidthManager);
     _job->setExpectedContentLength(_item->_size - _resumeStart);
 
     connect(_job.data(), &GETFileJob::finishedSignal, this, &PropagateDownloadFile::slotGetFinished);
@@ -696,7 +676,7 @@ void PropagateDownloadFile::slotGetFinished()
             qCWarning(lcPropagateDownload) << "server replied 404, assuming file was deleted";
         }
 
-        // Don't keep the temporary file if it is empty or we
+        // Don't keep the temporary file if it is empty, or we
         // used a bad range header or the file's not on the server anymore.
         if (_tmpFile.exists() && (_tmpFile.size() == 0 || badRangeHeader || fileNotFound)) {
             _tmpFile.close();
@@ -976,7 +956,7 @@ void PropagateDownloadFile::downloadFinished()
     FileSystem::setFileHidden(fn, false);
 
     // Maybe we downloaded a newer version of the file than we thought we would...
-    // Get up to date information for the journal.
+    // Get up-to-date information for the journal.
     _item->_size = FileSystem::getSize(QFileInfo{fn});
 
     // Maybe what we downloaded was a conflict file? If so, set a conflict record.
