@@ -1,19 +1,9 @@
 PYTHON_LINT_PATHS:="./**/*.py"
 
 .PHONY: install
-install: pnpm-install pnpm-install-chromium pip-install
-
-.PHONY: pnpm-install
-pnpm-install:
-	cd webUI && pnpm install
-
-.PHONY: pnpm-install-chromium
-pnpm-install-chromium:
-	cd webUI && pnpm exec playwright install chromium
-
-.PHONY: pip-install
-pip-install:
+install: install
 	python3.10 -m pip install -r requirements.txt
+	playwright install chromium
 
 .PHONY: python-lint
 python-lint:
