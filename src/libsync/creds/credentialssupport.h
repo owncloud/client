@@ -6,6 +6,5 @@ namespace OCC {
 
 inline constexpr QNetworkRequest::Attribute DontAddCredentialsAttribute = QNetworkRequest::User;
 
-enum class AuthenticationType { Unknown = 0, OAuth, Basic };
-
+enum class AuthenticationType { Unknown = 0, OAuth };
 }

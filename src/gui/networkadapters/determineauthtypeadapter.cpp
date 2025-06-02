@@ -60,10 +60,11 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
         if (rawHeader.contains(QByteArrayLiteral("bearer "))) {
             res.type = AuthenticationType::OAuth;
         } else {
-            // todo: #18 - if not OAuth this should most likely be Unknown
-            res.type = AuthenticationType::Basic;
+            res.error = tr("Server does not support OAuth");
             if (rawHeader.isEmpty()) {
                 qCWarning(lcDetermineAuthTypeAdapter) << "Did not receive WWW-Authenticate reply to auth-test PROPFIND";
+            } else {
+                qCWarning(lcDetermineAuthTypeAdapter) << "Did not receive bearer in WWW-Authenticate reply to auth-test PROPFIND";
             }
         }
     } else if (reply->error() == QNetworkReply::NoError) {
