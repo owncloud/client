@@ -14,10 +14,11 @@
 
 #include "creds/oauth.h"
 
+#include "accessmanager.h"
 #include "account.h"
 #include "common/version.h"
 #include "credentialmanager.h"
-#include "creds/httpcredentials.h"
+#include "creds/credentialssupport.h"
 #include "networkjobs/checkserverjobfactory.h"
 #include "networkjobs/fetchuserinfojobfactory.h"
 #include "resources/template.h"
@@ -169,7 +170,7 @@ private:
             { QStringLiteral("token_endpoint_auth_method"), QStringLiteral("client_secret_basic") } });
         QNetworkRequest req;
         req.setUrl(_registrationEndpoint);
-        req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+        req.setAttribute(DontAddCredentialsAttribute, true);
         req.setTransferTimeout(defaultTimeoutMs());
         req.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/json"));
         auto reply = _networkAccessManager->post(req, QJsonDocument(json).toJson());
@@ -438,7 +439,7 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
         break;
     }
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded; charset=UTF-8"));
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(DontAddCredentialsAttribute, true);
 
     queryItems.addQueryItem(QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes())));
     req.setUrl(requestTokenUrl);
@@ -520,7 +521,7 @@ void OAuth::fetchWellKnown()
     qCDebug(lcOauth) << "fetching" << wellKnownPathC;
 
     QNetworkRequest req;
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(DontAddCredentialsAttribute, true);
     req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
     req.setTransferTimeout(defaultTimeoutMs());
 
@@ -585,9 +586,9 @@ bool isUrlValid(const QUrl &url)
     // we have already validated any URL via user input OR we take the url from the webfinger service,
     // but if this is in fact "needed" it should check more than just the scheme imo
 
-    // the following allowlist contains URL schemes accepted as valid
+    // the following allow list contains URL schemes accepted as valid
     // OAuth 2.0 URLs must be HTTPS to be in compliance with the specification
-    // for unit tests, we also permit the nonexisting oauthtest scheme
+    // for unit tests, we also permit the non existing oauthtest scheme
     const QStringList allowedSchemes({ QStringLiteral("https"), QStringLiteral("oauthtest") });
     return allowedSchemes.contains(url.scheme());
 }

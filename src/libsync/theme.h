@@ -157,7 +157,7 @@ public:
     /**
      * Characteristics: bool if more than one sync folder is allowed
      */
-    [[deprecated("oc10 only")]] virtual bool singleSyncFolder() const;
+    [[deprecated("Support for single sync folder is removed as of client 7.0")]] virtual bool singleSyncFolder() const;
 
     /**
      * When true, client works with multiple accounts.

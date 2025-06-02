@@ -17,7 +17,6 @@
 #include "account.h"
 #include "accountmodalwidget.h"
 #include "application.h"
-#include "common/asserts.h"
 #include "creds/qmlcredentials.h"
 #include "gui/accountsettings.h"
 #include "networkjobs.h"
@@ -35,7 +34,7 @@ Q_LOGGING_CATEGORY(lcHttpCredentialsGui, "sync.credentials.http.gui", QtInfoMsg)
 
 // with oauth the account builder actually passes the token in place of the password.
 HttpCredentialsGui::HttpCredentialsGui(const QString &davUser, const QString &password, const QString &refreshToken)
-    : HttpCredentials(DetermineAuthTypeJob::AuthType::OAuth, davUser, password)
+    : HttpCredentials(OCC::AuthenticationType::OAuth, davUser, password)
 {
     _refreshToken = refreshToken;
 }
@@ -49,21 +48,6 @@ void HttpCredentialsGui::askFromUser()
     QTimer::singleShot(0, this, [this] {
         if (isUsingOAuth()) {
             startOAuth();
-        } /*all of this should go once the authentication type is moved to the credentials */
-        else {
-            // todo: #18 or #19
-            // First, we will check what kind of auth we need.
-            auto job = new DetermineAuthTypeJob(_account->sharedFromThis(), this);
-            QObject::connect(job, &DetermineAuthTypeJob::authType, this, [this](DetermineAuthTypeJob::AuthType type) {
-                _authType = type;
-                if (type == DetermineAuthTypeJob::AuthType::OAuth) {
-                    startOAuth();
-                } else {
-                    qCWarning(lcHttpCredentialsGui) << "Bad http auth type:" << type;
-                    Q_EMIT fetched();
-                }
-            });
-            job->start();
         }
     });
 }

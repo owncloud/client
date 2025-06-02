@@ -16,7 +16,7 @@
 
 #include "abstractcorejob.h"
 #include "common/utility.h"
-#include "creds/httpcredentials.h"
+#include "creds/credentialssupport.h"
 #include "theme.h"
 
 #include <QEventLoop>
@@ -45,7 +45,7 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
     // we explicitly use a legacy dav path here
     QNetworkRequest req = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, Theme::instance()->webDavPath()));
 
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
     QEventLoop waitLoop;

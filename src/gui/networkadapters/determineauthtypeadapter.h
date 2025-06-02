@@ -14,15 +14,13 @@
 
 #pragma once
 
+#include "creds/credentialssupport.h"
 #include <QObject>
 #include <QUrl>
 
 class QNetworkAccessManager;
 
 namespace OCC {
-
-enum class AuthenticationType { Unknown = 0, OAuth, Basic };
-
 
 struct DetermineAuthTypeResult
 {

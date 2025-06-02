@@ -14,9 +14,10 @@
 
 #include "fetchuserinfojobfactory.h"
 #include "common/utility.h"
-#include "creds/httpcredentials.h"
+#include "creds/credentialssupport.h"
 
 #include <QApplication>
+#include <QJsonObject>
 #include <QJsonParseError>
 #include <QNetworkReply>
 #include <QStringLiteral>
@@ -54,7 +55,7 @@ CoreJob *FetchUserInfoJobFactory::startJob(const QUrl &url, QObject *parent)
     req.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
 
     // We just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(OCC::DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
     auto *job = new CoreJob(nam()->get(req), parent);

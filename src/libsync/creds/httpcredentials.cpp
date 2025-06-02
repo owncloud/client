@@ -81,7 +81,7 @@ protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request, QIODevice *outgoingData) override
     {
         QNetworkRequest req(request);
-        if (!req.attribute(HttpCredentials::DontAddCredentialsAttribute).toBool()) {
+        if (!req.attribute(DontAddCredentialsAttribute).toBool()) {
             if (_cred && !_cred->_password.isEmpty()) {
                 if (_cred->isUsingOAuth()) {
                     req.setRawHeader("Authorization", "Bearer " + _cred->_password.toUtf8());
@@ -100,7 +100,7 @@ private:
     QPointer<const HttpCredentials> _cred;
 };
 
-HttpCredentials::HttpCredentials(DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password)
+HttpCredentials::HttpCredentials(AuthenticationType authType, const QString &user, const QString &password)
     : _user(user)
     , _password(password)
     , _ready(true)
@@ -108,7 +108,7 @@ HttpCredentials::HttpCredentials(DetermineAuthTypeJob::AuthType authType, const 
 {
 }
 
-QString HttpCredentials::authType() const
+QString HttpCredentials::credentialsType() const
 {
     return QStringLiteral("http");
 }
@@ -126,7 +126,7 @@ void HttpCredentials::setAccount(Account *account)
     }
     const auto isOauth = account->credentialSetting(isOAuthC());
     if (isOauth.isValid()) {
-        _authType = isOauth.toBool() ? DetermineAuthTypeJob::AuthType::OAuth : DetermineAuthTypeJob::AuthType::Unknown;
+        _authType = isOauth.toBool() ? OCC::AuthenticationType::OAuth : OCC::AuthenticationType ::Unknown;
     }
 }
 

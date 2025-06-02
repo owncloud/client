@@ -17,8 +17,8 @@
 #define MIRALL_CREDS_HTTP_CREDENTIALS_H
 
 #include "creds/abstractcredentials.h"
+#include "creds/credentialssupport.h"
 #include "creds/oauth.h"
-#include "networkjobs.h"
 
 #include <QMap>
 #include <QSslCertificate>
@@ -49,11 +49,10 @@ class OWNCLOUDSYNC_EXPORT HttpCredentials : public AbstractCredentials
 
 public:
     /// Don't add credentials if this is set on a QNetworkRequest
-    static constexpr QNetworkRequest::Attribute DontAddCredentialsAttribute = QNetworkRequest::User;
 
-    explicit HttpCredentials(DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password);
+    explicit HttpCredentials(AuthenticationType authType, const QString &user, const QString &password);
 
-    QString authType() const override;
+    QString credentialsType() const override;
     AccessManager *createAccessManager() const override;
     bool ready() const override;
     void fetchFromKeychain() override;
@@ -73,7 +72,8 @@ public:
     void setAccount(Account *account) override;
 
     // Whether we are using OAuth
-    bool isUsingOAuth() const { return _authType == DetermineAuthTypeJob::AuthType::OAuth; }
+    bool isUsingOAuth() const { return _authType == AuthenticationType::OAuth; }
+
 protected:
     HttpCredentials() = default;
 
@@ -89,7 +89,7 @@ protected:
     bool _ready = false;
     QPointer<AccountBasedOAuth> _oAuthJob;
 
-    DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
+    AuthenticationType _authType = AuthenticationType::Unknown;
 
 private:
     bool refreshAccessTokenInternal(int tokenRefreshRetriesCount);

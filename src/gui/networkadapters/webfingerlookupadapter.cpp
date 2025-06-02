@@ -16,7 +16,7 @@
 
 #include "abstractcorejob.h"
 #include "common/utility.h"
-#include "creds/httpcredentials.h"
+#include "creds/credentialssupport.h"
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
@@ -58,7 +58,7 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
     req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
 
     // we just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
-    req.setAttribute(OCC::HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
     QEventLoop waitLoop;

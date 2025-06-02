@@ -298,11 +298,7 @@ QString Account::hostName() const
 QVariant Account::credentialSetting(const QString &key) const
 {
     if (_credentials) {
-        // Lisa todo: this prefix is confusing and I think misleading because it has nothing to do with
-        // other "authType" values - eg oauth, basic or unknown. instead it seems to be hard coded to "http"
-        // for anything that uses the HttpCredentials, which is everything (aside from tests) at the moment.
-        // ick.
-        QString prefix = _credentials->authType();
+        QString prefix = _credentials->credentialsType();
         QVariant value = _settingsMap.value(prefix + QLatin1Char('_') + key);
         if (value.isNull()) {
             value = _settingsMap.value(key);
@@ -315,7 +311,7 @@ QVariant Account::credentialSetting(const QString &key) const
 void Account::addCredentialSetting(const QString &key, const QVariant &value)
 {
     if (_credentials) {
-        QString prefix = _credentials->authType();
+        QString prefix = _credentials->credentialsType();
         _settingsMap.insert(prefix + QLatin1Char('_') + key, value);
     }
 }
