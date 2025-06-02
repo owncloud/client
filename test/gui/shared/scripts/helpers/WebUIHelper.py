@@ -1,6 +1,8 @@
-import os
-import subprocess
+import re
 import squish
+from playwright.sync_api import sync_playwright, expect
+
+envs = {}
 
 
 def get_clipboard_text():
@@ -13,25 +15,45 @@ def get_clipboard_text():
 
 
 def authorize_via_webui(username, password, login_type='oidc'):
-    script_path = os.path.dirname(os.path.realpath(__file__))
-
-    webui_path = os.path.join(script_path, '..', '..', '..', 'webUI')
-    os.chdir(webui_path)
-
+    global envs
     envs = {
         'OC_USERNAME': username.strip('"'),
         'OC_PASSWORD': password.strip('"'),
         'OC_AUTH_URL': get_clipboard_text(),
     }
-    proc = subprocess.run(
-        f'pnpm run {login_type}-login',
-        capture_output=True,
-        shell=True,
-        env={**os.environ, **envs},
-        check=False,
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        context = browser.new_context(ignore_https_errors=True)
+        page = context.new_page()
+        page.goto(envs['OC_AUTH_URL'])
+        if login_type == 'oidc':
+            oidc_login(page)
+        else:
+            oauth_login(page)
+        context.close()
+        browser.close()
+
+
+def oidc_login(page):
+    # login
+    page.fill('#oc-login-username', envs['OC_USERNAME'])
+    page.fill('#oc-login-password', envs['OC_PASSWORD'])
+    page.click('button[type=submit]')
+    # allow permissions
+    page.click('button >> text=Allow')
+    # confirm successful login
+    page.wait_for_selector('text=Login Successful')
+
+
+def oauth_login(page):
+    # login
+    page.fill('#user', envs['OC_USERNAME'])
+    page.fill('#password', envs['OC_PASSWORD'])
+    page.click('button[type=submit]')
+    # authorize
+    page.click('button >> text=Authorize')
+    # confirm successful login
+    expect(page.locator('span.error')).to_have_text(
+        re.compile('The application was authorized successfully')
     )
-    if proc.returncode:
-        if proc.stderr.decode('utf-8'):
-            raise OSError(proc.stderr.decode('utf-8'))
-        raise OSError(proc.stdout.decode('utf-8'))
-    os.chdir(script_path)
