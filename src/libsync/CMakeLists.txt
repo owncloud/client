@@ -7,8 +7,7 @@ set_package_properties(LibreGraphAPI PROPERTIES
 
 set(libsync_SRCS
     account.cpp
-    bandwidthmanager.cpp
-    capabilities.cpp
+        capabilities.cpp
     cookiejar.cpp
     discovery.cpp
     discoveryphase.cpp

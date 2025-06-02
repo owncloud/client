@@ -33,7 +33,6 @@
 #include <QLoggingCategory>
 #include <QSslSocket>
 #include <QStringList>
-#include <QTextStream>
 #include <QTime>
 #include <QUrl>
 
@@ -243,7 +242,7 @@ void SyncEngine::conflictRecordMaintenance()
     // If so, add them now.
     //
     // This happens when the conflicts table is new or when conflict files
-    // are downlaoded but the server doesn't send conflict headers.
+    // are downloaded but the server doesn't send conflict headers.
     for (const auto &path : std::as_const(_seenConflictFiles)) {
         OC_ASSERT(Utility::isConflictFile(path));
 
@@ -403,7 +402,7 @@ void SyncEngine::startSync()
     Q_EMIT transmissionProgress(*_progressInfo);
 
     // TODO: add a constructor to DiscoveryPhase
-    // pass a syncEngine object rather than copying everyhting to another object
+    // pass a syncEngine object rather than copying everything to another object
     _discoveryPhase.reset(new DiscoveryPhase(_account, syncOptions(), _baseUrl));
     _discoveryPhase->_excludes = _excludedFiles.get();
     _discoveryPhase->_statedb = _journal;
@@ -447,7 +446,7 @@ void SyncEngine::startSync()
 
 void SyncEngine::slotFolderDiscovered(bool local, const QString &folder)
 {
-    // Don't wanna overload the UI
+    // Don't want to overload the UI
     if (!_lastUpdateProgressCallbackCall.isValid()) {
         _lastUpdateProgressCallbackCall.start(); // first call
     } else if (_lastUpdateProgressCallbackCall.elapsed() < 200) {
@@ -613,14 +612,6 @@ void SyncEngine::setNetworkLimits(int upload, int download)
     if (_propagator) {
         if (upload != 0 || download != 0) {
             qCInfo(lcEngine) << "Network Limits (down/up) " << upload << download;
-            if (!_propagator->_bandwidthManager) {
-                _propagator->_bandwidthManager = new BandwidthManager(_propagator.data());
-            }
-        }
-        // this might set the limit to 0 but only the next sync will have no bandwidth manager set
-        if (_propagator->_bandwidthManager) {
-            _propagator->_bandwidthManager->setCurrentDownloadLimit(download);
-            _propagator->_bandwidthManager->setCurrentUploadLimit(upload);
         }
     }
 }

@@ -29,8 +29,6 @@ Q_DECLARE_LOGGING_CATEGORY(lcPropagateUpload)
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadV1)
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadNG)
 
-class BandwidthManager;
-
 /**
  * @brief The UploadDevice class
  * @ingroup libsync
@@ -39,8 +37,7 @@ class UploadDevice : public QIODevice
 {
     Q_OBJECT
 public:
-    UploadDevice(const QString &fileName, qint64 start, qint64 size, BandwidthManager *bwm);
-    ~UploadDevice() override;
+    UploadDevice(const QString &fileName, qint64 start, qint64 size);
 
     bool open(QIODevice::OpenMode mode) override;
     void close() override;
@@ -52,12 +49,6 @@ public:
     qint64 bytesAvailable() const override;
     bool isSequential() const override;
     bool seek(qint64 pos) override;
-
-    void setBandwidthLimited(bool);
-    bool isBandwidthLimited() { return _bandwidthLimited; }
-    void setChoked(bool);
-    bool isChoked() { return _choked; }
-    void giveBandwidthQuota(qint64 bwq);
 
 Q_SIGNALS:
 
@@ -71,16 +62,6 @@ private:
     qint64 _size = 0;
     /// Position between _start and _start+_size
     qint64 _read = 0;
-
-    // Bandwidth manager related
-    QPointer<BandwidthManager> _bandwidthManager;
-    qint64 _bandwidthQuota;
-    qint64 _readWithProgress;
-    bool _bandwidthLimited; // if _bandwidthQuota will be used
-    bool _choked; // if upload is paused (readData() will return 0)
-    friend class BandwidthManager;
-public Q_SLOTS:
-    void slotJobUploadProgress(qint64 sent, qint64 t);
 };
 
 /**
@@ -207,7 +188,7 @@ public:
 
     /***
      * Add job to the list of children
-     * The job is automatically removed from the children once its done.
+     * The job is automatically removed from the children once it's done.
      * It is important that this function is called before any connects.
      */
     void addChildJob(AbstractNetworkJob *job);
@@ -264,7 +245,7 @@ private:
 /**
  * @ingroup libsync
  *
- * Propagation job, impementing the old chunking agorithm
+ * Propagation job, implementing the old chunking algorithm
  *
  */
 class PropagateUploadFileV1 : public PropagateUploadFileCommon
@@ -288,8 +269,8 @@ private:
     uint _transferId = 0; /// transfer id (part of the url)
 
     qint64 chunkSize() const {
-        // Old chunking does not use dynamic chunking algorithm, and does not adjusts the chunk size respectively,
-        // thus this value should be used as the one classifing item to be chunked
+        // Old chunking does not use dynamic chunking algorithm, and does not adjust the chunk size respectively,
+        // thus this value should be used as the one classifying item to be chunked
         return propagator()->syncOptions()._initialChunkSize;
     }
 
@@ -311,7 +292,7 @@ private Q_SLOTS:
 /**
  * @ingroup libsync
  *
- * Propagation job, impementing the new chunking agorithm
+ * Propagation job, implementing the new chunking algorithm
  *
  */
 class PropagateUploadFileNG : public PropagateUploadFileCommon
@@ -368,7 +349,7 @@ private:
      * Finds the range starting at 'start' in _rangesToUpload and removes the first
      * 'size' bytes from it. If it becomes empty, remove the range.
      *
-     * Retuns false if no matching range was found.
+     * Returns false if no matching range was found.
      */
     bool markRangeAsDone(qint64 start, qint64 size);
 
