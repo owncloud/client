@@ -50,7 +50,6 @@
 #include <QDir>
 #include <QSettings>
 
-#include <QApplication>
 #include <QMessageBox>
 
 using namespace std::chrono_literals;
@@ -222,9 +221,9 @@ bool Folder::checkLocalPath()
 
     QString error;
     if (fi.isDir() && fi.isReadable() && fi.isWritable()) {
-        auto pathLenghtCheck = checkPathLength(_canonicalLocalPath);
-        if (!pathLenghtCheck) {
-            error = pathLenghtCheck.error();
+        auto pathLengthCheck = checkPathLength(_canonicalLocalPath);
+        if (!pathLengthCheck) {
+            error = pathLengthCheck.error();
         }
 
         if (error.isEmpty()) {
@@ -541,15 +540,15 @@ void Folder::startVfs()
         connect(_vfs.get(), &Vfs::needSync, this, [this] {
             if (canSync()) {
                 // the vfs plugin detected that its metadata is out of sync and requests a new sync
-                // the request has a hight priority as it is probably issued after a user request
+                // the request has a height priority as it is probably issued after a user request
                 FolderMan::instance()->scheduler()->enqueueFolder(this, SyncScheduler::Priority::High);
             }
         });
         _vfsIsReady = true;
         // Refactoring todo: NO. Just no.
         Q_EMIT FolderMan::instance()->folderListChanged();
-        // we are setup, schedule ourselves if we can
-        // if not the scheduler will take care of it later.
+        // We are set up, schedule ourselves if we can.
+        // If not the scheduler will take care of it later.
         if (canSync()) {
             // Refactoring todo: also no. We need a general cleanup task to eval and fix all of these crossed triggers
             // the only element that should emit FolderMan signals is FolderMan! same for any/all other classes
@@ -602,7 +601,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
             journalDb()->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
 
             {
-                // horrible hack to compensate that we don't handle folder deletes on a per file basis
+                // horrible hack to compensate that we don't handle folder deletes on a per-file basis
                 qsizetype index = 0;
                 QString p = relativePath;
                 while ((index = p.lastIndexOf(QLatin1Char('/'))) != -1) {
@@ -759,7 +758,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
         connect(_vfs.get(), &Vfs::started, this, [oldBlacklist, this] {
             for (const auto &entry : oldBlacklist) {
                 journalDb()->schedulePathForRemoteDiscovery(entry);
-                // Refactoring todo: from what I can see, in 98% of cases the return val of setPinState is ingored
+                // Refactoring todo: from what I can see, in 98% of cases the return val of setPinState is ignored
                 // do we actually need that return value?! if so why aren't we using it?
                 std::ignore = vfs().setPinState(entry, PinState::OnlineOnly);
             }
@@ -855,7 +854,7 @@ void Folder::wipeForRemoval()
 
 bool Folder::reloadExcludes()
 {
-    // reloadExludes returns true *if the excludes were successfully reloaded*.
+    // reloadExcludes returns true *if the excludes were successfully reloaded*.
     // If the engine is missing the excludes
     // can't be reloaded so return here should be false? Erik agrees - caller never checks the value anyway
     if (!_engine) {
@@ -905,7 +904,7 @@ void Folder::startSync()
     setDirtyNetworkLimits();
 
     // get the latest touched files
-    // this will enque this folder again, it doesn't matter
+    // this will enqueue this folder again, it doesn't matter
     slotWatchedPathsChanged(_folderWatcher->popChangeSet(), Folder::ChangeReason::Other);
 
     const std::chrono::milliseconds fullLocalDiscoveryInterval = ConfigFile().fullLocalDiscoveryInterval();
@@ -931,7 +930,7 @@ void Folder::startSync()
     // propose: remove the param from the def, and when Folder:setIgnoreHiddenFiles is called it updates the
     // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
     // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead
-    // of saving this val for every folder in the config is just silly when it's defacto a global setting.
+    // of saving this val for every folder in the config is just silly when it's de-facto a global setting.
     // Erik has no objections
     // generally when we change settings we pause syncs, update whatever values,
     // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode
@@ -1069,7 +1068,7 @@ void Folder::slotSyncFinished(bool success)
     }
 }
 
-// a item is completed: count the errors and forward to the ProgressDispatcher
+// an item is completed: count the errors and forward to the ProgressDispatcher
 void Folder::slotItemCompleted(const SyncFileItemPtr &item)
 {
     if (item->_status == SyncFileItem::Success && (item->instruction() & (CSYNC_INSTRUCTION_NONE | CSYNC_INSTRUCTION_UPDATE_METADATA))) {
@@ -1239,9 +1238,6 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     QString vfsModeString = settings.value(QStringLiteral("virtualFilesMode")).toString();
     if (!vfsModeString.isEmpty()) {
         def._virtualFilesMode = Vfs::modeFromString(vfsModeString);
-    } else if (settings.value(QStringLiteral("usePlaceholders")).toBool()) {
-        def._virtualFilesMode = Vfs::WithSuffix;
-        def._upgradeVfsMode = true; // maybe winvfs is available?
     }
 
     return def;
@@ -1286,7 +1282,7 @@ bool Folder::groupInSidebar() const
     if (_accountState->account()->hasDefaultSyncRoot()) {
         // QFileInfo is horrible and "/foo/" is treated different to "/foo"
         const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
-        // If parentDir == home, we would add a the home dir to the side bar.
+        // If parentDir == home, we would add the home dir to the sidebar.
         return QFileInfo(parentDir) != QFileInfo(QDir::homePath()) && FileSystem::isChildPathOf(parentDir, _accountState->account()->defaultSyncRoot());
     }
     return false;

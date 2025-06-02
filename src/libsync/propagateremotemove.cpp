@@ -70,61 +70,8 @@ void PropagateRemoteMove::start()
     QString remoteSource = propagator()->fullRemotePath(origin);
     QString remoteDestination = QDir::cleanPath(propagator()->webDavUrl().path() + propagator()->fullRemotePath(_item->_renameTarget));
 
-    auto &vfs = propagator()->syncOptions()._vfs;
-    auto itype = _item->_type;
-    OC_ASSERT(itype != ItemTypeVirtualFileDownload && itype != ItemTypeVirtualFileDehydration);
-    if (vfs->mode() == Vfs::WithSuffix && itype != ItemTypeDirectory) {
-        const auto suffix = vfs->fileSuffix();
-        bool sourceHadSuffix = remoteSource.endsWith(suffix);
-        bool destinationHadSuffix = remoteDestination.endsWith(suffix);
-
-        // Remote source and destination definitely shouldn't have the suffix
-        if (sourceHadSuffix)
-            remoteSource.chop(suffix.size());
-        if (destinationHadSuffix)
-            remoteDestination.chop(suffix.size());
-
-        QString folderTarget = _item->_renameTarget;
-
-        // Users can rename the file *and at the same time* add or remove the vfs
-        // suffix. That's a complicated case where a remote rename plus a local hydration
-        // change is requested. We don't currently deal with that. Instead, the rename
-        // is propagated and the local vfs suffix change is reverted.
-        // The discovery would still set up _renameTarget without the changed
-        // suffix, since that's what must be propagated to the remote but the local
-        // file may have a different name. folderTargetAlt will contain this potential
-        // name.
-        QString folderTargetAlt = folderTarget;
-        if (itype == ItemTypeFile) {
-            OC_ASSERT(!sourceHadSuffix && !destinationHadSuffix);
-
-            // If foo -> bar.owncloud, the rename target will be "bar"
-            folderTargetAlt = folderTarget + suffix;
-
-        } else if (itype == ItemTypeVirtualFile) {
-            OC_ASSERT(sourceHadSuffix && destinationHadSuffix);
-
-            // If foo.owncloud -> bar, the rename target will be "bar.owncloud"
-            folderTargetAlt.chop(suffix.size());
-        }
-
-        QString localTarget = propagator()->fullLocalPath(folderTarget);
-        QString localTargetAlt = propagator()->fullLocalPath(folderTargetAlt);
-
-        // If the expected target doesn't exist but a file with different hydration
-        // state does, rename the local file to bring it in line with what the discovery
-        // has set up.
-        if (!FileSystem::fileExists(localTarget) && FileSystem::fileExists(localTargetAlt)) {
-            QString error;
-            if (!FileSystem::uncheckedRenameReplace(localTargetAlt, localTarget, &error)) {
-                done(SyncFileItem::NormalError, tr("Could not rename %1 to %2, error: %3")
-                     .arg(folderTargetAlt, folderTarget, error));
-                return;
-            }
-            qCInfo(lcPropagateRemoteMove) << "Suffix vfs required local rename of"
-                                          << folderTargetAlt << "to" << folderTarget;
-        }
-    }
+    auto itemType = _item->_type;
+    OC_ASSERT(itemType != ItemTypeVirtualFileDownload && itemType != ItemTypeVirtualFileDehydration);
     _job = new MoveJob(propagator()->account(), propagator()->webDavUrl(), remoteSource, remoteDestination, {}, this);
     connect(_job.data(), &MoveJob::finishedSignal, this, &PropagateRemoteMove::slotMoveJobFinished);
     propagator()->_activeJobList.append(this);

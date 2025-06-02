@@ -1,1 +1,0 @@
-add_vfs_plugin(NAME suffix SRC vfs_suffix.cpp)

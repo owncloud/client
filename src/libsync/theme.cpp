@@ -104,11 +104,6 @@ QString Theme::appName() const
     return QStringLiteral(APPLICATION_SHORTNAME);
 }
 
-QString Theme::appDotVirtualFileSuffix() const
-{
-    return QStringLiteral(APPLICATION_DOTVIRTUALFILE_SUFFIX);
-}
-
 QString Theme::orgDomainName() const
 {
     return QStringLiteral(APPLICATION_REV_DOMAIN);
@@ -322,7 +317,7 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
 QString Theme::about() const
 {
     // Ideally, the vendor should be "ownCloud GmbH", but it cannot be changed without
-    // changing the location of the settings and other registery keys.
+    // changing the location of the settings and other registry keys.
     const QString vendor = Resources::isVanillaTheme() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.com/c/desktop-client\">https://central.owncloud.com</a></p>"

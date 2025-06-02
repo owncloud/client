@@ -67,7 +67,7 @@
 
 namespace {
 
-const QString unregisterpathMessageC()
+const QString unregisterPathMessageC()
 {
     return QStringLiteral("UNREGISTER_PATH");
 }
@@ -173,7 +173,7 @@ SocketApi::~SocketApi()
 
 void SocketApi::startShellIntegration()
 {
-    // Start listeneing:
+    // Start listening:
     if (_localServer.listen(_socketPath)) {
         qCInfo(lcSocketApi) << "server started, listening at " << _socketPath;
     } else {
@@ -331,7 +331,7 @@ void SocketApi::unregisterAccount(const AccountPtr &a)
     }
 
     if (a->hasDefaultSyncRoot()) {
-        broadcastMessage(buildMessage(unregisterpathMessageC(), Utility::stripTrailingSlash(a->defaultSyncRoot())));
+        broadcastMessage(buildMessage(unregisterPathMessageC(), Utility::stripTrailingSlash(a->defaultSyncRoot())));
     }
     _registeredAccounts.remove(a);
 }
@@ -351,7 +351,7 @@ void SocketApi::slotUnregisterPath(Folder *folder)
     if (!_registeredFolders.contains(folder))
         return;
 
-    broadcastMessage(buildMessage(unregisterpathMessageC(), Utility::stripTrailingSlash(folder->path()), QString()), true);
+    broadcastMessage(buildMessage(unregisterPathMessageC(), Utility::stripTrailingSlash(folder->path()), QString()), true);
     _registeredFolders.remove(folder);
 }
 
@@ -469,7 +469,7 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
         statusString = SyncFileStatus(SyncFileStatus::StatusNone).toSocketAPIString();
     } else {
         // The user probably visited this directory in the file shell.
-        // Let the listener know that it should now send status pushes for sibblings of this file.
+        // Let the listener know that it should now send status pushes for siblings of this file.
         QString directory = fileData.localPath.left(fileData.localPath.lastIndexOf(QLatin1Char('/')));
         listener->registerMonitoredDirectory(qHash(directory));
 
@@ -888,7 +888,7 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
         // Do we have public links?
         bool publicLinksEnabled = theme->linkSharing() && capabilities.sharePublicLink();
 
-        // Is is possible to create a public link without user choices?
+        // It is possible to create a public link without user choices?
         bool canCreateDefaultPublicLink = publicLinksEnabled
             && !capabilities.sharePublicLinkEnforcePasswordForReadOnly();
 
@@ -922,17 +922,11 @@ SocketApi::FileData SocketApi::FileData::get(const QString &localFile)
         return data;
 
     data.serverRelativePath = QDir(data.folder->remotePath()).filePath(data.folderRelativePath);
-    if (data.folder->isReady()) {
-        data.serverRelativePath = data.folder->vfs().underlyingFileName(data.serverRelativePath);
-    }
     return data;
 }
 
 QString SocketApi::FileData::folderRelativePathNoVfsSuffix() const
 {
-    if (folder->isReady()) {
-        return folder->vfs().underlyingFileName(folderRelativePath);
-    }
     return folderRelativePath;
 }
 

@@ -17,7 +17,6 @@
 #include <QObject>
 #include "discoveryphase.h"
 #include "syncfileitem.h"
-#include "common/asserts.h"
 #include "common/syncjournaldb.h"
 
 class ExcludedFiles;
@@ -33,11 +32,11 @@ class SyncJournalDb;
  *  - Stat all the entries in the local file system for this directory
  *  - Merge all information (and the information from the database) in order to know what needs
  *    to be done for every file within this directory.
- *  - For every sub-directory within this directory, "recursively" create a new ProcessDirectoryJob.
+ *  - For every subdirectory within this directory, "recursively" create a new ProcessDirectoryJob.
  *
  * This job is tightly coupled with the DiscoveryPhase class.
  *
- * After being start()'ed this job will perform work asynchronously and Q_EMIT finished() when done.
+ * After being started this job will perform work asynchronously and Q_EMIT finished() when done.
  *
  * Internally, this job will call DiscoveryPhase::scheduleMoreJobs when one of its sub-jobs is
  * finished. DiscoveryPhase::scheduleMoreJobs will call processSubJobs() to continue work until
@@ -70,7 +69,7 @@ public:
         computePinState(basePinState);
     }
 
-    /// For creating subjobs
+    /// For creating sub-jobs
     explicit ProcessDirectoryJob(const PathTuple &path, const SyncFileItemPtr &dirItem,
         QueryMode queryLocal, QueryMode queryServer,
         ProcessDirectoryJob *parent)
@@ -193,13 +192,6 @@ private:
     /** An DB operation failed */
     void dbError();
 
-    void addVirtualFileSuffix(QString &str) const;
-    bool hasVirtualFileSuffix(const QString &str) const;
-    Q_REQUIRED_RESULT QString chopVirtualFileSuffix(const QString &str) const;
-
-    /** Convenience to detect suffix-vfs modes */
-    bool isVfsWithSuffix() const;
-
     /** Start a remote discovery network job
      *
      * It fills _serverNormalQueryEntries and sets _serverQueryDone when done.
@@ -220,18 +212,6 @@ private:
      */
     void computePinState(PinState parentState);
 
-    /** Adjust record._type if the db pin state suggests it.
-     *
-     * If the pin state is stored in the database (suffix vfs only right now)
-     * its effects won't be seen in localEntry._type. Instead the effects
-     * should materialize in dbEntry._type.
-     *
-     * This function checks whether the combination of file type and pin
-     * state suggests a hydration or dehydration action and changes the
-     * _type field accordingly.
-     */
-    void setupDbPinStateActions(SyncJournalFileRecord &record);
-
     QueryMode _queryServer = QueryMode::NormalQuery;
     QueryMode _queryLocal = QueryMode::NormalQuery;
 
@@ -240,7 +220,7 @@ private:
     QVector<LocalInfo> _localNormalQueryEntries;
 
     // Whether the local/remote directory item queries are done. Will be set
-    // even even for do-nothing (!= NormalQuery) queries.
+    // even for do-nothing (!= NormalQuery) queries.
     bool _serverQueryDone = false;
     bool _localQueryDone = false;
 
@@ -261,7 +241,7 @@ private:
 
     /** The queued and running jobs for subdirectories.
      *
-     * The jobs are enqueued while processind directory entries and
+     * The jobs are enqueued while processing directory entries and
      * then gradually run via calls to processSubJobs().
      */
     std::deque<ProcessDirectoryJob *> _queuedJobs;

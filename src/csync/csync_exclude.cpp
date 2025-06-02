@@ -120,7 +120,7 @@ OCSYNC_EXPORT bool csync_is_windows_reserved_word(QStringView filename)
         if (static_cast<size_t>(word.size()) > len_filename) {
             break;
         }
-        // until windows 11, not only the device names where illegal file names
+        // until Windows 11, not only the device names where illegal file names
         // also COM9.png was illegal
         if ((static_cast<size_t>(word.size()) == len_filename || filename.at(word.size()) == QLatin1Char('.')) && filename.startsWith(word, Qt::CaseInsensitive)) {
             return true;
@@ -163,10 +163,6 @@ static CSYNC_EXCLUDE_TYPE _csync_excluded_common(QStringView path, bool excludeC
         if (bname.startsWith(QLatin1String(".owncloudsync.log"), Qt::CaseInsensitive)) { // ".owncloudsync.log*"
             return CSYNC_FILE_SILENTLY_EXCLUDED;
         }
-    }
-
-    if (bname.endsWith(QLatin1String(APPLICATION_DOTVIRTUALFILE_SUFFIX), Qt::CaseInsensitive)) { // ".owncloud" placeholder
-        return CSYNC_FILE_EXCLUDE_RESERVED;
     }
 
     // check the strlen and ignore the file if its name is longer than 254 chars.
@@ -399,9 +395,9 @@ CSYNC_EXCLUDE_TYPE ExcludedFiles::traversalPatternMatch(QStringView path, ItemTy
 
     QRegularExpressionMatch m;
     if (filetype == ItemTypeDirectory) {
-        m = _bnameTraversalRegexDir.match(bnameStr);
+        m = _bnameTraversalRegexDir.matchView(bnameStr);
     } else {
-        m = _bnameTraversalRegexFile.match(bnameStr);
+        m = _bnameTraversalRegexFile.matchView(bnameStr);
     }
     if (!m.hasMatch())
         return CSYNC_NOT_EXCLUDED;
@@ -415,9 +411,9 @@ CSYNC_EXCLUDE_TYPE ExcludedFiles::traversalPatternMatch(QStringView path, ItemTy
     QStringView pathStr = path;
 
     if (filetype == ItemTypeDirectory) {
-        m = _fullTraversalRegexDir.match(pathStr);
+        m = _fullTraversalRegexDir.matchView(pathStr);
     } else {
-        m = _fullTraversalRegexFile.match(pathStr);
+        m = _fullTraversalRegexFile.matchView(pathStr);
     }
     if (m.hasMatch()) {
         if (m.capturedStart(QStringLiteral("exclude")) != -1) {
@@ -439,9 +435,9 @@ CSYNC_EXCLUDE_TYPE ExcludedFiles::fullPatternMatch(QStringView p, ItemType filet
 
     QRegularExpressionMatch m;
     if (filetype == ItemTypeDirectory) {
-        m = _fullRegexDir.match(p);
+        m = _fullRegexDir.matchView(p);
     } else {
-        m = _fullRegexFile.match(p);
+        m = _fullRegexFile.matchView(p);
     }
     if (m.hasMatch()) {
         if (m.capturedStart(QStringLiteral("exclude")) != -1) {

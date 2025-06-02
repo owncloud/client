@@ -24,7 +24,6 @@ owncloud_add_test(ExcludedFiles)
 owncloud_add_test(Utility)
 
 owncloud_add_test(SyncEngine)
-owncloud_add_test(SyncVirtualFiles)
 owncloud_add_test(SyncMove)
 add_dependencies(SyncMoveTest test_helper)
 owncloud_add_test(SyncDelete)
