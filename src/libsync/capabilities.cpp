@@ -163,31 +163,6 @@ CheckSums::Algorithm Capabilities::uploadChecksumType() const
     return CheckSums::Algorithm::PARSE_ERROR;
 }
 
-bool Capabilities::chunkingNg() const
-{
-    if (!bigfilechunkingEnabled())
-    {
-        return false;
-    }
-    static const auto chunkng = qgetenv("OWNCLOUD_CHUNKING_NG");
-    if (chunkng == "0")
-        return false;
-    if (chunkng == "1")
-        return true;
-    return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunking")).toFloat() >= 1.0;
-}
-
-bool Capabilities::bigfilechunkingEnabled() const
-{
-    bool ok;
-    const int chunkSize = qEnvironmentVariableIntValue("OWNCLOUD_CHUNK_SIZE", &ok);
-    if (ok && chunkSize == 0)
-    {
-        return false;
-    }
-    return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("bigfilechunking"), true).toBool();
-}
-
 const Status &Capabilities::status() const
 {
     return _status;
@@ -201,11 +176,6 @@ const TusSupport &Capabilities::tusSupport() const
 const SpaceSupport &Capabilities::spacesSupport() const
 {
     return _spaces;
-}
-
-bool Capabilities::chunkingParallelUploadDisabled() const
-{
-    return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunkingParallelUploadDisabled")).toBool();
 }
 
 bool Capabilities::privateLinkPropertyAvailable() const
