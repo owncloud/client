@@ -30,31 +30,9 @@ SyncOptions::~SyncOptions()
 
 void SyncOptions::fillFromEnvironmentVariables()
 {
-    QByteArray chunkSizeEnv = qgetenv("OWNCLOUD_CHUNK_SIZE");
-    if (!chunkSizeEnv.isEmpty())
-        _initialChunkSize = chunkSizeEnv.toUInt();
-
-    QByteArray minChunkSizeEnv = qgetenv("OWNCLOUD_MIN_CHUNK_SIZE");
-    if (!minChunkSizeEnv.isEmpty())
-        _minChunkSize = minChunkSizeEnv.toUInt();
-
-    QByteArray maxChunkSizeEnv = qgetenv("OWNCLOUD_MAX_CHUNK_SIZE");
-    if (!maxChunkSizeEnv.isEmpty())
-        _maxChunkSize = maxChunkSizeEnv.toUInt();
-
-    QByteArray targetChunkUploadDurationEnv = qgetenv("OWNCLOUD_TARGET_CHUNK_UPLOAD_DURATION");
-    if (!targetChunkUploadDurationEnv.isEmpty())
-        _targetChunkUploadDuration = std::chrono::milliseconds(targetChunkUploadDurationEnv.toUInt());
-
     int maxParallel = qEnvironmentVariableIntValue("OWNCLOUD_MAX_PARALLEL");
     if (maxParallel > 0)
         _parallelNetworkJobs = maxParallel;
-}
-
-void SyncOptions::verifyChunkSizes()
-{
-    _minChunkSize = qMin(_minChunkSize, _initialChunkSize);
-    _maxChunkSize = qMax(_maxChunkSize, _initialChunkSize);
 }
 
 QRegularExpression SyncOptions::fileRegex() const

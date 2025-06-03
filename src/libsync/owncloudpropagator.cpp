@@ -344,26 +344,21 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
                 return job;
             }
         } //fall through
-    case CSYNC_INSTRUCTION_SYNC:
+    case CSYNC_INSTRUCTION_SYNC: {
         if (item->_direction != SyncFileItem::Up) {
             auto job = new PropagateDownloadFile(this, item);
             job->setDeleteExistingFolder(deleteExisting);
             return job;
-        } else {
-            PropagateUploadFileCommon *job = nullptr;
-            if (account()->capabilities().tusSupport().isValid()) {
-                job = new PropagateUploadFileTUS(this, item);
-            } else {
-                if (item->_size > syncOptions()._initialChunkSize && account()->capabilities().chunkingNg()) {
-                    // Item is above _initialChunkSize, thus will be classified as to be chunked
-                    job = new PropagateUploadFileNG(this, item);
-                } else {
-                    job = new PropagateUploadFileV1(this, item);
-                }
-            }
-            job->setDeleteExisting(deleteExisting);
-            return job;
         }
+        PropagateUploadFileCommon *job = nullptr;
+        if (account()->capabilities().tusSupport().isValid()) {
+            job = new PropagateUploadFileTUS(this, item);
+        } else {
+            job = new PropagateUploadFile(this, item);
+        }
+        job->setDeleteExisting(deleteExisting);
+        return job;
+    }
     case CSYNC_INSTRUCTION_RENAME:
         if (item->_direction == SyncFileItem::Up) {
             return new PropagateRemoteMove(this, item);
