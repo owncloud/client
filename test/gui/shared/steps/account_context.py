@@ -29,6 +29,8 @@ def step(context):
 
 @Then('the account with displayname "|any|" and host "|any|" should be displayed')
 def step(context, displayname, _):
+    if get_config('predefined_users'):
+        displayname = get_displayname_for_user(displayname.split()[0].strip())
     displayname = substitute_inline_codes(displayname)
     Toolbar.account_exists(displayname)
 
