@@ -540,7 +540,7 @@ void Folder::startVfs()
         connect(_vfs.get(), &Vfs::needSync, this, [this] {
             if (canSync()) {
                 // the vfs plugin detected that its metadata is out of sync and requests a new sync
-                // the request has a height priority as it is probably issued after a user request
+                // the request has a high priority as it is probably issued after a user request
                 FolderMan::instance()->scheduler()->enqueueFolder(this, SyncScheduler::Priority::High);
             }
         });
@@ -930,7 +930,7 @@ void Folder::startSync()
     // propose: remove the param from the def, and when Folder:setIgnoreHiddenFiles is called it updates the
     // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
     // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead
-    // of saving this val for every folder in the config is just silly when it's de-facto a global setting.
+    // of saving this val for every folder in the config is just silly when it's de facto a global setting.
     // Erik has no objections
     // generally when we change settings we pause syncs, update whatever values,
     // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode

@@ -228,8 +228,6 @@ Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
 {
     if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
         return Vfs::WindowsCfApi;
-    } else if (isVfsPluginAvailable(Vfs::Off)) {
-        return Vfs::Off;
     }
 
     return Vfs::Off;

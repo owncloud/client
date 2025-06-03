@@ -397,7 +397,7 @@ int main(int argc, char **argv)
         // load the resources
         const OCC::ResourcesLoader resource;
 
-        // Create a `Platform` instance so it can set up/teared down stuff for us, and do any
+        // Create a `Platform` instance so it can set up/tear down stuff for us, and do any
         // initialisation that needs to be done before creating a QApplication
         const auto platform = Platform::create();
 

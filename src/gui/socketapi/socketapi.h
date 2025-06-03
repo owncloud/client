@@ -86,9 +86,6 @@ private:
         SyncJournalFileRecord journalRecord() const;
         FileData parentFolder() const;
 
-        // Relative path of the file locally, without any vfs suffix
-        QString folderRelativePathNoVfsSuffix() const;
-
         Folder *folder = nullptr;
         // Absolute path of the file locally. (May be a virtual file)
         QString localPath;

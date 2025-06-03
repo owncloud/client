@@ -393,17 +393,17 @@ CSYNC_EXCLUDE_TYPE ExcludedFiles::traversalPatternMatch(QStringView path, ItemTy
         bnameStr = path.mid(lastSlash + 1);
     }
 
-    QRegularExpressionMatch m;
+    QRegularExpressionMatch regularExpressionMatch;
     if (filetype == ItemTypeDirectory) {
-        m = _bnameTraversalRegexDir.matchView(bnameStr);
+        regularExpressionMatch = _bnameTraversalRegexDir.matchView(bnameStr);
     } else {
-        m = _bnameTraversalRegexFile.matchView(bnameStr);
+        regularExpressionMatch = _bnameTraversalRegexFile.matchView(bnameStr);
     }
-    if (!m.hasMatch())
+    if (!regularExpressionMatch.hasMatch())
         return CSYNC_NOT_EXCLUDED;
-    if (m.capturedStart(QStringLiteral("exclude")) != -1) {
+    if (regularExpressionMatch.capturedStart(QStringLiteral("exclude")) != -1) {
         return CSYNC_FILE_EXCLUDE_LIST;
-    } else if (m.capturedStart(QStringLiteral("excluderemove")) != -1) {
+    } else if (regularExpressionMatch.capturedStart(QStringLiteral("excluderemove")) != -1) {
         return CSYNC_FILE_EXCLUDE_AND_REMOVE;
     }
 
@@ -411,14 +411,15 @@ CSYNC_EXCLUDE_TYPE ExcludedFiles::traversalPatternMatch(QStringView path, ItemTy
     QStringView pathStr = path;
 
     if (filetype == ItemTypeDirectory) {
-        m = _fullTraversalRegexDir.matchView(pathStr);
+        regularExpressionMatch = _fullTraversalRegexDir.matchView(pathStr);
     } else {
-        m = _fullTraversalRegexFile.matchView(pathStr);
+        regularExpressionMatch = _fullTraversalRegexFile.matchView(pathStr);
     }
-    if (m.hasMatch()) {
-        if (m.capturedStart(QStringLiteral("exclude")) != -1) {
+    if (regularExpressionMatch.hasMatch()) {
+        if (regularExpressionMatch.capturedStart(QStringLiteral("exclude")) != -1) {
             return CSYNC_FILE_EXCLUDE_LIST;
-        } else if (m.capturedStart(QStringLiteral("excluderemove")) != -1) {
+        }
+        if (regularExpressionMatch.capturedStart(QStringLiteral("excluderemove")) != -1) {
             return CSYNC_FILE_EXCLUDE_AND_REMOVE;
         }
     }

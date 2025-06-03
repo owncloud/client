@@ -925,11 +925,6 @@ SocketApi::FileData SocketApi::FileData::get(const QString &localFile)
     return data;
 }
 
-QString SocketApi::FileData::folderRelativePathNoVfsSuffix() const
-{
-    return folderRelativePath;
-}
-
 bool OCC::SocketApi::FileData::isSyncFolder() const
 {
     return folderRelativePath.isEmpty();
