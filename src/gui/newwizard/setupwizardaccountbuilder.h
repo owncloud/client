@@ -18,9 +18,6 @@
 #include "gui/creds/httpcredentialsgui.h"
 #include "networkjobs/fetchuserinfojobfactory.h"
 
-// this temporarily holds the AuthenticationType enum
-#include "gui/networkadapters/determineauthtypeadapter.h"
-
 
 namespace OCC::Wizard {
 
@@ -58,10 +55,10 @@ private:
     QString _davUser;
 };
 
-class OAuth2AuthenticationStrategy : public AbstractAuthenticationStrategy
+class OAuthAuthenticationStrategy : public AbstractAuthenticationStrategy
 {
 public:
-    explicit OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken);
+    explicit OAuthAuthenticationStrategy(const QString &token, const QString &refreshToken);
 
     HttpCredentialsGui *makeCreds() override;
 
@@ -103,9 +100,6 @@ public:
             return _webFingerAuthenticationServerUrl;
         return _serverUrl;
     }
-
-    // TODO: move this out of the class's state
-    AuthenticationType authType();
 
     void setAuthenticationStrategy(AbstractAuthenticationStrategy *strategy);
     AbstractAuthenticationStrategy *authenticationStrategy() const;
@@ -159,8 +153,12 @@ private:
     QVector<QUrl> _webFingerInstances;
     QUrl _webFingerSelectedInstance;
 
+    // todo: #20 - the authentication type was originally used to support basic http authentication for ocXX as well as OAuth, but
+    // basic authentication is now gone. The only valid AuthenticationType is OAuth.
     AuthenticationType _authType = AuthenticationType::Unknown;
 
+    // todo: either with the new wizard or #20: there is only one valid authentication strategy now, which is OAuthAuthenticationStrategy.
+    // remove the base class and refactor this abstraction away.
     std::unique_ptr<AbstractAuthenticationStrategy> _authenticationStrategy;
 
     QVariantMap _dynamicRegistrationData;

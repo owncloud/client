@@ -70,7 +70,7 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
     } else if (reply->error() == QNetworkReply::NoError) {
         res.error = tr("Server did not ask for authorization");
     } else {
-        res.error = tr("Failed to determine auth type: %1").arg(reply->errorString());
+        res.error = tr("Failed to determine authentication type: %1").arg(reply->errorString());
     }
 
     delete reply;

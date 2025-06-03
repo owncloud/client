@@ -180,6 +180,7 @@ void ServerUrlSetupWizardState::evaluatePage()
             return;
         }
 
+        Q_ASSERT(authResult.type == AuthenticationType::OAuth);
         _context->accountBuilder().setServerUrl(finalUrl, authResult.type);
         Q_EMIT evaluationSuccessful();
 

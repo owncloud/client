@@ -33,24 +33,24 @@ void AbstractAuthenticationStrategy::setDavUser(const QString &user)
     _davUser = user;
 }
 
-OAuth2AuthenticationStrategy::OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken)
+OAuthAuthenticationStrategy::OAuthAuthenticationStrategy(const QString &token, const QString &refreshToken)
     : _token(token)
     , _refreshToken(refreshToken)
 {
 }
 
-HttpCredentialsGui *OAuth2AuthenticationStrategy::makeCreds()
+HttpCredentialsGui *OAuthAuthenticationStrategy::makeCreds()
 {
     Q_ASSERT(isValid());
     return new HttpCredentialsGui(davUser(), _token, _refreshToken);
 }
 
-bool OAuth2AuthenticationStrategy::isValid()
+bool OAuthAuthenticationStrategy::isValid()
 {
     return !davUser().isEmpty() && !_token.isEmpty() && !_refreshToken.isEmpty();
 }
 
-FetchUserInfoJobFactory OAuth2AuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
+FetchUserInfoJobFactory OAuthAuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
 {
     return FetchUserInfoJobFactory::fromOAuth2Credentials(nam, _token);
 }
@@ -72,10 +72,6 @@ QUrl SetupWizardAccountBuilder::serverUrl() const
     return _serverUrl;
 }
 
-AuthenticationType SetupWizardAccountBuilder::authType()
-{
-    return _authType;
-}
 
 AccountPtr SetupWizardAccountBuilder::build()
 {

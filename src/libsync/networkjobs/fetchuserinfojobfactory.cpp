@@ -26,12 +26,6 @@ Q_LOGGING_CATEGORY(lcFetchUserInfoJob, "sync.networkjob.fetchuserinfojob", QtInf
 
 namespace OCC {
 
-FetchUserInfoJobFactory FetchUserInfoJobFactory::fromBasicAuthCredentials(QNetworkAccessManager *nam, const QString &username, const QString &password)
-{
-    QString authorizationHeader = QStringLiteral("Basic %1").arg(QString::fromUtf8(QStringLiteral("%1:%2").arg(username, password).toUtf8().toBase64()));
-    return { nam, authorizationHeader };
-}
-
 FetchUserInfoJobFactory FetchUserInfoJobFactory::fromOAuth2Credentials(QNetworkAccessManager *nam, const QString &bearerToken)
 {
     QString authorizationHeader = QStringLiteral("Bearer %1").arg(bearerToken);

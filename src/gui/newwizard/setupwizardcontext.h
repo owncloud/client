@@ -59,6 +59,8 @@ private:
     QPointer<SetupWizardWidget> _window;
     AccessManager *_accessManager = nullptr;
     SetupWizardAccountBuilder _accountBuilder;
+
+    QUrl userInfoUrl() const;
 };
 
 } // OCC::Wizard
