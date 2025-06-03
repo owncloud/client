@@ -1,5 +1,7 @@
 from base64 import b64encode
 from typing import NamedTuple
+import json
+import os
 
 
 class User(NamedTuple):
@@ -72,3 +74,23 @@ def get_displayname_for_user(username):
 
 def get_password_for_user(username):
     return get_user_info(username, "password")
+
+
+def get_username_for_user(username):
+    return get_user_info(username, "username")
+
+
+def init_predefined_users():
+    with open(os.path.abspath("../users.json"), encoding="utf-8") as f:
+        users = json.load(f)
+        for key, value in users.items():
+            test_users.update(
+                {
+                    key: User(
+                        username=value["username"],
+                        password=value["password"],
+                        displayname=value["displayname"],
+                        email=value["email"],
+                    )
+                }
+            )
