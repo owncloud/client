@@ -15,7 +15,6 @@
 #ifndef CONFIGFILE_H
 #define CONFIGFILE_H
 
-#include "common/result.h"
 #include "owncloudlib.h"
 
 #include <QNetworkProxy>
@@ -67,8 +66,6 @@ public:
 
 
     QString defaultConnection() const;
-
-    bool passwordStorageAllowed(const QString &connection = QString());
 
     /* Server poll interval in milliseconds */
     std::chrono::milliseconds remotePollInterval(std::chrono::seconds defaultVal, const QString &connection = QString()) const;
@@ -155,10 +152,6 @@ public:
     void setIssuesWidgetFilter(const QStringList &checked);
 
     std::chrono::seconds timeout() const;
-    qint64 chunkSize() const;
-    qint64 maxChunkSize() const;
-    qint64 minChunkSize() const;
-    std::chrono::milliseconds targetChunkUploadDuration() const;
 
     void saveGeometry(QWidget *w);
     void restoreGeometry(QWidget *w);

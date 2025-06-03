@@ -20,13 +20,6 @@
 using namespace std::chrono_literals;
 using namespace std::chrono;
 
-namespace {
-inline auto chunkingNgUploadPathC()
-{
-    return QStringLiteral("/owncloud/remote.php/dav/uploads/admin/");
-}
-}
-
 PathComponents::PathComponents(const QString &path)
     : QStringList { path.split(QLatin1Char('/'), Qt::SkipEmptyParts) }
 {
@@ -906,7 +899,7 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
     }
     if (!reply) {
         // detect chunking ng upload
-        const bool isUpload = newRequest.url().path().startsWith(chunkingNgUploadPathC());
+        constexpr bool isUpload = false;
         FileInfo &info = isUpload ? _uploadFileInfo : _remoteRootFileInfo;
 
         const auto verb = newRequest.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
@@ -1263,10 +1256,9 @@ QString getFilePathFromUrl(const QUrl &url)
 
     if (path.startsWith(sRootUrl)) {
         return path.mid(sRootUrl.length());
-    } else if (path.startsWith(sRootUrl2)) {
+    }
+    if (path.startsWith(sRootUrl2)) {
         return path.mid(sRootUrl2.length());
-    } else if (path.startsWith(chunkingNgUploadPathC())) {
-        return path.mid(chunkingNgUploadPathC().length());
     }
     return {};
 }
