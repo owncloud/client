@@ -46,6 +46,7 @@ CoreJob *FetchUserInfoJobFactory::startJob(const QUrl &url, QObject *parent)
 
     // We are not connected yet so we need to handle the authentication manually
     req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
+    // todo: #20 - apparently this is oc10 related - there are many instances but they should go.
     req.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
 
     // We just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
