@@ -29,7 +29,7 @@ Q_LOGGING_CATEGORY(lcStatusTracker, "sync.statustracker", QtInfoMsg)
 bool SyncFileStatusTracker::PathComparator::operator()( const QString& lhs, const QString& rhs ) const
 {
     // This will make sure that the std::map is ordered and queried case-insensitively on macOS and Windows.
-    // we want don't want to pay for the runtime check on every comparison.
+    // we don't want to pay for the runtime check on every comparison.
     static const auto sensitivity = Utility::fsCaseSensitivity();
     return lhs.compare(rhs, sensitivity) < 0;
 }
@@ -115,10 +115,10 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
     // that the status of CSYNC_FILE_EXCLUDE_LIST excludes will change if the user
     // update the exclude list at runtime and doing it statically here removes
     // our ability to notify changes through the fileStatusChanged signal,
-    // it's an acceptable compromize to treat all exclude types the same.
+    // it's an acceptable compromise to treat all exclude types the same.
     // Update: This extra check shouldn't hurt even though silently excluded files
     // are now available via slotAddSilentlyExcluded().
-    if (_syncEngine->isExcluded(_syncEngine->syncOptions()._vfs->underlyingFileName(absolutePath))) {
+    if (_syncEngine->isExcluded(absolutePath)) {
         return SyncFileStatus(SyncFileStatus::StatusExcluded);
     }
 
@@ -259,7 +259,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
 
     SharedFlag sharedFlag = item->_remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared;
     if (item->instruction() & ~(CSYNC_INSTRUCTION_NONE | CSYNC_INSTRUCTION_UPDATE_METADATA | CSYNC_INSTRUCTION_IGNORE | CSYNC_INSTRUCTION_ERROR)) {
-        // decSyncCount calls *must* be symetric with incSyncCount calls in slotAboutToPropagate
+        // decSyncCount calls *must* be symmetric with incSyncCount calls in slotAboutToPropagate
         decSyncCountAndEmitStatusChanged(item->destination(), sharedFlag);
     } else {
         Q_EMIT fileStatusChanged(getSystemDestination(item->destination()), resolveSyncAndErrorStatus(item->destination(), sharedFlag));
@@ -268,7 +268,7 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
 
 void SyncFileStatusTracker::slotSyncFinished()
 {
-    // Clear the sync counts to reduce the impact of unsymetrical inc/dec calls (e.g. when directory job abort)
+    // Clear the sync counts to reduce the impact of unsymmetrical inc/dec calls (e.g. when directory job abort)
     QHash<QString, int> oldSyncCount;
     std::swap(_syncCount, oldSyncCount);
     for (auto it = oldSyncCount.begin(); it != oldSyncCount.end(); ++it)

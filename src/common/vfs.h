@@ -23,7 +23,6 @@
 #include "utility.h"
 
 #include <QObject>
-#include <QScopedPointer>
 #include <QSharedPointer>
 #include <QUrl>
 #include <QVersionNumber>
@@ -53,7 +52,7 @@ struct OCSYNC_EXPORT VfsSetupParams
      */
     QString remotePath;
 
-    /// Account url, credentials etc for network calls
+    /// Account url, credentials etc. for network calls
     AccountPtr account;
 
     /** Access to the sync folder's database.
@@ -68,7 +67,7 @@ struct OCSYNC_EXPORT VfsSetupParams
     QVersionNumber providerVersion;
 
     /** when registering with the system we might use
-     *  a different presentaton to identify the accounts
+     *  a different presentation to identify the accounts
      */
     bool multipleAccountsRegistered = false;
 
@@ -111,11 +110,7 @@ public:
      *
      * Currently plugins and modes are one-to-one but that's not required.
      */
-    enum Mode {
-        Off,
-        WithSuffix,
-        WindowsCfApi
-    };
+    enum Mode { Off, WindowsCfApi };
     Q_ENUM(Mode)
     enum class ConvertToPlaceholderResult {
         Ok,
@@ -141,13 +136,6 @@ public:
     ~Vfs() override;
 
     virtual Mode mode() const = 0;
-
-    /// For WithSuffix modes: the suffix (including the dot)
-    virtual QString fileSuffix() const = 0;
-
-    /// The fileName without fileSuffix
-    /// TODO: better naming welcome
-    virtual QString underlyingFileName(const QString &fileName) const;
 
     /// Access to the parameters the instance was start()ed with.
     const VfsSetupParams &params() const { return *_setupParams.get(); }
@@ -251,7 +239,7 @@ Q_SIGNALS:
     /// we encountered an error
     void error(const QString &error);
 
-    /// The vfs plugin detected that the meta data are out of sync and requests a sync with the server
+    /// The vfs plugin detected that the metadata are out of sync and requests a sync with the server
     void needSync();
 
 protected:
@@ -262,7 +250,7 @@ protected:
      */
     [[nodiscard]] virtual Result<ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &item, const QString &filePath, const QString &replacesFile) = 0;
 
-    /** Setup the plugin for the folder.
+    /** Set up the plugin for the folder.
      *
      * For example, the VFS provider might monitor files to be able to start a file
      * hydration (download of a file's remote contents) when the user wants to open

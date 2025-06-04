@@ -924,38 +924,8 @@ void PropagateDownloadFile::downloadFinished()
 
     // Maybe what we downloaded was a conflict file? If so, set a conflict record.
     // (the data was prepared in slotGetFinished above)
-    if (_conflictRecord.isValid())
+    if (_conflictRecord.isValid()) {
         propagator()->_journal->setConflictRecord(_conflictRecord);
-
-    auto vfs = propagator()->syncOptions()._vfs;
-    if (vfs && vfs->mode() == Vfs::WithSuffix) {
-        // TODO: move to the suffix plugin
-        // If the virtual file used to have a different name and db
-        // entry, remove it transfer its old pin state.
-        if (_item->_type == ItemTypeVirtualFileDownload) {
-            const QString virtualFile = _item->_file + vfs->fileSuffix();
-            const QString virtualFileAbsPath = propagator()->fullLocalPath(virtualFile);
-            qCDebug(lcPropagateDownload) << "Download of previous virtual file finished" << virtualFileAbsPath;
-            if (QFileInfo::exists(virtualFileAbsPath)) {
-                if (!FileSystem::remove(virtualFileAbsPath, &error)) {
-                    done(SyncFileItem::FatalError, error);
-                    return;
-                }
-            }
-            OC_ASSERT(propagator()->_journal->deleteFileRecord(virtualFile));
-            // Move the pin state to the new location
-            auto pin = propagator()->_journal->internalPinStates().rawForPath(virtualFile.toUtf8());
-            if (pin && *pin != PinState::Inherited) {
-                std::ignore = vfs->setPinState(_item->_file, *pin);
-                std::ignore = vfs->setPinState(virtualFile, PinState::Inherited);
-            }
-        }
-
-        // Ensure the pin state isn't contradictory
-        auto pin = vfs->pinState(_item->_file);
-        if (pin && *pin == PinState::OnlineOnly) {
-            std::ignore = vfs->setPinState(_item->_file, PinState::Unspecified);
-        }
     }
 
     updateMetadata(isConflict);

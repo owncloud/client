@@ -89,11 +89,6 @@ public:
     Vfs::Mode virtualFilesMode() const { return _virtualFilesMode; }
     void setVirtualFilesMode(Vfs::Mode mode) { _virtualFilesMode = mode; }
 
-    /// Whether the vfs mode shall silently be updated if possible
-    bool upgradeVfsMode() const { return _upgradeVfsMode; }
-    void setUpgradeVfsMode(bool upgradeVfs) { _upgradeVfsMode = upgradeVfs; }
-
-
     /// Ensure / as separator and trailing /.
     void setLocalPath(const QString &path);
     QString localPath() const { return _localPath; }
@@ -128,7 +123,7 @@ public:
     bool isDeployed() const { return _deployed; }
 
     /**
-     * Higher values mean more imortant
+     * Higher values mean more important
      * Used for sorting
      */
     uint32_t priority() const;
@@ -152,7 +147,7 @@ private:
     QUrl _webDavUrl;
 
     QString _spaceId;
-    /// For legacy reasons this can be a string, new folder objects will use a uuid
+    /// For legacy reasons this can be a string, new folder objects will use an uuid
     QByteArray _id;
     QString _displayName;
     /// path on local machine (always trailing /)
@@ -355,7 +350,7 @@ public:
     /**
      * Whether to register the parent folder of our sync root in the explorer
      * The default behaviour is to register alls spaces in a common dir in the home folder
-     * in that case we only display that common dir in the Windows side bar.
+     * in that case we only display that common dir in the Windows sidebar.
      * With the legacy behaviour we only have one dir which we will register with Windows
      */
     bool groupInSidebar() const;
@@ -453,7 +448,7 @@ private Q_SLOTS:
     void slotSyncStarted();
     void slotSyncFinished(bool);
 
-    /** Adds a error message that's not tied to a specific item.
+    /** Adds an error message that's not tied to a specific item.
      */
     void slotSyncError(const QString &message, ErrorCategory category = ErrorCategory::Normal);
 
@@ -534,7 +529,7 @@ private:
     QTimer _scheduleSelfTimer;
 
     /**
-     * Setting up vfs is a async operation
+     * Setting up vfs is an async operation
      */
     bool _vfsIsReady = false;
 
@@ -562,7 +557,7 @@ private:
      * The vfs mode instance (created by plugin) to use. Never null.
      */
     // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
-    // to ensure we don't keep it alive outside of useable scope. Would probably be simplest to make it a QPointer for use with the
+    // to ensure we don't keep it alive outside of usable scope. Would probably be simplest to make it a QPointer for use with the
     // SyncOptions and rely on normal qt parenting scheme to ensure correct cleanup timing if it's not explicitly deleted.
     // it is also false that it is never null - it is reset in wipeForRemoval
     // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
