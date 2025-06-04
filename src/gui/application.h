@@ -16,14 +16,11 @@
 
 #include "gui/owncloudguilib.h"
 
-#include "clientproxy.h"
 #include "folderman.h"
 #include "owncloudgui.h"
 #include "platform.h"
 
 #include <QPointer>
-#include <QQueue>
-#include <QTimer>
 
 class QMessageBox;
 class QSystemTrayIcon;
@@ -58,16 +55,6 @@ public:
     QString displayLanguage() const;
 
     AccountStatePtr addNewAccount(AccountPtr newAccount);
-
-public Q_SLOTS:
-    /**
-     * Will download a virtual file, and open the result.
-     * The argument is the filename of the virtual file (including the extension)
-     */
-    void openVirtualFile(const QString &filename);
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
 
 protected Q_SLOTS:
     void slotUseMonoIconsChanged(bool);

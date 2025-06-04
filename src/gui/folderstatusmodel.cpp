@@ -256,13 +256,6 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
         if (f->syncResult().hasUnresolvedConflicts()) {
             errors.append(tr("There are unresolved conflicts."));
         }
-        if (f->isReady() && f->virtualFilesEnabled() && f->vfs().mode() == Vfs::Mode::WithSuffix) {
-            errors.append({
-                tr("The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.\n"
-                   "Please use the context menu and select \"Disable virtual file support\" to ensure future access to your synced files.\n"
-                   "You are going to lose access to your sync folder if you do not do so!"),
-            });
-        }
         return errors;
     };
 
@@ -291,7 +284,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     case Roles::SyncProgressOverallString:
         return folderInfo->_progress._overallSyncString;
     case Roles::Priority:
-        // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by appling a negative factor
+        // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
         return QVariant::fromValue(f->priority() * 100 - (f->displayName().isEmpty() ? 0 : static_cast<int64_t>(f->displayName().at(0).toLower().unicode())));
     case Roles::Quota: {
         qint64 used{};
@@ -381,7 +374,7 @@ void FolderStatusModel::slotSetProgress(const ProgressInfo &progress, Folder *f)
 
     auto *pi = &folder->_progress;
     // depending on the use of virtual files or small files this slot might be called very often.
-    // throttle the model updates to prevent an needlessly high cpu usage used on ui updates.
+    // throttle the model updates to prevent a needlessly high cpu usage used on ui updates.
     if (folder->_lastProgressUpdateStatus != progress.status() || (std::chrono::steady_clock::now() - folder->_lastProgressUpdated > progressUpdateTimeOutC)) {
         folder->_lastProgressUpdateStatus = progress.status();
 

@@ -19,7 +19,6 @@
 #include "common/syncfilestatus.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
-#include "common/vfs.h"
 #include "configfile.h"
 #include "csync_exclude.h"
 #include "discovery.h"
@@ -86,7 +85,7 @@ SyncEngine::~SyncEngine()
 
 /**
  * Check if the item is in the blacklist.
- * If it should not be sync'ed because of the blacklist, update the item with the error instruction
+ * If it should not be synced because of the blacklist, update the item with the error instruction
  * and proper error message, and return true.
  * If the item is not in the blacklist, or the blacklist is stale, return false.
  */
@@ -171,7 +170,7 @@ static bool isFileTransferInstruction(SyncInstructions instruction)
 
 void SyncEngine::deleteStaleDownloadInfos(const SyncFileItemSet &syncItems)
 {
-    // Find all downloadinfo paths that we want to preserve.
+    // Find all download paths that we want to preserve.
     QSet<QString> download_file_paths;
     for (const auto &it : syncItems) {
         if (it->_direction == SyncFileItem::Down && it->_type == ItemTypeFile && isFileTransferInstruction(it->instruction())) {
@@ -376,12 +375,6 @@ void SyncEngine::startSync()
     _excludedFiles->setExcludeConflictFiles(!_account->capabilities().uploadConflictFiles());
 
     _lastLocalDiscoveryStyle = _localDiscoveryStyle;
-
-    if (syncOptions()._vfs->mode() == Vfs::WithSuffix && syncOptions()._vfs->fileSuffix().isEmpty()) {
-        Q_EMIT syncError(tr("Using virtual files with suffix, but suffix is not set"));
-        finalize(false);
-        return;
-    }
 
     bool ok;
     auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);

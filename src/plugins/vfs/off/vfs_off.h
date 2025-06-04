@@ -31,8 +31,6 @@ public:
 
     Mode mode() const override;
 
-    QString fileSuffix() const override;
-
     void stop() override;
     void unregisterFolder() override;
 

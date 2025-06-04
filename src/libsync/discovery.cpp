@@ -90,12 +90,8 @@ void ProcessDirectoryJob::process()
     auto pathU8 = _currentFolder._original.toUtf8();
     if (!_discoveryData->_statedb->listFilesInPath(pathU8, [&](const SyncJournalFileRecord &rec) {
             auto name = pathU8.isEmpty() ? QString::fromUtf8(rec._path) : QString::fromUtf8(rec._path.constData() + (pathU8.size() + 1));
-            if (rec.isVirtualFile() && isVfsWithSuffix()) {
-                name = chopVirtualFileSuffix(name);
-            }
             auto &dbEntry = entries[name].dbEntry;
             dbEntry = rec;
-            setupDbPinStateActions(dbEntry);
         })) {
         dbError();
         return;
@@ -103,34 +99,6 @@ void ProcessDirectoryJob::process()
 
     for (auto &e : _localNormalQueryEntries) {
         entries[e.name].localEntry = e;
-    }
-    if (isVfsWithSuffix()) {
-        // For vfs-suffix the local data for suffixed files should usually be associated
-        // with the non-suffixed name. Unless both names exist locally or there's
-        // other data about the suffixed file.
-        // This is done in a second path in order to not depend on the order of
-        // _localNormalQueryEntries.
-        for (auto &e : _localNormalQueryEntries) {
-            if (!e.isVirtualFile)
-                continue;
-            auto &suffixedEntry = entries[e.name];
-            bool hasOtherData = suffixedEntry.serverEntry.isValid() || suffixedEntry.dbEntry.isValid();
-
-            auto nonvirtualName = chopVirtualFileSuffix(e.name);
-            auto &nonvirtualEntry = entries[nonvirtualName];
-            // If the non-suffixed entry has no data, move it
-            if (!nonvirtualEntry.localEntry.isValid()) {
-                std::swap(nonvirtualEntry.localEntry, suffixedEntry.localEntry);
-                if (!hasOtherData)
-                    entries.erase(e.name);
-            } else if (!hasOtherData) {
-                // Normally a lone local suffixed file would be processed under the
-                // unsuffixed name. In this special case it's under the suffixed name.
-                // To avoid lots of special casing, make sure PathTuple::addName()
-                // will be called with the unsuffixed name anyway.
-                suffixedEntry.nameOverride = nonvirtualName;
-            }
-        }
     }
     _localNormalQueryEntries.clear();
 
@@ -142,25 +110,6 @@ void ProcessDirectoryJob::process()
 
         PathTuple path;
         path = _currentFolder.addName(e.nameOverride.isEmpty() ? f.first : e.nameOverride);
-
-        if (isVfsWithSuffix()) {
-            // Without suffix vfs the paths would be good. But since the dbEntry and localEntry
-            // can have different names from f.first when suffix vfs is on, make sure the
-            // corresponding _original and _local paths are right.
-
-            if (e.dbEntry.isValid()) {
-                path._original = QString::fromUtf8(e.dbEntry._path);
-            } else if (e.localEntry.isVirtualFile) {
-                // We don't have a db entry - but it should be at this path
-                path._original = PathTuple::pathAppend(_currentFolder._original,  e.localEntry.name);
-            }
-            if (e.localEntry.isValid()) {
-                path._local = PathTuple::pathAppend(_currentFolder._local, e.localEntry.name);
-            } else if (e.dbEntry.isVirtualFile()) {
-                // We don't have a local entry - but it should be at this path
-                addVirtualFileSuffix(path._local);
-            }
-        }
 
         // If the filename starts with a . we consider it a hidden file
         // For windows, the hidden state is also discovered within the vio
@@ -180,7 +129,7 @@ void ProcessDirectoryJob::process()
                 e.localEntry.isSymLink)) {
             // the file only exists in the db
             if (!e.localEntry.isValid() && e.dbEntry.isValid()) {
-                qCWarning(lcDisco) << "Removing db entry for non exisitng ignored file:" << path._original;
+                qCWarning(lcDisco) << "Removing db entry for non existing ignored file:" << path._original;
                 _discoveryData->_statedb->deleteFileRecord(path._original, true);
             }
             continue;
@@ -342,7 +291,7 @@ void ProcessDirectoryJob::processFile(const PathTuple &path,
 
     if (item->_type == ItemTypeVirtualFileDownload) {
         // The item shall only have this type if the db request for the virtual download
-        // was successful (like: no conflicting remote remove etc). This decision is done
+        // was successful (like: no conflicting remote remove etc.). This decision is done
         // either in processFileAnalyzeRemoteInfo() or further down here.
         item->_type = ItemTypeVirtualFile;
     } else if (item->_type == ItemTypeVirtualFileDehydration) {
@@ -444,7 +393,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             }
         } else if ((dbEntry._type == ItemTypeVirtualFileDownload || localEntry.type == ItemTypeVirtualFileDownload)
             && (localEntry.isValid() || _queryLocal == ParentNotChanged)) {
-            // The above check for the localEntry existing is important. Otherwise it breaks
+            // The above check for the localEntry existing is important. Otherwise, it breaks
             // the case where a file is moved and simultaneously tagged for download in the db.
             item->_direction = SyncFileItem::Down;
             item->setInstruction(CSYNC_INSTRUCTION_SYNC);
@@ -492,9 +441,6 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             && opts._vfs->mode() != Vfs::Off
             && _pinState != PinState::AlwaysLocal) {
             item->_type = ItemTypeVirtualFile;
-            if (isVfsWithSuffix()) {
-                addVirtualFileSuffix(path._original);
-            }
         }
         processFileAnalyzeLocalInfo(item, path, localEntry, serverEntry, dbEntry, _queryServer);
     };
@@ -712,14 +658,6 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
             qCInfo(lcDisco) << "Stale DB entry";
             _discoveryData->_statedb->deleteFileRecord(path._original, true);
             return;
-        } else if (dbEntry._type == ItemTypeVirtualFile && isVfsWithSuffix()) {
-            // If the virtual file is removed, recreate it.
-            // This is a precaution since the suffix files don't look like the real ones
-            // and we don't want users to accidentally delete server data because they
-            // might not expect that deleting the placeholder will have a remote effect.
-            item->setInstruction(CSYNC_INSTRUCTION_NEW);
-            item->_direction = SyncFileItem::Down;
-            item->_type = ItemTypeVirtualFile;
         } else if (!serverModified) {
             // Removed locally: also remove on the server.
             if (!dbEntry._serverHasIgnoredFiles) {
@@ -741,21 +679,6 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
             if (noServerEntry) {
                 item->setInstruction(CSYNC_INSTRUCTION_REMOVE);
                 item->_direction = SyncFileItem::Down;
-            } else if (!dbEntry.isVirtualFile() && isVfsWithSuffix()) {
-                // If we find what looks to be a spurious "abc.owncloud" the base file "abc"
-                // might have been renamed to that. Make sure that the base file is not
-                // deleted from the server.
-                if (dbEntry._modtime == localEntry.modtime && dbEntry._fileSize == localEntry.size) {
-                    qCInfo(lcDisco) << "Base file was renamed to virtual file:" << item->_file;
-                    item->_direction = SyncFileItem::Down;
-                    item->setInstruction(CSYNC_INSTRUCTION_SYNC);
-                    item->_type = ItemTypeVirtualFileDehydration;
-                    addVirtualFileSuffix(item->_file);
-                    item->_renameTarget = item->_file;
-                } else {
-                    qCInfo(lcDisco) << "Virtual file with non-virtual db entry, ignoring:" << item->_file;
-                    item->setInstruction(CSYNC_INSTRUCTION_IGNORE);
-                }
             }
         } else if (!typeChange && ((dbEntry._modtime == localEntry.modtime && dbEntry._fileSize == localEntry.size) || localEntry.isDirectory)) {
             // Local file unchanged.
@@ -772,27 +695,9 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
                 item->setInstruction(CSYNC_INSTRUCTION_UPDATE_METADATA);
                 item->_direction = SyncFileItem::Down;
             }
-        } else if (!typeChange && isVfsWithSuffix()
-            && dbEntry.isVirtualFile() && !localEntry.isVirtualFile
-            && dbEntry._inode == localEntry.inode
-            && dbEntry._modtime == localEntry.modtime
-            && localEntry.size == 1) {
-            // A suffix vfs file can be downloaded by renaming it to remove the suffix.
-            // This check leaks some details of VfsSuffix, particularly the size of placeholders.
-            item->_direction = SyncFileItem::Down;
-            if (noServerEntry) {
-                item->setInstruction(CSYNC_INSTRUCTION_REMOVE);
-                item->_type = ItemTypeFile;
-            } else {
-                item->setInstruction(CSYNC_INSTRUCTION_SYNC);
-                item->_type = ItemTypeVirtualFileDownload;
-                item->_previousSize = 1;
-            }
-        } else if (serverModified
-            || (isVfsWithSuffix() && dbEntry.isVirtualFile())) {
+        } else if (serverModified) {
             // There's a local change and a server change: Conflict!
-            // Alternatively, this might be a suffix-file that's virtual in the db but
-            // not locally. These also become conflicts. For in-place placeholders that's
+            // For in-place placeholders that's
             // not necessary: they could be replaced by real files and should then trigger
             // a regular SYNC upwards when there's no server change.
             processFileConflict(item, path, localEntry, serverEntry, dbEntry);
@@ -1010,9 +915,6 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
         // We must query the server to know if the etag has not changed
         _pendingAsyncJobs++;
         QString serverOriginalPath = _discoveryData->_remoteFolder + _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
-        if (base.isVirtualFile() && isVfsWithSuffix()) {
-            serverOriginalPath = chopVirtualFileSuffix(serverOriginalPath);
-        }
         auto job = new RequestEtagJob(_discoveryData->_account, _discoveryData->_baseUrl, serverOriginalPath, this);
         connect(job, &RequestEtagJob::finishedSignal, this,
             [job, recurseQueryServer, path = path, postProcessLocalNew, processRename, base, item, originalPath, this] {
@@ -1079,7 +981,7 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, const
 
     // Do we have an UploadInfo for this?
     // Maybe the Upload was completed, but the connection was broken just before
-    // we recieved the etag (Issue #5106)
+    // we received the etag (Issue #5106)
     auto up = _discoveryData->_statedb->getUploadInfo(path._original);
     if (up._valid && up._contentChecksum == serverEntry.checksumHeader) {
         // Solve the conflict into an upload, or update meta data
@@ -1109,22 +1011,6 @@ void ProcessDirectoryJob::processFileFinalize(
     const SyncFileItemPtr &item, PathTuple path, bool recurse,
     QueryMode recurseQueryLocal, QueryMode recurseQueryServer)
 {
-    // Adjust target path for virtual-suffix files
-    if (isVfsWithSuffix()) {
-        if (item->_type == ItemTypeVirtualFile) {
-            addVirtualFileSuffix(path._target);
-            if (item->instruction() == CSYNC_INSTRUCTION_RENAME)
-                addVirtualFileSuffix(item->_renameTarget);
-            else
-                addVirtualFileSuffix(item->_file);
-        } else if (item->_type == ItemTypeVirtualFileDehydration && item->instruction() == CSYNC_INSTRUCTION_SYNC) {
-            if (item->_renameTarget.isEmpty()) {
-                item->_renameTarget = item->_file;
-                addVirtualFileSuffix(item->_renameTarget);
-            }
-        }
-    }
-
     if (path._original != path._target && (item->instruction() & (CSYNC_INSTRUCTION_UPDATE_METADATA | CSYNC_INSTRUCTION_NONE))) {
         OC_ASSERT(_dirItem && _dirItem->instruction() == CSYNC_INSTRUCTION_RENAME);
         // This is because otherwise subitems are not updated!  (ideally renaming a directory could
@@ -1381,27 +1267,6 @@ void ProcessDirectoryJob::dbError()
     Q_EMIT _discoveryData->fatalError(tr("Error while reading the database"));
 }
 
-void ProcessDirectoryJob::addVirtualFileSuffix(QString &str) const
-{
-    str.append(_discoveryData->_syncOptions._vfs->fileSuffix());
-}
-
-bool ProcessDirectoryJob::hasVirtualFileSuffix(const QString &str) const
-{
-    if (!isVfsWithSuffix())
-        return false;
-    return str.endsWith(_discoveryData->_syncOptions._vfs->fileSuffix());
-}
-
-QString ProcessDirectoryJob::chopVirtualFileSuffix(const QString &str) const
-{
-    if (!isVfsWithSuffix())
-        return str;
-    // ensure we do it only with virtual files in this class
-    Q_ASSERT(hasVirtualFileSuffix(str));
-    return _discoveryData->_syncOptions._vfs->underlyingFileName(str);
-}
-
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 {
     auto serverJob = new DiscoverySingleDirectoryJob(_discoveryData->_account, _discoveryData->_baseUrl,
@@ -1436,7 +1301,7 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
                     // A file or directory should be ignored and sync must continue. See #3490
                     // The server usually replies with the custom "503 Storage not available"
                     // if some path is temporarily unavailable. But in some cases a standard 503
-                    // is returned too. Thus we can't distinguish the two and will treat any
+                    // is returned too. Thus, we can't distinguish the two and will treat any
                     // 503 as request to ignore the folder. See #3113 #2884.
                     // Similarly, the server might also return 404 or 50x in case of bugs. #7199 #7586
                     _dirItem->setInstruction(CSYNC_INSTRUCTION_IGNORE);
@@ -1509,12 +1374,6 @@ void ProcessDirectoryJob::startAsyncLocalQuery()
     pool->start(localJob); // QThreadPool takes ownership
 }
 
-
-bool ProcessDirectoryJob::isVfsWithSuffix() const
-{
-    return _discoveryData->_syncOptions._vfs->mode() == Vfs::WithSuffix;
-}
-
 void ProcessDirectoryJob::computePinState(PinState parentState)
 {
     _pinState = parentState;
@@ -1523,25 +1382,4 @@ void ProcessDirectoryJob::computePinState(PinState parentState)
             _pinState = *state;
     }
 }
-
-void ProcessDirectoryJob::setupDbPinStateActions(SyncJournalFileRecord &record)
-{
-    // Only suffix-vfs uses the db for pin states.
-    // Other plugins will set localEntry._type according to the file's pin state.
-    if (!isVfsWithSuffix())
-        return;
-
-    auto pin = _discoveryData->_statedb->internalPinStates().rawForPath(record._path);
-    if (!pin || *pin == PinState::Inherited)
-        pin = _pinState;
-
-    // OnlineOnly hydrated files want to be dehydrated
-    if (record._type == ItemTypeFile && *pin == PinState::OnlineOnly)
-        record._type = ItemTypeVirtualFileDehydration;
-
-    // AlwaysLocal dehydrated files want to be hydrated
-    if (record._type == ItemTypeVirtualFile && *pin == PinState::AlwaysLocal)
-        record._type = ItemTypeVirtualFileDownload;
-}
-
 }
