@@ -3,5 +3,6 @@ target_sources(owncloudGui PRIVATE
     webfingerlookupadapter.cpp
 	discoverwebfingerserviceadapter.cpp
 	determineauthtypeadapter.cpp
+	fetchcapabilitiesadapter.cpp
 )
 

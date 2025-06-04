@@ -1,6 +1,7 @@
 #include "setupwizardcontroller.h"
 
 #include "gui/accountmanager.h"
+#include "gui/networkadapters/fetchcapabilitiesadapter.h"
 #include "pages/accountconfiguredwizardpage.h"
 #include "states/abstractsetupwizardstate.h"
 #include "states/accountconfiguredsetupwizardstate.h"
@@ -147,14 +148,25 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
             connect(fetchUserInfoJob, &CoreJob::finished, this, [this, fetchUserInfoJob] {
                 if (fetchUserInfoJob->success()) {
                     auto result = fetchUserInfoJob->result().value<FetchUserInfoResult>();
-
                     if (AccountManager::instance()->accountForLoginExists(_context->accountBuilder().serverUrl(), result.userName())) {
                         _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials."));
                         changeStateTo(_currentState->state());
                     } else {
                         _context->accountBuilder().setDisplayName(result.displayName());
                         _context->accountBuilder().authenticationStrategy()->setDavUser(result.userName());
-                        changeStateTo(SetupWizardState::AccountConfiguredState);
+
+                        const QString token = _context->accountBuilder().authenticationStrategy()->token();
+                        Q_ASSERT(!token.isEmpty());
+                        // get the capabilities so we can block oc10 accounts. Checking for spaces support is not 
+                        // great and this should be refined, but for now it's effective.
+                        FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->accountBuilder().serverUrl());
+                        FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
+                        if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
+                            _context->window()->showErrorMessage(tr("The server is not supported by this client"));
+                            changeStateTo(_currentState->state());
+                        } else
+                            changeStateTo(SetupWizardState::AccountConfiguredState);
+                        // todo: #27: new wizard should take the capabilities and add them to the account builder or equivalent!
                     }
                 } else if (fetchUserInfoJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 401) {
                     _context->window()->showErrorMessage(tr("Invalid credentials."));

@@ -55,8 +55,6 @@ FetchUserInfoJobFactory OAuthAuthenticationStrategy::makeFetchUserInfoJobFactory
     return FetchUserInfoJobFactory::fromOAuth2Credentials(nam, _token);
 }
 
-SetupWizardAccountBuilder::SetupWizardAccountBuilder() = default;
-
 void SetupWizardAccountBuilder::setServerUrl(const QUrl &serverUrl, AuthenticationType authType)
 {
     _serverUrl = serverUrl;

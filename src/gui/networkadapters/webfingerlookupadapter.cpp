@@ -63,7 +63,6 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
 
     QEventLoop waitLoop;
     QNetworkReply *reply = _nam->get(req);
-    //_job = _factory.startJob(_url, this);
     connect(reply, &QNetworkReply::finished, &waitLoop, &QEventLoop::quit);
     waitLoop.exec();
 

@@ -39,6 +39,8 @@ using namespace std::chrono_literals;
 
 using namespace OCC;
 
+// todo: #24 - this is such a mess. it needs to parted out into clear classes (each in their own files), every impl needs to be reviewed.
+// I think there is some duplication here as well - just sort it out as much as possible.
 Q_LOGGING_CATEGORY(lcOauth, "sync.credentials.oauth", QtInfoMsg)
 
 namespace {
@@ -242,7 +244,7 @@ void logCredentialsJobResult(CredentialJob *credentialsJob)
 }
 }
 
-// todo: #18 - determine if the dynamic registration data is ever actually passed here. Also eval the use case below re: AccountBasedOauth which seems to
+// todo: #24 determine if the dynamic registration data is ever actually passed here. Also eval the use case below re: AccountBasedOauth which seems to
 // be the only case where the davUser is passed
 OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, const QVariantMap &dynamicRegistrationData, QObject *parent)
     : QObject(parent)

@@ -43,11 +43,15 @@ public:
      */
     virtual bool isValid() = 0;
 
+    // this is soooo temporary, just to get us through til we refactor this base away with the
+    // new, new wizard
+    virtual QString token() = 0;
     /**
      * The username used for ownCloud 10 dav requests.
      */
     QString davUser();
     void setDavUser(const QString &user);
+
 
     virtual FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) = 0;
 
@@ -64,6 +68,8 @@ public:
 
     bool isValid() override;
 
+    QString token() override { return _token; }
+
     FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) override;
 
 private:
@@ -78,7 +84,7 @@ private:
 class SetupWizardAccountBuilder
 {
 public:
-    SetupWizardAccountBuilder();
+    SetupWizardAccountBuilder() = default;
 
     /**
      * Set ownCloud server URL as well as the authentication type that needs to be used with this server.

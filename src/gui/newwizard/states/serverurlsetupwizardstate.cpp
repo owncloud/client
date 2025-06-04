@@ -167,12 +167,6 @@ void ServerUrlSetupWizardState::evaluatePage()
                 _context->accountBuilder().addCustomTrustedCaCertificate(cert);
         }
 
-        // next, we need to find out which kind of authentication page we have to present to the user
-        // todo: #18
-        // I so far do not see any totally reliable method of determining whether user is trying to connect to an
-        // owncloud server so I think we need an extra step to check the server capabilities before creating the account -
-        // eg check the name and if it isn't kiteworks or ocis fail it. I think this is probably risky in case the name changes
-        // but it's a place to start
         DetermineAuthTypeAdapter authTypeAdapter(_context->accessManager(), finalUrl);
         const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
         if (!authResult.success()) {
