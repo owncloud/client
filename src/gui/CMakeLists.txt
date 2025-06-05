@@ -99,7 +99,8 @@ set( final_src
 add_subdirectory(newwizard)
 add_subdirectory(folderwizard)
 
-add_library(owncloudGui SHARED ${final_src})
+add_library(owncloudGui SHARED ${final_src}
+  newaccountwizard/newaccountwizardcontroller.h newaccountwizard/newaccountwizardcontroller.cpp)
 set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
 # for the generated qml module
 target_include_directories(owncloudGui PRIVATE models spaces creds)

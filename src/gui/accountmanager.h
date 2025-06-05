@@ -59,6 +59,7 @@ public:
      * Add this account in the list of saved accounts.
      * Typically called from the wizard
      */
+    // todo: #28 - this should not be public and should not be called directly by any third party
     AccountStatePtr addAccount(const AccountPtr &newAccount);
 
     /**
@@ -91,6 +92,9 @@ public:
      * Creates an account and sets up some basic handlers.
      * Does *not* add the account to the account manager just yet.
      */
+
+    // todo: #28 - this has to be updated - it only works in tandem with the loadAccountHelper and should not even
+    //  be public. also, any create account scheme *should* register the new instance in the account manager
     static AccountPtr createAccount(const QUuid &uuid);
 
     /**
