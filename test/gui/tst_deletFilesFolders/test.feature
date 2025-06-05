@@ -1,3 +1,4 @@
+@predefined_users
 Feature: deleting files and folders
   	As a user
   	I want to delete files and folders
@@ -8,8 +9,11 @@ Feature: deleting files and folders
 
     @issue-9439
     Scenario Outline: Delete a file
-        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "<fileName>" in the server
-        And user "Alice" has set up a client with default settings
+        Given user "Alice" has set up a client with default settings
+        And user "Alice" has created a file "<fileName>" with the following content inside the sync folder
+            """
+            ownCloud test text file 0
+            """
         When the user deletes the file "<fileName>"
         And the user waits for the files to sync
         Then as "Alice" file "<fileName>" should not exist in the server
@@ -21,8 +25,8 @@ Feature: deleting files and folders
 
     @issue-9439
     Scenario Outline: Delete a folder
-        Given user "Alice" has created folder "<folderName>" in the server
-        And user "Alice" has set up a client with default settings
+        Given user "Alice" has set up a client with default settings
+        And user "Alice" has created a folder "<folderName>" inside the sync folder
         When the user deletes the folder "<folderName>"
         And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist in the server
@@ -33,11 +37,17 @@ Feature: deleting files and folders
 
 
     Scenario: Delete a file and a folder
-        Given user "Alice" has uploaded file with content "test file 1" to "textfile1.txt" in the server
-        And user "Alice" has uploaded file with content "test file 2" to "textfile2.txt" in the server
-        And user "Alice" has created folder "test-folder1" in the server
-        And user "Alice" has created folder "test-folder2" in the server
-        And user "Alice" has set up a client with default settings
+        Given user "Alice" has set up a client with default settings
+        And user "Alice" has created a file "textfile1.txt" with the following content inside the sync folder
+            """
+            test file 1
+            """
+        And user "Alice" has created a file "textfile2.txt" with the following content inside the sync folder
+            """
+            test file 2
+            """
+        And user "Alice" has created a folder "test-folder1" inside the sync folder
+        And user "Alice" has created a folder "test-folder2" inside the sync folder
         When the user deletes the file "textfile1.txt"
         And the user deletes the folder "test-folder1"
         And the user waits for the files to sync
