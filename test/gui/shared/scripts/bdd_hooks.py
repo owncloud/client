@@ -115,7 +115,10 @@ def hook(context):
         os.makedirs(tmp_dir)
 
     # sync connection folder display name
-    set_config("syncConnectionName", "Personal" if get_config("ocis") else "ownCloud")
+    set_config(
+        "syncConnectionName",
+        "My Folder" if get_config("predefined_users") else "Personal",
+    )
 
 
 # determines if the test scenario failed or not

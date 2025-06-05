@@ -75,6 +75,7 @@ CONFIG_ENV_MAP = {
     'clientConfigDir': 'CLIENT_CONFIG_DIR',
     'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
     'predefined_users': 'PREDEFINED_USERS',
+    'aut_name': 'AUT_NAME',
     'ocis': 'OCIS',
     'record_video_on_failure': 'RECORD_VIDEO_ON_FAILURE',
 }
@@ -99,6 +100,7 @@ CONFIG = {
     'clientConfigDir': get_config_home(),
     'guiTestReportDir': os.path.abspath('../reports'),
     'predefined_users': False,
+    'aut_name': 'owncloud',
     'ocis': False,
     'record_video_on_failure': False,
     'files_for_upload': os.path.join(CURRENT_DIR.parent.parent, 'files-for-upload'),
