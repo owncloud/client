@@ -135,65 +135,60 @@
 <context>
     <name>CommandLine</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="99"/>
+        <location filename="../src/gui/main.cpp" line="97"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
         <translation>%1 version %2&lt;byte value=&quot;xd&quot;/&gt;
 Mjet njëkohësimi kartelash për desktop.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="107"/>
+        <location filename="../src/gui/main.cpp" line="105"/>
         <source>For more information, see %1</source>
         <comment>link to homepage</comment>
         <translation>Për më tepër hollësi, shihni %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="126"/>
+        <location filename="../src/gui/main.cpp" line="124"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
         <translation>Niseni me dritaren kryesore të dukshme, ose, nëse është tashmë duke xhiruar, silleni përpara dritareve të tjera. Si parazgjedhje, klienti niset në prapaskenë.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="128"/>
+        <location filename="../src/gui/main.cpp" line="126"/>
         <source>Quit the running instance.</source>
         <translation>Dil nga instanca që është duke xhiruar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="130"/>
+        <location filename="../src/gui/main.cpp" line="128"/>
         <source>Write log to file (use - to write to stdout).</source>
         <translation>Shkruaje regjistrimin te kartelë (përdorni - që të shkruhet në stdout).</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="132"/>
+        <location filename="../src/gui/main.cpp" line="130"/>
         <source>Write each sync log output in a new file in folder.</source>
         <translation>Shkruaje çdo përfundim regjistrimi njëkohësimesh në një kartelë të re në dosje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="133"/>
+        <location filename="../src/gui/main.cpp" line="131"/>
         <source>Flush the log file after every write.</source>
         <translation>Zbraze kartelën regjistër pas çdo shkrimi.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
+        <location filename="../src/gui/main.cpp" line="132"/>
         <source>Output debug-level messages in the log.</source>
         <translation>Kaloji te regjistri mesazhet debug-level.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="135"/>
+        <location filename="../src/gui/main.cpp" line="133"/>
         <source>Enable debug mode.</source>
         <translation>Aktivizo mënyrën diagnostikim.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="136"/>
+        <location filename="../src/gui/main.cpp" line="134"/>
         <source>Forward all arguments to the cmd client. This argument must be the first.</source>
         <translation>Përcilli krejt argumentet te klienti cmd. Ky argument duhet të jetë i pari.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="139"/>
-        <source>Virtual file system file to be opened (optional).</source>
-        <translation>Kartelë sistemi virtual kartelash për t’u hapur (opsionale).</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="156"/>
+        <location filename="../src/gui/main.cpp" line="150"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile dhe --logdir përjashtojnë reciprokisht njëra-tjetrën</translation>
     </message>
@@ -992,7 +987,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="187"/>
+        <location filename="../src/gui/main.cpp" line="175"/>
         <source>Quit</source>
         <translation>Dilni</translation>
     </message>
@@ -1089,136 +1084,136 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="239"/>
+        <location filename="../src/gui/folder.cpp" line="238"/>
         <source>Local folder %1 does not exist.</source>
         <translation>Dosja vendore %1 s’ekziston.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="241"/>
+        <location filename="../src/gui/folder.cpp" line="240"/>
         <source>%1 should be a folder but is not.</source>
         <translation>%1 duhej të ishte dosje, por ja që s’është.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="243"/>
+        <location filename="../src/gui/folder.cpp" line="242"/>
         <source>%1 is not readable.</source>
         <translation>%1 s’është i lexueshëm.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="455"/>
+        <location filename="../src/gui/folder.cpp" line="454"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 u hoq.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="469"/>
+        <location filename="../src/gui/folder.cpp" line="468"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 u përditësua.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="476"/>
+        <location filename="../src/gui/folder.cpp" line="475"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 u riemërtua si %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="483"/>
+        <location filename="../src/gui/folder.cpp" line="482"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 u kalua te %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="453"/>
+        <location filename="../src/gui/folder.cpp" line="452"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>Janë hequr %1 dhe %n kartelë tjetër.</numerusform><numerusform>Janë hequr %1 dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="188"/>
+        <location filename="../src/gui/folder.cpp" line="187"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>Shtegu “%1” është shumë i gjatë. Ju lutemi, aktivizoni shtigje të gjatë te rregullimet e Windows-it, ose zgjidhni një dosje tjetër.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="233"/>
+        <location filename="../src/gui/folder.cpp" line="232"/>
         <source>%1 failed to open the database.</source>
         <translation>%1 s’arriti të hapë bazën e të dhënave.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="245"/>
+        <location filename="../src/gui/folder.cpp" line="244"/>
         <source>%1 is not writable.</source>
         <translation>%1 s’është e shkrueshme.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="460"/>
+        <location filename="../src/gui/folder.cpp" line="459"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>Janë shtuar %1 dhe %n kartelë tjetër.</numerusform><numerusform>Janë shtuar %1 dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="462"/>
+        <location filename="../src/gui/folder.cpp" line="461"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>U shtua %1.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="467"/>
+        <location filename="../src/gui/folder.cpp" line="466"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>U përditësuan %1 dhe %n kartelë tjetër.</numerusform><numerusform>U përditësuan %1 dhe %n kartela të tjera.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="474"/>
+        <location filename="../src/gui/folder.cpp" line="473"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 u riemërtua si %2 dhe u riemërtuan %n kartela të tjera.</numerusform><numerusform>%1 u riemërtua si %2 dhe u riemërtuan %n kartela të tjera.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="481"/>
+        <location filename="../src/gui/folder.cpp" line="480"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 u kalua te %2 dhe u zhvendos %n kartelë tjetër.</numerusform><numerusform>%1 u kalua te %2 dhe u zhvendosën %n kartela të tjera.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="488"/>
+        <location filename="../src/gui/folder.cpp" line="487"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 dhe %n kartelë tjetër kanë përplasje njëkohësimi.</numerusform><numerusform>%1 dhe %n kartela të tjera kanë përplasje njëkohësimi.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="490"/>
+        <location filename="../src/gui/folder.cpp" line="489"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 ka një përplasje njëkohësimi. Ju lutemi, kontrolloni kartelën e përplasjes!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="495"/>
+        <location filename="../src/gui/folder.cpp" line="494"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 dhe %n kartelë tjetër s’u njëkohësuan dot, për shkak gabimesh. Për hollësi shihni regjistrin.</numerusform><numerusform>%1 dhe %n kartela të tjera s’u njëkohësuan dot, për shkak gabimesh. Për hollësi shihni regjistrin.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="497"/>
+        <location filename="../src/gui/folder.cpp" line="496"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 s’u njëkohësua dot, për shkak gabimesh. Për hollësi, shihni regjistrin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="503"/>
+        <location filename="../src/gui/folder.cpp" line="502"/>
         <source>Sync Activity</source>
         <translation>Veprimtari Njëkohësimesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="700"/>
+        <location filename="../src/gui/folder.cpp" line="699"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Po ndërrohet mënyrë VFS në dosjen “%1”</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="895"/>
+        <location filename="../src/gui/folder.cpp" line="894"/>
         <source>Could not read system exclude file</source>
         <translation>S’u lexua dot kartelë përjashtimi sistemi</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1134"/>
+        <location filename="../src/gui/folder.cpp" line="1133"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Dosja %1 qe krijuar, por qe përjashtuar më herët nga njëkohësimi. Të dhënat brenda saj nuk do të njëkohësohen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1137"/>
+        <location filename="../src/gui/folder.cpp" line="1136"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Dosja %1 qe krijuar, por qe përjashtuar më herët nga njëkohësimi. S’do të njëkohësohet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1149"/>
+        <location filename="../src/gui/folder.cpp" line="1148"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1356,41 +1351,32 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
         <translation>Ka përplasje të pazgjidhura.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="261"/>
-        <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
-Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
-You are going to lose access to your sync folder if you do not do so!</source>
-        <translation>Shtojca Suffix-VFS është nxjerrë nga përdorimi dhe do të hiqet nga hedhja në qarkullim 7.0.
-Ju lutemi, përdorni menunë e kontekstit dhe përzgjidhni “Çaktivizo mbulim për kartela virtuale”, që të garantoni hyrje të ardhshme në kartelat tuaja të njëkohësuara.
-Nëse nuk bëni kështu, do të humbni hyrje te dosja juaj e njëkohësuar!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="307"/>
         <source>%1 of %2 used</source>
         <translation>Përdorur %1 nga %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="394"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="387"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Po kërkohet për ndryshime te shërbyesi i largët &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="396"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="389"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Po kërkohet për ndryshime te shërbyesi vendor &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="400"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="393"/>
         <source>Reconciling changes</source>
         <translation>Po pajtohen ndryshimet mes tyre</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="440"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="433"/>
         <source>Queued</source>
         <translation>Vënë në radhë</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="275"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="268"/>
         <source>Local folder: %1</source>
         <translation>Dosje vendore: %1</translation>
     </message>
@@ -2186,122 +2172,122 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="236"/>
+        <location filename="../src/libsync/discovery.cpp" line="185"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>Njëkohësimi s’i mbulon lidhjet simbolike.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="245"/>
+        <location filename="../src/libsync/discovery.cpp" line="194"/>
         <source>File is listed on the ignore list.</source>
         <translation>Kartela bën pjesë te lista e shpërfilljeve.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="250"/>
+        <location filename="../src/libsync/discovery.cpp" line="199"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>Në këtë sistem kartelash nuk mbulohen emra kartelash që mbarojnë me një pikë.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="263"/>
+        <location filename="../src/libsync/discovery.cpp" line="212"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>Në këtë sistem kartelash nuk mbulohen emra kartelash që përmbajnë shenjën &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="266"/>
+        <location filename="../src/libsync/discovery.cpp" line="215"/>
         <source>File name contains at least one invalid character</source>
         <translation>Emri i kartelës përmban të paktën një shenjë të pavlefshme</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="268"/>
+        <location filename="../src/libsync/discovery.cpp" line="217"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>Në këtë sistem kartelash, emri i kartelës është një emër i rezervuar.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="277"/>
+        <location filename="../src/libsync/discovery.cpp" line="226"/>
         <source>Filename contains trailing spaces.</source>
         <translation>Emri i kartelës përmban shenja të zbrazëta në fund.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="280"/>
+        <location filename="../src/libsync/discovery.cpp" line="229"/>
         <source>Filename is too long.</source>
         <translation>Emri i kartelës është shumë i gjatë.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="283"/>
+        <location filename="../src/libsync/discovery.cpp" line="232"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>Kartela/Dosja është shpërfillur, ngaqë është e fshehur.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="287"/>
+        <location filename="../src/libsync/discovery.cpp" line="236"/>
         <source>Stat failed.</source>
         <translation>Statistikat dështuan.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="290"/>
+        <location filename="../src/libsync/discovery.cpp" line="239"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>Përplasje: Versioni i shërbyesit u shkarkua, kopja vendore u riemërtua dhe s’është ngarkuar.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="294"/>
+        <location filename="../src/libsync/discovery.cpp" line="243"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>Emri i kartelës s’mund të kodohet në sistemin tuaj të kartelave.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="297"/>
+        <location filename="../src/libsync/discovery.cpp" line="246"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>Emri i kartelës gjendet në listë bllokimesh te shërbyesi.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="423"/>
+        <location filename="../src/libsync/discovery.cpp" line="372"/>
         <source>server reported no %1</source>
         <translation>shërbyesi s’raportoi %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1184"/>
+        <location filename="../src/libsync/discovery.cpp" line="1070"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: U shpërfill, pasi shtegu i vet qe shpërzgjedhur</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1258"/>
+        <location filename="../src/libsync/discovery.cpp" line="1144"/>
         <source>Moved to invalid target, restoring</source>
         <translation>U shpu te vendmbërritje e pavlefshme, po rikthehet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1271"/>
+        <location filename="../src/libsync/discovery.cpp" line="1157"/>
         <source>Not allowed to remove, restoring</source>
         <translation>S’lejohet të hiqet, po rikthehet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1217"/>
+        <location filename="../src/libsync/discovery.cpp" line="1103"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>S’lejohet, ngaqë s’keni leje për shtim nëndosjesh te ajo dosje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="629"/>
+        <location filename="../src/libsync/discovery.cpp" line="575"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Gabim teksa bëhej një riemërtim, kod gjendjeje të patrajtuar: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1222"/>
+        <location filename="../src/libsync/discovery.cpp" line="1108"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>S’lejohet, ngaqë s’keni leje të shtoni kartela te ajo dosje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1235"/>
+        <location filename="../src/libsync/discovery.cpp" line="1121"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>S’lejohet të ngarkohet kjo kartelë, ngaqë është vetëm për lexim te shërbyesi, po rikthehet</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1381"/>
+        <location filename="../src/libsync/discovery.cpp" line="1267"/>
         <source>Error while reading the database</source>
         <translation>Gabim gjatë leximit të bazës së të dhënave</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1429"/>
+        <location filename="../src/libsync/discovery.cpp" line="1294"/>
         <source>This Space is currently unavailable</source>
         <translation>Kjo hapësirë aktualisht është e papërdorshme</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1450"/>
+        <location filename="../src/libsync/discovery.cpp" line="1315"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>Shërbyesi u përgjigj me një gabim teksa lexohej drejtoria &apos;%1&apos; : %2</translation>
     </message>
@@ -2368,7 +2354,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Kartela %1 s’mund të ruhet, për shkak të një përplasjeje emrash kartele vendore me %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="968"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="938"/>
         <source>Error updating metadata: %1</source>
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
@@ -2376,7 +2362,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <location filename="../src/libsync/propagatedownload.cpp" line="491"/>
         <location filename="../src/libsync/propagatedownload.cpp" line="874"/>
         <location filename="../src/libsync/propagatedownload.cpp" line="906"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="971"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="941"/>
         <source>The file %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
@@ -2509,32 +2495,27 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::PropagateRemoteMove</name>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="120"/>
-        <source>Could not rename %1 to %2, error: %3</source>
-        <translation>S’u emërtua dot %1 si %2, gabim: %3</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="167"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="114"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
         <translation>Shërbyesi u përgjigj me kod HTTP të gabuar. Pritej 201, por u mor &quot;%1 %2&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="205"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="152"/>
         <source>Error updating metadata: %1</source>
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="208"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="155"/>
         <source>The file %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="220"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="167"/>
         <source>Error writing metadata to the database</source>
         <translation>Gabim në shkrim tejtëdhënash te baza e të dhënave</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="213"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="160"/>
         <source>Error setting pin state</source>
         <translation>Gabim në caktim gjendjeje pini</translation>
     </message>
@@ -3261,48 +3242,48 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Administroni lidhje publike</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="988"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="977"/>
         <source>Open in %1</source>
         <translation>Hape me %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="999"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="988"/>
         <source>Show file versions in web browser</source>
         <translation>Shfaq në shfletues versione kartelash</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1021"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1010"/>
         <source>Rename...</source>
         <translation>Riemërtoni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1024"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1013"/>
         <source>Rename and upload...</source>
         <translation>Riemërtoni dhe ngarkoni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1029"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1033"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1018"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1022"/>
         <source>Move and rename...</source>
         <translation>Zhvendosni dhe riemërtoni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1036"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1025"/>
         <source>Move, rename and upload...</source>
         <translation>Zhvendosni, riemërtoni dhe ngarkoni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1039"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1028"/>
         <source>Delete local changes</source>
         <translation>Fshiji ndryshimet vendore</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1044"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1033"/>
         <source>Move and upload...</source>
         <translation>Zhvendosni dhe ngarkoni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1045"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="1034"/>
         <source>Delete</source>
         <translation>Fshije</translation>
     </message>
@@ -3323,64 +3304,59 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="155"/>
+        <location filename="../src/libsync/syncengine.cpp" line="154"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation>%1 (u anashkalua për shkak të një gabimi më të hershëm, do të riprovohet për %2)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="337"/>
+        <location filename="../src/libsync/syncengine.cpp" line="336"/>
         <source>Only %1 are available, need at least %2 to start</source>
         <comment>Placeholders are postfixed with file sizes using Utility::octetsToString()</comment>
         <translation>Ka të lira vetëm %1, që të fillohet lypsen të paktën %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="365"/>
+        <location filename="../src/libsync/syncengine.cpp" line="364"/>
         <source>Unable to open or create the local sync database. Make sure you have write access in the sync folder.</source>
         <translation>S’arrihet të hapet apo të krijohet një bazë vendore të dhënash njëkohësimi. Sigurohuni që keni të drejta shkrimi te dosja e njëkohësimeve.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="817"/>
+        <location filename="../src/libsync/syncengine.cpp" line="810"/>
         <source>Aborted due to %1</source>
         <translation>U ndërpre për shkak të %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="835"/>
+        <location filename="../src/libsync/syncengine.cpp" line="828"/>
         <source>Disk space is low: Downloads that would reduce free space below %1 were skipped.</source>
         <translation>Hapësira në disk është e pakët: Shkarkimet që do ta ulnin hapësirën e lirë nën %1 janë anashkaluar.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="842"/>
+        <location filename="../src/libsync/syncengine.cpp" line="835"/>
         <source>There is insufficient space available on the server for some uploads.</source>
         <translation>Ka hapësirë të pamjaftueshme në shërbyes për disa nga ngarkimet.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="277"/>
+        <location filename="../src/libsync/syncengine.cpp" line="276"/>
         <source>Unresolved conflict.</source>
         <translation>Përplasje e pazgjidhur.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="83"/>
+        <location filename="../src/libsync/syncengine.cpp" line="82"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>dalje nga aplikacioni</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="381"/>
-        <source>Using virtual files with suffix, but suffix is not set</source>
-        <translation>Po përdoren kartela virtuale me prapashtesë, por s’është caktuar prapashtesë</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/syncengine.cpp" line="393"/>
+        <location filename="../src/libsync/syncengine.cpp" line="386"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>S’arrihet të lexohet lista e bllokimeve prej bazës vendore të të dhënave</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="420"/>
+        <location filename="../src/libsync/syncengine.cpp" line="413"/>
         <source>Unable to read from the sync journal.</source>
         <translation>S’arrihet të lexohet prej ditari njëkohësimesh.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="494"/>
+        <location filename="../src/libsync/syncengine.cpp" line="487"/>
         <source>Cannot open the sync journal</source>
         <translation>S’hapet dot regjistri i njëkohësimeve.</translation>
     </message>
@@ -3404,7 +3380,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="327"/>
+        <location filename="../src/libsync/theme.cpp" line="322"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;Version %1. Për më tepër hollësi, vizitoni &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Për probleme të ditura dhe ndihmë, ju lutemi, vizitoni: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Nga Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller dhe të tjerë.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Të drejta kopjimi ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Shpërndarë nga %4 dhe licencuar sipas GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 dhe stema e %5 janë shenja tregtare të regjistruara të %4 në Shtetet e Bashkuara, vende të tjera, ose te që të dy palët.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3469,27 +3445,19 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="85"/>
+        <location filename="../src/common/vfs.cpp" line="77"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>Veçoria për sistem Virtual kartelash nuk mbulon disk si “sync root”</translation>
     </message>
     <message>
-        <location filename="../src/common/vfs.cpp" line="89"/>
+        <location filename="../src/common/vfs.cpp" line="81"/>
         <source>The Virtual filesystem feature requires a NTFS file system, %1 is using %2</source>
         <translation>Veçoria sistem Virtual kartelash lyp një sistem NTFS kartelash, %1 po përdor %2</translation>
     </message>
     <message>
-        <location filename="../src/common/vfs.cpp" line="93"/>
+        <location filename="../src/common/vfs.cpp" line="85"/>
         <source>The Virtual filesystem feature is not supported on network drives</source>
         <translation>Veçoria e sistemit Virtual të kartelave nuk mbulohet në disqe rrjeti</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::VfsSuffix</name>
-    <message>
-        <location filename="../src/plugins/vfs/suffix/vfs_suffix.cpp" line="108"/>
-        <source>Cannot create a placeholder because a file with the placeholder name already exist</source>
-        <translation>S’mund të krijohet një vendmbajtëse, ngaqë ka tashmë një kartelë me emrin e vendmbajtëses</translation>
     </message>
 </context>
 <context>
@@ -3546,7 +3514,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Wizard::AccountConfiguredSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="72"/>
+        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="67"/>
         <source>Invalid local download directory: %1</source>
         <translation>Drejtori vendore shkarkimesh e pavlefshme: %1</translation>
     </message>
@@ -4149,12 +4117,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="582"/>
+        <location filename="../src/libsync/theme.cpp" line="577"/>
         <source>Username</source>
         <translation>Emër përdoruesi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="584"/>
+        <location filename="../src/libsync/theme.cpp" line="579"/>
         <source>E-mail address</source>
         <translation>Adresë email</translation>
     </message>
@@ -4213,12 +4181,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="477"/>
+        <location filename="../src/gui/main.cpp" line="465"/>
         <source>Error accessing the configuration file</source>
         <translation>Gabim gjatë hyrjes në kartelën e formësimit</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="478"/>
+        <location filename="../src/gui/main.cpp" line="466"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Pati një gabim teksa hyhej te kartela e formësimit në %1.</translation>
     </message>
@@ -4226,7 +4194,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="311"/>
+        <location filename="../src/libsync/theme.cpp" line="306"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Biblioteka Qt %3, %4%7Po përdoret shtojcë kartelash virtuale: %5%7%6</translation>
     </message>
@@ -4234,7 +4202,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="294"/>
+        <location filename="../src/libsync/theme.cpp" line="289"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (Montuar me Qt %2)</translation>
     </message>
@@ -4242,7 +4210,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="299"/>
+        <location filename="../src/libsync/theme.cpp" line="294"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
@@ -4400,7 +4368,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="184"/>
+        <location filename="../src/gui/main.cpp" line="172"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Disa rregullime qenë formësuar në versione më të rinj të këtij klienti dhe përdorin veçori që s’janë të pranishme në këtë version</translation>
     </message>
