@@ -1,4 +1,4 @@
-Feature: filter activity for user
+	Feature: filter activity for user
     As a user
     I want to filter activity
     So that I can view activity of specific user

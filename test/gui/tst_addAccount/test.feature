@@ -67,10 +67,11 @@ Feature: adding accounts
         When the user selects download everything option in advanced section
         Then the "Enable virtual file support" button should be available
 
-    @skipOnOC10
+    @skipOnOC10 @predefined_users
     Scenario: Add space manually from sync connection window
         Given user "Alice" has created folder "simple-folder" in the server
         And the user has started the client
+        And user "Alice" has created a folder "simple-folder" inside the sync folder of branded client
         And the user has entered the following account information:
             | server   | %local_server% |
             | user     | Alice          |

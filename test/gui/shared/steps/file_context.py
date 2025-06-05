@@ -20,6 +20,7 @@ from helpers.FilesHelper import (
     prefix_path_namespace,
     remember_path,
 )
+from helpers.UserHelper import get_username_for_user
 
 
 def folder_exists(folder_path, timeout=1000):
@@ -116,6 +117,18 @@ def step(context, username, foldername):
 
 @Given('user "|any|" has created a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
+    if get_config('predefined_users'):
+        username = get_username_for_user(username)
+    create_folder(foldername, username)
+
+
+@Given(
+    'user "|any|" has created a folder "|any|" inside the sync folder of branded client'
+)
+def step(context, username, foldername):
+    if not get_config('predefined_users'):
+        return
+    username = get_username_for_user(username)
     create_folder(foldername, username)
 
 
@@ -251,6 +264,8 @@ def step(context, item_type, resource):
 
 @When('user "|any|" creates the following files inside the sync folder:')
 def step(context, username):
+    if get_config('predefined_users'):
+        username = get_username_for_user(username)
     wait_for_client_to_be_ready()
 
     for row in context.table[1:]:
