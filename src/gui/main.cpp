@@ -85,8 +85,6 @@ struct CommandLineOptions
     bool logDebug = false;
 
     bool debugMode = false;
-
-    QString fileToOpen;
 };
 
 CommandLineOptions parseOptions(const QStringList &arguments)
@@ -135,10 +133,6 @@ CommandLineOptions parseOptions(const QStringList &arguments)
     auto debugOption = addOption({QStringLiteral("debug"), QApplication::translate("CommandLine", "Enable debug mode.")});
     addOption({QStringLiteral("cmd"), QApplication::translate("CommandLine", "Forward all arguments to the cmd client. This argument must be the first.")});
 
-    // virtual file system parameters (optional)
-    parser.addPositionalArgument(QStringLiteral("vfs file"), QApplication::translate("CommandLine", "Virtual file system file to be opened (optional)."),
-        {QStringLiteral("[<vfs file>]")});
-
     parser.process(arguments);
 
     CommandLineOptions out;
@@ -169,12 +163,6 @@ CommandLineOptions parseOptions(const QStringList &arguments)
         out.debugMode = true;
     }
 
-    auto positionalArguments = parser.positionalArguments();
-
-    // ignore any positional arguments beyond the first one
-    if (!positionalArguments.empty()) {
-        out.fileToOpen = positionalArguments.front();
-    }
     return out;
 }
 
@@ -409,7 +397,7 @@ int main(int argc, char **argv)
         // load the resources
         const OCC::ResourcesLoader resource;
 
-        // Create a `Platform` instance so it can set-up/tear-down stuff for us, and do any
+        // Create a `Platform` instance so it can set up/tear down stuff for us, and do any
         // initialisation that needs to be done before creating a QApplication
         const auto platform = Platform::create();
 
@@ -423,8 +411,8 @@ int main(int argc, char **argv)
 #ifdef Q_OS_LINUX
         // HACK:
         // With X11 arg0.name is used to map WM_CLASS to the desktop file.
-        // With Wayland it uses app.desktopFileName() or app.organizationDomain()
-        // As we preferably use AppImages the real deskop file name is unknown, we just ensure it mathces the StartupWMClass entry in our desktop file
+        // With Wayland, it uses app.desktopFileName() or app.organizationDomain()
+        // As we preferably use AppImages the real desktop file name is unknown, we just ensure it matches the StartupWMClass entry in our desktop file
         if (qgetenv("XDG_SESSION_TYPE") == "wayland") {
             // https://bugreports.qt.io/browse/QTBUG-77182 Qt 6.9 brings setAppId() but its private api
             app.setDesktopFileName(QFileInfo(app.applicationFilePath()).baseName());
@@ -498,9 +486,6 @@ int main(int argc, char **argv)
                 if (options.quitInstance) {
                     qApp->quit();
                 }
-                if (!options.fileToOpen.isEmpty()) {
-                    QTimer::singleShot(0, ocApp.get(), [ocApp = ocApp.get(), fileToOpen = options.fileToOpen] { ocApp->openVirtualFile(fileToOpen); });
-                }
             }
         });
 
@@ -517,7 +502,7 @@ int main(int argc, char **argv)
         // We cannot do this earlier, because the UI needs to be set up in order to
         // show sync errors. We also want to wait for the auto-updater to finish, in case it needs
         // to install an update.
-        // Setup the folders and start syncing. This includes a downgrade-detection, in which case the return value
+        // Set up the folders and start syncing. This includes a downgrade-detection, in which case the return value
         // is empty. Note that the value 0 (zero) is a valid return value (non-empty), in which case
         // the dialog is not shown.
         if (!FolderMan::instance()->setupFoldersFromConfig().has_value()) {
@@ -529,9 +514,6 @@ int main(int argc, char **argv)
         if (options.show) {
             ocApp->gui()->slotShowSettings();
             // The user explicitly requested the settings dialog, so don't start the new-account wizard.
-        } else if (!options.fileToOpen.isEmpty() && !AccountManager::instance()->accounts().isEmpty()) {
-            // Only try to open a file when accounts have been configured.
-            QTimer::singleShot(0, ocApp.get(), [ocApp = ocApp.get(), fileToOpen = options.fileToOpen] { ocApp->openVirtualFile(fileToOpen); });
         }
 
         // Display the wizard if we don't have an account yet, and no other UI is showing.

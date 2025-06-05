@@ -40,20 +40,14 @@ Vfs::Vfs(QObject* parent)
 {
 }
 
-QString Vfs::underlyingFileName(const QString &fileName) const
-{
-    return fileName;
-}
-
 Vfs::~Vfs() = default;
 
 Vfs::Mode Vfs::modeFromString(const QString &str)
 {
     // Note: Strings are used for config and must be stable
     // keep in sync with: QString Utility::enumToString(Vfs::Mode mode)
-    // which is defined BELOW
-    if (str == QLatin1String("suffix")) {
-        return WithSuffix;
+    if (str == QLatin1String("off")) {
+        return Off;
     } else if (str == QLatin1String("wincfapi")) {
         return WindowsCfApi;
     }
@@ -66,8 +60,6 @@ QString Utility::enumToString(Vfs::Mode mode)
     // Note: Strings are used for config and must be stable
     // keep in sync with: Optional<Vfs::Mode> Vfs::modeFromString(const QString &str)
     switch (mode) {
-    case Vfs::Mode::WithSuffix:
-        return QStringLiteral("suffix");
     case Vfs::Mode::WindowsCfApi:
         return QStringLiteral("wincfapi");
     case Vfs::Mode::Off:
@@ -162,7 +154,7 @@ void Vfs::wipeDehydratedVirtualFiles()
         _setupParams->journal->deleteFileRecord(relativePath);
 
         // If the local file is a dehydrated placeholder, wipe it too.
-        // Otherwise leave it to allow the next sync to have a new-new conflict.
+        // Otherwise, leave it to allow the next sync to have a new-new conflict.
         const QString absolutePath = _setupParams->filesystemPath + relativePath;
         if (QFile::exists(absolutePath)) {
             // according to our db this is a dehydrated file, check it  to be sure
@@ -199,17 +191,17 @@ bool OCC::VfsPluginManager::isVfsPluginAvailable(Vfs::Mode mode) const
         auto pluginPath = pluginFileName(QStringLiteral("vfs"), name);
         QPluginLoader loader(pluginPath);
 
-        auto basemeta = loader.metaData();
-        if (basemeta.isEmpty() || !basemeta.contains(QStringLiteral("IID"))) {
+        auto baseMetaData = loader.metaData();
+        if (baseMetaData.isEmpty() || !baseMetaData.contains(QStringLiteral("IID"))) {
             qCDebug(lcPlugin) << "Plugin doesn't exist:" << loader.fileName() << "LibraryPath:" << QCoreApplication::libraryPaths();
             return false;
         }
-        if (basemeta[QStringLiteral("IID")].toString() != QLatin1String("org.owncloud.PluginFactory")) {
-            qCWarning(lcPlugin) << "Plugin has wrong IID" << loader.fileName() << basemeta[QStringLiteral("IID")];
+        if (baseMetaData[QStringLiteral("IID")].toString() != QLatin1String("org.owncloud.PluginFactory")) {
+            qCWarning(lcPlugin) << "Plugin has wrong IID" << loader.fileName() << baseMetaData[QStringLiteral("IID")];
             return false;
         }
 
-        auto metadata = basemeta[QStringLiteral("MetaData")].toObject();
+        auto metadata = baseMetaData[QStringLiteral("MetaData")].toObject();
         if (metadata[QStringLiteral("type")].toString() != QLatin1String("vfs")) {
             qCWarning(lcPlugin) << "Plugin has wrong type" << loader.fileName() << metadata[QStringLiteral("type")];
             return false;
@@ -236,10 +228,6 @@ Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
 {
     if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
         return Vfs::WindowsCfApi;
-    } else if (isVfsPluginAvailable(Vfs::WithSuffix)) {
-        return Vfs::WithSuffix;
-    } else if (isVfsPluginAvailable(Vfs::Off)) {
-        return Vfs::Off;
     }
 
     return Vfs::Off;
@@ -253,7 +241,7 @@ std::unique_ptr<Vfs> OCC::VfsPluginManager::createVfsFromPlugin(Vfs::Mode mode) 
     auto pluginPath = pluginFileName(QStringLiteral("vfs"), name);
 
     if (!isVfsPluginAvailable(mode)) {
-        qCCritical(lcPlugin) << "Could not load plugin: not existant or bad metadata" << pluginPath;
+        qCCritical(lcPlugin) << "Could not load plugin: not existent or bad metadata" << pluginPath;
         return nullptr;
     }
 

@@ -101,7 +101,7 @@ public:
     /**
      * @brief appNameGUI - Human readable application name.
      *
-     * Use and redefine this if the human readable name contains spaces,
+     * Use and redefine this if the human-readable name contains spaces,
      * special chars and such.
      *
      * By default, the name is derived from the APPLICATION_NAME
@@ -119,8 +119,8 @@ public:
      * name in the GUI, redefine appNameGUI.
      *
      * By default, the name is derived from the APPLICATION_SHORTNAME
-     * cmake variable, and should be the same. This method is only
-     * reimplementable for legacy reasons.
+     * cmake variable, and should be the same. This method exists only for
+     * legacy reasons.
      *
      * Warning: Do not modify this value, as many things, e.g. settings
      * depend on it! You most likely want to modify \ref appNameGUI().
@@ -128,8 +128,6 @@ public:
      * @return QString with app name.
      */
     QString appName() const;
-
-    QString appDotVirtualFileSuffix() const;
 
     QString orgDomainName() const;
 
@@ -142,7 +140,7 @@ public:
     virtual QString configFileName() const;
 
     /**
-     * get an sync state icon
+     * get a sync state icon
      */
 
     QIcon themeTrayIcon(const SyncResult &result, bool sysTrayMenuVisible = false,
@@ -291,7 +289,7 @@ public:
     /**
      * @brief How to handle the userID
      *
-     * @value UserIDUserName Wizard asks for user name as ID
+     * @value UserIDUserName Wizard asks for username as ID
      * @value UserIDEmail Wizard asks for an email as ID
      * @value UserIDCustom Specify string in \ref customUserID
      */
@@ -309,7 +307,7 @@ public:
     virtual UserIDType userIDType() const;
 
     /**
-     * @brief Allows to customize the type of user ID (e.g. user name, email)
+     * @brief Allows to customize the type of user ID (e.g. username, email)
      *
      * @note This string cannot be translated, but is still useful for
      *       referencing brand name IDs (e.g. "ACME ID", when using ACME.)
@@ -337,7 +335,7 @@ public:
     /**
      * @brief the server folder that should be queried for the quota information
      *
-     * This can be configured to show the quota infromation for a different
+     * This can be configured to show the quota information for a different
      * folder than the root. This is the folder on which the client will do
      * PROPFIND calls to get "quota-available-bytes" and "quota-used-bytes"
      *
@@ -360,7 +358,7 @@ public:
     virtual QString oauthLocalhost() const;
 
     /**
-     * By default the client tries to get the OAuth access endpoint and the OAuth token endpoint from /.well-known/openid-configuration
+     * By default, the client tries to get the OAuth access endpoint and the OAuth token endpoint from /.well-known/openid-configuration
      * Setting this allow authentication without a well known url
      *
      * @return QPair<OAuth access endpoint, OAuth token endpoint>
@@ -373,20 +371,20 @@ public:
     virtual QVector<quint16> oauthPorts() const;
 
     /**
-     * Returns the required opeidconnect scopes
+     * Returns the required OpenIDConnect scopes
      */
     virtual QString openIdConnectScopes() const;
 
     /**
-     * Returns the openidconnect promt type
+     * Returns the OpenIDConnect prompt type
      * It is supposed to be "consent select_account".
-     * For Konnect it currently needs to be select_account,
+     * For "Konnect" it currently needs to be select_account,
      * which is the current default.
      */
     virtual QString openIdConnectPrompt() const;
 
     /**
-     * Defines whether the client attempts danamic registration with the IdP or uses the
+     * Defines whether the client attempts dynamic registration with the IdP or uses the
      * oauthClientId() and oauthClientSecret()
      * Default: True
      */
@@ -411,7 +409,7 @@ public:
 
     /**
      * Whether to clear cookies before checking status.php
-     * This is used with F5 BIG-IP seups.
+     * This is used with F5 BIG-IP setups.
      */
     virtual bool connectionValidatorClearCookies() const;
 
@@ -449,7 +447,7 @@ public:
 
 
     /**
-     * Whether or not to enable move-to-trash instead of deleting files that are gone from the server.
+     * Whether to enable move-to-trash instead of deleting files that are gone from the server.
      * Default: true
      */
     virtual bool enableMoveToTrash() const;

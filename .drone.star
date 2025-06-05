@@ -27,7 +27,6 @@ OC_CI_SQUISH = "owncloudci/squish:fedora-39-8.0.0-qt67x-linux64"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3:1.4.0"
-PLUGINS_SLACK = "plugins/slack"
 TOOLHIPPIE_CALENS = "toolhippie/calens:0.4.0"
 
 # npm packages to install
@@ -43,7 +42,6 @@ secrets = {
     "GITHUB_TOKEN": "github_token",  # not available for PRs
     "AWS_ACCESS_KEY_ID": "cache_public_s3_access_key",
     "AWS_SECRET_ACCESS_KEY": "cache_public_s3_secret_key",
-    "ROCKETCHAT_WEBHOOK": "rocketchat_talk_webhook",
 }
 
 dir = {
@@ -54,12 +52,6 @@ dir = {
     "build": "/drone/src/build",
     "pythonModules": "/usr/local/lib/python3.10/site-packages",
     "pythonModules64": "/usr/local/lib64/python3.10/site-packages",
-}
-
-notify_channels = {
-    "desktop-ci": {
-        "type": "channel",
-    },
 }
 
 branch_ref = [
@@ -414,35 +406,20 @@ def changelog(ctx):
     }]
 
 def notification():
-    steps = [{
-        "name": "create-template",
-        "image": OC_CI_ALPINE,
-        "environment": {
-            "CACHE_ENDPOINT": S3_PUBLIC_CACHE_SERVER,
-            "CACHE_BUCKET": S3_PUBLIC_CACHE_BUCKET,
-        },
-        "commands": [
-            "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
-        ],
-    }]
-
-    for channel, params in notify_channels.items():
-        settings = {
-            "webhook": from_secret("ROCKETCHAT_WEBHOOK"),
-            "template": "file:%s/template.md" % dir["base"],
-        }
-        if params["type"] == "user":
-            settings["recipient"] = channel
-        else:
-            settings["channel"] = channel
-
-        steps.append(
-            {
-                "name": "notification-%s" % channel,
-                "image": PLUGINS_SLACK,
-                "settings": settings,
+    steps = [
+        {
+            "name": "notify-matrix",
+            "image": OC_CI_ALPINE,
+            "environment": {
+                "MATRIX_TOKEN": {
+                    "from_secret": "matrix_token",
+                },
             },
-        )
+            "commands": [
+                "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
+            ],
+        },
+    ]
 
     return [{
         "kind": "pipeline",

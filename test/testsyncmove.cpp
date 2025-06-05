@@ -989,7 +989,6 @@ private Q_SLOTS:
         QTest::addColumn<Vfs::Mode>("vfsMode");
 
         QTest::newRow("Vfs::Off") << Vfs::Off;
-        QTest::newRow("Vfs::WithSuffix") << Vfs::WithSuffix;
 #ifdef Q_OS_WIN32
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
             QTest::newRow("Vfs::WindowsCfApi") << Vfs::WindowsCfApi;
@@ -1004,10 +1003,6 @@ private Q_SLOTS:
         QFETCH(Vfs::Mode, vfsMode);
         const auto getName = [vfsMode] (const QString &s)
         {
-            if (vfsMode == Vfs::WithSuffix)
-            {
-                return QStringLiteral("%1%2").arg(s, Theme::instance()->appDotVirtualFileSuffix());
-            }
             return s;
         };
         const QString src = QStringLiteral("folder/folderA/file.txt");
@@ -1050,11 +1045,6 @@ private Q_SLOTS:
 
         QVERIFY(!fakeFolder.currentLocalState().find(src));
         QVERIFY(fakeFolder.currentLocalState().find(getName(dest)));
-        if (vfsMode == Vfs::WithSuffix)
-        {
-            // the placeholder was not restored as it is still in error state
-            QVERIFY(!fakeFolder.currentLocalState().find(dest));
-        }
         QVERIFY(fakeFolder.currentRemoteState().find(src));
         QVERIFY(!fakeFolder.currentRemoteState().find(dest));
     }

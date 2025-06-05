@@ -31,11 +31,6 @@ Vfs::Mode VfsOff::mode() const
     return Vfs::Off;
 }
 
-QString VfsOff::fileSuffix() const
-{
-    return QString();
-}
-
 void VfsOff::stop() { }
 
 void VfsOff::unregisterFolder() { }
