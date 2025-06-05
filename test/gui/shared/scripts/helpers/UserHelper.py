@@ -3,6 +3,8 @@ from typing import NamedTuple
 import json
 import os
 
+from helpers.ConfigHelper import get_config
+
 
 class User(NamedTuple):
     username: str
@@ -81,7 +83,9 @@ def get_username_for_user(username):
 
 
 def init_predefined_users():
-    with open(os.path.abspath("../users.json"), encoding="utf-8") as f:
+    with open(
+        os.path.abspath("../" + get_config("predefined_users")), encoding="utf-8"
+    ) as f:
         users = json.load(f)
         for key, value in users.items():
             test_users.update(
