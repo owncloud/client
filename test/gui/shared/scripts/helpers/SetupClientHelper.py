@@ -99,7 +99,7 @@ def start_client():
     check_keyring()
 
     squish.startApplication(
-        'owncloud -s'
+        f'{get_config("aut_name")} -s'
         + f' --logfile {get_config("clientLogFile")}'
         + ' --logdebug'
         + ' --logflush'

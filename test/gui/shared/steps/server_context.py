@@ -2,6 +2,7 @@ from helpers.api import provisioning, sharing_helper, webdav_helper as webdav
 import helpers.api.oc10 as oc
 
 from pageObjects.Toolbar import Toolbar
+from helpers.ConfigHelper import get_config
 
 
 @Given('app "|any|" has been "|any|" in the server')
@@ -34,6 +35,8 @@ def step(context, user_name, resource_name):
 
 @Then('as "|any|" the file "|any|" should have the content "|any|" in the server')
 def step(context, user_name, file_name, content):
+    if get_config('predefined_users'):
+        return
     text_content = webdav.get_file_content(user_name, file_name)
     test.compare(
         text_content,
@@ -115,6 +118,8 @@ def step(context, user_name, folder_name, items_number):
 
 @Given('user "|any|" has created folder "|any|" in the server')
 def step(context, user, folder_name):
+    if get_config('predefined_users'):
+        return
     webdav.create_folder(user, folder_name)
 
 

@@ -313,6 +313,7 @@ def step(context, displayname):
 )
 def step(context, sync_path, wizard):
     sync_path = substitute_inline_codes(sync_path)
+    print('sync_path', sync_path)
 
     actual_sync_path = ''
     if wizard == 'configuration':
@@ -320,6 +321,7 @@ def step(context, sync_path, wizard):
     else:
         actual_sync_path = SyncConnectionWizard.get_local_sync_path()
 
+    print('actual_sync_path', actual_sync_path)
     test.compare(
         actual_sync_path,
         sync_path,

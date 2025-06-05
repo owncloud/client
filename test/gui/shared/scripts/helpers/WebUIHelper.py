@@ -46,6 +46,14 @@ def oidc_login(page):
     page.wait_for_selector('text=Login Successful')
 
 
+# def oidc_login(page):
+#     page.fill('#email', envs['OC_USERNAME'])
+#     page.click('//button//span[contains(text(), "Next")]')
+#     page.fill('#password', envs['OC_PASSWORD'])
+#     page.click('//button//span[contains(text(), "Sign in")]')
+#     page.wait_for_selector('//h1[contains(text(), "Login Successful")]')
+
+
 def oauth_login(page):
     # login
     page.fill('#user', envs['OC_USERNAME'])
