@@ -159,7 +159,7 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
                         Q_ASSERT(!token.isEmpty());
                         // get the capabilities so we can block oc10 accounts. Checking for spaces support is not 
                         // great and this should be refined, but for now it's effective.
-                        FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->accountBuilder().serverUrl());
+                        FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->userInfoUrl());
                         FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
                         if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
                             _context->window()->showErrorMessage(tr("The server is not supported by this client"));
