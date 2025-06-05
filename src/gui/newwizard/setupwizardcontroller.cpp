@@ -161,6 +161,12 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
                         // great and this should be refined, but for now it's effective.
                         FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->userInfoUrl());
                         FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
+                        if (!capabilitiesResult.success()) {
+                            // I don't think we want to display the core error message as it's stuff like json errors and not
+                            // useful to the user but we can change this after we have the discussion about error messages
+                            _context->window()->showErrorMessage(tr("Unable to retrieve capabilities from server"));
+                            changeStateTo(_currentState->state());
+                        }
                         if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
                             _context->window()->showErrorMessage(tr("The server is not supported by this client"));
                             changeStateTo(_currentState->state());
