@@ -69,8 +69,8 @@ Feature: adding accounts
 
     @skipOnOC10 @predefined_users
     Scenario: Add space manually from sync connection window
-        Given user "Alice" has created folder "simple-folder" in the server
-        And the user has started the client
+        Given the user has started the client
+        And user "Alice" has created a folder "simple-folder" inside the sync folder
         And the user has entered the following account information:
             | server   | %local_server% |
             | user     | Alice          |
