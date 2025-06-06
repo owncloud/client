@@ -832,8 +832,11 @@ FakeErrorReply::FakeErrorReply(QNetworkAccessManager::Operation op, const QNetwo
     case 403:
         setError(ContentAccessDenied, QStringLiteral("Fake access denied error"));
         break;
+    case 404:
+        setError(UnknownServerError, QStringLiteral("Fake file not found error"));
+        break;
     default:
-        setError(InternalServerError, QStringLiteral("Internal Server Fake Error"));
+        setError(InternalServerError, QStringLiteral("Fake internal server error"));
     }
     QMetaObject::invokeMethod(this, &FakeErrorReply::respond, Qt::QueuedConnection);
 }
