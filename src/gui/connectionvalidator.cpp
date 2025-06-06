@@ -217,6 +217,7 @@ void ConnectionValidator::checkAuthentication()
     job->start();
 }
 
+// Lisa todo: I hit this once and nothing happened in the gui?!
 void ConnectionValidator::slotAuthFailed()
 {
     auto job = qobject_cast<PropfindJob *>(sender());

@@ -29,6 +29,10 @@ public:
     SetupWizardState state() const override;
 
     void evaluatePage() override;
+
+protected:
+
+    void handleOAuthResult(OAuth::Result result, const QString &token, const QString &refreshToken);
 };
 
 } // OCC::Wizard

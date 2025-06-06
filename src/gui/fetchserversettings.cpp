@@ -53,6 +53,7 @@ void FetchServerSettingsJob::start()
             job->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject().value(QStringLiteral("capabilities")).toObject();
         qCInfo(lcfetchserversettings) << "Server capabilities" << caps;
         if (job->ocsSuccess()) {
+            // todo: #23 - this comment is important relative to that review
             // Record that the server supports HTTP/2
             // Actual decision if we should use HTTP/2 is done in AccessManager::createRequest
             // TODO: http2 support is currently disabled in the client code

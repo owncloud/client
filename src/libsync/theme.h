@@ -155,7 +155,7 @@ public:
     /**
      * Characteristics: bool if more than one sync folder is allowed
      */
-    [[deprecated("oc10 only")]] virtual bool singleSyncFolder() const;
+    [[deprecated("Support for single sync folder is removed as of client 7.0")]] virtual bool singleSyncFolder() const;
 
     /**
      * When true, client works with multiple accounts.
@@ -363,7 +363,7 @@ public:
      *
      * @return QPair<OAuth access endpoint, OAuth token endpoint>
      */
-    virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
+    [[deprecated("oauth url override support has been removed as of client 7.0")]] virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
      * List of ports to use for the local redirect server
@@ -437,7 +437,7 @@ public:
     /**
      * Enable Webfinger page in setup wizard.
      */
-    virtual bool wizardEnableWebfinger() const;
+    [[deprecated("Legacy web finger support has been removed starting with client 7.0.")]] virtual bool wizardEnableWebfinger() const;
 
     /**
      * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.

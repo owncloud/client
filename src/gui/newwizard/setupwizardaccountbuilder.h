@@ -16,8 +16,8 @@
 
 #include "account.h"
 #include "gui/creds/httpcredentialsgui.h"
-#include "networkjobs.h"
 #include "networkjobs/fetchuserinfojobfactory.h"
+
 
 namespace OCC::Wizard {
 
@@ -43,11 +43,15 @@ public:
      */
     virtual bool isValid() = 0;
 
+    // this is soooo temporary, just to get us through til we refactor this base away with the
+    // new, new wizard
+    virtual QString token() = 0;
     /**
      * The username used for ownCloud 10 dav requests.
      */
     QString davUser();
     void setDavUser(const QString &user);
+
 
     virtual FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) = 0;
 
@@ -55,38 +59,16 @@ private:
     QString _davUser;
 };
 
-class HttpBasicAuthenticationStrategy : public AbstractAuthenticationStrategy
+class OAuthAuthenticationStrategy : public AbstractAuthenticationStrategy
 {
 public:
-    explicit HttpBasicAuthenticationStrategy(const QString &username, const QString &password);
+    explicit OAuthAuthenticationStrategy(const QString &token, const QString &refreshToken);
 
     HttpCredentialsGui *makeCreds() override;
 
     bool isValid() override;
 
-    // access is needed to be able to check these credentials against the server
-    QString password() const;
-
-    /**
-     *  The user name used for authentication
-     */
-    QString loginUser() const;
-
-    FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) override;
-
-private:
-    QString _loginUser;
-    QString _password;
-};
-
-class OAuth2AuthenticationStrategy : public AbstractAuthenticationStrategy
-{
-public:
-    explicit OAuth2AuthenticationStrategy(const QString &token, const QString &refreshToken);
-
-    HttpCredentialsGui *makeCreds() override;
-
-    bool isValid() override;
+    QString token() override { return _token; }
 
     FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) override;
 
@@ -102,33 +84,28 @@ private:
 class SetupWizardAccountBuilder
 {
 public:
-    SetupWizardAccountBuilder();
+    SetupWizardAccountBuilder() = default;
 
     /**
      * Set ownCloud server URL as well as the authentication type that needs to be used with this server.
      * @param serverUrl URL to server
      */
-    void setServerUrl(const QUrl &serverUrl, DetermineAuthTypeJob::AuthType workflowType);
+    void setServerUrl(const QUrl &serverUrl, AuthenticationType workflowType);
     QUrl serverUrl() const;
 
-    /**
-     * Set URL of WebFinger server used to look up the user's server.
-     * Only used when WebFinger support is enabled by the theme.
-     * @param webFingerServerUrl URL to WebFinger server
-     */
-    void setLegacyWebFingerServerUrl(const QUrl &webFingerServerUrl);
-    QUrl legacyWebFingerServerUrl() const;
+    void setWebFingerAuthenticationServerUrl(const QUrl &url);
+    QUrl webFingerAuthenticationServerUrl() const;
 
     /**
-     * Set URL of WebFinger server used to look up the user's server.
-     * Only used when WebFinger support is enabled by the theme.
-     * @param username
+     * @brief effectiveAuthenticationServerUrl is the authentication url "in play"
+     * @return if webfinger is in use, return the webfinger url, else return the standard url.
      */
-    void setLegacyWebFingerUsername(const QString &username);
-    QString legacyWebFingerUsername() const;
-
-    // TODO: move this out of the class's state
-    DetermineAuthTypeJob::AuthType authType();
+    QUrl effectiveAuthenticationServerUrl() const
+    {
+        if (!_webFingerAuthenticationServerUrl.isEmpty())
+            return _webFingerAuthenticationServerUrl;
+        return _serverUrl;
+    }
 
     void setAuthenticationStrategy(AbstractAuthenticationStrategy *strategy);
     AbstractAuthenticationStrategy *authenticationStrategy() const;
@@ -169,9 +146,6 @@ public:
      */
     AccountPtr build();
 
-    void setWebFingerAuthenticationServerUrl(const QUrl &url);
-    QUrl webFingerAuthenticationServerUrl() const;
-
     void setWebFingerInstances(const QVector<QUrl> &instancesList);
     QVector<QUrl> webFingerInstances() const;
 
@@ -181,15 +155,16 @@ public:
 private:
     QUrl _serverUrl;
 
-    QString _legacyWebFingerUsername;
-    QUrl _legacyWebFingerServerUrl;
-
     QUrl _webFingerAuthenticationServerUrl;
     QVector<QUrl> _webFingerInstances;
     QUrl _webFingerSelectedInstance;
 
-    DetermineAuthTypeJob::AuthType _authType = DetermineAuthTypeJob::AuthType::Unknown;
+    // todo: #20 - the authentication type was originally used to support basic http authentication for ocXX as well as OAuth, but
+    // basic authentication is now gone. The only valid AuthenticationType is OAuth.
+    AuthenticationType _authType = AuthenticationType::Unknown;
 
+    // todo: either with the new wizard or #20: there is only one valid authentication strategy now, which is OAuthAuthenticationStrategy.
+    // remove the base class and refactor this abstraction away.
     std::unique_ptr<AbstractAuthenticationStrategy> _authenticationStrategy;
 
     QVariantMap _dynamicRegistrationData;

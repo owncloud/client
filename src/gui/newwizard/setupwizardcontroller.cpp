@@ -1,15 +1,12 @@
 #include "setupwizardcontroller.h"
 
 #include "gui/accountmanager.h"
-#include "gui/application.h"
+#include "gui/networkadapters/fetchcapabilitiesadapter.h"
 #include "pages/accountconfiguredwizardpage.h"
 #include "states/abstractsetupwizardstate.h"
 #include "states/accountconfiguredsetupwizardstate.h"
-#include "states/basiccredentialssetupwizardstate.h"
-#include "states/legacywebfingersetupwizardstate.h"
 #include "states/oauthcredentialssetupwizardstate.h"
 #include "states/serverurlsetupwizardstate.h"
-#include "theme.h"
 
 using namespace std::chrono_literals;
 
@@ -28,17 +25,10 @@ using namespace SetupWizardControllerPrivate;
 QList<SetupWizardState> getNavigationEntries()
 {
     QList<SetupWizardState> states = {
-        SetupWizardState::ServerUrlState
-    };
-
-    if (Theme::instance()->wizardEnableWebfinger()) {
-        states.append(SetupWizardState::LegacyWebFingerState);
-    }
-
-    states.append({
+        SetupWizardState::ServerUrlState,
         SetupWizardState::CredentialsState,
         SetupWizardState::AccountConfiguredState,
-    });
+    };
 
     return states;
 }
@@ -85,11 +75,6 @@ SetupWizardController::SetupWizardController(SettingsDialog *parent)
 
         auto previousState = static_cast<SetupWizardState>(currentStateIdx - 1);
 
-        // skip WebFinger page when WebFinger is not available
-        if (previousState == SetupWizardState::LegacyWebFingerState && !Theme::instance()->wizardEnableWebfinger()) {
-            previousState = SetupWizardState::ServerUrlState;
-        }
-
         changeStateTo(previousState);
     });
 }
@@ -113,23 +98,9 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
         _currentState = new ServerUrlSetupWizardState(_context);
         break;
     }
-    case SetupWizardState::LegacyWebFingerState: {
-        _currentState = new LegacyWebFingerSetupWizardState(_context);
-        break;
-    }
     case SetupWizardState::CredentialsState: {
-        switch (_context->accountBuilder().authType()) {
-        case DetermineAuthTypeJob::AuthType::Basic:
-            _currentState = new BasicCredentialsSetupWizardState(_context);
-            break;
-        case DetermineAuthTypeJob::AuthType::OAuth:
             _currentState = new OAuthCredentialsSetupWizardState(_context);
             break;
-        default:
-            Q_UNREACHABLE();
-        }
-
-        break;
     }
     case SetupWizardState::AccountConfiguredState: {
         _currentState = new AccountConfiguredSetupWizardState(_context);
@@ -159,15 +130,7 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
     connect(_currentState, &AbstractSetupWizardState::evaluationSuccessful, this, [this]() {
         switch (_currentState->state()) {
         case SetupWizardState::ServerUrlState: {
-            if (Theme::instance()->wizardEnableWebfinger()) {
-                changeStateTo(SetupWizardState::LegacyWebFingerState);
-            } else {
                 changeStateTo(SetupWizardState::CredentialsState);
-            }
-            return;
-        }
-        case SetupWizardState::LegacyWebFingerState: {
-            changeStateTo(SetupWizardState::CredentialsState);
             return;
         }
         case SetupWizardState::CredentialsState: {
@@ -185,14 +148,31 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
             connect(fetchUserInfoJob, &CoreJob::finished, this, [this, fetchUserInfoJob] {
                 if (fetchUserInfoJob->success()) {
                     auto result = fetchUserInfoJob->result().value<FetchUserInfoResult>();
-
                     if (AccountManager::instance()->accountForLoginExists(_context->accountBuilder().serverUrl(), result.userName())) {
                         _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials."));
                         changeStateTo(_currentState->state());
                     } else {
                         _context->accountBuilder().setDisplayName(result.displayName());
                         _context->accountBuilder().authenticationStrategy()->setDavUser(result.userName());
-                        changeStateTo(SetupWizardState::AccountConfiguredState);
+
+                        const QString token = _context->accountBuilder().authenticationStrategy()->token();
+                        Q_ASSERT(!token.isEmpty());
+                        // get the capabilities so we can block oc10 accounts. Checking for spaces support is not 
+                        // great and this should be refined, but for now it's effective.
+                        FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->userInfoUrl());
+                        FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
+                        if (!capabilitiesResult.success()) {
+                            // I don't think we want to display the core error message as it's stuff like json errors and not
+                            // useful to the user but we can change this after we have the discussion about error messages
+                            _context->window()->showErrorMessage(tr("Unable to retrieve capabilities from server"));
+                            changeStateTo(_currentState->state());
+                        }
+                        if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
+                            _context->window()->showErrorMessage(tr("The server is not supported by this client"));
+                            changeStateTo(_currentState->state());
+                        } else
+                            changeStateTo(SetupWizardState::AccountConfiguredState);
+                        // todo: #27: new wizard should take the capabilities and add them to the account builder or equivalent!
                     }
                 } else if (fetchUserInfoJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 401) {
                     _context->window()->showErrorMessage(tr("Invalid credentials."));
