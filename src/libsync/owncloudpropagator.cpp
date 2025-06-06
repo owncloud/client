@@ -350,12 +350,12 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
             job->setDeleteExistingFolder(deleteExisting);
             return job;
         }
-        PropagateUploadFileCommon *job = nullptr;
         if (account()->capabilities().tusSupport().isValid()) {
-            job = new PropagateUploadFileTUS(this, item);
-        } else {
-            job = new PropagateUploadFile(this, item);
+            auto job = new PropagateUploadFileTUS(this, item);
+            job->setDeleteExisting(deleteExisting);
+            return job;
         }
+        auto job = new PropagateUploadFile(this, item);
         job->setDeleteExisting(deleteExisting);
         return job;
     }

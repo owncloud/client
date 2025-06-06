@@ -84,6 +84,7 @@ void PropagateUploadFile::startUpload()
         return;
     }
 
+    // TODO: review usage of scoped pointer vs qt memory management
     // job takes ownership of device via a QScopedPointer. Job deletes itself when finishing
     PUTFileJob *job = new PUTFileJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(path), std::move(device), headers, this);
     addChildJob(job);
@@ -158,10 +159,9 @@ void PropagateUploadFile::slotPutFinished()
             // just wait for the other job to finish.
             return;
         }
-        done(SyncFileItem::NormalError, tr("The server did not acknowledge the last chunk. (No e-tag was present)"));
+        done(SyncFileItem::NormalError, tr("The server did not acknowledge the file upload. (No e-tag was present)"));
         return;
     }
-    // the following code only happens after all chunks were uploaded.
 
     // the file id should only be empty for new files up- or downloaded
     QByteArray fid = job->reply()->rawHeader("OC-FileID");

@@ -679,101 +679,6 @@ qint64 FakeGetReply::readData(char *data, qint64 maxlen)
     return len;
 }
 
-FakeChunkMoveReply::FakeChunkMoveReply(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
-    : FakeReply { parent }
-{
-    setRequest(request);
-    setUrl(request.url());
-    setOperation(op);
-    open(QIODevice::ReadOnly);
-    fileInfo = perform(uploadsFileInfo, remoteRootFileInfo, request);
-    if (!fileInfo) {
-        QTimer::singleShot(0, this, &FakeChunkMoveReply::respondPreconditionFailed);
-    } else {
-        QTimer::singleShot(0, this, &FakeChunkMoveReply::respond);
-    }
-}
-
-FileInfo *FakeChunkMoveReply::perform(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo, const QNetworkRequest &request)
-{
-    QString source = getFilePathFromUrl(request.url());
-    Q_ASSERT(!source.isEmpty());
-    Q_ASSERT(source.endsWith(QLatin1String("/.file")));
-    source = source.left(source.length() - qstrlen("/.file"));
-
-    auto sourceFolder = uploadsFileInfo.find(source);
-    Q_ASSERT(sourceFolder);
-    Q_ASSERT(sourceFolder->isDir);
-    int count = 0;
-    qlonglong size = 0;
-    qlonglong prev = 0;
-    char payload = '\0';
-
-    QString fileName = getFilePathFromUrl(QUrl::fromEncoded(request.rawHeader("Destination")));
-    Q_ASSERT(!fileName.isEmpty());
-
-    const auto &sourceFolderChildren = sourceFolder->children;
-    // Compute the size and content from the chunks if possible
-    for (auto it = sourceFolderChildren.cbegin(); it != sourceFolderChildren.cend(); ++it) {
-        const auto &chunkNameLongLong = it.key().toLongLong();
-        const auto &x = it.value();
-        if (chunkNameLongLong != prev)
-            break;
-        Q_ASSERT(!x.isDir);
-        Q_ASSERT(x.contentSize > 0); // There should not be empty chunks
-        size += x.contentSize;
-        Q_ASSERT(!payload || payload == x.contentChar);
-        payload = x.contentChar;
-        ++count;
-        prev = chunkNameLongLong + x.contentSize;
-    }
-    Q_ASSERT(sourceFolderChildren.count() == count); // There should not be holes or extra files
-
-    // NOTE: This does not actually assemble the file data from the chunks!
-    FileInfo *fileInfo = remoteRootFileInfo.find(fileName);
-    if (fileInfo) {
-        // The client should put this header
-        Q_ASSERT(request.hasRawHeader("If"));
-
-        // And it should condition on the destination file
-        auto start = QByteArray("<" + request.rawHeader("Destination") + ">");
-        Q_ASSERT(request.rawHeader("If").startsWith(start));
-
-        if (request.rawHeader("If") != start + " ([\"" + fileInfo->etag + "\"])") {
-            return nullptr;
-        }
-        fileInfo->contentSize = size;
-        fileInfo->contentChar = payload;
-        fileInfo->fileSize = fileInfo->contentSize; // it's hydrated on the server, so these are the same
-    } else {
-        Q_ASSERT(!request.hasRawHeader("If"));
-        // Assume that the file is filled with the same character
-        fileInfo = remoteRootFileInfo.create(fileName, size, payload);
-    }
-    fileInfo->setLastModifiedFromSecondsUTC(request.rawHeader("X-OC-Mtime").toLongLong());
-    remoteRootFileInfo.find(fileName, /*invalidate_etags=*/true);
-
-    return fileInfo;
-}
-
-void FakeChunkMoveReply::respond()
-{
-    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 201);
-    setRawHeader("OC-ETag", fileInfo->etag);
-    setRawHeader("ETag", fileInfo->etag);
-    setRawHeader("OC-FileId", fileInfo->fileId);
-    Q_EMIT metaDataChanged();
-    checkedFinished();
-}
-
-void FakeChunkMoveReply::respondPreconditionFailed()
-{
-    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 412);
-    setError(InternalServerError, QStringLiteral("Precondition Failed"));
-    Q_EMIT metaDataChanged();
-    checkedFinished();
-}
-
 FakePayloadReply::FakePayloadReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, const QByteArray &body, QObject *parent)
     : FakeReply { parent }
     , _body(body)
@@ -898,13 +803,11 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
         }
     }
     if (!reply) {
-        // detect chunking ng upload
-        constexpr bool isUpload = false;
-        FileInfo &info = isUpload ? _uploadFileInfo : _remoteRootFileInfo;
+        FileInfo &info = _remoteRootFileInfo;
 
         const auto verb = newRequest.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
         if (verb == QByteArrayLiteral("PROPFIND"))
-            // Ignore outgoingData always returning somethign good enough, works for now.
+            // Ignore outgoingData always returning something good enough, works for now.
             reply = new FakePropfindReply { info, op, newRequest, this };
         else if (verb == QByteArrayLiteral("GET") || op == QNetworkAccessManager::GetOperation)
             reply = new FakeGetReply { info, op, newRequest, this };
@@ -914,10 +817,8 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
             reply = new FakeMkcolReply { info, op, newRequest, this };
         else if (verb == QByteArrayLiteral("DELETE") || op == QNetworkAccessManager::DeleteOperation)
             reply = new FakeDeleteReply { info, op, newRequest, this };
-        else if (verb == QByteArrayLiteral("MOVE") && !isUpload)
+        else if (verb == QByteArrayLiteral("MOVE"))
             reply = new FakeMoveReply { info, op, newRequest, this };
-        else if (verb == QByteArrayLiteral("MOVE") && isUpload)
-            reply = new FakeChunkMoveReply { info, _remoteRootFileInfo, op, newRequest, this };
         else {
             qDebug() << verb << outgoingData;
             Q_UNREACHABLE();
