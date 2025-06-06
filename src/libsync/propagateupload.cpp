@@ -63,11 +63,10 @@ static bool fileIsStillChanging(const SyncFileItem &item)
         && secondsSinceMod > -1s;
 }
 
-PUTFileJob::PUTFileJob(AccountPtr account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device, const QMap<QByteArray, QByteArray> &headers, int chunk, QObject *parent)
+PUTFileJob::PUTFileJob(AccountPtr account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device, const QMap<QByteArray, QByteArray> &headers, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
     , _device(device.release())
     , _headers(headers)
-    , _chunk(chunk)
 {
     _device->setParent(this);
     // Long uploads must not block non-propagation jobs.
@@ -159,7 +158,7 @@ void PropagateUploadFileCommon::slotComputeContentChecksum()
 
     const QString filePath = propagator()->fullLocalPath(_item->_file);
 
-    // remember the modtime before checksumming to be able to detect a file
+    // remember the modtime before computing the checksum to be able to detect a file
     // change during the checksum calculation
     _item->_modtime = FileSystem::getModTime(filePath);
 
@@ -304,17 +303,17 @@ qint64 UploadDevice::writeData(const char *, qint64)
     return 0;
 }
 
-qint64 UploadDevice::readData(char *data, qint64 maxlen)
+qint64 UploadDevice::readData(char *data, qint64 maxLen)
 {
     if (_size - _read <= 0) {
         return -1;
     }
-    maxlen = qMin(maxlen, _size - _read);
-    if (maxlen <= 0) {
+    maxLen = qMin(maxLen, _size - _read);
+    if (maxLen <= 0) {
         return 0;
     }
 
-    auto c = _file.read(data, maxlen);
+    auto c = _file.read(data, maxLen);
     if (c < 0) {
         setErrorString(_file.errorString());
         return -1;
