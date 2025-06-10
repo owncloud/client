@@ -99,8 +99,8 @@ set( final_src
 add_subdirectory(newwizard)
 add_subdirectory(folderwizard)
 
-add_library(owncloudGui SHARED ${final_src}
-  newaccountwizard/newaccountwizardcontroller.h newaccountwizard/newaccountwizardcontroller.cpp)
+add_library(owncloudGui SHARED ${final_src})
+
 set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
 # for the generated qml module
 target_include_directories(owncloudGui PRIVATE models spaces creds)
@@ -137,9 +137,10 @@ generate_export_header(owncloudGui
         STATIC_DEFINE OWNCLOUD_BUILT_AS_STATIC
 )
 
-add_subdirectory(spaces)
 add_subdirectory(networkadapters)
+add_subdirectory(newaccountwizard)
 add_subdirectory(socketapi)
+add_subdirectory(spaces)
 
 target_include_directories(owncloudGui PUBLIC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/QProgressIndicator
@@ -174,6 +175,7 @@ if(WITH_AUTO_UPDATER)
 endif()
 
 add_executable(owncloud main.cpp)
+
 set_target_properties(owncloud PROPERTIES
     OUTPUT_NAME "${APPLICATION_EXECUTABLE}"
     AUTOUIC ON
