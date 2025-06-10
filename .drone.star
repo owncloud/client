@@ -411,6 +411,8 @@ def notification():
             "name": "notify-matrix",
             "image": OC_CI_ALPINE,
             "environment": {
+                "CACHE_ENDPOINT": S3_PUBLIC_CACHE_SERVER,
+                "CACHE_BUCKET": S3_PUBLIC_CACHE_BUCKET,
                 "MATRIX_TOKEN": {
                     "from_secret": "matrix_token",
                 },

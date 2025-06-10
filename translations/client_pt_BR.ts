@@ -1039,7 +1039,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
         <source>Invalid reply received from server.</source>
-        <translation type="unfinished"/>
+        <translation>Resposta errada recebida do servidor</translation>
     </message>
 </context>
 <context>
@@ -2740,7 +2740,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
         <source>SSL failure when connecting to server at %1</source>
-        <translation type="unfinished"/>
+        <translation>Falha de SSL ao conectar ao servidor em %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
@@ -2750,7 +2750,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"/>
+        <translation>O endereço URL é inválido %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
@@ -3471,7 +3471,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"/>
+        <translation>A pesquisa do WebFinger não retornou nenhum link</translation>
     </message>
 </context>
 <context>
@@ -3616,7 +3616,7 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
+        <translation>URL do servidor inválida: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
@@ -3643,7 +3643,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
         <source>Invalid URL scheme. Only http and https are accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Esquema de URL inválido. Somente http e https são aceitos.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
