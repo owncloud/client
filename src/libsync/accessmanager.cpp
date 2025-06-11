@@ -120,9 +120,9 @@ void AccessManager::setCustomTrustedCaCertificates(const QSet<QSslCertificate> &
     clearConnectionCache();
 }
 
-void AccessManager::addCustomTrustedCaCertificates(const QList<QSslCertificate> &certificates)
+void AccessManager::addCustomTrustedCaCertificates(const QSet<QSslCertificate> &certificates)
 {
-    _customTrustedCaCertificates.unite({ certificates.begin(), certificates.end() });
+    _customTrustedCaCertificates.unite(certificates);
 
     // we have to terminate the existing (cached) connection to make the access manager re-evaluate the certificate sent by the server
     clearConnectionCache();

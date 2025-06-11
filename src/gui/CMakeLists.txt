@@ -171,7 +171,8 @@ if(WITH_AUTO_UPDATER)
     target_compile_definitions(owncloudGui PUBLIC $<BUILD_INTERFACE:WITH_AUTO_UPDATER>)
 endif()
 
-add_executable(owncloud main.cpp)
+add_executable(owncloud main.cpp
+  newaccountwizard/urlpagecontroller.h newaccountwizard/urlpagecontroller.cpp)
 set_target_properties(owncloud PROPERTIES
     OUTPUT_NAME "${APPLICATION_EXECUTABLE}"
     AUTOUIC ON

@@ -99,7 +99,7 @@ void ResolveUrlAdapter::handleSslErrors(const QList<QSslError> &errors)
         int res = tlsErrorDialog->exec();
         if (res == QDialog::DialogCode::Accepted) {
             for (const auto &err : std::as_const(filtered))
-                _certificates.append(err.certificate());
+                _certificates.insert(err.certificate());
             // let the reply finish!
             reply->ignoreSslErrors();
         } else {

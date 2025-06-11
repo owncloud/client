@@ -167,6 +167,7 @@ void ServerUrlSetupWizardState::evaluatePage()
                 _context->accountBuilder().addCustomTrustedCaCertificate(cert);
         }
 
+        // todo: I think we should consider checking this in the main controller as a final validation step
         DetermineAuthTypeAdapter authTypeAdapter(_context->accessManager(), finalUrl);
         const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
         if (!authResult.success()) {
