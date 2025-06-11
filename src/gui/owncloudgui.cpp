@@ -774,6 +774,7 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
     }
 }
 
+// todo: #28
 void ownCloudGui::runNewAccountWizard()
 {
     if (_wizardController.isNull()) {
@@ -802,6 +803,8 @@ void ownCloudGui::runNewAccountWizard()
                     // that can do this job
                     auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
 
+                    // todo: #27 - we already get the capabilities in the last check of the url to filter out oc10 accounts. pass that info along instead of
+                    // fetching it again also again, none of this belongs here. The account manager should deal with it.
                     QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(),
                         [accountStatePtr, syncMode, dynamicRegistrationData, validator, this](ConnectionValidator::Status status, const QStringList &) {
                             switch (status) {
