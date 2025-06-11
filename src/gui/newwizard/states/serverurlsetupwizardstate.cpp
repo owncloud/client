@@ -13,7 +13,7 @@
  */
 
 #include "serverurlsetupwizardstate.h"
-#include "determineauthtypejobfactory.h"
+#include "gui/networkadapters/determineauthtypeadapter.h"
 #include "gui/networkadapters/discoverwebfingerserviceadapter.h"
 #include "gui/networkadapters/resolveurladapter.h"
 #include "theme.h"
@@ -31,13 +31,7 @@ ServerUrlSetupWizardState::ServerUrlSetupWizardState(SetupWizardContext *context
     : AbstractSetupWizardState(context)
 {
     // how can the context already have a server url if it has not been set up?
-    QUrl serverUrl;
-    if (Theme::instance()->wizardEnableWebfinger()) {
-        serverUrl = _context->accountBuilder().legacyWebFingerServerUrl();
-    } else {
-        serverUrl = _context->accountBuilder().serverUrl();
-    }
-
+    QUrl serverUrl = _context->accountBuilder().serverUrl();
     _page = new ServerUrlSetupWizardPage(serverUrl);
 }
 
@@ -117,7 +111,7 @@ void ServerUrlSetupWizardState::evaluatePage()
     // this only works if the url is valid. If it's invalid the original query text is wiped out from the QUrl instance and I don't
     // see an easy way to put it back because...erm...it wants to take the text from a url but it's invalid so the original text is gone.
     // I improved the error message to extract the original input in case it helps, but this new behavior should be reviewed.
-    _context->accountBuilder().setServerUrl(serverUrl, DetermineAuthTypeJob::AuthType::Unknown);
+    _context->accountBuilder().setServerUrl(serverUrl, AuthenticationType::Unknown);
 
     if (serverUrl.scheme() == QStringLiteral("http")) {
         auto *messageBox = new QMessageBox(QMessageBox::Warning, tr("Insecure connection"),
@@ -150,49 +144,39 @@ void ServerUrlSetupWizardState::evaluatePage()
     if (!webfingerServiceResult.success()) {
         // first, we must resolve the actual server URL
         ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl);
-        const ResolveUrlResult result = urlResolver.getResult();
+        const ResolveUrlResult resolveUrlResult = urlResolver.getResult();
 
-        if (!result.success()) {
-            Q_EMIT evaluationFailed(result.error);
+        if (!resolveUrlResult.success()) {
+            Q_EMIT evaluationFailed(resolveUrlResult.error);
             return;
         }
+        const QUrl finalUrl = resolveUrlResult.resolvedUrl;
 
-        if (result.resolvedUrl.hasQuery()) {
-            QString errorMsg = tr("The requested URL failed with query value: %1").arg(result.resolvedUrl.query());
+        if (finalUrl.hasQuery()) {
+            QString errorMsg = tr("The requested URL failed with query value: %1").arg(finalUrl.query());
             Q_EMIT evaluationFailed(errorMsg);
             return;
         }
 
-        if (!result.acceptedCertificates.isEmpty()) {
+        if (!resolveUrlResult.acceptedCertificates.isEmpty()) {
             // future requests made through this access manager should accept the certificate
-            _context->accessManager()->addCustomTrustedCaCertificates(result.acceptedCertificates);
+            _context->accessManager()->addCustomTrustedCaCertificates(resolveUrlResult.acceptedCertificates);
 
             // the account maintains a list, too, which is also saved in the config file
-            for (const auto &cert : result.acceptedCertificates)
+            for (const auto &cert : resolveUrlResult.acceptedCertificates)
                 _context->accountBuilder().addCustomTrustedCaCertificate(cert);
         }
 
-        // classic WebFinger workflow: auth type determination is delegated to whatever server the WebFinger service points us to in a dedicated
-        // step we can skip it here therefore
-        if (Theme::instance()->wizardEnableWebfinger()) {
-            _context->accountBuilder().setLegacyWebFingerServerUrl(result.resolvedUrl);
-            Q_EMIT evaluationSuccessful();
+        DetermineAuthTypeAdapter authTypeAdapter(_context->accessManager(), finalUrl);
+        const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
+        if (!authResult.success()) {
+            Q_EMIT evaluationFailed(authResult.error);
             return;
         }
 
-        // next, we need to find out which kind of authentication page we have to present to the user
-        // todo: #18
-        auto authTypeJob = DetermineAuthTypeJobFactory(_context->accessManager()).startJob(result.resolvedUrl, this);
-        QUrl url = result.resolvedUrl;
-        connect(authTypeJob, &CoreJob::finished, authTypeJob, [this, authTypeJob, url]() {
-            if (authTypeJob->result().isNull()) {
-                Q_EMIT evaluationFailed(authTypeJob->errorMessage());
-                return;
-            }
-
-            _context->accountBuilder().setServerUrl(url, qvariant_cast<DetermineAuthTypeJob::AuthType>(authTypeJob->result()));
-            Q_EMIT evaluationSuccessful();
-        });
+        Q_ASSERT(authResult.type == AuthenticationType::OAuth);
+        _context->accountBuilder().setServerUrl(finalUrl, authResult.type);
+        Q_EMIT evaluationSuccessful();
 
 
     } else {

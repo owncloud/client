@@ -204,6 +204,7 @@ void AccountState::setState(State state)
             // update capabilities and fetch relevant settings
             _fetchCapabilitiesJob = new FetchServerSettingsJob(account(), this);
             connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
+                // Lisa todo: I do not understand this logic at all - review it
                 if (oldState == Connected || _state == Connected) {
                     _fetchCapabilitiesJob.clear();
                     Q_EMIT isConnectedChanged();

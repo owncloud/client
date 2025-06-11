@@ -42,7 +42,6 @@ set(libsync_SRCS
     creds/credentialmanager.cpp
     creds/abstractcredentials.cpp
     creds/oauth.cpp
-    creds/webfinger.cpp
 
     networkjobs/fetchuserinfojobfactory.cpp
     networkjobs/checkserverjobfactory.cpp
@@ -50,7 +49,6 @@ set(libsync_SRCS
     networkjobs/resources.cpp
 
     abstractcorejob.cpp
-    determineauthtypejobfactory.cpp
 
     appprovider.cpp
 )
@@ -76,7 +74,8 @@ INSTALL(
     DESTINATION ${KDE_INSTALL_INCLUDEDIR}/${APPLICATION_SHORTNAME}/libsync
 )
 
-add_library(libsync SHARED ${libsync_SRCS})
+add_library(libsync SHARED ${libsync_SRCS}
+    creds/credentialssupport.h)
 set_target_properties(libsync PROPERTIES EXPORT_NAME SyncCore)
 
 target_link_libraries(libsync

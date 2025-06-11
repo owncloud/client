@@ -81,7 +81,7 @@ protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request, QIODevice *outgoingData) override
     {
         QNetworkRequest req(request);
-        if (!req.attribute(HttpCredentials::DontAddCredentialsAttribute).toBool()) {
+        if (!req.attribute(DontAddCredentialsAttribute).toBool()) {
             if (_cred && !_cred->_password.isEmpty()) {
                 if (_cred->isUsingOAuth()) {
                     req.setRawHeader("Authorization", "Bearer " + _cred->_password.toUtf8());
@@ -100,7 +100,7 @@ private:
     QPointer<const HttpCredentials> _cred;
 };
 
-HttpCredentials::HttpCredentials(DetermineAuthTypeJob::AuthType authType, const QString &user, const QString &password)
+HttpCredentials::HttpCredentials(AuthenticationType authType, const QString &user, const QString &password)
     : _user(user)
     , _password(password)
     , _ready(true)
@@ -108,7 +108,7 @@ HttpCredentials::HttpCredentials(DetermineAuthTypeJob::AuthType authType, const 
 {
 }
 
-QString HttpCredentials::authType() const
+QString HttpCredentials::credentialsType() const
 {
     return QStringLiteral("http");
 }
@@ -126,11 +126,11 @@ void HttpCredentials::setAccount(Account *account)
     }
     const auto isOauth = account->credentialSetting(isOAuthC());
     if (isOauth.isValid()) {
-        _authType = isOauth.toBool() ? DetermineAuthTypeJob::AuthType::OAuth : DetermineAuthTypeJob::AuthType::Basic;
+        _authType = isOauth.toBool() ? OCC::AuthenticationType::OAuth : OCC::AuthenticationType ::Unknown;
     }
 }
 
-AccessManager *HttpCredentials::createAM() const
+AccessManager *HttpCredentials::createAccessManager() const
 {
     AccessManager *am = new HttpCredentialsAccessManager(this);
 
@@ -220,6 +220,7 @@ void HttpCredentials::fetchFromKeychainHelper()
     });
 }
 
+// Lisa todo: this is called periodically, find the trigger
 bool HttpCredentials::stillValid(QNetworkReply *reply)
 {
     if (isUsingOAuth()) {
@@ -397,9 +398,9 @@ void HttpCredentials::persist()
         // We never connected or fetched the user, there is nothing to save.
         return;
     }
-    _account->setCredentialSetting(CredentialVersionKey(), CredentialVersion);
-    _account->setCredentialSetting(userC(), _user);
-    _account->setCredentialSetting(isOAuthC(), isUsingOAuth());
+    _account->addCredentialSetting(CredentialVersionKey(), CredentialVersion);
+    _account->addCredentialSetting(userC(), _user);
+    _account->addCredentialSetting(isOAuthC(), isUsingOAuth());
     Q_EMIT _account->wantsAccountSaved(_account);
 
     // write secrets to the keychain

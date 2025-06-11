@@ -17,7 +17,6 @@
 #include "account.h"
 #include "accountmodalwidget.h"
 #include "application.h"
-#include "common/asserts.h"
 #include "creds/qmlcredentials.h"
 #include "gui/accountsettings.h"
 #include "networkjobs.h"
@@ -32,13 +31,10 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcHttpCredentialsGui, "sync.credentials.http.gui", QtInfoMsg)
 
-HttpCredentialsGui::HttpCredentialsGui(const QString &loginUser, const QString &password)
-    : HttpCredentials(DetermineAuthTypeJob::AuthType::Basic, loginUser, password)
-{
-}
 
+// with oauth the account builder actually passes the token in place of the password.
 HttpCredentialsGui::HttpCredentialsGui(const QString &davUser, const QString &password, const QString &refreshToken)
-    : HttpCredentials(DetermineAuthTypeJob::AuthType::OAuth, davUser, password)
+    : HttpCredentials(OCC::AuthenticationType::OAuth, davUser, password)
 {
     _refreshToken = refreshToken;
 }
@@ -52,21 +48,6 @@ void HttpCredentialsGui::askFromUser()
     QTimer::singleShot(0, this, [this] {
         if (isUsingOAuth()) {
             startOAuth();
-        } else {
-            // First, we will check what kind of auth we need.
-            auto job = new DetermineAuthTypeJob(_account->sharedFromThis(), this);
-            QObject::connect(job, &DetermineAuthTypeJob::authType, this, [this](DetermineAuthTypeJob::AuthType type) {
-                _authType = type;
-                if (type == DetermineAuthTypeJob::AuthType::OAuth) {
-                    startOAuth();
-                } else if (type == DetermineAuthTypeJob::AuthType::Basic) {
-                    showDialog();
-                } else {
-                    qCWarning(lcHttpCredentialsGui) << "Bad http auth type:" << type;
-                    Q_EMIT fetched();
-                }
-            });
-            job->start();
         }
     });
 }
@@ -76,13 +57,9 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &token, 
     _asyncAuth.reset();
     switch (r) {
     case OAuth::NotSupported:
-        if (_modalWidget) {
-            _modalWidget->deleteLater();
-            _modalWidget.clear();
-        }
-        // show basic auth dialog for historic reasons
-        showDialog();
-        return;
+        // also should not happen after initial setup?
+        Q_ASSERT(false);
+        [[fallthrough]];
     case OAuth::ErrorInsecureUrl:
         // should not happen after the initial setup
         Q_ASSERT(false);
@@ -102,44 +79,13 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &token, 
     Q_EMIT fetched();
 }
 
-void HttpCredentialsGui::showDialog()
-{
-    if (_modalWidget) {
-        return;
-    }
-
-    auto basicCredentials = new QmlBasicCredentials(_account->url(), _account->davDisplayName(), this);
-    basicCredentials->setReadOnlyName(user());
-    _modalWidget = new AccountModalWidget(tr("Login required"), QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/credentials/BasicAuthCredentials.qml")),
-        basicCredentials, ocApp()->gui()->settingsDialog());
-    connect(basicCredentials, &QmlBasicCredentials::logOutRequested, _modalWidget, [basicCredentials, this] {
-        Q_EMIT requestLogout();
-        Q_EMIT fetched();
-        _modalWidget->reject();
-        basicCredentials->deleteLater();
-    });
-    connect(basicCredentials, &QmlBasicCredentials::loginRequested, _modalWidget, [basicCredentials, this] {
-        _password = basicCredentials->password();
-        basicCredentials->deleteLater();
-        _refreshToken.clear();
-        _ready = true;
-        persist();
-
-        Q_EMIT fetched();
-        _modalWidget->accept();
-    });
-
-
-    ocApp()->gui()->settingsDialog()->accountSettings(_account)->addModalWidget(_modalWidget);
-}
-
 void HttpCredentialsGui::startOAuth()
 {
     qCDebug(lcHttpCredentialsGui) << "showing modal dialog asking user to log in again via OAuth2";
     if (_asyncAuth) {
         return;
     }
-    if (!OC_ENSURE_NOT(_modalWidget)) {
+    if (_modalWidget) {
         _modalWidget->deleteLater();
     }
     _asyncAuth.reset(new AccountBasedOAuth(_account->sharedFromThis(), this));
@@ -153,7 +99,7 @@ void HttpCredentialsGui::startOAuth()
         _modalWidget->reject();
         _modalWidget.clear();
         _asyncAuth.reset();
-        requestLogout();
+        Q_EMIT requestLogout();
     });
     connect(oauthCredentials, &QmlOAuthCredentials::requestRestart, this, [this] {
         _modalWidget->reject();

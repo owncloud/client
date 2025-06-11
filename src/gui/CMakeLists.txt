@@ -123,7 +123,6 @@ ecm_add_qml_module(owncloudGui
             qml/FolderDelegate.qml
             qml/FolderError.qml
 
-            qml/credentials/BasicAuthCredentials.qml
             qml/credentials/Credentials.qml
             qml/credentials/OAuthCredentials.qml
 

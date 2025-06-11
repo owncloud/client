@@ -37,8 +37,11 @@ struct DiscoverWebFingerServiceResult
 };
 
 /**
- *  This adapter allows the caller to find a webfinger service synchronously, which is very useful when called from a gui
- *  because we can't continue until the required values are known.
+ *  This adapter allows the caller to find the href of a webfinger service associated with a given URL. No authentication is
+ *  required for this operation, we are merely checking to see if webfinger is available, and if so, we collect the href
+ *  for future use.
+ *
+ *  The request is run synchronously, which is very useful when called from a gui because we can't continue until the required values are known.
  *
  *  In future we may also extend the adapter to run in async mode as well, but for now it's not needed.
  *

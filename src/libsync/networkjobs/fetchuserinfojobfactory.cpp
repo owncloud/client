@@ -14,9 +14,10 @@
 
 #include "fetchuserinfojobfactory.h"
 #include "common/utility.h"
-#include "creds/httpcredentials.h"
+#include "creds/credentialssupport.h"
 
 #include <QApplication>
+#include <QJsonObject>
 #include <QJsonParseError>
 #include <QNetworkReply>
 #include <QStringLiteral>
@@ -24,12 +25,6 @@
 Q_LOGGING_CATEGORY(lcFetchUserInfoJob, "sync.networkjob.fetchuserinfojob", QtInfoMsg);
 
 namespace OCC {
-
-FetchUserInfoJobFactory FetchUserInfoJobFactory::fromBasicAuthCredentials(QNetworkAccessManager *nam, const QString &username, const QString &password)
-{
-    QString authorizationHeader = QStringLiteral("Basic %1").arg(QString::fromUtf8(QStringLiteral("%1:%2").arg(username, password).toUtf8().toBase64()));
-    return { nam, authorizationHeader };
-}
 
 FetchUserInfoJobFactory FetchUserInfoJobFactory::fromOAuth2Credentials(QNetworkAccessManager *nam, const QString &bearerToken)
 {
@@ -51,10 +46,11 @@ CoreJob *FetchUserInfoJobFactory::startJob(const QUrl &url, QObject *parent)
 
     // We are not connected yet so we need to handle the authentication manually
     req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
+    // todo: #20 - apparently this is oc10 related - there are many instances but they should go.
     req.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
 
     // We just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(OCC::DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
     auto *job = new CoreJob(nam()->get(req), parent);
