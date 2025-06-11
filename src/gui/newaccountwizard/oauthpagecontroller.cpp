@@ -11,17 +11,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-#include "urlpagecontroller.h"
+#include "oauthpagecontroller.h"
 
-#include "accessmanager.h"
 #include <QWizardPage>
 
 namespace OCC {
 
-UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent)
-    : QObject(parent)
+OAuthPageController::OAuthPageController(QWizardPage *page, QObject *parent)
+    : QObject{parent}
     , _page(page)
-    , _accessManager(accessManager)
 {
 }
 

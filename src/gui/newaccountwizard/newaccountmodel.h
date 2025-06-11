@@ -20,6 +20,7 @@
 #include <QUrl>
 #include <QVariantMap>
 
+namespace OCC {
 /**
  * @brief The NewAccountModel class is used to store data that is accumulated in the process of creating a new account
  *
@@ -95,3 +96,5 @@ private:
     QString _syncRootDir;
     QString _displayName;
 };
+
+}

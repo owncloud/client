@@ -18,10 +18,13 @@
 
 #include "newaccountmodel.h"
 
+namespace OCC {
 
 NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, QWizard *view, QObject *parent)
     : QObject{parent}
     , _model(model)
     , _wizard(view)
 {
+}
+
 }
