@@ -168,14 +168,6 @@ version = 1.3.1
 version = master
 revision = 96da290
 
-[qt-apps/gammaray]
-version = master
-revision = 680a36946
-
-[qt-apps/kdstatemachineeditor]
-version = master
-revision = 4ae88f3
-
 [qt-libs/qtkeychain]
 version = 0.15.0
 
