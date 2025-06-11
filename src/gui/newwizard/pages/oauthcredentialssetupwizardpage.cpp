@@ -29,6 +29,7 @@ OAuthCredentialsSetupWizardPage::OAuthCredentialsSetupWizardPage(OAuth *oauth, c
     layout->addWidget(widget);
     setFocusProxy(widget);
 
+    // who deletes this pointer?
     auto *oauthCredentials = new QmlOAuthCredentials(oauth, serverUrl, {});
     oauthCredentials->setIsRefresh(false);
     widget->setOCContext(

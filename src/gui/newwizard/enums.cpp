@@ -30,8 +30,6 @@ QString OCC::Utility::enumToDisplayName(SetupWizardState state)
         } else {
             return QApplication::translate("SetupWizardState", "Welcome");
         }
-    case SetupWizardState::LegacyWebFingerState:
-        return QApplication::translate("SetupWizardState", "Username");
     case SetupWizardState::CredentialsState:
         return QApplication::translate("SetupWizardState", "Login");
     case SetupWizardState::AccountConfiguredState:

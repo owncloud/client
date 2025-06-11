@@ -14,10 +14,11 @@
 
 #include "creds/oauth.h"
 
+#include "accessmanager.h"
 #include "account.h"
 #include "common/version.h"
 #include "credentialmanager.h"
-#include "creds/httpcredentials.h"
+#include "creds/credentialssupport.h"
 #include "networkjobs/checkserverjobfactory.h"
 #include "networkjobs/fetchuserinfojobfactory.h"
 #include "resources/template.h"
@@ -38,13 +39,15 @@ using namespace std::chrono_literals;
 
 using namespace OCC;
 
+// todo: #24 - this is such a mess. it needs to parted out into clear classes (each in their own files), every impl needs to be reviewed.
+// I think there is some duplication here as well - just sort it out as much as possible.
 Q_LOGGING_CATEGORY(lcOauth, "sync.credentials.oauth", QtInfoMsg)
 
 namespace {
 
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 
-const auto defaultOauthPromptValue()
+auto defaultOauthPromptValue()
 {
     static const auto promptValue = [] {
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
@@ -76,13 +79,13 @@ QString renderHttpTemplate(const QString &title, const QString &content)
         });
 }
 
-auto defaultTimeout()
+seconds defaultTimeout()
 {
     // as the OAuth process can be interactive we don't want 5min of inactivity
     return qMin(30s, OCC::AbstractNetworkJob::httpTimeout);
 }
 
-auto defaultTimeoutMs()
+int defaultTimeoutMs()
 {
     return static_cast<int>(duration_cast<milliseconds>(defaultTimeout()).count());
 }
@@ -169,7 +172,7 @@ private:
             { QStringLiteral("token_endpoint_auth_method"), QStringLiteral("client_secret_basic") } });
         QNetworkRequest req;
         req.setUrl(_registrationEndpoint);
-        req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+        req.setAttribute(DontAddCredentialsAttribute, true);
         req.setTransferTimeout(defaultTimeoutMs());
         req.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/json"));
         auto reply = _networkAccessManager->post(req, QJsonDocument(json).toJson());
@@ -241,6 +244,8 @@ void logCredentialsJobResult(CredentialJob *credentialsJob)
 }
 }
 
+// todo: #24 determine if the dynamic registration data is ever actually passed here. Also eval the use case below re: AccountBasedOauth which seems to
+// be the only case where the davUser is passed
 OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, const QVariantMap &dynamicRegistrationData, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)
@@ -436,7 +441,7 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
         break;
     }
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded; charset=UTF-8"));
-    req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
+    req.setAttribute(DontAddCredentialsAttribute, true);
 
     queryItems.addQueryItem(QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes())));
     req.setUrl(requestTokenUrl);
@@ -515,73 +520,59 @@ void OAuth::updateDynamicRegistration()
 
 void OAuth::fetchWellKnown()
 {
-    const QPair<QString, QString> urls = Theme::instance()->oauthOverrideAuthUrl();
+    qCDebug(lcOauth) << "fetching" << wellKnownPathC;
 
-    if (!urls.first.isNull()) {
-        OC_ASSERT(!urls.second.isNull());
-        _authEndpoint = QUrl::fromUserInput(urls.first);
-        _tokenEndpoint = QUrl::fromUserInput(urls.second);
+    QNetworkRequest req;
+    req.setAttribute(DontAddCredentialsAttribute, true);
+    req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
+    req.setTransferTimeout(defaultTimeoutMs());
 
-        qCDebug(lcOauth) << "override URL set, using auth endpoint" << _authEndpoint << "and token endpoint" << _tokenEndpoint;
+    auto reply = _networkAccessManager->get(req);
 
+    QObject::connect(reply, &QNetworkReply::finished, this, [reply, this] {
         _wellKnownFinished = true;
-        Q_EMIT fetchWellKnownFinished();
-    } else {
-        qCDebug(lcOauth) << "fetching" << wellKnownPathC;
-
-        QNetworkRequest req;
-        req.setAttribute(HttpCredentials::DontAddCredentialsAttribute, true);
-        req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
-        req.setTransferTimeout(defaultTimeoutMs());
-
-        auto reply = _networkAccessManager->get(req);
-
-        QObject::connect(reply, &QNetworkReply::finished, this, [reply, this] {
-            _wellKnownFinished = true;
-            if (reply->error() != QNetworkReply::NoError) {
-                qCDebug(lcOauth) << "failed to fetch .well-known reply, error:" << reply->error();
-                // Most likely the file does not exist, default to the normal endpoint
-                Q_EMIT fetchWellKnownFinished();
-                return;
-            }
-            QJsonParseError err = {};
-            QJsonObject data = QJsonDocument::fromJson(reply->readAll(), &err).object();
-            if (err.error == QJsonParseError::NoError) {
-                _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
-                _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
-                _registrationEndpoint = QUrl::fromEncoded(data[QStringLiteral("registration_endpoint")].toString().toUtf8());
-                _redirectUrl = QStringLiteral("http://127.0.0.1");
-
-                const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
-                if (authMethods.contains(QStringLiteral("client_secret_basic"))) {
-                    _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
-                } else if (authMethods.contains(QStringLiteral("client_secret_post"))) {
-                    _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_post;
-                } else {
-                    OC_ASSERT_X(false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
-                }
-                const auto promptValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
-                if (!promptValuesSupported.isEmpty()) {
-                    _supportedPromptValues = PromptValuesSupported::none;
-                    for (const auto &x : promptValuesSupported) {
-                        const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
-                        // only use flags present in Theme::instance()->openIdConnectPrompt()
-                        if (flag & defaultOauthPromptValue())
-                            _supportedPromptValues |= flag;
-                    }
-                }
-
-                qCDebug(lcOauth) << "parsing .well-known reply successful, auth endpoint" << _authEndpoint
-                                 << "and token endpoint" << _tokenEndpoint
-                                 << "and registration endpoint" << _registrationEndpoint;
-            } else if (err.error == QJsonParseError::IllegalValue) {
-                qCDebug(lcOauth) << "failed to parse .well-known reply as JSON, server might not support OIDC";
-            } else {
-                qCDebug(lcOauth) << "failed to parse .well-known reply, error:" << err.error;
-            }
+        if (reply->error() != QNetworkReply::NoError) {
+            qCDebug(lcOauth) << "failed to fetch .well-known reply, error:" << reply->error();
+            // Most likely the file does not exist, default to the normal endpoint
             Q_EMIT fetchWellKnownFinished();
-        });
-    }
+            return;
+        }
+        QJsonParseError err = {};
+        QJsonObject data = QJsonDocument::fromJson(reply->readAll(), &err).object();
+        if (err.error == QJsonParseError::NoError) {
+            _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
+            _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
+            _registrationEndpoint = QUrl::fromEncoded(data[QStringLiteral("registration_endpoint")].toString().toUtf8());
+            _redirectUrl = QStringLiteral("http://127.0.0.1");
+
+            const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
+            if (authMethods.contains(QStringLiteral("client_secret_basic"))) {
+                _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
+            } else if (authMethods.contains(QStringLiteral("client_secret_post"))) {
+                _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_post;
+            } else {
+                OC_ASSERT_X(false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
+            }
+            const auto promptValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
+            if (!promptValuesSupported.isEmpty()) {
+                _supportedPromptValues = PromptValuesSupported::none;
+                for (const auto &x : promptValuesSupported) {
+                    const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
+                    // only use flags present in Theme::instance()->openIdConnectPrompt()
+                    if (flag & defaultOauthPromptValue())
+                        _supportedPromptValues |= flag;
+                }
+            }
+
+            qCDebug(lcOauth) << "parsing .well-known reply successful, auth endpoint" << _authEndpoint << "and token endpoint" << _tokenEndpoint
+                             << "and registration endpoint" << _registrationEndpoint;
+        } else if (err.error == QJsonParseError::IllegalValue) {
+            qCDebug(lcOauth) << "failed to parse .well-known reply as JSON, server might not support OIDC";
+        } else {
+            qCDebug(lcOauth) << "failed to parse .well-known reply, error:" << err.error;
+        }
+        Q_EMIT fetchWellKnownFinished();
+    });
 }
 
 /**
@@ -593,15 +584,13 @@ bool isUrlValid(const QUrl &url)
 {
     qCDebug(lcOauth()) << "Checking URL for validity:" << url;
 
-    // we have hardcoded the oauthOverrideAuth
-    const auto overrideUrl = Theme::instance()->oauthOverrideAuthUrl();
-    if (!overrideUrl.first.isEmpty()) {
-        return QUrl::fromUserInput(overrideUrl.first).matches(url, QUrl::RemoveQuery);
-    }
+    // todo: #21 - I am not sure this check has much of a point to begin with as
+    // we have already validated any URL via user input OR we take the url from the webfinger service,
+    // but if this is in fact "needed" it should check more than just the scheme imo
 
-    // the following allowlist contains URL schemes accepted as valid
+    // the following allow list contains URL schemes accepted as valid
     // OAuth 2.0 URLs must be HTTPS to be in compliance with the specification
-    // for unit tests, we also permit the nonexisting oauthtest scheme
+    // for unit tests, we also permit the non existing oauthtest scheme
     const QStringList allowedSchemes({ QStringLiteral("https"), QStringLiteral("oauthtest") });
     return allowedSchemes.contains(url.scheme());
 }
@@ -635,6 +624,9 @@ AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)
     });
 }
 
+// this gets called periodically for reasons I don't yet understand. Need to determine if there is a timer or some other event that
+// triggers it
+
 void AccountBasedOAuth::startAuthentication()
 {
     qCDebug(lcOauth) << "fetching dynamic registration data";
@@ -654,6 +646,8 @@ void AccountBasedOAuth::startAuthentication()
     });
 }
 
+// I'm seeing this called even while the user is being asked to re-authenticate - this is very weird!
+// have a deeper look
 void AccountBasedOAuth::fetchWellKnown()
 {
     qCDebug(lcOauth) << "starting CheckServerJob before fetching" << wellKnownPathC;

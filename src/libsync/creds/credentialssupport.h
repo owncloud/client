@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Hannah von Reth <hannah.vonreth@owncloud.com>
+ * Copyright (C) Lisa Reese (lisa.reese@kiteworks.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,33 +14,11 @@
 
 #pragma once
 
-#include "owncloudlib.h"
-
-#include "account.h"
-
-#include <QJsonParseError>
-
+#include <QNetworkRequest>
 
 namespace OCC {
 
-class OWNCLOUDSYNC_EXPORT WebFinger : public QObject
-{
-    Q_OBJECT
-public:
-    WebFinger(QNetworkAccessManager *nam, QObject *parent = nullptr);
+inline constexpr QNetworkRequest::Attribute DontAddCredentialsAttribute = QNetworkRequest::User;
 
-    void start(const QUrl &url, const QString &resourceId);
-
-    const QJsonParseError &error() const;
-
-    const QUrl &href() const;
-
-Q_SIGNALS:
-    void finished();
-
-private:
-    QNetworkAccessManager *_nam;
-    QJsonParseError _error;
-    QUrl _href;
-};
+enum class AuthenticationType { Unknown = 0, OAuth };
 }

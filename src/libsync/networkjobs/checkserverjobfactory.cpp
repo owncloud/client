@@ -71,7 +71,7 @@ QUrl CheckServerJobResult::serverUrl() const
 CheckServerJobFactory CheckServerJobFactory::createFromAccount(const AccountPtr &account, bool clearCookies, QObject *parent)
 {
     // in order to receive all ssl erorrs we need a fresh QNam
-    auto nam = account->credentials()->createAM();
+    auto nam = account->credentials()->createAccessManager();
     nam->setCustomTrustedCaCertificates(account->approvedCerts());
     nam->setParent(parent);
     // do we start with the old cookies or new

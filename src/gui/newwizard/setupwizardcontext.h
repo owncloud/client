@@ -55,6 +55,8 @@ public:
     // convenience factory
     CoreJob *startFetchUserInfoJob(QObject *parent) const;
 
+    QUrl userInfoUrl() const;
+
 private:
     QPointer<SetupWizardWidget> _window;
     AccessManager *_accessManager = nullptr;
