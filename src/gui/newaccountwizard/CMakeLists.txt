@@ -8,5 +8,7 @@ target_sources(owncloudGui PRIVATE
 	oauthpagecontroller.cpp
 	oauthpagecontroller.h
 	wizardpagevalidator.h
+	newaccountwizard.cpp
+	newaccountwizard.h
 )
 
