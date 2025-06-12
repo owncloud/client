@@ -87,39 +87,6 @@
     </message>
 </context>
 <context>
-    <name>BasicAuthCredentials</name>
-    <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
-        <source>Please enter your password to log in.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
-        <source>Please enter %1 and password to log in.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
-        <source>Enter %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
-        <source>Password</source>
-        <translation>암호</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
-        <source>Enter Password</source>
-        <translation>암호 입력</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="92"/>
-        <source>Log in</source>
-        <translation>로그인</translation>
-    </message>
-</context>
-<context>
     <name>ChecksumHeader</name>
     <message>
         <location filename="../src/common/checksums.cpp" line="124"/>
@@ -242,22 +209,9 @@ File synchronization desktop utility.</source>
     </message>
 </context>
 <context>
-    <name>DetermineAuthTypeJobFactory</name>
-    <message>
-        <location filename="../src/libsync/determineauthtypejobfactory.cpp" line="51"/>
-        <source>Server did not ask for authorization</source>
-        <translation>서버가 인증을 묻지 않음</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/determineauthtypejobfactory.cpp" line="54"/>
-        <source>Failed to determine auth type: %1</source>
-        <translation>인증 유형 확인 실패: %1</translation>
-    </message>
-</context>
-<context>
     <name>FetchUserInfoJobFactory</name>
     <message>
-        <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="67"/>
+        <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="63"/>
         <source>Failed to retrieve user info</source>
         <translation>사용자 정보 검색 실패</translation>
     </message>
@@ -439,20 +393,6 @@ File synchronization desktop utility.</source>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="39"/>
         <source>Folders</source>
         <translation>폴더</translation>
-    </message>
-</context>
-<context>
-    <name>LegacyWebFingerSetupWizardPage</name>
-    <message>
-        <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.ui" line="14"/>
-        <source>Form</source>
-        <translation>폼</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.ui" line="79"/>
-        <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.ui" line="92"/>
-        <source>Username</source>
-        <translation>사용자 이름</translation>
     </message>
 </context>
 <context>
@@ -998,7 +938,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ownCloud 계정이 설정되지 않았음</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>최신 서버로 업데이트한 다음 클라이언트를 다시 시작하십시오.</translation>
     </message>
@@ -1013,12 +953,12 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>시간 제한</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="231"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
         <source>The provided credentials are not correct</source>
         <translation>지정한 인증 정보가 올바르지 않음</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="254"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
         <source>The configured server for this client is too old.</source>
         <translation>이 클라이언트에 대해 구성된 서버가 너무 오래되었습니다.</translation>
     </message>
@@ -1032,9 +972,27 @@ The update will be performed in the background, and overwrite the current AppIma
     </message>
 </context>
 <context>
+    <name>OCC::DetermineAuthTypeAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
+        <source>Server does not support OAuth</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
+        <source>Server did not ask for authorization</source>
+        <translation>서버가 인증을 묻지 않음</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
+        <source>Failed to determine authentication type: %1</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::DiscoverWebFingerServiceAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="81"/>
+        <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="84"/>
         <source>Invalid reply received from server.</source>
         <translation type="unfinished"/>
     </message>
@@ -1077,6 +1035,24 @@ The update will be performed in the background, and overwrite the current AppIma
         <location filename="../src/gui/models/expandingheaderview.cpp" line="102"/>
         <source>Reset column sizes</source>
         <translation>칼럼 크기 재 설정</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FetchCapabilitiesAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="67"/>
+        <source>server sent invalid content type: %1.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="73"/>
+        <source>could not parse Capabilities from server.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="81"/>
+        <source>reply sent for different subject (server): %1</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1398,17 +1374,17 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="166"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>선택 폴더에서 가상 파일을 이용할 수 없습니다</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="179"/>
         <source>Add Folder Sync Connection</source>
         <translation>폴더 동기화 연결 추가</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="181"/>
         <source>Add Sync Connection</source>
         <translation>동기화 연결 추가</translation>
     </message>
@@ -1644,8 +1620,7 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="113"/>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="149"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="95"/>
         <source>Login required</source>
         <translation>로그인 필요</translation>
     </message>
@@ -2041,66 +2016,66 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="351"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="356"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>서버에서 오류 반환함: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="354"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="359"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>&apos;token&apos; 엔드포인트에 접근하는 중 오류 발생: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="357"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>서버에서 반환한 JSON을 처리할 수 없음: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="360"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
         <source>Unsupported token type: %1</source>
         <translation>지원되지 않는 토큰 타입: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="367"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>서버의 응답에 기대되는 모든 필드가 포함되지 않았습니다
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="364"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="369"/>
         <source>Unknown Error</source>
         <translation>알 수 없는 오류</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="378"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
         <source>Login Error</source>
         <translation>로그인 오류</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="391"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="396"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;잘못된 사용자&lt;/h1&gt;&lt;p&gt;&lt;em&gt;%1&lt;/em&gt; 사용자로 로그인되어 있지만, &lt;em&gt;%2&lt;/em&gt; 사용자로 로그인해야 합니다. &lt;br&gt;%3 클라이언트로 돌아간 후 다시 인증하세요.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="395"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="400"/>
         <source>Wrong user</source>
         <translation>잘못된 사용자</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="413"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;로그인 성공&lt;/h1&gt;&lt;p&gt;이 창을 닫으셔도 됩니다.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="414"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="419"/>
         <source>Login Successful</source>
         <translation>로그인 성공</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="368"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="379"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="384"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;로그인 오류&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
@@ -3460,12 +3435,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="75"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="74"/>
         <source>Failed to retrieve user info</source>
         <translation>사용자 정보 검색 실패</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="101"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="100"/>
         <source>WebFinger lookup returned no links</source>
         <translation type="unfinished"/>
     </message>
@@ -3540,54 +3515,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::Wizard::BasicCredentialsSetupWizardState</name>
-    <message>
-        <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="43"/>
-        <source>Invalid credentials</source>
-        <translation>잘못된 인증 정보</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::LegacyWebFingerSetupWizardPage</name>
-    <message>
-        <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="28"/>
-        <source>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>&lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;에 연결 중</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="51"/>
-        <source>Please enter your %1:</source>
-        <comment>Please enter your [username, e-mail address, ...]:</comment>
-        <translation>%1 입력:</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::LegacyWebFingerSetupWizardState</name>
-    <message>
-        <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="39"/>
-        <source>Failed to parse WebFinger response: %1</source>
-        <translation>WebFinger 응답 해석 실패: %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="44"/>
-        <source>WebFinger endpoint did not send href attribute</source>
-        <translation>WebFinger 엔드포인트가 href 속성을 보내지 않음</translation>
-    </message>
-</context>
-<context>
     <name>OCC::Wizard::OAuthCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="52"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="64"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation>OAuth2가 켜진 서버에 로그인하는 중 오류가 발생했습니다.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="57"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="69"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation>서버에서 OAuth2를 지원하지 않는다는 응답을 보냈습니다.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="61"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="73"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation>Oauth2 인증은 보안 연결을 필요로 합니다.</translation>
     </message>
@@ -3609,39 +3549,39 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="110"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="104"/>
         <source>Invalid server URL: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="117"/>
         <source>Insecure connection</source>
         <translation>안전하지 않은 연결</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="124"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="118"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>%1와의 연결이 안전하지 않습니다.
 계속하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="128"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="122"/>
         <source>Confirm</source>
         <translation>확인</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="125"/>
         <source>Insecure server rejected by user</source>
         <translation>안전하지 않은 서버가 사용자에 의해 거부됨</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="136"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="130"/>
         <source>Invalid URL scheme. Only http and https are accepted.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="161"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="156"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3649,17 +3589,27 @@ Are you sure you want to proceed?</source>
 <context>
     <name>OCC::Wizard::SetupWizardController</name>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="190"/>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="152"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="198"/>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="167"/>
+        <source>Unable to retrieve capabilities from server</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="171"/>
+        <source>The server is not supported by this client</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="178"/>
         <source>Invalid credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="201"/>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="181"/>
         <source>Failed to retrieve user information from server.</source>
         <translation type="unfinished"/>
     </message>
@@ -3915,7 +3865,7 @@ Are you sure you want to proceed?</source>
         <translation>%1(%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="905"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="908"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation type="unfinished"/>
     </message>
@@ -3986,16 +3936,11 @@ Are you sure you want to proceed?</source>
     </message>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="34"/>
-        <source>Username</source>
-        <translation>사용자 이름</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/enums.cpp" line="36"/>
         <source>Login</source>
         <translation>로그인</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/enums.cpp" line="38"/>
+        <location filename="../src/gui/newwizard/enums.cpp" line="36"/>
         <source>Sync Options</source>
         <translation>동기화 옵션</translation>
     </message>
