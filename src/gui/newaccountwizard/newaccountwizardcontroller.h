@@ -19,6 +19,8 @@
 
 class QWizard;
 
+namespace OCC {
+
 class NewAccountModel;
 
 class NewAccountWizardController : public QObject
@@ -49,6 +51,11 @@ private:
     void buildPages();
     /** configures the wizard with proper settings */
     void setupWizard();
+    // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
+    // will enable the "next" button only when the validator returns true for hasAcceptableInput
+    // also need to override the QWizard validateCurrentPage to call the page controller instead of the
+    // wizard page validatePage
+
     /** connects "top level" wizard signals to local slots as needed */
     void connectWizard();
     /** connects the model signals to local slots, as needed */
@@ -57,3 +64,4 @@ private:
     NewAccountModel *_model;
     QWizard *_wizard;
 };
+}

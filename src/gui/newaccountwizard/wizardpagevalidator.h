@@ -11,20 +11,17 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-
-#include "newaccountwizardcontroller.h"
-
-#include <QWizard>
-
-#include "newaccountmodel.h"
+#pragma once
 
 namespace OCC {
 
-NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, QWizard *view, QObject *parent)
-    : QObject{parent}
-    , _model(model)
-    , _wizard(view)
+/** this is a possibly funky solution to allow sharing the page controllers' validation routines without actually sharing the page controllers
+ *  the controller will implement this interface, which allows us to block access to other controller functionality since only this interface
+ *  point is exposed
+ */
+class WizardPageValidator
 {
-}
-
+public:
+    virtual bool validate() = 0;
+};
 }

@@ -14,6 +14,7 @@
 
 #include "newaccountmodel.h"
 
+namespace OCC {
 
 NewAccountModel::NewAccountModel(QObject *parent)
     : QObject(parent)
@@ -96,4 +97,6 @@ void NewAccountModel::setDisplayName(const QString &newDisplayName)
         return;
     _displayName = newDisplayName;
     Q_EMIT displayNameChanged(_displayName);
+}
+
 }

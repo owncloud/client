@@ -11,19 +11,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+#include "oauthpagecontroller.h"
 
-#include "newaccountwizardcontroller.h"
-
-#include <QWizard>
-
-#include "newaccountmodel.h"
+#include <QWizardPage>
 
 namespace OCC {
 
-NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, QWizard *view, QObject *parent)
+OAuthPageController::OAuthPageController(QWizardPage *page, QObject *parent)
     : QObject{parent}
-    , _model(model)
-    , _wizard(view)
+    , _page(page)
 {
 }
 

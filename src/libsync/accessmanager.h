@@ -46,7 +46,7 @@ public:
     /***
      * Warning calling those will break running network jobs
      */
-    void addCustomTrustedCaCertificates(const QList<QSslCertificate> &certificates);
+    void addCustomTrustedCaCertificates(const QSet<QSslCertificate> &certificates);
 
     CookieJar *ownCloudCookieJar() const;
 

@@ -33,7 +33,7 @@ struct ResolveUrlResult
 {
     QString error;
     QUrl resolvedUrl;
-    QList<QSslCertificate> acceptedCertificates;
+    QSet<QSslCertificate> acceptedCertificates;
     bool success() const { return error.isEmpty() && resolvedUrl.isValid(); }
 };
 
@@ -71,6 +71,7 @@ private:
     QNetworkAccessManager *_nam;
     QUrl _url;
     QStringList _sslErrors;
-    QList<QSslCertificate> _certificates;
+    // made this a qset since that is what the account uses for certs. It just makes it easier to move the data around using same type
+    QSet<QSslCertificate> _certificates;
 };
 }
