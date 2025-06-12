@@ -25,4 +25,16 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
 {
 }
 
+bool UrlPageController::validate()
+{
+    // do all the stuff
+    // if it works, tell the main controller and provide the results. tbd whether we have a special data model or not.
+    // so far I don't think the main controller needs to know about failures since we can set the error on the page directly.
+    // obvs that needs to be reality checked.
+    Q_EMIT success(QUrl(), QUrl(), {});
+    return true;
+    // simply return false if it fails.
+    // Basically we should be able to rely on the QWizard not advancing the page if current validation fails.
+}
+
 }
