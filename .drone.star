@@ -11,7 +11,6 @@ MYSQL = "mysql:8.0"
 OC_CI_ALPINE = "owncloudci/alpine:latest"
 OC_CI_BAZEL_BUILDIFIER = "owncloudci/bazel-buildifier"
 OC_CI_CLIENT = "owncloudci/client:latest"
-OC_CI_CORE = "owncloudci/core"
 OC_CI_DRONE_SKIP_PIPELINE = "owncloudci/drone-skip-pipeline"
 OC_CI_NODEJS = "owncloudci/nodejs:18"
 OC_CI_PHP = "owncloudci/php:%s"
@@ -96,23 +95,6 @@ pip_step_volume = [
 config = {
     "gui-tests": {
         "servers": {
-            "oc10": {
-                "version": "latest",
-                # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
-                "tags": "~@skipOnOC10",
-                "extra_apps": {
-                    "oauth2": {
-                        "enabled": False,
-                        "command": "make dist",
-                    },
-                    "activity": {
-                        "enabled": True,
-                        "command": "make dist",
-                    },
-                },
-                "skip_in_pr": True,
-                "skip": False,
-            },
             "ocis": {
                 "version": "latest",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
@@ -202,27 +184,14 @@ def gui_test_pipeline(ctx):
         squish_parameters = " ".join(squish_parameters)
 
         steps = skipIfUnchanged(ctx, "gui-tests") + \
-                build_client(OC_CI_SQUISH, False)
-
-        services = []
-
-        if server == "oc10":
-            steps += installCore(params["version"]) + \
-                     setupServerAndApp() + \
-                     installExtraApps(params["extra_apps"]) + \
-                     fixPermissions() + \
-                     owncloudLog()
-            services += owncloudService() + \
-                        databaseService()
-        else:
-            steps += ocisService(params["version"]) + \
-                     waitForService("ocis", "ocis:9200")
-
-        steps += install_python_modules() + \
-                 setGuiTestReportDir() + \
-                 gui_tests(ctx, squish_parameters, server) + \
-                 uploadGuiTestLogs(ctx, server) + \
-                 logGuiReports(ctx, server)
+                build_client(OC_CI_SQUISH, False) + \
+                ocisService(params["version"]) + \
+                waitForService("ocis", "ocis:9200") + \
+                install_python_modules() + \
+                setGuiTestReportDir() + \
+                gui_tests(ctx, squish_parameters, server) + \
+                uploadGuiTestLogs(ctx, server) + \
+                logGuiReports(ctx, server)
 
         pipelines.append({
             "kind": "pipeline",
@@ -232,7 +201,6 @@ def gui_test_pipeline(ctx):
                 "arch": "amd64",
             },
             "steps": steps,
-            "services": services,
             "trigger": {
                 "ref": trigger_ref,
             },
@@ -289,9 +257,9 @@ def gui_tests(ctx, squish_parameters = "", server_type = "oc10"):
             "LICENSEKEY": from_secret("SQUISH_LICENSEKEY"),
             "GUI_TEST_REPORT_DIR": dir["guiTestReport"],
             "CLIENT_REPO": dir["base"],
-            "BACKEND_HOST": "http://owncloud/" if server_type == "oc10" else "https://ocis:9200",
-            "SECURE_BACKEND_HOST": "https://owncloud/" if server_type == "oc10" else "https://ocis:9200",
-            "OCIS": "true" if server_type == "ocis" else "false",
+            "BACKEND_HOST": "https://ocis:9200",
+            "SECURE_BACKEND_HOST": "https://ocis:9200",
+            "OCIS": "true",
             "SERVER_INI": "%s/drone/server.ini" % dir["guiTest"],
             "SQUISH_PARAMETERS": squish_parameters,
             "STACKTRACE_FILE": "%s/stacktrace.log" % dir["guiTestReport"],
@@ -441,104 +409,6 @@ def notification():
                 "failure",
             ],
         },
-    }]
-
-def databaseService():
-    return [{
-        "name": "mysql",
-        "image": MYSQL,
-        "environment": {
-            "MYSQL_USER": "owncloud",
-            "MYSQL_PASSWORD": "owncloud",
-            "MYSQL_DATABASE": "owncloud",
-            "MYSQL_ROOT_PASSWORD": "owncloud",
-        },
-        "command": ["--default-authentication-plugin=mysql_native_password"],
-    }]
-
-def installCore(server_version = "latest"):
-    return [{
-        "name": "install-core",
-        "image": OC_CI_CORE,
-        "settings": {
-            "version": server_version,
-            "core_path": dir["server"],
-            "db_type": "mysql",
-            "db_name": "owncloud",
-            "db_host": "mysql",
-            "db_username": "owncloud",
-            "db_password": "owncloud",
-        },
-    }]
-
-def setupServerAndApp(logLevel = 2):
-    return [{
-        "name": "setup-owncloud-server",
-        "image": OC_CI_PHP % DEFAULT_PHP_VERSION,
-        "commands": [
-            "cd %s" % dir["server"],
-            "php occ a:e testing",
-            "php occ config:system:set trusted_domains 1 --value=owncloud",
-            "php occ log:manage --level %s" % logLevel,
-            "php occ config:list",
-            "php occ config:system:set skeletondirectory --value=/var/www/owncloud/server/apps/testing/data/tinySkeleton",
-            "php occ config:system:set sharing.federation.allowHttpFallback --value=true --type=bool",
-        ],
-    }]
-
-def installExtraApps(extra_apps = {}):
-    commands = []
-    for app, param in extra_apps.items():
-        commands.append("ls %s/apps/%s || git clone --depth 1 https://github.com/owncloud/%s.git %s/apps/%s" % (dir["server"], app, app, dir["server"], app))
-        if (param["command"] != ""):
-            commands.append("cd %s/apps/%s" % (dir["server"], app))
-            commands.append(param["command"])
-        if param["enabled"]:
-            commands.append("cd %s" % dir["server"])
-            commands.append("php occ a:e %s" % app)
-
-    return [{
-        "name": "install-extra-apps",
-        "image": OC_CI_PHP % DEFAULT_PHP_VERSION,
-        "commands": commands,
-    }]
-
-def owncloudService():
-    return [{
-        "name": "owncloud",
-        "image": OC_CI_PHP % DEFAULT_PHP_VERSION,
-        "environment": {
-            "APACHE_WEBROOT": dir["server"],
-            "APACHE_CONFIG_TEMPLATE": "ssl",
-            "APACHE_SSL_CERT_CN": "server",
-            "APACHE_SSL_CERT": "%s/server.crt" % dir["base"],
-            "APACHE_SSL_KEY": "%s/server.key" % dir["base"],
-            "APACHE_LOGGING_PATH": "/dev/null",
-        },
-        "commands": [
-            "cat /etc/apache2/templates/base >> /etc/apache2/templates/ssl",
-            "/usr/local/bin/apachectl -e debug -D FOREGROUND",
-        ],
-    }]
-
-def owncloudLog():
-    return [{
-        "name": "owncloud-log",
-        "image": OC_UBUNTU,
-        "detach": True,
-        "commands": [
-            "tail -f %s/data/owncloud.log" % dir["server"],
-        ],
-    }]
-
-def fixPermissions():
-    return [{
-        "name": "fix-permissions",
-        "image": OC_CI_PHP % DEFAULT_PHP_VERSION,
-        "commands": [
-            "cd %s" % dir["server"],
-            "chown www-data * -R",
-        ],
     }]
 
 def ocisService(server_version = "latest"):
