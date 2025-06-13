@@ -978,7 +978,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
         <source>Server does not support OAuth</source>
-        <translation type="unfinished"/>
+        <translation>Server ei toeta OAuth protokolli</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
@@ -988,7 +988,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
         <source>Failed to determine authentication type: %1</source>
-        <translation type="unfinished"/>
+        <translation>Autentimistüübi määramine ebaõnnestus: %1</translation>
     </message>
 </context>
 <context>
@@ -1044,17 +1044,17 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="67"/>
         <source>server sent invalid content type: %1.</source>
-        <translation type="unfinished"/>
+        <translation>server saatis vigase sisu tüübi: %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="73"/>
         <source>could not parse Capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>serveri saadetud võimekuste lugemine ebaõnnestus.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="81"/>
         <source>reply sent for different subject (server): %1</source>
-        <translation type="unfinished"/>
+        <translation>vastus saadeti teisele subjektile (server): %1</translation>
     </message>
 </context>
 <context>
@@ -3598,12 +3598,12 @@ Kas olete kindel, et soovite jätkata?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="167"/>
         <source>Unable to retrieve capabilities from server</source>
-        <translation type="unfinished"/>
+        <translation>Võimekuste pärimine serverilt ebaõnnestus</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="171"/>
         <source>The server is not supported by this client</source>
-        <translation type="unfinished"/>
+        <translation>Server ei toeta antud klienti</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="178"/>
