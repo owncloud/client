@@ -21,20 +21,8 @@ namespace OCC {
 NewAccountWizard::NewAccountWizard(QWidget *parent)
     : QWizard(parent)
 {
-    // this presumes we want different options on mac vs others.
-    QWizard::WizardOptions origOptions = options();
-    setOptions(origOptions | WizardOption::IndependentPages | WizardOption::NoBackButtonOnStartPage | WizardOption::IgnoreSubTitles
-        | WizardOption::HaveCustomButton1 | WizardOption::HaveCustomButton2);
-    QAbstractButton *finishButton = button(WizardButton::FinishButton);
-    finishButton->setText(tr("Open Kiteworks"));
-
-    // it might make more sense to just rename the "next" button when this page is visible but really not sure yet
-    QAbstractButton *browserButton = button(WizardButton::CustomButton1);
-    browserButton->setText(tr("Open sign in again"));
-
-    QAbstractButton *advancedButton = button(WizardButton::CustomButton2);
-    advancedButton->setText(tr("Advanced settings"));
 }
+
 QAbstractButton *NewAccountWizard::browserButton()
 {
     return button(WizardButton::CustomButton1);

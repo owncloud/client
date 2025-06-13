@@ -17,11 +17,11 @@
 #include <QObject>
 
 
-class QWizard;
-
 namespace OCC {
 
 class NewAccountModel;
+class NewAccountWizard;
+class AccessManager;
 
 class NewAccountWizardController : public QObject
 {
@@ -35,13 +35,14 @@ public:
      * @param parent normally this will be a pointer to whatever instantiated the controller - this is normally a manager or another controller but since the
      * triad is short lived, we may manage the controller lifetime more directly. Nevertheless, the parent should be non-null.
      */
-    explicit NewAccountWizardController(NewAccountModel *model, QWizard *view, QObject *parent);
+    explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent);
 
 Q_SIGNALS:
     void wizardComplete();
     void wizardCanceled();
 
 protected Q_SLOTS:
+    void onPageChanged(int newPageIndex);
     // slots for "top level" wizard activity signals
     //  slots for model notifications if useful
 
@@ -49,7 +50,9 @@ protected Q_SLOTS:
 private:
     /** builds the page controller/page widget pairs */
     void buildPages();
-    /** configures the wizard with proper settings */
+    /** configures the wizard with proper settings - most of the config happens inside the wizard subclass so
+     *  this may be obsolete
+     */
     void setupWizard();
     // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
     // will enable the "next" button only when the validator returns true for hasAcceptableInput
@@ -61,7 +64,13 @@ private:
     /** connects the model signals to local slots, as needed */
     void connectModel();
 
-    NewAccountModel *_model;
-    QWizard *_wizard;
+    AccessManager *_accessManager = nullptr;
+    NewAccountModel *_model = nullptr;
+    NewAccountWizard *_wizard = nullptr;
+
+    int _urlPageIndex = -1;
+    int _oauthPageIndex = -1;
+    int _authSuccessPageIndex = -1;
+    int _advancedSettingsPageIndex = -1;
 };
 }

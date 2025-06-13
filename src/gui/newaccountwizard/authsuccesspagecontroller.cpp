@@ -11,25 +11,20 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-#pragma once
+#include "authsuccesspagecontroller.h"
 
-#include "wizardpagevalidator.h"
-#include <QObject>
-
-class QWizardPage;
-
+#include <QWizardPage>
 namespace OCC {
 
-class OAuthPageController : public QObject, public WizardPageValidator
+
+AuthSuccessPageController::AuthSuccessPageController(QWizardPage *page, QObject *parent)
+    : QObject{parent}
+    , _page(page)
 {
-    Q_OBJECT
-public:
-    explicit OAuthPageController(QWizardPage *page, QObject *parent);
-    bool validate() override;
+}
 
-private:
-    QWizardPage *_page;
-
-    void buildPage();
-};
+bool AuthSuccessPageController::validate()
+{
+    return true;
+}
 }

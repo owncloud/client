@@ -25,6 +25,14 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
 {
 }
 
+void UrlPageController::buildPage()
+{
+    if (!_page)
+        return;
+
+    _page->setTitle(QStringLiteral("UrlPage"));
+}
+
 bool UrlPageController::validate()
 {
     // do all the stuff
