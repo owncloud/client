@@ -18,7 +18,7 @@ Feature: filter activity for user
             | resource      | action     | account                              |
             | simple-folder | Downloaded | Alice Hansen@%local_server_hostname% |
 
-
+    @predefined_users
     Scenario: filter not synced activities
         Given user "Alice" has been created in the server with default attributes
         And user "Alice" has set up a client with default settings
