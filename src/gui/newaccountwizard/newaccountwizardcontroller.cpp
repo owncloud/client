@@ -41,12 +41,13 @@ void NewAccountWizardController::setupWizard()
     if (!_wizard) {
         return;
     }
+    _wizard->setWizardStyle(QWizard::ModernStyle);
     // todo: try to get the app name from the theme - not sure if this always works
     _wizard->setWindowTitle(tr("Welcome to Kiteworks"));
     // this presumes we want different options on mac vs others.
     QWizard::WizardOptions origOptions = _wizard->options();
 
-    _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage | QWizard::IgnoreSubTitles);
+    _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage /*| QWizard::IgnoreSubTitles*/);
 
     _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open Kiteworks"));
 
