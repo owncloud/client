@@ -19,6 +19,8 @@
 #include "wizardpagevalidator.h"
 
 class QWizardPage;
+class QLineEdit;
+class QLabel;
 
 namespace OCC {
 
@@ -74,12 +76,17 @@ private:
     QWizardPage *_page;
     AccessManager *_accessManager;
 
+    QLineEdit *_urlField;
+    QLabel *_errorField;
+
     // need to factor in any url val that comes from the theme and set the url to that
     // consider: make the url field read only if the url comes from the theme, and make sure "next" is enabled.
     // docs say that the QWizard checks changes/diffs to mandatory fields since initializePage was called so it's probably better
     // to buildPage then set the url value in separate step
     /** sets up the wizard page with appropriate content and connect any signals to eg the url QLineEdit */
     void buildPage();
+    void setUrl(const QString &urlText);
+    void setErrorMessage(const QString &error);
+    QUrl checkUrl();
 };
-
 }

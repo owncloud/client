@@ -71,6 +71,10 @@ public:
     SettingsDialog *settingsDialog() const;
 
     void runNewAccountWizard();
+    void runNewestAccountWizard();
+    // I don't like this. I think we should just exec it and wait for it to complete. I see no advantage to running it async
+    // it's not like you can do anything else while the dialog is visible anyway.
+    void newestAccountWizardFinished();
 
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountStatePtr account, bool useVfs);

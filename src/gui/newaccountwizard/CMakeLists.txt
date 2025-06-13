@@ -7,6 +7,12 @@ target_sources(owncloudGui PRIVATE
 	urlpagecontroller.h
 	oauthpagecontroller.cpp
 	oauthpagecontroller.h
+	authsuccesspagecontroller.cpp
+	authsuccesspagecontroller.h
+	advancedsettingspagecontroller.cpp
+	advancedsettingspagecontroller.h
 	wizardpagevalidator.h
+	newaccountwizard.cpp
+	newaccountwizard.h
 )
 
