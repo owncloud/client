@@ -71,6 +71,7 @@ class OWNCLOUDSYNC_EXPORT Theme : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool multiAccount READ multiAccount FINAL CONSTANT)
+    // todo: #20
     Q_PROPERTY(bool singleSyncFolder READ singleSyncFolder FINAL CONSTANT)
     Q_PROPERTY(QList<QmlUrlButton> urlButtons READ qmlUrlButtons FINAL CONSTANT)
     Q_PROPERTY(bool syncNewlyDiscoveredSpaces READ syncNewlyDiscoveredSpaces FINAL CONSTANT)

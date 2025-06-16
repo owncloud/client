@@ -40,7 +40,28 @@ void UrlPageController::buildPage()
     if (!_page)
         return;
 
+    QString appName = Theme::instance()->appNameGUI();
+
+    QLabel *logoLabel = new QLabel({}, _page);
+    //   Theme::instance()->wizardHeaderLogo().actualSize(50, 200);
+    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
+    logoLabel->setAlignment(Qt::AlignCenter);
+    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+
+    QLabel *welcomeLabel = new QLabel(tr("Welcome to %1").arg(appName), _page);
+    QFont welcomeFont = welcomeLabel->font();
+    welcomeFont.setWeight(QFont::DemiBold);
+    welcomeFont.setPixelSize(20);
+    welcomeLabel->setFont(welcomeFont);
+    //   welcomeLabel->set
+    welcomeLabel->setAlignment(Qt::AlignCenter);
+    welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     QLabel *instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in"), _page);
+    QFont font = instructionLabel->font();
+    font.setPixelSize(14);
+    instructionLabel->setFont(font);
     instructionLabel->setWordWrap(true);
     instructionLabel->setAlignment(Qt::AlignCenter);
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -54,11 +75,15 @@ void UrlPageController::buildPage()
     _errorField->setAlignment(Qt::AlignLeft);
 
     QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(50, 0, 50, 0);
     layout->addStretch(1);
+    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(welcomeLabel, Qt::AlignCenter);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
     layout->addWidget(_urlField, Qt::AlignCenter);
-    layout->addStretch(1);
     layout->addWidget(_errorField, Qt::AlignLeft);
+    layout->addStretch(1);
+    // todo: add pdn icon - this will need to go in the theme
     _page->setLayout(layout);
 }
 

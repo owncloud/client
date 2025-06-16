@@ -20,8 +20,8 @@
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
+#include "theme.h"
 #include "urlpagecontroller.h"
-#include <qabstractbutton.h>
 
 
 namespace OCC {
@@ -41,15 +41,17 @@ void NewAccountWizardController::setupWizard()
     if (!_wizard) {
         return;
     }
+    QString appName = Theme::instance()->appNameGUI();
+    _wizard->setFixedSize(600, 450);
     _wizard->setWizardStyle(QWizard::ModernStyle);
     // todo: try to get the app name from the theme - not sure if this always works
-    _wizard->setWindowTitle(tr("Welcome to Kiteworks"));
+    _wizard->setWindowTitle(tr("Welcome to %1").arg(appName));
     // this presumes we want different options on mac vs others.
     QWizard::WizardOptions origOptions = _wizard->options();
 
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage /*| QWizard::IgnoreSubTitles*/);
 
-    _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open Kiteworks"));
+    _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open %1").arg(appName));
 
     connectWizard();
 }
