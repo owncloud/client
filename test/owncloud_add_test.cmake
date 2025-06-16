@@ -24,4 +24,8 @@ function(owncloud_add_test test_class)
     if (UNIX AND NOT APPLE)
         set_property(TEST ${OWNCLOUD_TEST_CLASS}Test PROPERTY ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     endif()
+
+    foreach(arg IN LISTS ARGN)
+        target_sources(${OWNCLOUD_TEST_CLASS}Test PRIVATE ${arg})
+    endforeach()
 endfunction()
