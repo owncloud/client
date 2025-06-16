@@ -228,6 +228,9 @@ public:
     /** @return logo for the setup wizard. */
     virtual QIcon wizardHeaderLogo() const;
 
+    /** @return logo that is used below the main wizard page content. */
+    virtual QIcon wizardFooterLogo() const;
+
     virtual QColor avatarColor() const;
 
     virtual QColor avatarColorChecked() const;

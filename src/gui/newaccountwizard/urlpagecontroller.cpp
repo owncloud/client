@@ -43,7 +43,6 @@ void UrlPageController::buildPage()
     QString appName = Theme::instance()->appNameGUI();
 
     QLabel *logoLabel = new QLabel({}, _page);
-    //   Theme::instance()->wizardHeaderLogo().actualSize(50, 200);
     logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
     logoLabel->setAlignment(Qt::AlignCenter);
     logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -54,7 +53,6 @@ void UrlPageController::buildPage()
     welcomeFont.setWeight(QFont::DemiBold);
     welcomeFont.setPixelSize(20);
     welcomeLabel->setFont(welcomeFont);
-    //   welcomeLabel->set
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -74,6 +72,15 @@ void UrlPageController::buildPage()
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
 
+    QLabel *footerLogoLabel = nullptr;
+    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+        footerLogoLabel = new QLabel({}, _page);
+        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(200, 100));
+        footerLogoLabel->setAlignment(Qt::AlignCenter);
+        footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        // logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+    }
+
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(50, 0, 50, 0);
     layout->addStretch(1);
@@ -82,6 +89,8 @@ void UrlPageController::buildPage()
     layout->addWidget(instructionLabel, Qt::AlignCenter);
     layout->addWidget(_urlField, Qt::AlignCenter);
     layout->addWidget(_errorField, Qt::AlignLeft);
+    if (footerLogoLabel)
+        layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
     // todo: add pdn icon - this will need to go in the theme
     _page->setLayout(layout);

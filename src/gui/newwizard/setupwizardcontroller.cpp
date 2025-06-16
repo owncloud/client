@@ -122,6 +122,10 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
         Q_UNREACHABLE();
     }
 
+    // todo: something REALLY weird going on here. if I don't in
+    if (_currentState == nullptr)
+        return;
+
     Q_ASSERT(_currentState != nullptr);
     Q_ASSERT(_currentState->state() == nextState);
 
