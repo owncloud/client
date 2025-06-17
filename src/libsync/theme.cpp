@@ -398,6 +398,11 @@ QIcon Theme::wizardHeaderLogo() const
     return applicationIcon();
 }
 
+QIcon Theme::wizardFooterLogo() const
+{
+    return QIcon();
+}
+
 QColor Theme::avatarColor() const
 {
     return {};
