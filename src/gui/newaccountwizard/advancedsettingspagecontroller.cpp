@@ -21,6 +21,15 @@ AdvancedSettingsPageController::AdvancedSettingsPageController(QWizardPage *page
     : QObject{parent}
     , _page(page)
 {
+    buildPage();
+}
+
+void AdvancedSettingsPageController::buildPage()
+{
+    if (!_page)
+        return;
+
+    _page->setTitle(QStringLiteral("AdvancedSetttingsPage"));
 }
 
 bool AdvancedSettingsPageController::validate()

@@ -21,6 +21,7 @@ OAuthPageController::OAuthPageController(QWizardPage *page, QObject *parent)
     : QObject{parent}
     , _page(page)
 {
+    buildPage();
 }
 
 void OAuthPageController::buildPage()

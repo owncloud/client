@@ -20,6 +20,7 @@
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
+#include "resources/template.h"
 #include "theme.h"
 #include "urlpagecontroller.h"
 
@@ -44,7 +45,6 @@ void NewAccountWizardController::setupWizard()
     QString appName = Theme::instance()->appNameGUI();
     _wizard->setFixedSize(600, 450);
     _wizard->setWizardStyle(QWizard::ModernStyle);
-    // todo: try to get the app name from the theme - not sure if this always works
     _wizard->setWindowTitle(tr("Welcome to %1").arg(appName));
     // this presumes we want different options on mac vs others.
     QWizard::WizardOptions origOptions = _wizard->options();
@@ -52,6 +52,8 @@ void NewAccountWizardController::setupWizard()
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage /*| QWizard::IgnoreSubTitles*/);
 
     _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open %1").arg(appName));
+
+    updateColors();
 
     connectWizard();
 }
@@ -73,9 +75,12 @@ void NewAccountWizardController::buildPages()
     AuthSuccessPageController *authSuccessController = new AuthSuccessPageController(authSuccessPage, this);
     _authSuccessPageIndex = _wizard->addPage(authSuccessPage, authSuccessController);
 
-    QWizardPage *advancedSettingsPage = new QWizardPage(_wizard);
-    AdvancedSettingsPageController *advancedSettingsController = new AdvancedSettingsPageController(advancedSettingsPage, this);
-    _advancedSettingsPageIndex = _wizard->addPage(advancedSettingsPage, advancedSettingsController);
+    // todo: #26 - is this actually in play in real life or should it be deprecated?
+    if (!Theme::instance()->wizardSkipAdvancedPage()) {
+        QWizardPage *advancedSettingsPage = new QWizardPage(_wizard);
+        AdvancedSettingsPageController *advancedSettingsController = new AdvancedSettingsPageController(advancedSettingsPage, this);
+        _advancedSettingsPageIndex = _wizard->addPage(advancedSettingsPage, advancedSettingsController);
+    }
 }
 
 void NewAccountWizardController::connectWizard()
@@ -107,5 +112,17 @@ void NewAccountWizardController::onPageChanged(int newPageIndex)
         _wizard->page(_advancedSettingsPageIndex)->setFinalPage(true);
         _wizard->setOption(QWizard::HaveFinishButtonOnEarlyPages, false);
     }
+}
+
+// this is not done. the style needs to be applied to the pages, and *only* if the theme actually overrides the vals
+void NewAccountWizardController::updateColors()
+{
+    QString newStyle = Resources::Template::renderTemplateFromFile(QStringLiteral(":/client/resources/wizard/style.qss"),
+        {
+            {QStringLiteral("WIZARD_BACKGROUND_COLOR"), Theme::instance()->wizardHeaderBackgroundColor().name()}, //
+            {QStringLiteral("WIZARD_FONT_COLOR"), Theme::instance()->wizardHeaderTitleColor().name()} //
+        });
+
+    _wizard->setStyleSheet(newStyle);
 }
 }

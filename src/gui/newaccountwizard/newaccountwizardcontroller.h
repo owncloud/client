@@ -64,6 +64,8 @@ private:
     /** connects the model signals to local slots, as needed */
     void connectModel();
 
+    void updateColors();
+
     AccessManager *_accessManager = nullptr;
     NewAccountModel *_model = nullptr;
     NewAccountWizard *_wizard = nullptr;

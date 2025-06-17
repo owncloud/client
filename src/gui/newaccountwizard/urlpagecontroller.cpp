@@ -56,7 +56,7 @@ void UrlPageController::buildPage()
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    QLabel *instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in"), _page);
+    QLabel *instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in."), _page);
     QFont font = instructionLabel->font();
     font.setPixelSize(14);
     instructionLabel->setFont(font);
@@ -66,6 +66,7 @@ void UrlPageController::buildPage()
 
     _urlField = new QLineEdit(_page);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
 
     _errorField = new QLabel(QStringLiteral("errors live here"), _page);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -75,7 +76,7 @@ void UrlPageController::buildPage()
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(200, 100));
+        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 50));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         // logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
@@ -83,8 +84,10 @@ void UrlPageController::buildPage()
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(50, 0, 50, 0);
+    layout->setSpacing(12);
     layout->addStretch(1);
     layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addSpacing(16);
     layout->addWidget(welcomeLabel, Qt::AlignCenter);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
     layout->addWidget(_urlField, Qt::AlignCenter);
@@ -92,7 +95,6 @@ void UrlPageController::buildPage()
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
-    // todo: add pdn icon - this will need to go in the theme
     _page->setLayout(layout);
 }
 

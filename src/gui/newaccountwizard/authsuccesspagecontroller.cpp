@@ -21,6 +21,15 @@ AuthSuccessPageController::AuthSuccessPageController(QWizardPage *page, QObject 
     : QObject{parent}
     , _page(page)
 {
+    buildPage();
+}
+
+void AuthSuccessPageController::buildPage()
+{
+    if (!_page)
+        return;
+
+    _page->setTitle(QStringLiteral("SuccessPage"));
 }
 
 bool AuthSuccessPageController::validate()
