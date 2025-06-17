@@ -978,7 +978,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
         <source>Server does not support OAuth</source>
-        <translation type="unfinished"/>
+        <translation>Shërbyesi nuk mbulon OAuth</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
@@ -988,7 +988,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
         <source>Failed to determine authentication type: %1</source>
-        <translation type="unfinished"/>
+        <translation>S’u arrit të përcaktohej lloj mirëfilltësimi: %1</translation>
     </message>
 </context>
 <context>
@@ -1044,17 +1044,17 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="67"/>
         <source>server sent invalid content type: %1.</source>
-        <translation type="unfinished"/>
+        <translation>shërbyesi dërgoi lloj të pavlefshëm lënde: %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="73"/>
         <source>could not parse Capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>s’u analizuan dot Aftësi nga shërbyesi.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="81"/>
         <source>reply sent for different subject (server): %1</source>
-        <translation type="unfinished"/>
+        <translation>përgjigje e dërguar për tjetër subjekt (shërbyes): %1</translation>
     </message>
 </context>
 <context>
@@ -3599,12 +3599,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="167"/>
         <source>Unable to retrieve capabilities from server</source>
-        <translation type="unfinished"/>
+        <translation>S’u arrit të merreshin aftësi nga shërbyesi</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="171"/>
         <source>The server is not supported by this client</source>
-        <translation type="unfinished"/>
+        <translation>Shërbyesi nuk mbulohet nga ky klient</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="178"/>
