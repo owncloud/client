@@ -18,6 +18,7 @@
 import shutil
 import os
 from datetime import datetime
+from types import SimpleNamespace
 
 from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
 from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
@@ -180,6 +181,16 @@ def hook(context):
     delete_created_users()
 
 
+def get_active_widget():
+    ch = object.children(squish.waitForObject(AccountSetting.DIALOG_STACK, 500))
+    for obj in ch:
+        if hasattr(obj, "objectName") and obj.objectName and obj.objectName != "page":
+            return obj
+
+    # return empty object if not found
+    return SimpleNamespace(objectName="")
+
+
 def teardown_client():
     # Cleanup user accounts from UI for Windows platform
     # It is not needed for Linux so skipping it in order to save CI time
@@ -189,13 +200,15 @@ def teardown_client():
         # so to work around that, remove the account connection
         close_dialogs()
         close_widgets()
-        accounts, selectors = Toolbar.get_accounts()
-        for display_name in selectors:
-            _, account_objects = Toolbar.get_accounts()
-            squish.mouseClick(squish.waitForObject(account_objects[display_name]))
-            AccountSetting.remove_account_connection()
-        if accounts:
-            squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
+        active_widget = get_active_widget()
+        if active_widget.objectName and active_widget.objectName != "SetupWizardWidget":
+            accounts, selectors = Toolbar.get_accounts()
+            for display_name in selectors:
+                _, account_objects = Toolbar.get_accounts()
+                squish.mouseClick(squish.waitForObject(account_objects[display_name]))
+                AccountSetting.remove_account_connection()
+            if accounts:
+                squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
 
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in squish.applicationContextList():
