@@ -454,6 +454,11 @@ QString Theme::wizardUrlPostfix() const
     return QString();
 }
 
+QString Theme::wizardUrlPlaceholder() const
+{
+    return QString();
+}
+
 QString Theme::quotaBaseFolder() const
 {
     return QStringLiteral("/");

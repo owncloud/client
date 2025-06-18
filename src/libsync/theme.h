@@ -71,6 +71,7 @@ class OWNCLOUDSYNC_EXPORT Theme : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool multiAccount READ multiAccount FINAL CONSTANT)
+    // todo: #20
     Q_PROPERTY(bool singleSyncFolder READ singleSyncFolder FINAL CONSTANT)
     Q_PROPERTY(QList<QmlUrlButton> urlButtons READ qmlUrlButtons FINAL CONSTANT)
     Q_PROPERTY(bool syncNewlyDiscoveredSpaces READ syncNewlyDiscoveredSpaces FINAL CONSTANT)
@@ -216,11 +217,12 @@ public:
     virtual QString defaultServerFolder() const;
 
 
-    /** @return color for the setup wizard */
+    /** @return color for the setup wizard. This is effectively the text color for the wizard pages*/
     virtual QColor wizardHeaderTitleColor() const;
 
-    /** @return color for the setup wizard. */
+    /** @return color for the setup wizard.  This is effectively the background color for each page*/
     virtual QColor wizardHeaderBackgroundColor() const;
+    // todo: #26 I can only find this used in Credentials.qml so far. I don't understand what the intended purpose is.
     virtual QmlButtonColor primaryButtonColor() const;
     virtual QmlButtonColor secondaryButtonColor() const;
 
@@ -334,6 +336,12 @@ public:
      * @return An empty string, unless reimplemented
      */
     virtual QString wizardUrlPostfix() const;
+
+    /**
+     * @brief wizardUrlPlaceholder provides placeholder text for the URL field in the new account wizard
+     * @return empty string unless overridden
+     */
+    virtual QString wizardUrlPlaceholder() const;
 
     /**
      * @brief the server folder that should be queried for the quota information

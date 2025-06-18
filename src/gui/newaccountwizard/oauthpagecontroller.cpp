@@ -21,6 +21,19 @@ OAuthPageController::OAuthPageController(QWizardPage *page, QObject *parent)
     : QObject{parent}
     , _page(page)
 {
+    buildPage();
 }
 
+void OAuthPageController::buildPage()
+{
+    if (!_page)
+        return;
+
+    _page->setTitle(QStringLiteral("OAuthPage"));
+}
+
+bool OAuthPageController::validate()
+{
+    return true;
+}
 }

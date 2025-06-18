@@ -29,7 +29,7 @@
 using namespace OCC;
 using namespace Resources;
 
-Q_LOGGING_CATEGORY(lcResources, "sync.resoruces", QtInfoMsg)
+Q_LOGGING_CATEGORY(lcResources, "sync.resources", QtInfoMsg)
 
 namespace {
 struct IconCache
@@ -172,7 +172,6 @@ QIcon OCC::Resources::loadIcon(const QString &flavor, const QString &name, IconT
             return loadIcon(flavor, name, IconType::VanillaIcon);
         }
         qCWarning(lcResources) << "Failed to locate the icon" << path;
-        Q_ASSERT(false);
     }
     return cached;
 }
