@@ -38,6 +38,7 @@ public:
     explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent);
 
 Q_SIGNALS:
+    // so far I don't think we need these, as we should exec the wizard instead of running it async.
     void wizardComplete();
     void wizardCanceled();
 
@@ -48,12 +49,12 @@ protected Q_SLOTS:
 
     // slots that handle activity on an individual page are implemented in the associated page controller
 private:
+    /** configures the wizard with proper settings */
+    void setupWizard();
+
     /** builds the page controller/page widget pairs */
     void buildPages();
-    /** configures the wizard with proper settings - most of the config happens inside the wizard subclass so
-     *  this may be obsolete
-     */
-    void setupWizard();
+
     // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
     // will enable the "next" button only when the validator returns true for hasAcceptableInput
     // also need to override the QWizard validateCurrentPage to call the page controller instead of the
@@ -61,11 +62,14 @@ private:
 
     /** connects "top level" wizard signals to local slots as needed */
     void connectWizard();
+
     /** connects the model signals to local slots, as needed */
     void connectModel();
 
+    /** updates the QPalette of the wizard to use the theme colors, if they are valid */
     void updateColors();
 
+    // in theory these can be QPointers but I don't think it's particularly necessary. discuss.
     AccessManager *_accessManager = nullptr;
     NewAccountModel *_model = nullptr;
     NewAccountWizard *_wizard = nullptr;

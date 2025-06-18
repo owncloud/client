@@ -69,6 +69,9 @@ void UrlPageController::buildPage()
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
 
     _errorField = new QLabel(QStringLiteral("errors live here"), _page);
+    QPalette errorPalette = _errorField->palette();
+    errorPalette.setColor(QPalette::Text, Qt::red);
+    _errorField->setPalette(errorPalette);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
@@ -76,7 +79,7 @@ void UrlPageController::buildPage()
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 50));
+        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         // logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
@@ -169,7 +172,7 @@ bool UrlPageController::validate()
     // and certificates are deleted from the access manager
     // this is not ok. we don't know who "owns" this thing.
     // if it's so important to reset it "anywhere" it should have a reset function.
-    // todo: make a reset function for the AccessManager
+    // todo: DC-70 make a reset function for the AccessManager
     // _context->resetAccessManager();
     // yes this is terrible - it's just to get over the hump for now. Leakin' like a sieve.
     _accessManager = new AccessManager(this);

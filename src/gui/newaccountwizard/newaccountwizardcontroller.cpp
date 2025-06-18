@@ -35,6 +35,7 @@ NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, N
     _accessManager = new AccessManager(this);
     setupWizard();
     buildPages();
+    connectWizard();
 }
 
 void NewAccountWizardController::setupWizard()
@@ -42,20 +43,19 @@ void NewAccountWizardController::setupWizard()
     if (!_wizard) {
         return;
     }
+
+    updateColors();
+
     QString appName = Theme::instance()->appNameGUI();
     _wizard->setFixedSize(600, 450);
     _wizard->setWizardStyle(QWizard::ModernStyle);
     _wizard->setWindowTitle(tr("Welcome to %1").arg(appName));
+
     // this presumes we want different options on mac vs others.
     QWizard::WizardOptions origOptions = _wizard->options();
-
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage /*| QWizard::IgnoreSubTitles*/);
 
     _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open %1").arg(appName));
-
-    updateColors();
-
-    connectWizard();
 }
 
 void NewAccountWizardController::buildPages()
@@ -114,15 +114,23 @@ void NewAccountWizardController::onPageChanged(int newPageIndex)
     }
 }
 
-// this is not done. the style needs to be applied to the pages, and *only* if the theme actually overrides the vals
 void NewAccountWizardController::updateColors()
 {
-    QString newStyle = Resources::Template::renderTemplateFromFile(QStringLiteral(":/client/resources/wizard/style.qss"),
-        {
-            {QStringLiteral("WIZARD_BACKGROUND_COLOR"), Theme::instance()->wizardHeaderBackgroundColor().name()}, //
-            {QStringLiteral("WIZARD_FONT_COLOR"), Theme::instance()->wizardHeaderTitleColor().name()} //
-        });
+    if (!_wizard)
+        return;
 
-    _wizard->setStyleSheet(newStyle);
+    QPalette palette = _wizard->palette();
+    QColor themeBackground = Theme::instance()->wizardHeaderBackgroundColor();
+    QColor themeForeground = Theme::instance()->wizardHeaderTitleColor();
+    if (themeBackground.isValid()) {
+        palette.setColor(QPalette::Base, themeBackground);
+    }
+    if (themeForeground.isValid()) {
+        palette.setColor(QPalette::Text, themeForeground);
+    }
+
+    _wizard->setPalette(palette);
+    _wizard->setAutoFillBackground(true);
+
 }
 }
