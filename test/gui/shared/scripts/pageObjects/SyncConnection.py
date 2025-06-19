@@ -12,9 +12,9 @@ class SyncConnection:
         "visible": True,
     }
     FOLDER_SYNC_CONNECTION = {
-        "container": names.settings_stack_QStackedWidget,
-        "name": "_folderList",
-        "type": "QListView",
+        "container": names.stackedWidget_groupBox_QGroupBox,
+        "type": "QTreeWidget",
+        "unnamed": 1,
         "visible": 1,
     }
     FOLDER_SYNC_CONNECTION_LABEL = {
@@ -41,9 +41,9 @@ class SyncConnection:
         "visible": 1,
         "window": names.disable_virtual_file_support_QMessageBox,
     }
-    SELECTIVE_SYNC_APPLY_BUTTON = {
+    SELECTIVE_SYNC_OK_BUTTON = {
         "container": names.settings_stack_QStackedWidget,
-        "name": "selectiveSyncApply",
+        "text": "OK",
         "type": "QPushButton",
         "visible": 1,
     }
@@ -153,7 +153,7 @@ class SyncConnection:
                             )
                             break
         squish.clickButton(
-            squish.waitForObject(SyncConnection.SELECTIVE_SYNC_APPLY_BUTTON)
+            squish.waitForObject(SyncConnection.SELECTIVE_SYNC_OK_BUTTON)
         )
 
     @staticmethod

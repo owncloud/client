@@ -99,6 +99,11 @@ def get_socket_connection():
     return SOCKET_CONNECT
 
 
+def delete_socket_connection():
+    global SOCKET_CONNECT
+    SOCKET_CONNECT = None
+
+
 def read_socket_messages():
     messages = []
     socket_connect = get_socket_connection()

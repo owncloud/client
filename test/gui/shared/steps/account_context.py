@@ -14,6 +14,7 @@ from helpers.UserHelper import get_displayname_for_user, get_password_for_user
 from helpers.SyncHelper import (
     wait_for_initial_sync_to_complete,
     listen_sync_status_for_item,
+    delete_socket_connection,
 )
 from helpers.ConfigHelper import get_config, is_windows, is_linux
 
@@ -296,6 +297,7 @@ def step(context, _):
 @When('the user quits the client')
 def step(context):
     Toolbar.quit_owncloud()
+    delete_socket_connection()
 
 
 @Then('"|any|" account should be opened')
@@ -311,6 +313,8 @@ def step(context, displayname):
 )
 def step(context, sync_path, wizard):
     sync_path = substitute_inline_codes(sync_path)
+    if is_windows():
+        sync_path = sync_path.replace('/', '\\')
 
     actual_sync_path = ''
     if wizard == 'configuration':
