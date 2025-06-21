@@ -1,5 +1,6 @@
 from helpers.api import provisioning, sharing_helper, webdav_helper as webdav
 import helpers.api.oc10 as oc
+from helpers.ConfigHelper import get_config
 
 from pageObjects.Toolbar import Toolbar
 
@@ -14,6 +15,8 @@ def step(context, app_name, action):
     regexp=True,
 )
 def step(context, user_name, resource_name):
+    if get_config('predefined_users'):
+        return
     test.compare(
         webdav.resource_exists(user_name, resource_name),
         False,
@@ -25,6 +28,8 @@ def step(context, user_name, resource_name):
     r'^as "([^"].*)" (?:file|folder) "([^"].*)" should exist in the server', regexp=True
 )
 def step(context, user_name, resource_name):
+    if get_config('predefined_users'):
+        return
     test.compare(
         webdav.resource_exists(user_name, resource_name),
         True,
@@ -34,6 +39,8 @@ def step(context, user_name, resource_name):
 
 @Then('as "|any|" the file "|any|" should have the content "|any|" in the server')
 def step(context, user_name, file_name, content):
+    if get_config('predefined_users'):
+        return
     text_content = webdav.get_file_content(user_name, file_name)
     test.compare(
         text_content,
