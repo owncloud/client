@@ -170,6 +170,12 @@ QUrl UrlPageController::checkUrl()
 bool UrlPageController::validate()
 {
     setErrorMessage({});
+    if (!_accessManager)
+        return false;
+
+    // always clear the access manager data before revalidating the url
+    _accessManager->reset();
+
     // do all the stuff
     // if it works, tell the main controller and provide the results. tbd whether we have a special data model or not.
     // so far I don't think the main controller needs to know about failures since we can set the error on the page directly.
@@ -181,17 +187,13 @@ bool UrlPageController::validate()
         // it might be too much to print both the error and the source string - eval with input from others.
         setErrorMessage(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
         return false;
+    } else if (givenUrl.scheme().isEmpty() || givenUrl.scheme() != QStringLiteral("https")) // scheme should not be empty but who knows
+    {
+        setErrorMessage(tr("Invalid URL scheme. Only https is accepted."));
+        return false;
     }
-    setUrl(givenUrl.toDisplayString());
 
-    // when moving back to this page (or retrying a failed credentials check), we need to make sure existing cookies
-    // and certificates are deleted from the access manager
-    // this is not ok. we don't know who "owns" this thing.
-    // if it's so important to reset it "anywhere" it should have a reset function.
-    // todo: DC-70 make a reset function for the AccessManager
-    // _context->resetAccessManager();
-    // yes this is terrible - it's just to get over the hump for now. Leakin' like a sieve.
-    _accessManager = new AccessManager(this);
+    setUrl(givenUrl.toDisplayString());
 
     DiscoverWebFingerServiceAdapter webfingerServiceAdapter(_accessManager, givenUrl);
     const DiscoverWebFingerServiceResult webfingerServiceResult = webfingerServiceAdapter.getResult();
@@ -242,8 +244,6 @@ bool UrlPageController::validate()
     }
 
     return true;
-    // simply return false if it fails.
-    // Basically we should be able to rely on the QWizard not advancing the page if current validation fails.
 }
 
 }

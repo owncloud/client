@@ -33,6 +33,8 @@ class OWNCLOUDSYNC_EXPORT AccessManager : public QNetworkAccessManager
     Q_OBJECT
 
 public:
+    void reset();
+
     static QByteArray generateRequestId();
 
     AccessManager(QObject *parent);

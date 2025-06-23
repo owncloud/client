@@ -474,12 +474,12 @@ QUrl OAuth::authorisationLink() const
         const QString davUser = QString::fromUtf8(QUrl::toPercentEncoding(_davUser)); // Issue #7762;
         // open id connect
         query.addQueryItem(QStringLiteral("login_hint"), davUser);
-        // oc 10
+        // todo: #20 oc10 as fallback!
         query.addQueryItem(QStringLiteral("user"), davUser);
     }
-    const QUrl url = _authEndpoint.isValid()
-        ? Utility::concatUrlPath(_authEndpoint, {}, query)
-        : Utility::concatUrlPath(_serverUrl, QStringLiteral("/index.php/apps/oauth2/authorize"), query);
+    const QUrl url = _authEndpoint.isValid() ? Utility::concatUrlPath(_authEndpoint, {}, query)
+                                             // todo: #20 oc10!
+                                             : Utility::concatUrlPath(_serverUrl, QStringLiteral("/index.php/apps/oauth2/authorize"), query);
 
     return url;
 }

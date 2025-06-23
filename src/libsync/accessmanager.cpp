@@ -43,6 +43,17 @@ AccessManager::AccessManager(QObject *parent)
     });
 }
 
+void AccessManager::reset()
+{
+    _customTrustedCaCertificates.clear();
+    // afaik we really do want to use this, not clearConnectionCache, as we need to ensure auth data is also cleared
+    clearAccessCache();
+    // I know the QNetworkAccessManager takes ownership of the cookie jar, so in theory we can just do
+    setCookieJar(new CookieJar);
+    // but I am not sure it deletes the old cookie jar when a new one is set - I just know that it reparents it to the manager
+    // need to test that to make sure our dtr is invoked.
+}
+
 QByteArray AccessManager::generateRequestId()
 {
     return QUuid::createUuid().toByteArray(QUuid::WithoutBraces);
