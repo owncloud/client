@@ -33,6 +33,13 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
     , _accessManager(accessManager)
 {
     buildPage();
+
+    QString themeUrl = Theme::instance()->overrideServerUrlV2();
+    if (_urlField && !themeUrl.isEmpty()) {
+        setUrl(themeUrl);
+        // I think this is the right thing to do: if the theme provides the url, don't let the user change it!
+        _urlField->setEnabled(false);
+    }
 }
 
 void UrlPageController::buildPage()
@@ -105,6 +112,12 @@ void UrlPageController::setUrl(const QString &urlText)
 {
     QSignalBlocker blocker(_urlField);
     _urlField->setText(urlText);
+    // this is weird - for some reason if I set the text for eg a theme url, the text is auto selected which is really bad,
+    // as the whole content will be deleted with the first keystroke from the user.
+    // in this case, calling deselect does nothing.
+    // I'm working around this by disabling the field if a theme url is in play - I think that is correct regardless of this
+    // weird selection behavior.
+    _urlField->deselect();
 }
 
 void UrlPageController::setErrorMessage(const QString &error)
@@ -114,6 +127,9 @@ void UrlPageController::setErrorMessage(const QString &error)
 
 QUrl UrlPageController::checkUrl()
 {
+    if (!_accessManager)
+        return QUrl();
+
     QString userUrl = _urlField->text();
 
     // we need to check the scheme to be sure it's not there, but using the old "string matching" technique was not great

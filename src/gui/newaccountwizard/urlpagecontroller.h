@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 #include <QSslCertificate>
 
 #include "wizardpagevalidator.h"
@@ -73,8 +74,8 @@ Q_SIGNALS:
     void success(const QUrl &serverUrl, const QUrl &webfingerUrl, QSet<QSslCertificate> trustedCertificates);
 
 private:
-    QWizardPage *_page;
-    AccessManager *_accessManager;
+    QPointer<QWizardPage> _page;
+    QPointer<AccessManager> _accessManager;
 
     QLineEdit *_urlField;
     QLabel *_errorField;

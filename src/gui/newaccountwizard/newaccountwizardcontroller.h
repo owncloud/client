@@ -15,6 +15,7 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 
 
 namespace OCC {
@@ -69,10 +70,12 @@ private:
     /** updates the QPalette of the wizard to use the theme colors, if they are valid */
     void updateColors();
 
-    // in theory these can be QPointers but I don't think it's particularly necessary. discuss.
     AccessManager *_accessManager = nullptr;
-    NewAccountModel *_model = nullptr;
-    NewAccountWizard *_wizard = nullptr;
+
+    // using QPointer for the injected dependencies. For an impl like this it's more of a "best practice" formality as the whole
+    // bundle of stuff has a shared lifetime.
+    QPointer<NewAccountModel> _model = nullptr;
+    QPointer<NewAccountWizard> _wizard = nullptr;
 
     int _urlPageIndex = -1;
     int _oauthPageIndex = -1;

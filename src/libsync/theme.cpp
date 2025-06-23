@@ -90,9 +90,7 @@ Theme *Theme::create(QQmlEngine *qmlEngine, QJSEngine *)
     return instance();
 }
 
-Theme::~Theme()
-{
-}
+Theme::~Theme() { }
 
 QString Theme::appNameGUI() const
 {
@@ -286,7 +284,9 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
         Q_UNREACHABLE();
     }();
     const QString qtVersion = QString::fromUtf8(qVersion());
-    const QString qtVersionString = (QLatin1String(QT_VERSION_STR) == qtVersion ? qtVersion : QCoreApplication::translate("ownCloudTheme::qtVer", "%1 (Built against Qt %2)").arg(qtVersion, QStringLiteral(QT_VERSION_STR)));
+    const QString qtVersionString = (QLatin1String(QT_VERSION_STR) == qtVersion
+            ? qtVersion
+            : QCoreApplication::translate("ownCloudTheme::qtVer", "%1 (Built against Qt %2)").arg(qtVersion, QStringLiteral(QT_VERSION_STR)));
     QString _version = Version::displayString();
     QString gitUrl;
     if (!Version::gitSha().isEmpty()) {
@@ -297,7 +297,7 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
         }
     }
     QStringList sysInfo = {QStringLiteral("OS: %1-%2 (build arch: %3, CPU arch: %4)")
-                               .arg(QSysInfo::productType(), QSysInfo::kernelVersion(), QSysInfo::buildCpuArchitecture(), Utility::currentCpuArch())};
+            .arg(QSysInfo::productType(), QSysInfo::kernelVersion(), QSysInfo::buildCpuArchitecture(), Utility::currentCpuArch())};
     // may be called by both GUI and CLI, but we can display QPA only for the former
     if (auto guiApp = qobject_cast<QGuiApplication *>(qApp)) {
         sysInfo << QStringLiteral("QPA: %1").arg(guiApp->platformName());
