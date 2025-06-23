@@ -43,7 +43,7 @@ public:
     void close() override;
 
     qint64 writeData(const char *, qint64) override;
-    qint64 readData(char *data, qint64 maxlen) override;
+    qint64 readData(char *data, qint64 maxLen) override;
     bool atEnd() const override;
     qint64 size() const override;
     qint64 bytesAvailable() const override;
@@ -80,10 +80,8 @@ private:
 
 public:
     explicit PUTFileJob(AccountPtr account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device,
-        const HeaderMap &headers, int chunk, QObject *parent = nullptr);
+        const HeaderMap &headers, QObject *parent = nullptr);
     ~PUTFileJob() override;
-
-    int _chunk;
 
     void start() override;
 
@@ -245,37 +243,15 @@ private:
 /**
  * @ingroup libsync
  *
- * Propagation job, implementing the old chunking algorithm
+ * Propagation job, simple PUT upload.
  *
  */
-class PropagateUploadFileV1 : public PropagateUploadFileCommon
+class PropagateUploadFile : public PropagateUploadFileCommon
 {
     Q_OBJECT
 
-private:
-    /**
-     * That's the start chunk that was stored in the database for resuming.
-     * In the non-resuming case it is 0.
-     * If we are resuming, this is the first chunk we need to send
-     */
-    int _startChunk = 0;
-    /**
-     * This is the next chunk that we need to send. Starting from 0 even if _startChunk != 0
-     * (In other words,  _startChunk + _currentChunk is really the number of the chunk we need to send next)
-     * (In other words, _currentChunk is the number of the chunk that we already sent or started sending)
-     */
-    int _currentChunk = 0;
-    int _chunkCount = 0; /// Total number of chunks for this file
-    uint _transferId = 0; /// transfer id (part of the url)
-
-    qint64 chunkSize() const {
-        // Old chunking does not use dynamic chunking algorithm, and does not adjust the chunk size respectively,
-        // thus this value should be used as the one classifying item to be chunked
-        return propagator()->syncOptions()._initialChunkSize;
-    }
-
 public:
-    PropagateUploadFileV1(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
+    PropagateUploadFile(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
         : PropagateUploadFileCommon(propagator, item)
     {
     }
@@ -284,94 +260,8 @@ public:
 public Q_SLOTS:
     void abort(PropagatorJob::AbortType abortType) override;
 private Q_SLOTS:
-    void startNextChunk();
+    void startUpload();
     void slotPutFinished();
-    void slotUploadProgress(qint64, qint64);
-};
-
-/**
- * @ingroup libsync
- *
- * Propagation job, implementing the new chunking algorithm
- *
- */
-class PropagateUploadFileNG : public PropagateUploadFileCommon
-{
-    Q_OBJECT
-private:
-    /** Amount of data that was already sent in bytes.
-     *
-     * If this job is resuming an upload, this number includes bytes that were
-     * sent in previous jobs.
-     */
-    qint64 _sent = 0;
-
-    /** Amount of data that needs to be sent to the server in bytes.
-     *
-     * For normal uploads this will be the file size.
-     *
-     * This value is intended to be comparable to _sent: it's always the total
-     * amount of data that needs to be present at the server to finish the upload -
-     * regardless of whether previous jobs have already sent something.
-     */
-    qint64 _bytesToUpload;
-
-    uint _transferId = 0; /// transfer id (part of the url)
-    qint64 _currentChunkOffset = 0; /// byte offset of the next chunk data that will be sent
-    qint64 _currentChunkSize = 0; /// current chunk size
-    bool _removeJobError = false; /// if not null, there was an error removing the job
-
-    // Map chunk number with its size  from the PROPFIND on resume.
-    // (Only used from slotPropfindIterate/slotPropfindFinished because the PropfindJob use signals to report data.)
-    struct ServerChunkInfo
-    {
-        qint64 size;
-        QString originalName;
-    };
-    QMap<qint64, ServerChunkInfo> _serverChunks;
-
-    // Vector with expected PUT ranges.
-    struct UploadRangeInfo
-    {
-        qint64 start;
-        qint64 size;
-        qint64 end() const { return start + size; }
-    };
-    QVector<UploadRangeInfo> _rangesToUpload;
-
-    /**
-     * Return the path of a chunk.
-     * If chunkOffset == -1, returns the URL of the parent folder containing the chunks
-     */
-    QString chunkPath(qint64 chunkOffset = -1);
-
-    /**
-     * Finds the range starting at 'start' in _rangesToUpload and removes the first
-     * 'size' bytes from it. If it becomes empty, remove the range.
-     *
-     * Returns false if no matching range was found.
-     */
-    bool markRangeAsDone(qint64 start, qint64 size);
-
-public:
-    PropagateUploadFileNG(OwncloudPropagator *propagator, const SyncFileItemPtr &item);
-    void doStartUpload() override;
-
-private:
-    void doStartUploadNext();
-    void startNewUpload();
-    void startNextChunk();
-    void doFinalMove();
-public Q_SLOTS:
-    void abort(AbortType abortType) override;
-private Q_SLOTS:
-    void slotPropfindFinished();
-    void slotPropfindFinishedWithError();
-    void slotPropfindIterate(const QString &name, const QMap<QString, QString> &properties);
-    void slotDeleteJobFinished();
-    void slotMkColFinished();
-    void slotPutFinished();
-    void slotMoveJobFinished();
     void slotUploadProgress(qint64, qint64);
 };
 }

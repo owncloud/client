@@ -261,13 +261,7 @@ SyncOptions Folder::loadSyncOptions()
     opt._moveFilesToTrash = cfgFile.moveToTrash();
     opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
-    opt._initialChunkSize = cfgFile.chunkSize();
-    opt._minChunkSize = cfgFile.minChunkSize();
-    opt._maxChunkSize = cfgFile.maxChunkSize();
-    opt._targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
-
     opt.fillFromEnvironmentVariables();
-    opt.verifyChunkSizes();
     return opt;
 }
 
