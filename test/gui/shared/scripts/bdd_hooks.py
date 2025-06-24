@@ -18,7 +18,6 @@
 import shutil
 import os
 from datetime import datetime
-from types import SimpleNamespace
 
 from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
 from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
@@ -36,10 +35,6 @@ from helpers.ConfigHelper import (
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from helpers.ReportHelper import save_video_recording, take_screenshot, is_video_enabled
 import helpers.api.oc10 as oc
-
-from pageObjects.Toolbar import Toolbar
-from pageObjects.AccountSetting import AccountSetting
-from pageObjects.AccountConnectionWizard import AccountConnectionWizard
 
 # Squish test settings:
 # This controls whether a test (scenario) should stop execution on failure or not
@@ -149,9 +144,6 @@ def hook(context):
         if is_video_enabled():
             save_video_recording(f"{filename}.mp4", scenario_failed())
 
-    # teardown accounts and configs
-    teardown_client()
-
     # search coredumps after every test scenario
     # CI pipeline might fail although all tests are passing
     if coredumps := get_core_dumps():
@@ -181,35 +173,7 @@ def hook(context):
     delete_created_users()
 
 
-def get_active_widget():
-    ch = object.children(squish.waitForObject(AccountSetting.DIALOG_STACK, 500))
-    for obj in ch:
-        if hasattr(obj, "objectName") and obj.objectName and obj.objectName != "page":
-            return obj
-
-    # return empty object if not found
-    return SimpleNamespace(objectName="")
-
-
 def teardown_client():
-    # Cleanup user accounts from UI for Windows platform
-    # It is not needed for Linux so skipping it in order to save CI time
-    if is_windows():
-        # remove account from UI
-        # In Windows, removing only config and sync folders won't help
-        # so to work around that, remove the account connection
-        close_dialogs()
-        close_widgets()
-        active_widget = get_active_widget()
-        if active_widget.objectName and active_widget.objectName != "SetupWizardWidget":
-            accounts, selectors = Toolbar.get_accounts()
-            for display_name in selectors:
-                _, account_objects = Toolbar.get_accounts()
-                squish.mouseClick(squish.waitForObject(account_objects[display_name]))
-                AccountSetting.remove_account_connection()
-            if accounts:
-                squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX)
-
     # Detach (i.e. potentially terminate) all AUTs at the end of a scenario
     for ctx in squish.applicationContextList():
         # get pid before detaching
@@ -233,40 +197,3 @@ def teardown_client():
             test.log(f"Failed to delete '{entry.name}'.\nReason: {e}.")
     # cleanup paths created outside of the temporary directory during the test
     cleanup_created_paths()
-
-
-def close_dialogs():
-    # close the current active dailog if it's not a main client window
-    while True:
-        active_window = QApplication.activeModalWidget()
-        if str(active_window) == "<null>":
-            break
-        test.log(f"Closing '{active_window.objectName}' window")
-        if not active_window.close():
-            confirm_dialog = QApplication.activeModalWidget()
-            if confirm_dialog.visible:
-                squish.clickButton(
-                    squish.waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON)
-                )
-
-
-def close_widgets():
-    try:
-        ch = object.children(squish.waitForObject(AccountSetting.DIALOG_STACK, 500))
-        for obj in ch:
-            if (
-                hasattr(obj, "objectName")
-                and obj.objectName
-                and obj.objectName != "page"
-            ):
-                obj.close()
-                # if the dialog has a confirmation dialog, confirm it
-                confirm_dialog = QApplication.activeModalWidget()
-                if str(confirm_dialog) != "<null>" and confirm_dialog.visible:
-                    squish.clickButton(
-                        squish.waitForObject(AccountSetting.CONFIRMATION_YES_BUTTON)
-                    )
-    except LookupError:
-        # nothing to close if DIALOG_STACK is not found
-        # required for client versions <= 5
-        pass
