@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Include>
+
+    <!-- defined in command line
+	<?define HarvestAppDir = "files" ?>
+	-->
+	
+	<?define UpgradeCode = "{EB15081D-1892-4DB5-872C-9424BFFFF22F}"?>
+	<?define codepage = "1252" ?>
+	
+    <?if $(var.Platform) = x64 ?>
+		<?define isWin64 = "yes" ?>
+		<?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?else ?>
+		<?define isWin64 = "no" ?>
+		<?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?endif ?>
+
+</Include>

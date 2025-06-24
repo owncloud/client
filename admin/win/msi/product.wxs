@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding="utf-8"?>
+
+<?include $(sys.CURRENTDIR)/config.wxi?>
+<?include $(sys.CURRENTDIR)/oem.wxi?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+    <Product Name="$(var.AppName)" Manufacturer="$(var.AppVendor)"
+        Id="$(var.ProductId)" 
+        UpgradeCode="$(var.UpgradeCode)"
+		Language="1033" 
+        Codepage="$(var.codepage)" Version="$(var.VerFull)">
+
+        <Package Comments="Windows Installer Package"
+			Compressed="yes"
+			InstallScope="perMachine"
+			Description="$(var.PackageDescr)"
+			InstallerVersion="300" 
+			Manufacturer="$(var.AppVendor)"
+			Platform="x64" />
+
+        <CustomAction Id="SetINSTALLDIR" Property="INSTALLDIR" Value="[ProgramFiles64Folder]\ownCloud" />
+
+		<Media Id="1" Cabinet="$(var.AppShortName).cab" EmbedCab="yes" />
+		<!-- App icon -->
+		<Icon Id="$(var.AppIcon)" SourceFile="gui\$(var.AppIcon)" />
+		
+		<WixVariable Id="WixUILicenseRtf" Value="text/license.rtf" />
+
+		<!-- Required for WixUI_InstallDir dialog -->
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+		<!-- "Add or Remove" Programs Entries -->
+		<Property Id="APPNAME">$(var.AppName)</Property>
+		<Property Id="ARPPRODUCTICON">$(var.AppIcon)</Property>
+
+		<!-- Quit / restart application -->
+		<util:RestartResource ProcessName="$(var.AppExe)" />
+
+		<UI>
+			<UIRef Id="WixUI_FeatureTree" />
+			<UIRef Id="WixUI_ErrorProgressText" />
+
+			<!-- https://wixtoolset.org/documentation/manual/v3/howtos/ui_and_localization/run_program_after_install.html -->        
+			<Publish Dialog="ExitDialog" 
+				Control="Finish" 
+				Event="DoAction" 
+				Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+		</UI>
+
+		<!-- Launch product checkbox -->
+		<Property Id="WixShellExecTarget" Value="[#MainExecutable]" />
+		<CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch $(var.AppName)" />
+		<SetProperty Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" Before="CostInitialize">NOT (LAUNCH=0)</SetProperty>
+
+
+		<!-- TODO: Make reboot request depends on shell extension feature -->
+		<InstallExecuteSequence>
+			<ScheduleReboot After="InstallFinalize">NOT DO_NOT_SCHEDULE_REBOOT</ScheduleReboot>
+		</InstallExecuteSequence>
+
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="$(var.PlatformProgramFilesFolder)" Name="PFiles">
+                <Directory Id="ProductProgramDir" Name="$(var.ProgramFilesProductSubDir)">
+					<Directory Id="INSTALLDIR" Name="$(var.AppName)">
+						<!-- Shell Extensions -->
+						<Directory Id="ShellExtDir" />
+					</Directory>
+                </Directory>
+            </Directory>
+			
+			<Directory Id="ProgramMenuFolder" Name="Programs">
+				<!-- Start Menu Shortcut -->
+				<Component Id="StartMenuIcon" Guid="*" Win64="$(var.isWin64)">
+					<Shortcut Id="StartMenu" Name="$(var.AppName)" Target="[INSTALLDIR]$(var.AppExe)" WorkingDirectory="INSTALLDIR" Icon="$(var.AppIcon)" IconIndex="0" Advertise="no" />
+					<RegistryValue Root="HKCU" Key="Software\$(var.AppVendor)\$(var.AppName)" Name="installedStartMenuShortcut" Type="integer" Value="1" KeyPath="yes"/>
+				</Component>
+			</Directory>
+
+			<Directory Id="DesktopFolder" Name="Desktop">
+				<!-- Desktop Shortcut -->
+				<Component Id="DesktopIcon" Guid="*" Win64="$(var.isWin64)">
+					<Shortcut Id="Desktop" Name="$(var.AppName)" Target="[INSTALLDIR]$(var.AppExe)" WorkingDirectory="INSTALLDIR" Icon="$(var.AppIcon)" IconIndex="0" Advertise="no" />
+					<RegistryValue Root="HKCU" Key="Software\$(var.AppVendor)\$(var.AppName)" Name="installedDesktopShortcut" Type="integer" Value="1" KeyPath="yes"/>
+				</Component>
+			</Directory>
+
+        </Directory>
+
+		<DirectoryRef Id="TARGETDIR">
+			<!-- Version numbers used to detect existing installation (use 32-bit registry) -->
+			<Component Id="RegistryVersionInfo" Guid="*" Win64="no">
+				<RegistryKey Root="HKLM" Key="Software\$(var.AppVendor)\$(var.AppName)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+					<RegistryValue Type="string" Value="[INSTALLDIR]" />
+					<RegistryValue Type="integer" Name="VersionMajor" Value="$(var.VerMajor)" />
+					<RegistryValue Type="integer" Name="VersionMinor" Value="$(var.VerMinor)" />
+					<RegistryValue Type="integer" Name="VersionRevision" Value="$(var.VerRevision)" />
+					<RegistryValue Type="integer" Name="VersionBuild" Value="$(var.VerBuild)" />
+
+					<!-- Save MSI ProductCode to allow being uninstalled by custom tools -->
+					<RegistryValue Type="string" Name="InstallerProductCode" Value="[ProductCode]" />
+				</RegistryKey>
+			</Component>
+
+			<!-- Register URI handler -->
+			<Component Id="RegistryUriHandler" Guid="*" Win64="$(var.isWin64)">
+				<RegistryKey Root="HKLM" Key="Software\Classes\$(var.AppCommandOpenUrlScheme)" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+					<RegistryValue Type="string" Value="URL:$(var.AppName) Protocol" />
+					<RegistryValue Type="string" Name="URL Protocol" Value="" />
+				</RegistryKey>
+				<RegistryKey Root="HKLM" Key="Software\Classes\$(var.AppCommandOpenUrlScheme)\DefaultIcon" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+					<RegistryValue Type="string" Value="[INSTALLDIR]$(var.AppExe)" />
+				</RegistryKey>
+				<RegistryKey Root="HKLM" Key="Software\Classes\$(var.AppCommandOpenUrlScheme)\shell\open\command" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes">
+					<RegistryValue Type="string" Value="&quot;[INSTALLDIR]$(var.AppExe)&quot; &quot;%1&quot;" />
+				</RegistryKey>
+			</Component>
+		</DirectoryRef>
+
+
+        <Feature Id="MainProduct" Title="$(var.AppName)" Level="1" Display="collapse" Absent="disallow" ConfigurableDirectory="INSTALLDIR">
+			<ComponentGroupRef Id="ClientFiles" />
+
+			<ComponentRef Id="RegistryVersionInfo" />
+			<ComponentRef Id="RegistryUriHandler" />
+			
+			<Feature Id="ShellExtensions" Title="Integration for Windows Explorer"
+				Description="This feature requires a reboot." >
+				<ComponentGroupRef Id="ShellExtensions" />
+				<Condition Level="0">(NO_SHELL_EXTENSIONS=1)</Condition>
+			</Feature>
+
+			<!-- Start menu shortcut reference -->
+			<Feature Id="StartMenuShortcuts" Title="Start Menu Shortcut">
+				<ComponentRef Id="StartMenuIcon" />
+				<Condition Level="0">(NO_START_MENU_SHORTCUTS=1)</Condition>
+			</Feature>
+
+			<!-- Desktop shortcut reference -->
+			<Feature Id="DesktopShortcut" Title="Desktop Shortcut">
+				<ComponentRef Id="DesktopIcon" />
+				<Condition Level="0">(NO_DESKTOP_SHORTCUT=1)</Condition>
+			</Feature>
+        </Feature>
+
+    </Product>
+
+</Wix>
