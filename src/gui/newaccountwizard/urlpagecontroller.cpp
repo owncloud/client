@@ -75,7 +75,7 @@ void UrlPageController::buildPage()
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
 
-    _errorField = new QLabel(QStringLiteral("errors live here"), _page);
+    _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
     errorPalette.setColor(QPalette::Text, Qt::red);
     _errorField->setPalette(errorPalette);
@@ -166,6 +166,7 @@ QUrl UrlPageController::checkUrl()
 bool UrlPageController::validate()
 {
     _results = {};
+    _errorField->clear();
 
     if (!_accessManager) {
         handleError(QStringLiteral("No valid access manager is available"));
@@ -199,7 +200,8 @@ bool UrlPageController::validate()
         _results.webfingerServiceUrl = QUrl(webfingerServiceResult.href);
     } else {
         // first, we must resolve the actual server URL
-        ResolveUrlAdapter urlResolver(_accessManager, givenUrl);
+        // note we have to pass the wizard dialog as the parent to the
+        ResolveUrlAdapter urlResolver(_accessManager, givenUrl, _page->parentWidget());
         const ResolveUrlResult resolveUrlResult = urlResolver.getResult();
 
         if (!resolveUrlResult.success()) {

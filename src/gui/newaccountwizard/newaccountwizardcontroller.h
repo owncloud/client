@@ -58,8 +58,6 @@ private:
 
     // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
     // will enable the "next" button only when the validator returns true for hasAcceptableInput. Not sure if this will be useful yet or not
-    // also need to override the QWizard validateCurrentPage to call the page controller instead of the
-    // wizard page validatePage
 
     /** connects "top level" wizard signals to local slots as needed */
     void connectWizard();

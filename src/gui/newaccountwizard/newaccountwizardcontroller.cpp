@@ -55,8 +55,9 @@ void NewAccountWizardController::setupWizard()
     // Ramona would like to show the cancel button on mac too - afaik it is removed but need to check this with Erik.
     // it may be that using modern style puts it back
     QWizard::WizardOptions origOptions = _wizard->options();
-    _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage /*| QWizard::IgnoreSubTitles*/);
-
+    _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
+    // no cancel button is set by default on mac with the original options. just remove it to bring the cancel button back
+    _wizard->setOption(QWizard::NoCancelButton, false);
     _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open %1").arg(appName));
 }
 
