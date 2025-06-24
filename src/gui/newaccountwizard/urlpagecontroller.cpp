@@ -112,17 +112,13 @@ void UrlPageController::setUrl(const QString &urlText)
 {
     QSignalBlocker blocker(_urlField);
     _urlField->setText(urlText);
-    // this is weird - for some reason if I set the text for eg a theme url, the text is auto selected which is really bad,
-    // as the whole content will be deleted with the first keystroke from the user.
-    // in this case, calling deselect does nothing.
-    // I'm working around this by disabling the field if a theme url is in play - I think that is correct regardless of this
-    // weird selection behavior.
-    _urlField->deselect();
 }
 
-void UrlPageController::setErrorMessage(const QString &error)
+void UrlPageController::handleError(const QString &error)
 {
     _errorField->setText(error);
+    _results.error = error;
+    Q_EMIT failure(_results);
 }
 
 QUrl UrlPageController::checkUrl()
@@ -169,27 +165,26 @@ QUrl UrlPageController::checkUrl()
 
 bool UrlPageController::validate()
 {
-    setErrorMessage({});
-    if (!_accessManager)
+    _results = {};
+
+    if (!_accessManager) {
+        handleError(QStringLiteral("No valid access manager is available"));
         return false;
+    }
 
     // always clear the access manager data before revalidating the url
     _accessManager->reset();
 
-    // do all the stuff
-    // if it works, tell the main controller and provide the results. tbd whether we have a special data model or not.
-    // so far I don't think the main controller needs to know about failures since we can set the error on the page directly.
-    // obvs that needs to be reality checked.
     QUrl givenUrl = checkUrl();
     if (!givenUrl.isValid()) {
         QString fullError = givenUrl.errorString();
         QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
         // it might be too much to print both the error and the source string - eval with input from others.
-        setErrorMessage(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
+        handleError(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
         return false;
     } else if (givenUrl.scheme().isEmpty() || givenUrl.scheme() != QStringLiteral("https")) // scheme should not be empty but who knows
     {
-        setErrorMessage(tr("Invalid URL scheme. Only https is accepted."));
+        handleError(tr("Invalid URL scheme. Only https is accepted."));
         return false;
     }
 
@@ -199,50 +194,49 @@ bool UrlPageController::validate()
     const DiscoverWebFingerServiceResult webfingerServiceResult = webfingerServiceAdapter.getResult();
 
     // in case any kind of error occurs, we assume the WebFinger service is not available
-    if (!webfingerServiceResult.success()) {
+    if (webfingerServiceResult.success()) {
+        _results.baseServerUrl = givenUrl;
+        _results.webfingerServiceUrl = QUrl(webfingerServiceResult.href);
+    } else {
         // first, we must resolve the actual server URL
         ResolveUrlAdapter urlResolver(_accessManager, givenUrl);
         const ResolveUrlResult resolveUrlResult = urlResolver.getResult();
 
         if (!resolveUrlResult.success()) {
-            setErrorMessage(resolveUrlResult.error);
+            handleError(resolveUrlResult.error);
             return false;
         }
 
         const QUrl finalUrl = resolveUrlResult.resolvedUrl;
-
+        // I don't know how likely it is that the resolved url will contain a query but from other code it is
+        // evident that url queries are banned. so if it comes back with a query on it, it's a nogo
         if (finalUrl.hasQuery()) {
             QString errorMsg = tr("The requested URL failed with query value: %1").arg(finalUrl.query());
-            setErrorMessage(errorMsg);
+            handleError(errorMsg);
             return false;
         }
-        if (!resolveUrlResult.acceptedCertificates.isEmpty()) {
-            // future requests made through this access manager should accept the certificate
-            /*  _context->accessManager()->addCustomTrustedCaCertificates(resolveUrlResult.acceptedCertificates);
 
-                     // the account maintains a list, too, which is also saved in the config file
-              for (const auto &cert : resolveUrlResult.acceptedCertificates)
-                  _context->accountBuilder().addCustomTrustedCaCertificate(cert);
-      */
+        if (!resolveUrlResult.acceptedCertificates.isEmpty()) {
+            // future requests made through this access manager need to include any certificates
+            _accessManager->addCustomTrustedCaCertificates(resolveUrlResult.acceptedCertificates);
+            // save/return this also for the account setup, as the account maintains the set of certificates, too.
+            _results.certificates = resolveUrlResult.acceptedCertificates;
         }
 
+        // This is now a mere formality to be very very very sure that the base url uses oauth. In the unlikely event that it doesn't
+        // the job simply fails.
         DetermineAuthTypeAdapter authTypeAdapter(_accessManager, finalUrl);
         const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
         if (!authResult.success()) {
-            setErrorMessage(authResult.error);
+            handleError(authResult.error);
             return false;
         }
 
         Q_ASSERT(authResult.type == AuthenticationType::OAuth);
-        // _context->accountBuilder().setServerUrl(finalUrl, authResult.type);
-        // Q_EMIT evaluationSuccessful();
-
-
-    } else {
-        // _context->accountBuilder().setWebFingerAuthenticationServerUrl(QUrl(webfingerServiceResult.href));
-        // Q_EMIT evaluationSuccessful();
+        _results.baseServerUrl = finalUrl;
     }
 
+    Q_EMIT success(_results);
     return true;
 }
 

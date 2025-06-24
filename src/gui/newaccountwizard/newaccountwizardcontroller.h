@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "newaccountwizard/urlpagecontroller.h"
 #include <QObject>
 #include <QPointer>
 
@@ -38,17 +39,16 @@ public:
      */
     explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent);
 
-Q_SIGNALS:
-    // so far I don't think we need these, as we should exec the wizard instead of running it async.
-    void wizardComplete();
-    void wizardCanceled();
 
 protected Q_SLOTS:
     void onPageChanged(int newPageIndex);
     // slots for "top level" wizard activity signals
     //  slots for model notifications if useful
 
-    // slots that handle activity on an individual page are implemented in the associated page controller
+    void onUrlValidationCompleted(const OCC::UrlPageResults &result);
+    // the failed slot is currently unused - I don't think we need to listen on this one for the wizard, need to discuss with Erik
+    void onUrlValidationFailed(const OCC::UrlPageResults &result);
+
 private:
     /** configures the wizard with proper settings */
     void setupWizard();
@@ -57,7 +57,7 @@ private:
     void buildPages();
 
     // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
-    // will enable the "next" button only when the validator returns true for hasAcceptableInput
+    // will enable the "next" button only when the validator returns true for hasAcceptableInput. Not sure if this will be useful yet or not
     // also need to override the QWizard validateCurrentPage to call the page controller instead of the
     // wizard page validatePage
 

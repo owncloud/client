@@ -52,6 +52,8 @@ void NewAccountWizardController::setupWizard()
     _wizard->setWindowTitle(tr("Welcome to %1").arg(appName));
 
     // this presumes we want different options on mac vs others.
+    // Ramona would like to show the cancel button on mac too - afaik it is removed but need to check this with Erik.
+    // it may be that using modern style puts it back
     QWizard::WizardOptions origOptions = _wizard->options();
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage /*| QWizard::IgnoreSubTitles*/);
 
@@ -65,6 +67,7 @@ void NewAccountWizardController::buildPages()
 
     QWizardPage *urlPage = new QWizardPage(_wizard);
     UrlPageController *urlController = new UrlPageController(urlPage, _accessManager, this);
+    connect(urlController, &UrlPageController::success, this, &NewAccountWizardController::onUrlValidationCompleted);
     _urlPageIndex = _wizard->addPage(urlPage, urlController);
 
     QWizardPage *oauthPage = new QWizardPage(_wizard);
@@ -91,11 +94,29 @@ void NewAccountWizardController::connectWizard()
     connect(_wizard, &QWizard::currentIdChanged, this, &NewAccountWizardController::onPageChanged);
 }
 
+void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResults &result)
+{
+    if (!_model)
+        return;
+
+    _model->setServerUrl(result.baseServerUrl);
+    _model->setWebfingerAuthenticationUrl(result.webfingerServiceUrl);
+    _model->setTrustedCertificates(result.certificates);
+
+    // and then we have to explicitly set some data on the controller for the next page...
+}
+
+// I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
+// first page yet.
+void NewAccountWizardController::onUrlValidationFailed(const OCC::UrlPageResults &result)
+{
+    Q_UNUSED(result);
+}
+
 void NewAccountWizardController::onPageChanged(int newPageIndex)
 {
     if (newPageIndex == _urlPageIndex) {
         _wizard->setOption(QWizard::HaveFinishButtonOnEarlyPages, false);
-        // I think we should rename next to "sign in" on the first page
         _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Next"));
     } else if (newPageIndex == _oauthPageIndex) {
         _wizard->setOption(QWizard::HaveFinishButtonOnEarlyPages, false);

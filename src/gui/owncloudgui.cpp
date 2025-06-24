@@ -781,7 +781,8 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
 void ownCloudGui::runNewestAccountWizard()
 {
     NewAccountWizard wizard(settingsDialog());
-    NewAccountWizardController wizardController(nullptr, &wizard, nullptr);
+    NewAccountModel model(nullptr);
+    NewAccountWizardController wizardController(&model, &wizard, nullptr);
     ownCloudGui::raise();
     int result = wizard.exec();
     if (result == QDialog::Accepted)
