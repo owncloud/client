@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Include>
+
+    <?define AppVendor = "ownCloud GmbH" ?>
+    <?define AppName = "ownCloud client" ?>
+    <?define AppShortName = "owncloud" ?>
+
+    <?define AppIcon = "owncloud.ico" ?>
+    <?define AppExe = "owncloud.exe" ?>
+
+	<?define AppCommandOpenUrlScheme = "oc" ?>
+
+    <!-- App Version -->
+    <?define VerMajor = "5" ?>
+    <?define VerMinor = "2" ?>
+    <?define VerRevision = "3" ?>
+    <?define VerBuild = "1234" ?>
+    <?define VerStd = "$(var.VerMajor).$(var.VerMinor).$(var.VerRevision)" ?>
+    <?define VerFull = "$(var.VerStd).$(var.VerBuild)" ?>
+    <?define VerDesc = "ownCloud Sync Client" ?>
+    <?define PackageDescr = "$(var.VerDesc) - Version $(var.VerFull)" ?>
+
+    <?define ProductId = "{B550F35E-3467-4F71-9108-D755C34054BC}" ?>
+	<?define ProgramFilesProductSubDir = "ownCloud" ?>
+
+	
+</Include>
