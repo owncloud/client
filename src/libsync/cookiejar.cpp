@@ -14,11 +14,9 @@
 
 #include "cookiejar.h"
 
-#include "configfile.h"
+// todo: #31
 
-#include <QDir>
 #include <QLoggingCategory>
-#include <QNetworkCookie>
 
 namespace OCC {
 

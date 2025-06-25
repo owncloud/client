@@ -35,6 +35,10 @@
 #include "setupwizardcontroller.h"
 #include "sharedialog.h"
 
+#include "newaccountwizard/newaccountmodel.h"
+#include "newaccountwizard/newaccountwizard.h"
+#include "newaccountwizard/newaccountwizardcontroller.h"
+
 #include "libsync/graphapi/spacesmanager.h"
 
 #include "resources/resources.h"
@@ -772,6 +776,19 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
             slotRebuildRecentMenus();
         }
     }
+}
+
+void ownCloudGui::runNewestAccountWizard()
+{
+    NewAccountWizard wizard(settingsDialog());
+    NewAccountModel model(nullptr);
+    NewAccountWizardController wizardController(&model, &wizard, nullptr);
+    ownCloudGui::raise();
+    int result = wizard.exec();
+    if (result == QDialog::Accepted)
+        qDebug() << "accepted";
+    else
+        qDebug() << "rejected";
 }
 
 // todo: #28

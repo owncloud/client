@@ -13,6 +13,7 @@
  */
 
 #include "serverurlsetupwizardstate.h"
+#include "gui/application.h"
 #include "gui/networkadapters/determineauthtypeadapter.h"
 #include "gui/networkadapters/discoverwebfingerserviceadapter.h"
 #include "gui/networkadapters/resolveurladapter.h"
@@ -143,7 +144,7 @@ void ServerUrlSetupWizardState::evaluatePage()
     // in case any kind of error occurs, we assume the WebFinger service is not available
     if (!webfingerServiceResult.success()) {
         // first, we must resolve the actual server URL
-        ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl);
+        ResolveUrlAdapter urlResolver(_context->accessManager(), serverUrl, ocApp()->gui()->settingsDialog());
         const ResolveUrlResult resolveUrlResult = urlResolver.getResult();
 
         if (!resolveUrlResult.success()) {

@@ -20,16 +20,16 @@ class QWizardPage;
 
 namespace OCC {
 
-class OAuthPageController : public QObject, public WizardPageValidator
+class AdvancedSettingsPageController : public QObject, public WizardPageValidator
 {
     Q_OBJECT
 public:
-    explicit OAuthPageController(QWizardPage *page, QObject *parent);
+    explicit AdvancedSettingsPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
 
 private:
-    QWizardPage *_page;
-
     void buildPage();
+
+    QWizardPage *_page = nullptr;
 };
 }

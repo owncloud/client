@@ -14,14 +14,16 @@
 
 #pragma once
 
+#include "newaccountwizard/urlpagecontroller.h"
 #include <QObject>
+#include <QPointer>
 
-
-class QWizard;
 
 namespace OCC {
 
 class NewAccountModel;
+class NewAccountWizard;
+class AccessManager;
 
 class NewAccountWizardController : public QObject
 {
@@ -35,33 +37,47 @@ public:
      * @param parent normally this will be a pointer to whatever instantiated the controller - this is normally a manager or another controller but since the
      * triad is short lived, we may manage the controller lifetime more directly. Nevertheless, the parent should be non-null.
      */
-    explicit NewAccountWizardController(NewAccountModel *model, QWizard *view, QObject *parent);
+    explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent);
 
-Q_SIGNALS:
-    void wizardComplete();
-    void wizardCanceled();
 
 protected Q_SLOTS:
+    void onPageChanged(int newPageIndex);
     // slots for "top level" wizard activity signals
     //  slots for model notifications if useful
 
-    // slots that handle activity on an individual page are implemented in the associated page controller
+    void onUrlValidationCompleted(const OCC::UrlPageResults &result);
+    // the failed slot is currently unused - I don't think we need to listen on this one for the wizard, need to discuss with Erik
+    void onUrlValidationFailed(const OCC::UrlPageResults &result);
+
 private:
-    /** builds the page controller/page widget pairs */
-    void buildPages();
     /** configures the wizard with proper settings */
     void setupWizard();
+
+    /** builds the page controller/page widget pairs */
+    void buildPages();
+
     // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
-    // will enable the "next" button only when the validator returns true for hasAcceptableInput
-    // also need to override the QWizard validateCurrentPage to call the page controller instead of the
-    // wizard page validatePage
+    // will enable the "next" button only when the validator returns true for hasAcceptableInput. Not sure if this will be useful yet or not
 
     /** connects "top level" wizard signals to local slots as needed */
     void connectWizard();
+
     /** connects the model signals to local slots, as needed */
     void connectModel();
 
-    NewAccountModel *_model;
-    QWizard *_wizard;
+    /** updates the QPalette of the wizard to use the theme colors, if they are valid */
+    void updateColors();
+
+    AccessManager *_accessManager = nullptr;
+
+    // using QPointer for the injected dependencies. For an impl like this it's more of a "best practice" formality as the whole
+    // bundle of stuff has a shared lifetime.
+    QPointer<NewAccountModel> _model = nullptr;
+    QPointer<NewAccountWizard> _wizard = nullptr;
+
+    int _urlPageIndex = -1;
+    int _oauthPageIndex = -1;
+    int _authSuccessPageIndex = -1;
+    int _advancedSettingsPageIndex = -1;
 };
 }

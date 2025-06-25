@@ -14,13 +14,37 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 #include <QSslCertificate>
+#include <QUrl>
 
 #include "wizardpagevalidator.h"
 
 class QWizardPage;
+class QLineEdit;
+class QLabel;
 
 namespace OCC {
+
+/**
+ * @brief The UrlPageResults class contains all the possible values this controller can collect.
+ *
+ *   baseServerUrl is the "original" server url (https://somehost/<optional path> that appears in the gui either via user input or
+ *   provided by the theme
+ *   webfingerServiceUrl is the url for a webfinger service discovered during validation. If this is empty, no webfinger service is
+ *   available
+ *   trustedCertificates holds any certificates the user accepted in the course of validation. This will only be non-empty in
+ *   exceptional cases (eg with very poorly configured hosts that do not provide legit, signed certs)
+ *   error holds a beautified error message. This may go away as I don't think the owner of the controller needs to do anything with it.
+ */
+struct UrlPageResults
+{
+    QUrl baseServerUrl;
+    QUrl webfingerServiceUrl;
+    QSet<QSslCertificate> certificates;
+
+    QString error;
+};
 
 class AccessManager;
 
@@ -59,27 +83,37 @@ Q_SIGNALS:
     // a dedicated model will also make testing easier. this is tbd once we have some basic functional impl for the wizard
     // and first page.
     /**
-     * @brief success is emitted when the validation has passed without errors
-     * @param serverUrl is the "original" server url (https://somehost/<optional path> that appears in the gui.
-     * @param webfingerUrl is the url for a webfinger service discovered during validation. If this is empty, no webfinger service is
-     * available
-     * @param trustedCertificates holds any certificates the user accepted in the course of validation. This will only be non-empty in
-     * exceptional cases (eg with very poorly configured hosts that do not provide legit, signed certs)
-     *
+     *      *
      * if OAuth is not supported by the target server the whole validation will fail.
      */
-    void success(const QUrl &serverUrl, const QUrl &webfingerUrl, QSet<QSslCertificate> trustedCertificates);
+    void success(const OCC::UrlPageResults &);
+    // I think it also makes sense to return the results on failure, in case the listener wants to eval the values that were successfully
+    // gathered.
+    void failure(const OCC::UrlPageResults &);
 
 private:
-    QWizardPage *_page;
-    AccessManager *_accessManager;
+    QPointer<QWizardPage> _page;
+    QPointer<AccessManager> _accessManager;
 
-    // need to factor in any url val that comes from the theme and set the url to that
-    // consider: make the url field read only if the url comes from the theme, and make sure "next" is enabled.
-    // docs say that the QWizard checks changes/diffs to mandatory fields since initializePage was called so it's probably better
-    // to buildPage then set the url value in separate step
+    QLineEdit *_urlField;
+    QLabel *_errorField;
+
+    UrlPageResults _results;
+
     /** sets up the wizard page with appropriate content and connect any signals to eg the url QLineEdit */
     void buildPage();
+    /** sets the url value in the line edit */
+    void setUrl(const QString &urlText);
+    /** displays the error in the page, sets the error value in the results and emits failure(error) */
+    void handleError(const QString &error);
+    /** performs some rudimentary checks on the url format, adds https:// if there is no scheme provided
+     *  we should replace this with a QValidator that uses a more stringent regex
+     *  the validator::fixup method can be used to add the https scheme
+     */
+    QUrl checkUrl();
 };
-
 }
+Q_DECLARE_METATYPE(OCC::UrlPageResults)
+// this type id is throwaway, we just use it to ensure we declare the meta type only ONCE
+// also this is only required to use the type cross thread, or with QSignalSpy during testing
+static const int urlPageResultsTypeId = qRegisterMetaType<OCC::UrlPageResults>();

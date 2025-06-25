@@ -79,6 +79,9 @@ public:
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
 
+    // Note: dynamic registration data is no longer in play - that is why it is not included here. I left it in the old impl for now since the
+    // whole thing will just go away in the near future.
+
 Q_SIGNALS:
     void serverUrlChanged(const QUrl &newUrl);
     void webfingerAuthenticationUrlChanged(const QUrl &newWebfingerAuthenticationUrl);
