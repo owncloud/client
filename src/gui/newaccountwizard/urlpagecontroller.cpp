@@ -39,7 +39,6 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
         setUrl(themeUrl);
         // I think this is the right thing to do: if the theme provides the url, don't let the user change it!
         _urlField->setEnabled(false);
-        _urlField->setVisible(false);
     }
 }
 
