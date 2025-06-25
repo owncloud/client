@@ -39,6 +39,7 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
         setUrl(themeUrl);
         // I think this is the right thing to do: if the theme provides the url, don't let the user change it!
         _urlField->setEnabled(false);
+        _urlField->setVisible(false);
     }
 }
 
@@ -74,6 +75,7 @@ void UrlPageController::buildPage()
     _urlField = new QLineEdit(_page);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
+    _urlField->setFocusPolicy(Qt::StrongFocus);
 
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
@@ -106,6 +108,8 @@ void UrlPageController::buildPage()
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
     _page->setLayout(layout);
+
+    _urlField->setFocus();
 }
 
 void UrlPageController::setUrl(const QString &urlText)
