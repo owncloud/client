@@ -86,6 +86,9 @@ def step(context, item):
         False,
         f'Menu item "{item}" does not exist.',
     )
+    # Close the opened menu as it remains open
+    # This will prevent the menu to close in the next step while trying to open the menu
+    squish.mouseClick(squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_LABEL))
 
 
 @When('the user disables virtual file support')
@@ -348,15 +351,19 @@ def step(context):
         )
 
 
-@Then('the following activities should be displayed in not synced table')
-def step(context):
+@Then(
+    r'the following activities (should|should not) be displayed in not synced table',
+    regexp=True,
+)
+def step(context, should_or_should_not):
+    expected = should_or_should_not == 'should'
     for row in context.table[1:]:
         resource = row[0]
         status = row[1]
         account = substitute_inline_codes(row[2])
         test.compare(
             Activity.check_not_synced_table(resource, status, account),
-            True,
+            expected,
             'Resource should be displayed in the not synced table',
         )
 

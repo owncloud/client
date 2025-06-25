@@ -2817,42 +2817,42 @@ Note that using any logging command line options will override the settings.</so
         <translation>ownCloud 경로:</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="106"/>
+        <location filename="../src/gui/sharedialog.cpp" line="105"/>
         <source>%1 Sharing</source>
         <translation>%1 공유</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="87"/>
+        <location filename="../src/gui/sharedialog.cpp" line="86"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="103"/>
+        <location filename="../src/gui/sharedialog.cpp" line="102"/>
         <source>Folder: %2</source>
         <translation>폴더: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="109"/>
+        <location filename="../src/gui/sharedialog.cpp" line="108"/>
         <source>The server does not allow sharing</source>
         <translation>서버에서 공유를 허용하지 않음</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="125"/>
+        <location filename="../src/gui/sharedialog.cpp" line="118"/>
         <source>Retrieving maximum possible sharing permissions from server...</source>
         <translation>서버에서 최대로 사용 가능한 공유 권한 확인하는 중...</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="184"/>
+        <location filename="../src/gui/sharedialog.cpp" line="177"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>공유 권한 없이 공유되었기 때문에 파일을 공유할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="193"/>
+        <location filename="../src/gui/sharedialog.cpp" line="186"/>
         <source>Users and Groups</source>
         <translation>사용자 및 그룹</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="200"/>
+        <location filename="../src/gui/sharedialog.cpp" line="193"/>
         <source>Public Links</source>
         <translation>공개 링크</translation>
     </message>
@@ -4059,12 +4059,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="577"/>
+        <location filename="../src/libsync/theme.cpp" line="582"/>
         <source>Username</source>
         <translation>사용자 이름</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="579"/>
+        <location filename="../src/libsync/theme.cpp" line="584"/>
         <source>E-mail address</source>
         <translation>이메일 주소</translation>
     </message>

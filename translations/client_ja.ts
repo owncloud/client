@@ -2820,42 +2820,42 @@ Note that using any logging command line options will override the settings.</so
         <translation>OwnCloudのパス:</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="106"/>
+        <location filename="../src/gui/sharedialog.cpp" line="105"/>
         <source>%1 Sharing</source>
         <translation>%1 を共有中</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="87"/>
+        <location filename="../src/gui/sharedialog.cpp" line="86"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="103"/>
+        <location filename="../src/gui/sharedialog.cpp" line="102"/>
         <source>Folder: %2</source>
         <translation>フォルダー: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="109"/>
+        <location filename="../src/gui/sharedialog.cpp" line="108"/>
         <source>The server does not allow sharing</source>
         <translation>サーバーで共有を許可していません</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="125"/>
+        <location filename="../src/gui/sharedialog.cpp" line="118"/>
         <source>Retrieving maximum possible sharing permissions from server...</source>
         <translation>サーバーから共有権限を取得できる最大数で取得しています</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="184"/>
+        <location filename="../src/gui/sharedialog.cpp" line="177"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>再共有権限がない共有ため、このファイルは共有できません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="193"/>
+        <location filename="../src/gui/sharedialog.cpp" line="186"/>
         <source>Users and Groups</source>
         <translation>ユーザーとグループ</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="200"/>
+        <location filename="../src/gui/sharedialog.cpp" line="193"/>
         <source>Public Links</source>
         <translation>公開リンク</translation>
     </message>
@@ -4062,12 +4062,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="577"/>
+        <location filename="../src/libsync/theme.cpp" line="582"/>
         <source>Username</source>
         <translation>ユーザー名</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="579"/>
+        <location filename="../src/libsync/theme.cpp" line="584"/>
         <source>E-mail address</source>
         <translation>メールアドレス</translation>
     </message>

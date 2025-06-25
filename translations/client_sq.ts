@@ -2820,42 +2820,42 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Shteg ownCloud-i:</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="106"/>
+        <location filename="../src/gui/sharedialog.cpp" line="105"/>
         <source>%1 Sharing</source>
         <translation>Ndarje e %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="87"/>
+        <location filename="../src/gui/sharedialog.cpp" line="86"/>
         <source>%1</source>
         <translation>%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="103"/>
+        <location filename="../src/gui/sharedialog.cpp" line="102"/>
         <source>Folder: %2</source>
         <translation>Dosje: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="109"/>
+        <location filename="../src/gui/sharedialog.cpp" line="108"/>
         <source>The server does not allow sharing</source>
         <translation>Shërbyesi nuk lejon ndarjet</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="125"/>
+        <location filename="../src/gui/sharedialog.cpp" line="118"/>
         <source>Retrieving maximum possible sharing permissions from server...</source>
         <translation>Po merren nga shërbyesi lejet maksimum të mundshme për ndarje…</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="184"/>
+        <location filename="../src/gui/sharedialog.cpp" line="177"/>
         <source>The file can not be shared because it was shared without sharing permission.</source>
         <translation>Kartela s’mund të ndahet me të tjerët, ngaqë qe ndarë pa leje për ndarje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="193"/>
+        <location filename="../src/gui/sharedialog.cpp" line="186"/>
         <source>Users and Groups</source>
         <translation>Përdorues dhe Grupe</translation>
     </message>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="200"/>
+        <location filename="../src/gui/sharedialog.cpp" line="193"/>
         <source>Public Links</source>
         <translation>Lidhje Publike</translation>
     </message>
@@ -4062,12 +4062,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="577"/>
+        <location filename="../src/libsync/theme.cpp" line="582"/>
         <source>Username</source>
         <translation>Emër përdoruesi</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="579"/>
+        <location filename="../src/libsync/theme.cpp" line="584"/>
         <source>E-mail address</source>
         <translation>Adresë email</translation>
     </message>
