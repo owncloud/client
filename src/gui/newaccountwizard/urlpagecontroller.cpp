@@ -108,7 +108,7 @@ void UrlPageController::buildPage()
     layout->addStretch(1);
     _page->setLayout(layout);
 
-    _urlField->setFocus();
+    // _urlField->setFocus();
 }
 
 void UrlPageController::setUrl(const QString &urlText)
@@ -183,7 +183,6 @@ bool UrlPageController::validate()
     if (!givenUrl.isValid()) {
         QString fullError = givenUrl.errorString();
         QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
-        // it might be too much to print both the error and the source string - eval with input from others.
         handleError(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
         return false;
     } else if (givenUrl.scheme().isEmpty() || givenUrl.scheme() != QStringLiteral("https")) // scheme should not be empty but who knows
@@ -203,7 +202,7 @@ bool UrlPageController::validate()
         _results.webfingerServiceUrl = QUrl(webfingerServiceResult.href);
     } else {
         // first, we must resolve the actual server URL
-        // note we have to pass the wizard dialog as the parent to the
+        // note we have to pass the wizard dialog to the adapter to parent the tlsErrorDialog
         ResolveUrlAdapter urlResolver(_accessManager, givenUrl, _page->parentWidget());
         const ResolveUrlResult resolveUrlResult = urlResolver.getResult();
 

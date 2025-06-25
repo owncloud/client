@@ -48,10 +48,9 @@ void AccessManager::reset()
     _customTrustedCaCertificates.clear();
     // afaik we really do want to use this, not clearConnectionCache, as we need to ensure auth data is also cleared
     clearAccessCache();
-    // I know the QNetworkAccessManager takes ownership of the cookie jar, so in theory we can just do
+    // QNetworkAccessManager takes ownership of the cookie jar and deletes the old one when a new one is set, so no
+    // leaks here.
     setCookieJar(new CookieJar);
-    // but I am not sure it deletes the old cookie jar when a new one is set - I just know that it reparents it to the manager
-    // need to test that to make sure our dtr is invoked.
 }
 
 QByteArray AccessManager::generateRequestId()
@@ -67,10 +66,10 @@ QNetworkReply *AccessManager::createRequest(QNetworkAccessManager::Operation op,
     // Some firewalls reject requests that have a "User-Agent" but no "Accept" header
     newRequest.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("*/*"));
 
-    // Set the language, so messages from the server are localised correctly.
+    // Set the language, so messages from the server are localized correctly.
     newRequest.setRawHeader("Accept-Language", QLocale().name().toUtf8());
 
-    // we don't follow redirects, if we receive one the ConnectionValidor is triggered
+    // we don't follow redirects, if we receive one the ConnectionValidator is triggered
     // -> default to manual redirection
     if (newRequest.attribute(QNetworkRequest::RedirectPolicyAttribute).isNull()) {
         newRequest.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
