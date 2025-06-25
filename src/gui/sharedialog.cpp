@@ -21,7 +21,6 @@
 #include "gui/sharee.h"
 #include "gui/sharelinkwidget.h"
 #include "gui/shareusergroupwidget.h"
-#include "gui/thumbnailjob.h"
 
 #include "account.h"
 #include "configfile.h"
@@ -114,12 +113,6 @@ ShareDialog::ShareDialog(AccountStatePtr accountState,
         return;
     }
 
-    if (QFileInfo(_localPath).isFile()) {
-        ThumbnailJob *job = new ThumbnailJob(_sharePath, _accountState->account(), this);
-        connect(job, &ThumbnailJob::jobFinished, this, &ShareDialog::slotThumbnailFetched);
-        job->start();
-    }
-
     _progressIndicator = new QProgressIndicator(this);
     _progressIndicator->startAnimation();
     _progressIndicator->setToolTip(tr("Retrieving maximum possible sharing permissions from server..."));
@@ -203,21 +196,6 @@ void ShareDialog::showSharingUi()
         if (_startPage == ShareDialogStartPage::PublicLinks)
             _ui->shareWidgets->setCurrentWidget(_linkWidget);
     }
-}
-
-void ShareDialog::slotThumbnailFetched(const int &statusCode, const QPixmap &reply)
-{
-    if (statusCode != 200) {
-        qCWarning(lcSharing) << "Thumbnail status code: " << statusCode;
-        return;
-    }
-    if (reply.isNull()) {
-        qCWarning(lcSharing) << "Invalid pixmap";
-        return;
-    }
-    const auto p = reply.scaledToHeight(thumbnailSize, Qt::SmoothTransformation);
-    _ui->label_icon->setPixmap(p);
-    _ui->label_icon->show();
 }
 
 void ShareDialog::slotAccountStateChanged(int state)

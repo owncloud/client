@@ -18,9 +18,9 @@
 #include "capabilities.h"
 #include "configfile.h"
 #include "guiutility.h"
+#include "networkjobs.h"
 #include "sharee.h"
 #include "sharemanager.h"
-#include "thumbnailjob.h"
 #include "ui_shareusergroupwidget.h"
 #include "ui_shareuserline.h"
 
