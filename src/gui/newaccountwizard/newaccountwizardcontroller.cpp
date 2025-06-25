@@ -51,9 +51,6 @@ void NewAccountWizardController::setupWizard()
     _wizard->setWizardStyle(QWizard::ModernStyle);
     _wizard->setWindowTitle(tr("Welcome to %1").arg(appName));
 
-    // this presumes we want different options on mac vs others.
-    // Ramona would like to show the cancel button on mac too - afaik it is removed but need to check this with Erik.
-    // it may be that using modern style puts it back
     QWizard::WizardOptions origOptions = _wizard->options();
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
     // no cancel button is set by default on mac with the original options. just remove it to bring the cancel button back
