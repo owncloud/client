@@ -710,7 +710,6 @@ private Q_SLOTS:
             virtual void test()
             {
                 oauth = prepareOauth();
-                oauth->saveDynamicRegistrationDataForAccount(account, {});
                 QSignalSpy spy(oauth.get(), &OCC::AccountBasedOAuth::refreshFinished);
                 oauth->refreshAuthentication(QStringLiteral("foo"));
 
@@ -771,7 +770,6 @@ private Q_SLOTS:
             void test() override
             {
                 oauth = prepareOauth();
-                oauth->saveDynamicRegistrationDataForAccount(account, {});
                 QSignalSpy spy(oauth.get(), &OCC::AccountBasedOAuth::refreshFinished);
                 oauth->refreshAuthentication(QStringLiteral("foo"));
 
