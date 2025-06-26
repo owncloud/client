@@ -101,7 +101,7 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _model->setWebfingerAuthenticationUrl(result.webfingerServiceUrl);
     _model->setTrustedCertificates(result.certificates);
 
-    // and then we have to explicitly set some data on the controller for the next page...
+    // and then we have to explicitly set login url on the controller for the next page...
 }
 
 // I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
