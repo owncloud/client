@@ -1970,6 +1970,34 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>OCC::NewAccountWizardController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="52"/>
+        <source>Welcome to %1</source>
+        <translation>Willkommen zu %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="58"/>
+        <source>Open %1</source>
+        <translation>öffne %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="118"/>
+        <source>Next</source>
+        <translation>Weiter</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="121"/>
+        <source>Open sign in again</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="127"/>
+        <source>Advanced settings</source>
+        <translation>Erweiterte Einstellungen</translation>
+    </message>
+</context>
+<context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
         <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="33"/>
@@ -2707,22 +2735,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ResolveUrlAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="58"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="59"/>
         <source>SSL failure when connecting to server at %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="62"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="63"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="67"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="68"/>
         <source>Resolved url is invalid %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="70"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="71"/>
         <source>Rejected redirect from %1 to %2</source>
         <translation type="unfinished"/>
     </message>
@@ -2772,22 +2800,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="97"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="99"/>
         <source>Hide</source>
         <translation>Ausblenden</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="106"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
         <source>Quit %1</source>
         <translation>%1 beenden</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="109"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Sind Sie sicher, dass sie %1 beenden möchten?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="139"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="141"/>
         <source>%1 - %2</source>
         <translation type="unfinished"/>
     </message>
@@ -3405,6 +3433,39 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>OCC::UrlPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="56"/>
+        <source>%1 logo</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="58"/>
+        <source>Welcome to %1</source>
+        <translation>Willkommen zu %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="66"/>
+        <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="186"/>
+        <source>Invalid server URL: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="190"/>
+        <source>Invalid URL scheme. Only https is accepted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="218"/>
+        <source>The requested URL failed with query value: %1</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::ValidateChecksumHeader</name>
     <message>
         <location filename="../src/common/checksums.cpp" line="388"/>
@@ -3547,39 +3608,39 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::Wizard::ServerUrlSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="104"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="105"/>
         <source>Invalid server URL: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="117"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="118"/>
         <source>Insecure connection</source>
         <translation>Unsichere Verbindung</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="118"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="119"/>
         <source>The connection to %1 is insecure.
 Are you sure you want to proceed?</source>
         <translation>Die Verbindung zu %1 ist unsicher.
 Möchten Sie fortfahren?</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="122"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
         <source>Confirm</source>
         <translation>Bestätigen</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="125"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="126"/>
         <source>Insecure server rejected by user</source>
         <translation>Der unsichere Server ist vom Benutzer abgelehnt worden</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="130"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
         <source>Invalid URL scheme. Only http and https are accepted.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="156"/>
+        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="157"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3671,199 +3732,199 @@ Möchten Sie fortfahren?</translation>
 <context>
     <name>OCC::ownCloudGui</name>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="246"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="250"/>
         <source>Please sign in</source>
         <translation>Bitte melden Sie sich an</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="274"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="278"/>
         <source>Folder %1: %2</source>
         <translation>Ordner %1: %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="283"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="287"/>
         <source>Unresolved %1 conflicts</source>
         <translation>Ungelöste %1 Konflikte</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="286"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="290"/>
         <source>Ignored errors %1</source>
         <translation>Ignorierte Fehler %1 </translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="301"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="305"/>
         <source>There are no sync folders configured.</source>
         <translation>Es wurden keine Synchonisationsordner konfiguriert.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="335"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="339"/>
         <source>Log in...</source>
         <translation>Anmelden...</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="337"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="341"/>
         <source>Log out</source>
         <translation>Abmelden</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="434"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="438"/>
         <source>Recent Changes</source>
         <translation>Letzte Änderungen</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="324"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="328"/>
         <source>Open folder &apos;%1&apos;</source>
         <translation>Ordner &apos;%1&apos; öffnen</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="175"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="179"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>Der Server für Konto %1 benutzt eine nicht unterstützte Version %2. Die Client Software funktioniert möglicherweise mit nicht unterstützten Versionen, dies ist jedoch nicht getestet. Weiter auf eigenes Risiko.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="233"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="237"/>
         <source>Account %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="331"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="564"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="335"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="568"/>
         <source>Stop synchronization</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="559"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="563"/>
         <source>Create a new account</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="682"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="686"/>
         <source>Unknown status</source>
         <translation>Unbekannter Status</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="698"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="702"/>
         <source>Details...</source>
         <translation>Details …</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="609"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="613"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="329"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="562"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="333"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="566"/>
         <source>Resume synchronization</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="616"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="620"/>
         <source>Quit %1</source>
         <translation>%1 beenden</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="228"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="232"/>
         <source>Disconnected from %1</source>
         <translation>Getrennt von %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="174"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="178"/>
         <source>Unsupported Server Version</source>
         <translation>Nicht unterstützte Server Version</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="218"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="222"/>
         <source>Disconnected</source>
         <translation>Getrennt</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="220"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="224"/>
         <source>Disconnected from some accounts</source>
         <translation>Die Verbindungen zu einigen Konnten wurde getrennt</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="231"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="235"/>
         <source>Disconnected from accounts:</source>
         <translation>Die Verbindungen zu Konnten wurde getrennt:</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="247"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="251"/>
         <source>Signed out</source>
         <translation>Ausgeloggt</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="251"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="255"/>
         <source>Account synchronization is disabled</source>
         <translation>Synchronisieren der Konten ist deaktiviert</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="252"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="256"/>
         <source>Synchronization is paused</source>
         <translation>Synchronisation pausiert</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="298"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="302"/>
         <source>Up to date (%1)</source>
         <translation>Aktuell (%1) </translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="302"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="306"/>
         <source>No sync folders configured</source>
         <translation>Keine Ordner für die Synchronisation konfiguriert</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="555"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="559"/>
         <source>Show %1</source>
         <translation>Zeige %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="613"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="617"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="695"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="699"/>
         <source>No items synced recently</source>
         <translation>Keine kürzlich synchronisierten Elemente</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="712"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="716"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Prüfe Änderungen der entfernten &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="715"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="719"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Prüfe Änderungen der lokalen &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="730"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="734"/>
         <source>Syncing %1 of %2  (%3 left)</source>
         <translation>Synchronisiere %1 von %2  (%3 übrig)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="735"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="739"/>
         <source>Syncing %1 of %2</source>
         <translation>Synchronisiere %1 von %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="744"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="748"/>
         <source>Syncing %1 (%2 left)</source>
         <translation>Synchronisiere %1 (%2 übrig)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="747"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="751"/>
         <source>Syncing %1</source>
         <translation>Synchronisiere %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="756"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="760"/>
         <source>%1 (%2, %3)</source>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="908"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="925"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation type="unfinished"/>
     </message>
@@ -4057,12 +4118,12 @@ Möchten Sie fortfahren?</translation>
 <context>
     <name>Type of user ID</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="582"/>
+        <location filename="../src/libsync/theme.cpp" line="587"/>
         <source>Username</source>
         <translation>Benutzer</translation>
     </message>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="584"/>
+        <location filename="../src/libsync/theme.cpp" line="589"/>
         <source>E-mail address</source>
         <translation>E-mail Adresse</translation>
     </message>
