@@ -1992,7 +1992,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="121"/>
         <source>Open sign in again</source>
-        <translation type="unfinished"/>
+        <translation>Ava sisselogimine uuesti</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="127"/>
@@ -3451,7 +3451,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="66"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Alustamiseks sisesta oma serveri aadress. Sisselogimise lõpuleviimiseks avatakse veebibrauser.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="186"/>
@@ -3461,7 +3461,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="190"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Vigane URL skeem. Ainult https on lubatud.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="218"/>

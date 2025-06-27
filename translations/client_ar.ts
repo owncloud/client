@@ -1986,7 +1986,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="118"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>التالي</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="121"/>
@@ -1996,7 +1996,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="127"/>
         <source>Advanced settings</source>
-        <translation type="unfinished"/>
+        <translation>الإعدادات المتقدمة</translation>
     </message>
 </context>
 <context>
@@ -3445,7 +3445,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="58"/>
         <source>Welcome to %1</source>
-        <translation type="unfinished"/>
+        <translation>Welcome to %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="66"/>

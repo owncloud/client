@@ -1984,7 +1984,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="118"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>Nächstes</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="121"/>
@@ -3443,7 +3443,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="58"/>
         <source>Welcome to %1</source>
-        <translation type="unfinished"/>
+        <translation>Willkommen zu %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="66"/>
