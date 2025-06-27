@@ -17,6 +17,7 @@
 #include <QObject>
 
 class QWizardPage;
+class QLineEdit;
 
 namespace OCC {
 
@@ -27,9 +28,16 @@ public:
     explicit OAuthPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
 
+    void setUrl(const QUrl &url);
+
+protected Q_SLOTS:
+    void copyUrlClicked();
+
 private:
     QWizardPage *_page;
+    QLineEdit *_urlField;
 
     void buildPage();
+    QIcon copyIcon();
 };
 }
