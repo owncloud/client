@@ -131,8 +131,6 @@ void httpReplyAndClose(const QPointer<QTcpSocket> &socket, const QString &code, 
 }
 }
 
-// todo: #24 determine if the dynamic registration data is ever actually passed here. Also eval the use case below re: AccountBasedOauth which seems to
-// be the only case where the davUser is passed
 OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)
