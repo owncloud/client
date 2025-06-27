@@ -1974,7 +1974,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="118"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>Další</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="121"/>
@@ -1984,7 +1984,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="127"/>
         <source>Advanced settings</source>
-        <translation type="unfinished"/>
+        <translation>Pokročilá nastavení</translation>
     </message>
 </context>
 <context>
@@ -3433,7 +3433,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="58"/>
         <source>Welcome to %1</source>
-        <translation type="unfinished"/>
+        <translation>Výtejte na %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="66"/>
