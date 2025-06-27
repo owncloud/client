@@ -399,7 +399,7 @@ public:
      * oauthClientId() and oauthClientSecret()
      * Default: True
      */
-    virtual bool oidcEnableDynamicRegistration() const;
+    [[deprecated("oidc dynamic registration has been removed starting with client 7.0.")]] virtual bool oidcEnableDynamicRegistration() const;
 
     /**
      * @brief What should be output for the --version command line switch.

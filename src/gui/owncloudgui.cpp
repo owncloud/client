@@ -834,11 +834,6 @@ void ownCloudGui::runNewAccountWizard()
                                 // (for instance, when running from a debugger and stopping the process from there)
                                 AccountManager::instance()->save(true);
 
-                                // only now, we can store the dynamic registration data in the keychain
-                                if (!dynamicRegistrationData.isEmpty()) {
-                                    OAuth::saveDynamicRegistrationDataForAccount(accountStatePtr->account(), dynamicRegistrationData);
-                                }
-
                                 // the account is now ready, emulate a normal account loading and Q_EMIT that the credentials are ready
                                 // Refactoring todo: no. the account should emit this when it meets some internal state, not the gui controller!!!!
                                 Q_EMIT accountStatePtr->account()->credentialsFetched();

@@ -90,12 +90,6 @@ int defaultTimeoutMs()
     return static_cast<int>(duration_cast<milliseconds>(defaultTimeout()).count());
 }
 
-const QString dynamicRegistrationDataC()
-{
-    // this is a legacy identifier
-    return QStringLiteral("http/clientSecret");
-}
-
 QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *error)
 {
     const auto out = json.constFind(s);
@@ -135,122 +129,12 @@ void httpReplyAndClose(const QPointer<QTcpSocket> &socket, const QString &code, 
     // The socket will be deleted after disconnection because disconnected is connected to deleteLater
     socket->setParent(nullptr);
 }
-
-class RegisterClientJob : public QObject
-{
-    Q_OBJECT
-public:
-    RegisterClientJob(QNetworkAccessManager *networkAccessManager, QVariantMap &dynamicRegistrationData, const QUrl &registrationEndpoint, QObject *parent)
-        : QObject(parent)
-        , _networkAccessManager(networkAccessManager)
-        , _dynamicRegistrationData(dynamicRegistrationData)
-        , _registrationEndpoint(registrationEndpoint)
-    {
-        connect(this, &RegisterClientJob::errorOccured, this, &RegisterClientJob::deleteLater);
-        connect(this, &RegisterClientJob::finished, this, &RegisterClientJob::deleteLater);
-    }
-
-    void start()
-    {
-        if (!_dynamicRegistrationData.isEmpty()) {
-            registerClientFinished(_dynamicRegistrationData);
-        } else {
-            registerClientOnline();
-        }
-    }
-
-Q_SIGNALS:
-    void finished(const QString &clientId, const QString &clientSecret, const QVariantMap &dynamicRegistrationData);
-    void errorOccured(const QString &error);
-
-private:
-    void registerClientOnline()
-    {
-        const QJsonObject json({ { QStringLiteral("client_name"), QStringLiteral("%1 %2").arg(Theme::instance()->appNameGUI(), OCC::Version::versionWithBuildNumber().toString()) },
-            { QStringLiteral("redirect_uris"), QJsonArray { QStringLiteral("http://127.0.0.1") } },
-            { QStringLiteral("application_type"), QStringLiteral("native") },
-            { QStringLiteral("token_endpoint_auth_method"), QStringLiteral("client_secret_basic") } });
-        QNetworkRequest req;
-        req.setUrl(_registrationEndpoint);
-        req.setAttribute(DontAddCredentialsAttribute, true);
-        req.setTransferTimeout(defaultTimeoutMs());
-        req.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/json"));
-        auto reply = _networkAccessManager->post(req, QJsonDocument(json).toJson());
-        connect(reply, &QNetworkReply::finished, this, [reply, this] {
-            // https://datatracker.ietf.org/doc/html/rfc7591#section-3.2
-            if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 201) {
-                const auto data = reply->readAll();
-                QJsonParseError error{};
-                const auto json = QJsonDocument::fromJson(data, &error);
-                if (error.error == QJsonParseError::NoError) {
-                    registerClientFinished(json.object().toVariantMap());
-                } else {
-                    qCWarning(lcOauth) << "Failed to register the client" << error.errorString() << data;
-                    Q_EMIT errorOccured(error.errorString());
-                }
-            } else {
-                Q_EMIT errorOccured(reply->errorString());
-            }
-        });
-    }
-
-    void registerClientFinished(const QVariantMap &data)
-    {
-        {
-            QString error;
-            const auto expireDate = getRequiredField(data, QStringLiteral("client_secret_expires_at"), &error).value<qint64>();
-            if (!error.isEmpty()) {
-                Q_EMIT errorOccured(error);
-                return;
-            }
-            // 0 means it doesn't expire
-            if (expireDate) {
-                const auto qExpireDate = QDateTime::fromSecsSinceEpoch(expireDate);
-                qCInfo(lcOauth) << "Client id issued at:" << QDateTime::fromSecsSinceEpoch(data[QStringLiteral("client_id_issued_at")].value<quint64>())
-                                << "expires at" << qExpireDate;
-                if (QDateTime::currentDateTimeUtc() > qExpireDate) {
-                    qCDebug(lcOauth) << "Client registration expired";
-                    registerClientOnline();
-                    return;
-                }
-            }
-        }
-        // extracting these values could be done by the signal receiver, too, but that'd require duplicating the error handling code
-        // therefore, we extract the values here and pass them separately in the signal
-        // sure, the data will be redundant, but it's worth it
-        QString error;
-        const auto client_id = getRequiredField(data, QStringLiteral("client_id"), &error).toString();
-        const auto client_secret = getRequiredField(data, QStringLiteral("client_secret"), &error).toString();
-        if (!error.isEmpty()) {
-            Q_EMIT errorOccured(error);
-            return;
-        }
-        Q_EMIT finished(client_id, client_secret, data);
-    }
-
-private:
-    QNetworkAccessManager *_networkAccessManager;
-    QVariantMap _dynamicRegistrationData;
-    QUrl _registrationEndpoint;
-};
-
-void logCredentialsJobResult(CredentialJob *credentialsJob)
-{
-    qCDebug(lcOauth) << "credentials job has finished";
-
-    if (!credentialsJob->data().isValid()) {
-        qCInfo(lcOauth) << "Failed to read client id" << credentialsJob->errorString();
-    }
-}
 }
 
-// todo: #24 determine if the dynamic registration data is ever actually passed here. Also eval the use case below re: AccountBasedOauth which seems to
-// be the only case where the davUser is passed
-OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, const QVariantMap &dynamicRegistrationData, QObject *parent)
+OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)
     , _davUser(davUser)
-    , _dynamicRegistrationData(dynamicRegistrationData)
     , _networkAccessManager(networkAccessManager)
     , _clientId(Theme::instance()->oauthClientId())
     , _clientSecret(Theme::instance()->oauthClientSecret())
@@ -283,10 +167,7 @@ void OAuth::startAuthentication()
     OC_ASSERT(_pkceCodeVerifier.size() == 128)
     _state = generateRandomString(8);
 
-    connect(this, &OAuth::fetchWellKnownFinished, this, [this] {
-        connect(this, &AccountBasedOAuth::dynamicRegistrationDataReceived, this, &OAuth::authorisationLinkChanged);
-        updateDynamicRegistration();
-    });
+    connect(this, &OAuth::fetchWellKnownFinished, this, &OAuth::authorisationLinkChanged);
 
     fetchWellKnown();
 
@@ -484,40 +365,6 @@ QUrl OAuth::authorisationLink() const
     return url;
 }
 
-void OAuth::saveDynamicRegistrationDataForAccount(const OCC::AccountPtr &accountPtr, const QVariantMap &dynamicRegistrationData)
-{
-    if (!dynamicRegistrationData.isEmpty()) {
-        accountPtr->credentialManager()->set(dynamicRegistrationDataC(), dynamicRegistrationData);
-    }
-}
-
-void OAuth::updateDynamicRegistration()
-{
-    // this slightly complicated construct allows us to log case-specific messages
-    if (!Theme::instance()->oidcEnableDynamicRegistration()) {
-        qCDebug(lcOauth) << "dynamic registration disabled by theme";
-    } else if (!_registrationEndpoint.isValid()) {
-        qCDebug(lcOauth) << "registration endpoint not provided or empty:" << _registrationEndpoint.toString()
-                         << "we assume dynamic registration is not supported by the server";
-    } else {
-        auto registerJob = new RegisterClientJob(_networkAccessManager, _dynamicRegistrationData, _registrationEndpoint, this);
-        connect(registerJob, &RegisterClientJob::finished, this,
-            [this](const QString &clientId, const QString &clientSecret, const QVariantMap &dynamicRegistrationData) {
-                qCDebug(lcOauth) << "client registration finished successfully";
-                _clientId = clientId;
-                _clientSecret = clientSecret;
-                Q_EMIT dynamicRegistrationDataReceived(dynamicRegistrationData);
-            });
-        connect(registerJob, &RegisterClientJob::errorOccured, this, [this](const QString &error) {
-            qCWarning(lcOauth) << "Failed to dynamically register the client, try the default client id" << error;
-            Q_EMIT dynamicRegistrationDataReceived({});
-        });
-        registerJob->start();
-        return;
-    }
-    Q_EMIT dynamicRegistrationDataReceived({});
-}
-
 void OAuth::fetchWellKnown()
 {
     qCDebug(lcOauth) << "fetching" << wellKnownPathC;
@@ -542,7 +389,6 @@ void OAuth::fetchWellKnown()
         if (err.error == QJsonParseError::NoError) {
             _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
             _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
-            _registrationEndpoint = QUrl::fromEncoded(data[QStringLiteral("registration_endpoint")].toString().toUtf8());
             _redirectUrl = QStringLiteral("http://127.0.0.1");
 
             const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
@@ -564,8 +410,7 @@ void OAuth::fetchWellKnown()
                 }
             }
 
-            qCDebug(lcOauth) << "parsing .well-known reply successful, auth endpoint" << _authEndpoint << "and token endpoint" << _tokenEndpoint
-                             << "and registration endpoint" << _registrationEndpoint;
+            qCDebug(lcOauth) << "parsing .well-known reply successful, auth endpoint" << _authEndpoint << "and token endpoint" << _tokenEndpoint;
         } else if (err.error == QJsonParseError::IllegalValue) {
             qCDebug(lcOauth) << "failed to parse .well-known reply as JSON, server might not support OIDC";
         } else {
@@ -615,39 +460,16 @@ void OAuth::openBrowser()
 }
 
 AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)
-    : OAuth(account->url(), account->davUser(), account->accessManager(), {}, parent)
+    : OAuth(account->url(), account->davUser(), account->accessManager(), parent)
     , _account(account)
 {
-    connect(this, &AccountBasedOAuth::dynamicRegistrationDataReceived, this, [this](const QVariantMap &dynamicRegistrationData) {
-        // the base class doesn't use the data at all, so no need to call its implementation
-        OAuth::saveDynamicRegistrationDataForAccount(_account, dynamicRegistrationData);
-    });
 }
-
-// this gets called periodically for reasons I don't yet understand. Need to determine if there is a timer or some other event that
-// triggers it
 
 void AccountBasedOAuth::startAuthentication()
 {
-    qCDebug(lcOauth) << "fetching dynamic registration data";
-
-    auto credentialsJob = _account->credentialManager()->get(dynamicRegistrationDataC());
-
-    connect(credentialsJob, &CredentialJob::finished, this, [this, credentialsJob] {
-        qCDebug(lcOauth) << "fetched dynamic registration data successfully";
-
-        credentialsJob->deleteLater();
-
-        logCredentialsJobResult(credentialsJob);
-
-        _dynamicRegistrationData = credentialsJob->data().value<QVariantMap>();
-
-        OAuth::startAuthentication();
-    });
+    OAuth::startAuthentication();
 }
 
-// I'm seeing this called even while the user is being asked to re-authenticate - this is very weird!
-// have a deeper look
 void AccountBasedOAuth::fetchWellKnown()
 {
     qCDebug(lcOauth) << "starting CheckServerJob before fetching" << wellKnownPathC;
@@ -676,69 +498,56 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
         return;
     }
 
+    // I don't see where this ever gets set to false
     _isRefreshingToken = true;
 
-    qCDebug(lcOauth) << "fetching dynamic registration data";
 
-    auto credentialsJob = _account->credentialManager()->get(dynamicRegistrationDataC());
-
-    connect(credentialsJob, &CredentialJob::finished, this, [this, credentialsJob, refreshToken] {
-        qCDebug(lcOauth) << "fetched dynamic registration data successfully";
-
-        credentialsJob->deleteLater();
-
-        logCredentialsJobResult(credentialsJob);
-
-        _dynamicRegistrationData = credentialsJob->data().value<QVariantMap>();
-
-        auto refresh = [this, refreshToken] {
-            auto reply = postTokenRequest({ { QStringLiteral("grant_type"), QStringLiteral("refresh_token") },
-                { QStringLiteral("refresh_token"), refreshToken } });
-            connect(reply, &QNetworkReply::finished, this, [reply, refreshToken, this]() {
-                const auto jsonData = reply->readAll();
-                QJsonParseError jsonParseError;
-                const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
-                QString accessToken;
-                QString newRefreshToken = refreshToken;
-                // https://developer.okta.com/docs/reference/api/oidc/#response-properties-2
-                const QString errorString = data.value(QStringLiteral("error")).toString();
-                if (!errorString.isEmpty()) {
-                    if (errorString == QLatin1String("invalid_grant") || errorString == QLatin1String("invalid_request")) {
-                        newRefreshToken.clear();
-                    } else {
-                        qCWarning(lcOauth) << "Error while refreshing the token:" << errorString << data.value(QStringLiteral("error_description")).toString();
-                    }
-                } else if (reply->error() != QNetworkReply::NoError) {
-                    qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << ":" << reply->errorString() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                    Q_EMIT refreshError(reply->error(), reply->errorString());
-                    return;
+    // make the a real function -
+    auto refresh = [this, refreshToken] {
+        auto reply = postTokenRequest({{QStringLiteral("grant_type"), QStringLiteral("refresh_token")}, {QStringLiteral("refresh_token"), refreshToken}});
+        connect(reply, &QNetworkReply::finished, this, [reply, refreshToken, this]() {
+            const auto jsonData = reply->readAll();
+            QJsonParseError jsonParseError;
+            const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
+            QString accessToken;
+            QString newRefreshToken = refreshToken;
+            // https://developer.okta.com/docs/reference/api/oidc/#response-properties-2
+            const QString errorString = data.value(QStringLiteral("error")).toString();
+            if (!errorString.isEmpty()) {
+                if (errorString == QLatin1String("invalid_grant") || errorString == QLatin1String("invalid_request")) {
+                    newRefreshToken.clear();
                 } else {
-                    if (jsonParseError.error != QJsonParseError::NoError || data.isEmpty()) {
-                        // Invalid or empty JSON: Network error maybe?
-                        qCWarning(lcOauth) << "Error while refreshing the token:" << jsonParseError.errorString();
-                    } else {
-                        QString error;
-                        accessToken = getRequiredField(data, QStringLiteral("access_token"), &error).toString();
-                        if (!error.isEmpty()) {
-                            qCWarning(lcOauth) << "The reply from the server did not contain all expected fields:" << error;
-                        }
+                    qCWarning(lcOauth) << "Error while refreshing the token:" << errorString << data.value(QStringLiteral("error_description")).toString();
+                }
+            } else if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << ":" << reply->errorString()
+                                   << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                Q_EMIT refreshError(reply->error(), reply->errorString());
+                return;
+            } else {
+                if (jsonParseError.error != QJsonParseError::NoError || data.isEmpty()) {
+                    // Invalid or empty JSON: Network error maybe?
+                    qCWarning(lcOauth) << "Error while refreshing the token:" << jsonParseError.errorString();
+                } else {
+                    QString error;
+                    accessToken = getRequiredField(data, QStringLiteral("access_token"), &error).toString();
+                    if (!error.isEmpty()) {
+                        qCWarning(lcOauth) << "The reply from the server did not contain all expected fields:" << error;
+                    }
 
-                        const auto refresh_token = data.find(QStringLiteral("refresh_token"));
-                        if (refresh_token != data.constEnd()) {
-                            newRefreshToken = refresh_token.value().toString();
-                        }
+                    const auto refresh_token = data.find(QStringLiteral("refresh_token"));
+                    if (refresh_token != data.constEnd()) {
+                        newRefreshToken = refresh_token.value().toString();
                     }
                 }
-                Q_EMIT refreshFinished(accessToken, newRefreshToken);
-            });
-        };
-
-        connect(this, &OAuth::fetchWellKnownFinished, this, [refresh, this] {
-            connect(this, &AccountBasedOAuth::dynamicRegistrationDataReceived, this, refresh);
-            updateDynamicRegistration();
+            }
+            Q_EMIT refreshFinished(accessToken, newRefreshToken);
         });
-        fetchWellKnown();
-    });
+    };
+
+    connect(this, &OAuth::fetchWellKnownFinished, this, refresh);
+
+    fetchWellKnown();
 }
 
 QString OCC::toString(OAuth::PromptValuesSupportedFlags s)
