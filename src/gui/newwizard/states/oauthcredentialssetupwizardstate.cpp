@@ -22,12 +22,8 @@ OAuthCredentialsSetupWizardState::OAuthCredentialsSetupWizardState(SetupWizardCo
 {
     const QUrl authServerUrl = _context->accountBuilder().effectiveAuthenticationServerUrl();
 
-    auto oAuth = new OAuth(authServerUrl, {}, _context->accessManager(), {}, this);
-    connect(oAuth, &OAuth::dynamicRegistrationDataReceived, this,
-        [this](const QVariantMap &dynamicRegistrationData) { _context->accountBuilder().setDynamicRegistrationData(dynamicRegistrationData); });
-
+    auto oAuth = new OAuth(authServerUrl, {}, _context->accessManager(), this);
     _page = new OAuthCredentialsSetupWizardPage(oAuth, authServerUrl);
-
 
     connect(oAuth, &OAuth::result, this, &OAuthCredentialsSetupWizardState::handleOAuthResult);
 

@@ -62,14 +62,13 @@ public:
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
-    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, const QVariantMap &dynamicRegistrationData, QObject *parent);
+    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,
+        /*const QVariantMap &dynamicRegistrationData,*/ QObject *parent);
     ~OAuth() override;
 
     virtual void startAuthentication();
     void openBrowser();
     QUrl authorisationLink() const;
-
-    static void saveDynamicRegistrationDataForAccount(const AccountPtr &accountPtr, const QVariantMap &dynamicRegistrationData);
 
 Q_SIGNALS:
     /**
@@ -85,21 +84,17 @@ Q_SIGNALS:
 
     void fetchWellKnownFinished();
 
-    void dynamicRegistrationDataReceived(const QVariantMap &dynamicRegistrationData);
 
 protected:
-    void updateDynamicRegistration();
 
     QUrl _serverUrl;
     QString _davUser;
-    QVariantMap _dynamicRegistrationData;
     QNetworkAccessManager *_networkAccessManager;
     bool _isRefreshingToken = false;
 
     QString _clientId;
     QString _clientSecret;
 
-    QUrl _registrationEndpoint;
 
     virtual void fetchWellKnown();
 
