@@ -143,6 +143,8 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
 
             // not a fan of performing this job here, should be moved into its own (headless) state IMO
             // we can bind it to the current state, which will be cleaned up by changeStateTo(...) as soon as the job finished
+
+            // Lisa todo: this  is also run as part of OAuth step - why do we run it again?!
             auto fetchUserInfoJob = _context->startFetchUserInfoJob(_currentState);
 
             connect(fetchUserInfoJob, &CoreJob::finished, this, [this, fetchUserInfoJob] {

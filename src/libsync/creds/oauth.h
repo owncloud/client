@@ -20,6 +20,7 @@
 #include <QPointer>
 #include <QTcpServer>
 #include <QUrl>
+#include <QUrlQuery>
 
 
 namespace OCC {
@@ -102,11 +103,18 @@ protected:
 
 
 private:
-    void finalize(const QPointer<QTcpSocket> &socket, const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
+    void handleTcpConnection();
+    void handleSocketReadyRead();
+    void finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
+    void httpReplyAndClose(const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
 
     QByteArray generateRandomString(size_t size) const;
 
     QTcpServer _server;
+    QPointer<QTcpSocket> _socket;
+    QUrlQuery _queryArgs;
+    quint16 _serverPort;
+
     bool _wellKnownFinished = false;
 
     QUrl _authEndpoint;
@@ -117,6 +125,7 @@ private:
 
     TokenEndpointAuthMethods _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
     PromptValuesSupportedFlags _supportedPromptValues = {PromptValuesSupported::consent, PromptValuesSupported::select_account};
+    void getTokens();
 };
 
 /**
