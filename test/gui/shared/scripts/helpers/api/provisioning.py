@@ -32,6 +32,9 @@ def add_user_to_group(user, group_name):
 
 
 def create_user(username):
+    if get_config('predefined_users'):
+        return
+
     if username in UserHelper.test_users:
         user = UserHelper.test_users[username]
     else:

@@ -36,6 +36,7 @@ from helpers.ConfigHelper import (
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from helpers.ReportHelper import save_video_recording, take_screenshot, is_video_enabled
 import helpers.api.oc10 as oc
+from helpers.UserHelper import init_predefined_users
 
 from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
@@ -57,6 +58,8 @@ PREVIOUS_ERROR_RESULT_COUNT = 0
 @OnFeatureStart
 def hook(context):
     init_config()
+    if get_config("predefined_users"):
+        init_predefined_users()
 
 
 # runs before every scenario
@@ -113,7 +116,10 @@ def hook(context):
         os.makedirs(tmp_dir)
 
     # sync connection folder display name
-    set_config("syncConnectionName", "Personal" if get_config("ocis") else "ownCloud")
+    set_config(
+        "syncConnectionName",
+        get_config("personal_sync_folder"),
+    )
 
 
 # determines if the test scenario failed or not
