@@ -63,8 +63,7 @@ public:
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
-    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,
-        /*const QVariantMap &dynamicRegistrationData,*/ QObject *parent);
+    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,QObject *parent);
     ~OAuth() override;
 
     virtual void startAuthentication();
@@ -101,15 +100,25 @@ protected:
 
     QNetworkReply *postTokenRequest(QUrlQuery &&queryItems);
 
+protected Q_SLOTS:
+    void handleSocketReadyRead();
 
 private:
     void handleTcpConnection();
-    void handleSocketReadyRead();
+
+    void getTokens();
+    void checkUserInfo();
     void finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
     void httpReplyAndClose(const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
 
     QByteArray generateRandomString(size_t size) const;
 
+    // The actual data we're collecting!
+    QString _accessToken;
+    QString _refreshToken;
+    QUrl _messageUrl;
+
+    // peripheral deps
     QTcpServer _server;
     QPointer<QTcpSocket> _socket;
     QUrlQuery _queryArgs;
@@ -125,7 +134,6 @@ private:
 
     TokenEndpointAuthMethods _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
     PromptValuesSupportedFlags _supportedPromptValues = {PromptValuesSupported::consent, PromptValuesSupported::select_account};
-    void getTokens();
 };
 
 /**
