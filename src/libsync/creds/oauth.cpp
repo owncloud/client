@@ -168,7 +168,6 @@ void OAuth::httpReplyAndClose(const QString &code, const QString &title, const Q
     _socket->write(msg);
     _socket->disconnectFromHost();
     _socket = nullptr;
-    // that ensures the socket is finished sending its message, AND deleted (later) via disconnected signal by the end of this function.
 }
 
 void OAuth::finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
