@@ -60,8 +60,17 @@ UserInfoResult UserInfoAdapter::getResult()
     const auto data = reply->readAll();
     const auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-    if (reply->error() != QNetworkReply::NoError || statusCode != 200) {
-        result.error = tr("Failed to retrieve user info");
+    if (reply->error() != QNetworkReply::NoError) {
+        result.error = tr("Network request to collect user info failed");
+        qCritical(lcUserInfoAdapter)
+            << QStringLiteral("Network error when retrieving user info from: %1 %2.").arg(_url.toDisplayString(), reply->errorString());
+    } else if (statusCode != 200) {
+        if (statusCode == 401)
+            // putting this special case in as we originally reported it explicitly in the wizard controller
+            result.error = tr("Unable to retrieve user info: invalid credentials.");
+        else
+            result.error = tr("Unexpected network response when retrieving user info.");
+        qCritical(lcUserInfoAdapter) << QStringLiteral("Bad response when retrieving user info from %1: %2.").arg(_url.toDisplayString(), statusCode);
     } else {
         QJsonParseError error = {};
         const auto json = QJsonDocument::fromJson(data, &error);
@@ -70,7 +79,9 @@ UserInfoResult UserInfoAdapter::getResult()
             result.userId = jsonData.value(QStringLiteral("id")).toString();
             result.displayName = jsonData.value(QStringLiteral("display-name")).toString();
         } else {
-            result.error = error.errorString();
+            result.error = tr("Retrieving user info failed with JSON error.");
+            qCritical(lcUserInfoAdapter)
+                << QStringLiteral("JSON error when retrieving user info from %1: %2.").arg(_url.toDisplayString(), error.errorString());
         }
     }
 
