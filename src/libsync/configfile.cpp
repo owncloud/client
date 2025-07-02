@@ -55,7 +55,7 @@ const QString notificationRefreshIntervalC() { return QStringLiteral("notificati
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
-const QString optionalDesktopNoficationsC()
+const QString optionalDesktopNotificationsC()
 {
     return QStringLiteral("optionalDesktopNotifications");
 }
@@ -65,10 +65,6 @@ const QString updateChannelC() { return QStringLiteral("updateChannel"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
-const QString chunkSizeC() { return QStringLiteral("chunkSize"); }
-const QString minChunkSizeC() { return QStringLiteral("minChunkSize"); }
-const QString maxChunkSizeC() { return QStringLiteral("maxChunkSize"); }
-const QString targetChunkUploadDurationC() { return QStringLiteral("targetChunkUploadDuration"); }
 const QString automaticLogDirC() { return QStringLiteral("logToTemporaryLogDir"); }
 const QString numberOfLogsToKeepC()
 {
@@ -149,7 +145,7 @@ bool ConfigFile::setConfDir(const QString &value)
 bool ConfigFile::optionalDesktopNotifications() const
 {
     auto settings = makeQSettings();
-    return settings.value(optionalDesktopNoficationsC(), true).toBool();
+    return settings.value(optionalDesktopNotificationsC(), true).toBool();
 }
 
 std::optional<QStringList> ConfigFile::issuesWidgetFilter() const
@@ -176,34 +172,10 @@ std::chrono::seconds ConfigFile::timeout() const
     return val ? std::chrono::seconds(val) : 5min;
 }
 
-qint64 ConfigFile::chunkSize() const
-{
-    auto settings = makeQSettings();
-    return settings.value(chunkSizeC(), 10 * 1000 * 1000).toLongLong(); // default to 10 MB
-}
-
-qint64 ConfigFile::maxChunkSize() const
-{
-    auto settings = makeQSettings();
-    return settings.value(maxChunkSizeC(), 100 * 1000 * 1000).toLongLong(); // default to 100 MB
-}
-
-qint64 ConfigFile::minChunkSize() const
-{
-    auto settings = makeQSettings();
-    return settings.value(minChunkSizeC(), 1000 * 1000).toLongLong(); // default to 1 MB
-}
-
-chrono::milliseconds ConfigFile::targetChunkUploadDuration() const
-{
-    auto settings = makeQSettings();
-    return millisecondsValue(settings, targetChunkUploadDurationC(), chrono::minutes(1));
-}
-
 void ConfigFile::setOptionalDesktopNotifications(bool show)
 {
     auto settings = makeQSettings();
-    settings.setValue(optionalDesktopNoficationsC(), show);
+    settings.setValue(optionalDesktopNotificationsC(), show);
     settings.sync();
 }
 
