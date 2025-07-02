@@ -39,11 +39,6 @@ jobs:
               os: macos-latest
               container:
               useSonarCloud:
-            - name: macos-clang-arm64-debug
-              target: macos-clang-arm64-debug
-              os: macos-latest
-              container:
-              useSonarCloud:
             - name: linux-gcc-x86_64
               target: linux-64-gcc
               os: ubuntu-latest

@@ -72,12 +72,12 @@ private Q_SLOTS:
         QTest::addColumn<QString>("expectedErrorString");
         QTest::addColumn<bool>("syncSucceeds");
 
-        QString itemErrorMessage = QStringLiteral("Internal Server Fake Error");
+        QString itemErrorMessage = QStringLiteral("Fake internal server error");
 
         QTest::newRow("400") << 400 << itemErrorMessage << false;
         QTest::newRow("401") << 401 << QStringLiteral("Fake credentials error") << false;
         QTest::newRow("403") << 403 << QStringLiteral("Fake access denied error") << true;
-        QTest::newRow("404") << 404 << itemErrorMessage << true;
+        QTest::newRow("404") << 404 << QStringLiteral("Fake file not found error") << true;
         QTest::newRow("500") << 500 << itemErrorMessage << true;
         QTest::newRow("503") << 503 << itemErrorMessage << true;
         // 200 should be an error since propfind should return 207

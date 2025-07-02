@@ -2047,66 +2047,66 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="356"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="237"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>サーバからエラーが返されました: &lt;em&gt;%1&lt;/em&gt; </translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="359"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="240"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>&apos;token&apos; エンドポイントへのアクセスにエラーが発生しました: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="362"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="243"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>サーバから返された JSON をパースできませんでした: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="365"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="246"/>
         <source>Unsupported token type: %1</source>
         <translation>サポートされていない形式のトークン: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="367"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="248"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>サーバからの応答には、期待されたフィールドがすべて含まれていません。
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="369"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="250"/>
         <source>Unknown Error</source>
         <translation>不明なエラー</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="383"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="254"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="264"/>
         <source>Login Error</source>
         <translation>ログインエラー</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="396"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="277"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;間違ったユーザー&lt;/h1&gt; &lt;p&gt;ユーザーでログインしました &lt;em&gt;%1&lt;/em&gt;, ただし、ユーザーでログインする必要があります &lt;em&gt;%2 &lt;/em&gt;.&lt;br&gt;%3 クライアントに戻り、認証を再開してください。&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="400"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="281"/>
         <source>Wrong user</source>
         <translation>間違ったユーザー</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="418"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="299"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;ログイン成功&lt;/h1&gt;&lt;p&gt;このウィンドウを閉じることができます。&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="419"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="300"/>
         <source>Login Successful</source>
         <translation>ログイン成功</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="373"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="384"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="254"/>
+        <location filename="../src/libsync/creds/oauth.cpp" line="265"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;ログインエラー&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt; </translation>
     </message>
@@ -3581,17 +3581,17 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Wizard::OAuthCredentialsSetupWizardState</name>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="64"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="60"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation>OAuth2 対応サーバーにログインしようとしたときにエラーが発生しました。</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="69"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="65"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation>サーバーは、OAuth2 がサポートされていないと報告しました。</translation>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="73"/>
+        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="69"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation>Oauth2認証には、セキュリティで保護された接続が必要です。</translation>
     </message>
@@ -3929,7 +3929,7 @@ Are you sure you want to proceed?</source>
         <translation>%1 (%2, %3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="925"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="920"/>
         <source>User paused sync for account &apos;%1&apos;</source>
         <translation>ユーザーはアカウント &apos;%1&apos; の同期を一時停止しました</translation>
     </message>
