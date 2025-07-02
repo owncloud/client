@@ -1,9 +1,13 @@
 if(WITH_EXTERNAL_BRANDING)
     include(FetchContent)
 
+    if(NOT WITH_EXTERNAL_BRANDING_TAG)
+        set(WITH_EXTERNAL_BRANDING_TAG "main")
+    endif()
+
     FetchContent_Declare(branding
             GIT_REPOSITORY ${WITH_EXTERNAL_BRANDING}
-            GIT_TAG main
+            GIT_TAG ${WITH_EXTERNAL_BRANDING_TAG}
     )
     FetchContent_MakeAvailable(branding)
 
