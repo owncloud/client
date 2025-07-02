@@ -18,8 +18,8 @@
 
 #include "fetchserversettings.h"
 
+#include "creds/httpcredentials.h"
 #include "libsync/creds/abstractcredentials.h"
-#include "libsync/creds/httpcredentials.h"
 
 #include "quotainfo.h"
 #include "gui/settingsdialog.h"

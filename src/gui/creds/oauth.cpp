@@ -16,10 +16,10 @@
 
 #include "accessmanager.h"
 #include "account.h"
-#include "credentialmanager.h"
 #include "creds/credentialssupport.h"
+#include "gui/networkadapters/userinfoadapter.h"
+#include "libsync/creds/credentialmanager.h"
 #include "networkjobs/checkserverjobfactory.h"
-#include "networkjobs/fetchuserinfojobfactory.h"
 #include "resources/template.h"
 #include "theme.h"
 
@@ -145,7 +145,12 @@ void OAuth::startAuthentication()
 
 void OAuth::httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
 {
-    if (!_socket) {
+    httpReplyAndClose(_socket, code, title, body, additionalHeader);
+}
+
+void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
+{
+    if (!socket) {
         return; // socket can have been deleted if the browser was closed
     }
 
@@ -165,9 +170,9 @@ void OAuth::httpReplyAndClose(const QString &code, const QString &title, const Q
 
     qCDebug(lcOauth) << "replying with HTTP response and closing socket:" << msg;
 
-    _socket->write(msg);
-    _socket->disconnectFromHost();
-    _socket = nullptr;
+    socket->write(msg);
+    socket->disconnectFromHost();
+    socket = nullptr;
 }
 
 void OAuth::finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
@@ -183,6 +188,8 @@ void OAuth::finalize(const QString &accessToken, const QString &refreshToken, co
     Q_EMIT result(LoggedIn, accessToken, refreshToken);
 }
 
+// the tcp server handling has to be done async while we wait for a suitable socket with which to communciate with the
+// authentication web page. The async handling for tcp includes this function + the handleSocketReadyRead
 void OAuth::handleTcpConnection()
 {
     while (_server.hasPendingConnections()) {
@@ -200,7 +207,8 @@ void OAuth::handleTcpConnection()
 
 void OAuth::handleSocketReadyRead()
 {
-    // if we have already found our target socket ignore all the others
+    // we already have the socket we want to use to complete the auth communications so ignore any other incoming
+    // sockets
     if (_socket)
         return;
 
@@ -209,10 +217,11 @@ void OAuth::handleSocketReadyRead()
         // something is really wrong
         return;
     }
+    QPointer<QTcpSocket> tempSocket(connected);
 
     Q_ASSERT(connected->state() == QAbstractSocket::ConnectedState);
 
-    const QByteArray peek = connected->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
+    const QByteArray peek = tempSocket->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
 
     // wait until we find a \n
     if (!peek.contains('\n')) {
@@ -221,12 +230,9 @@ void OAuth::handleSocketReadyRead()
 
     qCDebug(lcOauth) << "Server provided:" << peek;
 
-    // this may be the wrong location but why would we report 404 or 400 if we haven't found the "target" socket yet?!
-    // and what, then it would still keep evaluating other sockets that are coming later in the server connection pool?
-    _socket = connected;
     const auto getPrefix = QByteArrayLiteral("GET /?");
     if (!peek.startsWith(getPrefix)) {
-        httpReplyAndClose(QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
+        httpReplyAndClose(tempSocket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
         return;
     }
     const auto endOfUrl = peek.indexOf(' ', getPrefix.length());
@@ -234,21 +240,24 @@ void OAuth::handleSocketReadyRead()
     _queryArgs = QUrlQuery(QUrl::fromPercentEncoding(peek.mid(getPrefix.length(), endOfUrl - getPrefix.length())));
 
     if (_queryArgs.queryItemValue(QStringLiteral("state")).toUtf8() != _state) {
-        httpReplyAndClose(QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
+        httpReplyAndClose(tempSocket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
         return;
     }
+
+    // basic checks passed, we now want to commit to this socket all other pending connections will effectively be
+    // ignored from here out. To ensure we get as few stray connections as possible, just close the server
+    _socket = tempSocket;
 
     // server port cannot be queried any more after server has been closed, which we want to do as early as possible in the processing chain
     // therefore we have to store it beforehand
     _serverPort = _server.serverPort();
-
-    // we only consider the first valid response
     qCDebug(lcOauth) << "Received the first valid response, closing server socket";
     _server.close();
 
     getTokens();
 }
 
+// todo: #24 - this can be converted to an adapter
 void OAuth::getTokens()
 {
     auto postTokenReply = postTokenRequest({
@@ -295,8 +304,9 @@ void OAuth::getTokens()
             return;
         }
 
+        // this check is important when reauthenticating an existing account, where a davUser is already defined.
+        // In this context, the check just validates that the user had not authenticated with a different username from the account
         if (!_davUser.isEmpty()) {
-            // this check is run only when re-loading a pre-existing account. consider moving it to the account based oauth routine?
             checkUserInfo();
         } else { // davUser is empty so we are done:
             finalize(_accessToken, _refreshToken, _messageUrl);
@@ -306,35 +316,31 @@ void OAuth::getTokens()
 
 void OAuth::checkUserInfo()
 {
-    auto *job = FetchUserInfoJobFactory::fromOAuth2Credentials(_networkAccessManager, _accessToken).startJob(_serverUrl, this);
+    Q_ASSERT(!_davUser.isEmpty());
 
-    connect(job, &CoreJob::finished, this, [=]() {
-        if (!job->success()) {
-            httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(job->errorMessage()));
+    UserInfoAdapter infoAdapter(_networkAccessManager, _accessToken, _serverUrl);
+    const UserInfoResult infoResult = infoAdapter.getResult();
+
+    if (!infoResult.success()) {
+        httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(infoResult.error));
+        Q_EMIT result(Error);
+    } else {
+        if (infoResult.userId.compare(_davUser, Qt::CaseInsensitive) != 0) {
+            // Connected with the wrong user
+            qCWarning(lcOauth) << "We expected the user" << _davUser << "but the server answered with user" << infoResult.userId;
+            const QString message = tr("<h1>Wrong user</h1>"
+                                       "<p>You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
+                                       "Please return to the %3 client and restart the authentication.</p>")
+                                        .arg(infoResult.userId, _davUser, Theme::instance()->appNameGUI());
+            httpReplyAndClose(QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
             Q_EMIT result(Error);
         } else {
-            auto fetchUserInfo = job->result().value<FetchUserInfoResult>();
-
-            // note: the username still shouldn't be empty
-            Q_ASSERT(!_davUser.isEmpty());
-
-            // dav usernames are case-insensitive, we might compare a user input with the string provided by the server
-            if (fetchUserInfo.userName().compare(_davUser, Qt::CaseInsensitive) != 0) {
-                // Connected with the wrong user
-                qCWarning(lcOauth) << "We expected the user" << _davUser << "but the server answered with user" << fetchUserInfo.userName();
-                const QString message = tr("<h1>Wrong user</h1>"
-                                           "<p>You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
-                                           "Please return to the %3 client and restart the authentication.</p>")
-                                            .arg(fetchUserInfo.userName(), _davUser, Theme::instance()->appNameGUI());
-                httpReplyAndClose(QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
-                Q_EMIT result(Error);
-            } else {
-                finalize(_accessToken, _refreshToken, _messageUrl);
-            }
+            finalize(_accessToken, _refreshToken, _messageUrl);
         }
-    });
+    }
 }
 
+// todo: #24 - I think this should also be an adapter. I also have a vague recollection that we have a job that does this already
 QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
 {
     const QUrl requestTokenUrl =
@@ -588,4 +594,4 @@ QString OCC::toString(OAuth::PromptValuesSupportedFlags s)
         }
     return out.join(QLatin1Char(' '));
 }
-#include "oauth.moc"
+// #include "oauth.moc"

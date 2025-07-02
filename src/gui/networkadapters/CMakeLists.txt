@@ -1,15 +1,15 @@
 target_sources(owncloudGui PRIVATE
     resolveurladapter.cpp
-	resolveurladapter.h
+    resolveurladapter.h
     webfingerlookupadapter.cpp
-	webfingerlookupadapter.h
-	discoverwebfingerserviceadapter.cpp
-	discoverwebfingerserviceadapter.h
-	determineauthtypeadapter.cpp
-	determineauthtypeadapter.h
-	fetchcapabilitiesadapter.cpp
-	fetchcapabilitiesadapter.h
-	userinfoadapter.cpp
-	userinfoadapter.h
+    webfingerlookupadapter.h
+    discoverwebfingerserviceadapter.cpp
+    discoverwebfingerserviceadapter.h
+    determineauthtypeadapter.cpp
+    determineauthtypeadapter.h
+    fetchcapabilitiesadapter.cpp
+    fetchcapabilitiesadapter.h
+    userinfoadapter.cpp
+    userinfoadapter.h
 )
 

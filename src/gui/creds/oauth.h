@@ -50,7 +50,7 @@ class JsonJob;
  *              finalize(...): Q_EMIT result(...)
  *
  */
-class OWNCLOUDSYNC_EXPORT OAuth : public QObject
+class OAuth : public QObject
 {
     Q_OBJECT
 public:
@@ -105,11 +105,13 @@ protected Q_SLOTS:
 
 private:
     void handleTcpConnection();
-
     void getTokens();
     void checkUserInfo();
     void finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
-    void httpReplyAndClose(const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
+    void httpReplyAndClose(
+        QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
+
+    void httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader = {});
 
     QByteArray generateRandomString(size_t size) const;
 
@@ -141,7 +143,7 @@ private:
  * Instead of relying on the user to provide a working server URL, a CheckServerJob is run upon start(), which also stores the fetched cookies in the account's state.
  * Furthermore, it takes care of storing and loading the dynamic registration data in the account's credentials manager.
  */
-class OWNCLOUDSYNC_EXPORT AccountBasedOAuth : public OAuth
+class AccountBasedOAuth : public OAuth
 {
     Q_OBJECT
 
@@ -163,6 +165,6 @@ private:
     AccountPtr _account;
 };
 
-QString OWNCLOUDSYNC_EXPORT toString(OAuth::PromptValuesSupportedFlags s);
+QString toString(OAuth::PromptValuesSupportedFlags s);
 Q_DECLARE_OPERATORS_FOR_FLAGS(OAuth::PromptValuesSupportedFlags)
 } // namespace OCC

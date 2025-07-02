@@ -8,10 +8,10 @@
 #include <QtTest/QtTest>
 #include <QDesktopServices>
 
-#include "libsync/creds/oauth.h"
+#include "common/asserts.h"
+#include "creds/oauth.h"
 #include "testutils/syncenginetestutils.h"
 #include "theme.h"
-#include "common/asserts.h"
 
 using namespace std::chrono_literals;
 using namespace OCC;
