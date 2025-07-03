@@ -13,25 +13,29 @@
  */
 #include "oauthpagecontroller.h"
 
+#include "accessmanager.h"
+#include "networkadapters/webfingerlookupadapter.h"
 #include "resources.h"
 #include "template.h"
 #include "theme.h"
 
+#include <QBuffer>
 #include <QHBoxLayout>
+#include <QImageReader>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSignalBlocker>
 #include <QVBoxLayout>
 #include <QWizardPage>
-#include <qbuffer.h>
-#include <qimagereader.h>
 
 namespace OCC {
 
-OAuthPageController::OAuthPageController(QWizardPage *page, QObject *parent)
+OAuthPageController::OAuthPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent)
     : QObject{parent}
     , _page(page)
+    , _accessManager(accessManager)
+    , _oauth(nullptr)
 {
     buildPage();
 }
@@ -71,6 +75,14 @@ void OAuthPageController::buildPage()
     copyButton->setAccessibleDescription(tr("Copy the login URL to the clipboard"));
     connect(copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
+    _errorField = new QLabel(QString(), _page);
+    QPalette errorPalette = _errorField->palette();
+    errorPalette.setColor(QPalette::Text, Qt::red);
+    _errorField->setPalette(errorPalette);
+    _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _errorField->setWordWrap(true);
+    _errorField->setAlignment(Qt::AlignLeft);
+
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
         footerLogoLabel = new QLabel({}, _page);
@@ -102,6 +114,13 @@ void OAuthPageController::buildPage()
     _page->setLayout(layout);
 }
 
+void OAuthPageController::handleError(const QString &error)
+{
+    _errorField->setText(error);
+    _results.error = error;
+    Q_EMIT failure(_results);
+}
+
 QIcon OAuthPageController::copyIcon()
 {
     // this is required because the background color of the wizard pages can be set via theming and we can't pick an icon
@@ -118,13 +137,75 @@ QIcon OAuthPageController::copyIcon()
 
 void OAuthPageController::setUrl(const QUrl &url)
 {
+    _serverUrl = url;
     _urlField->setText(url.toDisplayString());
+}
+
+void OAuthPageController::setLookupWebfingerUrls(bool lookup)
+{
+    _lookupWebfingerUrls = lookup;
 }
 
 void OAuthPageController::copyUrlClicked() { }
 
 bool OAuthPageController::validate()
 {
-    return true;
+    if (_oauthCompleted) {
+        delete _oauth;
+        _oauth = nullptr;
+        _oauthCompleted = false;
+        return true;
+    }
+
+    _results = {};
+    _errorField->clear();
+    _oauth = new OAuth(_serverUrl, {}, _accessManager.get(), this);
+    connect(_oauth, &OAuth::result, this, &OAuthPageController::handleOauthResult);
+    connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::showBrowser);
+    _oauth->startAuthentication();
+    return false;
+}
+
+void OAuthPageController::showBrowser()
+{
+    _oauth->openBrowser();
+}
+
+void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken)
+{
+    switch (result) {
+    case OAuth::Result::LoggedIn: {
+        _results.token = token;
+        _results.refreshToken = refreshToken;
+        if (_lookupWebfingerUrls) {
+            WebFingerLookupAdapter lookup(_accessManager, token, _serverUrl);
+            const WebFingerLookupResult webfingerResult = lookup.getResult();
+            if (!webfingerResult.success()) {
+                handleError(tr("Failed to look up webfinger instances: %1").arg(webfingerResult.error));
+                return;
+            } else {
+                _results.webfingerUrls = webfingerResult.urls;
+            }
+        }
+        _oauthCompleted = true;
+        Q_EMIT success(_results);
+        break;
+    }
+    case OAuth::Result::Error: {
+        handleError(tr("Error while trying to log in to OAuth2-enabled server."));
+        break;
+    }
+    case OAuth::Result::NotSupported: {
+        // should never happen
+        handleError(tr("Server reports that OAuth2 is not supported."));
+        break;
+    }
+    case OAuth::Result::ErrorInsecureUrl: {
+        handleError(tr("Oauth2 authentication requires a secured connection."));
+        break;
+    }
+    };
+    delete _oauth;
+    _oauth = nullptr;
 }
 }

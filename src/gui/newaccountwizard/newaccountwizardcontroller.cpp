@@ -24,6 +24,8 @@
 #include "theme.h"
 #include "urlpagecontroller.h"
 
+#include "owncloudgui.h"
+
 
 namespace OCC {
 
@@ -69,8 +71,9 @@ void NewAccountWizardController::buildPages()
     _urlPageIndex = _wizard->addPage(urlPage, urlController);
 
     QWizardPage *oauthPage = new QWizardPage(_wizard);
-    OAuthPageController *oauthController = new OAuthPageController(oauthPage, this);
-    _oauthPageIndex = _wizard->addPage(oauthPage, oauthController);
+    _oauthController = new OAuthPageController(oauthPage, _accessManager, this);
+    connect(_oauthController, &OAuthPageController::success, this, &NewAccountWizardController::onOAuthValidationCompleted);
+    _oauthPageIndex = _wizard->addPage(oauthPage, _oauthController);
 
     QWizardPage *authSuccessPage = new QWizardPage(_wizard);
     AuthSuccessPageController *authSuccessController = new AuthSuccessPageController(authSuccessPage, this);
@@ -102,8 +105,16 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _model->setTrustedCertificates(result.certificates);
 
     // and then we have to explicitly set login url on the controller for the next page...
+    _oauthController->setUrl(_model->effectiveAuthenticationServerUrl());
+    _oauthController->setLookupWebfingerUrls(!_model->webfingerAuthenticationUrl().isEmpty());
 }
 
+void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPageResults &results)
+{
+    // add the props from the oauth step
+    _wizard->setCurrentId(_authSuccessPageIndex);
+    ownCloudGui::raise();
+}
 // I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
 // first page yet.
 void NewAccountWizardController::onUrlValidationFailed(const OCC::UrlPageResults &result)

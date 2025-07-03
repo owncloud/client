@@ -24,7 +24,6 @@
 #include "gui/qmlutils.h"
 #include "owncloudgui.h"
 #include "resources/qmlresources.h"
-#include "resources/resources.h"
 #include "theme.h"
 
 #include <QMessageBox>

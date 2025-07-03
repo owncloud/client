@@ -172,7 +172,9 @@ void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, 
 
     socket->write(msg);
     socket->disconnectFromHost();
-    socket = nullptr;
+    // this is super important as we may delete the oauth/server before the socket has completed its work
+    // let the deleteLater on final disconnect take care of the cleanup
+    socket->setParent(nullptr);
 }
 
 void OAuth::finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
@@ -188,7 +190,7 @@ void OAuth::finalize(const QString &accessToken, const QString &refreshToken, co
     Q_EMIT result(LoggedIn, accessToken, refreshToken);
 }
 
-// the tcp server handling has to be done async while we wait for a suitable socket with which to communciate with the
+// the tcp server handling has to be done async while we wait for a suitable socket with which to communiciate with the
 // authentication web page. The async handling for tcp includes this function + the handleSocketReadyRead
 void OAuth::handleTcpConnection()
 {
@@ -209,7 +211,7 @@ void OAuth::handleSocketReadyRead()
 {
     // we already have the socket we want to use to complete the auth communications so ignore any other incoming
     // sockets
-    if (_socket)
+    if (!_server.isListening())
         return;
 
     QTcpSocket *connected = qobject_cast<QTcpSocket *>(sender());

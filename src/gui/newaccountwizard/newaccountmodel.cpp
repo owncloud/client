@@ -99,4 +99,10 @@ void NewAccountModel::setDisplayName(const QString &newDisplayName)
     Q_EMIT displayNameChanged(_displayName);
 }
 
+QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
+{
+    if (!_webfingerAuthenticationUrl.isEmpty())
+        return _webfingerAuthenticationUrl;
+    return _serverUrl;
+}
 }
