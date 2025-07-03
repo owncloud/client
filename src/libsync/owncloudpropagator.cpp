@@ -442,7 +442,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
     // See the `else` statment in the second step.
     QString maybeConflictDirectory;
 
-    for (const auto &item : qAsConst(items)) {
+    for (const auto &item : std::as_const(items)) {
         // First check if this is an item in a directory which is going to be removed.
         if (currentRemoveDirectoryJob && FileSystem::isChildPathOf(item->_file, currentRemoveDirectoryJob->path())) {
             // Check the sync instruction for the item:
@@ -508,7 +508,7 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 // checkForPermissions() has already run and used the permissions
                 // of the file we're about to delete to decide whether uploading
                 // to the new dir is ok...
-                for (const auto &item2 : qAsConst(items)) {
+                for (const auto &item2 : std::as_const(items)) {
                     if (item2 != item && FileSystem::isChildPathOf(item2->destination(), item->destination())) {
                         item2->setInstruction(CSYNC_INSTRUCTION_NONE);
                         _anotherSyncNeeded = true;

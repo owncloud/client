@@ -56,7 +56,7 @@ bool expectAndWipeConflict(FakeFolder &fFolder, const QString &path)
         return false;
     }
 
-    for (const auto &item : qAsConst(base->children)) {
+    for (const auto &item : std::as_const(base->children)) {
         if (item.name.startsWith(pathComponents.fileName()) && item.name.contains(QLatin1String("(conflicted copy"))) {
             fFolder.localModifier().remove(item.path());
             OC_ASSERT(fFolder.applyLocalModificationsWithoutSync());
@@ -654,7 +654,7 @@ private slots:
         QVERIFY(conflicts.size() == 2);
         QVERIFY(conflicts[0].contains(QStringLiteral("A (conflicted copy")));
         QVERIFY(conflicts[1].contains(QStringLiteral("B (conflicted copy")));
-        for (const auto &conflict : qAsConst(conflicts))
+        for (const auto &conflict : std::as_const(conflicts))
             QDir(fakeFolder.localPath() + conflict).removeRecursively();
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SetupWizardWindow</class>
- <widget class="QDialog" name="SetupWizardWindow">
+ <class>SetupWizardWidget</class>
+ <widget class="QWidget" name="SetupWizardWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,9 +12,6 @@
   </property>
   <property name="windowTitle">
    <string>Add New Account</string>
-  </property>
-  <property name="modal">
-   <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
    <property name="leftMargin">
@@ -32,16 +29,11 @@
    <item>
     <widget class="QStackedWidget" name="contentWidget">
      <widget class="QWidget" name="transitionPage">
-      <widget class="QProgressIndicator" name="transitionProgressIndicator" native="true">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>280</y>
-         <width>120</width>
-         <height>80</height>
-        </rect>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QProgressIndicator" name="transitionProgressIndicator" native="true"/>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
@@ -67,27 +59,46 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: #ff7070;</string>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0">
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
+        <item>
+         <widget class="QLabel" name="warningPixmap">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>64</width>
+            <height>64</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>64</width>
+            <height>64</height>
+           </size>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../../resources/client.qrc">:/client/resources/light/warning.svg</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="errorMessageLabel">
-          <property name="text">
-           <string notr="true">error message placeholder</string>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="errorMessageDismissButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
           <property name="text">
-           <string>Dismiss</string>
+           <string>&amp;Dismiss</string>
           </property>
          </widget>
         </item>
@@ -102,7 +113,7 @@
        <item>
         <widget class="QPushButton" name="cancelButton">
          <property name="text">
-          <string>Cancel</string>
+          <string>&amp;Cancel</string>
          </property>
         </widget>
        </item>
@@ -169,6 +180,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../resources/client.qrc"/>
+ </resources>
  <connections/>
 </ui>

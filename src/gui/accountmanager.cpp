@@ -195,7 +195,7 @@ bool AccountManager::restoreFromLegacySettings()
 
 void AccountManager::save(bool saveCredentials)
 {
-    for (const auto &acc : qAsConst(_accounts)) {
+    for (const auto &acc : std::as_const(_accounts)) {
         saveAccount(acc->account().data(), saveCredentials);
     }
 
@@ -311,7 +311,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
 AccountStatePtr AccountManager::account(const QString &name)
 {
-    for (const auto &acc : qAsConst(_accounts)) {
+    for (const auto &acc : std::as_const(_accounts)) {
         if (acc->account()->displayName() == name) {
             return acc;
         }

@@ -66,7 +66,7 @@ void LockWatcher::checkFiles()
             unlocked.insert(p);
         }
     }
-    for (const auto &removed : qAsConst(unlocked)) {
+    for (const auto &removed : std::as_const(unlocked)) {
         _watchedPaths.erase(removed);
     }
 }
