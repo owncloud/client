@@ -19,14 +19,17 @@ namespace OCC::Wizard {
 
 SetupWizardContext::SetupWizardContext(SettingsDialog *windowParent, QObject *parent)
     : QObject(parent)
-    , _window(new SetupWizardWindow(windowParent))
+    , _window(new SetupWizardWidget(windowParent))
 {
     resetAccessManager();
 }
 
 SetupWizardContext::~SetupWizardContext()
 {
-    _window->deleteLater();
+    // the widget might already have been deleted by the destruction of its parent widget
+    if (_window) {
+        _window->deleteLater();
+    }
     _accessManager->deleteLater();
 }
 
@@ -40,7 +43,7 @@ AccessManager *SetupWizardContext::resetAccessManager()
     return _accessManager;
 }
 
-SetupWizardWindow *SetupWizardContext::window() const
+SetupWizardWidget *SetupWizardContext::window() const
 {
     return _window;
 }
