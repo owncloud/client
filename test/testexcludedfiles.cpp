@@ -68,7 +68,7 @@ private slots:
                 const auto fileName = parts.back();
                 parts.pop_back(); // remove file name
                 QString workPath = tmp.path() + QLatin1Char('/');
-                for (const auto &p : qAsConst(parts)) {
+                for (const auto &p : std::as_const(parts)) {
                     QDir dir(workPath);
                     dir.mkdir(p);
                     workPath += p + QLatin1Char('/');

@@ -292,7 +292,7 @@ void Application::setupTranslations()
     QTranslator *qtTranslator = new QTranslator(this);
     QTranslator *qtkeychainTranslator = new QTranslator(this);
 
-    for (QString lang : qAsConst(uiLanguages)) {
+    for (QString lang : std::as_const(uiLanguages)) {
         lang.replace(QLatin1Char('-'), QLatin1Char('_')); // work around QTBUG-25973
         lang = substLang(lang);
         const QString trFile = Translations::translationsFilePrefix() + lang;

@@ -127,9 +127,9 @@ void ShareeModel::fetch(const QString &search, const ShareeSet &blacklist)
 
                     // Filter sharees that we have already shared with
                     QVector<QSharedPointer<Sharee>> filteredSharees;
-                    for (const auto &sharee : qAsConst(newSharees)) {
+                    for (const auto &sharee : std::as_const(newSharees)) {
                         bool found = false;
-                        for (const auto &blacklistSharee : qAsConst(_shareeBlacklist)) {
+                        for (const auto &blacklistSharee : std::as_const(_shareeBlacklist)) {
                             if (sharee->type() == blacklistSharee->type() && sharee->shareWith() == blacklistSharee->shareWith()) {
                                 found = true;
                                 break;
@@ -194,7 +194,7 @@ void ShareeModel::setNewSharees(const QVector<QSharedPointer<Sharee>> &newSharee
 
     QModelIndexList newPersistant;
     newPersistant.reserve(persistent.size());
-    for (const auto &sharee : qAsConst(oldPersistantSharee)) {
+    for (const auto &sharee : std::as_const(oldPersistantSharee)) {
         FindShareeHelper helper = { sharee };
         auto it = std::find_if(_sharees.constBegin(), _sharees.constEnd(), helper);
         if (it == _sharees.constEnd()) {

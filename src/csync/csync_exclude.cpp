@@ -275,7 +275,7 @@ bool ExcludedFiles::reloadExcludeFiles()
 {
     _allExcludes.clear();
     bool success = true;
-    for (const auto &file : qAsConst(_excludeFiles)) {
+    for (const auto &file : std::as_const(_excludeFiles)) {
         QFile f(file);
         if (!f.open(QIODevice::ReadOnly)) {
             success = false;
@@ -629,7 +629,7 @@ void ExcludedFiles::prepare()
         pattern.append(appendMe);
     };
 
-    for (auto exclude : qAsConst(_allExcludes)) {
+    for (auto exclude : std::as_const(_allExcludes)) {
         if (exclude[0] == QLatin1Char('\n'))
             continue; // empty line
         if (exclude[0] == QLatin1Char('\r'))

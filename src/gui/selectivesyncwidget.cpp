@@ -145,7 +145,7 @@ void SelectiveSyncWidget::recursiveInsert(QTreeWidgetItem *parent, QStringList p
             item = new SelectiveSyncTreeViewItem(parent);
             if (parent->checkState(0) == Qt::Checked || parent->checkState(0) == Qt::PartiallyChecked) {
                 item->setCheckState(0, Qt::Checked);
-                for (const auto &str : qAsConst(_oldBlackList)) {
+                for (const auto &str : std::as_const(_oldBlackList)) {
                     if (str == path || str == QLatin1Char('/')) {
                         item->setCheckState(0, Qt::Unchecked);
                         break;
@@ -190,7 +190,7 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
 
     QStringList relativeList;
     relativeList.reserve(list.size());
-    for (const QString &path : qAsConst(list)) {
+    for (const QString &path : std::as_const(list)) {
         Q_ASSERT(path.startsWith(rootPath));
         const QString relativePath = path.mid(rootPath.size());
         if (!relativePath.isEmpty()) {
@@ -202,7 +202,7 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     // list of top-level folders as soon as possible.
     if (_oldBlackList.size() == 1 && _oldBlackList.contains(QLatin1String("/"))) {
         _oldBlackList.clear();
-        for (const QString &path : qAsConst(relativeList)) {
+        for (const QString &path : std::as_const(relativeList)) {
             _oldBlackList.insert(path);
         }
     }
@@ -229,7 +229,7 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     }
 
     Utility::sortFilenames(relativeList);
-    for (const QString &path : qAsConst(relativeList)) {
+    for (const QString &path : std::as_const(relativeList)) {
         const auto size = job ? job->sizes().value(Utility::ensureTrailingSlash(Utility::concatUrlPathItems({rootPath, path}))) : 0;
         const QStringList paths = path.split(QLatin1Char('/'), Qt::SkipEmptyParts);
         if (paths.isEmpty()) {

@@ -27,7 +27,6 @@
 #include "gui/spacemigration.h"
 #include "gui/tlserrordialog.h"
 
-#include "logger.h"
 #include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
@@ -362,7 +361,7 @@ void AccountState::checkConnectivity(bool blockJobs)
                 _tlsDialog->setAttribute(Qt::WA_DeleteOnClose);
                 QSet<QSslCertificate> certs;
                 certs.reserve(filteredErrors.size());
-                for (const auto &error : qAsConst(filteredErrors)) {
+                for (const auto &error : std::as_const(filteredErrors)) {
                     certs << error.certificate();
                 }
                 connect(_tlsDialog, &TlsErrorDialog::accepted, _tlsDialog, [certs, blockJobs, this]() {

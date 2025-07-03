@@ -119,7 +119,7 @@ void NotificationWidget::slotNotificationRequestFinished(bool success)
 
     if (!success) {
         qCWarning(lcNotifications) << "Notification Request to Server failed, leave button visible.";
-        for (auto *button : qAsConst(_buttons)) {
+        for (auto *button : std::as_const(_buttons)) {
             button->setEnabled(true);
         }
         //: The second parameter is a time, such as 'failed at 09:58pm'
