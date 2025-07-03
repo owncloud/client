@@ -18,7 +18,8 @@
 
 #include "creds/abstractcredentials.h"
 #include "creds/credentialssupport.h"
-#include "creds/oauth.h"
+#include "gui/owncloudguilib.h"
+#include "oauth.h"
 
 #include <QMap>
 #include <QSslCertificate>
@@ -42,7 +43,7 @@ class OAuth;
    is in HttpCredentialsGui.
 
  */
-class OWNCLOUDSYNC_EXPORT HttpCredentials : public AbstractCredentials
+class OWNCLOUDGUI_EXPORT HttpCredentials : public AbstractCredentials
 {
     Q_OBJECT
     friend class HttpCredentialsAccessManager;

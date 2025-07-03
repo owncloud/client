@@ -55,7 +55,7 @@ owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
-owncloud_add_test(OAuth)
+owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp)
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 

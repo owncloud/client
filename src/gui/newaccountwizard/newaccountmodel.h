@@ -79,14 +79,12 @@ public:
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
 
-    // Note: dynamic registration data is no longer in play - that is why it is not included here. I left it in the old impl for now since the
-    // whole thing will just go away in the near future.
+    QUrl effectiveAuthenticationServerUrl() const;
 
 Q_SIGNALS:
     void serverUrlChanged(const QUrl &newUrl);
     void webfingerAuthenticationUrlChanged(const QUrl &newWebfingerAuthenticationUrl);
     void webfingerUserUrlChanged(const QUrl &newWebfingerUserUrl);
-    void dynamicRegistrationDataChanged(QVariantMap dynamicRegistrationData);
     void trustedCertificatesChanged(QSet<QSslCertificate> trustedCertificates);
     void syncRootDirChanged(QString syncRootDir);
     void displayNameChanged(QString displayName);

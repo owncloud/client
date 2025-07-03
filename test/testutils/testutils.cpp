@@ -2,7 +2,7 @@
 
 #include "common/checksums.h"
 #include "gui/accountmanager.h"
-#include "libsync/creds/httpcredentials.h"
+#include "gui/creds/httpcredentials.h"
 
 #include <QCoreApplication>
 #include <QRandomGenerator>

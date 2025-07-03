@@ -2,6 +2,7 @@
 
 #include "gui/accountmanager.h"
 #include "gui/networkadapters/fetchcapabilitiesadapter.h"
+#include "gui/networkadapters/userinfoadapter.h"
 #include "pages/accountconfiguredwizardpage.h"
 #include "states/abstractsetupwizardstate.h"
 #include "states/accountconfiguredsetupwizardstate.h"
@@ -99,8 +100,8 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
         break;
     }
     case SetupWizardState::CredentialsState: {
-            _currentState = new OAuthCredentialsSetupWizardState(_context);
-            break;
+        _currentState = new OAuthCredentialsSetupWizardState(_context);
+        break;
     }
     case SetupWizardState::AccountConfiguredState: {
         _currentState = new AccountConfiguredSetupWizardState(_context);
@@ -143,46 +144,42 @@ void SetupWizardController::changeStateTo(SetupWizardState nextState, ChangeReas
 
             // not a fan of performing this job here, should be moved into its own (headless) state IMO
             // we can bind it to the current state, which will be cleaned up by changeStateTo(...) as soon as the job finished
-            auto fetchUserInfoJob = _context->startFetchUserInfoJob(_currentState);
+            const QUrl infoUrl = _context->userInfoUrl();
+            UserInfoAdapter infoAdapter(_context->accessManager(), _context->accountBuilder().authenticationStrategy()->token(), infoUrl);
+            UserInfoResult infoResult = infoAdapter.getResult();
 
-            connect(fetchUserInfoJob, &CoreJob::finished, this, [this, fetchUserInfoJob] {
-                if (fetchUserInfoJob->success()) {
-                    auto result = fetchUserInfoJob->result().value<FetchUserInfoResult>();
-                    if (AccountManager::instance()->accountForLoginExists(_context->accountBuilder().serverUrl(), result.userName())) {
-                        _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials."));
-                        changeStateTo(_currentState->state());
-                    } else {
-                        _context->accountBuilder().setDisplayName(result.displayName());
-                        _context->accountBuilder().authenticationStrategy()->setDavUser(result.userName());
 
-                        const QString token = _context->accountBuilder().authenticationStrategy()->token();
-                        Q_ASSERT(!token.isEmpty());
-                        // get the capabilities so we can block oc10 accounts. Checking for spaces support is not 
-                        // great and this should be refined, but for now it's effective.
-                        FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->userInfoUrl());
-                        FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
-                        if (!capabilitiesResult.success()) {
-                            // I don't think we want to display the core error message as it's stuff like json errors and not
-                            // useful to the user but we can change this after we have the discussion about error messages
-                            _context->window()->showErrorMessage(tr("Unable to retrieve capabilities from server"));
-                            changeStateTo(_currentState->state());
-                        }
-                        if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
-                            _context->window()->showErrorMessage(tr("The server is not supported by this client"));
-                            changeStateTo(_currentState->state());
-                        } else
-                            changeStateTo(SetupWizardState::AccountConfiguredState);
-                        // todo: #27: new wizard should take the capabilities and add them to the account builder or equivalent!
-                    }
-                } else if (fetchUserInfoJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 401) {
-                    _context->window()->showErrorMessage(tr("Invalid credentials."));
+            if (infoResult.success()) {
+                if (AccountManager::instance()->accountForLoginExists(_context->accountBuilder().serverUrl(), infoResult.userId)) {
+                    _context->window()->showErrorMessage(tr("You are already connected to an account with these credentials."));
                     changeStateTo(_currentState->state());
                 } else {
-                    _context->window()->showErrorMessage(tr("Failed to retrieve user information from server."));
-                    changeStateTo(_currentState->state());
-                }
-            });
+                    _context->accountBuilder().setDisplayName(infoResult.displayName);
+                    _context->accountBuilder().authenticationStrategy()->setDavUser(infoResult.userId);
 
+                    const QString token = _context->accountBuilder().authenticationStrategy()->token();
+                    Q_ASSERT(!token.isEmpty());
+                    // get the capabilities so we can block oc10 accounts. Checking for spaces support is not
+                    // great and this should be refined, but for now it's effective.
+                    FetchCapabilitiesAdapter fetchCapabilities(_context->accessManager(), token, _context->userInfoUrl());
+                    FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
+                    if (!capabilitiesResult.success()) {
+                        // I don't think we want to display the core error message as it's stuff like json errors and not
+                        // useful to the user but we can change this after we have the discussion about error messages
+                        _context->window()->showErrorMessage(tr("Unable to retrieve capabilities from server"));
+                        changeStateTo(_currentState->state());
+                    }
+                    if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
+                        _context->window()->showErrorMessage(tr("The server is not supported by this client"));
+                        changeStateTo(_currentState->state());
+                    } else
+                        changeStateTo(SetupWizardState::AccountConfiguredState);
+                    // todo: #27: new wizard should take the capabilities and add them to the account builder or equivalent!
+                }
+            } else {
+                _context->window()->showErrorMessage(infoResult.error);
+                changeStateTo(_currentState->state());
+            }
             return;
         }
         case SetupWizardState::AccountConfiguredState: {

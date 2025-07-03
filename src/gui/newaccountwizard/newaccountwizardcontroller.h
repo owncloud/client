@@ -14,7 +14,8 @@
 
 #pragma once
 
-#include "newaccountwizard/urlpagecontroller.h"
+#include "oauthpagecontroller.h"
+#include "urlpagecontroller.h"
 #include <QObject>
 #include <QPointer>
 
@@ -46,6 +47,8 @@ protected Q_SLOTS:
     //  slots for model notifications if useful
 
     void onUrlValidationCompleted(const OCC::UrlPageResults &result);
+    void onOAuthValidationCompleted(const OCC::OAuthPageResults &results);
+
     // the failed slot is currently unused - I don't think we need to listen on this one for the wizard, need to discuss with Erik
     void onUrlValidationFailed(const OCC::UrlPageResults &result);
 
@@ -74,6 +77,10 @@ private:
     // bundle of stuff has a shared lifetime.
     QPointer<NewAccountModel> _model = nullptr;
     QPointer<NewAccountWizard> _wizard = nullptr;
+
+    // this is the only controller we need to explicitly keep our eye on as we
+    // need to give it values to start the oauth step
+    OAuthPageController *_oauthController = nullptr;
 
     int _urlPageIndex = -1;
     int _oauthPageIndex = -1;

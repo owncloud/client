@@ -41,7 +41,6 @@ set(libsync_SRCS
     theme.cpp
     creds/credentialmanager.cpp
     creds/abstractcredentials.cpp
-    creds/oauth.cpp
 
     networkjobs/fetchuserinfojobfactory.cpp
     networkjobs/checkserverjobfactory.cpp
@@ -63,7 +62,7 @@ elseif(UNIX)
     endif()
 endif()
 
-set(libsync_SRCS ${libsync_SRCS} creds/httpcredentials.cpp)
+set(libsync_SRCS ${libsync_SRCS})
 
 # These headers are installed for libowncloudsync to be used by 3rd party apps
 INSTALL(
