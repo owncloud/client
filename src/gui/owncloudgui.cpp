@@ -182,7 +182,7 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
         // However if the settings dialog is already visible but hidden
         // by other applications, this will bring it to the front.
         if (_settingsDialog->isVisible()) {
-            raiseDialog(_settingsDialog);
+            raise();
         }
 #else
         slotOpenSettingsDialog();
@@ -872,7 +872,6 @@ void ownCloudGui::runNewAccountWizard()
                                     Q_ASSERT(!accountStatePtr->account()->hasDefaultSyncRoot());
 
                                     auto *folderWizard = new FolderWizard(accountStatePtr, ocApp()->gui()->settingsDialog());
-                                    folderWizard->resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
                                     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
                                     // TODO: duplication of AccountSettings
@@ -903,8 +902,11 @@ void ownCloudGui::runNewAccountWizard()
                                         accountStatePtr->setSettingUp(false);
                                     });
 
-                                    folderWizard->open();
-                                    ocApp()->gui()->raiseDialog(folderWizard);
+                                    ocApp()
+                                        ->gui()
+                                        ->settingsDialog()
+                                        ->accountSettings(accountStatePtr->account().get())
+                                        ->addModalWidget(folderWizard, AccountSettings::ModalWidgetSizePolicy::Expanding);
 
                                     break;
                                 }
@@ -925,9 +927,7 @@ void ownCloudGui::runNewAccountWizard()
             });
 
         // all we have to do is show the dialog...
-        _wizardController->window()->open();
-        // ... and bring it to the front
-        raiseDialog(_wizardController->window());
+        ocApp()->gui()->settingsDialog()->addModalWidget(_wizardController->window());
     }
 }
 
@@ -945,7 +945,7 @@ void ownCloudGui::setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accou
 
 void ownCloudGui::slotShowSettings()
 {
-    raiseDialog(_settingsDialog);
+    raise();
 }
 
 void ownCloudGui::slotShowSyncProtocol()
@@ -968,8 +968,8 @@ void ownCloudGui::slotToggleLogBrowser()
 {
     auto logBrowser = new LogBrowser(settingsDialog());
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
+    ownCloudGui::raise();
     logBrowser->open();
-    raiseDialog(logBrowser);
 }
 
 void ownCloudGui::slotHelp()
@@ -977,25 +977,12 @@ void ownCloudGui::slotHelp()
     QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
 }
 
-void ownCloudGui::raiseDialog(QWidget *raiseWidget)
+void ownCloudGui::raise()
 {
     auto window = ocApp()->gui()->settingsDialog();
-    auto *dialog = qobject_cast<QDialog *>(raiseWidget);
-    OC_ASSERT(window);
-    OC_ASSERT_X(!dialog || raiseWidget->parentWidget() == window, "raiseDialog should only be called with modal dialogs");
-    if (!window) {
-        return;
-    }
     window->showNormal();
     window->raise();
-    if (dialog && !dialog->isVisible()) {
-        dialog->open();
-    } else {
-        raiseWidget->showNormal();
-        raiseWidget->raise();
-    }
     window->activateWindow();
-    raiseWidget->activateWindow();
 
 #if defined(Q_OS_WIN)
     // Windows disallows raising a Window when you're not the active application.
@@ -1068,8 +1055,7 @@ void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &l
             _shareDialogs[localPath] = w;
             connect(w, &QObject::destroyed, this, &ownCloudGui::slotRemoveDestroyedShareDialogs);
         }
-        w->open();
-        raiseDialog(w);
+        ocApp()->gui()->settingsDialog()->accountSettings(accountState->account().get())->addModalWidget(w, AccountSettings::ModalWidgetSizePolicy::Expanding);
     }
 }
 
@@ -1089,9 +1075,8 @@ void ownCloudGui::slotAbout()
     if(!_aboutDialog) {
         _aboutDialog = new AboutDialog(_settingsDialog);
         _aboutDialog->setAttribute(Qt::WA_DeleteOnClose);
-        _aboutDialog->open();
+        ocApp()->gui()->settingsDialog()->addModalWidget(_aboutDialog);
     }
-    raiseDialog(_aboutDialog);
 }
 
 

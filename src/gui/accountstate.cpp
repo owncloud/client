@@ -76,8 +76,8 @@ UpdateUrlDialog *AccountState::updateUrlDialog(const QUrl &newUrl)
         Q_EMIT urlUpdated();
     });
 
-    _updateUrlDialog->show();
-    ocApp()->gui()->raiseDialog(_updateUrlDialog);
+    ownCloudGui::raise();
+    _updateUrlDialog->open();
 
     return _updateUrlDialog;
 }
@@ -157,8 +157,8 @@ AccountState::AccountState(AccountPtr account)
     connect(account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->gui()->settingsDialog());
         msgBox->setAttribute(Qt::WA_DeleteOnClose);
+        ownCloudGui::raise();
         msgBox->open();
-        ocApp()->gui()->raiseDialog(msgBox);
     });
 }
 
@@ -379,11 +379,9 @@ void AccountState::checkConnectivity(bool blockJobs)
                     setState(SignedOut);
                 });
 
+                ownCloudGui::raise();
                 _tlsDialog->open();
             }
-        }
-        if (_tlsDialog) {
-            ocApp()->gui()->raiseDialog(_tlsDialog);
         }
     });
     ConnectionValidator::ValidationMode mode = ConnectionValidator::ValidationMode::ValidateAuthAndUpdate;

@@ -30,6 +30,7 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
+#include "gui/accountsettings.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
@@ -1213,8 +1214,8 @@ void Folder::slotWatcherUnreliable(const QString &message)
         {}, ocApp()->gui()->settingsDialog());
 
     msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    ownCloudGui::raise();
     msgBox->open();
-    ocApp()->gui()->raiseDialog(msgBox);
 }
 
 void Folder::registerFolderWatcher()
@@ -1242,7 +1243,7 @@ bool Folder::virtualFilesEnabled() const
 void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction)
 {
     if (_removeAllFilesDialog) {
-        ocApp()->gui()->raiseDialog(_removeAllFilesDialog);
+        ownCloudGui::raise();
         return;
     }
     const QString msg = [direction] {
@@ -1285,8 +1286,11 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction)
         }
     });
     connect(this, &Folder::destroyed, _removeAllFilesDialog, &QMessageBox::deleteLater);
-    _removeAllFilesDialog->open();
-    ownCloudGui::raiseDialog(_removeAllFilesDialog);
+    ocApp()
+        ->gui()
+        ->settingsDialog()
+        ->accountSettings(_accountState->account().get())
+        ->addModalWidget(_removeAllFilesDialog, AccountSettings::ModalWidgetSizePolicy::Minimum);
 }
 
 FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName)

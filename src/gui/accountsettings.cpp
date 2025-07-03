@@ -47,11 +47,16 @@
 #include <QSortFilterProxyModel>
 #include <QToolTip>
 #include <QTreeView>
+#include <QGroupBox>
 
 #include "askexperimentalvirtualfilesfeaturemessagebox.h"
 #include "gui/models/models.h"
 #include "loginrequireddialog.h"
 #include "oauthloginwidget.h"
+
+namespace {
+constexpr auto modalWidgetStretchedMarginC = 50;
+}
 
 namespace OCC {
 
@@ -421,17 +426,16 @@ void AccountSettings::slotAddFolder()
 {
     FolderMan::instance()->setSyncEnabled(false); // do not start more syncs.
 
-    FolderWizard *folderWizard = new FolderWizard(_accountState, ocApp()->gui()->settingsDialog());
+    FolderWizard *folderWizard = new FolderWizard(_accountState, this);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
-    folderWizard->resize(ocApp()->gui()->settingsDialog()->sizeHintForChild());
 
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
     connect(folderWizard, &QDialog::rejected, this, [] {
         qCInfo(lcAccountSettings) << "Folder wizard cancelled";
         FolderMan::instance()->setSyncEnabled(true);
     });
-    folderWizard->open();
-    ocApp()->gui()->raiseDialog(folderWizard);
+
+    addModalWidget(folderWizard, AccountSettings::ModalWidgetSizePolicy::Expanding);
 }
 
 
@@ -486,7 +490,6 @@ void AccountSettings::slotRemoveCurrentFolder()
             }
         });
         messageBox->open();
-        ownCloudGui::raiseDialog(messageBox);
     }
 }
 
@@ -549,8 +552,8 @@ void AccountSettings::slotEnableVfsCurrentFolder()
     if (VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
         Q_EMIT messageBox->accepted();
     } else {
+        ownCloudGui::raise();
         messageBox->show();
-        ocApp()->gui()->raiseDialog(messageBox);
     }
 }
 
@@ -783,14 +786,14 @@ void AccountSettings::slotAccountStateChanged()
             connect(cred, &HttpCredentialsGui::oAuthErrorOccurred, _askForOAuthLoginDialog, [loginDialog = _askForOAuthLoginDialog, contentWidget, cred]() {
                 Q_ASSERT(!cred->ready());
 
-                ocApp()->gui()->raiseDialog(loginDialog);
+                ownCloudGui::raise();
                 contentWidget->showRetryFrame();
             });
 
             showConnectionLabel(tr("Reauthorization required."));
 
+            ownCloudGui::raise();
             _askForOAuthLoginDialog->open();
-            ocApp()->gui()->raiseDialog(_askForOAuthLoginDialog);
 
             QTimer::singleShot(0, [contentWidget]() {
                 contentWidget->setFocus(Qt::OtherFocusReason);
@@ -895,7 +898,43 @@ void AccountSettings::slotLinkActivated(const QString &link)
 
 AccountSettings::~AccountSettings()
 {
+    _goingDown = true;
     delete ui;
+}
+
+void AccountSettings::addModalWidget(QWidget *widget, ModalWidgetSizePolicy sizePolicy)
+{
+    auto *outerWidget = new QWidget;
+    auto *groupBox = new QGroupBox;
+
+    switch (sizePolicy) {
+    case ModalWidgetSizePolicy::Expanding: {
+        auto *outerLayout = new QHBoxLayout(outerWidget);
+        outerLayout->setContentsMargins(modalWidgetStretchedMarginC, modalWidgetStretchedMarginC, modalWidgetStretchedMarginC, modalWidgetStretchedMarginC);
+        outerLayout->addWidget(groupBox);
+        auto *layout = new QHBoxLayout(groupBox);
+        layout->addWidget(widget);
+    } break;
+    case ModalWidgetSizePolicy::Minimum: {
+        auto *outerLayout = new QGridLayout(outerWidget);
+        outerLayout->addWidget(groupBox, 0, 0, Qt::AlignCenter);
+        auto * layout = new QHBoxLayout(groupBox);
+        layout->addWidget(widget);
+    } break;
+    }
+    groupBox->setTitle(widget->windowTitle());
+
+    ui->stackedWidget->addWidget(outerWidget);
+    ui->stackedWidget->setCurrentWidget(outerWidget);
+
+    Q_ASSERT(widget->testAttribute(Qt::WA_DeleteOnClose));
+    connect(widget, &QWidget::destroyed, this, [this, outerWidget] {
+        outerWidget->deleteLater();
+        if (!_goingDown) {
+            ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account().get());
+        }
+    });
+    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
 }
 
 void AccountSettings::refreshSelectiveSyncStatus()

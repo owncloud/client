@@ -104,8 +104,8 @@ void FolderWizardSelectiveSync::virtualFilesCheckboxClicked()
         if (VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
             Q_EMIT messageBox->accepted();
         } else {
+            ownCloudGui::raise();
             messageBox->show();
-            ocApp()->gui()->raiseDialog(messageBox);
         }
     }
 }

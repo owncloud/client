@@ -18,6 +18,7 @@
 #include "application.h"
 #include "basicloginwidget.h"
 #include "common/asserts.h"
+#include "gui/accountsettings.h"
 #include "loginrequireddialog.h"
 #include "networkjobs.h"
 #include "settingsdialog.h"
@@ -134,13 +135,7 @@ void HttpCredentialsGui::showDialog()
         emit fetched();
     });
 
-    dialog->open();
-    ownCloudGui::raiseDialog(dialog);
-
-    QTimer::singleShot(0, contentWidget, [contentWidget]() {
-        contentWidget->setFocus(Qt::OtherFocusReason);
-    });
-
+    ocApp()->gui()->settingsDialog()->accountSettings(_account)->addModalWidget(dialog, AccountSettings::ModalWidgetSizePolicy::Minimum);
     _loginRequiredDialog = dialog;
 }
 
