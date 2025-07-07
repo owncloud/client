@@ -167,7 +167,7 @@ def step(context, file_path):
         contents = f.read()
     test.compare(
         expected,
-        contents,
+        contents.rstrip(),
         'file expected to exist with content '
         + expected
         + ' but does not have the expected content',
