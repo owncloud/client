@@ -61,7 +61,7 @@ public:
     explicit ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QWidget *errorDialogParent, QObject *parent = nullptr);
 
     /**
-     * @brief getResult executes a network request asynchronously
+     * @brief getResult executes a network request synchronously
      * @return the result of the request
      *
      * Important detail: if the reply contains certificates the user will be asked to accept them before this function returns.
@@ -77,7 +77,6 @@ private:
     QWidget *_tlsDialogParent;
 
     QStringList _sslErrors;
-    // made this a qset since that is what the account uses for certs. It just makes it easier to move the data around using same type
     QSet<QSslCertificate> _certificates;
 };
 }
