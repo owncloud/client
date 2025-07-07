@@ -37,6 +37,10 @@ from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from helpers.ReportHelper import save_video_recording, take_screenshot, is_video_enabled
 import helpers.api.oc10 as oc
 from helpers.UserHelper import init_predefined_users
+from helpers.api.webdav_helper import (
+    delete_all_resources,
+    permanently_delete_all_resources,
+)
 
 from pageObjects.Toolbar import Toolbar
 from pageObjects.AccountSetting import AccountSetting
@@ -188,6 +192,9 @@ def hook(context):
         oc.restore_apps_state()
     delete_created_groups()
     delete_created_users()
+    if get_config("predefined_users"):
+        delete_all_resources()
+        permanently_delete_all_resources()
 
 
 def get_active_widget():

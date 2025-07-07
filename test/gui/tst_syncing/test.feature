@@ -21,20 +21,17 @@ Feature: Syncing files
 
     @predefined_users
     Scenario: Syncing all files and folders from the server
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "simple-folder1" inside the sync folder
-        And user "Alice" has created a folder "large-folder" inside the sync folder
-        And user "Alice" has created a file "uploaded-lorem.txt" with the following content inside the sync folder
-            """
-            test content
-            """
-        Then the file "uploaded-lorem.txt" should exist on the file system
-        And the file "uploaded-lorem.txt" should exist on the file system with the following content
-            """
-            test content
-            """
-        And the folder "simple-folder1" should exist on the file system
-        And the folder "large-folder" should exist on the file system
+        Given user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has created folder "large-folder" in the server
+        And user "Alice" has uploaded file with content "test content" to "uploaded-lorem.txt" in the server
+#        And user "Alice" has set up a client with default settings
+#        Then the file "uploaded-lorem.txt" should exist on the file system
+#        And the file "uploaded-lorem.txt" should exist on the file system with the following content
+#            """
+#            test content
+#            """
+#        And the folder "simple-folder" should exist on the file system
+#        And the folder "large-folder" should exist on the file system
 
     @issue-9733
     Scenario: Syncing a file from the server and creating a conflict

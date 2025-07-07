@@ -1,10 +1,42 @@
 from urllib.parse import quote
 import xml.etree.ElementTree as ET
+import json
+import os
 
 import helpers.api.http_helper as request
 from helpers.api.utils import url_join
 from helpers.ConfigHelper import get_config
 from helpers.FilesHelper import get_file_for_upload
+from helpers.UserHelper import get_username_for_user
+
+tokens = {'acc_xsrf_token': None, 'web_token': None, 'x_xsrf_token': None}
+PERSONAL_SYNC_FOLDER_ID = None
+
+
+def set_token(acc_xsrf_token, web_token, x_xsrf_token):
+    tokens['acc_xsrf_token'] = acc_xsrf_token
+    tokens['web_token'] = web_token
+    tokens['x_xsrf_token'] = x_xsrf_token
+
+
+def get_token():
+    return tokens['acc_xsrf_token'], tokens['web_token'], tokens['x_xsrf_token']
+
+
+def get_personal_sync_folder_id():
+    return PERSONAL_SYNC_FOLDER_ID
+
+
+def get_auth_headers(extra_headers=None):
+    acc_xsrf_token, web_token, x_xsrf_token = get_token()
+    auth_headers = {
+        'x-accellion-version': '28',
+        'x-xsrf-token': x_xsrf_token,
+        'cookie': f'ACC-XSRF-TOKEN={acc_xsrf_token}; web_token={web_token}',
+    }
+    if extra_headers:
+        auth_headers.update(extra_headers)
+    return auth_headers
 
 
 def get_webdav_url():
@@ -50,8 +82,27 @@ def get_folder_items_count(user, folder_name):
 
 
 def create_folder(user, folder_name):
-    url = get_resource_path(user, folder_name)
-    response = request.mkcol(url, user=user)
+    if get_config('predefined_users'):
+        user = get_username_for_user(user)
+        generate_token(user)
+        set_personal_sync_folder_id(user)
+        url = url_join(
+            get_config('localBackendUrl'),
+            f'rest/folders/{get_personal_sync_folder_id()}/folders',
+        )
+        headers = get_auth_headers({'content-type': 'application/json'})
+        body = json.dumps(
+            {
+                'description': '',
+                'fileLifetime': '0',
+                'name': folder_name,
+                'syncable': '1',
+            }
+        )
+        response = request.post(url, body, headers)
+    else:
+        url = get_resource_path(user, folder_name)
+        response = request.mkcol(url, user=user)
     assert (
         response.status_code == 201
     ), f'Could not create the folder: {folder_name} for user {user}'
@@ -66,14 +117,169 @@ def create_file(user, file_name, contents):
     ], f"Could not create file '{file_name}' for user {user}"
 
 
-def upload_file(user, file_name, destination):
-    file_path = get_file_for_upload(file_name)
-    with open(file_path, 'rb') as file:
-        contents = file.read()
-    create_file(user, destination, contents)
+def upload_file(user, file_name, destination=None):
+    if get_config('predefined_users'):
+        file_path, file_size = get_local_file_info(file_name)
+
+        # initiate upload
+        upload_uri = initiate_upload(file_name, file_size)
+
+        # finalize upload
+        finalize_upload(file_name, file_path, file_size, upload_uri)
+    else:
+        file_path = get_file_for_upload(file_name)
+        with open(file_path, 'rb') as file:
+            contents = file.read()
+        create_file(user, destination, contents)
+
+
+def get_local_file_info(file_name):
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.abspath(
+        os.path.join(script_path, '..', '..', '..', 'files-for-upload', file_name)
+    )
+    file_size = os.path.getsize(file_path)
+    return file_path, file_size
+
+
+def initiate_upload(file_name, file_size):
+    url = url_join(
+        get_config('localBackendUrl'),
+        f'rest/folders/{get_personal_sync_folder_id()}/actions/initiateUpload',
+    )
+    headers = get_auth_headers({'content-type': 'application/json'})
+    json_body = json.dumps(
+        {'filename': file_name, 'totalSize': file_size, 'totalChunks': 1}
+    )
+
+    response = request.post(url, body=json_body, headers=headers)
+    assert (
+        response.status_code == 201
+    ), f'Failed to initiate upload for file {file_name}.'
+
+    data = json.loads(response.text)
+    return data['uri']
+
+
+def finalize_upload(file_name, file_path, file_size, upload_uri):
+    url = url_join(get_config('localBackendUrl'), upload_uri)
+    headers = get_auth_headers()
+    with open(file_path, 'rb') as f:
+        files = {'content': (file_name, f, 'application/octet-stream')}
+        body = {
+            'compressionMode': 'NORMAL',
+            'compressionSize': file_size,
+            'originalSize': file_size,
+            'index': 0,
+        }
+        response = request.post(url, body=body, headers=headers, files=files)
+        assert response.status_code == 201, f'Failed to upload file {file_name}.'
 
 
 def delete_resource(user, resource):
     url = get_resource_path(user, resource)
     response = request.delete(url, user=user)
     assert response.status_code == 204, f"Could not delete folder '{resource}'"
+
+
+def generate_token(user):
+    url = url_join(get_config('localBackendUrl'), 'rest/users/actions/login')
+    headers = {'content-type': 'application/json', 'x-accellion-version': '28'}
+    body = json.dumps({'username': user, 'password': 'at*f1WM07IGej@fT'})
+    response = request.send_request(url, 'POST', body, headers)
+    assert response.status_code == 200, 'Failed to get the token'
+
+    acc_xsrf_token = None
+    web_token = None
+    x_xsrf_token = None
+    for cookie in response.cookies:
+        if cookie.name == 'ACC-XSRF-TOKEN':
+            acc_xsrf_token = cookie.value
+            x_xsrf_token = cookie.value
+        elif cookie.name == 'web_token':
+            web_token = cookie.value
+    set_token(acc_xsrf_token, web_token, x_xsrf_token)
+
+
+def set_personal_sync_folder_id(user):
+    global PERSONAL_SYNC_FOLDER_ID
+    url = url_join(get_config('localBackendUrl'), 'rest/folders/top')
+    headers = get_auth_headers()
+    response = request.get(url, headers)
+    assert (
+        response.status_code == 200
+    ), f'Failed to get the personal sync folder id for user {user}'
+    data = json.loads(response.text)
+
+    for folder in data['data']:
+        if folder['name'] == get_config('personal_sync_folder'):
+            PERSONAL_SYNC_FOLDER_ID = folder['id']
+            return
+    raise ValueError(f'Cound not find personal sync folder id for user {user}')
+
+
+# return resources inside sync folder
+# status=False returns resources that are not deleted
+# status=True returns resources that are deleted and are stored in deleted content
+def get_resources_inside_sync_folder(status=False):
+    url = url_join(
+        get_config('localBackendUrl'),
+        f'rest/folders/{get_personal_sync_folder_id()}/children?deleted={status}',
+    )
+    headers = get_auth_headers()
+    response = request.get(url, headers)
+    assert response.status_code == 200, 'Failed to get the folders inside sync folder'
+
+    data = json.loads(response.text)
+    folder_ids = []
+    file_ids = []
+    for resource in data['data']:
+        if resource['type'] == 'd':
+            folder_ids.append(resource['id'])
+        if resource['type'] == 'f':
+            file_ids.append(resource['id'])
+    return folder_ids, file_ids
+
+
+def delete_all_resources():
+    folder_ids, file_ids = get_resources_inside_sync_folder()
+    headers = get_auth_headers()
+    # Delete all folders
+    if len(folder_ids) > 0:
+        url = url_join(
+            get_config('localBackendUrl'),
+            f'rest/folders?partialSuccess=true&id:in={",".join(folder_ids)}',
+        )
+        response = request.delete(url, headers)
+        assert response.status_code == 204, 'Failed to delete all folders.'
+
+    # Delete all files
+    if len(file_ids) > 0:
+        url = url_join(
+            get_config('localBackendUrl'),
+            f'rest/files?partialSuccess=true&id:in={",".join(file_ids)}',
+        )
+        response = request.delete(url, headers)
+        assert response.status_code == 204, 'Failed to delete all files.'
+
+
+def permanently_delete_all_resources():
+    folder_ids, file_ids = get_resources_inside_sync_folder(True)
+    headers = get_auth_headers()
+    # Permanently delete all folders
+    if len(folder_ids) > 0:
+        url = url_join(
+            get_config('localBackendUrl'),
+            f'rest/folders/actions/permanent?partialSuccess=true&id:in={",".join(folder_ids)}',
+        )
+        response = request.delete(url, headers)
+        assert response.status_code == 204, 'Failed to permanently delete all folders.'
+
+    # Permanently delete all files
+    if len(file_ids) > 0:
+        url = url_join(
+            get_config('localBackendUrl'),
+            f'rest/files/actions/permanent?partialSuccess=true&id:in={",".join(file_ids)}',
+        )
+        response = request.delete(url, headers)
+        assert response.status_code == 204, 'Failed to permanently delete all files.'
