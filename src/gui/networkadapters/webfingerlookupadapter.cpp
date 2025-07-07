@@ -84,7 +84,7 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
 
     const auto links = json.object().value(QStringLiteral("links")).toArray();
 
-    for (const auto &link : links) {
+    for (QJsonValueConstRef link : links) {
         const auto linkObject = link.toObject();
 
         const QString rel = linkObject.value(QStringLiteral("rel")).toString();
