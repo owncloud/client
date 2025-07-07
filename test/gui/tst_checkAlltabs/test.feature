@@ -4,7 +4,7 @@ Feature: Visually check all tabs
     I want to visually check all tabs in client
     So that I can perform all the actions related to client
 
-    @predefined_users
+
     Scenario: Tabs in toolbar looks correct
         Given user "Alice" has been created in the server with default attributes
         And user "Alice" has set up a client with default settings
@@ -14,7 +14,7 @@ Feature: Visually check all tabs
             | Settings    |
             | Quit        |
 
-    @predefined_users
+
     Scenario: Verify various setting options in Settings tab
         Given user "Alice" has been created in the server with default attributes
         And user "Alice" has set up a client with default settings

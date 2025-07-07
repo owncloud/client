@@ -9,11 +9,8 @@ Feature: deleting files and folders
 
     @issue-9439
     Scenario Outline: Delete a file
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a file "<fileName>" with the following content inside the sync folder
-            """
-            ownCloud test text file 0
-            """
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "<fileName>" in the server
+        And user "Alice" has set up a client with default settings
         When the user deletes the file "<fileName>"
         And the user waits for the files to sync
         Then as "Alice" file "<fileName>" should not exist in the server
@@ -25,8 +22,8 @@ Feature: deleting files and folders
 
     @issue-9439
     Scenario Outline: Delete a folder
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "<folderName>" inside the sync folder
+        Given user "Alice" has created folder "<folderName>" in the server
+        And user "Alice" has set up a client with default settings
         When the user deletes the folder "<folderName>"
         And the user waits for the files to sync
         Then as "Alice" file "<folderName>" should not exist in the server
@@ -37,21 +34,15 @@ Feature: deleting files and folders
 
 
     Scenario: Delete a file and a folder
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a file "textfile1.txt" with the following content inside the sync folder
-            """
-            test file 1
-            """
-        And user "Alice" has created a file "textfile2.txt" with the following content inside the sync folder
-            """
-            test file 2
-            """
-        And user "Alice" has created a folder "test-folder1" inside the sync folder
-        And user "Alice" has created a folder "test-folder2" inside the sync folder
-        When the user deletes the file "textfile1.txt"
+        Given user "Alice" has uploaded file with content "ownCloud test text file 0" to "textfile0.txt" in the server
+        And user "Alice" has uploaded file with content "test content" to "uploaded-lorem.txt" in the server
+        And user "Alice" has created folder "test-folder1" in the server
+        And user "Alice" has created folder "test-folder2" in the server
+        And user "Alice" has set up a client with default settings
+        When the user deletes the file "textfile0.txt"
         And the user deletes the folder "test-folder1"
         And the user waits for the files to sync
-        Then as "Alice" file "textfile1.txt" should not exist in the server
+        Then as "Alice" file "textfile0.txt" should not exist in the server
         And as "Alice" folder "test-folder1" should not exist in the server
-        And as "Alice" file "textfile2.txt" should exist in the server
+        And as "Alice" file "uploaded-lorem.txt" should exist in the server
         And as "Alice" folder "test-folder2" should exist in the server

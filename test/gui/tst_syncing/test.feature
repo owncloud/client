@@ -6,7 +6,7 @@ Feature: Syncing files
     Background:
         Given user "Alice" has been created in the server with default attributes
 
-    @smokeTest @issue-9281 @predefined_users
+    @smokeTest @issue-9281
     Scenario: Syncing a file to the server
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a file "lorem-for-upload.txt" with the following content inside the sync folder
@@ -19,21 +19,18 @@ Feature: Syncing files
         Then the file "lorem-for-upload.txt" should have status "Uploaded" in the activity tab
         And as "Alice" the file "lorem-for-upload.txt" should have the content "test content" in the server
 
-    @predefined_users
+
     Scenario: Syncing all files and folders from the server
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "simple-folder1" inside the sync folder
-        And user "Alice" has created a folder "large-folder" inside the sync folder
-        And user "Alice" has created a file "uploaded-lorem.txt" with the following content inside the sync folder
-            """
-            test content
-            """
+        Given user "Alice" has created folder "simple-folder" in the server
+        And user "Alice" has created folder "large-folder" in the server
+        And user "Alice" has uploaded file with content "test content" to "uploaded-lorem.txt" in the server
+        And user "Alice" has set up a client with default settings
         Then the file "uploaded-lorem.txt" should exist on the file system
         And the file "uploaded-lorem.txt" should exist on the file system with the following content
             """
             test content
             """
-        And the folder "simple-folder1" should exist on the file system
+        And the folder "simple-folder" should exist on the file system
         And the folder "large-folder" should exist on the file system
 
     @issue-9733
@@ -201,10 +198,10 @@ Feature: Syncing files
         Then the file "trailing-space.txt " should be ignored
         And the file "folder with space at end " should be ignored
 
-    @predefined_users
+
     Scenario: Many subfolders can be synced
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "parent" inside the sync folder
+        Given user "Alice" has created folder "parent" in the server
+        And user "Alice" has set up a client with default settings
         When user "Alice" creates a folder "parent/subfolderEmpty1" inside the sync folder
         And user "Alice" creates a folder "parent/subfolderEmpty2" inside the sync folder
         And user "Alice" creates a folder "parent/subfolderEmpty3" inside the sync folder
@@ -247,7 +244,7 @@ Feature: Syncing files
         And as "Alice" folder "parent/subfolder4" should exist in the server
         And as "Alice" folder "parent/subfolder5" should exist in the server
 
-    @predefined_users
+
     Scenario: Both original and copied folders can be synced
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a folder "original" inside the sync folder
@@ -256,45 +253,45 @@ Feature: Syncing files
         Then as "Alice" folder "original" should exist in the server
         And as "Alice" folder "copied" should exist in the server
 
-    @issue-9281 @predefined_users
+    @issue-9281
     Scenario: Verify that you can create a subfolder with long name
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "Folder2" inside the sync folder
-        When user "Alice" creates a folder "Folder2/really long folder name with some spaces and special char such as $%ñ&" inside the sync folder
-        And the user waits for folder "Folder2/really long folder name with some spaces and special char such as $%ñ&" to be synced
-        Then the folder "Folder2/really long folder name with some spaces and special char such as $%ñ&" should exist on the file system
-        And as "Alice" folder "Folder2/really long folder name with some spaces and special char such as $%ñ&" should exist in the server
+        Given user "Alice" has created folder "Folder1" in the server
+        And user "Alice" has set up a client with default settings
+        When user "Alice" creates a folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" inside the sync folder
+        And the user waits for folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" to be synced
+        Then the folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist on the file system
+        And as "Alice" folder "Folder1/really long folder name with some spaces and special char such as $%ñ&" should exist in the server
 
-    @predefined_users
+
     Scenario: Verify pre existing folders in local (Desktop client) are copied over to the server
         Given user "Alice" has set up a client with default settings
         When the user quits the client
-        Given user "Alice" has created a folder "Folder3" inside the sync folder
-        And user "Alice" has created a folder "Folder3/subFolder1" inside the sync folder
-        And user "Alice" has created a folder "Folder3/subFolder1/subFolder2" inside the sync folder
+        Given user "Alice" has created a folder "Folder1" inside the sync folder
+        And user "Alice" has created a folder "Folder1/subFolder1" inside the sync folder
+        And user "Alice" has created a folder "Folder1/subFolder1/subFolder2" inside the sync folder
         When user "Alice" starts the client
         And the user waits for the files to sync
-        Then as "Alice" folder "Folder3" should exist in the server
-        And as "Alice" folder "Folder3/subFolder1" should exist in the server
-        And as "Alice" folder "Folder3/subFolder1/subFolder2" should exist in the server
+        Then as "Alice" folder "Folder1" should exist in the server
+        And as "Alice" folder "Folder1/subFolder1" should exist in the server
+        And as "Alice" folder "Folder1/subFolder1/subFolder2" should exist in the server
 
-    @skipOnWindows @predefined_users
+    @skipOnWindows
     Scenario: Filenames that are rejected by the server are reported (Linux only)
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "Folder4" inside the sync folder
-        When user "Alice" creates a file "Folder4/a\\a.txt" with the following content inside the sync folder
+        Given user "Alice" has created folder "Folder1" in the server
+        And user "Alice" has set up a client with default settings
+        When user "Alice" creates a file "Folder1/a\\a.txt" with the following content inside the sync folder
             """
             test content
             """
         And the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
-        Then the file "Folder4/a\\a.txt" should exist on the file system
-        And the file "Folder4/a\\a.txt" should be blacklisted
+        Then the file "Folder1/a\\a.txt" should exist on the file system
+        And the file "Folder1/a\\a.txt" should be blacklisted
 
-    @predefined_users
+
     Scenario Outline: Sync long nested folder
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "<foldername>" inside the sync folder
+        Given user "Alice" has created folder "<foldername>" in the server
+        And user "Alice" has set up a client with default settings
         When user "Alice" creates a folder "<foldername>/<foldername>" inside the sync folder
         And user "Alice" creates a folder "<foldername>/<foldername>/<foldername>" inside the sync folder
         And user "Alice" creates a folder "<foldername>/<foldername>/<foldername>/<foldername>" inside the sync folder
@@ -308,20 +305,13 @@ Feature: Syncing files
             | foldername                                                      |
             | An empty folder which name is obviously more than 59 characters |
 
-    @skipOnWindows @predefined_users
+    @skipOnWindows
     Scenario: Invalid system names are synced (Linux only)
-        Given user "Alice" has set up a client with default settings
-        And user "Alice" has created a folder "CON" inside the sync folder
-        And user "Alice" has created a folder "test%" inside the sync folder
-        And user "Alice" has created a file "/PRN" with the following content inside the sync folder
-            """
-            server content
-            """
-        And user "Alice" has created a file "/foo%" with the following content inside the sync folder
-            """
-            server content
-            """
-        When the user waits for the files to sync
+        Given user "Alice" has created folder "CON" in the server
+        And user "Alice" has created folder "test%" in the server
+        And user "Alice" has uploaded file with content "server content" to "/PRN" in the server
+        And user "Alice" has uploaded file with content "server content" to "/foo%" in the server
+        And user "Alice" has set up a client with default settings
         Then the folder "CON" should exist on the file system
         And the folder "test%" should exist on the file system
         And the file "PRN" should exist on the file system
@@ -380,7 +370,7 @@ Feature: Syncing files
         And as "Alice" file "test_video.mp4" should exist in the server
         And as "Alice" file "simple.txt" should exist in the server
 
-    @predefined_users
+
     Scenario Outline: File with long name can be synced
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a file "<filename>" with the following content inside the sync folder
@@ -414,7 +404,7 @@ Feature: Syncing files
         And the user waits for file "newfile.txt" to be synced
         Then as "Alice" file "newfile.txt" should exist in the server
 
-    @predefined_users
+
     Scenario: File with spaces in the name can sync
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a file "file with space.txt" with the following content inside the sync folder
@@ -440,7 +430,7 @@ Feature: Syncing files
         And as "Alice" folder "folder2" should exist in the server
         And as user "Alice" folder "folder2" should contain "500" items in the server
 
-    @predefined_users
+
     Scenario: Skip sync folder configuration
         Given the user has started the client
         And the user has entered the following account information:
