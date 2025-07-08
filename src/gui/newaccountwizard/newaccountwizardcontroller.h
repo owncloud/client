@@ -47,10 +47,14 @@ protected Q_SLOTS:
     //  slots for model notifications if useful
 
     void onUrlValidationCompleted(const OCC::UrlPageResults &result);
-    void onOAuthValidationCompleted(const OCC::OAuthPageResults &results);
-
-    // the failed slot is currently unused - I don't think we need to listen on this one for the wizard, need to discuss with Erik
+    // the failed slot is currently unused - I don't think we need to listen on this one for the wizard, will remove it if it's really
+    // useless in the end
     void onUrlValidationFailed(const OCC::UrlPageResults &result);
+
+    void onOAuthValidationCompleted(const OCC::OAuthPageResults &results);
+    // we need to raise the gui when oauth validation fails
+    void onOauthValidationFailed(const OCC::OAuthPageResults &results);
+
 
 private:
     /** configures the wizard with proper settings */

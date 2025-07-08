@@ -14,6 +14,9 @@
 #include "oauthpagecontroller.h"
 
 #include "accessmanager.h"
+#include "accountmanager.h"
+#include "networkadapters/fetchcapabilitiesadapter.h"
+#include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
 #include "resources.h"
 #include "template.h"
@@ -108,6 +111,7 @@ void OAuthPageController::buildPage()
     urlAreaLayout->addWidget(_urlField, Qt::AlignLeft);
     urlAreaLayout->addWidget(copyButton);
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
+    layout->addWidget(_errorField, Qt::AlignLeft);
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
@@ -123,7 +127,7 @@ void OAuthPageController::handleError(const QString &error)
 
 QIcon OAuthPageController::copyIcon()
 {
-    // this is required because the background color of the wizard pages can be set via theming and we can't pick an icon
+    // this is required because the background color of the wizard pages can be set via theme and we can't pick an icon
     // color that "fits" based on the current
     // normally we would want to cache this but for this very special one off case I don't think it makes sense
     const QString iconPath = QStringLiteral(":/client/resources/core/copy.svg");
@@ -150,9 +154,21 @@ void OAuthPageController::copyUrlClicked() { }
 
 bool OAuthPageController::validate()
 {
-    if (_oauthCompleted) {
+    // this should have already been cleaned up after the auth routine but who knows. Never hurts to be sure.
+    if (_oauth) {
         delete _oauth;
         _oauth = nullptr;
+    }
+    // this is a little bit tricky. Because we "auto advance" the wizard to the next page when the oauth step has succeeded, validate
+    // will be called *twice*
+    // first when the page change triggers the authentication step in the browser, then a second time when we auto-advance after the main controller has
+    // received the success signal.
+    // In the first call to validate, we always return false because we don't yet know if the asynchronous oauth routine has succeeded.
+    // the slot for handling the authentication result sets _oauthCompleted to true when all checks have passed,
+    // so the second call to validate triggered by programmatically advancing the page, returns true.
+    // we always reset the _oauthCompleted flag after success in case the user wants to go back to reauthenticate for whatever reason, they will start from
+    // scratch.
+    if (_oauthCompleted) {
         _oauthCompleted = false;
         return true;
     }
@@ -184,9 +200,44 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
                 handleError(tr("Failed to look up webfinger instances: %1").arg(webfingerResult.error));
                 return;
             } else {
-                _results.webfingerUrls = webfingerResult.urls;
+                if (!webfingerResult.urls.isEmpty())
+                    _results.webfingerUserUrl = webfingerResult.urls[0];
             }
         }
+
+        const QUrl userInfoUrl = _results.webfingerUserUrl.isEmpty() ? _serverUrl : _results.webfingerUserUrl;
+        UserInfoAdapter infoAdapter(_accessManager, _results.token, userInfoUrl);
+        UserInfoResult infoResult = infoAdapter.getResult();
+
+        if (infoResult.success()) {
+            if (AccountManager::instance()->accountForLoginExists(_serverUrl, infoResult.userId)) {
+                handleError(tr("You are already connected to an account with these credentials."));
+                return;
+            } else {
+                _results.displayName = infoResult.displayName;
+                _results.userId = infoResult.userId;
+            }
+        } else {
+            handleError(infoResult.error);
+            return;
+        }
+
+        // Finally, get the capabilities so we can block oc10 accounts. Checking for spaces support is not
+        // great and this should be refined, but for now it's effective.
+        FetchCapabilitiesAdapter fetchCapabilities(_accessManager, _results.token, userInfoUrl);
+        FetchCapabilitiesResult capabilitiesResult = fetchCapabilities.getResult();
+        if (!capabilitiesResult.success()) {
+            // I don't think we want to display the core error message as it's stuff like json errors and not
+            // useful to the user but we can change this after we have the discussion about error messages
+            handleError(tr("Unable to retrieve capabilities from server"));
+            break;
+        }
+        if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
+            handleError(tr("The server is not supported by this client"));
+            break;
+        } else
+            _results.capabilities = capabilitiesResult.capabilities;
+
         _oauthCompleted = true;
         Q_EMIT success(_results);
         break;

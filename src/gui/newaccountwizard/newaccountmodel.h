@@ -14,11 +14,14 @@
 
 #pragma once
 
+#include "capabilities.h"
+
 #include <QObject>
 #include <QSet>
 #include <QSslCertificate>
 #include <QUrl>
 #include <QVariantMap>
+
 
 namespace OCC {
 /**
@@ -37,30 +40,35 @@ class NewAccountModel : public QObject
     Q_PROPERTY(QUrl webfingerUserUrl READ webfingerUserUrl WRITE setWebfingerUserUrl NOTIFY webfingerUserUrlChanged);
     Q_PROPERTY(QSet<QSslCertificate> trustedCertificates READ trustedCertificates WRITE setTrustedCertificates NOTIFY trustedCertificatesChanged);
     Q_PROPERTY(QString syncRootDir READ syncRootDir WRITE setSyncRootDir NOTIFY syncRootDirChanged);
-    // I can't remember if/how we use this from the oc10 blocker pr, it may be obsolete
+
     Q_PROPERTY(QString displayName READ displayName WRITE setDisplayName NOTIFY displayNameChanged);
-    // todo: OAuth credentials
-    // might need authentication type too - decide after DC-49 is merged. in general if the authentication type check is not oauth, the whole account setup
-    // needs to fail so I don't see a future for it in this model but let's see.
-    // todo: advanced settings props
+    Q_PROPERTY(QString davUser READ davUser WRITE setDavUser NOTIFY davUserChanged);
+
+    Q_PROPERTY(QString authToken READ authToken WRITE setAuthToken NOTIFY authTokenChanged);
+    Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged);
+
+    Q_PROPERTY(Capabilities capabilities READ capabilities WRITE setCapabilities NOTIFY capabilitiesChanged);
 
 public:
     NewAccountModel(QObject *parent);
 
     /** The serverUrl is the first url we process in the account wizard. It may be provided by the user or the theme
-     * if webfinger is not in play, this is the effective url that ends up in the Account
+     * If no webfinger user urls are found, this is the effective url that ends up in the Account
      */
     QUrl serverUrl() const;
     void setServerUrl(const QUrl &newServerUrl);
 
-    /** the webfingerAuthenticationUrl is the primary url used for authentication if webfinger is in play
-     *  it is used to look up the actual user webfinger url which becomes the effective url for the account
-     *  if webfinger is in play
+    /** The webfingerAuthenticationUrl is the primary url used for authentication if webfinger is in play.
+     *  It is used to look up the actual user webfinger urls. The list may be empty even if we have a webfinger authentication url,
+     *  eg with a stock ocis server. This url does not become part of the new account, it is only needed for the authentication process.
      */
     QUrl webfingerAuthenticationUrl() const;
     void setWebfingerAuthenticationUrl(const QUrl &newWebfingerAuthenticationUrl);
 
-    /** the webfingerUserUrl is the effective url passed to the account if webfinger is in play */
+    /** the webfingerUserUrl is the effective url passed to the account if webfinger lookup retrieved a non-empty list of user urls
+     *  if the list is non-empty, we always take the first element in the list as the webfingerUserUrl, and when the account is built,
+     *  this becomes the effective url for the account.
+     */
     QUrl webfingerUserUrl() const;
     void setWebfingerUserUrl(const QUrl &newWebfingerUserUrl);
 
@@ -75,11 +83,23 @@ public:
     QString syncRootDir() const;
     void setSyncRootDir(const QString &newSyncRootDir);
 
-    /** I can't remember what we do with the display name so I will update this asap */
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
 
+    // convenience function that returns the webfingerAuthenticationUrl if it is non-empty, else it returns the serverUrl
     QUrl effectiveAuthenticationServerUrl() const;
+
+    QString davUser() const;
+    void setDavUser(const QString &newDavUser);
+
+    QString authToken() const;
+    void setAuthToken(const QString &newAuthToken);
+
+    QString refreshToken() const;
+    void setRefreshToken(const QString &newRefreshToken);
+
+    Capabilities capabilities() const;
+    void setCapabilities(const Capabilities &newCapabilities);
 
 Q_SIGNALS:
     void serverUrlChanged(const QUrl &newUrl);
@@ -88,6 +108,11 @@ Q_SIGNALS:
     void trustedCertificatesChanged(QSet<QSslCertificate> trustedCertificates);
     void syncRootDirChanged(QString syncRootDir);
     void displayNameChanged(QString displayName);
+    void davUserChanged(QString davUser);
+    void authTokenChanged(QString authToken);
+    void refreshTokenChanged(QString refreshToken);
+
+    void capabilitiesChanged(OCC::Capabilities capabilities);
 
 private:
     QUrl _serverUrl;
@@ -96,6 +121,9 @@ private:
     QSet<QSslCertificate> _trustedCertificates;
     QString _syncRootDir;
     QString _displayName;
+    QString _davUser;
+    QString _authToken;
+    QString _refreshToken;
+    Capabilities _capabilities{QUrl(), {}};
 };
-
 }

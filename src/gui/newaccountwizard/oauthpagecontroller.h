@@ -13,6 +13,7 @@
  */
 #pragma once
 
+#include "capabilities.h"
 #include "creds/oauth.h"
 #include "wizardpagevalidator.h"
 
@@ -32,7 +33,10 @@ struct OAuthPageResults
 {
     QString token;
     QString refreshToken;
-    QList<QUrl> webfingerUrls;
+    QUrl webfingerUserUrl;
+    QString displayName;
+    QString userId;
+    Capabilities capabilities = {QUrl{}, {}};
 
     QString error;
 };

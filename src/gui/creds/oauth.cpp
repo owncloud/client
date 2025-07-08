@@ -120,7 +120,8 @@ void OAuth::startAuthentication()
 
     // Listen on the socket to get a port which will be used in the redirect_uri
 
-    for (const auto port : Theme::instance()->oauthPorts()) {
+    QList<quint16> ports = Theme::instance()->oauthPorts();
+    for (const auto port : std::as_const(ports)) {
         if (_server.listen(QHostAddress::LocalHost, port)) {
             break;
         }
@@ -199,8 +200,6 @@ void OAuth::handleTcpConnection()
 
         qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
 
-        // this is probably overkill as the server is so short lived, and it will clean up all the sockets when it dies
-        // but it doesn't hurt either.
         QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
 
         QObject::connect(socket, &QIODevice::readyRead, this, &OAuth::handleSocketReadyRead);
@@ -253,7 +252,6 @@ void OAuth::handleSocketReadyRead()
     // server port cannot be queried any more after server has been closed, which we want to do as early as possible in the processing chain
     // therefore we have to store it beforehand
     _serverPort = _server.serverPort();
-    qCDebug(lcOauth) << "Received the first valid response, closing server socket";
     _server.close();
 
     getTokens();

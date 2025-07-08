@@ -73,6 +73,7 @@ void NewAccountWizardController::buildPages()
     QWizardPage *oauthPage = new QWizardPage(_wizard);
     _oauthController = new OAuthPageController(oauthPage, _accessManager, this);
     connect(_oauthController, &OAuthPageController::success, this, &NewAccountWizardController::onOAuthValidationCompleted);
+    connect(_oauthController, &OAuthPageController::failure, this, &NewAccountWizardController::onOauthValidationFailed);
     _oauthPageIndex = _wizard->addPage(oauthPage, _oauthController);
 
     QWizardPage *authSuccessPage = new QWizardPage(_wizard);
@@ -109,17 +110,29 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _oauthController->setLookupWebfingerUrls(!_model->webfingerAuthenticationUrl().isEmpty());
 }
 
-void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPageResults &results)
-{
-    // add the props from the oauth step
-    _wizard->setCurrentId(_authSuccessPageIndex);
-    ownCloudGui::raise();
-}
 // I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
 // first page yet.
 void NewAccountWizardController::onUrlValidationFailed(const OCC::UrlPageResults &result)
 {
     Q_UNUSED(result);
+}
+
+void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPageResults &results)
+{
+    _model->setAuthToken(results.token);
+    _model->setRefreshToken(results.refreshToken);
+    _model->setDisplayName(results.displayName);
+    _model->setDavUser(results.userId);
+    _model->setCapabilities(results.capabilities);
+
+    _wizard->setCurrentId(_authSuccessPageIndex);
+    ownCloudGui::raise();
+}
+
+void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageResults &results)
+{
+    Q_UNUSED(results);
+    ownCloudGui::raise();
 }
 
 void NewAccountWizardController::onPageChanged(int newPageIndex)
