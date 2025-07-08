@@ -10,7 +10,7 @@ set( APPLICATION_VIRTUALFILE_SUFFIX "owncloud" CACHE STRING "Virtual file suffix
 set( LINUX_PACKAGE_SHORTNAME "owncloud" )
 
 set( THEME_CLASS            "ownCloudTheme" )
-set( APPLICATION_REV_DOMAIN "com.owncloud.desktopclient" )
+set( APPLICATION_REV_DOMAIN "com.seagate.curator.stxfiles.macos" )
 set( WIN_SETUP_BITMAP_PATH  "${CMAKE_SOURCE_DIR}/admin/win/nsi" )
 
 set( MAC_INSTALLER_BACKGROUND_FILE "${CMAKE_SOURCE_DIR}/admin/osx/installer-background.png" CACHE STRING "The MacOSX installer background image")

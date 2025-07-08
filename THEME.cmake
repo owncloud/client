@@ -18,8 +18,8 @@ if(NOT DEFINED APPLICATION_VIRTUALFILE_SUFFIX)
 endif()
 
 # need this logic to not mess with re/uninstallations via macosx.pkgproj
-if(${APPLICATION_REV_DOMAIN} STREQUAL "com.owncloud.desktopclient")
-    set(APPLICATION_REV_DOMAIN_INSTALLER "com.ownCloud.client")
+if(${APPLICATION_REV_DOMAIN} STREQUAL "com.seagate.curator.stxfiles.macos")
+    set(APPLICATION_REV_DOMAIN_INSTALLER "com.curator.client")
 else()
     set(APPLICATION_REV_DOMAIN_INSTALLER ${APPLICATION_REV_DOMAIN})
 endif()
