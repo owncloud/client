@@ -30,6 +30,9 @@ namespace OCC {
 class AccessManager;
 class OAuth;
 
+/**
+ * @brief The OAuthPageResults class is a simple container that carries the results of the page validation
+ */
 struct OAuthPageResults
 {
     QString token;
@@ -42,24 +45,64 @@ struct OAuthPageResults
     QString error;
 };
 
+/**
+ * @brief The OAuthPageController class controls the authentication step in the NewAccountWizard
+ */
 class OAuthPageController : public QObject, public WizardPageValidator
 {
     Q_OBJECT
 public:
+    /**
+     * @brief OAuthPageController
+     * @param page is the page this controller will build and manage. Nullptr is acceptable eg for testing
+     * @param accessManager is the access manager that will be used for all network requests
+     * @param parent implements the usual Qt parenting scheme.
+     */
     explicit OAuthPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent);
+
+    /**
+     * @brief validate runs the OAuth routines to authenticate the user and gather the tokens for the account, and it also runs various
+     * "final checks" on the data to ensure we can or should use these credentials to create an account
+     * @return true if the all the checks pass, false if it fails.
+     * This function also emits success or failure signals, below, to provide the OAuthPageResults to interested parties.
+     */
     bool validate() override;
 
+    /**
+     * @brief setUrl sets the url that we will authenticate against in the validation step. This value must be set before running validate
+     * @param url the authentication url that will be validated
+     */
     void setUrl(const QUrl &url);
+    /**
+     * @brief setLookupWebfingerUrls tells the controller whether it should run the webfinger lookup or not. This flag is necessary because
+     * the incoming url may or may not be a webfinger authentication endpoint, which needs to be determined by the caller.
+     * @param lookup If the url provided in setUrl is a webfinger authentication url, the lookup param should be set to true. Otherwise false.
+     */
     void setLookupWebfingerUrls(bool lookup);
 
 Q_SIGNALS:
+    /**
+     * @brief success notifies interested parties that the validation routine succeeded
+     * @param results contains the data collected during the validation
+     */
     void success(const OCC::OAuthPageResults &results);
     // for this controller the failure signal is important, as the main wizard controller uses it to raise the client window after the user
     // has completed the browser login
+    /**
+     * @brief failure notifies interested parties that the validation failed
+     * @param results contains the error that led to the failure, and also may contain other legitimate values depending on how far the validation
+     * progressed before it failed
+     */
     void failure(const OCC::OAuthPageResults &results);
 
 protected Q_SLOTS:
+    /**
+     * @brief copyUrlClicked copies the content of the url field to the clipboard
+     */
     void copyUrlClicked();
+    /**
+     * @brief clipboardChanged updates the tooltip on the copy button depending on whether the clipboard contains the current url or not
+     */
     void clipboardChanged();
 
 private:
