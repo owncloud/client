@@ -218,11 +218,11 @@ void OAuth::handleSocketReadyRead()
         // something is really wrong
         return;
     }
-    QPointer<QTcpSocket> tempSocket(connected);
+    QPointer<QTcpSocket> candidateSocket(connected);
 
     Q_ASSERT(connected->state() == QAbstractSocket::ConnectedState);
 
-    const QByteArray peek = tempSocket->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
+    const QByteArray peek = candidateSocket->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
 
     // wait until we find a \n
     if (!peek.contains('\n')) {
@@ -233,7 +233,7 @@ void OAuth::handleSocketReadyRead()
 
     const auto getPrefix = QByteArrayLiteral("GET /?");
     if (!peek.startsWith(getPrefix)) {
-        httpReplyAndClose(tempSocket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
+        httpReplyAndClose(candidateSocket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
         return;
     }
     const auto endOfUrl = peek.indexOf(' ', getPrefix.length());
@@ -241,13 +241,13 @@ void OAuth::handleSocketReadyRead()
     _queryArgs = QUrlQuery(QUrl::fromPercentEncoding(peek.mid(getPrefix.length(), endOfUrl - getPrefix.length())));
 
     if (_queryArgs.queryItemValue(QStringLiteral("state")).toUtf8() != _state) {
-        httpReplyAndClose(tempSocket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
+        httpReplyAndClose(candidateSocket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
         return;
     }
 
     // basic checks passed, we now want to commit to this socket all other pending connections will effectively be
     // ignored from here out. To ensure we get as few stray connections as possible, just close the server
-    _socket = tempSocket;
+    _socket = candidateSocket;
 
     // server port cannot be queried any more after server has been closed, which we want to do as early as possible in the processing chain
     // therefore we have to store it beforehand
@@ -594,4 +594,3 @@ QString OCC::toString(OAuth::PromptValuesSupportedFlags s)
         }
     return out.join(QLatin1Char(' '));
 }
-// #include "oauth.moc"
