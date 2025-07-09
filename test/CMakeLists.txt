@@ -38,7 +38,14 @@ owncloud_add_test(RemoteDiscovery)
 owncloud_add_test(Permissions)
 owncloud_add_test(DatabaseError)
 owncloud_add_test(LockedFiles)
-owncloud_add_test(Adapters ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp)
+owncloud_add_test(Adapters
+    ../src/gui/networkadapters/determineauthtypeadapter.cpp
+    ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp
+    ../src/gui/networkadapters/fetchcapabilitiesadapter.cpp
+#    ../src/gui/networkadapters/resolveurladapter.cpp
+#    ../src/gui/tlserrordialog.cpp
+    ../src/gui/networkadapters/webfingerlookupadapter.cpp
+)
 
 if (WITH_AUTO_UPDATER)
     owncloud_add_test(Updater)
