@@ -23,6 +23,7 @@
 class QWizardPage;
 class QLineEdit;
 class QLabel;
+class QPushButton;
 
 namespace OCC {
 
@@ -53,12 +54,13 @@ public:
 
 Q_SIGNALS:
     void success(const OCC::OAuthPageResults &results);
-    // I think it also makes sense to return the results on failure, in case the listener wants to eval the values that were successfully
-    // gathered.
+    // for this controller the failure signal is important, as the main wizard controller uses it to raise the client window after the user
+    // has completed the browser login
     void failure(const OCC::OAuthPageResults &results);
 
 protected Q_SLOTS:
     void copyUrlClicked();
+    void clipboardChanged();
 
 private:
     QPointer<QWizardPage> _page;
@@ -69,6 +71,7 @@ private:
 
     QLineEdit *_urlField;
     QLabel *_errorField;
+    QPushButton *_copyButton;
 
     bool _oauthCompleted = false;
     OAuthPageResults _results;
@@ -76,7 +79,7 @@ private:
 
     void buildPage();
     QIcon copyIcon();
-    /** displays the error in the page, sets the error value in the results and emits failure(error) */
+    /** displays the error in the page, sets the error value in the results and emits failure(results) */
     void handleError(const QString &error);
     void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
     void showBrowser();

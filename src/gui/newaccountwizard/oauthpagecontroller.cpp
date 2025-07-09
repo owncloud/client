@@ -23,12 +23,14 @@
 #include "theme.h"
 
 #include <QBuffer>
+#include <QClipboard>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSignalBlocker>
+#include <QToolTip>
 #include <QVBoxLayout>
 #include <QWizardPage>
 
@@ -41,6 +43,7 @@ OAuthPageController::OAuthPageController(QWizardPage *page, AccessManager *acces
     , _oauth(nullptr)
 {
     buildPage();
+    connect(QGuiApplication::clipboard(), &QClipboard::dataChanged, this, &OAuthPageController::clipboardChanged);
 }
 
 void OAuthPageController::buildPage()
@@ -71,12 +74,13 @@ void OAuthPageController::buildPage()
     _urlField->setAccessibleDescription(tr("Login URL"));
 
     //    QIcon copyIcon = copyIcon();
-    QPushButton *copyButton = new QPushButton(copyIcon(), QString(), _page);
-    copyButton->setFlat(true);
-    copyButton->setContentsMargins(0, 0, 0, 0);
-    copyButton->setFixedSize(_urlField->height(), _urlField->height());
-    copyButton->setAccessibleDescription(tr("Copy the login URL to the clipboard"));
-    connect(copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
+    _copyButton = new QPushButton(copyIcon(), QString(), _page);
+    _copyButton->setFlat(true);
+    _copyButton->setContentsMargins(0, 0, 0, 0);
+    _copyButton->setFixedSize(_urlField->height(), _urlField->height());
+    _copyButton->setAccessibleDescription(tr("Copy the login URL to the clipboard"));
+    _copyButton->installEventFilter(this);
+    connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
@@ -109,7 +113,8 @@ void OAuthPageController::buildPage()
     urlAreaLayout->setContentsMargins(0, 0, 0, 0);
     urlAreaLayout->setSpacing(0);
     urlAreaLayout->addWidget(_urlField, Qt::AlignLeft);
-    urlAreaLayout->addWidget(copyButton);
+    urlAreaLayout->addWidget(_copyButton);
+
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
     layout->addWidget(_errorField, Qt::AlignLeft);
     if (footerLogoLabel)
@@ -150,7 +155,22 @@ void OAuthPageController::setLookupWebfingerUrls(bool lookup)
     _lookupWebfingerUrls = lookup;
 }
 
-void OAuthPageController::copyUrlClicked() { }
+void OAuthPageController::copyUrlClicked()
+{
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText(_urlField->text());
+}
+
+// I was going to implement an event filter for the tooltip but I think the positioning is risky given our previous issues with popup stuff
+// on mac and/or linux. This is also the simplest, least error prone way to do it imo.
+void OAuthPageController::clipboardChanged()
+{
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    if (clipboard->text() == _urlField->text())
+        _copyButton->setToolTip(tr("URL copied"));
+    else
+        _copyButton->setToolTip(tr("Copy URL"));
+}
 
 bool OAuthPageController::validate()
 {
