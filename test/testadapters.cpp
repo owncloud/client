@@ -72,6 +72,95 @@ private:
     QByteArray payload;
 };
 
+class TestAdaptersAM : public FakeAM
+{
+    Q_OBJECT
+
+public:
+    TestAdaptersAM(const QUrl &urlWithoutPath)
+        : FakeAM({}, nullptr)
+        , _urlWithoutPath(urlWithoutPath)
+    {
+        setOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
+            return this->handleRequest(op, req, device);
+        });
+    }
+
+protected:
+    virtual QNetworkReply *handleRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device)
+    {
+        Q_ASSERT(op == QNetworkAccessManager::GetOperation);
+
+        QString reqPath = req.url().path();
+        if (reqPath == QStringLiteral("/.well-known/webfinger")) {
+            const QString resource = QUrlQuery(req.url()).queryItemValue(QStringLiteral("resource"));
+            if (resource == _urlWithoutPath.toString()) {
+                return handleWebFingerDiscoveryRequest(op, req);
+            } else if (resource == QStringLiteral("acct:me@%1").arg(_urlWithoutPath.host())) {
+                return handleWebFingerLookup(op, req);
+            }
+        }
+
+        Q_UNREACHABLE(); // Bomb out, the adapter send a strange request path
+        return nullptr;
+    }
+
+    virtual QNetworkReply *handleWebFingerDiscoveryRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req)
+    {
+        return new AdapterJSonReply(op, req, {ValidWebFingerResponse}, this);
+    }
+
+    QNetworkReply *errorResponse(QNetworkAccessManager::Operation op, const QNetworkRequest &req, int httpErrorCode = 404)
+    {
+        return new FakeErrorReply(op, req, this, httpErrorCode);
+    }
+
+    static QByteArray ValidWebFingerResponse;
+    static QByteArray ValidWebFingerLookupResponse;
+    static QByteArray ValidFetchCapabilitiesResponse;
+
+private:
+    const QUrl _urlWithoutPath;
+};
+
+QByteArray TestAdaptersAM::ValidWebFingerResponse = QByteArrayLiteral(
+    "{\"subject\":\"https://demo.test\",\"links\":[{\"rel\":\"http://openid.net/specs/connect/1.0/issuer\",\"href\":\"https://demo.test/realms/test\"}]}");
+QByteArray TestAdaptersAM::ValidWebFingerLookupResponse =
+    QByteArrayLiteral("{\"links\":[{\"rel\":\"http://webfinger.owncloud/rel/server-instance\",\"href\":\"one.demo.test\"},{\"rel\":\"http://webfinger.owncloud/"
+                      "rel/server-instance\",\"href\":\"two.demo.test\"}]}");
+QByteArray TestAdaptersAM::ValidFetchCapabilitiesResponse = QByteArrayLiteral(
+    "{\"ocs\":{\"data\":{\"capabilities\":{\"checksums\":{\"preferredUploadType\":\"SHA3-256\",\"supportedTypes\":[\"SHA3-256\"]},\"core\":{\"pollinterval\":"
+    "30000,\"status\":{\"edition\":\"Enterprise\",\"installed\":true,\"maintenance\":false,\"needsDbUpgrade\":false,\"product\":\"test\",\"productname\":"
+    "\"test\",\"productversion\":\"8.4.1\",\"version\":\"10.0.11.5\",\"versionstring\":\"10.0.11\"},\"support-url-signing\":false},\"dav\":{\"chunking\":\"\","
+    "\"chunkingParallelUploadDisabled\":false,\"reports\":null,\"trashbin\":\"\"},\"files\":{\"app_providers\":null,\"archivers\":null,\"bigfilechunking\":"
+    "false,\"blacklisted_files\":null,\"favorites\":false,\"permanent_deletion\":false,\"privateLinks\":true,\"tus_support\":null,\"undelete\":false,"
+    "\"versioning\":false},\"files_sharing\":{\"allow_custom\":false,\"api_enabled\":false,\"auto_accept_share\":false,\"can_rename\":false,\"default_"
+    "permissions\":0,\"deny_access\":false,\"federation\":null,\"group_sharing\":false,\"public\":null,\"resharing\":false,\"resharing_default\":false,"
+    "\"search_min_length\":0,\"share_with_group_members_only\":false,\"share_with_membership_groups_only\":false,\"user\":{\"profile_picture\":true,\"send_"
+    "mail\":false,\"settings\":null},\"user_enumeration\":null},\"notifications\":{},\"spaces\":{\"enabled\":true,\"has_multiple_personal_spaces\":true,"
+    "\"projects\":true,\"version\":\"1.0.0\"}},\"version\":{\"edition\":\"Enterprise\",\"major\":10,\"micro\":11,\"minor\":0,\"product\":\"test\",\"string\":"
+    "\"10.0.11\"}},\"meta\":{\"message\":\"OK\",\"status\":\"ok\",\"statuscode\":100}}}");
+
+
+class FailureAM : public TestAdaptersAM
+{
+public:
+    FailureAM(const QUrl &urlWithoutPath)
+        : TestAdaptersAM(urlWithoutPath)
+    {
+    }
+
+protected:
+    QNetworkReply *handleRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) override
+    {
+        Q_UNUSED(device);
+
+        // Send the reply
+        // no well-known endpoints defined
+        return errorResponse(op, req);
+    }
+};
+
 /*
  * Note: in the override for the fake NAM we cannot use QCOMPARE/QVERIFY/etc, so we use asserts to
  *       validate the requests.
@@ -83,19 +172,9 @@ class TestAdapters : public QObject
 private Q_SLOTS:
     void testWebFingerDiscovery_Failure()
     {
-        FakeAM fakeAM({}, nullptr);
-        fakeAM.setOverride([&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
-            Q_UNUSED(device);
+        FailureAM fakeAM(testUrl());
 
-            // Validate the request
-            Q_ASSERT(op == QNetworkAccessManager::GetOperation);
-
-            // Send the reply
-            // no well-known endpoints defined
-            return new FakeErrorReply(op, req, &fakeAM, 404);
-        });
-
-        DiscoverWebFingerServiceAdapter adapter(&fakeAM, QUrl::fromUserInput(QStringLiteral("http://localhost/")));
+        DiscoverWebFingerServiceAdapter adapter(&fakeAM, testUrl());
         DiscoverWebFingerServiceResult result = adapter.getResult();
         QVERIFY(!result.error.isEmpty());
         QVERIFY(result.href.isEmpty());
@@ -103,16 +182,7 @@ private Q_SLOTS:
 
     void testWebFingerDiscovery_Success()
     {
-        FakeAM fakeAM({}, nullptr);
-        fakeAM.setOverride([&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
-            Q_UNUSED(device)
-
-            // Validate the request
-            Q_ASSERT(op == QNetworkAccessManager::GetOperation);
-
-            // Send the reply
-            return new AdapterJSonReply(op, req, {ValidWebFingerResponse}, &fakeAM);
-        });
+        TestAdaptersAM fakeAM(testUrl());
 
         DiscoverWebFingerServiceAdapter adapter(&fakeAM, testUrl());
         DiscoverWebFingerServiceResult result = adapter.getResult();
@@ -122,16 +192,20 @@ private Q_SLOTS:
 
     void testWebFingerDiscovery_BrokenJSON()
     {
-        FakeAM fakeAM({}, nullptr);
-        fakeAM.setOverride([&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
-            Q_UNUSED(device)
+        class BrokenAM : public TestAdaptersAM
+        {
+        public:
+            BrokenAM()
+                : TestAdaptersAM(testUrl())
+            {
+            }
 
-            // Validate the request
-            Q_ASSERT(op == QNetworkAccessManager::GetOperation);
-
-            // Send the reply
-            return new AdapterJSonReply(op, req, ValidWebFingerResponse.first(80), &fakeAM);
-        });
+        protected:
+            QNetworkReply *handleWebFingerDiscoveryRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req) override
+            {
+                return new AdapterJSonReply(op, req, ValidWebFingerResponse.first(80), this);
+            }
+        } fakeAM;
 
         DiscoverWebFingerServiceAdapter adapter(&fakeAM, testUrl());
         DiscoverWebFingerServiceResult result = adapter.getResult();
@@ -142,11 +216,11 @@ private Q_SLOTS:
     void testDetermineAuthType_OAUTH()
     {
         FakeAM fakeAM({}, nullptr);
-        fakeAM.setOverride([&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
+        fakeAM.setOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
             Q_UNUSED(device)
 
             // Send the reply
-            auto reply = new FakeErrorReply(op, req, &fakeAM, 401, {});
+            auto reply = new FakeErrorReply(op, req, this, 401, {});
             reply->setRawHeader(QByteArrayLiteral("www-authenticate"), QByteArrayLiteral("Bearer realm=\"ownCloudTest\""));
             return reply;
         });
@@ -160,7 +234,7 @@ private Q_SLOTS:
     void testFetchCapabilitiesAdapter_Success()
     {
         FakeAM fakeAM({}, nullptr);
-        fakeAM.setOverride([&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
+        fakeAM.setOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
             Q_UNUSED(device)
 
             // Validate the request
@@ -169,7 +243,7 @@ private Q_SLOTS:
             Q_ASSERT(QUrlQuery(req.url()).queryItemValue(QStringLiteral("format")) == QStringLiteral("json"));
 
             // Send the reply
-            return new AdapterJSonReply(op, req, ValidFetchCapabilitiesResponse, &fakeAM);
+            return new AdapterJSonReply(op, req, ValidFetchCapabilitiesResponse, this);
         });
 
         FetchCapabilitiesAdapter adapter(&fakeAM, QStringLiteral("theToken"), testUrl(), nullptr);
@@ -181,7 +255,7 @@ private Q_SLOTS:
     {
         FakeAM fakeAM({}, nullptr);
         const QString authToken = QStringLiteral("theToken");
-        fakeAM.setOverride([&fakeAM, authToken](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
+        fakeAM.setOverride([&, authToken](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) -> QNetworkReply * {
             Q_UNUSED(device)
 
             // Validate the request
@@ -192,7 +266,7 @@ private Q_SLOTS:
             Q_ASSERT(req.rawHeader("Authorization") == QByteArrayLiteral("Bearer ").append(authToken.toUtf8()));
 
             // Send the reply
-            return new AdapterJSonReply(op, req, ValidWebFingerLookupResponse, &fakeAM);
+            return new AdapterJSonReply(op, req, ValidWebFingerLookupResponse, this);
         });
 
         WebFingerLookupAdapter adapter(&fakeAM, QStringLiteral("theToken"), testUrl(), nullptr);
