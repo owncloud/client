@@ -15,13 +15,16 @@
 
 namespace OCC {
 
-/** this is a possibly funky solution to allow sharing the page controllers' validation routines without actually sharing the page controllers
- *  the controller will implement this interface, which allows us to block access to other controller functionality since only this interface
- *  point is exposed
+/** this is a solution to allow sharing the page controllers' validation routine without exposing the page controller itself.
+ *  the wizard page controllers will implement this interface and the wizard will call the validate function in an override of QWizard::validateCurrentPage
  */
 class WizardPageValidator
 {
 public:
+    /**
+     * @brief validate the data of a wizard page
+     * @return true if the validation succeeds, false if it does not
+     */
     virtual bool validate() = 0;
 };
 }

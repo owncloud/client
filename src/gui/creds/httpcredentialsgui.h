@@ -14,8 +14,8 @@
  */
 
 #pragma once
-#include "creds/httpcredentials.h"
-#include "creds/oauth.h"
+#include "httpcredentials.h"
+#include "oauth.h"
 
 #include <QPointer>
 

@@ -20,6 +20,7 @@
 #include <QPointer>
 #include <QTcpServer>
 #include <QUrl>
+#include <QUrlQuery>
 
 
 namespace OCC {
@@ -49,7 +50,7 @@ class JsonJob;
  *              finalize(...): Q_EMIT result(...)
  *
  */
-class OWNCLOUDSYNC_EXPORT OAuth : public QObject
+class OAuth : public QObject
 {
     Q_OBJECT
 public:
@@ -62,8 +63,7 @@ public:
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
-    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,
-        /*const QVariantMap &dynamicRegistrationData,*/ QObject *parent);
+    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,QObject *parent);
     ~OAuth() override;
 
     virtual void startAuthentication();
@@ -100,13 +100,32 @@ protected:
 
     QNetworkReply *postTokenRequest(QUrlQuery &&queryItems);
 
+protected Q_SLOTS:
+    void handleSocketReadyRead();
 
 private:
-    void finalize(const QPointer<QTcpSocket> &socket, const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
+    void handleTcpConnection();
+    void getTokens();
+    void checkUserInfo();
+    void finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
+    void httpReplyAndClose(
+        QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
+
+    void httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader = {});
 
     QByteArray generateRandomString(size_t size) const;
 
+    // The actual data we're collecting!
+    QString _accessToken;
+    QString _refreshToken;
+    QUrl _messageUrl;
+
+    // peripheral deps
     QTcpServer _server;
+    QPointer<QTcpSocket> _socket;
+    QUrlQuery _queryArgs;
+    quint16 _serverPort;
+
     bool _wellKnownFinished = false;
 
     QUrl _authEndpoint;
@@ -124,7 +143,7 @@ private:
  * Instead of relying on the user to provide a working server URL, a CheckServerJob is run upon start(), which also stores the fetched cookies in the account's state.
  * Furthermore, it takes care of storing and loading the dynamic registration data in the account's credentials manager.
  */
-class OWNCLOUDSYNC_EXPORT AccountBasedOAuth : public OAuth
+class AccountBasedOAuth : public OAuth
 {
     Q_OBJECT
 
@@ -146,6 +165,6 @@ private:
     AccountPtr _account;
 };
 
-QString OWNCLOUDSYNC_EXPORT toString(OAuth::PromptValuesSupportedFlags s);
+QString toString(OAuth::PromptValuesSupportedFlags s);
 Q_DECLARE_OPERATORS_FOR_FLAGS(OAuth::PromptValuesSupportedFlags)
 } // namespace OCC

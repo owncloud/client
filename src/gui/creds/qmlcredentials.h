@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "libsync/creds/oauth.h"
+#include "oauth.h"
 
 #include <QtQmlIntegration/QtQmlIntegration>
 
