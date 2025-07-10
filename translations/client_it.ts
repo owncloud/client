@@ -1976,27 +1976,27 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="52"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="54"/>
         <source>Welcome to %1</source>
         <translation>Benvenuti in %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="58"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="60"/>
         <source>Open %1</source>
         <translation>Apri %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="118"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="142"/>
         <source>Next</source>
         <translation>Successivo</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="121"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
         <source>Open sign in again</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="127"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="151"/>
         <source>Advanced settings</source>
         <translation>Impostazioni avanzate</translation>
     </message>
@@ -2047,68 +2047,141 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="237"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="289"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Messaggio di errore dal server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="240"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="291"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Si è verificato un errore accedendo al &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="243"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="293"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Impossibile gestire la risposta JSON dal server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="246"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="295"/>
         <source>Unsupported token type: %1</source>
         <translation>Tipo di token non supportato: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="248"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="297"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>La risposta dal server non conteneva tutti i campi previsti
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="250"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="299"/>
         <source>Unknown Error</source>
         <translation>Errore sconosciuto</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="254"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="264"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="302"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="325"/>
         <source>Login Error</source>
         <translation>Errore di accesso</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="277"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="331"/>
         <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Utente errato&lt;/h1&gt;&lt;p&gt;Hai effettuato l&apos;accesso con &lt;em&gt;%1&lt;/em&gt;, mentre dovresti accedere con l&apos;utente &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Per favore ritorna al client %3 e riavvia il processo di autenticazione.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="281"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="335"/>
         <source>Wrong user</source>
         <translation>Utente errato</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="299"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="183"/>
         <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Accesso riuscito&lt;/h1&gt;&lt;p&gt;Puoi chiudere questa finestra.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="300"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="184"/>
         <source>Login Successful</source>
         <translation>Accesso Riuscito</translation>
     </message>
     <message>
-        <location filename="../src/libsync/creds/oauth.cpp" line="254"/>
-        <location filename="../src/libsync/creds/oauth.cpp" line="265"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="302"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="325"/>
         <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;h1&gt;Errore di login&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::OAuthPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
+        <source>Application Name Logo %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
+        <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="74"/>
+        <source>Login URL</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="81"/>
+        <source>Copy the login URL to the clipboard</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="101"/>
+        <source>Additional logo defined by the organization</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="170"/>
+        <source>URL copied</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="172"/>
+        <source>Copy URL</source>
+        <translation>Copia l&apos;URL</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="220"/>
+        <source>Failed to look up webfinger instances: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="234"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
+        <source>Unable to retrieve capabilities from server</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="256"/>
+        <source>The server is not supported by this client</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="266"/>
+        <source>Error while trying to log in to OAuth2-enabled server.</source>
+        <translation>Errore durante il tentativo di accesso al server abilitato per OAuth2.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
+        <source>Server reports that OAuth2 is not supported.</source>
+        <translation>Il server segnala che OAuth2 non è supportato.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <source>Oauth2 authentication requires a secured connection.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2805,22 +2878,22 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="99"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="98"/>
         <source>Hide</source>
         <translation>Nascondi</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
         <source>Quit %1</source>
         <translation>Esci da %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="109"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Sei sicuro di voler terminare %1?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="141"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="140"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
@@ -3471,6 +3544,29 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     </message>
 </context>
 <context>
+    <name>OCC::UserInfoAdapter</name>
+    <message>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="64"/>
+        <source>Network request to collect user info failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="70"/>
+        <source>Unable to retrieve user info: invalid credentials.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="72"/>
+        <source>Unexpected network response when retrieving user info.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="82"/>
+        <source>Retrieving user info failed with JSON error.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::ValidateChecksumHeader</name>
     <message>
         <location filename="../src/common/checksums.cpp" line="388"/>
@@ -3653,28 +3749,18 @@ Vuoi procedere comunque?</translation>
 <context>
     <name>OCC::Wizard::SetupWizardController</name>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="152"/>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="154"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="167"/>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="169"/>
         <source>Unable to retrieve capabilities from server</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="171"/>
+        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="173"/>
         <source>The server is not supported by this client</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="178"/>
-        <source>Invalid credentials.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="181"/>
-        <source>Failed to retrieve user information from server.</source>
         <translation type="unfinished"/>
     </message>
 </context>
