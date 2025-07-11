@@ -2169,17 +2169,17 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="266"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
-        <translation type="unfinished"/>
+        <translation>Грешка при опит за влизане в сървър с активиран OAuth2.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
         <source>Server reports that OAuth2 is not supported.</source>
-        <translation type="unfinished"/>
+        <translation>Сървърът докладва, че OAuth2 не се поддържа.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>Удостоверяването чрез Oauth2 изисква защитена връзка.</translation>
     </message>
 </context>
 <context>

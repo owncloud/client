@@ -2181,7 +2181,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>L&apos;autenticazione Oauth2 richiede una connessione protetta.</translation>
     </message>
 </context>
 <context>
