@@ -47,17 +47,17 @@ void NewAccountModel::setWebfingerAuthenticationUrl(const QUrl &newWebfingerAuth
     Q_EMIT webfingerAuthenticationUrlChanged(_webfingerAuthenticationUrl);
 }
 
-QUrl NewAccountModel::webfingerUserUrl() const
+QUrl NewAccountModel::webfingerUserInfoUrl() const
 {
-    return _webfingerUserUrl;
+    return _webfingerUserInfoUrl;
 }
 
-void NewAccountModel::setWebfingerUserUrl(const QUrl &newWebfingerUserUrl)
+void NewAccountModel::setWebfingerUserInfoUrl(const QUrl &newWebfingerUserUrl)
 {
-    if (_webfingerUserUrl == newWebfingerUserUrl)
+    if (_webfingerUserInfoUrl == newWebfingerUserUrl)
         return;
-    _webfingerUserUrl = newWebfingerUserUrl;
-    Q_EMIT webfingerUserUrlChanged(_webfingerUserUrl);
+    _webfingerUserInfoUrl = newWebfingerUserUrl;
+    Q_EMIT webfingerUserInfoUrlChanged(_webfingerUserInfoUrl);
 }
 
 QSet<QSslCertificate> NewAccountModel::trustedCertificates() const
