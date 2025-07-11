@@ -68,6 +68,15 @@ Account::Account(const QUuid &uuid, QObject *parent)
 
     // we need to make sure the directory we pass to the resources cache exists
     const QString resourcesCacheDir = QStringLiteral("%1/resources/").arg(_cacheDirectory);
+    if (QFileInfo::exists(resourcesCacheDir)) {
+        // Some versions of the client failed to remove the temporary cache directory on exit, and
+        // after a crash the directory would not be removed either. This can result in multiple
+        // GB of cached space images. So clean this up before creating a new cache.
+        // todo: #32
+        if (!QDir(resourcesCacheDir).removeRecursively()) {
+            qCWarning(lcAccount) << "Resources cache was not fully cleaned";
+        }
+    }
     QDir().mkpath(resourcesCacheDir);
     _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
 }
