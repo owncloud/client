@@ -2182,7 +2182,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>A autenticação Oauth2 requer uma conexão segura.</translation>
     </message>
 </context>
 <context>

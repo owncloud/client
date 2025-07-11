@@ -2181,7 +2181,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>Oauth2認証には、セキュリティで保護された接続が必要です。</translation>
     </message>
 </context>
 <context>

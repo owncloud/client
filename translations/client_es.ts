@@ -2173,12 +2173,12 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
         <source>Server reports that OAuth2 is not supported.</source>
-        <translation type="unfinished"/>
+        <translation>OAuth2 no se soporta en el servidor.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>La autenticación mediante Oauth2 requiere una conexión segura.</translation>
     </message>
 </context>
 <context>

@@ -2176,12 +2176,12 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
         <source>Server reports that OAuth2 is not supported.</source>
-        <translation type="unfinished"/>
+        <translation>Server reports that OAuth2 is not supported.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>Oauth2 authentication requires a secured connection.</translation>
     </message>
 </context>
 <context>

@@ -2115,32 +2115,32 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Rakendus Nimi Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation type="unfinished"/>
+        <translation>Jätke see kuva avatuks. Sisselogimine avaneb brauseris, et järgmise aadressiga ühenduda.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="74"/>
         <source>Login URL</source>
-        <translation type="unfinished"/>
+        <translation>Sisselogimise URL</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="81"/>
         <source>Copy the login URL to the clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Kopeeri sisselogimise URL lõikelauale</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="101"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="170"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL kopeeritud</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="172"/>
@@ -2150,7 +2150,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="220"/>
         <source>Failed to look up webfinger instances: %1</source>
-        <translation type="unfinished"/>
+        <translation>Webfingeri instantside leidmine ebaõnnestus: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="234"/>
@@ -2175,12 +2175,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
         <source>Server reports that OAuth2 is not supported.</source>
-        <translation type="unfinished"/>
+        <translation>Server teatab, et OAuth2 ei ole toetatud.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>Oauth2 authentication requires a secured connection.</source>
-        <translation type="unfinished"/>
+        <translation>Oauth2 autentimine nõuab turvalist ühendust.</translation>
     </message>
 </context>
 <context>
@@ -3547,22 +3547,22 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="64"/>
         <source>Network request to collect user info failed</source>
-        <translation type="unfinished"/>
+        <translation>Võrgupäring kasutajainfo kogumiseks ebaõnnestus</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="70"/>
         <source>Unable to retrieve user info: invalid credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Kasutaja info pärimine ebaõnnestus: vigased kasutajatunnused.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="72"/>
         <source>Unexpected network response when retrieving user info.</source>
-        <translation type="unfinished"/>
+        <translation>Ootamatu võrguvastus kasutajainfo pärimisel.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="82"/>
         <source>Retrieving user info failed with JSON error.</source>
-        <translation type="unfinished"/>
+        <translation>Kasutajainfo pärimine ebaõnnestus – vigane JSON.</translation>
     </message>
 </context>
 <context>
