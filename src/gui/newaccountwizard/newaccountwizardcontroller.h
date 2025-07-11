@@ -18,6 +18,7 @@
 #include "urlpagecontroller.h"
 #include <QObject>
 #include <QPointer>
+#include <QWizard>
 
 
 namespace OCC {
@@ -55,6 +56,8 @@ protected Q_SLOTS:
     // we need to raise the gui when oauth validation fails
     void onOauthValidationFailed(const OCC::OAuthPageResults &results);
 
+    void showAdvancedSettingsPage();
+
 
 private:
     /** configures the wizard with proper settings */
@@ -62,6 +65,8 @@ private:
 
     /** builds the page controller/page widget pairs */
     void buildPages();
+
+    void buildButtonLayouts();
 
     // also key to setting up the wizard is that if we make a field mandatory (eg the url QLineEdit) and add a validator, the wizard
     // will enable the "next" button only when the validator returns true for hasAcceptableInput. Not sure if this will be useful yet or not
@@ -85,6 +90,8 @@ private:
     // this is the only controller we need to explicitly keep our eye on as we
     // need to give it values to start the oauth step
     OAuthPageController *_oauthController = nullptr;
+
+    QHash<int, QList<QWizard::WizardButton>> _buttonLayouts;
 
     int _urlPageIndex = -1;
     int _oauthPageIndex = -1;

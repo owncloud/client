@@ -62,14 +62,14 @@ void AuthSuccessPageController::buildPage()
     buttonFont.setUnderline(true);
     advancedSettingsButton->setFont(buttonFont);
     QPalette buttonPalette = advancedSettingsButton->palette();
+    // it's very possible this is not going to work with some themes. Remember: buttons often have different color schemes than the app overall.
+    // because we are not actually painting most of the button, this choice of text color could be pretty gross depending on system settings
+    // and theme in play
     QColor highlightColor = buttonPalette.color(QPalette::Highlight);
     buttonPalette.setColor(QPalette::Normal, QPalette::ButtonText, highlightColor);
-    // I hoped this would change the text on eg hover or focus. Nope. just changes it overall
-    QColor accentColor = buttonPalette.color(QPalette::Accent);
-    //  buttonPalette.setColor(QPalette::Active, QPalette::ButtonText, accentColor);
-    buttonPalette.setColor(QPalette::BrightText, accentColor);
     advancedSettingsButton->setPalette(buttonPalette);
     advancedSettingsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    connect(advancedSettingsButton, &QPushButton::clicked, this, &AuthSuccessPageController::requestAdvancedSettings);
 
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
