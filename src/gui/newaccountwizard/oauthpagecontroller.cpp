@@ -144,15 +144,20 @@ QIcon OAuthPageController::copyIcon()
     return QIcon(QPixmap::fromImageReader(&iconReader));
 }
 
-void OAuthPageController::setUrl(const QUrl &url)
-{
-    _serverUrl = url;
-    _urlField->setText(url.toDisplayString());
-}
-
 void OAuthPageController::setLookupWebfingerUrls(bool lookup)
 {
     _lookupWebfingerUrls = lookup;
+}
+
+void OAuthPageController::setServerUrl(const QUrl &url)
+{
+    _serverUrl = url;
+}
+
+void OAuthPageController::setAuthenticationUrl(const QUrl &url)
+{
+    _authUrl = url;
+    _urlField->setText(_authUrl.toDisplayString());
 }
 
 void OAuthPageController::copyUrlClicked()
@@ -195,7 +200,7 @@ bool OAuthPageController::validate()
 
     _results = {};
     _errorField->clear();
-    _oauth = new OAuth(_serverUrl, {}, _accessManager.get(), this);
+    _oauth = new OAuth(_authUrl, {}, _accessManager.get(), this);
     connect(_oauth, &OAuth::result, this, &OAuthPageController::handleOauthResult);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::showBrowser);
     _oauth->startAuthentication();
@@ -213,7 +218,12 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
     case OAuth::Result::LoggedIn: {
         _results.token = token;
         _results.refreshToken = refreshToken;
+        // special note: if the original server url does not support webfinger, the _authUrl will equal the _serverUrl
+        // HOWEVER, we can't use this fact to determine whether webfinger is in play as some webfinger impls return the original
+        // _serverUrl (eg demo) as the authentication url and some don't (eg infinite).
         if (_lookupWebfingerUrls) {
+            // it is important to use the original server url for the webfinger lookup because the webfinger authentication url *only* knows how to authenticate
+            // the webfinger service actually lives in the original server url so we have to use that to look up the webfinger user info endpoints.
             WebFingerLookupAdapter lookup(_accessManager, token, _serverUrl);
             const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {
@@ -225,12 +235,15 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
             }
         }
 
+        // if we have successfully found a user info endpoint url using webfinger, that becomes our de facto url for further account related activities.
+        // if webfinger is not in play we are just using the original server url.
         const QUrl userInfoUrl = _results.webfingerUserUrl.isEmpty() ? _serverUrl : _results.webfingerUserUrl;
+
         UserInfoAdapter infoAdapter(_accessManager, _results.token, userInfoUrl);
         UserInfoResult infoResult = infoAdapter.getResult();
 
         if (infoResult.success()) {
-            if (AccountManager::instance()->accountForLoginExists(_serverUrl, infoResult.userId)) {
+            if (AccountManager::instance()->accountForLoginExists(userInfoUrl, infoResult.userId)) {
                 handleError(tr("You are already connected to an account with these credentials."));
                 return;
             } else {

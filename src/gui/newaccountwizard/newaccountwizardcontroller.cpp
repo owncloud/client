@@ -135,7 +135,10 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _model->setTrustedCertificates(result.certificates);
 
     // and then we have to explicitly set login url on the controller for the next page...
-    _oauthController->setUrl(_model->effectiveAuthenticationServerUrl());
+    // yes this combination of values is gross however I do not want to pass the server and auth urls in the same function as it's way too easy to mix up the
+    // args!
+    _oauthController->setServerUrl(_model->serverUrl());
+    _oauthController->setAuthenticationUrl(_model->effectiveAuthenticationServerUrl());
     _oauthController->setLookupWebfingerUrls(!_model->webfingerAuthenticationUrl().isEmpty());
 }
 
