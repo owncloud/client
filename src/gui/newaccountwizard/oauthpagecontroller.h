@@ -69,15 +69,18 @@ public:
     bool validate() override;
 
     /**
-     * @brief setUrl sets the url that we will authenticate against in the validation step. This value must be set before running validate
-     * @param url the authentication url that will be validated
+     * @brief setServerUrl is the original url used to kick off the account creation process. This url is not necessarily the same as the authentication url
+     * (which may be a webfinger authentication url). Even if the authentication goes through webfinger, we still need to use the server url to eg do the
+     * webfinger lookup among other things.
      */
-    void setUrl(const QUrl &url);
+    void setServerUrl(const QUrl &url);
+
     /**
-     * @brief setLookupWebfingerUrls tells the controller whether it should run the webfinger lookup or not. This flag is necessary because
-     * the incoming url may or may not be a webfinger authentication endpoint, which needs to be determined by the caller.
-     * @param lookup If the url provided in setUrl is a webfinger authentication url, the lookup param should be set to true. Otherwise false.
+     * @brief setAuthenticationUrl sets the authentication url. This may be equal to the server url or it may be a webfinger authentication url.
+     * @param url
      */
+    void setAuthenticationUrl(const QUrl &url);
+
     void setLookupWebfingerUrls(bool lookup);
 
 Q_SIGNALS:
@@ -109,8 +112,9 @@ private:
     QPointer<QWizardPage> _page;
     QPointer<AccessManager> _accessManager;
     QUrl _serverUrl;
-    bool _lookupWebfingerUrls = false;
+    QUrl _authUrl;
     OAuth *_oauth;
+    bool _lookupWebfingerUrls = false;
 
     QLineEdit *_urlField;
     QLabel *_errorField;
