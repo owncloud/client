@@ -1986,17 +1986,17 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="142"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
         <source>Next</source>
         <translation>Pasuesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="148"/>
         <source>Open sign in again</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="151"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="154"/>
         <source>Advanced settings</source>
         <translation>Rregullime të mëtejshme</translation>
     </message>
@@ -2139,47 +2139,47 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="170"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="175"/>
         <source>URL copied</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="172"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="177"/>
         <source>Copy URL</source>
         <translation>Kopjoji URL-në</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="220"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
         <source>Failed to look up webfinger instances: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="234"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="247"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>Jeni tashmë i lidhur te një llogari me këto kredenciale.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="265"/>
         <source>Unable to retrieve capabilities from server</source>
         <translation>S’u arrit të merreshin aftësi nga shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="256"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>The server is not supported by this client</source>
         <translation>Shërbyesi nuk mbulohet nga ky klient</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="266"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="279"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation>Gabim teksa provohej të bëhej hyrja te shërbyes me OAuth2 të aktivizuar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="284"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation>Shërbyesi njofton se OAuth2 nuk mbulohet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="288"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation>Mirëfilltësimi Oauth2 lyp një lidhje të siguruar.</translation>
     </message>
