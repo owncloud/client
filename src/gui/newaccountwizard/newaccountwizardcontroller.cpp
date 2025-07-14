@@ -60,7 +60,7 @@ void NewAccountWizardController::setupWizard()
     _wizard->setOption(QWizard::NoCancelButton, false);
 
     _wizard->setButtonText(QWizard::BackButton, tr("Back"));
-    _wizard->setButtonText(QWizard::CustomButton1, tr("Advanced Settings"));
+    _wizard->setButtonText(QWizard::CustomButton1, tr("Advanced"));
     _wizard->setOption(QWizard::HaveCustomButton1, true);
 }
 
