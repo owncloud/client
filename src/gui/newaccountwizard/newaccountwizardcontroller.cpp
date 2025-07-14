@@ -111,6 +111,11 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _oauthController->setServerUrl(_model->serverUrl());
     _oauthController->setAuthenticationUrl(_model->effectiveAuthenticationServerUrl());
     _oauthController->setLookupWebfingerUrls(!_model->webfingerAuthenticationUrl().isEmpty());
+
+    if (_wizard->currentId() != _oauthPageIndex)
+        _wizard->setCurrentId(_oauthPageIndex);
+    if (_wizard->currentId() == _oauthPageIndex)
+        _wizard->validateCurrentPage();
 }
 
 // I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
@@ -130,12 +135,15 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
 
     _wizard->setCurrentId(_authSuccessPageIndex);
     ownCloudGui::raise();
+    // on mac, for unknown reasons, the main window is active after raise
+    _wizard->activateWindow();
 }
 
 void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageResults &results)
 {
     Q_UNUSED(results);
     ownCloudGui::raise();
+    _wizard->activateWindow();
 }
 
 void NewAccountWizardController::onPageChanged(int newPageIndex)

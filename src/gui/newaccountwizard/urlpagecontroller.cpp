@@ -83,6 +83,7 @@ void UrlPageController::buildPage()
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
+    _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
@@ -168,6 +169,11 @@ QUrl UrlPageController::checkUrl()
 
 bool UrlPageController::validate()
 {
+    if (_urlValidated) {
+        _urlValidated = false;
+        return true;
+    }
+
     _results = {};
     _errorField->clear();
 
@@ -239,7 +245,7 @@ bool UrlPageController::validate()
         Q_ASSERT(authResult.type == AuthenticationType::OAuth);
         _results.baseServerUrl = finalUrl;
     }
-
+    _urlValidated = true;
     Q_EMIT success(_results);
     return true;
 }

@@ -99,6 +99,7 @@ private:
     QLabel *_errorField;
 
     UrlPageResults _results;
+    bool _urlValidated = false;
 
     /** sets up the wizard page with appropriate content and connect any signals to eg the url QLineEdit */
     void buildPage();
