@@ -1984,17 +1984,17 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>%1 Aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="142"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
         <source>Next</source>
         <translation>Sonraki</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="148"/>
         <source>Open sign in again</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="151"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="154"/>
         <source>Advanced settings</source>
         <translation>Gelişmiş ayarlar</translation>
     </message>
@@ -2137,47 +2137,47 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="170"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="175"/>
         <source>URL copied</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="172"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="177"/>
         <source>Copy URL</source>
         <translation>Bağlantıyı kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="220"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
         <source>Failed to look up webfinger instances: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="234"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="247"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="265"/>
         <source>Unable to retrieve capabilities from server</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="256"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>The server is not supported by this client</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="266"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="279"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation>OAuth2&apos;nin etkin olduğu sunucuda oturum açmaya çalışırken hata oluştu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="284"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation>Sunucu, OAuth2&apos;nin desteklenmediğini bildiriyor.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="288"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation>Oauth2 kimlik doğrulaması, güvenli bir bağlantı gerektirir.</translation>
     </message>

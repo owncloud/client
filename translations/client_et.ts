@@ -1985,17 +1985,17 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Ava %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="142"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
         <source>Next</source>
         <translation>Järgmine</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="148"/>
         <source>Open sign in again</source>
         <translation>Ava sisselogimine uuesti</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="151"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="154"/>
         <source>Advanced settings</source>
         <translation>Lisavalikud</translation>
     </message>
@@ -2138,47 +2138,47 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="170"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="175"/>
         <source>URL copied</source>
         <translation>URL kopeeritud</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="172"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="177"/>
         <source>Copy URL</source>
         <translation>Kopeeri URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="220"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
         <source>Failed to look up webfinger instances: %1</source>
         <translation>Webfingeri instantside leidmine ebaõnnestus: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="234"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="247"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>Oled juba käesolevate kasutajatunnustega kontoga ühendatud.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="265"/>
         <source>Unable to retrieve capabilities from server</source>
         <translation>Võimekuste pärimine serverilt ebaõnnestus</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="256"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>The server is not supported by this client</source>
         <translation>Server ei toeta antud klienti</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="266"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="279"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation>Viga OAuth2-toega serverisse sisselogimisel.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="284"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation>Server teatab, et OAuth2 ei ole toetatud.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="288"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation>Oauth2 autentimine nõuab turvalist ühendust.</translation>
     </message>
