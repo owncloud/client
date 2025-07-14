@@ -541,7 +541,7 @@ Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDe
     }
 
     if (!validateFolderDefinition(folderDefinition)) {
-        qCWarning(lcFolderMan) << "Folder Defnition validation failed for folder" << folderDefinition.localPath();
+        qCWarning(lcFolderMan) << "Folder Definition validation failed for folder" << folderDefinition.localPath();
         return nullptr;
     }
 

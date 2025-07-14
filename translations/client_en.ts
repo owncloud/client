@@ -2005,17 +2005,17 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="142"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="148"/>
         <source>Open sign in again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="151"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="154"/>
         <source>Advanced settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2157,47 +2157,47 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="170"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="175"/>
         <source>URL copied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="172"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="177"/>
         <source>Copy URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="220"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
         <source>Failed to look up webfinger instances: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="234"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="247"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="265"/>
         <source>Unable to retrieve capabilities from server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="256"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>The server is not supported by this client</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="266"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="279"/>
         <source>Error while trying to log in to OAuth2-enabled server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="271"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="284"/>
         <source>Server reports that OAuth2 is not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="288"/>
         <source>Oauth2 authentication requires a secured connection.</source>
         <translation type="unfinished"></translation>
     </message>
