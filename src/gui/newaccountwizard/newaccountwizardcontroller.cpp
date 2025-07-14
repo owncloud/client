@@ -58,8 +58,8 @@ void NewAccountWizardController::setupWizard()
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
     // no cancel button is set by default on mac with the original options. just remove it to bring the cancel button back
     _wizard->setOption(QWizard::NoCancelButton, false);
-    //   _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open %1").arg(appName));
 
+    _wizard->setButtonText(QWizard::BackButton, tr("Back"));
     _wizard->setButtonText(QWizard::CustomButton1, tr("Advanced Settings"));
     _wizard->setOption(QWizard::HaveCustomButton1, true);
 }
@@ -141,10 +141,12 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _oauthController->setAuthenticationUrl(_model->effectiveAuthenticationServerUrl());
     _oauthController->setLookupWebfingerUrls(!_model->webfingerAuthenticationUrl().isEmpty());
 
-    if (_wizard->currentId() != _oauthPageIndex)
-        _wizard->setCurrentId(_oauthPageIndex);
-    if (_wizard->currentId() == _oauthPageIndex)
-        _wizard->validateCurrentPage();
+    // this is also a bit tricky: at this stage the page index is still == _urlPageIndex. However it is in the process of changing to
+    // the oauth page. We can't do the auto-validate on the oauth page here.
+    // note we should also not advance the page here as that would trigger the url page to validate AGAIN which is definitely not what we want -
+    // it already succeeded!
+    // so we just set a flag to auto-validate the oauth page and handle that when we are notified that the page actually changed -> see onPageChanged
+    _autoValidateOAuthPage = true;
 }
 
 // I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
@@ -189,10 +191,14 @@ void NewAccountWizardController::onPageChanged(int newPageIndex)
 {
     if (newPageIndex == _urlPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_urlPageIndex]);
-        _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Next"));
+        _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Sign in"));
     } else if (newPageIndex == _oauthPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_oauthPageIndex]);
         _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Open sign in again"));
+        if (_autoValidateOAuthPage) {
+            _autoValidateOAuthPage = false;
+            _wizard->validateCurrentPage();
+        }
     } else if (newPageIndex == _authSuccessPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_authSuccessPageIndex]);
         // for some reason - probably because this is not the last, last page ever, the focus kept coming out on the

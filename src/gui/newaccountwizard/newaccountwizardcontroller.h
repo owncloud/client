@@ -95,6 +95,7 @@ private:
 
     // this is the only controller we need to explicitly keep our eye on as we need to give it values to start the oauth step
     OAuthPageController *_oauthController = nullptr;
+    bool _autoValidateOAuthPage = false;
 
     QHash<int, QList<QWizard::WizardButton>> _buttonLayouts;
 
