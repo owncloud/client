@@ -95,7 +95,7 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
     connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
     slotAccountStateChanged();
 
-    buildManageAccountMenu();
+    configureManageAccountMenu();
 
     connect(_accountState.get(), &AccountState::isSettingUpChanged, this, [this] {
         if (_accountState->isSettingUp()) {
@@ -504,15 +504,16 @@ void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
     FolderMan::instance()->scheduler()->start();
 }
 
-void AccountSettings::buildManageAccountMenu()
+std::pair<QMenu *, QAction *> AccountSettings::buildManageAccountMenu()
 {
     QMenu *menu = new QMenu(this);
     menu->setAccessibleName(tr("Account options menu"));
 
-    auto *logInOutAction = menu->addAction(tr("Log in"), this, &AccountSettings::slotToggleSignInState);
+    auto *logInOutAction = menu->addAction(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"), this, &AccountSettings::slotToggleSignInState);
     auto *reconnectAction = menu->addAction(tr("Reconnect"), this, [this] { _accountState->checkConnectivity(true); });
     reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-    connect(_accountState, &AccountState::stateChanged, this, [logInOutAction, reconnectAction, this]() {
+
+    connect(_accountState, &AccountState::stateChanged, menu, [logInOutAction, reconnectAction, this]() {
         logInOutAction->setText(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"));
         reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
     });
@@ -520,29 +521,38 @@ void AccountSettings::buildManageAccountMenu()
     menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountSettings::slotOpenAccountInBrowser);
     menu->addAction(tr("Remove"), this, &AccountSettings::slotDeleteAccount);
 
+    return {menu, logInOutAction};
+}
+
+void AccountSettings::configureManageAccountMenu()
+{
     if (Utility::isMac()) {
         // VoiceOver will read the button as a "menu button", clearly indicating that this is not a normal
-        // button, and that a menu will appear. Using the Windows/Linux work-around results in the button
-        // being read as "button" (no indication of the menu), and the setActiveAction doesn't help either.
+        // button, and that a menu will appear.
         //
         // Bug in Qt: the menu somehow is not added to the a11y chain, VoiceOver doesn't "see" it, even
         // when navigating around inside it with the arrow keys.
+        QMenu *menu = buildManageAccountMenu().first;
         ui->manageAccountButton->setMenu(menu);
         ui->manageAccountButton->setPopupMode(QToolButton::InstantPopup);
-    } else {
+    } else if (Utility::isWindows()) {
         // Windows: when using a button-with-a-menu, Narrator will not notice the menu. Manually showing
-        // and placing it, and then setting the first item as active, will have Narrator read this as
-        // "Account options menu, window, Log in, menu item".
-        //
-        // Linux with Gnome: place the menu BELOW the button. If this is omitted, the click event that
-        // opened the menu will be forwarded to the menu, resulting in selecting the first action (!!!),
-        // and immediately close the menu. The work-around is to manually call "popup", which seems
-        // to work in ~60% of the cases. If it doesn't work, select e.g settings, switch back, and try
-        // again.
-        connect(ui->manageAccountButton, &QPushButton::clicked, this, [menu, logInOutAction, button = ui->manageAccountButton] {
+        // and placing it will have Narrator read this as "Account options menu, window".
+        auto menuAndAction = buildManageAccountMenu();
+        connect(ui->manageAccountButton, &QPushButton::clicked, this, [menu = menuAndAction.first, firstAction = menuAndAction.second, button = ui->manageAccountButton] {
             auto pos = button->mapToGlobal(QPoint(0, button->height()));
             menu->popup(pos);
-            menu->setActiveAction(logInOutAction);
+            menu->setActiveAction(firstAction);
+        });
+    } else {
+        // Linux with Gnome: place the menu at the position of the cursor. If it is placed differently,
+        // the click event that opened the menu will be forwarded to the menu, resulting in selecting
+        // the first action (!!!), and immediately close the menu.
+        connect(ui->manageAccountButton, &QPushButton::clicked, this, [this] {
+            QMenu *menu = buildManageAccountMenu().first;
+            menu->setAttribute(Qt::WA_DeleteOnClose);
+            menu->popup(QCursor::pos());
+            menu->setFocus();
         });
     }
 }
