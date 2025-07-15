@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Daniel Molkentin <danimo@owncloud.com>
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,24 +11,28 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+#pragma once
 
-#include "cookiejar.h"
+#include <QObject>
 
-// todo: #31
+#include "wizardpagevalidator.h"
 
-#include <QLoggingCategory>
+class QWizardPage;
 
 namespace OCC {
-
-Q_LOGGING_CATEGORY(lcCookieJar, "sync.cookiejar", QtInfoMsg)
-
-CookieJar::CookieJar(QObject *parent)
-    : QNetworkCookieJar(parent)
+class AuthSuccessPageController : public QObject, public WizardPageValidator
 {
-}
+    Q_OBJECT
+public:
+    explicit AuthSuccessPageController(QWizardPage *page, QObject *parent);
+    bool validate() override;
 
-CookieJar::~CookieJar()
-{
-}
+Q_SIGNALS:
+    void requestAdvancedSettings();
 
-} // namespace OCC
+private:
+    void buildPage();
+
+    QWizardPage *_page = nullptr;
+};
+}

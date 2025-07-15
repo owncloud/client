@@ -71,6 +71,7 @@ public:
     SettingsDialog *settingsDialog() const;
 
     void runNewAccountWizard();
+    void runNewestAccountWizard();
 
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountStatePtr account, bool useVfs);

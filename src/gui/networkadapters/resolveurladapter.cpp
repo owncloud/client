@@ -30,10 +30,11 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcResolveUrlAdapter, "gui.networkadapters.resolveurladapter")
 
-ResolveUrlAdapter::ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QObject *parent)
+ResolveUrlAdapter::ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QWidget *errorDialogParent, QObject *parent)
     : QObject(parent)
     , _nam(nam)
     , _url(url)
+    , _tlsDialogParent(errorDialogParent)
 {
 }
 
@@ -92,7 +93,7 @@ void ResolveUrlAdapter::handleSslErrors(const QList<QSslError> &errors)
             _sslErrors.append(error.errorString());
         }
     } else {
-        auto *tlsErrorDialog = new TlsErrorDialog(filtered, reply->url().host(), ocApp()->gui()->settingsDialog());
+        auto *tlsErrorDialog = new TlsErrorDialog(filtered, reply->url().host(), _tlsDialogParent);
 
         ownCloudGui::raise();
         // we have to exec here or the request finishes too fast

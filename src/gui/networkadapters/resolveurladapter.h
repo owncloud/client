@@ -20,6 +20,7 @@
 #include <QUrl>
 
 class QNetworkAccessManager;
+class QWidget;
 
 namespace OCC {
 
@@ -51,13 +52,16 @@ public:
      * @brief ResolveUrlAdapter
      * @param nam is the network access manager provided by the caller
      * @param url is the url which will be validated by the request
+     * @param errorDialogParent should be the current top level window. Because this adapter will often be used in the new account wizard
+     * which is already a modal dialog on top of the main window, and we get some quirky behavior on linux if we use the main window to
+     * parent the tls dialog
      * @param parent fits normal QObject parenting concept. The intent of the adapter is to create an instance on the stack and
      * let it naturally go out of scope after getResult has completed, so a parent should not be required in normal use
      */
-    explicit ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QObject *parent = nullptr);
+    explicit ResolveUrlAdapter(QNetworkAccessManager *nam, const QUrl &url, QWidget *errorDialogParent, QObject *parent = nullptr);
 
     /**
-     * @brief getResult executes a network request asynchronously
+     * @brief getResult executes a network request synchronously
      * @return the result of the request
      *
      * Important detail: if the reply contains certificates the user will be asked to accept them before this function returns.
@@ -70,8 +74,9 @@ private:
 
     QNetworkAccessManager *_nam;
     QUrl _url;
+    QWidget *_tlsDialogParent;
+
     QStringList _sslErrors;
-    // made this a qset since that is what the account uses for certs. It just makes it easier to move the data around using same type
     QSet<QSslCertificate> _certificates;
 };
 }

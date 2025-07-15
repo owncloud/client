@@ -38,6 +38,7 @@ owncloud_add_test(RemoteDiscovery)
 owncloud_add_test(Permissions)
 owncloud_add_test(DatabaseError)
 owncloud_add_test(LockedFiles)
+owncloud_add_test(Adapters ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp)
 
 if (WITH_AUTO_UPDATER)
     owncloud_add_test(Updater)
@@ -54,7 +55,7 @@ owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
-owncloud_add_test(OAuth)
+owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp)
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 

@@ -24,7 +24,6 @@
 #include "gui/qmlutils.h"
 #include "owncloudgui.h"
 #include "resources/qmlresources.h"
-#include "resources/resources.h"
 #include "theme.h"
 
 #include <QMessageBox>
@@ -36,6 +35,8 @@
 
 void setActivationPolicy(ActivationPolicy policy);
 #endif
+
+// #define USE_NEW_ACCOUNT_WIZARD
 
 Q_LOGGING_CATEGORY(lcSettingsDialog, "gui.settingsdialog", QtInfoMsg);
 
@@ -278,7 +279,11 @@ Account *SettingsDialog::currentAccount() const
 
 void SettingsDialog::addAccount()
 {
+#ifdef USE_NEW_ACCOUNT_WIZARD
+    ocApp()->gui()->runNewestAccountWizard();
+#else
     ocApp()->gui()->runNewAccountWizard();
+#endif
 }
 
 } // namespace OCC

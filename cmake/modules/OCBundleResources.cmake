@@ -90,6 +90,7 @@ function(generate_theme TARGET OWNCLOUD_SIDEBAR_ICONS_OUT)
         # full theme
         __addIcon(${QRC_PATH} "universal" "${APPLICATION_ICON_NAME}-icon")
         __addIcon(${QRC_PATH} "universal" "wizard_logo")
+		__addIcon(${QRC_PATH} "universal" "wizard_logo_dark")
         __addIcon(${QRC_PATH} "universal" "wizard_footer_logo")
 
         __addUrlIcons(${QRC_PATH})

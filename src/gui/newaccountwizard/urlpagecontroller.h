@@ -14,13 +14,37 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 #include <QSslCertificate>
+#include <QUrl>
 
 #include "wizardpagevalidator.h"
 
 class QWizardPage;
+class QLineEdit;
+class QLabel;
 
 namespace OCC {
+
+/**
+ * @brief The UrlPageResults class contains all the possible values this controller can collect.
+ *
+ *   baseServerUrl is the "original" server url (https://somehost/<optional path> that appears in the gui either via user input or
+ *   provided by the theme
+ *   webfingerServiceUrl is the url for a webfinger service discovered during validation. If this is empty, no webfinger service is
+ *   available
+ *   trustedCertificates holds any certificates the user accepted in the course of validation. This will only be non-empty in
+ *   exceptional cases (eg with very poorly configured hosts that do not provide legit, signed certs)
+ *   error holds a beautified error message. This may go away as I don't think the owner of the controller needs to do anything with it.
+ */
+struct UrlPageResults
+{
+    QUrl baseServerUrl;
+    QUrl webfingerServiceUrl;
+    QSet<QSslCertificate> certificates;
+
+    QString error;
+};
 
 class AccessManager;
 
@@ -43,8 +67,10 @@ public:
      */
     explicit UrlPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent);
 
-    // the wizard will call this when the user presses the next button. so far this method will also signal success() to the main controller
-    // and pass the values collected/verified but that may be replaced with a dedicated model down the road.
+    /**
+     * @brief validate evaluates the given url, performs various checks, and signals the UrlPageResults to interested parties
+     * @return true of the validation succeeded, false if it failed
+     */
     bool validate() override;
 
     // ideally we should have a QRegExValidator on the url line edit and only when that passes,
@@ -52,34 +78,42 @@ public:
     // obviously bogus url. this is future as a final polishing step.
 
 Q_SIGNALS:
-    // eh - this probably won't work
-    // the "normal" way to do it would be to create a model for this controller that contains these values
-    // and let the main controller create it/pass it so it has direct access to the results. We should not use the main
-    // controller model imo since we don't want to accept the values until all have been successfully obtained.
-    // a dedicated model will also make testing easier. this is tbd once we have some basic functional impl for the wizard
-    // and first page.
+
     /**
-     * @brief success is emitted when the validation has passed without errors
-     * @param serverUrl is the "original" server url (https://somehost/<optional path> that appears in the gui.
-     * @param webfingerUrl is the url for a webfinger service discovered during validation. If this is empty, no webfinger service is
-     * available
-     * @param trustedCertificates holds any certificates the user accepted in the course of validation. This will only be non-empty in
-     * exceptional cases (eg with very poorly configured hosts that do not provide legit, signed certs)
-     *
-     * if OAuth is not supported by the target server the whole validation will fail.
+     * @brief success is emitted when the validation has succeeded.
+     * note we do not track the authentication method anymore since there is only one. If OAuth is not supported by the target server the
+     * whole validation will fail.
      */
-    void success(const QUrl &serverUrl, const QUrl &webfingerUrl, QSet<QSslCertificate> trustedCertificates);
+    void success(const OCC::UrlPageResults &);
+    /**
+     * @brief failure is emitted when a validation error has occurred. Some of the values in the result may be valid, depending on
+     * how far the validation got before it failed.
+     */
+    void failure(const OCC::UrlPageResults &);
 
 private:
-    QWizardPage *_page;
-    AccessManager *_accessManager;
+    QPointer<QWizardPage> _page;
+    QPointer<AccessManager> _accessManager;
 
-    // need to factor in any url val that comes from the theme and set the url to that
-    // consider: make the url field read only if the url comes from the theme, and make sure "next" is enabled.
-    // docs say that the QWizard checks changes/diffs to mandatory fields since initializePage was called so it's probably better
-    // to buildPage then set the url value in separate step
+    QLineEdit *_urlField;
+    QLabel *_errorField;
+
+    UrlPageResults _results;
+
     /** sets up the wizard page with appropriate content and connect any signals to eg the url QLineEdit */
     void buildPage();
+    /** sets the url value in the line edit */
+    void setUrl(const QString &urlText);
+    /** displays the error in the page, sets the error value in the results and emits failure(error) */
+    void handleError(const QString &error);
+    /** performs some rudimentary checks on the url format, adds https:// if there is no scheme provided
+     *  we should replace this with a QValidator that uses a more stringent regex
+     *  the validator::fixup method can be used to add the https scheme
+     */
+    QUrl checkUrl();
 };
-
 }
+Q_DECLARE_METATYPE(OCC::UrlPageResults)
+// this type id is throwaway, we just use it to ensure we declare the meta type only ONCE
+// also this is only required to use the type cross thread, or with QSignalSpy during testing
+static const int urlPageResultsTypeId = qRegisterMetaType<OCC::UrlPageResults>();

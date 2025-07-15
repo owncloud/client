@@ -35,6 +35,10 @@
 #include "setupwizardcontroller.h"
 #include "sharedialog.h"
 
+#include "newaccountwizard/newaccountmodel.h"
+#include "newaccountwizard/newaccountwizard.h"
+#include "newaccountwizard/newaccountwizardcontroller.h"
+
 #include "libsync/graphapi/spacesmanager.h"
 
 #include "resources/resources.h"
@@ -774,6 +778,19 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
     }
 }
 
+void ownCloudGui::runNewestAccountWizard()
+{
+    NewAccountWizard wizard(settingsDialog());
+    NewAccountModel model(nullptr);
+    NewAccountWizardController wizardController(&model, &wizard, nullptr);
+    ownCloudGui::raise();
+    int result = wizard.exec();
+    if (result == QDialog::Accepted)
+        qDebug() << "accepted";
+    else
+        qDebug() << "rejected";
+}
+
 // todo: #28
 void ownCloudGui::runNewAccountWizard()
 {
@@ -816,11 +833,6 @@ void ownCloudGui::runNewAccountWizard()
                                 // this is needed to ensure a consistent state in the config file upon unexpected terminations of the client
                                 // (for instance, when running from a debugger and stopping the process from there)
                                 AccountManager::instance()->save(true);
-
-                                // only now, we can store the dynamic registration data in the keychain
-                                if (!dynamicRegistrationData.isEmpty()) {
-                                    OAuth::saveDynamicRegistrationDataForAccount(accountStatePtr->account(), dynamicRegistrationData);
-                                }
 
                                 // the account is now ready, emulate a normal account loading and Q_EMIT that the credentials are ready
                                 // Refactoring todo: no. the account should emit this when it meets some internal state, not the gui controller!!!!

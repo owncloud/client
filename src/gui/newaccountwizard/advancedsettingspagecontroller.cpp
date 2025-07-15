@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Daniel Molkentin <danimo@owncloud.com>
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,24 +11,29 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+#include "advancedsettingspagecontroller.h"
 
-#include "cookiejar.h"
-
-// todo: #31
-
-#include <QLoggingCategory>
+#include <QWizardPage>
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcCookieJar, "sync.cookiejar", QtInfoMsg)
-
-CookieJar::CookieJar(QObject *parent)
-    : QNetworkCookieJar(parent)
+AdvancedSettingsPageController::AdvancedSettingsPageController(QWizardPage *page, QObject *parent)
+    : QObject{parent}
+    , _page(page)
 {
+    buildPage();
 }
 
-CookieJar::~CookieJar()
+void AdvancedSettingsPageController::buildPage()
 {
+    if (!_page)
+        return;
+
+    _page->setTitle(QStringLiteral("AdvancedSetttingsPage"));
 }
 
-} // namespace OCC
+bool AdvancedSettingsPageController::validate()
+{
+    return true;
+}
+}
