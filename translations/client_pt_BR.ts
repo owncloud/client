@@ -934,6 +934,29 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     </message>
 </context>
 <context>
+    <name>OCC::AuthSuccessPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="45"/>
+        <source>Application Name Logo %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="47"/>
+        <source>You&apos;re all set! Open %1 and get started.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="56"/>
+        <source>Advanced Settings</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="82"/>
+        <source>Additional logo defined by the organization</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::ConnectionValidator</name>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="75"/>
@@ -1977,29 +2000,24 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="54"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Welcome to %1</source>
         <translation>Bem vindo a %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="60"/>
-        <source>Open %1</source>
-        <translation>Abrir %1</translation>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
+        <source>Advanced Settings</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="184"/>
         <source>Next</source>
         <translation>Próximo</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="148"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="187"/>
         <source>Open sign in again</source>
         <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="154"/>
-        <source>Advanced settings</source>
-        <translation>Configurações avançadas</translation>
     </message>
 </context>
 <context>
