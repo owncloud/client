@@ -2,8 +2,8 @@ name: "Update translations"
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 3 * * *"
+  #schedule:
+  #  - cron: "0 3 * * *"
 
 permissions: {}
 
@@ -26,7 +26,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           submodules: recursive
-          ref: "master"
+          ref: "6"
 
       - name: install-deps
         run: sudo apt install -y qt6-l10n-tools
