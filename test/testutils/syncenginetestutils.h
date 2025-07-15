@@ -226,12 +226,12 @@ public:
 
     QDateTime lastModified() const
     {
-        return QDateTime::fromSecsSinceEpoch(_lastModifiedInSecondsUTC, Qt::LocalTime);
+        return QDateTime::fromSecsSinceEpoch(_lastModifiedInSecondsUTC, QTimeZone::LocalTime);
     }
 
     QDateTime lastModifiedInUtc() const
     {
-        return QDateTime::fromSecsSinceEpoch(_lastModifiedInSecondsUTC, Qt::UTC);
+        return QDateTime::fromSecsSinceEpoch(_lastModifiedInSecondsUTC, QTimeZone::UTC);
     }
 
     void setLastModified(const QDateTime &t)
