@@ -70,8 +70,11 @@ set(client_SRCS
     guiutility.cpp
     elidedlabel.cpp
     translations.cpp
+
+    creds/httpcredentials.cpp
     creds/httpcredentialsgui.cpp
     creds/qmlcredentials.cpp
+    creds/oauth.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp

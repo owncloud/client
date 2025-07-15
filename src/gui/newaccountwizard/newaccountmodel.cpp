@@ -47,17 +47,17 @@ void NewAccountModel::setWebfingerAuthenticationUrl(const QUrl &newWebfingerAuth
     Q_EMIT webfingerAuthenticationUrlChanged(_webfingerAuthenticationUrl);
 }
 
-QUrl NewAccountModel::webfingerUserUrl() const
+QUrl NewAccountModel::webfingerUserInfoUrl() const
 {
-    return _webfingerUserUrl;
+    return _webfingerUserInfoUrl;
 }
 
-void NewAccountModel::setWebfingerUserUrl(const QUrl &newWebfingerUserUrl)
+void NewAccountModel::setWebfingerUserInfoUrl(const QUrl &newWebfingerUserUrl)
 {
-    if (_webfingerUserUrl == newWebfingerUserUrl)
+    if (_webfingerUserInfoUrl == newWebfingerUserUrl)
         return;
-    _webfingerUserUrl = newWebfingerUserUrl;
-    Q_EMIT webfingerUserUrlChanged(_webfingerUserUrl);
+    _webfingerUserInfoUrl = newWebfingerUserUrl;
+    Q_EMIT webfingerUserInfoUrlChanged(_webfingerUserInfoUrl);
 }
 
 QSet<QSslCertificate> NewAccountModel::trustedCertificates() const
@@ -99,4 +99,62 @@ void NewAccountModel::setDisplayName(const QString &newDisplayName)
     Q_EMIT displayNameChanged(_displayName);
 }
 
+QString NewAccountModel::davUser() const
+{
+    return _davUser;
+}
+
+void NewAccountModel::setDavUser(const QString &newDavUser)
+{
+    if (_davUser == newDavUser)
+        return;
+    _davUser = newDavUser;
+    Q_EMIT davUserChanged(_davUser);
+}
+
+QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
+{
+    if (!_webfingerAuthenticationUrl.isEmpty())
+        return _webfingerAuthenticationUrl;
+    return _serverUrl;
+}
+
+QString NewAccountModel::authToken() const
+{
+    return _authToken;
+}
+
+void NewAccountModel::setAuthToken(const QString &newAuthToken)
+{
+    if (_authToken == newAuthToken)
+        return;
+    _authToken = newAuthToken;
+    Q_EMIT authTokenChanged(_authToken);
+}
+
+QString NewAccountModel::refreshToken() const
+{
+    return _refreshToken;
+}
+
+void NewAccountModel::setRefreshToken(const QString &newRefreshToken)
+{
+    if (_refreshToken == newRefreshToken)
+        return;
+    _refreshToken = newRefreshToken;
+    Q_EMIT refreshTokenChanged(_refreshToken);
+}
+
+Capabilities NewAccountModel::capabilities() const
+{
+    return _capabilities;
+}
+
+void NewAccountModel::setCapabilities(const Capabilities &newCapabilities)
+{
+    // if (_capabilities == newCapabilities)
+    //    return;
+    _capabilities = newCapabilities;
+    Q_EMIT capabilitiesChanged(_capabilities);
+}
 }

@@ -67,8 +67,10 @@ public:
      */
     explicit UrlPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent);
 
-    // the wizard will call this when the user presses the next button. so far this method will also signal success() to the main controller
-    // and pass the values collected/verified but that may be replaced with a dedicated model down the road.
+    /**
+     * @brief validate evaluates the given url, performs various checks, and signals the UrlPageResults to interested parties
+     * @return true of the validation succeeded, false if it failed
+     */
     bool validate() override;
 
     // ideally we should have a QRegExValidator on the url line edit and only when that passes,
@@ -76,19 +78,17 @@ public:
     // obviously bogus url. this is future as a final polishing step.
 
 Q_SIGNALS:
-    // eh - this probably won't work
-    // the "normal" way to do it would be to create a model for this controller that contains these values
-    // and let the main controller create it/pass it so it has direct access to the results. We should not use the main
-    // controller model imo since we don't want to accept the values until all have been successfully obtained.
-    // a dedicated model will also make testing easier. this is tbd once we have some basic functional impl for the wizard
-    // and first page.
+
     /**
-     *      *
-     * if OAuth is not supported by the target server the whole validation will fail.
+     * @brief success is emitted when the validation has succeeded.
+     * note we do not track the authentication method anymore since there is only one. If OAuth is not supported by the target server the
+     * whole validation will fail.
      */
     void success(const OCC::UrlPageResults &);
-    // I think it also makes sense to return the results on failure, in case the listener wants to eval the values that were successfully
-    // gathered.
+    /**
+     * @brief failure is emitted when a validation error has occurred. Some of the values in the result may be valid, depending on
+     * how far the validation got before it failed.
+     */
     void failure(const OCC::UrlPageResults &);
 
 private:

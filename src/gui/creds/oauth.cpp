@@ -16,11 +16,10 @@
 
 #include "accessmanager.h"
 #include "account.h"
-#include "common/version.h"
-#include "credentialmanager.h"
 #include "creds/credentialssupport.h"
+#include "gui/networkadapters/userinfoadapter.h"
+#include "libsync/creds/credentialmanager.h"
 #include "networkjobs/checkserverjobfactory.h"
-#include "networkjobs/fetchuserinfojobfactory.h"
 #include "resources/template.h"
 #include "theme.h"
 
@@ -99,8 +98,58 @@ QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *er
     }
     return *out;
 }
+}
 
-void httpReplyAndClose(const QPointer<QTcpSocket> &socket, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {})
+OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)
+    : QObject(parent)
+    , _serverUrl(serverUrl)
+    , _davUser(davUser)
+    , _networkAccessManager(networkAccessManager)
+    , _clientId(Theme::instance()->oauthClientId())
+    , _clientSecret(Theme::instance()->oauthClientSecret())
+    , _redirectUrl(Theme::instance()->oauthLocalhost())
+    , _supportedPromptValues(defaultOauthPromptValue())
+{
+}
+
+OAuth::~OAuth() = default;
+
+void OAuth::startAuthentication()
+{
+    qCDebug(lcOauth) << "starting authentication";
+
+    // Listen on the socket to get a port which will be used in the redirect_uri
+
+    QList<quint16> ports = Theme::instance()->oauthPorts();
+    for (const auto port : std::as_const(ports)) {
+        if (_server.listen(QHostAddress::LocalHost, port)) {
+            break;
+        }
+        qCDebug(lcOauth) << "Creating local server Port:" << port << "failed. Error:" << _server.errorString();
+    }
+    if (!_server.isListening()) {
+        qCDebug(lcOauth) << "server is not listening";
+        Q_EMIT result(Error, {});
+        return;
+    }
+
+    _pkceCodeVerifier = generateRandomString(24);
+    OC_ASSERT(_pkceCodeVerifier.size() == 128)
+    _state = generateRandomString(8);
+
+    connect(this, &OAuth::fetchWellKnownFinished, this, &OAuth::authorisationLinkChanged);
+
+    fetchWellKnown();
+
+    QObject::connect(&_server, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
+}
+
+void OAuth::httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
+{
+    httpReplyAndClose(_socket, code, title, body, additionalHeader);
+}
+
+void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
 {
     if (!socket) {
         return; // socket can have been deleted if the browser was closed
@@ -124,192 +173,178 @@ void httpReplyAndClose(const QPointer<QTcpSocket> &socket, const QString &code, 
 
     socket->write(msg);
     socket->disconnectFromHost();
-
-    // We don't want that deleting the server too early prevent queued data to be sent on this socket.
-    // The socket will be deleted after disconnection because disconnected is connected to deleteLater
+    // this is super important as we may delete the oauth/server before the socket has completed its work
+    // let the deleteLater on final disconnect take care of the cleanup
     socket->setParent(nullptr);
 }
-}
 
-OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)
-    : QObject(parent)
-    , _serverUrl(serverUrl)
-    , _davUser(davUser)
-    , _networkAccessManager(networkAccessManager)
-    , _clientId(Theme::instance()->oauthClientId())
-    , _clientSecret(Theme::instance()->oauthClientSecret())
-    , _redirectUrl(Theme::instance()->oauthLocalhost())
-    , _supportedPromptValues(defaultOauthPromptValue())
-{
-}
-
-OAuth::~OAuth() = default;
-
-void OAuth::startAuthentication()
-{
-    qCDebug(lcOauth) << "starting authentication";
-
-    // Listen on the socket to get a port which will be used in the redirect_uri
-
-    for (const auto port : Theme::instance()->oauthPorts()) {
-        if (_server.listen(QHostAddress::LocalHost, port)) {
-            break;
-        }
-        qCDebug(lcOauth) << "Creating local server Port:" << port << "failed. Error:" << _server.errorString();
-    }
-    if (!_server.isListening()) {
-        qCDebug(lcOauth) << "server is not listening";
-        Q_EMIT result(Error, {});
-        return;
-    }
-
-    _pkceCodeVerifier = generateRandomString(24);
-    OC_ASSERT(_pkceCodeVerifier.size() == 128)
-    _state = generateRandomString(8);
-
-    connect(this, &OAuth::fetchWellKnownFinished, this, &OAuth::authorisationLinkChanged);
-
-    fetchWellKnown();
-
-    QObject::connect(&_server, &QTcpServer::newConnection, this, [this] {
-        while (QPointer<QTcpSocket> socket = _server.nextPendingConnection()) {
-            qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
-
-            QObject::connect(socket.data(), &QTcpSocket::disconnected, socket.data(), &QTcpSocket::deleteLater);
-
-            QObject::connect(socket.data(), &QIODevice::readyRead, this, [this, socket] {
-                const QByteArray peek = socket->peek(qMin(socket->bytesAvailable(), 4000LL)); //The code should always be within the first 4K
-
-                // wait until we find a \n
-                if (!peek.contains('\n')) {
-                    return;
-                }
-
-                qCDebug(lcOauth) << "Server provided:" << peek;
-
-                const auto getPrefix = QByteArrayLiteral("GET /?");
-                if (!peek.startsWith(getPrefix)) {
-                    httpReplyAndClose(socket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
-                    return;
-                }
-                const auto endOfUrl = peek.indexOf(' ', getPrefix.length());
-                const QUrlQuery args(QUrl::fromPercentEncoding(peek.mid(getPrefix.length(), endOfUrl - getPrefix.length())));
-                if (args.queryItemValue(QStringLiteral("state")).toUtf8() != _state) {
-                    httpReplyAndClose(socket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
-                    return;
-                }
-
-                // server port cannot be queried any more after server has been closed, which we want to do as early as possible in the processing chain
-                // therefore we have to store it beforehand
-                const auto serverPort = _server.serverPort();
-
-                // we only allow one response
-                qCDebug(lcOauth) << "Received the first valid response, closing server socket";
-                _server.close();
-
-                auto reply = postTokenRequest({
-                    { QStringLiteral("grant_type"), QStringLiteral("authorization_code") },
-                    { QStringLiteral("code"), args.queryItemValue(QStringLiteral("code")) },
-                    { QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(serverPort)) },
-                    { QStringLiteral("code_verifier"), QString::fromUtf8(_pkceCodeVerifier) },
-                });
-
-                connect(reply, &QNetworkReply::finished, this, [reply, socket, this] {
-                    const auto jsonData = reply->readAll();
-                    QJsonParseError jsonParseError;
-                    const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
-                    QString fieldsError;
-                    const QString accessToken = getRequiredField(data, QStringLiteral("access_token"), &fieldsError).toString();
-                    const QString refreshToken = getRequiredField(data, QStringLiteral("refresh_token"), &fieldsError).toString();
-                    const QString tokenType = getRequiredField(data, QStringLiteral("token_type"), &fieldsError).toString().toLower();
-                    const QUrl messageUrl = QUrl::fromEncoded(data[QStringLiteral("message_url")].toByteArray());
-
-                    if (reply->error() != QNetworkReply::NoError || jsonParseError.error != QJsonParseError::NoError
-                        || !fieldsError.isEmpty()
-                        || tokenType != QLatin1String("bearer")) {
-                        // do we have error message suitable for users?
-                        QString errorReason = data[QStringLiteral("error_description")].toString();
-                        if (errorReason.isEmpty()) {
-                            // fall back to technical error
-                            errorReason = data[QStringLiteral("error")].toString();
-                        }
-                        if (!errorReason.isEmpty()) {
-                            errorReason = tr("Error returned from the server: <em>%1</em>")
-                                              .arg(errorReason.toHtmlEscaped());
-                        } else if (reply->error() != QNetworkReply::NoError) {
-                            errorReason = tr("There was an error accessing the 'token' endpoint: <br><em>%1</em>")
-                                              .arg(reply->errorString().toHtmlEscaped());
-                        } else if (jsonParseError.error != QJsonParseError::NoError) {
-                            errorReason = tr("Could not parse the JSON returned from the server: <br><em>%1</em>")
-                                              .arg(jsonParseError.errorString());
-                        } else if (tokenType != QStringLiteral("bearer")) {
-                            errorReason = tr("Unsupported token type: %1").arg(tokenType);
-                        } else if (!fieldsError.isEmpty()) {
-                            errorReason = tr("The reply from the server did not contain all expected fields\n:%1").arg(fieldsError);
-                        } else {
-                            errorReason = tr("Unknown Error");
-                        }
-                        qCWarning(lcOauth) << "Error when getting the accessToken" << errorReason;
-                        httpReplyAndClose(socket, QStringLiteral("500 Internal Server Error"),
-                            tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(errorReason));
-                        Q_EMIT result(Error);
-                        return;
-                    }
-
-                    if (!_davUser.isEmpty()) {
-                        auto *job = FetchUserInfoJobFactory::fromOAuth2Credentials(_networkAccessManager, accessToken).startJob(_serverUrl, this);
-
-                        connect(job, &CoreJob::finished, this, [=]() {
-                            if (!job->success()) {
-                                httpReplyAndClose(socket, QStringLiteral("500 Internal Server Error"), tr("Login Error"),
-                                    tr("<h1>Login Error</h1><p>%1</p>").arg(job->errorMessage()));
-                                Q_EMIT result(Error);
-                            } else {
-                                auto fetchUserInfo = job->result().value<FetchUserInfoResult>();
-
-                                // note: the username still shouldn't be empty
-                                Q_ASSERT(!_davUser.isEmpty());
-
-                                // dav usernames are case-insensitive, we might compare a user input with the string provided by the server
-                                if (fetchUserInfo.userName().compare(_davUser, Qt::CaseInsensitive) != 0) {
-                                    // Connected with the wrong user
-                                    qCWarning(lcOauth) << "We expected the user" << _davUser << "but the server answered with user" << fetchUserInfo.userName();
-                                    const QString message = tr("<h1>Wrong user</h1>"
-                                                               "<p>You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
-                                                               "Please return to the %3 client and restart the authentication.</p>")
-                                                                .arg(fetchUserInfo.userName(), _davUser, Theme::instance()->appNameGUI());
-                                    httpReplyAndClose(socket, QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
-                                    Q_EMIT result(Error);
-                                } else {
-                                    finalize(socket, accessToken, refreshToken, messageUrl);
-                                }
-                            }
-                        });
-                    } else {
-                        finalize(socket, accessToken, refreshToken, messageUrl);
-                    }
-                });
-            });
-        }
-    });
-}
-
-void OAuth::finalize(const QPointer<QTcpSocket> &socket, const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
+void OAuth::finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
 {
     const QString loginSuccessfulHtml = tr("<h1>Login Successful</h1><p>You can close this window.</p>");
     const QString loginSuccessfulTitle = tr("Login Successful");
     if (messageUrl.isValid()) {
-        httpReplyAndClose(socket, QStringLiteral("303 See Other"), loginSuccessfulTitle, loginSuccessfulHtml,
+        httpReplyAndClose(QStringLiteral("303 See Other"), loginSuccessfulTitle, loginSuccessfulHtml,
             {QStringLiteral("Location: %1").arg(QString::fromUtf8(messageUrl.toEncoded()))});
     } else {
-        httpReplyAndClose(socket, QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
+        httpReplyAndClose(QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
     }
     Q_EMIT result(LoggedIn, accessToken, refreshToken);
 }
 
+// the tcp server handling has to be done async while we wait for a suitable socket with which to communiciate with the
+// authentication web page. The async handling for tcp includes this function + the handleSocketReadyRead
+void OAuth::handleTcpConnection()
+{
+    while (_server.hasPendingConnections()) {
+        auto socket = _server.nextPendingConnection();
+
+        qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
+
+        QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
+
+        QObject::connect(socket, &QIODevice::readyRead, this, &OAuth::handleSocketReadyRead);
+    }
+}
+
+void OAuth::handleSocketReadyRead()
+{
+    // we already have the socket we want to use to complete the auth communications so ignore any other incoming
+    // sockets
+    if (!_server.isListening())
+        return;
+
+    QTcpSocket *connected = qobject_cast<QTcpSocket *>(sender());
+    if (!connected) {
+        // something is really wrong
+        return;
+    }
+    QPointer<QTcpSocket> candidateSocket(connected);
+
+    Q_ASSERT(connected->state() == QAbstractSocket::ConnectedState);
+
+    const QByteArray peek = candidateSocket->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
+
+    // wait until we find a \n
+    if (!peek.contains('\n')) {
+        return;
+    }
+
+    qCDebug(lcOauth) << "Server provided:" << peek;
+
+    const auto getPrefix = QByteArrayLiteral("GET /?");
+    if (!peek.startsWith(getPrefix)) {
+        httpReplyAndClose(candidateSocket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
+        return;
+    }
+    const auto endOfUrl = peek.indexOf(' ', getPrefix.length());
+
+    _queryArgs = QUrlQuery(QUrl::fromPercentEncoding(peek.mid(getPrefix.length(), endOfUrl - getPrefix.length())));
+
+    if (_queryArgs.queryItemValue(QStringLiteral("state")).toUtf8() != _state) {
+        httpReplyAndClose(candidateSocket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
+        return;
+    }
+
+    // basic checks passed, we now want to commit to this socket all other pending connections will effectively be
+    // ignored from here out. To ensure we get as few stray connections as possible, just close the server
+    _socket = candidateSocket;
+
+    // server port cannot be queried any more after server has been closed, which we want to do as early as possible in the processing chain
+    // therefore we have to store it beforehand
+    _serverPort = _server.serverPort();
+    _server.close();
+
+    getTokens();
+}
+
+// todo: #24 - this can be converted to an adapter
+void OAuth::getTokens()
+{
+    auto postTokenReply = postTokenRequest({
+        {QStringLiteral("grant_type"), QStringLiteral("authorization_code")},
+        {QStringLiteral("code"), _queryArgs.queryItemValue(QStringLiteral("code"))},
+        {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_serverPort))},
+        {QStringLiteral("code_verifier"), QString::fromUtf8(_pkceCodeVerifier)},
+    });
+
+    connect(postTokenReply, &QNetworkReply::finished, this, [postTokenReply, this] {
+        const auto jsonData = postTokenReply->readAll();
+        QJsonParseError jsonParseError;
+        const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
+        QString fieldsError;
+        _accessToken = getRequiredField(data, QStringLiteral("access_token"), &fieldsError).toString();
+        _refreshToken = getRequiredField(data, QStringLiteral("refresh_token"), &fieldsError).toString();
+        const QString tokenType = getRequiredField(data, QStringLiteral("token_type"), &fieldsError).toString().toLower();
+        _messageUrl = QUrl::fromEncoded(data[QStringLiteral("message_url")].toByteArray());
+
+        if (postTokenReply->error() != QNetworkReply::NoError || jsonParseError.error != QJsonParseError::NoError || !fieldsError.isEmpty()
+            || tokenType != QLatin1String("bearer")) {
+            // do we have error message suitable for users?
+            QString errorReason = data[QStringLiteral("error_description")].toString();
+            if (errorReason.isEmpty()) {
+                // fall back to technical error
+                errorReason = data[QStringLiteral("error")].toString();
+            }
+            if (!errorReason.isEmpty()) {
+                errorReason = tr("Error returned from the server: <em>%1</em>").arg(errorReason.toHtmlEscaped());
+            } else if (postTokenReply->error() != QNetworkReply::NoError) {
+                errorReason = tr("There was an error accessing the 'token' endpoint: <br><em>%1</em>").arg(postTokenReply->errorString().toHtmlEscaped());
+            } else if (jsonParseError.error != QJsonParseError::NoError) {
+                errorReason = tr("Could not parse the JSON returned from the server: <br><em>%1</em>").arg(jsonParseError.errorString());
+            } else if (tokenType != QStringLiteral("bearer")) {
+                errorReason = tr("Unsupported token type: %1").arg(tokenType);
+            } else if (!fieldsError.isEmpty()) {
+                errorReason = tr("The reply from the server did not contain all expected fields\n:%1").arg(fieldsError);
+            } else {
+                errorReason = tr("Unknown Error");
+            }
+            qCWarning(lcOauth) << "Error when getting the accessToken" << errorReason;
+            httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(errorReason));
+            Q_EMIT result(Error);
+            return;
+        }
+
+        // this check is important when reauthenticating an existing account, where a davUser is already defined.
+        // In this context, the check just validates that the user had not authenticated with a different username from the account
+        if (!_davUser.isEmpty()) {
+            checkUserInfo();
+        } else { // davUser is empty so we are done:
+            finalize(_accessToken, _refreshToken, _messageUrl);
+        }
+    });
+}
+
+void OAuth::checkUserInfo()
+{
+    Q_ASSERT(!_davUser.isEmpty());
+
+    UserInfoAdapter infoAdapter(_networkAccessManager, _accessToken, _serverUrl);
+    const UserInfoResult infoResult = infoAdapter.getResult();
+
+    if (!infoResult.success()) {
+        httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(infoResult.error));
+        Q_EMIT result(Error);
+    } else {
+        if (infoResult.userId.compare(_davUser, Qt::CaseInsensitive) != 0) {
+            // Connected with the wrong user
+            qCWarning(lcOauth) << "We expected the user" << _davUser << "but the server answered with user" << infoResult.userId;
+            const QString message = tr("<h1>Wrong user</h1>"
+                                       "<p>You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
+                                       "Please return to the %3 client and restart the authentication.</p>")
+                                        .arg(infoResult.userId, _davUser, Theme::instance()->appNameGUI());
+            httpReplyAndClose(QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
+            Q_EMIT result(Error);
+        } else {
+            finalize(_accessToken, _refreshToken, _messageUrl);
+        }
+    }
+}
+
+// todo: #24 - I think this should also be an adapter. I also have a vague recollection that we have a job that does this already
 QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
 {
-    const QUrl requestTokenUrl = _tokenEndpoint.isEmpty() ? Utility::concatUrlPath(_serverUrl, QStringLiteral("/index.php/apps/oauth2/api/v1/token")) : _tokenEndpoint;
+    const QUrl requestTokenUrl =
+        _tokenEndpoint.isEmpty() ? Utility::concatUrlPath(_serverUrl, QStringLiteral("/index.php/apps/oauth2/api/v1/token")) : _tokenEndpoint;
     QNetworkRequest req;
     req.setTransferTimeout(defaultTimeoutMs());
     switch (_endpointAuthMethod) {
@@ -342,8 +377,8 @@ QUrl OAuth::authorisationLink() const
     Q_ASSERT(_server.isListening());
     Q_ASSERT(_wellKnownFinished);
 
-    const QByteArray code_challenge = QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256)
-                                          .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+    const QByteArray code_challenge =
+        QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256).toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _clientId},
         {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_server.serverPort()))},
         {QStringLiteral("code_challenge"), QString::fromLatin1(code_challenge)}, {QStringLiteral("code_challenge_method"), QStringLiteral("S256")},
@@ -425,9 +460,9 @@ void OAuth::fetchWellKnown()
  * @param url URL to validate
  * @return true if validation is successful, false otherwise
  */
-bool isUrlValid(const QUrl &url)
+bool isUrlSchemeValid(const QUrl &url)
 {
-    qCDebug(lcOauth()) << "Checking URL for validity:" << url;
+    qCDebug(lcOauth()) << "Checking URL scheme for validity:" << url;
 
     // todo: #21 - I am not sure this check has much of a point to begin with as
     // we have already validated any URL via user input OR we take the url from the webfinger service,
@@ -436,7 +471,7 @@ bool isUrlValid(const QUrl &url)
     // the following allow list contains URL schemes accepted as valid
     // OAuth 2.0 URLs must be HTTPS to be in compliance with the specification
     // for unit tests, we also permit the non existing oauthtest scheme
-    const QStringList allowedSchemes({ QStringLiteral("https"), QStringLiteral("oauthtest") });
+    const QStringList allowedSchemes({QStringLiteral("https"), QStringLiteral("oauthtest")});
     return allowedSchemes.contains(url.scheme());
 }
 
@@ -446,7 +481,7 @@ void OAuth::openBrowser()
 
     qCDebug(lcOauth) << "opening browser";
 
-    if (!isUrlValid(authorisationLink())) {
+    if (!isUrlSchemeValid(authorisationLink())) {
         qCWarning(lcOauth) << "URL validation failed";
         Q_EMIT result(ErrorInsecureUrl, QString());
         return;
@@ -502,7 +537,7 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
     _isRefreshingToken = true;
 
 
-    // make the a real function -
+    // make this a real function -
     auto refresh = [this, refreshToken] {
         auto reply = postTokenRequest({{QStringLiteral("grant_type"), QStringLiteral("refresh_token")}, {QStringLiteral("refresh_token"), refreshToken}});
         connect(reply, &QNetworkReply::finished, this, [reply, refreshToken, this]() {
@@ -559,6 +594,3 @@ QString OCC::toString(OAuth::PromptValuesSupportedFlags s)
         }
     return out.join(QLatin1Char(' '));
 }
-
-
-#include "oauth.moc"
