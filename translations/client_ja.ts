@@ -91,12 +91,12 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
-        <translation>パスワードを入力してログインしてください。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter %1 and password to log in.</source>
-        <translation>%1 とパスワードを入力してログインしてください。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
         <source>Password</source>
-        <translation>パスワード</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
@@ -190,7 +190,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="139"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation>開く仮想ファイルシステムファイル (オプション)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="156"/>
@@ -266,7 +266,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
         <source>Invalid reply received from server</source>
-        <translation>サーバーから無効な応答を受信しました</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -390,22 +390,22 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;エラー:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;警告:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;エラー:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;警告:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -1359,9 +1359,7 @@ Please consider removing this folder from the account and adding it again.</sour
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation>Suffix-VFS プラグインは非推奨であり、7.0 リリースで削除されます。
-コンテキスト メニューを使用して「仮想ファイル サポートを無効にする」を選択し、同期されたファイルに将来アクセスできるようにします。
-これを行わないと、同期フォルダーにアクセスできなくなります。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
@@ -1413,17 +1411,17 @@ You are going to lose access to your sync folder if you do not do so!</source>
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>選択したフォルダーで仮想ファイルが利用できません</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>同期フォルダーを追加</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>同期接続を追加</translation>
     </message>
@@ -3343,7 +3341,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="380"/>
         <source>Using virtual files with suffix, but suffix is not set</source>
-        <translation>サフィックス付きの仮想ファイルを使用しますが、サフィックスが設定されていません</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="392"/>
@@ -3431,12 +3429,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation>URL を %1 に完全に変更します</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
         <source>Reject</source>
-        <translation>拒否</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="45"/>
@@ -3446,7 +3444,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation>%1 の URL が %2 から %3 に変更されました。変更された URL を受け入れますか？</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3488,7 +3486,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/plugins/vfs/suffix/vfs_suffix.cpp" line="108"/>
         <source>Cannot create a placeholder because a file with the placeholder name already exist</source>
-        <translation>指定されたプレースホルダー名と同じファイルが既に存在するため、プレースホルダーを作成できません。</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3565,7 +3563,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
         <source>Invalid credentials</source>
-        <translation>無効な資格情報</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3573,13 +3571,13 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="28"/>
         <source>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</source>
-        <translation> &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;に接続中</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="51"/>
         <source>Please enter your %1:</source>
         <comment>Please enter your [username, e-mail address, ...]:</comment>
-        <translation>%1 を入力してください:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3587,12 +3585,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="39"/>
         <source>Failed to parse WebFinger response: %1</source>
-        <translation>WebFinger 応答の解析に失敗しました: %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="44"/>
         <source>WebFinger endpoint did not send href attribute</source>
-        <translation>WebFinger エンドポイントが href 属性を送信しませんでした</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3632,7 +3630,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
         <source>Invalid server URL</source>
-        <translation>無効なサーバー URL</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
@@ -3667,12 +3665,12 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="191"/>
         <source>Invalid credentials</source>
-        <translation>無効な資格情報</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
         <source>Failed to retrieve user information from server</source>
-        <translation>サーバーからのユーザー情報の取得に失敗しました</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3975,12 +3973,12 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>%1 で互換性のあるサーバーを検出できませんでした。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
         <source>User rejected redirect from %1 to %2</source>
-        <translation>ユーザーは %1 から %2 へのリダイレクトを拒否しました。</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
@@ -3990,7 +3988,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
         <source>User rejected invalid SSL certificate</source>
-        <translation>ユーザーが無効なSSL証明書を拒否しました</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4021,7 +4019,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="34"/>
         <source>Username</source>
-        <translation>ユーザー名</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="36"/>
@@ -4214,7 +4212,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
         <source>Failed to retrieve user info</source>
-        <translation>ユーザー情報の取得に失敗しました</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

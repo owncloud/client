@@ -91,7 +91,7 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
-        <translation>Ju lutemi, që të bëni hyrjen, jepni fjalëkalimin.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
         <source>Password</source>
-        <translation>Fjalëkalim</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
@@ -190,7 +190,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/main.cpp" line="139"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation>Kartelë sistemi virtual kartelash për t’u hapur (opsionale).</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="156"/>
@@ -266,7 +266,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
         <source>Invalid reply received from server</source>
-        <translation>U mor përgjigje e pavlefshme nga shërbyesi</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -390,22 +390,22 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Gabim:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Kujdes:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Gabim:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Sinjalizim:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -1413,17 +1413,17 @@ Nëse nuk bëni kështu, do të humbni hyrje te dosja juaj e njëkohësuar!</tra
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>S’ka kartela virtuale për dosjen e përzgjedhur</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>Shtoni Lidhje Njëkohësimi Dosjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>Shtoni Lidhje Njëkohësimesh</translation>
     </message>
@@ -3288,12 +3288,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Përzgjidhni një dosje që të njëkohësohet me kompjuterin tuaj.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Përzgjidhni një Hapësirë që të njëkohësohet me kompjuterin tuaj.</translation>
     </message>
 </context>
 <context>
@@ -3431,12 +3431,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation>Ndryshoje URL-në përgjithnjë në %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
         <source>Reject</source>
-        <translation>Hidheni tej</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="45"/>
@@ -3488,7 +3488,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/plugins/vfs/suffix/vfs_suffix.cpp" line="108"/>
         <source>Cannot create a placeholder because a file with the placeholder name already exist</source>
-        <translation>S’mund të krijohet një vendmbajtëse, ngaqë ka tashmë një kartelë me emrin e vendmbajtëses</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3573,13 +3573,13 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="28"/>
         <source>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>Po lidhet te &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="51"/>
         <source>Please enter your %1:</source>
         <comment>Please enter your [username, e-mail address, ...]:</comment>
-        <translation>Ju lutemi, jepni %1 tuaj:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3592,7 +3592,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="44"/>
         <source>WebFinger endpoint did not send href attribute</source>
-        <translation>Pikëmbarim WebFinger s’dërgoi atribut href</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3632,7 +3632,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
         <source>Invalid server URL</source>
-        <translation>URL e pavlefshme shërbyesi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
@@ -3667,12 +3667,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="191"/>
         <source>Invalid credentials</source>
-        <translation>Kredenciale të pavlefshme</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
         <source>Failed to retrieve user information from server</source>
-        <translation>S’u arrit të merreshin hollësi përdoruesi nga shërbyesi</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3975,12 +3975,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>S’u pikas dot shërbyes i përputhshmë te %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
         <source>User rejected redirect from %1 to %2</source>
-        <translation>Përdoruesi hodhi poshtë ridrejtimin nga %1 në %2</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
@@ -3990,7 +3990,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
         <source>User rejected invalid SSL certificate</source>
-        <translation>Përdoruesi hodhi poshtë dëshmi SSL të pavlefshme</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4214,7 +4214,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
         <source>Failed to retrieve user info</source>
-        <translation>S’u arrit të merren hollësi përdoruesi</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

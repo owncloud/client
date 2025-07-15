@@ -91,12 +91,12 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
-        <translation>Por favor, digite sua senha para fazer login.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter %1 and password to log in.</source>
-        <translation>Insira %1 e senha para efetuar login.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
         <source>Password</source>
-        <translation>Senha</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
@@ -190,7 +190,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/main.cpp" line="139"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation>Arquivo do sistema de arquivos virtual a ser aberto (opcional). </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="156"/>
@@ -266,7 +266,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
         <source>Invalid reply received from server</source>
-        <translation>Resposta inválida recebida do servidor</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -390,22 +390,22 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Erro:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Alerta:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Erro:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Alerta:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -1360,9 +1360,7 @@ Considere remover esta pasta da conta e adicioná-la novamente.</translation>
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation>O plug-in de sufixo-VFS é descontinuado e será removido na versão 7.0.
-Use o menu de contexto e selecione &quot;Desative o suporte ao arquivo virtual&quot; para garantir o acesso futuro aos seus arquivos sincronizados.
-Você vai perder o acesso à sua pasta de sincronização se não o fizer!</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
@@ -1414,17 +1412,17 @@ Você vai perder o acesso à sua pasta de sincronização se não o fizer!</tran
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Arquivos virtuais não estão disponíveis para a pasta selecionada</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>Adicionar Conexão de Sincronização de pasta</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>Adicionar Conexão de Sincronização</translation>
     </message>
@@ -1953,7 +1951,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Limites de largura de banda foram descontinuados e serão removidos num futuro lançamento!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
@@ -3289,12 +3287,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Selecione uma pasta para sincronizar ao seu computador.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Selecione um Espaço para sincronizar com o seu computador.</translation>
     </message>
 </context>
 <context>
@@ -3344,7 +3342,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="380"/>
         <source>Using virtual files with suffix, but suffix is not set</source>
-        <translation>Usando arquivos virtuais com sufixo, mas o sufixo não está definido</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="392"/>
@@ -3432,12 +3430,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation>Alterar o URL permanentemente para %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
         <source>Reject</source>
-        <translation>Rejeitar </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="45"/>
@@ -3447,7 +3445,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation>O URL de %1 mudou de %2 para %3. Você deseja aceitar o URL alterado?</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3489,7 +3487,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/plugins/vfs/suffix/vfs_suffix.cpp" line="108"/>
         <source>Cannot create a placeholder because a file with the placeholder name already exist</source>
-        <translation>Não é possível criar um marcador porque já existe um arquivo com o nome do marcador</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3567,7 +3565,7 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
         <source>Invalid credentials</source>
-        <translation>Credenciais inválidas</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3575,13 +3573,13 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="28"/>
         <source>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>Conectando a &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="51"/>
         <source>Please enter your %1:</source>
         <comment>Please enter your [username, e-mail address, ...]:</comment>
-        <translation>Por favor insira o seu %1:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3589,12 +3587,12 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="39"/>
         <source>Failed to parse WebFinger response: %1</source>
-        <translation>Falha ao analisar a resposta do WebFinger: %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="44"/>
         <source>WebFinger endpoint did not send href attribute</source>
-        <translation>O endpoint WebFinger não enviou o atributo href</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3634,7 +3632,7 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
         <source>Invalid server URL</source>
-        <translation>URL do servidor inválido</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
@@ -3661,7 +3659,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>A URL solicitada falhou com o seguinte valor: %1</translation>
     </message>
 </context>
 <context>
@@ -3669,12 +3667,12 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="191"/>
         <source>Invalid credentials</source>
-        <translation>Credenciais inválidas</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
         <source>Failed to retrieve user information from server</source>
-        <translation>Falha ao recuperar as informações do usuário do servidor</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3977,12 +3975,12 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>Não foi possível detectar o servidor compatível em %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
         <source>User rejected redirect from %1 to %2</source>
-        <translation>O usuário rejeitou o redirecionamento de %1 para %2</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
@@ -3992,7 +3990,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
         <source>User rejected invalid SSL certificate</source>
-        <translation>O usuário rejeitou o certificado SSL inválido</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4023,7 +4021,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="34"/>
         <source>Username</source>
-        <translation>Nome do Usuário</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="36"/>
@@ -4216,7 +4214,7 @@ Tem certeza de que deseja continuar?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
         <source>Failed to retrieve user info</source>
-        <translation>Falha ao recuperar informações do usuário</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

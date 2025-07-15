@@ -106,17 +106,17 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
         <source>Password</source>
-        <translation>كلمة المرور</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
         <source>Enter Password</source>
-        <translation>إدخال كلمة مرور</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="92"/>
         <source>Log in</source>
-        <translation>تسجيل الدخول</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -190,7 +190,7 @@ File synchronization desktop utility.</translation>
     <message>
         <location filename="../src/gui/main.cpp" line="139"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation>Virtual file system file to be opened (optional).</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="156"/>
@@ -251,7 +251,7 @@ File synchronization desktop utility.</translation>
     <message>
         <location filename="../src/libsync/determineauthtypejobfactory.cpp" line="51"/>
         <source>Server did not ask for authorization</source>
-        <translation>Server did not ask for authorization</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/libsync/determineauthtypejobfactory.cpp" line="54"/>
@@ -264,7 +264,7 @@ File synchronization desktop utility.</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
         <source>Invalid reply received from server</source>
-        <translation>Invalid reply received from server</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -388,22 +388,22 @@ File synchronization desktop utility.</translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Error:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;تحذير:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -459,13 +459,13 @@ File synchronization desktop utility.</translation>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.ui" line="14"/>
         <source>Form</source>
-        <translation>نموذج</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.ui" line="79"/>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.ui" line="92"/>
         <source>Username</source>
-        <translation>اسم المستخدم</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1409,17 +1409,17 @@ You are going to lose access to your sync folder if you do not do so!</source>
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>الملفات الإفتراضية غير متوفرة للمجلد المحدد</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>أضف اتصال مزامنة المجلد</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>أضف اتصال المزامنة</translation>
     </message>
@@ -3339,7 +3339,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="380"/>
         <source>Using virtual files with suffix, but suffix is not set</source>
-        <translation>استخدام ملفات ظاهرية ذات لاحقة، ولكن بدون تعيين اللاحقة</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="392"/>
@@ -3432,7 +3432,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
         <source>Reject</source>
-        <translation>Reject</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="45"/>
@@ -3484,7 +3484,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/plugins/vfs/suffix/vfs_suffix.cpp" line="108"/>
         <source>Cannot create a placeholder because a file with the placeholder name already exist</source>
-        <translation>Cannot create a placeholder because a file with the placeholder name already exist</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3561,7 +3561,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/states/basiccredentialssetupwizardstate.cpp" line="41"/>
         <source>Invalid credentials</source>
-        <translation>Invalid credentials</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3569,13 +3569,13 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="28"/>
         <source>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="51"/>
         <source>Please enter your %1:</source>
         <comment>Please enter your [username, e-mail address, ...]:</comment>
-        <translation>Please enter your %1:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3583,12 +3583,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="39"/>
         <source>Failed to parse WebFinger response: %1</source>
-        <translation>Failed to parse WebFinger response: %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="44"/>
         <source>WebFinger endpoint did not send href attribute</source>
-        <translation>WebFinger endpoint did not send href attribute</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3628,7 +3628,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
         <source>Invalid server URL</source>
-        <translation>Invalid server URL</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
@@ -3663,12 +3663,12 @@ Are you sure you want to proceed?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="191"/>
         <source>Invalid credentials</source>
-        <translation>Invalid credentials</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
         <source>Failed to retrieve user information from server</source>
-        <translation>Failed to retrieve user information from server</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3971,12 +3971,12 @@ Are you sure you want to proceed?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>Could not detect compatible server at %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
         <source>User rejected redirect from %1 to %2</source>
-        <translation>User rejected redirect from %1 to %2</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
@@ -3986,7 +3986,7 @@ Are you sure you want to proceed?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
         <source>User rejected invalid SSL certificate</source>
-        <translation>User rejected invalid SSL certificate</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4017,7 +4017,7 @@ Are you sure you want to proceed?</translation>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="34"/>
         <source>Username</source>
-        <translation>اسم المستخدم</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/enums.cpp" line="36"/>
@@ -4210,7 +4210,7 @@ Are you sure you want to proceed?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
         <source>Failed to retrieve user info</source>
-        <translation>Failed to retrieve user info</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

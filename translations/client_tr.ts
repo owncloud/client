@@ -4,12 +4,12 @@
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
         <source>Navigation bar</source>
-        <translation type="unfinished"/>
+        <translation>Navigasyon çubuğu</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
-        <translation type="unfinished"/>
+        <translation>Hesap ekle</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
@@ -106,7 +106,7 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
         <source>Password</source>
-        <translation>Parola</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="65"/>
@@ -190,7 +190,7 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
     <message>
         <location filename="../src/gui/main.cpp" line="139"/>
         <source>Virtual file system file to be opened (optional).</source>
-        <translation>Açılacak sanal dosya sistemi dosyası (isteğe bağlı).</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="156"/>
@@ -264,7 +264,7 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/discoverwebfingerservicejobfactory.cpp" line="39"/>
         <source>Invalid reply received from server</source>
-        <translation>Sunucudan geçersiz yanıt alındı</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -329,7 +329,7 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="77"/>
         <source>Show more</source>
-        <translation type="unfinished"/>
+        <translation>Daha fazla göster</translation>
     </message>
 </context>
 <context>
@@ -388,22 +388,22 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Hata:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="50"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Uyarı:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Hata:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;Uyarı:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -473,7 +473,7 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="49"/>
         <source>Notification icon</source>
-        <translation type="unfinished"/>
+        <translation>Bildirim ikonu</translation>
     </message>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="73"/>
@@ -511,17 +511,17 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>İnternet tarayıcısını aç</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Kimlik doğrulamasını yeniden başlat</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Bağlantıyı kopyala</translation>
     </message>
 </context>
 <context>
@@ -1409,17 +1409,17 @@ You are going to lose access to your sync folder if you do not do so!</source>
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="165"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Seçilen klasör için sanal dosyalar mevcut değil</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="172"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="178"/>
         <source>Add Folder Sync Connection</source>
         <translation>Klasör Eşitleme Bağlantısı Ekle</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="174"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="180"/>
         <source>Add Sync Connection</source>
         <translation>Eşitleme Bağlantısı Ekle</translation>
     </message>
@@ -3432,7 +3432,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
         <source>Reject</source>
-        <translation>Reddet</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="45"/>
@@ -3484,7 +3484,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     <message>
         <location filename="../src/plugins/vfs/suffix/vfs_suffix.cpp" line="108"/>
         <source>Cannot create a placeholder because a file with the placeholder name already exist</source>
-        <translation>Yer tutucu adına sahip bir dosya zaten mevcut olduğundan yer tutucu oluşturulamıyor</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3569,13 +3569,13 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="28"/>
         <source>Connecting to &lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>&lt;a href=&apos;%1&apos; style=&apos;color: %2;&apos;&gt;%1&lt;/a&gt;&apos;ye bağlanıyor</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/legacywebfingersetupwizardpage.cpp" line="51"/>
         <source>Please enter your %1:</source>
         <comment>Please enter your [username, e-mail address, ...]:</comment>
-        <translation>Lütfen %1 bilginizi giriniz:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3588,7 +3588,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     <message>
         <location filename="../src/gui/newwizard/states/legacywebfingersetupwizardstate.cpp" line="44"/>
         <source>WebFinger endpoint did not send href attribute</source>
-        <translation>WebFinger uç noktası href niteliği göndermedi</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3628,7 +3628,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="90"/>
         <source>Invalid server URL</source>
-        <translation>Geçersiz sunucu URL&apos;i</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="96"/>
@@ -3663,12 +3663,12 @@ Devam etmek istediğinizden emin misiniz?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="191"/>
         <source>Invalid credentials</source>
-        <translation>Geçersiz kimlik bilgileri</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
         <source>Failed to retrieve user information from server</source>
-        <translation>Sunucudan kullanıcı bilgilerini alma başarısız</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3971,12 +3971,12 @@ Devam etmek istediğinizden emin misiniz?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>%1 konumunda uyumlu sunucu algılanamadı</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
         <source>User rejected redirect from %1 to %2</source>
-        <translation>Kullanıcı %1&apos;den %2&apos;ye yönlendirmeyi reddetti</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
@@ -3986,7 +3986,7 @@ Devam etmek istediğinizden emin misiniz?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
         <source>User rejected invalid SSL certificate</source>
-        <translation>Kullanıcı geçersiz SSL sertifikasını reddetti</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4210,7 +4210,7 @@ Devam etmek istediğinizden emin misiniz?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/webfingeruserinfojobfactory.cpp" line="59"/>
         <source>Failed to retrieve user info</source>
-        <translation>Kullanıcı bilgileri alınamadı</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
