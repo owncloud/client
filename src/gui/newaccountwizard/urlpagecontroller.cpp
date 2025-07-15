@@ -91,7 +91,7 @@ void UrlPageController::buildPage()
         footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        // footerLogoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+        footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
     }
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -109,7 +109,7 @@ void UrlPageController::buildPage()
     layout->addStretch(1);
     _page->setLayout(layout);
 
-    _urlField->setFocus();
+    _urlField->setFocus(Qt::OtherFocusReason);
 }
 
 void UrlPageController::setUrl(const QString &urlText)

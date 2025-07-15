@@ -23,16 +23,6 @@ namespace OCC {
 NewAccountWizard::NewAccountWizard(QWidget *parent)
     : QWizard(parent)
 {
-    disconnect(button(QWizard::CancelButton), SIGNAL(clicked()), this, SLOT(reject()));
-    connect(button(QWizard::CancelButton), &QAbstractButton::clicked, this, &NewAccountWizard::cancelClicked);
-}
-
-void NewAccountWizard::cancelClicked()
-{
-    QMessageBox::StandardButton result = QMessageBox::question(
-        this, tr("Cancel Setup"), tr("Do you really want to cancel the account setup?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-    if (result == QMessageBox::Yes)
-        reject();
 }
 
 bool NewAccountWizard::validateCurrentPage()
@@ -48,5 +38,13 @@ int NewAccountWizard::addPage(QWizardPage *page, WizardPageValidator *validator)
 {
     _pageValidators.insert(page, validator);
     return QWizard::addPage(page);
+}
+
+void NewAccountWizard::reject()
+{
+    QMessageBox::StandardButton result = QMessageBox::question(
+        this, tr("Cancel Setup"), tr("Do you really want to cancel the account setup?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+    if (result == QMessageBox::Yes)
+        QWizard::reject();
 }
 }

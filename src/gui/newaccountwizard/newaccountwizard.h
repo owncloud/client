@@ -30,9 +30,11 @@ public:
     /** overload of QWizard::addPage which also accepts the associated page validator */
     int addPage(QWizardPage *page, WizardPageValidator *validator);
 
+public Q_SLOTS:
+
+    void reject() override;
 
 private:
     QHash<QWizardPage *, WizardPageValidator *> _pageValidators;
-    void cancelClicked();
 };
 }

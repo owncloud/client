@@ -17,13 +17,14 @@
 #include "accessmanager.h"
 #include "advancedsettingspagecontroller.h"
 #include "authsuccesspagecontroller.h"
+#include "common/utility.h"
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
+#include "owncloudgui.h"
 #include "resources/template.h"
 #include "theme.h"
 #include "urlpagecontroller.h"
-#include "owncloudgui.h"
 
 #include <QAbstractButton>
 
@@ -100,18 +101,31 @@ void NewAccountWizardController::buildButtonLayouts()
 {
     if (_wizard == nullptr)
         return;
-
-    _buttonLayouts.insert(
-        _urlPageIndex, QList<QWizard::WizardButton>{QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
-    _buttonLayouts.insert(_oauthPageIndex,
-        QList<QWizard::WizardButton>{
-            QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
-    _buttonLayouts.insert(_authSuccessPageIndex,
-        QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
-            QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
-    _buttonLayouts.insert(_advancedSettingsPageIndex,
-        QList<QWizard::WizardButton>{
-            QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
+    if (Utility::isMac()) {
+        _buttonLayouts.insert(
+            _urlPageIndex, QList<QWizard::WizardButton>{QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::NextButton});
+        _buttonLayouts.insert(_oauthPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::NextButton});
+        _buttonLayouts.insert(_authSuccessPageIndex,
+            QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
+                QWizard::WizardButton::CancelButton, QWizard::WizardButton::FinishButton});
+        _buttonLayouts.insert(_advancedSettingsPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::FinishButton});
+    } else {
+        _buttonLayouts.insert(
+            _urlPageIndex, QList<QWizard::WizardButton>{QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_oauthPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_authSuccessPageIndex,
+            QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
+                QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_advancedSettingsPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
+    }
 }
 
 void NewAccountWizardController::connectWizard()
