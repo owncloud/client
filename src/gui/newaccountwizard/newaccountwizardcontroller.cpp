@@ -17,13 +17,14 @@
 #include "accessmanager.h"
 #include "advancedsettingspagecontroller.h"
 #include "authsuccesspagecontroller.h"
+#include "common/utility.h"
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
+#include "owncloudgui.h"
 #include "resources/template.h"
 #include "theme.h"
 #include "urlpagecontroller.h"
-#include "owncloudgui.h"
 
 #include <QAbstractButton>
 
@@ -58,9 +59,9 @@ void NewAccountWizardController::setupWizard()
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
     // no cancel button is set by default on mac with the original options. just remove it to bring the cancel button back
     _wizard->setOption(QWizard::NoCancelButton, false);
-    //   _wizard->setButtonText(QWizard::WizardButton::FinishButton, tr("Open %1").arg(appName));
 
-    _wizard->setButtonText(QWizard::CustomButton1, tr("Advanced Settings"));
+    _wizard->setButtonText(QWizard::BackButton, tr("Back"));
+    _wizard->setButtonText(QWizard::CustomButton1, tr("Advanced"));
     _wizard->setOption(QWizard::HaveCustomButton1, true);
 }
 
@@ -100,18 +101,31 @@ void NewAccountWizardController::buildButtonLayouts()
 {
     if (_wizard == nullptr)
         return;
-
-    _buttonLayouts.insert(
-        _urlPageIndex, QList<QWizard::WizardButton>{QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
-    _buttonLayouts.insert(_oauthPageIndex,
-        QList<QWizard::WizardButton>{
-            QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
-    _buttonLayouts.insert(_authSuccessPageIndex,
-        QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
-            QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
-    _buttonLayouts.insert(_advancedSettingsPageIndex,
-        QList<QWizard::WizardButton>{
-            QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
+    if (Utility::isMac()) {
+        _buttonLayouts.insert(
+            _urlPageIndex, QList<QWizard::WizardButton>{QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::NextButton});
+        _buttonLayouts.insert(_oauthPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::NextButton});
+        _buttonLayouts.insert(_authSuccessPageIndex,
+            QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
+                QWizard::WizardButton::CancelButton, QWizard::WizardButton::FinishButton});
+        _buttonLayouts.insert(_advancedSettingsPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::FinishButton});
+    } else {
+        _buttonLayouts.insert(
+            _urlPageIndex, QList<QWizard::WizardButton>{QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_oauthPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_authSuccessPageIndex,
+            QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
+                QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_advancedSettingsPageIndex,
+            QList<QWizard::WizardButton>{
+                QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
+    }
 }
 
 void NewAccountWizardController::connectWizard()
@@ -140,6 +154,13 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _oauthController->setServerUrl(_model->serverUrl());
     _oauthController->setAuthenticationUrl(_model->effectiveAuthenticationServerUrl());
     _oauthController->setLookupWebfingerUrls(!_model->webfingerAuthenticationUrl().isEmpty());
+
+    // this is also a bit tricky: at this stage the page index is still == _urlPageIndex. However it is in the process of changing to
+    // the oauth page. We can't do the auto-validate on the oauth page here.
+    // note we should also not advance the page here as that would trigger the url page to validate AGAIN which is definitely not what we want -
+    // it already succeeded!
+    // so we just set a flag to auto-validate the oauth page and handle that when we are notified that the page actually changed -> see onPageChanged
+    _autoValidateOAuthPage = true;
 }
 
 // I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
@@ -161,6 +182,8 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
 
     _wizard->setCurrentId(_authSuccessPageIndex);
     ownCloudGui::raise();
+    // on mac, for unknown reasons, the main window is active after raise
+    _wizard->activateWindow();
 }
 
 void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageResults &results)
@@ -169,6 +192,7 @@ void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageRes
         return;
     Q_UNUSED(results);
     ownCloudGui::raise();
+    _wizard->activateWindow();
 }
 
 void NewAccountWizardController::showAdvancedSettingsPage()
@@ -181,10 +205,14 @@ void NewAccountWizardController::onPageChanged(int newPageIndex)
 {
     if (newPageIndex == _urlPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_urlPageIndex]);
-        _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Next"));
+        _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Sign in"));
     } else if (newPageIndex == _oauthPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_oauthPageIndex]);
         _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Open sign in again"));
+        if (_autoValidateOAuthPage) {
+            _autoValidateOAuthPage = false;
+            _wizard->validateCurrentPage();
+        }
     } else if (newPageIndex == _authSuccessPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_authSuccessPageIndex]);
         // for some reason - probably because this is not the last, last page ever, the focus kept coming out on the

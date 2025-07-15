@@ -53,24 +53,6 @@ void AuthSuccessPageController::buildPage()
     instructionLabel->setAlignment(Qt::AlignCenter);
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    QPushButton *advancedSettingsButton = new QPushButton(tr("Advanced Settings"), _page);
-    advancedSettingsButton->setFlat(true);
-    // ugh I hate this but...
-    advancedSettingsButton->setFocusPolicy(Qt::NoFocus);
-    QFont buttonFont = advancedSettingsButton->font();
-    buttonFont.setPixelSize(14);
-    buttonFont.setUnderline(true);
-    advancedSettingsButton->setFont(buttonFont);
-    QPalette buttonPalette = advancedSettingsButton->palette();
-    // it's very possible this is not going to work with some themes. Remember: buttons often have different color schemes than the app overall.
-    // because we are not actually painting most of the button, this choice of text color could be pretty gross depending on system settings
-    // and theme in play
-    QColor highlightColor = buttonPalette.color(QPalette::Highlight);
-    buttonPalette.setColor(QPalette::Normal, QPalette::ButtonText, highlightColor);
-    advancedSettingsButton->setPalette(buttonPalette);
-    advancedSettingsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    connect(advancedSettingsButton, &QPushButton::clicked, this, &AuthSuccessPageController::requestAdvancedSettings);
-
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
         footerLogoLabel = new QLabel({}, _page);
@@ -89,12 +71,6 @@ void AuthSuccessPageController::buildPage()
     layout->addWidget(logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
-
-    QHBoxLayout *advancedSettingsLayout = new QHBoxLayout();
-    advancedSettingsLayout->addStretch(1);
-    advancedSettingsLayout->addWidget(advancedSettingsButton);
-    advancedSettingsLayout->addStretch(1);
-    layout->addLayout(advancedSettingsLayout);
 
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);

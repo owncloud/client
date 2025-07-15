@@ -14,23 +14,15 @@
 #include "newaccountwizard.h"
 
 #include "wizardpagevalidator.h"
-#include <qabstractbutton.h>
+
+#include <QAbstractButton>
+#include <QMessageBox>
 
 namespace OCC {
 
 NewAccountWizard::NewAccountWizard(QWidget *parent)
     : QWizard(parent)
 {
-}
-
-QAbstractButton *NewAccountWizard::browserButton()
-{
-    return button(WizardButton::CustomButton1);
-}
-
-QAbstractButton *NewAccountWizard::advancedButton()
-{
-    return button(WizardButton::CustomButton2);
 }
 
 bool NewAccountWizard::validateCurrentPage()
@@ -46,5 +38,13 @@ int NewAccountWizard::addPage(QWizardPage *page, WizardPageValidator *validator)
 {
     _pageValidators.insert(page, validator);
     return QWizard::addPage(page);
+}
+
+void NewAccountWizard::reject()
+{
+    QMessageBox::StandardButton result = QMessageBox::question(
+        this, tr("Cancel Setup"), tr("Do you really want to cancel the account setup?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+    if (result == QMessageBox::Yes)
+        QWizard::reject();
 }
 }

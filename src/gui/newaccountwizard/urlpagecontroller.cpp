@@ -83,6 +83,7 @@ void UrlPageController::buildPage()
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
+    _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
@@ -90,7 +91,7 @@ void UrlPageController::buildPage()
         footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        // footerLogoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+        footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
     }
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -108,7 +109,7 @@ void UrlPageController::buildPage()
     layout->addStretch(1);
     _page->setLayout(layout);
 
-    _urlField->setFocus();
+    _urlField->setFocus(Qt::OtherFocusReason);
 }
 
 void UrlPageController::setUrl(const QString &urlText)
@@ -239,7 +240,6 @@ bool UrlPageController::validate()
         Q_ASSERT(authResult.type == AuthenticationType::OAuth);
         _results.baseServerUrl = finalUrl;
     }
-
     Q_EMIT success(_results);
     return true;
 }
