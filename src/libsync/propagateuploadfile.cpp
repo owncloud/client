@@ -12,15 +12,17 @@
  * for more details.
  */
 
+#include "propagateuploadfile.h"
 #include "account.h"
 #include "common/checksums.h"
 #include "common/syncjournaldb.h"
 #include "filesystem.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
-#include "propagateupload.h"
 #include "propagatorjobs.h"
+#include "putfilejob.h"
 #include "syncengine.h"
+#include "uploaddevice.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -71,14 +73,14 @@ void PropagateUploadFile::startUpload()
     QString path = _item->_file;
 
     if (!_transmissionChecksumHeader.isEmpty()) {
-        qCInfo(lcPropagateUploadV1) << propagator()->fullRemotePath(path) << _transmissionChecksumHeader;
+        qCInfo(lcPropagateUpload) << propagator()->fullRemotePath(path) << _transmissionChecksumHeader;
         headers[checkSumHeaderC] = _transmissionChecksumHeader;
     }
 
     const QString fileName = propagator()->fullLocalPath(_item->_file);
     auto device = std::make_unique<UploadDevice>(fileName, 0, fileSize);
     if (!device->open(QIODevice::ReadOnly)) {
-        qCWarning(lcPropagateUploadV1) << "Could not prepare upload device: " << device->errorString();
+        qCWarning(lcPropagateUpload) << "Could not prepare upload device: " << device->errorString();
         // Soft error because this is likely caused by the user modifying his files while syncing
         abortWithError(SyncFileItem::SoftError, device->errorString());
         return;
@@ -167,7 +169,7 @@ void PropagateUploadFile::slotPutFinished()
     QByteArray fid = job->reply()->rawHeader("OC-FileID");
     if (!fid.isEmpty()) {
         if (!_item->_fileId.isEmpty() && _item->_fileId != fid) {
-            qCWarning(lcPropagateUploadV1) << "File ID changed!" << _item->_fileId << fid;
+            qCWarning(lcPropagateUpload) << "File ID changed!" << _item->_fileId << fid;
         }
         _item->_fileId = fid;
     }
@@ -177,7 +179,7 @@ void PropagateUploadFile::slotPutFinished()
     if (job->reply()->rawHeader("X-OC-MTime") != "accepted") {
         // X-OC-MTime is supported since owncloud 5.0.   But not when chunking.
         // Normally Owncloud 6 always puts X-OC-MTime
-        qCWarning(lcPropagateUploadV1) << "Server does not support X-OC-MTime" << job->reply()->rawHeader("X-OC-MTime");
+        qCWarning(lcPropagateUpload) << "Server does not support X-OC-MTime" << job->reply()->rawHeader("X-OC-MTime");
         // Well, the mtime was not set
     }
 

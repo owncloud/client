@@ -16,99 +16,11 @@
 #include "owncloudpropagator.h"
 #include "networkjobs.h"
 
-#include <QBuffer>
-#include <QFile>
-#include <QElapsedTimer>
-
 #include <unordered_set>
 
 namespace OCC {
 
-Q_DECLARE_LOGGING_CATEGORY(lcPutJob)
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUpload)
-Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadV1)
-Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadNG)
-
-/**
- * @brief The UploadDevice class
- * @ingroup libsync
- */
-class UploadDevice : public QIODevice
-{
-    Q_OBJECT
-public:
-    UploadDevice(const QString &fileName, qint64 start, qint64 size);
-
-    bool open(QIODevice::OpenMode mode) override;
-    void close() override;
-
-    qint64 writeData(const char *, qint64) override;
-    qint64 readData(char *data, qint64 maxLen) override;
-    bool atEnd() const override;
-    qint64 size() const override;
-    qint64 bytesAvailable() const override;
-    bool isSequential() const override;
-    bool seek(qint64 pos) override;
-
-Q_SIGNALS:
-
-private:
-    /// The local file to read data from
-    QFile _file;
-
-    /// Start of the file data to use
-    qint64 _start = 0;
-    /// Amount of file data after _start to use
-    qint64 _size = 0;
-    /// Position between _start and _start+_size
-    qint64 _read = 0;
-};
-
-/**
- * @brief The PUTFileJob class
- * @ingroup libsync
- */
-class PUTFileJob : public AbstractNetworkJob
-{
-    Q_OBJECT
-
-private:
-    QIODevice *_device;
-    QMap<QByteArray, QByteArray> _headers;
-    QString _errorString;
-    QElapsedTimer _requestTimer;
-
-public:
-    explicit PUTFileJob(AccountPtr account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device,
-        const HeaderMap &headers, QObject *parent = nullptr);
-    ~PUTFileJob() override;
-
-    void start() override;
-
-    void finished() override;
-
-    QIODevice *device()
-    {
-        return _device;
-    }
-
-    QString errorString()
-    {
-        return _errorString.isEmpty() ? AbstractNetworkJob::errorString() : _errorString;
-    }
-
-    std::chrono::milliseconds msSinceStart() const
-    {
-        return std::chrono::milliseconds(_requestTimer.elapsed());
-    }
-
-protected:
-    void newReplyHook(QNetworkReply *reply) override;
-
-Q_SIGNALS:
-    void uploadProgress(qint64, qint64);
-
-};
 
 /**
  * @brief The PropagateUploadFileCommon class is the code common between all chunking algorithms
@@ -238,30 +150,5 @@ private:
     bool _quotaUpdated = false;
 
     std::unordered_set<AbstractNetworkJob *> _childJobs; /// network jobs that are currently in transit
-};
-
-/**
- * @ingroup libsync
- *
- * Propagation job, simple PUT upload.
- *
- */
-class PropagateUploadFile : public PropagateUploadFileCommon
-{
-    Q_OBJECT
-
-public:
-    PropagateUploadFile(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
-        : PropagateUploadFileCommon(propagator, item)
-    {
-    }
-
-    void doStartUpload() override;
-public Q_SLOTS:
-    void abort(PropagatorJob::AbortType abortType) override;
-private Q_SLOTS:
-    void startUpload();
-    void slotPutFinished();
-    void slotUploadProgress(qint64, qint64);
 };
 }

@@ -24,7 +24,7 @@
 #include "httplogger.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
-#include "propagateupload.h"
+#include "propagateuploadfile.h"
 #include "propagatorjobs.h"
 #include "syncengine.h"
 

@@ -25,7 +25,7 @@
 #include "propagateremotedelete.h"
 #include "propagateremotemkdir.h"
 #include "propagateremotemove.h"
-#include "propagateupload.h"
+#include "propagateuploadfile.h"
 #include "propagateuploadtus.h"
 #include "propagatorjobs.h"
 
