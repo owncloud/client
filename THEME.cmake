@@ -2,7 +2,7 @@ if(WITH_EXTERNAL_BRANDING)
     include(FetchContent)
 
     if(NOT WITH_EXTERNAL_BRANDING_TAG)
-        set(WITH_EXTERNAL_BRANDING_TAG "main")
+        set(WITH_EXTERNAL_BRANDING_TAG "master")
     endif()
 
     FetchContent_Declare(branding
