@@ -933,6 +933,29 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
     </message>
 </context>
 <context>
+    <name>OCC::AuthSuccessPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="45"/>
+        <source>Application Name Logo %1</source>
+        <translation>Rakendus Nimi Logo %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="47"/>
+        <source>You&apos;re all set! Open %1 and get started.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="56"/>
+        <source>Advanced Settings</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="82"/>
+        <source>Additional logo defined by the organization</source>
+        <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
+    </message>
+</context>
+<context>
     <name>OCC::ConnectionValidator</name>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="75"/>
@@ -1975,29 +1998,24 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="54"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Welcome to %1</source>
         <translation>Tere tulemast %1&apos;i</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="60"/>
-        <source>Open %1</source>
-        <translation>Ava %1</translation>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
+        <source>Advanced Settings</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="145"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="184"/>
         <source>Next</source>
         <translation>Järgmine</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="148"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="187"/>
         <source>Open sign in again</source>
         <translation>Ava sisselogimine uuesti</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="154"/>
-        <source>Advanced settings</source>
-        <translation>Lisavalikud</translation>
     </message>
 </context>
 <context>
