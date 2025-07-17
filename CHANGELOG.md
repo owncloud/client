@@ -59,6 +59,7 @@ ownCloud admins and users.
 * Bugfix - Make open account in browser accessible for keyboard navigation: [#11772](https://github.com/owncloud/client/issues/11772)
 * Bugfix - Don't log misleading error if dynamic registration failed: [#11839](https://github.com/owncloud/client/pull/11839)
 * Bugfix - Fix crash after resource job fails: [#12045](https://github.com/owncloud/client/pull/12045)
+* Bugfix - Remove any existing ResourceCache directories for accounts: [#12214](https://github.com/owncloud/client/pull/12214)
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 * Change - Make messages translatable that occur early in start-up: [#11142](https://github.com/owncloud/client/issues/11142)
 * Change - Remove unused command line option --language: [#11245](https://github.com/owncloud/client/issues/11245)
@@ -179,6 +180,14 @@ ownCloud admins and users.
    icon.
 
    https://github.com/owncloud/client/pull/12045
+
+* Bugfix - Remove any existing ResourceCache directories for accounts: [#12214](https://github.com/owncloud/client/pull/12214)
+
+   Some versions of the client failed to remove the temporary cache directory on
+   exit. This can result in multiple GB of cached space images. These cache
+   directories are now cleaned up before creating a new cache.
+
+   https://github.com/owncloud/client/pull/12214
 
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 
