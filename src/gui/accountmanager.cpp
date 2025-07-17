@@ -377,6 +377,8 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     // AccountStatePtr occurrences:
     _accounts.erase(it);
 
+    account->account()->cleanupForRemoval();
+
     if (account->account()->hasDefaultSyncRoot()) {
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }

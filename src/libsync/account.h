@@ -92,6 +92,8 @@ public:
     static AccountPtr create(const QUuid &uuid);
     ~Account() override;
 
+    void cleanupForRemoval();
+
     AccountPtr sharedFromThis();
 
     /**
