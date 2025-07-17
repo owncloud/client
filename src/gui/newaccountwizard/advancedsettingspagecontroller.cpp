@@ -183,9 +183,9 @@ bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
         return false;
     }
 
-    // I'm not testing the case that vfs is actually the chosen mode as if vfs is available we should just block dirs that don't support it
-    // the idea being that eg if they change the mode after they select the dir, or use selective sync with vfs later, at least we know the default
-    // root they select here will support it
+    // I'm not testing the case that vfs is actually the chosen mode here as if vfs is available we should just block dirs that don't support it,
+    // the idea being that eg if they change the mode in the page after they select the dir, or use selective sync with vfs later, at least we know the default
+    // root they select here will not cause any issues down the road
     if (_vfsIsAvailable && !FolderMan::instance()->checkVfsAvailability(rootPath)) {
         _errorField->setText(errorMessageTemplate.arg(rootPath, tr("selected path does not support using virtual file system.")));
         return false;
@@ -199,8 +199,11 @@ void AdvancedSettingsPageController::showFolderPicker()
     _errorField->setText({});
     _lastHandEditedRootFailed = false;
 
-    QString chosenRoot = QFileDialog::getExistingDirectory(_page->parentWidget(), tr("Select sync root"), _defaultSyncRoot);
-    // do some checks on it to be sure it's a supported dir
+    QDir defaultDir(_defaultSyncRoot);
+    while (!defaultDir.exists())
+        defaultDir.cdUp();
+    QString chosenRoot = QFileDialog::getExistingDirectory(_page->parentWidget(), tr("Select sync root"), defaultDir.path());
+
     if (chosenRoot.isEmpty())
         return;
 
