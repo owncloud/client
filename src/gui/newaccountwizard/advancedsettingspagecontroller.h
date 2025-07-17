@@ -19,6 +19,7 @@
 class QWizardPage;
 class QButtonGroup;
 class QLineEdit;
+class QLabel;
 
 namespace OCC {
 
@@ -31,7 +32,7 @@ struct AdvancedSettingsResult
     SyncType _syncType = SyncType::NONE;
     QString _syncRoot;
 
-    // So far I don't see how this can end up having an error. Even if they pick a "bad" sync root they should not be allowed to finish so...
+    // So far I don't see how this can end up having an error on validate. Even if they pick a "bad" sync root they should not be allowed to finish so...
     // let's see if we need it later
 };
 
@@ -42,20 +43,27 @@ public:
     explicit AdvancedSettingsPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
 
+Q_SIGNALS:
+    void success(const AdvancedSettingsResult &result);
+
 private:
     void gatherSyncInfo();
     void buildPage();
     void showFolderPicker();
+    void onRootDirFieldEdited();
+    bool validateSyncRoot(const QString &rootPath);
 
-    SyncType _syncType = SyncType::NONE;
-    QString _syncRoot;
+    SyncType _defaultSyncType = SyncType::NONE;
+    QString _defaultSyncRoot;
     bool _vfsIsAvailable = false;
     bool _forceVfs = false;
+    bool _lastHandEditedRootFailed = false;
 
     AdvancedSettingsResult _results;
 
     QWizardPage *_page = nullptr;
     QButtonGroup *_buttonGroup = nullptr;
     QLineEdit *_rootDirEdit = nullptr;
+    QLabel *_errorField;
 };
 }

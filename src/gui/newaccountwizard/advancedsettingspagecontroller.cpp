@@ -88,12 +88,18 @@ void AdvancedSettingsPageController::buildPage()
         layout->addWidget(syncAllButton, Qt::AlignLeft);
     }
 
-    Q_ASSERT(_buttonGroup->button(_syncType));
-    _buttonGroup->button(_syncType)->setChecked(true);
+    Q_ASSERT(_buttonGroup->button(_defaultSyncType));
+    _buttonGroup->button(_defaultSyncType)->setChecked(true);
 
     _rootDirEdit = new QLineEdit(_page);
-    _rootDirEdit->setText(_syncRoot);
+    _rootDirEdit->setText(_defaultSyncRoot);
     _rootDirEdit->setFocusPolicy(Qt::StrongFocus);
+    // just clear the error if the user starts typing in the text edit
+    connect(_rootDirEdit, &QLineEdit::textEdited, this, [this] {
+        if (!_errorField->text().isEmpty())
+            _errorField->setText({});
+    });
+    connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
     QPushButton *folderButton = new QPushButton(tr("Choose..."), _page);
     folderButton->setFocusPolicy(Qt::StrongFocus);
@@ -107,6 +113,16 @@ void AdvancedSettingsPageController::buildPage()
     folderPickerLayout->addWidget(folderButton);
     layout->addLayout(folderPickerLayout);
 
+    _errorField = new QLabel(QString(), _page);
+    QPalette errorPalette = _errorField->palette();
+    errorPalette.setColor(QPalette::Text, Qt::red);
+    _errorField->setPalette(errorPalette);
+    _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _errorField->setWordWrap(true);
+    _errorField->setAlignment(Qt::AlignLeft);
+    _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
+    layout->addWidget(_errorField);
+
     layout->addStretch(1);
     _page->setLayout(layout);
 }
@@ -116,43 +132,70 @@ void AdvancedSettingsPageController::gatherSyncInfo()
     _vfsIsAvailable = VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi;
     _forceVfs = _vfsIsAvailable && Theme::instance()->forceVirtualFilesOption();
     if (!_vfsIsAvailable)
-        _syncType = SyncType::SYNC_ALL;
+        _defaultSyncType = SyncType::SYNC_ALL;
     else
-        _syncType = SyncType::USE_VFS;
+        _defaultSyncType = SyncType::USE_VFS;
 
-    _syncRoot = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot, {});
+    _defaultSyncRoot = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot, {});
 }
 
 bool AdvancedSettingsPageController::validate()
 {
+    // this is a safety net because for unknown reasons, on windows when you hit enter to commit hand edited text
+    // in the QLineEdit, it ALSO triggers the finish button. No idea but this should block the finish so the user
+    // can see their last choice failed, and that the root has been reset to the default.
+    if (_lastHandEditedRootFailed)
+        return false;
+
+    // normally I don't like taking values directly from the gui but in this case, it would be complete overkill to
+    // create a dedicated model just for these two values that only need to be collected when the user is done.
     AdvancedSettingsResult result;
     result._syncRoot = _rootDirEdit->text();
     result._syncType = static_cast<SyncType>(_buttonGroup->checkedId());
+    Q_EMIT success(result);
+    return true;
+}
+
+bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
+{
+    QString errorMessageTemplate = tr("Invalid local download directory %1: %2.");
+
+    if (!QDir::isAbsolutePath(rootPath)) {
+        _errorField->setText(errorMessageTemplate.arg(rootPath, tr("path must be absolute")));
+        return false;
+    }
+
+    QString invalidPathErrorMessage = FolderMan::checkPathValidityRecursive(rootPath, FolderMan::NewFolderType::SpacesSyncRoot, {});
+    if (!invalidPathErrorMessage.isEmpty()) {
+        _errorField->setText(errorMessageTemplate.arg(rootPath, invalidPathErrorMessage));
+        return false;
+    }
     return true;
 }
 
 void AdvancedSettingsPageController::showFolderPicker()
 {
-    //  _errorField->setText({});
+    _errorField->setText({});
+    _lastHandEditedRootFailed = false;
 
-    QString chosenRoot = QFileDialog::getExistingDirectory(_page->parentWidget(), tr("Select sync root"), _syncRoot);
+    QString chosenRoot = QFileDialog::getExistingDirectory(_page->parentWidget(), tr("Select sync root"), _defaultSyncRoot);
     // do some checks on it to be sure it's a supported dir
     if (chosenRoot.isEmpty())
         return;
 
-    QString errorMessageTemplate = tr("Invalid local download directory %1: %2.");
+    if (validateSyncRoot(chosenRoot))
+        _rootDirEdit->setText(chosenRoot);
+}
 
-    if (!QDir::isAbsolutePath(chosenRoot)) {
-        //   _errorField->setText(errorMessageTemplate.arg(chosenRoot, tr("path must be absolute")));
-        return;
+void AdvancedSettingsPageController::onRootDirFieldEdited()
+{
+    QString chosenRoot = _rootDirEdit->text();
+    if (!validateSyncRoot(chosenRoot)) {
+        _rootDirEdit->setText(_defaultSyncRoot);
+        _lastHandEditedRootFailed = true;
+    } else {
+        _lastHandEditedRootFailed = false;
+        _errorField->setText({});
     }
-
-    QString invalidPathErrorMessage = FolderMan::checkPathValidityRecursive(chosenRoot, FolderMan::NewFolderType::SpacesSyncRoot, {});
-    if (!invalidPathErrorMessage.isEmpty()) {
-        //  _errorField->setText(errorMessageTemplate.arg(chosenRoot, invalidPathErrorMessage));
-        return;
-    }
-
-    _rootDirEdit->setText(chosenRoot);
 }
 }
