@@ -2,6 +2,7 @@
 # Essentially they could be in the same directory but are separate to
 # help keep track of the different code licenses.
 configure_file(${CMAKE_CURRENT_LIST_DIR}/version.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/version.cpp @ONLY)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/version-defines.h.in ${CMAKE_CURRENT_BINARY_DIR}/version-defines.h @ONLY)
 set(common_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/checksums.cpp
     ${CMAKE_CURRENT_LIST_DIR}/checksumalgorithms.cpp

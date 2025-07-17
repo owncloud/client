@@ -18,9 +18,11 @@
 #pragma once
 
 #include "ocsynclib.h"
+#include "version-defines.h"
 
 #include <QString>
 #include <QVersionNumber>
+
 
 namespace OCC::Version {
 OCSYNC_EXPORT const QVersionNumber &version();
