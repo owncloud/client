@@ -260,6 +260,11 @@ void OAuth::handleSocketReadyRead()
 // todo: #24 - this can be converted to an adapter
 void OAuth::getTokens()
 {
+    if(_tokenEndpoint.isEmpty()) {
+        Q_EMIT result(Error);
+        return;
+    }
+
     auto postTokenReply = postTokenRequest({
         {QStringLiteral("grant_type"), QStringLiteral("authorization_code")},
         {QStringLiteral("code"), _queryArgs.queryItemValue(QStringLiteral("code"))},
@@ -343,8 +348,7 @@ void OAuth::checkUserInfo()
 // todo: #24 - I think this should also be an adapter. I also have a vague recollection that we have a job that does this already
 QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
 {
-    const QUrl requestTokenUrl =
-        _tokenEndpoint.isEmpty() ? Utility::concatUrlPath(_serverUrl, QStringLiteral("/index.php/apps/oauth2/api/v1/token")) : _tokenEndpoint;
+    const QUrl requestTokenUrl = _tokenEndpoint;
     QNetworkRequest req;
     req.setTransferTimeout(defaultTimeoutMs());
     switch (_endpointAuthMethod) {
@@ -377,6 +381,10 @@ QUrl OAuth::authorisationLink() const
     Q_ASSERT(_server.isListening());
     Q_ASSERT(_wellKnownFinished);
 
+    if (!_authEndpoint.isValid()) {
+        return {}; // no auth endpoint, cannot continue
+    }
+
     const QByteArray code_challenge =
         QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256).toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _clientId},
@@ -393,11 +401,7 @@ QUrl OAuth::authorisationLink() const
         // todo: #20 oc10 as fallback!
         query.addQueryItem(QStringLiteral("user"), davUser);
     }
-    const QUrl url = _authEndpoint.isValid() ? Utility::concatUrlPath(_authEndpoint, {}, query)
-                                             // todo: #20 oc10!
-                                             : Utility::concatUrlPath(_serverUrl, QStringLiteral("/index.php/apps/oauth2/authorize"), query);
-
-    return url;
+    return Utility::concatUrlPath(_authEndpoint, {}, query);
 }
 
 void OAuth::fetchWellKnown()
@@ -477,17 +481,22 @@ bool isUrlSchemeValid(const QUrl &url)
 
 void OAuth::openBrowser()
 {
-    Q_ASSERT(!authorisationLink().isEmpty());
-
+    auto authorisationURL = authorisationLink();
+    if (authorisationURL.isEmpty()) {
+        qCWarning(lcOauth) << "Authorization URL is unknown - well-known/openid-configuration endpoint did not return usable information";
+        Q_EMIT result(Error, QString());
+        return;
+    }
     qCDebug(lcOauth) << "opening browser";
 
-    if (!isUrlSchemeValid(authorisationLink())) {
+
+    if (!isUrlSchemeValid(authorisationURL)) {
         qCWarning(lcOauth) << "URL validation failed";
         Q_EMIT result(ErrorInsecureUrl, QString());
         return;
     }
 
-    if (!QDesktopServices::openUrl(authorisationLink())) {
+    if (!QDesktopServices::openUrl(authorisationURL)) {
         qCWarning(lcOauth) << "QDesktopServices::openUrl Failed";
         // We cannot open the browser, then we claim we don't support OAuth.
         Q_EMIT result(NotSupported, QString());
