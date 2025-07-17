@@ -156,10 +156,7 @@ void SpaceImage::update()
 
         _etag = newEtag;
         _url = QUrl(img->getWebDavUrl());
-        // issue 12057: I am leaving the space as the parent of the job just to avoid having confusion about "new" destructor crashes. At least
-        // we'll get any future crashes on the space still. I don't think that changing the parent is going to eliminate the associate crash - save
-        // this for a future refactoring
-        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, {}, _space);
+        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url);
 
         // TODO: next problem = this routine is correctly run when the icon has changed on the server, but the icon in the gui does not get refreshed!
         // The icon IS in the app cache, so it seems to have been brought back from the server correctly, but it is not shown until restart

@@ -410,6 +410,8 @@ void AccountManager::deleteAccount(AccountStatePtr account)
 
     _accounts.remove(account->account()->uuid());
 
+    account->account()->cleanupForRemoval();
+
     if (account->account()->hasDefaultSyncRoot()) {
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }

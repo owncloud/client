@@ -92,6 +92,19 @@ Account::~Account()
 {
 }
 
+void Account::cleanupForRemoval()
+{
+    // First stop the resource cache (including any pending jobs), because this uses the cache directory
+    delete _resourcesCache;
+
+    if (!QDir(_cacheDirectory).removeRecursively()) {
+        qCWarning(lcAccount) << "Cache directory" << _cacheDirectory << "was not fully removed";
+    }
+
+    // Abort any pending jobs: the account credentials are about to be invalidated.
+    _jobQueue.clear();
+}
+
 QString Account::davPath() const
 {
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
