@@ -36,7 +36,7 @@
 void setActivationPolicy(ActivationPolicy policy);
 #endif
 
-#define USE_NEW_ACCOUNT_WIZARD
+// #define USE_NEW_ACCOUNT_WIZARD
 
 Q_LOGGING_CATEGORY(lcSettingsDialog, "gui.settingsdialog", QtInfoMsg);
 
