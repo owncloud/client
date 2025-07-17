@@ -158,10 +158,22 @@ bool AdvancedSettingsPageController::validate()
 
 bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
 {
-    QString errorMessageTemplate = tr("Invalid local download directory %1: %2.");
+    QString errorMessageTemplate = tr("Invalid local download directory %1: %2");
+
+    if (rootPath == QDir::homePath()) {
+        _errorField->setText(errorMessageTemplate.arg(rootPath, tr("your user directory may not be chosen as the sync root.")));
+        return false;
+    }
+
+    if (Utility::isMac()) {
+        QString filesystemType = FileSystem::fileSystemForPath(rootPath);
+        if (filesystemType != QStringLiteral("apfs")) {
+            _errorField->setText(errorMessageTemplate.arg(rootPath, tr("path is not located on a compatible Apple File System.")));
+        }
+    }
 
     if (!QDir::isAbsolutePath(rootPath)) {
-        _errorField->setText(errorMessageTemplate.arg(rootPath, tr("path must be absolute")));
+        _errorField->setText(errorMessageTemplate.arg(rootPath, tr("path must be absolute.")));
         return false;
     }
 
@@ -170,6 +182,15 @@ bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
         _errorField->setText(errorMessageTemplate.arg(rootPath, invalidPathErrorMessage));
         return false;
     }
+
+    // I'm not testing the case that vfs is actually the chosen mode as if vfs is available we should just block dirs that don't support it
+    // the idea being that eg if they change the mode after they select the dir, or use selective sync with vfs later, at least we know the default
+    // root they select here will support it
+    if (_vfsIsAvailable && !FolderMan::instance()->checkVfsAvailability(rootPath)) {
+        _errorField->setText(errorMessageTemplate.arg(rootPath, tr("selected path does not support using virtual file system.")));
+        return false;
+    }
+
     return true;
 }
 

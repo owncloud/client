@@ -23,7 +23,7 @@ class QLabel;
 
 namespace OCC {
 
-// I am NOT making this strongly typed enum class as it's only used to support the radio button ids in the gui.
+// I am not making this a strongly typed enum class as it's only used to support the radio button ids in the gui.
 // an old fashioned enum does not require casts back and forth, which for this use case is a good thing.
 enum SyncType { NONE, USE_VFS, SYNC_ALL, SELECTIVE_SYNC };
 
@@ -31,14 +31,12 @@ struct AdvancedSettingsResult
 {
     SyncType _syncType = SyncType::NONE;
     QString _syncRoot;
-
-    // So far I don't see how this can end up having an error on validate. Even if they pick a "bad" sync root they should not be allowed to finish so...
-    // let's see if we need it later
 };
 
 class AdvancedSettingsPageController : public QObject, public WizardPageValidator
 {
     Q_OBJECT
+
 public:
     explicit AdvancedSettingsPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
