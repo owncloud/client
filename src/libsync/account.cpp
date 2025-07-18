@@ -94,15 +94,19 @@ Account::~Account()
 
 void Account::cleanupForRemoval()
 {
-    // First stop the resource cache (including any pending jobs), because this uses the cache directory
+    // Stop the spaces manager, because it might have resource jobs running that use the resource cache.
+    if (_spacesManager) {
+        delete _spacesManager;
+        _spacesManager = nullptr;
+    }
+
+    // Stop the resource cache (including any pending jobs), because this uses the cache directory.
     delete _resourcesCache;
+    _resourcesCache = nullptr;
 
     if (!QDir(_cacheDirectory).removeRecursively()) {
         qCWarning(lcAccount) << "Cache directory" << _cacheDirectory << "was not fully removed";
     }
-
-    // Abort any pending jobs: the account credentials are about to be invalidated.
-    _jobQueue.clear();
 }
 
 QString Account::davPath() const
