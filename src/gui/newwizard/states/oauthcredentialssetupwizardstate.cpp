@@ -66,7 +66,11 @@ void OAuthCredentialsSetupWizardState::handleOAuthResult(OAuth::Result result, c
         break;
     }
     case OAuth::Result::ErrorInsecureUrl: {
-        Q_EMIT evaluationFailed(tr("Oauth2 authentication requires a secured connection."));
+        Q_EMIT evaluationFailed(tr("OAuth2 authentication requires a secured connection."));
+        break;
+    }
+    case OAuth::Result::ErrorIdPUnreachable: {
+        Q_EMIT evaluationFailed(tr("Authorization server unreachable."));
         break;
     }
     };

@@ -484,11 +484,10 @@ void OAuth::openBrowser()
     auto authorisationURL = authorisationLink();
     if (authorisationURL.isEmpty()) {
         qCWarning(lcOauth) << "Authorization URL is unknown - well-known/openid-configuration endpoint did not return usable information";
-        Q_EMIT result(Error, QString());
+        Q_EMIT result(ErrorIdPUnreachable, QString());
         return;
     }
     qCDebug(lcOauth) << "opening browser";
-
 
     if (!isUrlSchemeValid(authorisationURL)) {
         qCWarning(lcOauth) << "URL validation failed";

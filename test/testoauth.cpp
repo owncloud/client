@@ -457,7 +457,7 @@ private Q_SLOTS:
 
             void oauthResult(OAuth::Result result, const QString &token, const QString &refreshToken) override
             {
-                QCOMPARE(result, OAuth::Error);
+                QCOMPARE(result, OAuth::ErrorIdPUnreachable);
                 QCOMPARE(state, StatusPhpState);
                 QCOMPARE(token, QStringLiteral(""));
                 QCOMPARE(refreshToken, QStringLiteral(""));
