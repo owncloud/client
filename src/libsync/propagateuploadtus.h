@@ -14,7 +14,8 @@
 
 #pragma once
 
-#include "propagateupload.h"
+#include "propagateuploadfile.h"
+#include "uploaddevice.h"
 
 namespace OCC {
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadTUS)

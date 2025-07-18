@@ -12,12 +12,12 @@
  * for more details.
  */
 
-#include "propagateupload.h"
 #include "account.h"
 #include "filesystem.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
 #include "propagateremotedelete.h"
+#include "propagateuploadfile.h"
 #include "syncengine.h"
 
 #include "common/asserts.h"
@@ -30,7 +30,6 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <QJsonObject>
 
 #include <chrono>
 #include <cmath>
@@ -39,10 +38,7 @@ using namespace std::chrono_literals;
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcPutJob, "sync.networkjob.put", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcPropagateUpload, "sync.propagator.upload", QtInfoMsg)
-Q_LOGGING_CATEGORY(lcPropagateUploadV1, "sync.propagator.upload.v1", QtInfoMsg)
-Q_LOGGING_CATEGORY(lcPropagateUploadNG, "sync.propagator.upload.ng", QtInfoMsg)
 
 /**
  * We do not want to upload files that are currently being modified.
@@ -61,46 +57,6 @@ static bool fileIsStillChanging(const SyncFileItem &item)
     return secondsSinceMod < SyncEngine::minimumFileAgeForUpload
         // if the mtime is too much in the future we *do* upload the file
         && secondsSinceMod > -1s;
-}
-
-PUTFileJob::PUTFileJob(AccountPtr account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device, const QMap<QByteArray, QByteArray> &headers, int chunk, QObject *parent)
-    : AbstractNetworkJob(account, url, path, parent)
-    , _device(device.release())
-    , _headers(headers)
-    , _chunk(chunk)
-{
-    _device->setParent(this);
-    // Long uploads must not block non-propagation jobs.
-    setPriority(QNetworkRequest::LowPriority);
-}
-
-PUTFileJob::~PUTFileJob()
-{
-}
-
-void PUTFileJob::start()
-{
-    QNetworkRequest req;
-    for (auto it = _headers.cbegin(); it != _headers.cend(); ++it) {
-        req.setRawHeader(it.key(), it.value());
-    }
-    sendRequest("PUT", req, _device);
-    _requestTimer.start();
-    AbstractNetworkJob::start();
-}
-
-void PUTFileJob::finished()
-{
-    _device->close();
-
-    qCInfo(lcPutJob) << "PUT of" << reply()->request().url().toString() << "FINISHED WITH STATUS" << replyStatusString()
-                     << reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
-                     << reply()->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-}
-
-void PUTFileJob::newReplyHook(QNetworkReply *reply)
-{
-    connect(reply, &QNetworkReply::uploadProgress, this, &PUTFileJob::uploadProgress);
 }
 
 const QString PropagateUploadFileCommon::fileChangedMessage()
@@ -159,7 +115,7 @@ void PropagateUploadFileCommon::slotComputeContentChecksum()
 
     const QString filePath = propagator()->fullLocalPath(_item->_file);
 
-    // remember the modtime before checksumming to be able to detect a file
+    // remember the modtime before computing the checksum to be able to detect a file
     // change during the checksum calculation
     _item->_modtime = FileSystem::getModTime(filePath);
 
@@ -261,100 +217,6 @@ void PropagateUploadFileCommon::slotStartUpload(CheckSums::Algorithm transmissio
     }
 
     doStartUpload();
-}
-
-UploadDevice::UploadDevice(const QString &fileName, qint64 start, qint64 size)
-    : _file(fileName)
-    , _start(start)
-    , _size(size)
-    , _read(0)
-{
-}
-
-bool UploadDevice::open(QIODevice::OpenMode mode)
-{
-    if (mode & QIODevice::WriteOnly)
-        return false;
-
-    // Get the file size now: _file.fileName() is no longer reliable
-    // on all platforms after openAndSeekFileSharedRead().
-    auto fileDiskSize = FileSystem::getSize(QFileInfo{_file.fileName()});
-
-    QString openError;
-    if (!FileSystem::openAndSeekFileSharedRead(&_file, &openError, _start)) {
-        setErrorString(openError);
-        return false;
-    }
-
-    _size = qBound(0ll, _size, fileDiskSize - _start);
-    _read = 0;
-
-    return QIODevice::open(mode);
-}
-
-void UploadDevice::close()
-{
-    _file.close();
-    QIODevice::close();
-}
-
-qint64 UploadDevice::writeData(const char *, qint64)
-{
-    OC_ASSERT_X(false, "write to read only device");
-    return 0;
-}
-
-qint64 UploadDevice::readData(char *data, qint64 maxlen)
-{
-    if (_size - _read <= 0) {
-        return -1;
-    }
-    maxlen = qMin(maxlen, _size - _read);
-    if (maxlen <= 0) {
-        return 0;
-    }
-
-    auto c = _file.read(data, maxlen);
-    if (c < 0) {
-        setErrorString(_file.errorString());
-        return -1;
-    }
-    _read += c;
-    return c;
-}
-
-bool UploadDevice::atEnd() const
-{
-    return _read >= _size;
-}
-
-qint64 UploadDevice::size() const
-{
-    return _size;
-}
-
-qint64 UploadDevice::bytesAvailable() const
-{
-    return _size - _read + QIODevice::bytesAvailable();
-}
-
-// random access, we can seek
-bool UploadDevice::isSequential() const
-{
-    return false;
-}
-
-bool UploadDevice::seek(qint64 pos)
-{
-    if (!QIODevice::seek(pos)) {
-        return false;
-    }
-    if (pos < 0 || pos > _size) {
-        return false;
-    }
-    _read = pos;
-    _file.seek(_start + pos);
-    return true;
 }
 
 void PropagateUploadFileCommon::done(SyncFileItem::Status status, const QString &errorString)
