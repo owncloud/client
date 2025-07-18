@@ -286,7 +286,11 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         break;
     }
     case OAuth::Result::ErrorInsecureUrl: {
-        handleError(tr("Oauth2 authentication requires a secured connection."));
+        handleError(tr("OAuth2 authentication requires a secured connection."));
+        break;
+    }
+    case OAuth::Result::ErrorIdPUnreachable: {
+        handleError(tr("Authorization server unreachable."));
         break;
     }
     };

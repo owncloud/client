@@ -64,6 +64,9 @@ void HttpCredentialsGui::asyncAuthResult(OAuth::Result r, const QString &token, 
         // should not happen after the initial setup
         Q_ASSERT(false);
         [[fallthrough]];
+    case OAuth::ErrorIdPUnreachable:
+        // TODO: add user facing error message that authentication is currently not possible - retry is the wrong advice
+        [[fallthrough]];
     case OAuth::Error:
         Q_EMIT oAuthErrorOccurred();
         return;
