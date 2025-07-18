@@ -156,7 +156,7 @@ void SpaceImage::update()
 
         _etag = newEtag;
         _url = QUrl(img->getWebDavUrl());
-        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url);
+        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, this);
 
         // TODO: next problem = this routine is correctly run when the icon has changed on the server, but the icon in the gui does not get refreshed!
         // The icon IS in the app cache, so it seems to have been brought back from the server correctly, but it is not shown until restart
@@ -165,6 +165,7 @@ void SpaceImage::update()
         QObject::connect(job, &SimpleNetworkJob::finishedSignal, _space, [job, this] {
             if (job->httpStatusCode() == 200) {
                 _image = job->asIcon();
+                job->deleteLater();
                 Q_EMIT imageChanged();
             }
         });

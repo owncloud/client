@@ -81,8 +81,8 @@ QIcon ResourceJob::asIcon() const
     return QIcon(_cache->path(_cacheKey));
 }
 
-ResourceJob::ResourceJob(ResourcesCache *cache, const QUrl &rootUrl, const QString &path)
-    : SimpleNetworkJob(cache->account()->sharedFromThis(), rootUrl, path, "GET", {}, {}, cache)
+ResourceJob::ResourceJob(ResourcesCache *cache, const QUrl &rootUrl, const QString &path, QObject *parent)
+    : SimpleNetworkJob(cache->account()->sharedFromThis(), rootUrl, path, "GET", {}, {}, parent)
     , _cache(cache)
 {
     setStoreInCache(true);
@@ -96,9 +96,9 @@ ResourcesCache::ResourcesCache(const QString &cacheDirectory, Account *account)
     Q_ASSERT(_cacheDirectory.isValid());
 }
 
-ResourceJob *ResourcesCache::makeGetJob(const QUrl &rootUrl)
+ResourceJob *ResourcesCache::makeGetJob(const QUrl &rootUrl, QObject *parent)
 {
-    return new ResourceJob(this, rootUrl, {});
+    return new ResourceJob(this, rootUrl, {}, parent);
 }
 
 Account *ResourcesCache::account() const
