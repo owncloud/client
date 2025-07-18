@@ -176,6 +176,8 @@ AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
     auto accountStatePtr = accountMan->addAccount(newAccount);
 
     // if one account is configured: enable autostart
+    // todo: #33. on first run of the app, just turn the setting on. This is easily accomplished by checking the settings to see if the key exists yet,
+    // if it does not, shouldSetAutoStart -> true and go from there.
     bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
 #ifdef Q_OS_MAC
     // Don't auto start when not being 'installed'

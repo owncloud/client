@@ -207,6 +207,11 @@ void AccountManager::save(bool saveCredentials)
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
+AccountStatePtr AccountManager::createAccount(const NewAccountModel &model)
+{
+    return nullptr;
+}
+
 void AccountManager::saveAccount(Account *account, bool saveCredentials)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
