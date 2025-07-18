@@ -48,12 +48,28 @@ def get_client_root_path():
     return os.path.join(gettempdir(), 'owncloudtest')
 
 
+def get_test_config_file_path():
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    return os.path.abspath(os.path.join(script_path, '..', '..', '..', 'config.ini'))
+
+
+def get_client_name():
+    if os.environ.get('CLIENT_NAME'):
+        return os.environ.get('CLIENT_NAME')
+    cfg = ConfigParser()
+    if cfg.read(get_test_config_file_path()) and cfg.get('DEFAULT', 'CLIENT_NAME'):
+        return cfg.get('DEFAULT', 'CLIENT_NAME')
+    return 'ownCloud'
+
+
 def get_config_home():
     if is_windows():
         # There is no way to set custom config path in windows
         # TODO: set to different path if option is available
-        return os.path.join(get_win_user_home(), 'AppData', 'Roaming', 'ownCloud')
-    return os.path.join(get_config_from_env_file('XDG_CONFIG_HOME'), 'ownCloud')
+        return os.path.join(
+            get_win_user_home(), 'AppData', 'Roaming', get_client_name()
+        )
+    return os.path.join(get_config_from_env_file('XDG_CONFIG_HOME'), get_client_name())
 
 
 def get_default_home_dir():
@@ -74,6 +90,8 @@ CONFIG_ENV_MAP = {
     'tempFolderPath': 'TEMP_FOLDER_PATH',
     'clientConfigDir': 'CLIENT_CONFIG_DIR',
     'guiTestReportDir': 'GUI_TEST_REPORT_DIR',
+    'predefined_users': 'PREDEFINED_USERS',
+    'personal_sync_folder': 'PERSONAL_SYNC_FOLDER',
     'ocis': 'OCIS',
     'record_video_on_failure': 'RECORD_VIDEO_ON_FAILURE',
 }
@@ -97,6 +115,9 @@ CONFIG = {
     'tempFolderPath': os.path.join(get_client_root_path(), 'temp'),
     'clientConfigDir': get_config_home(),
     'guiTestReportDir': os.path.abspath('../reports'),
+    'predefined_users': '',
+    'client_name': get_client_name(),
+    'personal_sync_folder': 'Personal',
     'ocis': False,
     'record_video_on_failure': False,
     'files_for_upload': os.path.join(CURRENT_DIR.parent.parent, 'files-for-upload'),
@@ -123,11 +144,7 @@ def read_cfg_file(cfg_path):
 def init_config():
     # try reading configs from config.ini
     try:
-        script_path = os.path.dirname(os.path.realpath(__file__))
-        cfg_path = os.path.abspath(
-            os.path.join(script_path, '..', '..', '..', 'config.ini')
-        )
-        read_cfg_file(cfg_path)
+        read_cfg_file(get_test_config_file_path())
     except:
         pass
 
