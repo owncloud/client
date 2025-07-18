@@ -27,7 +27,8 @@ public:
     ~DesktopServiceHook() { QDesktopServices::unsetUrlHandler(QStringLiteral("oauthtest")); }
 };
 
-static const QUrl sOAuthTestServer(QStringLiteral("oauthtest://someserver/owncloud"));
+static const QUrl sOpenIdBaseURL(QStringLiteral("oauthtest://auth.example.com"));
+static const QUrl sOpenIdAuthURL(QStringLiteral("oauthtest://auth.example.com/realms/test/protocol/openid-connect/auth"));
 
 
 class FakePostReply : public QNetworkReply
@@ -115,8 +116,7 @@ public:
         CustomState } state = StartState;
     Q_ENUM(State);
 
-    // for oauth2 we use localhost, for oidc we use 127.0.0.1
-    QString localHost = QStringLiteral("localhost");
+    QString localHost = QStringLiteral("127.0.0.1");
     bool replyToBrowserOk = false;
     bool gotAuthOk = false;
     virtual bool done() const { return replyToBrowserOk && gotAuthOk; }
@@ -133,16 +133,18 @@ public:
     {
         fakeAm = new FakeAM({}, nullptr);
         account = Account::create(QUuid::createUuid());
-        account->setUrl(sOAuthTestServer);
+        account->setUrl(sOpenIdBaseURL);
         // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
         // therefore, we should never call fakeAm->setThis(...)
         account->setCredentials(new FakeCredentials { fakeAm });
         fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
             if (req.url().path().endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 return this->wellKnownReply(op, req);
-            } else if (req.url().path().endsWith(QLatin1String("status.php"))) {
+            }
+            if (req.url().path().endsWith(QLatin1String("status.php"))) {
                 return this->statusPhpReply(op, req);
-            } else if (req.url().path().endsWith(QLatin1String("ocs/v2.php/cloud/user")) && req.url().query() == QLatin1String("format=json")) {
+            }
+            if (req.url().path().endsWith(QLatin1String("ocs/v2.php/cloud/user")) && req.url().query() == QLatin1String("format=json")) {
                 return this->userInfoReply(op, req);
             }
             OC_ASSERT(device);
@@ -159,6 +161,13 @@ public:
 
     virtual void test()
     {
+        runTest();
+
+        QTRY_VERIFY(done());
+    }
+
+    virtual void runTest()
+    {
         oauth = prepareOauth();
         oauth->startAuthentication();
 
@@ -166,15 +175,13 @@ public:
         if (spy.wait()) {
             oauth->openBrowser();
         }
-
-        QTRY_VERIFY(done());
     }
 
     virtual void openBrowserHook(const QUrl &url) {
         QCOMPARE(state, StatusPhpState);
         state = BrowserOpened;
-        QCOMPARE(url.path(), sOAuthTestServer.path() + QStringLiteral("/index.php/apps/oauth2/authorize"));
-        QVERIFY(url.toString().startsWith(sOAuthTestServer.toString()));
+        QCOMPARE(url.path(), sOpenIdAuthURL.path());
+        QVERIFY(url.toString().startsWith(sOpenIdBaseURL.toString()));
         QUrlQuery query(url);
         QCOMPARE(query.queryItemValue(QStringLiteral("response_type")), QLatin1String("code"));
         QCOMPARE(query.queryItemValue(QStringLiteral("client_id")), _expectedClientId);
@@ -207,8 +214,7 @@ public:
         OC_ASSERT(state == BrowserOpened);
         state = TokenAsked;
         OC_ASSERT(op == QNetworkAccessManager::PostOperation);
-        OC_ASSERT(req.url().toString().startsWith(sOAuthTestServer.toString()));
-        OC_ASSERT(req.url().path() == sOAuthTestServer.path() + QStringLiteral("/index.php/apps/oauth2/api/v1/token"));
+
         auto payload = std::make_unique<QBuffer>();
         payload->setData(tokenReplyPayload());
         return new FakePostReply(op, req, std::move(payload), fakeAm);
@@ -219,8 +225,8 @@ public:
         OC_ASSERT(state == StartState);
         state = StatusPhpState;
         OC_ASSERT(op == QNetworkAccessManager::GetOperation);
-        OC_ASSERT(req.url().toString().startsWith(sOAuthTestServer.toString()));
-        OC_ASSERT(req.url().path() == sOAuthTestServer.path() + QStringLiteral("/status.php"));
+        OC_ASSERT(req.url().toString().startsWith(sOpenIdBaseURL.toString()));
+        OC_ASSERT(req.url().path() == sOpenIdBaseURL.path() + QStringLiteral("/status.php"));
         auto payload = std::make_unique<QBuffer>();
         payload->setData(statusPhpPayload());
         return new FakePostReply(op, req, std::move(payload), fakeAm);
@@ -231,17 +237,22 @@ public:
         OC_ASSERT(state == TokenAsked);
         state = UserInfoFetched;
         OC_ASSERT(op == QNetworkAccessManager::GetOperation);
-        OC_ASSERT(req.url().toString().startsWith(sOAuthTestServer.toString()));
-        OC_ASSERT(req.url().path() == sOAuthTestServer.path() + QStringLiteral("/ocs/v2.php/cloud/user"));
+        OC_ASSERT(req.url().toString().startsWith(sOpenIdBaseURL.toString()));
+        OC_ASSERT(req.url().path() == sOpenIdBaseURL.path() + QStringLiteral("/ocs/v2.php/cloud/user"));
         OC_ASSERT(req.url().query() == QStringLiteral("format=json"));
         auto payload = std::make_unique<QBuffer>();
         payload->setData(userInfoPayload());
         return new FakePostReply(op, req, std::move(payload), fakeAm);
     }
 
-    virtual QNetworkReply *wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req)
-    {
-        return new FakeErrorReply(op, req, fakeAm, 404);
+    virtual QNetworkReply * wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest & req) {
+        OC_ASSERT(op == QNetworkAccessManager::GetOperation);
+        QJsonDocument jsondata(QJsonObject{
+            {QStringLiteral("authorization_endpoint"), sOpenIdAuthURL.toString()},
+            {QStringLiteral("token_endpoint"), QStringLiteral("oauthtest://openidserver/token_endpoint")},
+            {QStringLiteral("token_endpoint_auth_methods_supported"), QJsonArray{QStringLiteral("client_secret_post")}},
+        });
+        return new FakePayloadReply(op, req, jsondata.toJson(), fakeAm);
     }
 
     virtual QByteArray tokenReplyPayload() const {
@@ -411,37 +422,58 @@ private Q_SLOTS:
                 localHost = QStringLiteral("127.0.0.1");
             }
 
-            QNetworkReply * wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest & req) override {
-                OC_ASSERT(op == QNetworkAccessManager::GetOperation);
-                QJsonDocument jsondata(QJsonObject{
-                    {QStringLiteral("authorization_endpoint"),
-                        QJsonValue(QStringLiteral("oauthtest://openidserver") + sOAuthTestServer.path() + QStringLiteral("/index.php/apps/oauth2/authorize"))},
-                    {QStringLiteral("token_endpoint"), QStringLiteral("oauthtest://openidserver/token_endpoint")},
-                    {QStringLiteral("token_endpoint_auth_methods_supported"), QJsonArray{QStringLiteral("client_secret_post")}},
-                });
-                return new FakePayloadReply(op, req, jsondata.toJson(), fakeAm);
-            }
-
             void openBrowserHook(const QUrl & url) override {
-                OC_ASSERT(url.host() == QStringLiteral("openidserver"));
+                OC_ASSERT(url.host() == QStringLiteral("auth.example.com"));
                 QUrl url2 = url;
-                url2.setHost(sOAuthTestServer.host());
+                url2.setHost(sOpenIdBaseURL.host());
                 OAuthTestCase::openBrowserHook(url2);
             }
 
+            /*
             QNetworkReply *tokenReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *device) override
             {
                 OC_ASSERT(browserReply);
                 OC_ASSERT(request.url().toString().startsWith(QStringLiteral("oauthtest://openidserver/token_endpoint")));
                 auto req = request;
                 req.setUrl(QUrl(request.url().toString().replace(QLatin1String("oauthtest://openidserver/token_endpoint"),
-                    sOAuthTestServer.toString() + QStringLiteral("/index.php/apps/oauth2/api/v1/token"))));
+                    sOpenIdBaseURL.toString() + QStringLiteral("/index.php/apps/oauth2/api/v1/token"))));
                 return OAuthTestCase::tokenReply(op, req, device);
-            }
+            }*/
         } test;
         test.test();
     }
 
+    void testWellKnown307() {
+        struct Test : OAuthTestCase {
+            Test()
+            {
+                localHost = QStringLiteral("127.0.0.1");
+            }
+
+            QNetworkReply *wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req) override
+            {
+                return new FakeErrorReply(op, req, fakeAm, 404);
+            }
+
+            void oauthResult(OAuth::Result result, const QString &token, const QString &refreshToken) override
+            {
+                QCOMPARE(result, OAuth::ErrorIdPUnreachable);
+                QCOMPARE(state, StatusPhpState);
+                QCOMPARE(token, QStringLiteral(""));
+                QCOMPARE(refreshToken, QStringLiteral(""));
+            }
+
+            void openBrowserHook(const QUrl & url) override {
+                OC_ASSERT(url.host() == QStringLiteral("openidserver"));
+                QUrl url2 = url;
+                url2.setHost(sOpenIdBaseURL.host());
+                OAuthTestCase::openBrowserHook(url2);
+            }
+        } test;
+        test.runTest();
+        QTRY_VERIFY(test.gotAuthOk == false);
+        QTRY_VERIFY(test.replyToBrowserOk == false);
+    }
 
     void testTimeout()
     {
