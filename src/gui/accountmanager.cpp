@@ -198,6 +198,33 @@ bool AccountManager::restoreFromLegacySettings()
     return false;
 }
 
+AccountPtr AccountManager::createAccount(const NewAccountModel &model)
+{
+    auto newAccountPtr = Account::create(QUuid::createUuid());
+
+    newAccountPtr->setUrl(model.effectiveUserInfoUrl());
+    newAccountPtr->setDavUser(model.davUser());
+    newAccountPtr->setDavDisplayName(model.displayName());
+
+    HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
+    newAccountPtr->setCredentials(credentials);
+
+    newAccountPtr->addApprovedCerts(model.trustedCertificates());
+
+    QString syncRoot = model.defaultSyncRoot();
+    if (!syncRoot.isEmpty()) {
+        newAccountPtr->setDefaultSyncRoot(syncRoot);
+        if (!QFileInfo::exists(syncRoot)) {
+            OC_ASSERT(QDir().mkpath(syncRoot));
+        }
+        Utility::markDirectoryAsSyncRoot(syncRoot, newAccountPtr->uuid());
+    }
+
+    newAccountPtr->setCapabilities(model.capabilities());
+
+    return newAccountPtr;
+}
+
 void AccountManager::save(bool saveCredentials)
 {
     for (const auto &acc : std::as_const(_accounts)) {
@@ -205,11 +232,6 @@ void AccountManager::save(bool saveCredentials)
     }
 
     qCInfo(lcAccountManager) << "Saved all account settings";
-}
-
-AccountStatePtr AccountManager::createAccount(const NewAccountModel &model)
-{
-    return nullptr;
 }
 
 void AccountManager::saveAccount(Account *account, bool saveCredentials)

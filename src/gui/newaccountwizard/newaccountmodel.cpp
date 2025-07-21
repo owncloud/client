@@ -28,6 +28,7 @@ QUrl NewAccountModel::serverUrl() const
 
 void NewAccountModel::setServerUrl(const QUrl &newServerUrl)
 {
+    // consider clearing auth info any time the url changes. it might be overkill though
     if (_serverUrl == newServerUrl)
         return;
     _serverUrl = newServerUrl;
@@ -119,6 +120,14 @@ QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
     return _serverUrl;
 }
 
+QUrl NewAccountModel::effectiveUserInfoUrl() const
+{
+    if (!_webfingerUserInfoUrl.isEmpty())
+        return _webfingerUserInfoUrl;
+    else
+        return _serverUrl;
+}
+
 QString NewAccountModel::authToken() const
 {
     return _authToken;
@@ -156,5 +165,18 @@ void NewAccountModel::setCapabilities(const Capabilities &newCapabilities)
     //    return;
     _capabilities = newCapabilities;
     Q_EMIT capabilitiesChanged(_capabilities);
+}
+
+QString NewAccountModel::defaultSyncRoot() const
+{
+    return _defaultSyncRoot;
+}
+
+void NewAccountModel::setDefaultSyncRoot(const QString &newDefaultSyncRoot)
+{
+    if (_defaultSyncRoot != newDefaultSyncRoot) {
+        _defaultSyncRoot = newDefaultSyncRoot;
+        Q_EMIT defaultSyncRootChanged(_defaultSyncRoot);
+    }
 }
 }

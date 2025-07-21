@@ -51,9 +51,9 @@ public:
     /**
      * @brief createAccount creates an account from scratch
      * @param model contains the data used to set up the new account (usually collected from the new account wizard)
-     * @return the account state associated with the new account
+     * @return the AccountPtr associated with the new account. for now.
      */
-    AccountStatePtr createAccount(const NewAccountModel &model);
+    AccountPtr createAccount(const NewAccountModel &model);
 
     /**
      * Creates account objects from a given settings file.

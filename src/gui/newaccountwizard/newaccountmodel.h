@@ -47,6 +47,8 @@ class NewAccountModel : public QObject
     Q_PROPERTY(QString authToken READ authToken WRITE setAuthToken NOTIFY authTokenChanged);
     Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged);
 
+    Q_PROPERTY(QString defaultSyncRoot READ defaultSyncRoot WRITE setDefaultSyncRoot NOTIFY defaultSyncRootChanged);
+
     Q_PROPERTY(Capabilities capabilities READ capabilities WRITE setCapabilities NOTIFY capabilitiesChanged);
 
 public:
@@ -89,6 +91,8 @@ public:
 
     // convenience function that returns the webfingerAuthenticationUrl if it is non-empty, else it returns the serverUrl
     QUrl effectiveAuthenticationServerUrl() const;
+    // convenience function that returns the webfingerUserInfoUrl if it is nonempty, else it returns the serverUrl
+    QUrl effectiveUserInfoUrl() const;
 
     QString davUser() const;
     void setDavUser(const QString &newDavUser);
@@ -102,6 +106,9 @@ public:
     Capabilities capabilities() const;
     void setCapabilities(const Capabilities &newCapabilities);
 
+    QString defaultSyncRoot() const;
+    void setDefaultSyncRoot(const QString &newDefaultSyncRoot);
+
 Q_SIGNALS:
     void serverUrlChanged(const QUrl &newUrl);
     void webfingerAuthenticationUrlChanged(const QUrl &newWebfingerAuthenticationUrl);
@@ -112,8 +119,8 @@ Q_SIGNALS:
     void davUserChanged(QString davUser);
     void authTokenChanged(QString authToken);
     void refreshTokenChanged(QString refreshToken);
-
     void capabilitiesChanged(OCC::Capabilities capabilities);
+    void defaultSyncRootChanged(QString defaultSyncRoot);
 
 private:
     QUrl _serverUrl;
@@ -126,5 +133,6 @@ private:
     QString _authToken;
     QString _refreshToken;
     Capabilities _capabilities{QUrl(), {}};
+    QString _defaultSyncRoot;
 };
 }
