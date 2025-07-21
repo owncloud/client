@@ -849,9 +849,9 @@ QString FolderMan::checkPathValidityRecursive(const QString &path, FolderMan::Ne
     Utility::NtfsPermissionLookupRAII ntfs_perm;
 #endif
 
-    auto pathLenghtCheck = Folder::checkPathLength(path);
-    if (!pathLenghtCheck) {
-        return pathLenghtCheck.error();
+    auto pathLengthCheck = Folder::checkPathLength(path);
+    if (!pathLengthCheck) {
+        return pathLengthCheck.error();
     }
 
     const QFileInfo selectedPathInfo(path);
@@ -867,7 +867,7 @@ QString FolderMan::checkPathValidityRecursive(const QString &path, FolderMan::Ne
         return FolderMan::tr("The folder %1 is used in a folder sync connection!").arg(QDir::toNativeSeparators(selectedPathInfo.filePath()));
     }
 
-    // At this point we know there is no syncdb in the parent hyrarchy, check for spaces sync root.
+    // At this point we know there is no syncdb in the parent hierarchy, check for spaces sync root.
 
     if (!selectedPathInfo.isDir()) {
         return FolderMan::tr("The selected path is not a folder!");
