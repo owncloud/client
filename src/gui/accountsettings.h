@@ -94,6 +94,9 @@ protected Q_SLOTS:
     void slotToggleSignInState();
     void slotCustomContextMenuRequested(Folder *folder);
 
+protected:
+    void accountSettingUpChanged(bool settingUp);
+
 private:
     void showSelectiveSyncDialog(Folder *folder);
 
