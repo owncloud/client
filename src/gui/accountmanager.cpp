@@ -362,7 +362,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     settings.beginGroup(QStringLiteral("General"));
     const auto certs = QSslCertificate::fromData(settings.value(caCertsKeyC()).toByteArray());
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
-    acc->setApprovedCerts(certs);
+    acc->setApprovedCerts({certs.begin(), certs.end()});
     settings.endGroup();
 
     return acc;

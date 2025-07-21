@@ -35,21 +35,21 @@ class NewAccountModel : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QUrl serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged);
-    Q_PROPERTY(QUrl webfingerAuthenticationUrl READ webfingerAuthenticationUrl WRITE setWebfingerAuthenticationUrl NOTIFY webfingerAuthenticationUrlChanged);
-    Q_PROPERTY(QUrl webfingerUserInfoUrl READ webfingerUserInfoUrl WRITE setWebfingerUserInfoUrl NOTIFY webfingerUserInfoUrlChanged);
-    Q_PROPERTY(QSet<QSslCertificate> trustedCertificates READ trustedCertificates WRITE setTrustedCertificates NOTIFY trustedCertificatesChanged);
-    Q_PROPERTY(QString syncRootDir READ syncRootDir WRITE setSyncRootDir NOTIFY syncRootDirChanged);
+    Q_PROPERTY(QUrl serverUrl READ serverUrl WRITE setServerUrl NOTIFY serverUrlChanged)
+    Q_PROPERTY(QUrl webfingerAuthenticationUrl READ webfingerAuthenticationUrl WRITE setWebfingerAuthenticationUrl NOTIFY webfingerAuthenticationUrlChanged)
+    Q_PROPERTY(QUrl webfingerUserInfoUrl READ webfingerUserInfoUrl WRITE setWebfingerUserInfoUrl NOTIFY webfingerUserInfoUrlChanged)
+    Q_PROPERTY(QSet<QSslCertificate> trustedCertificates READ trustedCertificates WRITE setTrustedCertificates NOTIFY trustedCertificatesChanged)
+    Q_PROPERTY(QString syncRootDir READ syncRootDir WRITE setSyncRootDir NOTIFY syncRootDirChanged)
 
-    Q_PROPERTY(QString displayName READ displayName WRITE setDisplayName NOTIFY displayNameChanged);
-    Q_PROPERTY(QString davUser READ davUser WRITE setDavUser NOTIFY davUserChanged);
+    Q_PROPERTY(QString displayName READ displayName WRITE setDisplayName NOTIFY displayNameChanged)
+    Q_PROPERTY(QString davUser READ davUser WRITE setDavUser NOTIFY davUserChanged)
 
-    Q_PROPERTY(QString authToken READ authToken WRITE setAuthToken NOTIFY authTokenChanged);
-    Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged);
+    Q_PROPERTY(QString authToken READ authToken WRITE setAuthToken NOTIFY authTokenChanged)
+    Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged)
 
-    Q_PROPERTY(QString defaultSyncRoot READ defaultSyncRoot WRITE setDefaultSyncRoot NOTIFY defaultSyncRootChanged);
+    Q_PROPERTY(QString defaultSyncRoot READ defaultSyncRoot WRITE setDefaultSyncRoot NOTIFY defaultSyncRootChanged)
 
-    Q_PROPERTY(Capabilities capabilities READ capabilities WRITE setCapabilities NOTIFY capabilitiesChanged);
+    Q_PROPERTY(Capabilities capabilities READ capabilities WRITE setCapabilities NOTIFY capabilitiesChanged)
 
 public:
     NewAccountModel(QObject *parent);

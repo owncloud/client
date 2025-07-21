@@ -232,6 +232,7 @@ bool HttpCredentials::stillValid(QNetworkReply *reply)
         }
         return true;
     }
+    // Lisa todo: I think this part can go as we are only ever using oauth now
     return ((reply->error() != QNetworkReply::AuthenticationRequiredError)
         // returned if user or password is incorrect
         && (reply->error() != QNetworkReply::OperationCanceledError
