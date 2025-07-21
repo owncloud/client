@@ -52,8 +52,6 @@ public:
 
     AccessManager *accessManager() const;
 
-    // convenience factory
-    CoreJob *startFetchUserInfoJob(QObject *parent) const;
 
     QUrl userInfoUrl() const;
 

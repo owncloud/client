@@ -53,8 +53,6 @@ public:
     void setDavUser(const QString &user);
 
 
-    virtual FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) = 0;
-
 private:
     QString _davUser;
 };
@@ -69,8 +67,6 @@ public:
     bool isValid() override;
 
     QString token() override { return _token; }
-
-    FetchUserInfoJobFactory makeFetchUserInfoJobFactory(QNetworkAccessManager *nam) override;
 
 private:
     QString _token;

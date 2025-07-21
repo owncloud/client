@@ -50,11 +50,6 @@ bool OAuthAuthenticationStrategy::isValid()
     return !davUser().isEmpty() && !_token.isEmpty() && !_refreshToken.isEmpty();
 }
 
-FetchUserInfoJobFactory OAuthAuthenticationStrategy::makeFetchUserInfoJobFactory(QNetworkAccessManager *nam)
-{
-    return FetchUserInfoJobFactory::fromOAuth2Credentials(nam, _token);
-}
-
 void SetupWizardAccountBuilder::setServerUrl(const QUrl &serverUrl, AuthenticationType authType)
 {
     _serverUrl = serverUrl;

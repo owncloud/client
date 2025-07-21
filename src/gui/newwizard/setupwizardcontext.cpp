@@ -71,11 +71,5 @@ QUrl SetupWizardContext::userInfoUrl() const
     return _accountBuilder.serverUrl();
 }
 
-CoreJob *SetupWizardContext::startFetchUserInfoJob(QObject *parent) const
-{
-    const QUrl serverUrl = userInfoUrl();
-
-    return _accountBuilder.authenticationStrategy()->makeFetchUserInfoJobFactory(_accessManager).startJob(serverUrl, parent);
-}
 
 } // OCC::Wizard
