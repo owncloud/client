@@ -618,8 +618,7 @@ void AccountState::setSettingUp(bool settingUp)
 {
     if (_settingUp != settingUp) {
         _settingUp = settingUp;
-        // for goodness sake, just send the new value
-        Q_EMIT isSettingUpChanged();
+        Q_EMIT isSettingUpChanged(settingUp);
     }
 }
 bool AccountState::readyForSync() const

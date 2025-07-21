@@ -273,9 +273,9 @@ QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, 
     return _am->sendCustomRequest(req, verb, data);
 }
 
-void Account::setApprovedCerts(const QList<QSslCertificate> &certs)
+void Account::setApprovedCerts(const QSet<QSslCertificate> &certs)
 {
-    _approvedCerts = { certs.begin(), certs.end() };
+    _approvedCerts = certs;
     _am->setCustomTrustedCaCertificates(_approvedCerts);
 }
 
@@ -337,7 +337,6 @@ void Account::clearAMCache()
 
 const Capabilities &Account::capabilities() const
 {
-    Q_ASSERT(hasCapabilities());
     return _capabilities;
 }
 
@@ -382,7 +381,6 @@ Account::ServerSupportLevel Account::serverSupportLevel() const
 
 QString Account::defaultSyncRoot() const
 {
-    Q_ASSERT(!_defaultSyncRoot.isEmpty());
     return _defaultSyncRoot;
 }
 bool Account::hasDefaultSyncRoot() const

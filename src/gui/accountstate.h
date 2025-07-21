@@ -175,7 +175,7 @@ private:
 Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
-    void isSettingUpChanged();
+    void isSettingUpChanged(bool settingUp);
     void supportsSpacesChanged();
 
 protected Q_SLOTS:

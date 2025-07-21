@@ -168,6 +168,8 @@ void Application::slotCleanup()
     AccountManager::instance()->shutdown();
 }
 
+// todo: #33 this is currently called by the old account wizard routine to add the account, too - remove the whole thing
+// once both updates are complete
 AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
 {
     auto *accountMan = AccountManager::instance();

@@ -97,18 +97,22 @@ AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *p
 
     buildManageAccountMenu();
 
-    connect(_accountState.get(), &AccountState::isSettingUpChanged, this, [this] {
-        if (_accountState->isSettingUp()) {
-            ui->spinner->startAnimation();
-            ui->stackedWidget->setCurrentWidget(ui->loadingPage);
-        } else {
-            ui->spinner->stopAnimation();
-            ui->stackedWidget->setCurrentWidget(ui->quickWidget);
-        }
-    });
+    connect(_accountState.get(), &AccountState::isSettingUpChanged, this, &AccountSettings::accountSettingUpChanged);
+
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this,
         [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->quickWidget); });
     ui->stackedWidget->setCurrentWidget(ui->quickWidget);
+}
+
+void AccountSettings::accountSettingUpChanged(bool settingUp)
+{
+    if (settingUp) {
+        ui->spinner->startAnimation();
+        ui->stackedWidget->setCurrentWidget(ui->loadingPage);
+    } else {
+        ui->spinner->stopAnimation();
+        ui->stackedWidget->setCurrentWidget(ui->quickWidget);
+    }
 }
 
 void AccountSettings::slotOpenAccountInBrowser()
