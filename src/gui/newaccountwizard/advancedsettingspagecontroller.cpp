@@ -168,7 +168,7 @@ bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
     if (Utility::isMac()) {
         QString filesystemType = FileSystem::fileSystemForPath(rootPath);
         if (filesystemType != QStringLiteral("apfs")) {
-            _errorField->setText(errorMessageTemplate.arg(rootPath, tr("path is not located on a compatible Apple File System.")));
+            _errorField->setText(errorMessageTemplate.arg(rootPath, tr("path is not located on a supported Apple File System.")));
         }
     }
 
