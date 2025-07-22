@@ -167,6 +167,7 @@ def step(context):
 
 @Then('the folders should be in the following order:')
 def step(context):
+    squish.snooze(30)
     row_index = 0
     for row in context.table[1:]:
         expected_folder = row[0]

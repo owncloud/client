@@ -289,6 +289,8 @@ def step(context, file_number, file_size, folder_name):
     regexp=True,
 )
 def step(context, username, _, resource_name):
+    if get_config('predefined_users'):
+        username = get_username_for_user(username)
     source_dir = join(get_config('tempFolderPath'), resource_name)
     destination_dir = get_resource_path('/', username)
     shutil.move(source_dir, destination_dir)
@@ -357,6 +359,8 @@ def step(context, zip_file_name):
 
 @When('user "|any|" unzips the zip file "|any|" inside the sync root')
 def step(context, username, zip_file_name):
+    if get_config('predefined_users'):
+        username = get_username_for_user(username)
     destination_dir = get_resource_path('/', username)
     zip_file_path = join(destination_dir, zip_file_name)
     extract_zip(zip_file_path, destination_dir)

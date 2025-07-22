@@ -7,6 +7,7 @@ from helpers.ConfigHelper import get_config
 from helpers.FilesHelper import write_file
 from helpers.UserHelper import get_username_for_user
 from helpers.api.provisioning import created_users
+from helpers.FilesHelper import get_file_for_upload
 
 tokens = {}
 personal_sync_folder_id = {}
@@ -56,16 +57,21 @@ def generate_xsrf_token(user):
 
 def resource_exists(user, resource):
     user = get_username_for_user(user)
-    resources = get_resources_inside_sync_folder(user)
+    file_name = os.path.basename(resource)
+    folder_path = os.path.dirname(resource)
+    folder_id = None
+    if folder_path:
+        folder_id = get_folder_id_by_path(user, folder_path)
+    resources = get_resources_inside_folder(user, folder_id=folder_id)
     for r in resources:
-        if r['name'] == resource:
+        if r['name'] == file_name:
             return True
     return False
 
 
 def get_file_content(user, resource):
     user = get_username_for_user(user)
-    resources = get_resources_inside_sync_folder(user)
+    resources = get_resources_inside_folder(user)
     file_id = None
     for r in resources:
         if r['name'] == resource:
@@ -79,16 +85,21 @@ def get_file_content(user, resource):
 
 def create_folder(user, folder_name):
     user = get_username_for_user(user)
+    folder_to_create = os.path.basename(folder_name)
+    if folder_path := os.path.dirname(folder_name):
+        folder_id = get_folder_id_by_path(user, folder_path)
+    else:
+        folder_id = get_personal_sync_folder_id(user)
     url = url_join(
         get_config('localBackendUrl'),
-        f'rest/folders/{get_personal_sync_folder_id(user)}/folders',
+        f'rest/folders/{folder_id}/folders',
     )
     headers = get_headers(user, {'content-type': 'application/json'})
     body = json.dumps(
         {
             'description': '',
             'fileLifetime': '0',
-            'name': folder_name,
+            'name': folder_to_create,
             'syncable': '1',
         }
     )
@@ -98,24 +109,46 @@ def create_folder(user, folder_name):
     ), f'Could not create the folder: {folder_name} for user {user}'
 
 
-def upload_file(user, file_name, file_content):
+def get_folder_id_by_path(user, folder_path):
+    parts = folder_path.split(os.sep)
+    current_folder_id = get_personal_sync_folder_id(user)
+
+    for part in parts:
+        resources = get_resources_inside_folder(user, folder_id=current_folder_id)
+        for r in resources:
+            if r['type'] == 'd' and r['name'] == part:
+                current_folder_id = r['id']
+                break
+    return current_folder_id
+
+
+def upload_file(user, file_name, file_content=None):
     user = get_username_for_user(user)
-    # create file in temp folder before uploading
-    file_path = f'{get_config("tempFolderPath")}/{file_name}'
-    write_file(file_path, file_content)
+    filename = os.path.basename(file_name)
+    if file_content:
+        # create file in temp folder before uploading
+        file_path = f'{get_config("tempFolderPath")}/{filename}'
+        write_file(file_path, file_content)
+    else:
+        file_path = get_file_for_upload(filename)
     file_size = os.path.getsize(file_path)
 
+    if folder_path := os.path.dirname(file_name):
+        folder_id = get_folder_id_by_path(user, folder_path)
+    else:
+        folder_id = get_personal_sync_folder_id(user)
+
     # initiate upload
-    upload_uri = initiate_upload(user, file_name, file_size)
+    upload_uri = initiate_upload(user, filename, file_size, folder_id)
 
     # finalize upload
-    finalize_upload(user, file_name, file_path, file_size, upload_uri)
+    finalize_upload(user, filename, file_path, file_size, upload_uri)
 
 
-def initiate_upload(user, file_name, file_size):
+def initiate_upload(user, file_name, file_size, folder_id):
     url = url_join(
         get_config('localBackendUrl'),
-        f'rest/folders/{get_personal_sync_folder_id(user)}/actions/initiateUpload',
+        f'rest/folders/{folder_id}/actions/initiateUpload',
     )
     headers = get_headers(user, {'content-type': 'application/json'})
     json_body = json.dumps(
@@ -146,6 +179,28 @@ def finalize_upload(user, file_name, file_path, file_size, upload_uri):
         assert response.status_code == 201, f'Failed to upload file {file_name}.'
 
 
+def delete_resource(user, resource):
+    user = get_username_for_user(user)
+    resources = get_resources_inside_folder(user)
+    resource_id = None
+    resource_type = 'd'
+    for r in resources:
+        if r['name'] == resource:
+            resource_id = r['id']
+            resource_type = r['type']
+    if resource_type == 'd':
+        uri = 'folders'
+    else:
+        uri = 'files'
+    url = url_join(
+        get_config('localBackendUrl'),
+        f'rest/{uri}?partialSuccess=true&id:in={resource_id}',
+    )
+    headers = get_headers(user)
+    response = request.delete(url, headers)
+    assert response.status_code == 204, f'Cound not delete resource: {resource}'
+
+
 def get_personal_sync_folder_id(user):
     if user in personal_sync_folder_id:
         return personal_sync_folder_id[user]
@@ -168,21 +223,23 @@ def get_personal_sync_folder_id(user):
 # return resources inside sync folder
 # status=False returns resources that are not deleted
 # status=True returns resources that are deleted and are stored in deleted content
-def get_resources_inside_sync_folder(user, status=False):
+def get_resources_inside_folder(user, status=False, folder_id=None):
+    if not folder_id:
+        folder_id = get_personal_sync_folder_id(user)
     url = url_join(
         get_config('localBackendUrl'),
-        f'rest/folders/{get_personal_sync_folder_id(user)}/children?deleted={status}',
+        f'rest/folders/{folder_id}/children?deleted={status}',
     )
     headers = get_headers(user)
     response = request.get(url, headers)
-    assert response.status_code == 200, 'Failed to get the resources inside sync folder'
+    assert response.status_code == 200, 'Failed to get the resources inside folder'
 
     data = json.loads(response.text)
     return data['data']
 
 
 def get_resource_ids(user, status=False):
-    resources = get_resources_inside_sync_folder(user, status)
+    resources = get_resources_inside_folder(user, status)
     folder_ids = []
     file_ids = []
     for resource in resources:
@@ -241,3 +298,10 @@ def permanently_delete_all_resources():
             assert (
                 response.status_code == 204
             ), 'Failed to permanently delete all files.'
+
+
+def get_folder_items_count(user, folder_name):
+    user = get_username_for_user(user)
+    folder_id = get_folder_id_by_path(user, folder_name)
+    resources = get_resources_inside_folder(user, folder_id=folder_id)
+    return str(len(resources))

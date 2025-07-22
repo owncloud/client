@@ -120,7 +120,10 @@ def step(context, resource_name, public_link_password, link_creator):
     regexp=True,
 )
 def step(context, user_name, folder_name, items_number):
-    total_items = webdav.get_folder_items_count(user_name, folder_name)
+    if get_config('client_name') != 'ownCloud':
+        total_items = ext.get_folder_items_count(user_name, folder_name)
+    else:
+        total_items = webdav.get_folder_items_count(user_name, folder_name)
     test.compare(
         total_items, items_number, f'Folder should contain {items_number} items'
     )
@@ -149,12 +152,18 @@ def step(context):
 
 @When('user "|any|" uploads file with content "|any|" to "|any|" in the server')
 def step(context, user, file_content, file_name):
-    webdav.create_file(user, file_name, file_content)
+    if get_config('client_name') != 'ownCloud':
+        ext.upload_file(user, file_name, file_content)
+    else:
+        webdav.create_file(user, file_name, file_content)
 
 
 @When('user "|any|" deletes the folder "|any|" in the server')
 def step(context, user, folder_name):
-    webdav.delete_resource(user, folder_name)
+    if get_config('client_name') != 'ownCloud':
+        ext.delete_resource(user, folder_name)
+    else:
+        webdav.delete_resource(user, folder_name)
 
 
 @Given('group "|any|" has been created in the server')
@@ -229,4 +238,7 @@ def step(context, user):
 
 @Given('user "|any|" has uploaded file "|any|" to "|any|" in the server')
 def step(context, user, file_name, destination):
-    webdav.upload_file(user, file_name, destination)
+    if get_config('client_name') != 'ownCloud':
+        ext.upload_file(user, destination)
+    else:
+        webdav.upload_file(user, file_name, destination)
