@@ -65,7 +65,7 @@ class SyncConnection:
     @staticmethod
     def open_menu(sync_folder=""):
         if get_config("ocis") and not sync_folder:
-            sync_folder = "Personal"
+            sync_folder = get_config("personal_sync_folder")
         elif not sync_folder:
             sync_folder = "ownCloud"
         selector = SyncConnection.FOLDER_SYNC_CONNECTION_LABEL.copy()
