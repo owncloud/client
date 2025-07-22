@@ -600,7 +600,7 @@ Anwendung zur Datei-Synchronisation.</translation>
 <context>
     <name>OCC::Account</name>
     <message>
-        <location filename="../src/libsync/account.cpp" line="149"/>
+        <location filename="../src/libsync/account.cpp" line="158"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
     </message>
