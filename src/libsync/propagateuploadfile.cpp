@@ -67,7 +67,7 @@ void PropagateUploadFile::startUpload()
         return;
 
     qint64 fileSize = _item->_size;
-    auto headers = PropagateUploadFileCommon::headers();
+    auto headers = PropagateUploadCommon::headers();
     headers[QByteArrayLiteral("OC-Total-Length")] = QByteArray::number(fileSize);
 
     QString path = _item->_file;

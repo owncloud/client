@@ -27,13 +27,13 @@ namespace OCC {
  * Propagation job, simple PUT upload.
  *
  */
-class PropagateUploadFile : public PropagateUploadFileCommon
+class PropagateUploadFile : public PropagateUploadCommon
 {
     Q_OBJECT
 
 public:
     PropagateUploadFile(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
-        : PropagateUploadFileCommon(propagator, item)
+        : PropagateUploadCommon(propagator, item)
     {
     }
 

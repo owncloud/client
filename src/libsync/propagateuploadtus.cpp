@@ -93,7 +93,7 @@ SimpleNetworkJob *PropagateUploadFileTUS::makeCreationWithUploadJob(QNetworkRequ
 QNetworkRequest PropagateUploadFileTUS::prepareRequest(const quint64 &chunkSize)
 {
     QNetworkRequest request;
-    const auto headers = PropagateUploadFileCommon::headers();
+    const auto headers = PropagateUploadCommon::headers();
     for (auto it = headers.cbegin(); it != headers.cend(); ++it) {
         request.setRawHeader(it.key(), it.value());
     }
@@ -106,7 +106,7 @@ QNetworkRequest PropagateUploadFileTUS::prepareRequest(const quint64 &chunkSize)
 }
 
 PropagateUploadFileTUS::PropagateUploadFileTUS(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
-    : PropagateUploadFileCommon(propagator, item)
+    : PropagateUploadCommon(propagator, item)
 {
 }
 
@@ -285,7 +285,7 @@ void PropagateUploadFileTUS::finalize(const QString &etag, const QByteArray &fil
         _item->_fileId = fileId;
     }
     propagator()->_activeJobList.removeOne(this);
-    PropagateUploadFileCommon::finalize();
+    PropagateUploadCommon::finalize();
 }
 
 void PropagateUploadFileTUS::abort(PropagatorJob::AbortType abortType)

@@ -42,7 +42,7 @@ Q_DECLARE_LOGGING_CATEGORY(lcPropagateUpload)
  *                                  v
  *        finalize() or abortWithError()
  */
-class PropagateUploadFileCommon : public PropagateItemJob
+class PropagateUploadCommon : public PropagateItemJob
 {
     Q_OBJECT
 
@@ -63,7 +63,7 @@ protected:
     QByteArray _transmissionChecksumHeader;
 
 public:
-    PropagateUploadFileCommon(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
+    PropagateUploadCommon(OwncloudPropagator *propagator, const SyncFileItemPtr &item)
         : PropagateItemJob(propagator, item)
         , _finished(false)
         , _deleteExisting(false)

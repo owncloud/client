@@ -59,18 +59,18 @@ static bool fileIsStillChanging(const SyncFileItem &item)
         && secondsSinceMod > -1s;
 }
 
-const QString PropagateUploadFileCommon::fileChangedMessage()
+const QString PropagateUploadCommon::fileChangedMessage()
 {
     return tr("Local file changed during sync. It will be resumed.");
 }
 
-void PropagateUploadFileCommon::setDeleteExisting(bool enabled)
+void PropagateUploadCommon::setDeleteExisting(bool enabled)
 {
     _deleteExisting = enabled;
 }
 
 
-void PropagateUploadFileCommon::start()
+void PropagateUploadCommon::start()
 {
     if (propagator()->_abortRequested) {
         return;
@@ -103,11 +103,11 @@ void PropagateUploadFileCommon::start()
         propagator()->fullRemotePath(_item->_file),
         this);
     addChildJob(job);
-    connect(job, &DeleteJob::finishedSignal, this, &PropagateUploadFileCommon::slotComputeContentChecksum);
+    connect(job, &DeleteJob::finishedSignal, this, &PropagateUploadCommon::slotComputeContentChecksum);
     job->start();
 }
 
-void PropagateUploadFileCommon::slotComputeContentChecksum()
+void PropagateUploadCommon::slotComputeContentChecksum()
 {
     if (propagator()->_abortRequested) {
         return;
@@ -140,13 +140,13 @@ void PropagateUploadFileCommon::slotComputeContentChecksum()
     computeChecksum->setChecksumType(checksumType);
 
     connect(computeChecksum, &ComputeChecksum::done,
-        this, &PropagateUploadFileCommon::slotComputeTransmissionChecksum);
+        this, &PropagateUploadCommon::slotComputeTransmissionChecksum);
     connect(computeChecksum, &ComputeChecksum::done,
         computeChecksum, &QObject::deleteLater);
     computeChecksum->start(filePath);
 }
 
-void PropagateUploadFileCommon::slotComputeTransmissionChecksum(CheckSums::Algorithm contentChecksumType, const QByteArray &contentChecksum)
+void PropagateUploadCommon::slotComputeTransmissionChecksum(CheckSums::Algorithm contentChecksumType, const QByteArray &contentChecksum)
 {
     _item->_checksumHeader = ChecksumHeader(contentChecksumType, contentChecksum).makeChecksumHeader();
 
@@ -175,13 +175,13 @@ void PropagateUploadFileCommon::slotComputeTransmissionChecksum(CheckSums::Algor
     }
 
     connect(computeChecksum, &ComputeChecksum::done,
-        this, &PropagateUploadFileCommon::slotStartUpload);
+        this, &PropagateUploadCommon::slotStartUpload);
     connect(computeChecksum, &ComputeChecksum::done,
         computeChecksum, &QObject::deleteLater);
     computeChecksum->start(filePath);
 }
 
-void PropagateUploadFileCommon::slotStartUpload(CheckSums::Algorithm transmissionChecksumType, const QByteArray &transmissionChecksum)
+void PropagateUploadCommon::slotStartUpload(CheckSums::Algorithm transmissionChecksumType, const QByteArray &transmissionChecksum)
 {
     // Remove ourselves from the list of active job, before any possible call to done()
     // When we start chunks, we will add it again, once for every chunk.
@@ -219,13 +219,13 @@ void PropagateUploadFileCommon::slotStartUpload(CheckSums::Algorithm transmissio
     doStartUpload();
 }
 
-void PropagateUploadFileCommon::done(SyncFileItem::Status status, const QString &errorString)
+void PropagateUploadCommon::done(SyncFileItem::Status status, const QString &errorString)
 {
     _finished = true;
     PropagateItemJob::done(status, errorString);
 }
 
-void PropagateUploadFileCommon::checkResettingErrors()
+void PropagateUploadCommon::checkResettingErrors()
 {
     if (_item->_httpErrorCode == 412
         || propagator()->account()->capabilities().httpErrorCodesThatResetFailingChunkedUploads().contains(_item->_httpErrorCode)) {
@@ -245,7 +245,7 @@ void PropagateUploadFileCommon::checkResettingErrors()
     }
 }
 
-void PropagateUploadFileCommon::commonErrorHandling(AbstractNetworkJob *job)
+void PropagateUploadCommon::commonErrorHandling(AbstractNetworkJob *job)
 {
     QByteArray replyContent;
     QString errorString = job->errorStringParsingBody(&replyContent);
@@ -286,7 +286,7 @@ void PropagateUploadFileCommon::commonErrorHandling(AbstractNetworkJob *job)
     abortWithError(status, errorString);
 }
 
-void PropagateUploadFileCommon::adjustLastJobTimeout(AbstractNetworkJob *job, qint64 fileSize)
+void PropagateUploadCommon::adjustLastJobTimeout(AbstractNetworkJob *job, qint64 fileSize)
 {
     // Calculate 3 minutes for each gigabyte of data
     const auto timeout = std::chrono::minutes(static_cast<quint64>((3min).count() * fileSize / 1e9));
@@ -298,7 +298,7 @@ void PropagateUploadFileCommon::adjustLastJobTimeout(AbstractNetworkJob *job, qi
 }
 
 // This function is used whenever there is an error occurring and jobs might be in progress
-void PropagateUploadFileCommon::abortWithError(SyncFileItem::Status status, const QString &error)
+void PropagateUploadCommon::abortWithError(SyncFileItem::Status status, const QString &error)
 {
     qCWarning(lcPropagateUpload) << Q_FUNC_INFO << _item->_file << error;
     if (!_aborting) {
@@ -307,7 +307,7 @@ void PropagateUploadFileCommon::abortWithError(SyncFileItem::Status status, cons
     }
 }
 
-void PropagateUploadFileCommon::addChildJob(AbstractNetworkJob *job)
+void PropagateUploadCommon::addChildJob(AbstractNetworkJob *job)
 {
     _childJobs.insert(job);
     connect(
@@ -317,7 +317,7 @@ void PropagateUploadFileCommon::addChildJob(AbstractNetworkJob *job)
         Qt::DirectConnection);
 }
 
-QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
+QMap<QByteArray, QByteArray> PropagateUploadCommon::headers()
 {
     QMap<QByteArray, QByteArray> headers;
     headers[QByteArrayLiteral("Content-Type")] = QByteArrayLiteral("application/octet-stream");
@@ -359,7 +359,7 @@ QMap<QByteArray, QByteArray> PropagateUploadFileCommon::headers()
     return headers;
 }
 
-void PropagateUploadFileCommon::finalize()
+void PropagateUploadCommon::finalize()
 {
     OC_ENFORCE(state() != Finished);
 
@@ -373,7 +373,7 @@ void PropagateUploadFileCommon::finalize()
     }
 
     if (_item->_remotePerm.isNull()) {
-        qCWarning(lcPropagateUpload) << "PropagateUploadFileCommon::finalize: Missing permissions for" << propagator()->fullRemotePath(_item->_file);
+        qCWarning(lcPropagateUpload) << "PropagateUploadCommon::finalize: Missing permissions for" << propagator()->fullRemotePath(_item->_file);
         auto *permCheck =
             new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
         addChildJob(permCheck);
@@ -413,7 +413,7 @@ void PropagateUploadFileCommon::finalize()
     done(SyncFileItem::Success);
 }
 
-void PropagateUploadFileCommon::abortNetworkJobs(
+void PropagateUploadCommon::abortNetworkJobs(
     PropagatorJob::AbortType abortType,
     const std::function<bool(AbstractNetworkJob *)> &mayAbortJob)
 {
