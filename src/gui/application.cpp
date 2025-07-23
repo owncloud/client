@@ -149,7 +149,7 @@ void Application::slotAccountStateAdded(AccountStatePtr accountState) const
     connect(accountState.data(), &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(accountState->account().data(), &Account::serverVersionChanged, FolderMan::instance(),
         [account = accountState->account().data()] { FolderMan::instance()->slotServerVersionChanged(account); });
-    accountState->checkConnectivity();
+    // accountState->checkConnectivity();
 }
 
 void Application::slotCleanup()

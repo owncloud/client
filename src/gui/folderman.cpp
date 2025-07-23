@@ -239,7 +239,7 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
 
 
     // todo: #11
-    accountStatePtr->checkConnectivity();
+    // accountStatePtr->checkConnectivity();
 }
 
 void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)

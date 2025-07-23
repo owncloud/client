@@ -35,6 +35,7 @@
 #include "setupwizardcontroller.h"
 #include "sharedialog.h"
 
+#include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountmodel.h"
 #include "newaccountwizard/newaccountwizard.h"
 #include "newaccountwizard/newaccountwizardcontroller.h"
@@ -785,9 +786,13 @@ void ownCloudGui::runNewestAccountWizard()
     NewAccountWizardController wizardController(&model, &wizard, nullptr);
     ownCloudGui::raise();
     int result = wizard.exec();
-    if (result == QDialog::Accepted)
-        qDebug() << "accepted";
-    else
+    if (result == QDialog::Accepted) {
+        // the builder needs to be a pointer as it has to wait for the connection state to go to connected
+        // it will delete itself once it has completed its mission.
+        // pass this as parent only as a safeguard.
+        NewAccountBuilder *builder = new NewAccountBuilder(model, this);
+        builder->buildAccount();
+    } else
         qDebug() << "rejected";
 }
 
@@ -899,6 +904,8 @@ void ownCloudGui::runNewAccountWizard()
                             validator->deleteLater();
                         });
 
+                    // I simply do not understand why this is needed. As soon as the accountState is created it starts polling with the connectionValidator.
+                    // we should not need to call this AGAIN, especially since the polling should already be running? I don't get it.
                     validator->checkServer();
                 }
 
