@@ -386,7 +386,6 @@ public:
         : _journal(progressDb)
         , _finishedEmitted(false)
         , _anotherSyncNeeded(false)
-        , _chunkSize(options._initialChunkSize)
         , _account(account)
         , _syncOptions(options)
         , _localDir((localDir.endsWith(QLatin1Char('/'))) ? localDir : localDir + QLatin1Char('/'))
@@ -431,13 +430,6 @@ public:
     /* the maximum number of jobs using bandwidth (uploads or downloads, in parallel) */
     int maximumActiveTransferJob();
 
-    /** The size to use for upload chunks.
-     *
-     * Will be dynamically adjusted after each chunk upload finishes
-     * if Capabilities::desiredChunkUploadDuration has a target
-     * chunk-upload duration set.
-     */
-    qint64 _chunkSize;
     qint64 smallFileSize();
 
     /* The maximum number of active jobs in parallel  */

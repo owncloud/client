@@ -199,16 +199,8 @@ void SyncEngine::deleteStaleUploadInfos(const SyncFileItemSet &syncItems)
     }
 
     // Delete from journal.
-    const auto &ids = _journal->deleteStaleUploadInfos(upload_file_paths);
+    _journal->deleteStaleUploadInfos(upload_file_paths);
 
-    // Delete the stales chunk on the server.
-    if (account()->capabilities().chunkingNg()) {
-        for (auto transferId : ids) {
-            if (!transferId)
-                continue; // Was not a chunked upload
-            (new DeleteJob(account(), account()->url(), QLatin1String("remote.php/dav/uploads/") + account()->davUser() + QLatin1Char('/') + QString::number(transferId), this))->start();
-        }
-    }
 }
 
 void SyncEngine::deleteStaleErrorBlacklistEntries(const SyncFileItemSet &syncItems)

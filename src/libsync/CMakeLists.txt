@@ -7,7 +7,7 @@ set_package_properties(LibreGraphAPI PROPERTIES
 
 set(libsync_SRCS
     account.cpp
-        capabilities.cpp
+    capabilities.cpp
     cookiejar.cpp
     discovery.cpp
     discoveryphase.cpp
@@ -25,13 +25,13 @@ set(libsync_SRCS
     progressdispatcher.cpp
     propagatorjobs.cpp
     propagatedownload.cpp
-    propagateupload.cpp
-    propagateuploadv1.cpp
-    propagateuploadng.cpp
+    propagateuploadcommon.cpp
+    propagateuploadfile.cpp
     propagateuploadtus.cpp
     propagateremotedelete.cpp
     propagateremotemove.cpp
     propagateremotemkdir.cpp
+    putfilejob.cpp
     syncengine.cpp
     syncfileitem.cpp
     syncfilestatustracker.cpp
@@ -39,6 +39,8 @@ set(libsync_SRCS
     syncresult.cpp
     syncoptions.cpp
     theme.cpp
+    uploaddevice.cpp
+
     creds/credentialmanager.cpp
     creds/abstractcredentials.cpp
 
