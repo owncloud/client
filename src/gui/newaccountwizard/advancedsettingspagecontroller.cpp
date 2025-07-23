@@ -86,6 +86,7 @@ void AdvancedSettingsPageController::buildPage()
         _buttonGroup->addButton(syncAllButton, SyncType::SYNC_ALL);
         layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
         layout->addWidget(syncAllButton, Qt::AlignLeft);
+        connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
     }
 
     Q_ASSERT(_buttonGroup->button(_defaultSyncType));
@@ -101,16 +102,16 @@ void AdvancedSettingsPageController::buildPage()
     });
     connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
-    QPushButton *folderButton = new QPushButton(tr("Choose..."), _page);
-    folderButton->setFocusPolicy(Qt::StrongFocus);
-    connect(folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
+    _folderButton = new QPushButton(tr("Choose..."), _page);
+    _folderButton->setFocusPolicy(Qt::StrongFocus);
+    connect(_folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
 
     layout->addSpacing(8);
     layout->addWidget(syncRootLabel, Qt::AlignLeft);
 
     QHBoxLayout *folderPickerLayout = new QHBoxLayout();
     folderPickerLayout->addWidget(_rootDirEdit, Qt::AlignLeft);
-    folderPickerLayout->addWidget(folderButton);
+    folderPickerLayout->addWidget(_folderButton);
     layout->addLayout(folderPickerLayout);
 
     _errorField = new QLabel(QString(), _page);
@@ -139,6 +140,14 @@ void AdvancedSettingsPageController::gatherSyncInfo()
     _defaultSyncRoot = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot, {});
 }
 
+AdvancedSettingsResult AdvancedSettingsPageController::defaultResult()
+{
+    AdvancedSettingsResult result;
+    result.syncRoot = _defaultSyncRoot;
+    result.syncType = _defaultSyncType;
+    return result;
+}
+
 bool AdvancedSettingsPageController::validate()
 {
     // this is a safety net because for unknown reasons, on windows when you hit enter to commit hand edited text
@@ -150,8 +159,11 @@ bool AdvancedSettingsPageController::validate()
     // normally I don't like taking values directly from the gui but in this case, it would be complete overkill to
     // create a dedicated model just for these two values that only need to be collected when the user is done.
     AdvancedSettingsResult result;
-    result._syncRoot = _rootDirEdit->text();
-    result._syncType = static_cast<SyncType>(_buttonGroup->checkedId());
+    result.syncType = static_cast<SyncType>(_buttonGroup->checkedId());
+    if (result.syncType == SyncType::SELECTIVE_SYNC)
+        result.syncRoot.clear();
+    else
+        result.syncRoot = _rootDirEdit->text();
     Q_EMIT success(result);
     return true;
 }
@@ -221,5 +233,13 @@ void AdvancedSettingsPageController::onRootDirFieldEdited()
         _lastHandEditedRootFailed = false;
         _errorField->setText({});
     }
+}
+
+void AdvancedSettingsPageController::syncTypeChanged(int id)
+{
+    bool enableFolderEditors = (id != SyncType::SELECTIVE_SYNC);
+
+    _rootDirEdit->setEnabled(enableFolderEditors);
+    _folderButton->setEnabled(enableFolderEditors);
 }
 }

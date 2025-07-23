@@ -20,6 +20,7 @@ class QWizardPage;
 class QButtonGroup;
 class QLineEdit;
 class QLabel;
+class QPushButton;
 
 namespace OCC {
 
@@ -29,8 +30,8 @@ enum SyncType { NONE, USE_VFS, SYNC_ALL, SELECTIVE_SYNC };
 
 struct AdvancedSettingsResult
 {
-    SyncType _syncType = SyncType::NONE;
-    QString _syncRoot;
+    SyncType syncType = SyncType::NONE;
+    QString syncRoot;
 };
 
 class AdvancedSettingsPageController : public QObject, public WizardPageValidator
@@ -40,15 +41,17 @@ class AdvancedSettingsPageController : public QObject, public WizardPageValidato
 public:
     explicit AdvancedSettingsPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
+    AdvancedSettingsResult defaultResult();
 
 Q_SIGNALS:
-    void success(const AdvancedSettingsResult &result);
+    void success(const OCC::AdvancedSettingsResult &result);
 
 private:
     void gatherSyncInfo();
     void buildPage();
     void showFolderPicker();
     void onRootDirFieldEdited();
+    void syncTypeChanged(int id);
     bool validateSyncRoot(const QString &rootPath);
 
     SyncType _defaultSyncType = SyncType::NONE;
@@ -62,6 +65,7 @@ private:
     QWizardPage *_page = nullptr;
     QButtonGroup *_buttonGroup = nullptr;
     QLineEdit *_rootDirEdit = nullptr;
+    QPushButton *_folderButton;
     QLabel *_errorField;
 };
 }
