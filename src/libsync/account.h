@@ -231,7 +231,6 @@ Q_SIGNALS:
     void invalidCredentials(QPrivateSignal);
 
     void credentialsFetched();
-    void credentialsAsked();
 
     // e.g. when the approved SSL certificates changed
     // todo: #15

@@ -182,7 +182,6 @@ protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
-    void slotCredentialsAsked();
 
 private:
     Account *accountForQml() const;

@@ -102,7 +102,6 @@ void AccountState::connectAccount()
     }
     connect(_account.data(), &Account::invalidCredentials, this, &AccountState::slotInvalidCredentials);
     connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
-    connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
 
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
@@ -556,26 +555,6 @@ void AccountState::slotCredentialsFetched()
     checkConnectivity();
 }
 
-void AccountState::slotCredentialsAsked()
-{
-    qCInfo(lcAccountState) << "Credentials asked for" << _account->url().toString() << "are they ready?" << _account->credentials()->ready();
-
-    _waitingForNewCredentials = false;
-
-    if (!_account->credentials()->ready()) {
-        // User canceled the connection or did not give a password
-        setState(SignedOut);
-        return;
-    }
-
-    if (_connectionValidator) {
-        // When new credentials become available we always want to restart the
-        // connection validation, even if it's currently running.
-        resetConnectionValidator();
-    }
-
-    checkConnectivity();
-}
 
 Account *AccountState::accountForQml() const
 {
