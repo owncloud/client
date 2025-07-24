@@ -14,9 +14,12 @@
 #include "newaccountbuilder.h"
 #include "account.h"
 #include "accountmanager.h"
+#include "accountsettings.h"
 #include "accountstate.h"
 // #include "owncloudgui.h"
+#include "application.h"
 #include "folderman.h"
+#include "settingsdialog.h"
 
 namespace OCC {
 
@@ -69,6 +72,9 @@ void NewAccountBuilder::completeAccountSetup()
 
     // if selective sync is the type, we need to run the folder wizard asap. naturally the owncloudGui doesn't have a reusable way of doing that yet
     // so it comes in the next step.
+    // the fact that I can do this is insane.
+    if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC)
+        ocApp()->gui()->settingsDialog()->accountSettings(_account.get())->slotAddFolder();
 
     delete this;
 }

@@ -80,9 +80,9 @@ Q_SIGNALS:
 public Q_SLOTS:
     void slotAccountStateChanged();
     void slotSpacesUpdated();
+    void slotAddFolder();
 
 protected Q_SLOTS:
-    void slotAddFolder();
     void slotEnableCurrentFolder(Folder *folder, bool terminate = false);
     void slotForceSyncCurrentFolder(Folder *folder);
     void slotRemoveCurrentFolder(Folder *folder);

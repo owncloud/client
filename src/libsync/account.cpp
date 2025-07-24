@@ -97,6 +97,7 @@ QString Account::davPath() const
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
 }
 
+// todo: #20. I'm speechless
 void Account::setSharedThis(AccountPtr sharedThis)
 {
     _sharedThis = sharedThis.toWeakRef();
@@ -112,6 +113,7 @@ QUuid Account::uuid() const
     return _uuid;
 }
 
+// todo: #20
 AccountPtr Account::sharedFromThis()
 {
     return _sharedThis.toStrongRef();
