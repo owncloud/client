@@ -190,7 +190,11 @@ void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageRes
     _wizard->activateWindow();
 }
 
-void NewAccountWizardController::onAdvancedSettingsCompleted(const OCC::AdvancedSettingsResult &result) { }
+void NewAccountWizardController::onAdvancedSettingsCompleted(const OCC::AdvancedSettingsResult &result)
+{
+    _model->setDefaultSyncRoot(result.syncRoot);
+    _model->setSyncType(result.syncType);
+}
 
 void NewAccountWizardController::showAdvancedSettingsPage()
 {

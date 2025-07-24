@@ -13,30 +13,15 @@
  */
 #pragma once
 
-#include "newaccountmodel.h"
 #include <QObject>
 
-#include "accountfwd.h"
-#include "accountstate.h"
+namespace OCC::NewAccount {
+Q_NAMESPACE
 
-#include "newaccountenums.h"
+// I am not making this a strongly typed enum class as it's used to support the radio button ids in the advanced settings gui.
+// an old fashioned enum does not require as many casts back and forth, which for this use case is a good thing.
+enum SyncType { NONE, USE_VFS, SYNC_ALL, SELECTIVE_SYNC };
 
-namespace OCC {
+Q_ENUM_NS(SyncType)
 
-class NewAccountBuilder : public QObject
-{
-    Q_OBJECT
-public:
-    explicit NewAccountBuilder(const NewAccountModel &model, QObject *parent = nullptr);
-
-    void buildAccount();
-
-private:
-    void onAccountStateChanged(AccountState::State state);
-    void completeAccountSetup();
-
-    AccountPtr _account = nullptr;
-    AccountStatePtr _accountState = nullptr;
-    NewAccount::SyncType _syncType = NewAccount::SyncType::NONE;
-};
 }

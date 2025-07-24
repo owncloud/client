@@ -13,7 +13,9 @@
  */
 #pragma once
 
+#include "newaccountenums.h"
 #include "wizardpagevalidator.h"
+
 #include <QObject>
 
 class QWizardPage;
@@ -24,13 +26,9 @@ class QPushButton;
 
 namespace OCC {
 
-// I am not making this a strongly typed enum class as it's only used to support the radio button ids in the gui.
-// an old fashioned enum does not require casts back and forth, which for this use case is a good thing.
-enum SyncType { NONE, USE_VFS, SYNC_ALL, SELECTIVE_SYNC };
-
 struct AdvancedSettingsResult
 {
-    SyncType syncType = SyncType::NONE;
+    NewAccount::SyncType syncType = NewAccount::SyncType::NONE;
     QString syncRoot;
 };
 
@@ -54,7 +52,7 @@ private:
     void syncTypeChanged(int id);
     bool validateSyncRoot(const QString &rootPath);
 
-    SyncType _defaultSyncType = SyncType::NONE;
+    NewAccount::SyncType _defaultSyncType = NewAccount::SyncType::NONE;
     QString _defaultSyncRoot;
     bool _vfsIsAvailable = false;
     bool _forceVfs = false;

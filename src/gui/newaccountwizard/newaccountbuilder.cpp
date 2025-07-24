@@ -24,7 +24,7 @@ NewAccountBuilder::NewAccountBuilder(const NewAccountModel &model, QObject *pare
     : QObject{parent}
 {
     _account = AccountManager::instance()->createAccount(model);
-    // save the sync type from the account too to use in last step
+    _syncType = model.syncType();
 }
 
 void NewAccountBuilder::buildAccount()
@@ -57,12 +57,18 @@ void NewAccountBuilder::completeAccountSetup()
     // was added before connecting various listeners.
     if (_account->credentials()->ready())
         Q_EMIT _account->credentialsFetched();
-    // replace with signal
-    FolderMan::instance()->setUpInitialSyncFolders(_accountState, true);
+    if (_syncType != NewAccount::SyncType::SELECTIVE_SYNC) {
+        bool useVfs = (_syncType == NewAccount::SyncType::USE_VFS);
+        // replace with signal
+        FolderMan::instance()->setUpInitialSyncFolders(_accountState, useVfs);
+    }
     // the account is now ready, emulate a normal account loading and Q_EMIT that the credentials are ready
-    // Refactoring todo: no. the account should emit this when it meets some internal state, not the gui controller!!!!
-    // Q_EMIT ownCloudGui::requestSetUpSyncFoldersForAccount(_accountState, true);
+    // Refactoring todo: the account should ideally emit this when it meets some internal state, not left to some gui controller
+    // Q_EMIT requestSetUpSyncFoldersForAccount(_accountState, true);
     _accountState->setSettingUp(false);
+
+    // if selective sync is the type, we need to run the folder wizard asap. naturally the owncloudGui doesn't have a reusable way of doing that yet
+    // so it comes in the next step.
 
     delete this;
 }

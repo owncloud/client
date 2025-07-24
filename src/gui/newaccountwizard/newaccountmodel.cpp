@@ -179,4 +179,17 @@ void NewAccountModel::setDefaultSyncRoot(const QString &newDefaultSyncRoot)
         Q_EMIT defaultSyncRootChanged(_defaultSyncRoot);
     }
 }
+
+NewAccount::SyncType NewAccountModel::syncType() const
+{
+    return _syncType;
+}
+
+void NewAccountModel::setSyncType(NewAccount::SyncType newSyncType)
+{
+    if (_syncType == newSyncType)
+        return;
+    _syncType = newSyncType;
+    Q_EMIT syncTypeChanged(_syncType);
+}
 }

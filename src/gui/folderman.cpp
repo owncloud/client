@@ -225,6 +225,7 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
         // todo: #10
         accountStatePtr->account()->spacesManager()->checkReady();
     } else {
+        // todo: #20
         setSyncEnabled(false);
         auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
         def.setLocalPath(accountStatePtr->account()->defaultSyncRoot());

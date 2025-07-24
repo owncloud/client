@@ -74,7 +74,7 @@ void AdvancedSettingsPageController::buildPage()
     if (_vfsIsAvailable) {
         QRadioButton *vfsButton = new QRadioButton(tr("Only sync and dowload files as you use them to save hard drive space"), _page);
         vfsButton->setFocusPolicy(Qt::StrongFocus);
-        _buttonGroup->addButton(vfsButton, SyncType::USE_VFS);
+        _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
         layout->addWidget(vfsButton, Qt::AlignLeft);
     }
     if (!_forceVfs) {
@@ -82,8 +82,8 @@ void AdvancedSettingsPageController::buildPage()
         selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
         QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download all current folders and files"), _page);
         syncAllButton->setFocusPolicy(Qt::StrongFocus);
-        _buttonGroup->addButton(selectiveSyncButton, SyncType::SELECTIVE_SYNC);
-        _buttonGroup->addButton(syncAllButton, SyncType::SYNC_ALL);
+        _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
+        _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
         layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
         layout->addWidget(syncAllButton, Qt::AlignLeft);
         connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
@@ -133,9 +133,9 @@ void AdvancedSettingsPageController::gatherSyncInfo()
     _vfsIsAvailable = VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi;
     _forceVfs = _vfsIsAvailable && Theme::instance()->forceVirtualFilesOption();
     if (!_vfsIsAvailable)
-        _defaultSyncType = SyncType::SYNC_ALL;
+        _defaultSyncType = NewAccount::SyncType::SYNC_ALL;
     else
-        _defaultSyncType = SyncType::USE_VFS;
+        _defaultSyncType = NewAccount::SyncType::USE_VFS;
 
     _defaultSyncRoot = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot, {});
 }
@@ -159,8 +159,8 @@ bool AdvancedSettingsPageController::validate()
     // normally I don't like taking values directly from the gui but in this case, it would be complete overkill to
     // create a dedicated model just for these two values that only need to be collected when the user is done.
     AdvancedSettingsResult result;
-    result.syncType = static_cast<SyncType>(_buttonGroup->checkedId());
-    if (result.syncType == SyncType::SELECTIVE_SYNC)
+    result.syncType = static_cast<NewAccount::SyncType>(_buttonGroup->checkedId());
+    if (result.syncType == NewAccount::SyncType::SELECTIVE_SYNC)
         result.syncRoot.clear();
     else
         result.syncRoot = _rootDirEdit->text();
@@ -237,7 +237,7 @@ void AdvancedSettingsPageController::onRootDirFieldEdited()
 
 void AdvancedSettingsPageController::syncTypeChanged(int id)
 {
-    bool enableFolderEditors = (id != SyncType::SELECTIVE_SYNC);
+    bool enableFolderEditors = (id != NewAccount::SyncType::SELECTIVE_SYNC);
 
     _rootDirEdit->setEnabled(enableFolderEditors);
     _folderButton->setEnabled(enableFolderEditors);

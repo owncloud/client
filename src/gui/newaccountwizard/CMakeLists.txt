@@ -16,5 +16,6 @@ target_sources(owncloudGui PRIVATE
     newaccountwizard.h
     newaccountbuilder.cpp
     newaccountbuilder.h
+    newaccountenums.h
 )
 

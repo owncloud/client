@@ -15,6 +15,7 @@
 #pragma once
 
 #include "capabilities.h"
+#include "newaccountenums.h"
 
 #include <QObject>
 #include <QSet>
@@ -48,6 +49,7 @@ class NewAccountModel : public QObject
     Q_PROPERTY(QString refreshToken READ refreshToken WRITE setRefreshToken NOTIFY refreshTokenChanged)
 
     Q_PROPERTY(QString defaultSyncRoot READ defaultSyncRoot WRITE setDefaultSyncRoot NOTIFY defaultSyncRootChanged)
+    Q_PROPERTY(NewAccount::SyncType syncType READ syncType WRITE setSyncType NOTIFY syncTypeChanged)
 
     Q_PROPERTY(Capabilities capabilities READ capabilities WRITE setCapabilities NOTIFY capabilitiesChanged)
 
@@ -109,6 +111,9 @@ public:
     QString defaultSyncRoot() const;
     void setDefaultSyncRoot(const QString &newDefaultSyncRoot);
 
+    NewAccount::SyncType syncType() const;
+    void setSyncType(NewAccount::SyncType newSyncType);
+
 Q_SIGNALS:
     void serverUrlChanged(const QUrl &newUrl);
     void webfingerAuthenticationUrlChanged(const QUrl &newWebfingerAuthenticationUrl);
@@ -122,6 +127,8 @@ Q_SIGNALS:
     void capabilitiesChanged(OCC::Capabilities capabilities);
     void defaultSyncRootChanged(QString defaultSyncRoot);
 
+    void syncTypeChanged(NewAccount::SyncType syncType);
+
 private:
     QUrl _serverUrl;
     QUrl _webfingerAuthenticationUrl;
@@ -134,5 +141,6 @@ private:
     QString _refreshToken;
     Capabilities _capabilities{QUrl(), {}};
     QString _defaultSyncRoot;
+    NewAccount::SyncType _syncType;
 };
 }
