@@ -92,6 +92,23 @@ Account::~Account()
 {
 }
 
+void Account::cleanupForRemoval()
+{
+    // Stop the spaces manager, because it might have resource jobs running that use the resource cache.
+    if (_spacesManager) {
+        delete _spacesManager;
+        _spacesManager = nullptr;
+    }
+
+    // Stop the resource cache (including any pending jobs), because this uses the cache directory.
+    delete _resourcesCache;
+    _resourcesCache = nullptr;
+
+    if (!QDir(_cacheDirectory).removeRecursively()) {
+        qCWarning(lcAccount) << "Cache directory" << _cacheDirectory << "was not fully removed";
+    }
+}
+
 QString Account::davPath() const
 {
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');

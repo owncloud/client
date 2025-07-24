@@ -377,6 +377,9 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     // AccountStatePtr occurrences:
     _accounts.erase(it);
 
+    // Abort any pending jobs: the account credentials are invalidated.
+    account->account()->jobQueue()->clear();
+
     if (account->account()->hasDefaultSyncRoot()) {
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }
@@ -390,6 +393,9 @@ void AccountManager::deleteAccount(AccountStatePtr account)
 
     Q_EMIT accountRemoved(account);
     Q_EMIT accountsChanged();
+
+    account->account()->cleanupForRemoval();
+
     account->deleteLater();
 }
 
