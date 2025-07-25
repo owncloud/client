@@ -95,7 +95,9 @@ void NewAccountWizardController::buildPages()
     _advancedSettingsPageIndex = _wizard->addPage(advancedSettingsPage, advancedSettingsController);
     advancedSettingsPage->setFinalPage(true);
     // capture the default advanced settings in case the user never runs the advanced settings page
-    _model->setDefaultSyncRoot(advancedSettingsController->defaultResult().syncRoot);
+    AdvancedSettingsResult defaultAdvancedSettings = advancedSettingsController->defaultResult();
+    _model->setDefaultSyncRoot(defaultAdvancedSettings.syncRoot);
+    _model->setSyncType(defaultAdvancedSettings.syncType);
     //  }
 }
 

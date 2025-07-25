@@ -139,6 +139,6 @@ private:
     QString _refreshToken;
     Capabilities _capabilities{QUrl(), {}};
     QString _defaultSyncRoot;
-    NewAccount::SyncType _syncType;
+    NewAccount::SyncType _syncType = NewAccount::SyncType::NONE;
 };
 }
