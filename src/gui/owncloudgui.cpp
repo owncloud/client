@@ -22,7 +22,6 @@
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
 #include "folderman.h"
-#include "folderwizard/folderwizard.h"
 #include "gui/accountsettings.h"
 #include "gui/commonstrings.h"
 #include "gui/networkinformation.h"
@@ -32,7 +31,6 @@
 #include "openfilemanager.h"
 #include "progressdispatcher.h"
 #include "settingsdialog.h"
-#include "setupwizardcontroller.h"
 #include "sharedialog.h"
 
 #include "newaccountwizard/newaccountbuilder.h"

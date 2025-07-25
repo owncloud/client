@@ -98,7 +98,6 @@ set( final_src
     ${3rdparty_SRC}
 )
 
-add_subdirectory(newwizard)
 add_subdirectory(folderwizard)
 
 add_library(owncloudGui SHARED ${final_src})
@@ -109,7 +108,7 @@ target_include_directories(owncloudGui PRIVATE models spaces creds)
 target_link_libraries(owncloudGui
     PUBLIC
         Qt::Widgets Qt::Network Qt::Xml Qt::Quick Qt::QuickWidgets Qt::QuickControls2
-        newwizard folderwizard
+        folderwizard
         libsync
         Qt6Keychain::Qt6Keychain
 )
