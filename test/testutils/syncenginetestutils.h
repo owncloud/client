@@ -418,25 +418,6 @@ public:
     static std::pair<qint64, qint64> parseRange(const QNetworkRequest &request);
 };
 
-class FakeChunkMoveReply : public FakeReply
-{
-    Q_OBJECT
-    FileInfo *fileInfo;
-
-public:
-    FakeChunkMoveReply(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo,
-        QNetworkAccessManager::Operation op, const QNetworkRequest &request,
-        QObject *parent);
-
-    static FileInfo *perform(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo, const QNetworkRequest &request);
-
-    Q_INVOKABLE virtual void respond();
-
-    Q_INVOKABLE void respondPreconditionFailed();
-
-    qint64 readData(char *, qint64) override { return 0; }
-};
-
 class FakePayloadReply : public FakeReply
 {
     Q_OBJECT

@@ -97,7 +97,7 @@ struct OWNCLOUDSYNC_EXPORT SpaceSupport
 struct OWNCLOUDSYNC_EXPORT FilesSharing
 {
     /**
-     api_enabled": true,
+    "api_enabled": true,
     "resharing": true,
     "group_sharing": true,
     "sharing_roles": true,
@@ -177,17 +177,9 @@ public:
     // TODO: return SharePermission
     int defaultPermissions() const;
 
-    bool chunkingNg() const;
-
-    /// Wheter to use chunking
-    bool bigfilechunkingEnabled() const;
-
     const Status &status() const;
     const TusSupport &tusSupport() const;
     const SpaceSupport &spacesSupport() const;
-
-    /// disable parallel upload in chunking
-    bool chunkingParallelUploadDisabled() const;
 
     /// Whether the "privatelink" DAV property is available
     bool privateLinkPropertyAvailable() const;
@@ -204,7 +196,7 @@ public:
     /**
      * Returns the checksum types the server understands.
      *
-     * When the client uses one of these checksumming algorithms in
+     * When the client uses one of these checksum algorithms in
      * the OC-Checksum header of a file upload, the server will use
      * it to validate that data was transmitted correctly.
      *

@@ -756,9 +756,6 @@ private Q_SLOTS:
 
         FakeFolder fakeFolder(FileInfo {}, vfsMode, filesAreDehydrated);
         SyncOptions options = fakeFolder.syncEngine().syncOptions();
-        options._initialChunkSize = 10;
-        options._maxChunkSize = 10;
-        options._minChunkSize = 10;
         fakeFolder.syncEngine().setSyncOptions(options);
         auto cap = TestUtils::testCapabilities();
         // unset chunking v1
@@ -775,7 +772,9 @@ private Q_SLOTS:
             return nullptr;
         });
 
-        fakeFolder.localModifier().insert(QStringLiteral("file"), 1_MiB, 'W');
+        fakeFolder.localModifier().insert(QStringLiteral("file1"), 1_MiB, 'W');
+        fakeFolder.localModifier().insert(QStringLiteral("file2"), 1_MiB, 'W');
+        fakeFolder.localModifier().insert(QStringLiteral("file3"), 1_MiB, 'W');
         // wait until the sync engine is ready
         // wait a second and abort
         connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, &fakeFolder.syncEngine(),

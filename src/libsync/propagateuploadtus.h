@@ -14,12 +14,13 @@
 
 #pragma once
 
-#include "propagateupload.h"
+#include "propagateuploadfile.h"
+#include "uploaddevice.h"
 
 namespace OCC {
 Q_DECLARE_LOGGING_CATEGORY(lcPropagateUploadTUS)
 
-class PropagateUploadFileTUS : public PropagateUploadFileCommon
+class PropagateUploadFileTUS : public PropagateUploadCommon
 {
     Q_OBJECT
 
