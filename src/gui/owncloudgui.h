@@ -70,7 +70,7 @@ public:
 
     SettingsDialog *settingsDialog() const;
 
-    void runNewAccountWizard();
+    void runAccountWizard();
     void runNewestAccountWizard();
 
 Q_SIGNALS:

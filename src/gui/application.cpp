@@ -127,11 +127,9 @@ Application::~Application()
 
 void Application::slotAccountStateRemoved() const
 {
-    // if there is no more account, show the wizard.
+    // auto run the wizard if there are no existing accounts
     if (_gui && AccountManager::instance()->accounts().isEmpty()) {
-        // allow to add a new account if there is none anymore. Always think
-        // about single account theming!
-        gui()->runNewAccountWizard();
+        gui()->runAccountWizard();
     }
 }
 
@@ -149,7 +147,6 @@ void Application::slotAccountStateAdded(AccountStatePtr accountState) const
     connect(accountState.data(), &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(accountState->account().data(), &Account::serverVersionChanged, FolderMan::instance(),
         [account = accountState->account().data()] { FolderMan::instance()->slotServerVersionChanged(account); });
-    // accountState->checkConnectivity();
 }
 
 void Application::slotCleanup()

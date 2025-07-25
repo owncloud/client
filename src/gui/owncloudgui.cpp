@@ -22,7 +22,6 @@
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
 #include "folderman.h"
-#include "folderwizard/folderwizard.h"
 #include "gui/accountsettings.h"
 #include "gui/commonstrings.h"
 #include "gui/networkinformation.h"
@@ -32,7 +31,6 @@
 #include "openfilemanager.h"
 #include "progressdispatcher.h"
 #include "settingsdialog.h"
-#include "setupwizardcontroller.h"
 #include "sharedialog.h"
 
 #include "newaccountwizard/newaccountbuilder.h"
@@ -108,11 +106,12 @@ void ownCloudGui::slotOpenSettingsDialog()
         if (QApplication::activeWindow() != _settingsDialog) {
             slotShowSettings();
         } else {
+            // ????!!!!?????????
             _settingsDialog->close();
         }
     } else {
         qCInfo(lcApplication) << "No configured folders yet, starting setup wizard";
-        runNewAccountWizard();
+        runAccountWizard();
     }
 }
 
@@ -562,7 +561,7 @@ void ownCloudGui::updateContextMenu()
     _contextMenu->addSeparator();
 
     if (accountList.isEmpty()) {
-        _contextMenu->addAction(tr("Create a new account"), this, &ownCloudGui::runNewAccountWizard);
+        _contextMenu->addAction(tr("Create a new account"), this, &ownCloudGui::runAccountWizard);
     } else {
         if (atLeastOnePaused) {
             _contextMenu->addAction(tr("Resume synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts(), false); });
@@ -780,7 +779,7 @@ void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progres
     }
 }
 
-void ownCloudGui::runNewestAccountWizard()
+void ownCloudGui::runAccountWizard()
 {
     NewAccountWizard wizard(settingsDialog());
     NewAccountModel model(nullptr);
@@ -801,129 +800,6 @@ void ownCloudGui::runNewestAccountWizard()
 
             builder->buildAccount();
         }
-    } else
-        qDebug() << "rejected";
-}
-
-// todo: #28
-void ownCloudGui::runNewAccountWizard()
-{
-    if (_wizardController.isNull()) {
-        // passing the settings dialog as parent makes sure the wizard will be shown above it
-        // as the settingsDialog's lifetime spans across the entire application but the dialog will live much shorter,
-        // we have to clean it up manually when finished() is emitted
-        _wizardController = new Wizard::SetupWizardController(settingsDialog());
-
-        connect(_wizardController, &Wizard::SetupWizardController::finished, this,
-            [this](AccountPtr newAccount, Wizard::SyncMode syncMode, const QVariantMap &dynamicRegistrationData) {
-                // note: while the wizard is shown, we disable the folder synchronization
-                // previously we could perform this just here, but now we have to postpone this depending on whether selective sync was chosen
-                // see also #9497
-
-                // when the dialog is closed before it has finished, there won't be a new account to set up
-                // the wizard controller signalizes this by passing a null pointer
-                if (!newAccount.isNull()) {
-                    // finally, call the slot that finalizes the setup
-                    auto accountStatePtr = ocApp()->addNewAccount(newAccount);
-                    accountStatePtr->setSettingUp(true);
-
-                    _settingsDialog->setCurrentAccount(accountStatePtr->account().data());
-
-                    // ensure we are connected and fetch the capabilities
-                    // refactoring todo: WHAT is this doing here? we have a "legit" account state pointer. it has a checkConnection
-                    // that can do this job
-                    auto validator = new ConnectionValidator(accountStatePtr->account(), accountStatePtr->account().data());
-
-                    // todo: #27 - we already get the capabilities in the last check of the url to filter out oc10 accounts. pass that info along instead of
-                    // fetching it again also again, none of this belongs here. The account manager should deal with it.
-                    QObject::connect(validator, &ConnectionValidator::connectionResult, accountStatePtr.data(),
-                        [accountStatePtr, syncMode, dynamicRegistrationData, validator, this](ConnectionValidator::Status status, const QStringList &) {
-                            switch (status) {
-                            // a server we no longer support but that might work
-                            case ConnectionValidator::ServerVersionMismatch:
-                                [[fallthrough]];
-                            case ConnectionValidator::Connected: {
-                                // saving once after adding makes sure the account is stored in the config in a working state
-                                // this is needed to ensure a consistent state in the config file upon unexpected terminations of the client
-                                // (for instance, when running from a debugger and stopping the process from there)
-                                AccountManager::instance()->save(true);
-
-                                // the account is now ready, emulate a normal account loading and Q_EMIT that the credentials are ready
-                                // Refactoring todo: no. the account should emit this when it meets some internal state, not the gui controller!!!!
-                                Q_EMIT accountStatePtr->account()->credentialsFetched();
-
-                                switch (syncMode) {
-                                case Wizard::SyncMode::SyncEverything:
-                                case Wizard::SyncMode::UseVfs: {
-                                    bool useVfs = syncMode == Wizard::SyncMode::UseVfs;
-                                    // Refactoring example: don't handle complicated stuff locally, REQUEST that it be performed by some entity
-                                    // more properly responsible for the task
-                                    Q_EMIT requestSetUpSyncFoldersForAccount(accountStatePtr, useVfs);
-                                    accountStatePtr->setSettingUp(false);
-                                    break;
-                                }
-                                case Wizard::SyncMode::ConfigureUsingFolderWizard: {
-                                    Q_ASSERT(!accountStatePtr->account()->hasDefaultSyncRoot());
-
-                                    auto *folderWizard = new FolderWizard(accountStatePtr, ocApp()->gui()->settingsDialog());
-                                    folderWizard->setAttribute(Qt::WA_DeleteOnClose);
-
-                                    // TODO: duplication of AccountSettings
-                                    // adapted from AccountSettings::slotFolderWizardAccepted()
-                                    // Refactoring todo: the way to fix this is to have a single controller dedicated to the FolderWizard, which will handle
-                                    // signals from that gui regardless of where it's "installed".
-                                    connect(folderWizard, &QDialog::accepted, this, [accountStatePtr, folderWizard]() {
-                                        FolderMan *folderMan = FolderMan::instance();
-
-                                        qCInfo(lcApplication) << "Folder wizard completed";
-                                        auto config = folderWizard->result();
-
-                                        // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
-                                        // originally in play here so...keep it just in case.
-                                        if (config.useVirtualFiles && !config.selectiveSyncBlackList.empty()) {
-                                            config.selectiveSyncBlackList.clear();
-                                        }
-
-                                        folderMan->addFolderFromGui(accountStatePtr, config);
-
-                                        accountStatePtr->setSettingUp(false);
-                                    });
-
-                                    connect(folderWizard, &QDialog::rejected, [accountStatePtr]() {
-                                        qCInfo(lcApplication) << "Folder wizard cancelled";
-                                        accountStatePtr->setSettingUp(false);
-                                    });
-
-                                    ocApp()
-                                        ->gui()
-                                        ->settingsDialog()
-                                        ->accountSettings(accountStatePtr->account().get())
-                                        ->addModalLegacyDialog(folderWizard, AccountSettings::ModalWidgetSizePolicy::Expanding);
-                                    break;
-                                }
-                                case OCC::Wizard::SyncMode::Invalid:
-                                    Q_UNREACHABLE();
-                                }
-                            }
-                            case ConnectionValidator::ClientUnsupported:
-                                break;
-                            default:
-                                Q_UNREACHABLE();
-                            }
-                            validator->deleteLater();
-                        });
-
-                    // I simply do not understand why this is needed. As soon as the accountState is created it starts polling with the connectionValidator.
-                    // we should not need to call this AGAIN, especially since the polling should already be running? I don't get it.
-                    validator->checkServer();
-                }
-
-                // make sure the wizard is cleaned up eventually
-                _wizardController->deleteLater();
-            });
-
-        // all we have to do is show the dialog...
-        ocApp()->gui()->settingsDialog()->addModalWidget(_wizardController->window());
     }
 }
 

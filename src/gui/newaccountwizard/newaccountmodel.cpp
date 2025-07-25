@@ -188,7 +188,7 @@ bool NewAccountModel::isComplete() const
     if (_syncType != NewAccount::SyncType::NONE) {
         if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC && _defaultSyncRoot.isEmpty())
             syncInfoComplete = true;
-        else if (_syncType == (NewAccount::SyncType::USE_VFS || _syncType == NewAccount::SyncType::SYNC_ALL) && !_defaultSyncRoot.isEmpty())
+        else if ((_syncType == NewAccount::SyncType::USE_VFS || _syncType == NewAccount::SyncType::SYNC_ALL) && !_defaultSyncRoot.isEmpty())
             syncInfoComplete = true;
     }
 
