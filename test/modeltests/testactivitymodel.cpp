@@ -11,8 +11,9 @@
 
 #include "testutils/testutils.h"
 
-#include <QTest>
 #include <QAbstractItemModelTester>
+#include <QTest>
+#include <syncenginetestutils.h>
 
 namespace OCC {
 
@@ -27,8 +28,11 @@ private Q_SLOTS:
 
         new QAbstractItemModelTester(model, this);
 
-        auto acc1 = TestUtils::createDummyAccount();
-        auto acc2 = TestUtils::createDummyAccount();
+        auto fakeAm = new FakeAM(FileInfo(), this);
+        auto creds0 = new FakeCredentials{fakeAm};
+        auto creds1 = new FakeCredentials{fakeAm};
+        auto acc1 = TestUtils::createDummyAccount(creds0);
+        auto acc2 = TestUtils::createDummyAccount(creds1);
 
         model->setActivityList({
             Activity{Activity::ActivityType, QStringLiteral("1"), acc1->account(), QStringLiteral("test"), QStringLiteral("test"), QStringLiteral("foo.cpp"),
