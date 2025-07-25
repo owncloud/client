@@ -22,7 +22,7 @@ namespace TestUtils {
 
     FolderMan *folderMan();
     FolderDefinition createDummyFolderDefinition(const AccountPtr &account, const QString &path);
-    TestUtilsPrivate::AccountStateRaii createDummyAccount(AbstractCredentials *cred = nullptr);
+    TestUtilsPrivate::AccountStateRaii createDummyAccount(AbstractCredentials *cred);
     bool writeRandomFile(const QString &fname, int size = -1);
 
     /***

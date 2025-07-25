@@ -7,21 +7,6 @@
 #include <QCoreApplication>
 #include <QRandomGenerator>
 
-namespace {
-class HttpCredentialsTest : public OCC::HttpCredentials
-{
-public:
-    HttpCredentialsTest(const QString &user, const QString &password)
-        : HttpCredentials(OCC::AuthenticationType::OAuth, user, password)
-    {
-    }
-
-    void askFromUser() override
-    {
-    }
-};
-}
-
 namespace OCC {
 
 namespace TestUtils {
@@ -31,13 +16,7 @@ namespace TestUtils {
         std::ignore = folderMan();
         // don't use the account manager to create the account, it would try to use widgets
         auto acc = Account::create(QUuid::createUuid());
-        if (cred) {
-            acc->setCredentials(cred);
-        } else {
-            // TODO: kill this one - it creates a real QNAM
-            HttpCredentialsTest *cred = new HttpCredentialsTest(QStringLiteral("testuser"), QStringLiteral("secret"));
-            acc->setCredentials(cred);
-        }
+        acc->setCredentials(cred);
         acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
         acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
         acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});

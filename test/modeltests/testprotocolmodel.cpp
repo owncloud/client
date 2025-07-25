@@ -13,9 +13,10 @@
 
 #include "testutils/testutils.h"
 
-#include <QTest>
 #include <QAbstractItemModelTester>
+#include <QTest>
 #include <folder.h>
+#include <syncenginetestutils.h>
 
 namespace OCC {
 
@@ -32,7 +33,9 @@ private Q_SLOTS:
 
         auto dir = TestUtils::createTempDir();
 
-        auto newAccountState = TestUtils::createDummyAccount();
+        auto fakeAm = new FakeAM(FileInfo(), this);
+        auto creds = new FakeCredentials{fakeAm};
+        auto newAccountState = TestUtils::createDummyAccount(creds);
 
         const QDir d(dir.path());
         QVERIFY(d.mkdir(QStringLiteral("foo")));
