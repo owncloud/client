@@ -127,3 +127,8 @@ def cleanup_created_paths():
 def get_file_for_upload(file_name):
     base_upload_dir = get_config("files_for_upload")
     return os.path.join(base_upload_dir, file_name)
+
+
+def write_file(resource, content):
+    with open(prefix_path_namespace(resource), "w", encoding="utf-8") as f:
+        f.write(content)

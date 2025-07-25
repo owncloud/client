@@ -7,7 +7,9 @@ from helpers.ConfigHelper import get_config
 urllib3.disable_warnings()
 
 
-def send_request(url, method, body=None, headers=None, user=None, password=None):
+def send_request(
+    url, method, body=None, headers=None, user=None, password=None, files=None
+):
     auth_header = basic_auth_header(user, password)
     if not headers:
         headers = {}
@@ -21,6 +23,7 @@ def send_request(url, method, body=None, headers=None, user=None, password=None)
         # in seconds
         # e.g.: 60
         timeout=get_config("maxSyncTimeout"),
+        files=files,
     )
 
 
@@ -30,8 +33,8 @@ def get(url, headers=None, user=None, password=None):
     )
 
 
-def post(url, body=None, headers=None, user=None):
-    return send_request(url, "POST", body, headers, user)
+def post(url, body=None, headers=None, user=None, files=None):
+    return send_request(url, "POST", body, headers, user, files=files)
 
 
 def put(url, body=None, headers=None, user=None):

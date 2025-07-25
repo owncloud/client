@@ -29,6 +29,9 @@ def step(context):
 
 @Then('the account with displayname "|any|" and host "|any|" should be displayed')
 def step(context, displayname, _):
+    if get_config('client_name') != 'ownCloud':
+        # get displayname from first name
+        displayname = get_displayname_for_user(displayname.split()[0].strip())
     displayname = substitute_inline_codes(displayname)
     Toolbar.account_exists(displayname)
 
@@ -61,13 +64,11 @@ def step(context, username):
 
 @Given('the user has set up the following accounts with default settings:')
 def step(context):
-    users = []
     start_client()
     for idx, row in enumerate(context.table):
         username = row[0]
-        password = get_password_for_user(username)
         account_details = get_client_details(
-            [['server', '%local_server%'], ['user', username], ['password', password]]
+            [['server', '%local_server%'], ['user', username]]
         )
         if idx > 0:
             Toolbar.open_new_account_setup()

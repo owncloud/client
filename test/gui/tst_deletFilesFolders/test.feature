@@ -1,3 +1,4 @@
+@predefined_users
 Feature: deleting files and folders
   	As a user
   	I want to delete files and folders

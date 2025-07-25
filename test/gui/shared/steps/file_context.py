@@ -19,7 +19,9 @@ from helpers.FilesHelper import (
     get_size_in_bytes,
     prefix_path_namespace,
     remember_path,
+    write_file,
 )
+from helpers.UserHelper import get_username_for_user
 
 
 def folder_exists(folder_path, timeout=1000):
@@ -62,11 +64,6 @@ def create_file_with_size(filename, filesize, is_temp_folder=False):
         f.write(b'\0')
 
 
-def write_file(resource, content):
-    with open(prefix_path_namespace(resource), 'w', encoding='utf-8') as f:
-        f.write(content)
-
-
 def wait_and_write_file(path, content):
     wait_for_client_to_be_ready()
     write_file(path, content)
@@ -103,6 +100,8 @@ def add_copy_suffix(resource_path, resource_type):
     'user "|any|" creates a file "|any|" with the following content inside the sync folder'
 )
 def step(context, username, filename):
+    if get_config('client_name') != 'ownCloud':
+        username = get_username_for_user(username)
     file_content = '\n'.join(context.multiLineText)
     file = get_resource_path(filename, username)
     wait_and_write_file(file, file_content)
@@ -110,12 +109,16 @@ def step(context, username, filename):
 
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
+    if get_config('client_name') != 'ownCloud':
+        username = get_username_for_user(username)
     wait_for_client_to_be_ready()
     create_folder(foldername, username)
 
 
 @Given('user "|any|" has created a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
+    if get_config('client_name') != 'ownCloud':
+        username = get_username_for_user(username)
     create_folder(foldername, username)
 
 
@@ -149,7 +152,7 @@ def step(context, file_path):
         contents = f.read()
     test.compare(
         expected,
-        contents,
+        contents.rstrip(),
         'file expected to exist with content '
         + expected
         + ' but does not have the expected content',
@@ -251,6 +254,8 @@ def step(context, item_type, resource):
 
 @When('user "|any|" creates the following files inside the sync folder:')
 def step(context, username):
+    if get_config('client_name') != 'ownCloud':
+        username = get_username_for_user(username)
     wait_for_client_to_be_ready()
 
     for row in context.table[1:]:
