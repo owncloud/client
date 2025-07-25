@@ -48,6 +48,7 @@
 #include <QDesktopServices>
 #include <QDialog>
 #include <QHBoxLayout>
+#include <QMessageBox>
 
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
@@ -790,8 +791,16 @@ void ownCloudGui::runNewestAccountWizard()
         // the builder needs to be a pointer as it has to wait for the connection state to go to connected
         // it will delete itself once it has completed its mission.
         // pass this as parent only as a safeguard.
-        NewAccountBuilder *builder = new NewAccountBuilder(model, this);
-        builder->buildAccount();
+        if (!model.isComplete()) {
+            QMessageBox::warning(
+                _settingsDialog, tr("New account failure"), tr("The information required to create a new account is incomplete. Please run the wizard again."));
+        } else {
+            NewAccountBuilder *builder = new NewAccountBuilder(model, this);
+            connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, this, &ownCloudGui::requestSetUpSyncFoldersForAccount);
+            connect(builder, &NewAccountBuilder::requestFolderWizard, _settingsDialog, &SettingsDialog::runFolderWizard);
+
+            builder->buildAccount();
+        }
     } else
         qDebug() << "rejected";
 }

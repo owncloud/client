@@ -31,6 +31,10 @@ public:
 
     void buildAccount();
 
+Q_SIGNALS:
+    void requestSetUpSyncFoldersForAccount(AccountStatePtr, bool useVfs);
+    void requestFolderWizard(OCC::AccountPtr account);
+
 private:
     void onAccountStateChanged(AccountState::State state);
     void completeAccountSetup();

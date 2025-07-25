@@ -74,19 +74,6 @@ void NewAccountModel::setTrustedCertificates(const QSet<QSslCertificate> &newTru
     Q_EMIT trustedCertificatesChanged(_trustedCertificates);
 }
 
-QString NewAccountModel::syncRootDir() const
-{
-    return _syncRootDir;
-}
-
-void NewAccountModel::setSyncRootDir(const QString &newSyncRootDir)
-{
-    if (_syncRootDir == newSyncRootDir)
-        return;
-    _syncRootDir = newSyncRootDir;
-    Q_EMIT syncRootDirChanged(_syncRootDir);
-}
-
 QString NewAccountModel::displayName() const
 {
     return _displayName;
@@ -111,21 +98,6 @@ void NewAccountModel::setDavUser(const QString &newDavUser)
         return;
     _davUser = newDavUser;
     Q_EMIT davUserChanged(_davUser);
-}
-
-QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
-{
-    if (!_webfingerAuthenticationUrl.isEmpty())
-        return _webfingerAuthenticationUrl;
-    return _serverUrl;
-}
-
-QUrl NewAccountModel::effectiveUserInfoUrl() const
-{
-    if (!_webfingerUserInfoUrl.isEmpty())
-        return _webfingerUserInfoUrl;
-    else
-        return _serverUrl;
 }
 
 QString NewAccountModel::authToken() const
@@ -191,5 +163,36 @@ void NewAccountModel::setSyncType(NewAccount::SyncType newSyncType)
         return;
     _syncType = newSyncType;
     Q_EMIT syncTypeChanged(_syncType);
+}
+
+
+QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
+{
+    if (!_webfingerAuthenticationUrl.isEmpty())
+        return _webfingerAuthenticationUrl;
+    return _serverUrl;
+}
+
+QUrl NewAccountModel::effectiveUserInfoUrl() const
+{
+    if (!_webfingerUserInfoUrl.isEmpty())
+        return _webfingerUserInfoUrl;
+    else
+        return _serverUrl;
+}
+
+bool NewAccountModel::isComplete() const
+{
+    bool authInfoComplete = !_davUser.isEmpty() && !_authToken.isEmpty() && !_refreshToken.isEmpty();
+    bool syncInfoComplete = false;
+    if (_syncType != NewAccount::SyncType::NONE) {
+        if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC && _defaultSyncRoot.isEmpty())
+            syncInfoComplete = true;
+        else if (_syncType == (NewAccount::SyncType::USE_VFS || _syncType == NewAccount::SyncType::SYNC_ALL) && !_defaultSyncRoot.isEmpty())
+            syncInfoComplete = true;
+    }
+
+    bool complete = authInfoComplete && syncInfoComplete && effectiveUserInfoUrl().isValid() && _capabilities.isValid();
+    return complete;
 }
 }

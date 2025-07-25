@@ -69,6 +69,7 @@ public:
 
 public Q_SLOTS:
     void addAccount();
+    void runFolderWizard(AccountPtr account);
 
 
 Q_SIGNALS:

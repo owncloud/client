@@ -264,6 +264,9 @@ SettingsDialog::SettingsPage SettingsDialog::currentPage() const
 
 void SettingsDialog::setCurrentAccount(Account *account)
 {
+    if (account == _currentAccount)
+        return;
+
     _currentAccount = account;
     _ui->stack->setCurrentWidget(accountSettings(account));
     _currentPage = SettingsPage::Account;
@@ -284,6 +287,12 @@ void SettingsDialog::addAccount()
 #else
     ocApp()->gui()->runNewAccountWizard();
 #endif
+}
+
+void SettingsDialog::runFolderWizard(AccountPtr account)
+{
+    setCurrentAccount(account.get());
+    accountSettings(_currentAccount)->slotAddFolder();
 }
 
 } // namespace OCC

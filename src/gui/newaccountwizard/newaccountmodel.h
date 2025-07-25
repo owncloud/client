@@ -40,7 +40,6 @@ class NewAccountModel : public QObject
     Q_PROPERTY(QUrl webfingerAuthenticationUrl READ webfingerAuthenticationUrl WRITE setWebfingerAuthenticationUrl NOTIFY webfingerAuthenticationUrlChanged)
     Q_PROPERTY(QUrl webfingerUserInfoUrl READ webfingerUserInfoUrl WRITE setWebfingerUserInfoUrl NOTIFY webfingerUserInfoUrlChanged)
     Q_PROPERTY(QSet<QSslCertificate> trustedCertificates READ trustedCertificates WRITE setTrustedCertificates NOTIFY trustedCertificatesChanged)
-    Q_PROPERTY(QString syncRootDir READ syncRootDir WRITE setSyncRootDir NOTIFY syncRootDirChanged)
 
     Q_PROPERTY(QString displayName READ displayName WRITE setDisplayName NOTIFY displayNameChanged)
     Q_PROPERTY(QString davUser READ davUser WRITE setDavUser NOTIFY davUserChanged)
@@ -84,17 +83,8 @@ public:
     QSet<QSslCertificate> trustedCertificates() const;
     void setTrustedCertificates(const QSet<QSslCertificate> &newTrustedCertificates);
 
-    /** the syncRootDir is the local directory which will host all folder/space subdirectories */
-    QString syncRootDir() const;
-    void setSyncRootDir(const QString &newSyncRootDir);
-
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
-
-    // convenience function that returns the webfingerAuthenticationUrl if it is non-empty, else it returns the serverUrl
-    QUrl effectiveAuthenticationServerUrl() const;
-    // convenience function that returns the webfingerUserInfoUrl if it is nonempty, else it returns the serverUrl
-    QUrl effectiveUserInfoUrl() const;
 
     QString davUser() const;
     void setDavUser(const QString &newDavUser);
@@ -114,19 +104,27 @@ public:
     NewAccount::SyncType syncType() const;
     void setSyncType(NewAccount::SyncType newSyncType);
 
+    // convenience function that returns the webfingerAuthenticationUrl if it is non-empty, else it returns the serverUrl
+    QUrl effectiveAuthenticationServerUrl() const;
+
+    // convenience function that returns the webfingerUserInfoUrl if it is nonempty, else it returns the serverUrl
+    QUrl effectiveUserInfoUrl() const;
+
+    // verify that all required values are present in the model - this should be called at the "end" before passing the model to the account
+    // manager or other element that can create an account from the model values.
+    bool isComplete() const;
+
 Q_SIGNALS:
     void serverUrlChanged(const QUrl &newUrl);
     void webfingerAuthenticationUrlChanged(const QUrl &newWebfingerAuthenticationUrl);
     void webfingerUserInfoUrlChanged(const QUrl &newWebfingerUserUrl);
     void trustedCertificatesChanged(QSet<QSslCertificate> trustedCertificates);
-    void syncRootDirChanged(QString syncRootDir);
     void displayNameChanged(QString displayName);
     void davUserChanged(QString davUser);
     void authTokenChanged(QString authToken);
     void refreshTokenChanged(QString refreshToken);
     void capabilitiesChanged(OCC::Capabilities capabilities);
     void defaultSyncRootChanged(QString defaultSyncRoot);
-
     void syncTypeChanged(NewAccount::SyncType syncType);
 
 private:
