@@ -37,7 +37,7 @@ class SyncConnectionWizard:
     SELECTIVE_SYNC_ROOT_FOLDER = {
         "column": 0,
         "container": names.folder_Sync_Connection_Deselect_remote_folders_QTreeWidget,
-        "text": "ownCloud",
+        "text": get_config("client_name"),
         "type": "QModelIndex",
     }
     SYNC_DIALOG_FOLDER_TREE = {
