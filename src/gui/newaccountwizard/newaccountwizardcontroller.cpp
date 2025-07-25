@@ -176,6 +176,7 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
     _model->setDisplayName(results.displayName);
     _model->setDavUser(results.userId);
     _model->setCapabilities(results.capabilities);
+    _model->setWebfingerUserInfoUrl(results.webfingerUserUrl);
 
     _wizard->setCurrentId(_authSuccessPageIndex);
     ownCloudGui::raise();
