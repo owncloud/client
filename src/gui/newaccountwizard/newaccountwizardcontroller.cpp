@@ -88,12 +88,16 @@ void NewAccountWizardController::buildPages()
 
     // todo: #26 - is this actually in play in real life or should it be deprecated?
     //  if (!Theme::instance()->wizardSkipAdvancedPage()) {
-    connect(authSuccessController, &AuthSuccessPageController::requestAdvancedSettings, this, &NewAccountWizardController::showAdvancedSettingsPage);
 
     QWizardPage *advancedSettingsPage = new QWizardPage(_wizard);
     AdvancedSettingsPageController *advancedSettingsController = new AdvancedSettingsPageController(advancedSettingsPage, this);
+    connect(advancedSettingsController, &AdvancedSettingsPageController::success, this, &NewAccountWizardController::onAdvancedSettingsCompleted);
     _advancedSettingsPageIndex = _wizard->addPage(advancedSettingsPage, advancedSettingsController);
     advancedSettingsPage->setFinalPage(true);
+    // capture the default advanced settings in case the user never runs the advanced settings page
+    AdvancedSettingsResult defaultAdvancedSettings = advancedSettingsController->defaultResult();
+    _model->setDefaultSyncRoot(defaultAdvancedSettings.syncRoot);
+    _model->setSyncType(defaultAdvancedSettings.syncType);
     //  }
 }
 
@@ -163,13 +167,6 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _autoValidateOAuthPage = true;
 }
 
-// I think this can be removed. we don't really care as the page will not advance and we have no complete result to collect from the
-// first page yet.
-void NewAccountWizardController::onUrlValidationFailed(const OCC::UrlPageResults &result)
-{
-    Q_UNUSED(result);
-}
-
 void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPageResults &results)
 {
     if (!_wizard || !_model)
@@ -179,6 +176,7 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
     _model->setDisplayName(results.displayName);
     _model->setDavUser(results.userId);
     _model->setCapabilities(results.capabilities);
+    _model->setWebfingerUserInfoUrl(results.webfingerUserUrl);
 
     _wizard->setCurrentId(_authSuccessPageIndex);
     ownCloudGui::raise();
@@ -193,6 +191,12 @@ void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageRes
     Q_UNUSED(results);
     ownCloudGui::raise();
     _wizard->activateWindow();
+}
+
+void NewAccountWizardController::onAdvancedSettingsCompleted(const OCC::AdvancedSettingsResult &result)
+{
+    _model->setDefaultSyncRoot(result.syncRoot);
+    _model->setSyncType(result.syncType);
 }
 
 void NewAccountWizardController::showAdvancedSettingsPage()

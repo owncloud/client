@@ -80,9 +80,9 @@ Q_SIGNALS:
 public Q_SLOTS:
     void slotAccountStateChanged();
     void slotSpacesUpdated();
+    void slotAddFolder();
 
 protected Q_SLOTS:
-    void slotAddFolder();
     void slotEnableCurrentFolder(Folder *folder, bool terminate = false);
     void slotForceSyncCurrentFolder(Folder *folder);
     void slotRemoveCurrentFolder(Folder *folder);
@@ -93,6 +93,9 @@ protected Q_SLOTS:
     void slotOpenAccountInBrowser();
     void slotToggleSignInState();
     void slotCustomContextMenuRequested(Folder *folder);
+
+protected:
+    void accountSettingUpChanged(bool settingUp);
 
 private:
     void showSelectiveSyncDialog(Folder *folder);

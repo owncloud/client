@@ -13,24 +13,23 @@
  */
 #pragma once
 
+#include "newaccountenums.h"
 #include "wizardpagevalidator.h"
+
 #include <QObject>
 
 class QWizardPage;
 class QButtonGroup;
 class QLineEdit;
 class QLabel;
+class QPushButton;
 
 namespace OCC {
 
-// I am not making this a strongly typed enum class as it's only used to support the radio button ids in the gui.
-// an old fashioned enum does not require casts back and forth, which for this use case is a good thing.
-enum SyncType { NONE, USE_VFS, SYNC_ALL, SELECTIVE_SYNC };
-
 struct AdvancedSettingsResult
 {
-    SyncType _syncType = SyncType::NONE;
-    QString _syncRoot;
+    NewAccount::SyncType syncType = NewAccount::SyncType::NONE;
+    QString syncRoot;
 };
 
 class AdvancedSettingsPageController : public QObject, public WizardPageValidator
@@ -40,18 +39,20 @@ class AdvancedSettingsPageController : public QObject, public WizardPageValidato
 public:
     explicit AdvancedSettingsPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
+    AdvancedSettingsResult defaultResult();
 
 Q_SIGNALS:
-    void success(const AdvancedSettingsResult &result);
+    void success(const OCC::AdvancedSettingsResult &result);
 
 private:
     void gatherSyncInfo();
     void buildPage();
     void showFolderPicker();
     void onRootDirFieldEdited();
+    void syncTypeChanged(int id);
     bool validateSyncRoot(const QString &rootPath);
 
-    SyncType _defaultSyncType = SyncType::NONE;
+    NewAccount::SyncType _defaultSyncType = NewAccount::SyncType::NONE;
     QString _defaultSyncRoot;
     bool _vfsIsAvailable = false;
     bool _forceVfs = false;
@@ -62,6 +63,7 @@ private:
     QWizardPage *_page = nullptr;
     QButtonGroup *_buttonGroup = nullptr;
     QLineEdit *_rootDirEdit = nullptr;
+    QPushButton *_folderButton;
     QLabel *_errorField;
 };
 }

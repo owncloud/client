@@ -175,14 +175,13 @@ private:
 Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
-    void isSettingUpChanged();
+    void isSettingUpChanged(bool settingUp);
     void supportsSpacesChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
-    void slotCredentialsAsked();
 
 private:
     Account *accountForQml() const;

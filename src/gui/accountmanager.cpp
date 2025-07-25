@@ -198,6 +198,33 @@ bool AccountManager::restoreFromLegacySettings()
     return false;
 }
 
+AccountPtr AccountManager::createAccount(const NewAccountModel &model)
+{
+    auto newAccountPtr = Account::create(QUuid::createUuid());
+
+    newAccountPtr->setUrl(model.effectiveUserInfoUrl());
+    newAccountPtr->setDavUser(model.davUser());
+    newAccountPtr->setDavDisplayName(model.displayName());
+
+    HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
+    newAccountPtr->setCredentials(credentials);
+
+    newAccountPtr->addApprovedCerts(model.trustedCertificates());
+
+    QString syncRoot = model.defaultSyncRoot();
+    if (!syncRoot.isEmpty()) {
+        newAccountPtr->setDefaultSyncRoot(syncRoot);
+        if (!QFileInfo::exists(syncRoot)) {
+            OC_ASSERT(QDir().mkpath(syncRoot));
+        }
+        Utility::markDirectoryAsSyncRoot(syncRoot, newAccountPtr->uuid());
+    }
+
+    newAccountPtr->setCapabilities(model.capabilities());
+
+    return newAccountPtr;
+}
+
 void AccountManager::save(bool saveCredentials)
 {
     for (const auto &acc : std::as_const(_accounts)) {
@@ -335,7 +362,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     settings.beginGroup(QStringLiteral("General"));
     const auto certs = QSslCertificate::fromData(settings.value(caCertsKeyC()).toByteArray());
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
-    acc->setApprovedCerts(certs);
+    acc->setApprovedCerts({certs.begin(), certs.end()});
     settings.endGroup();
 
     return acc;
@@ -442,13 +469,16 @@ AccountStatePtr AccountManager::addAccountState(std::unique_ptr<AccountState> &&
     auto *rawAccount = statePtr->account().get();
     // this slot can't be connected until the account state exists because saveAccount uses the state
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
-        // persis the account, not the credentials, we don't know whether they are ready yet
+        // persist the account, not the credentials, we don't know whether they are ready yet
         // Refactoring todo: how about we make those two completely different saves? then we can ditch this lambda
         saveAccount(rawAccount, false);
     });
 
     Q_EMIT accountAdded(statePtr);
     Q_EMIT accountsChanged();
+
+    statePtr->checkConnectivity();
+
     return statePtr;
 }
 }

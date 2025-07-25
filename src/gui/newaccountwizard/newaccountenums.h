@@ -15,21 +15,13 @@
 
 #include <QObject>
 
-#include "wizardpagevalidator.h"
+namespace OCC::NewAccount {
+Q_NAMESPACE
 
-class QWizardPage;
+// I am not making this a strongly typed enum class as it's used to support the radio button ids in the advanced settings gui.
+// an old fashioned enum does not require as many casts back and forth, which for this use case is a good thing.
+enum SyncType { NONE, USE_VFS, SYNC_ALL, SELECTIVE_SYNC };
 
-namespace OCC {
-class AuthSuccessPageController : public QObject, public WizardPageValidator
-{
-    Q_OBJECT
-public:
-    explicit AuthSuccessPageController(QWizardPage *page, QObject *parent);
-    bool validate() override;
+Q_ENUM_NS(SyncType)
 
-private:
-    void buildPage();
-
-    QWizardPage *_page = nullptr;
-};
 }

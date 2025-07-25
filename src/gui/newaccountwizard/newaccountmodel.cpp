@@ -28,6 +28,7 @@ QUrl NewAccountModel::serverUrl() const
 
 void NewAccountModel::setServerUrl(const QUrl &newServerUrl)
 {
+    // consider clearing auth info any time the url changes. it might be overkill though
     if (_serverUrl == newServerUrl)
         return;
     _serverUrl = newServerUrl;
@@ -73,19 +74,6 @@ void NewAccountModel::setTrustedCertificates(const QSet<QSslCertificate> &newTru
     Q_EMIT trustedCertificatesChanged(_trustedCertificates);
 }
 
-QString NewAccountModel::syncRootDir() const
-{
-    return _syncRootDir;
-}
-
-void NewAccountModel::setSyncRootDir(const QString &newSyncRootDir)
-{
-    if (_syncRootDir == newSyncRootDir)
-        return;
-    _syncRootDir = newSyncRootDir;
-    Q_EMIT syncRootDirChanged(_syncRootDir);
-}
-
 QString NewAccountModel::displayName() const
 {
     return _displayName;
@@ -110,13 +98,6 @@ void NewAccountModel::setDavUser(const QString &newDavUser)
         return;
     _davUser = newDavUser;
     Q_EMIT davUserChanged(_davUser);
-}
-
-QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
-{
-    if (!_webfingerAuthenticationUrl.isEmpty())
-        return _webfingerAuthenticationUrl;
-    return _serverUrl;
 }
 
 QString NewAccountModel::authToken() const
@@ -156,5 +137,62 @@ void NewAccountModel::setCapabilities(const Capabilities &newCapabilities)
     //    return;
     _capabilities = newCapabilities;
     Q_EMIT capabilitiesChanged(_capabilities);
+}
+
+QString NewAccountModel::defaultSyncRoot() const
+{
+    return _defaultSyncRoot;
+}
+
+void NewAccountModel::setDefaultSyncRoot(const QString &newDefaultSyncRoot)
+{
+    if (_defaultSyncRoot != newDefaultSyncRoot) {
+        _defaultSyncRoot = newDefaultSyncRoot;
+        Q_EMIT defaultSyncRootChanged(_defaultSyncRoot);
+    }
+}
+
+NewAccount::SyncType NewAccountModel::syncType() const
+{
+    return _syncType;
+}
+
+void NewAccountModel::setSyncType(NewAccount::SyncType newSyncType)
+{
+    if (_syncType == newSyncType)
+        return;
+    _syncType = newSyncType;
+    Q_EMIT syncTypeChanged(_syncType);
+}
+
+
+QUrl NewAccountModel::effectiveAuthenticationServerUrl() const
+{
+    if (!_webfingerAuthenticationUrl.isEmpty())
+        return _webfingerAuthenticationUrl;
+    return _serverUrl;
+}
+
+QUrl NewAccountModel::effectiveUserInfoUrl() const
+{
+    if (!_webfingerUserInfoUrl.isEmpty())
+        return _webfingerUserInfoUrl;
+    else
+        return _serverUrl;
+}
+
+bool NewAccountModel::isComplete() const
+{
+    bool authInfoComplete = !_davUser.isEmpty() && !_authToken.isEmpty() && !_refreshToken.isEmpty();
+    bool syncInfoComplete = false;
+    if (_syncType != NewAccount::SyncType::NONE) {
+        if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC && _defaultSyncRoot.isEmpty())
+            syncInfoComplete = true;
+        else if (_syncType == (NewAccount::SyncType::USE_VFS || _syncType == NewAccount::SyncType::SYNC_ALL) && !_defaultSyncRoot.isEmpty())
+            syncInfoComplete = true;
+    }
+
+    bool complete = authInfoComplete && syncInfoComplete && effectiveUserInfoUrl().isValid() && _capabilities.isValid();
+    return complete;
 }
 }

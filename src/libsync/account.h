@@ -104,9 +104,7 @@ public:
     void setDavUser(const QString &newDavUser);
 
     /***
-     * With OC 10 this is the equivalent to the sync root.
-     * With ocis and spaces this will be the default folder containing all spaces.
-     * This function will assert if the sync root is empty.
+     * With spaces this will be the default folder containing all spaces.
      */
     QString defaultSyncRoot() const;
 
@@ -172,7 +170,7 @@ public:
     /***
      * Warning calling those will break running network jobs on the current access manager
      */
-    void setApprovedCerts(const QList<QSslCertificate> &certs);
+    void setApprovedCerts(const QSet<QSslCertificate> &certs);
 
     /***
      * Warning calling those will break running network jobs on the current access manager
@@ -233,7 +231,6 @@ Q_SIGNALS:
     void invalidCredentials(QPrivateSignal);
 
     void credentialsFetched();
-    void credentialsAsked();
 
     // e.g. when the approved SSL certificates changed
     // todo: #15

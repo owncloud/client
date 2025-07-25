@@ -25,14 +25,19 @@ public:
 namespace OCC {
 
 namespace TestUtils {
-    TestUtilsPrivate::AccountStateRaii createDummyAccount()
+    TestUtilsPrivate::AccountStateRaii createDummyAccount(AbstractCredentials *cred)
     {
         // ensure we have an instance of folder man
         std::ignore = folderMan();
         // don't use the account manager to create the account, it would try to use widgets
         auto acc = Account::create(QUuid::createUuid());
-        HttpCredentialsTest *cred = new HttpCredentialsTest(QStringLiteral("testuser"), QStringLiteral("secret"));
-        acc->setCredentials(cred);
+        if (cred) {
+            acc->setCredentials(cred);
+        } else {
+            // TODO: kill this one - it creates a real QNAM
+            HttpCredentialsTest *cred = new HttpCredentialsTest(QStringLiteral("testuser"), QStringLiteral("secret"));
+            acc->setCredentials(cred);
+        }
         acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
         acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
         acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});

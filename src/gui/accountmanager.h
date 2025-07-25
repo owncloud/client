@@ -18,6 +18,7 @@
 
 #include "account.h"
 #include "accountstate.h"
+#include "newaccountwizard/newaccountmodel.h"
 
 #include <QtQmlIntegration/QtQmlIntegration>
 
@@ -46,6 +47,13 @@ public:
      * Saves the accounts to a given settings file
      */
     void save(bool saveCredentials = true);
+
+    /**
+     * @brief createAccount creates an account from scratch
+     * @param model contains the data used to set up the new account (usually collected from the new account wizard)
+     * @return the AccountPtr associated with the new account. for now.
+     */
+    AccountPtr createAccount(const NewAccountModel &model);
 
     /**
      * Creates account objects from a given settings file.

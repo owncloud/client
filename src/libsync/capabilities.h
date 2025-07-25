@@ -26,6 +26,7 @@
 
 namespace OCC {
 
+// todo: #34
 struct OWNCLOUDSYNC_EXPORT Status
 {
     /**

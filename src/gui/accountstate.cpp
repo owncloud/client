@@ -102,7 +102,6 @@ void AccountState::connectAccount()
     }
     connect(_account.data(), &Account::invalidCredentials, this, &AccountState::slotInvalidCredentials);
     connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
-    connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
 
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
@@ -134,6 +133,10 @@ std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account,
 
 std::unique_ptr<AccountState> AccountState::fromNewAccount(AccountPtr account)
 {
+    // todo: #22. In essence this function creates a unique pointer which in the caller is immediately added to the _accounts map
+    // as a QPointer. Meanwhile the parent is a shared pointer (the account) so who knows when this thing will ever get cleaned up?
+    // add to this that I rarely see anyone checking an account state to see if it's null. We need a consistent impl that reflects
+    // the ownership status of these elements, and make the lifetime concrete
     return std::unique_ptr<AccountState>(new AccountState(account));
 }
 
@@ -556,26 +559,6 @@ void AccountState::slotCredentialsFetched()
     checkConnectivity();
 }
 
-void AccountState::slotCredentialsAsked()
-{
-    qCInfo(lcAccountState) << "Credentials asked for" << _account->url().toString() << "are they ready?" << _account->credentials()->ready();
-
-    _waitingForNewCredentials = false;
-
-    if (!_account->credentials()->ready()) {
-        // User canceled the connection or did not give a password
-        setState(SignedOut);
-        return;
-    }
-
-    if (_connectionValidator) {
-        // When new credentials become available we always want to restart the
-        // connection validation, even if it's currently running.
-        resetConnectionValidator();
-    }
-
-    checkConnectivity();
-}
 
 Account *AccountState::accountForQml() const
 {
@@ -618,8 +601,7 @@ void AccountState::setSettingUp(bool settingUp)
 {
     if (_settingUp != settingUp) {
         _settingUp = settingUp;
-        // for goodness sake, just send the new value
-        Q_EMIT isSettingUpChanged();
+        Q_EMIT isSettingUpChanged(settingUp);
     }
 }
 bool AccountState::readyForSync() const

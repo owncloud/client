@@ -74,7 +74,7 @@ void AdvancedSettingsPageController::buildPage()
     if (_vfsIsAvailable) {
         QRadioButton *vfsButton = new QRadioButton(tr("Only sync and dowload files as you use them to save hard drive space"), _page);
         vfsButton->setFocusPolicy(Qt::StrongFocus);
-        _buttonGroup->addButton(vfsButton, SyncType::USE_VFS);
+        _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
         layout->addWidget(vfsButton, Qt::AlignLeft);
     }
     if (!_forceVfs) {
@@ -82,10 +82,11 @@ void AdvancedSettingsPageController::buildPage()
         selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
         QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download all current folders and files"), _page);
         syncAllButton->setFocusPolicy(Qt::StrongFocus);
-        _buttonGroup->addButton(selectiveSyncButton, SyncType::SELECTIVE_SYNC);
-        _buttonGroup->addButton(syncAllButton, SyncType::SYNC_ALL);
+        _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
+        _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
         layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
         layout->addWidget(syncAllButton, Qt::AlignLeft);
+        connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
     }
 
     Q_ASSERT(_buttonGroup->button(_defaultSyncType));
@@ -101,16 +102,16 @@ void AdvancedSettingsPageController::buildPage()
     });
     connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
-    QPushButton *folderButton = new QPushButton(tr("Choose..."), _page);
-    folderButton->setFocusPolicy(Qt::StrongFocus);
-    connect(folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
+    _folderButton = new QPushButton(tr("Choose..."), _page);
+    _folderButton->setFocusPolicy(Qt::StrongFocus);
+    connect(_folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
 
     layout->addSpacing(8);
     layout->addWidget(syncRootLabel, Qt::AlignLeft);
 
     QHBoxLayout *folderPickerLayout = new QHBoxLayout();
     folderPickerLayout->addWidget(_rootDirEdit, Qt::AlignLeft);
-    folderPickerLayout->addWidget(folderButton);
+    folderPickerLayout->addWidget(_folderButton);
     layout->addLayout(folderPickerLayout);
 
     _errorField = new QLabel(QString(), _page);
@@ -132,11 +133,19 @@ void AdvancedSettingsPageController::gatherSyncInfo()
     _vfsIsAvailable = VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi;
     _forceVfs = _vfsIsAvailable && Theme::instance()->forceVirtualFilesOption();
     if (!_vfsIsAvailable)
-        _defaultSyncType = SyncType::SYNC_ALL;
+        _defaultSyncType = NewAccount::SyncType::SYNC_ALL;
     else
-        _defaultSyncType = SyncType::USE_VFS;
+        _defaultSyncType = NewAccount::SyncType::USE_VFS;
 
     _defaultSyncRoot = FolderMan::suggestSyncFolder(FolderMan::NewFolderType::SpacesSyncRoot, {});
+}
+
+AdvancedSettingsResult AdvancedSettingsPageController::defaultResult()
+{
+    AdvancedSettingsResult result;
+    result.syncRoot = _defaultSyncRoot;
+    result.syncType = _defaultSyncType;
+    return result;
 }
 
 bool AdvancedSettingsPageController::validate()
@@ -150,8 +159,11 @@ bool AdvancedSettingsPageController::validate()
     // normally I don't like taking values directly from the gui but in this case, it would be complete overkill to
     // create a dedicated model just for these two values that only need to be collected when the user is done.
     AdvancedSettingsResult result;
-    result._syncRoot = _rootDirEdit->text();
-    result._syncType = static_cast<SyncType>(_buttonGroup->checkedId());
+    result.syncType = static_cast<NewAccount::SyncType>(_buttonGroup->checkedId());
+    if (result.syncType == NewAccount::SyncType::SELECTIVE_SYNC)
+        result.syncRoot.clear();
+    else
+        result.syncRoot = _rootDirEdit->text();
     Q_EMIT success(result);
     return true;
 }
@@ -221,5 +233,13 @@ void AdvancedSettingsPageController::onRootDirFieldEdited()
         _lastHandEditedRootFailed = false;
         _errorField->setText({});
     }
+}
+
+void AdvancedSettingsPageController::syncTypeChanged(int id)
+{
+    bool enableFolderEditors = (id != NewAccount::SyncType::SELECTIVE_SYNC);
+
+    _rootDirEdit->setEnabled(enableFolderEditors);
+    _folderButton->setEnabled(enableFolderEditors);
 }
 }

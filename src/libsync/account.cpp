@@ -97,6 +97,7 @@ QString Account::davPath() const
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
 }
 
+// todo: #20. I'm speechless
 void Account::setSharedThis(AccountPtr sharedThis)
 {
     _sharedThis = sharedThis.toWeakRef();
@@ -112,6 +113,7 @@ QUuid Account::uuid() const
     return _uuid;
 }
 
+// todo: #20
 AccountPtr Account::sharedFromThis()
 {
     return _sharedThis.toStrongRef();
@@ -273,9 +275,9 @@ QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, 
     return _am->sendCustomRequest(req, verb, data);
 }
 
-void Account::setApprovedCerts(const QList<QSslCertificate> &certs)
+void Account::setApprovedCerts(const QSet<QSslCertificate> &certs)
 {
-    _approvedCerts = { certs.begin(), certs.end() };
+    _approvedCerts = certs;
     _am->setCustomTrustedCaCertificates(_approvedCerts);
 }
 
@@ -337,7 +339,6 @@ void Account::clearAMCache()
 
 const Capabilities &Account::capabilities() const
 {
-    Q_ASSERT(hasCapabilities());
     return _capabilities;
 }
 
@@ -361,28 +362,23 @@ void Account::setCapabilities(const Capabilities &caps)
 Account::ServerSupportLevel Account::serverSupportLevel() const
 {
     if (!hasCapabilities()) {
-        // not detected yet, assume it is fine.
-        return ServerSupportLevel::Supported;
+        // not detected yet
+        // should only happen when reloading an account from config?
+        return ServerSupportLevel::Unknown;
     }
 
-    // ocis
+    // todo: #34
+    // ocis and kiteworks allegedly
+    // this seems awfully loosey goosey but I've been told it should work
     if (!capabilities().status().productversion.isEmpty()) {
         return ServerSupportLevel::Supported;
     }
 
-    // Older version which is not "end of life" according to https://github.com/owncloud/core/wiki/Maintenance-and-Release-Schedule
-    if (!capabilities().status().legacyVersion.isNull()) {
-        if (capabilities().status().legacyVersion < QVersionNumber(10)) {
-            return ServerSupportLevel::Unsupported;
-        }
-        return ServerSupportLevel::Supported;
-    }
-    return ServerSupportLevel::Unknown;
+    return ServerSupportLevel::Unsupported;
 }
 
 QString Account::defaultSyncRoot() const
 {
-    Q_ASSERT(!_defaultSyncRoot.isEmpty());
     return _defaultSyncRoot;
 }
 bool Account::hasDefaultSyncRoot() const
