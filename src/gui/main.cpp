@@ -518,7 +518,7 @@ int main(int argc, char **argv)
 
         // Display the wizard if we don't have an account yet, and no other UI is showing.
         if (AccountManager::instance()->accounts().isEmpty()) {
-            QTimer::singleShot(0, ocApp->gui(), &ownCloudGui::runNewAccountWizard);
+            QTimer::singleShot(0, ocApp->gui(), &ownCloudGui::runAccountWizard);
         }
 
         // Now that everything is up and running, start accepting connections/requests from the shell integration.
