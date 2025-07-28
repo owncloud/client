@@ -165,19 +165,13 @@ void Application::slotCleanup()
     AccountManager::instance()->shutdown();
 }
 
-// todo: #33 this is currently called by the old account wizard routine to add the account, too - remove the whole thing
-// once both updates are complete
-AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
+void Application::updateAutoRun(bool firstRun)
 {
-    auto *accountMan = AccountManager::instance();
+    if (!firstRun)
+        return;
 
-    // first things first: we need to add the new account
-    auto accountStatePtr = accountMan->addAccount(newAccount);
+    bool shouldSetAutoStart = firstRun;
 
-    // if one account is configured: enable autostart
-    // todo: #33. on first run of the app, just turn the setting on. This is easily accomplished by checking the settings to see if the key exists yet,
-    // if it does not, shouldSetAutoStart -> true and go from there.
-    bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
 #ifdef Q_OS_MAC
     // Don't auto start when not being 'installed'
     shouldSetAutoStart = shouldSetAutoStart
@@ -186,11 +180,6 @@ AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
     if (shouldSetAutoStart) {
         Utility::setLaunchOnStartup(Theme::instance()->appName(), Theme::instance()->appNameGUI(), true);
     }
-
-    // showing the UI to show the user that the account has been added successfully
-    _gui->slotShowSettings();
-
-    return accountStatePtr;
 }
 
 void Application::slotUseMonoIconsChanged(bool)
