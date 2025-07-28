@@ -13,7 +13,6 @@ Feature: adding accounts
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
-        When the user opens the advanced configuration
         Then the download everything option should be selected by default for Linux
         And the VFS option should be selected by default for Windows
         And the user should be able to choose the local download directory
@@ -36,7 +35,7 @@ Feature: adding accounts
             | server   | %local_server% |
             | user     | Brian          |
             | password | AaBb2Cc3Dd4    |
-        Then "Brian Murphy" account should be opened
+        Then "Alice Hansen" account should be opened
         And the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
         And the account with displayname "Brian Murphy" and host "%local_server_hostname%" should be displayed
 
