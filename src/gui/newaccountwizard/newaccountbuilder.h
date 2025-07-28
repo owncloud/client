@@ -34,6 +34,7 @@ public:
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountStatePtr, bool useVfs);
     void requestFolderWizard(OCC::AccountPtr account);
+    void unableToCompleteAccountCreation(const QString &error);
 
 private:
     void onAccountStateChanged(AccountState::State state);

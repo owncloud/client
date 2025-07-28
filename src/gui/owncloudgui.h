@@ -110,6 +110,7 @@ public Q_SLOTS:
      * to the folder).
      */
     void slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
+    void handleAccountSetupError(const QString &error);
 
 private:
     void setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accounts, bool pause);

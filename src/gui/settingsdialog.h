@@ -65,6 +65,7 @@ public:
 
     void setCurrentAccount(Account *account);
 
+    // todo: #37 - this is stickier to get rid of as it's used in the qml related to the account. That needs to go.
     Account *currentAccount() const;
 
 public Q_SLOTS:
@@ -84,6 +85,7 @@ protected:
 private:
     Ui::SettingsDialog *const _ui;
 
+    // todo: #37
     QHash<Account *, AccountSettings *> _widgetForAccount;
 
     ActivitySettings *_activitySettings;
@@ -92,6 +94,7 @@ private:
 
     GeneralSettings *_generalSettings;
     SettingsPage _currentPage = SettingsPage::None;
+    // todo: #37
     Account *_currentAccount = nullptr;
 };
 }
