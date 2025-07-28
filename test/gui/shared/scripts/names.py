@@ -64,3 +64,7 @@ contentWidget_OCC_QmlUtils_OCQuickWidget = {"container": contentWidget_contentWi
 stackedWidget_Add_Folder_Sync_Connection_QGroupBox = {"container": stack_stackedWidget_QStackedWidget, "title": "Add Folder Sync Connection", "type": "QGroupBox", "unnamed": 1, "visible": 1}
 stackedWidget_groupBox_QGroupBox = {"container": settings_stack_QStackedWidget, "name": "groupBox", "type": "QGroupBox", "visible": 1}
 groupBox_OCC_QmlUtils_OCQuickWidget = {"container": stackedWidget_groupBox_QGroupBox, "type": "OCC::QmlUtils::OCQuickWidget", "unnamed": 1, "visible": 1}
+welcome_to_ownCloud_OCC_NewAccountWizard = {"type": "OCC::NewAccountWizard", "unnamed": 1, "visible": 1, "windowTitle": "Welcome to ownCloud"}
+welcome_to_ownCloud_Enter_your_server_address_to_get_started_Your_web_browser_will_be_opened_to_complete_sign_in_QLabel = {"text": "Enter your server address to get started. Your web browser will be opened to complete sign in.", "type": "QLabel", "unnamed": 1, "visible": 1, "window": welcome_to_ownCloud_OCC_NewAccountWizard}
+welcome_to_ownCloud_Leave_this_screen_open_A_sign_in_prompt_will_appear_in_your_web_browser_to_connect_you_to_the_following_address_QLabel = {"text": "Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.", "type": "QLabel", "unnamed": 1, "visible": 1, "window": welcome_to_ownCloud_OCC_NewAccountWizard}
+welcome_to_ownCloud_Folder_location_QLabel = {"text": "Folder location", "type": "QLabel", "unnamed": 1, "visible": 1, "window": welcome_to_ownCloud_OCC_NewAccountWizard}

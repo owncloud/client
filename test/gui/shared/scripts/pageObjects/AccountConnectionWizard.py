@@ -15,17 +15,42 @@ from helpers.SyncHelper import listen_sync_status_for_item
 
 
 class AccountConnectionWizard:
+    # SERVER_ADDRESS_BOX = {
+    #     "container": names.setupWizardWindow_contentWidget_QStackedWidget,
+    #     "name": "urlLineEdit",
+    #     "type": "QLineEdit",
+    #     "visible": 1,
+    # }
     SERVER_ADDRESS_BOX = {
-        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
-        "name": "urlLineEdit",
+        "aboveWidget": names.welcome_to_ownCloud_Enter_your_server_address_to_get_started_Your_web_browser_will_be_opened_to_complete_sign_in_QLabel,
         "type": "QLineEdit",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     NEXT_BUTTON = {
         "container": names.settings_dialogStack_QStackedWidget,
         "name": "nextButton",
         "type": "QPushButton",
         "visible": 1,
+    }
+    SIGN_IN_BUTTON = {
+        "name": "__qt__passive_wizardbutton1",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    }
+    FINISH_BUTTON = {
+        "name": "qt_wizard_finish",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    }
+    ADVANCED_CONFIGURATION_BUTTON = {
+        "name": "__qt__passive_wizardbutton6",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONFIRM_INSECURE_CONNECTION_BUTTON = {
         "text": "Confirm",
@@ -52,11 +77,18 @@ class AccountConnectionWizard:
         "type": "QLineEdit",
         "visible": 1,
     }
+    # DIRECTORY_NAME_BOX = {
+    #     "container": names.advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox,
+    #     "name": "chooseLocalDirectoryButton",
+    #     "type": "QToolButton",
+    #     "visible": 1,
+    # }
     DIRECTORY_NAME_BOX = {
-        "container": names.advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox,
-        "name": "chooseLocalDirectoryButton",
-        "type": "QToolButton",
+        "text": "Choose...",
+        "type": "QPushButton",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CHOOSE_BUTTON = {
         "text": "Choose",
@@ -81,11 +113,18 @@ class AccountConnectionWizard:
         "type": "OCC::Wizard::OAuthCredentialsSetupWizardPage",
         "visible": 1,
     }
+    # COPY_URL_TO_CLIPBOARD_BUTTON = {
+    #     "container": names.contentWidget_OCC_QmlUtils_OCQuickWidget,
+    #     "id": "copyToClipboardButton",
+    #     "type": "Button",
+    #     "visible": True,
+    # }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
-        "container": names.contentWidget_OCC_QmlUtils_OCQuickWidget,
-        "id": "copyToClipboardButton",
-        "type": "Button",
-        "visible": True,
+        "aboveWidget": names.welcome_to_ownCloud_Leave_this_screen_open_A_sign_in_prompt_will_appear_in_your_web_browser_to_connect_you_to_the_following_address_QLabel,
+        "type": "QPushButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONF_SYNC_MANUALLY_RADIO_BUTTON = {
         "container": names.advancedConfigGroupBox_syncModeGroupBox_QGroupBox,
@@ -127,7 +166,8 @@ class AccountConnectionWizard:
             squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX),
             server_url,
         )
-        AccountConnectionWizard.next_step()
+        # AccountConnectionWizard.next_step()
+        AccountConnectionWizard.sign_in()
 
         if not get_config("ocis"):
             try:
@@ -184,11 +224,23 @@ class AccountConnectionWizard:
         )
 
     @staticmethod
+    def sign_in():
+        squish.clickButton(
+            squish.waitForObjectExists(AccountConnectionWizard.SIGN_IN_BUTTON)
+        )
+
+    @staticmethod
     def select_sync_folder(user):
         # create sync folder for user
         sync_path = create_user_sync_path(user)
 
-        AccountConnectionWizard.select_advanced_config()
+        # AccountConnectionWizard.select_advanced_config()
+        squish.clickButton(
+            squish.waitForObjectExists(
+                AccountConnectionWizard.ADVANCED_CONFIGURATION_BUTTON
+            )
+        )
+
         squish.mouseClick(
             squish.waitForObject(AccountConnectionWizard.DIRECTORY_NAME_BOX)
         )
@@ -220,7 +272,10 @@ class AccountConnectionWizard:
     @staticmethod
     def add_account(account_details):
         AccountConnectionWizard.add_account_information(account_details)
-        AccountConnectionWizard.next_step()
+        # AccountConnectionWizard.next_step()
+        squish.clickButton(
+            squish.waitForObjectExists(AccountConnectionWizard.FINISH_BUTTON)
+        )
 
     @staticmethod
     def add_account_information(account_details):

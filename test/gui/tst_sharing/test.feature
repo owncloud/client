@@ -1,4 +1,4 @@
-@skipOnOCIS @pr-10241
+@skipOnOCIS @pr-10241 @skip
 Feature: Sharing
     As a user
     I want to share files and folders with other users

@@ -1,4 +1,4 @@
-@skipOnOC10
+@skipOnOC10 @skip
 Feature: Project spaces
     As a user
     I want to sync project space

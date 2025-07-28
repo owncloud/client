@@ -99,7 +99,7 @@ config = {
                 "version": "latest",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
-                "skip": True,
+                "skip": False,
             },
         },
     },
@@ -244,7 +244,7 @@ def build_client(image = OC_CI_CLIENT, ctest = True):
     ]
 
 def gui_tests(ctx, squish_parameters = "", server_type = "oc10"):
-    record_video = False
+    record_video = True
 
     # generate video reports on cron build
     if ctx.build.event == "cron":
