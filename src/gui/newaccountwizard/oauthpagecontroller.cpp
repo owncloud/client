@@ -82,6 +82,11 @@ void OAuthPageController::buildPage()
     _copyButton->installEventFilter(this);
     connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
+    _authEndpointField = new QLabel(_page);
+    _authEndpointField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _authEndpointField->setWordWrap(true);
+    _authEndpointField->setAlignment(Qt::AlignLeft);
+
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
     errorPalette.setColor(QPalette::Text, Qt::red);
@@ -115,8 +120,10 @@ void OAuthPageController::buildPage()
     urlAreaLayout->setSpacing(0);
     urlAreaLayout->addWidget(_urlField, Qt::AlignLeft);
     urlAreaLayout->addWidget(_copyButton);
-
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
+
+    layout->addWidget(_authEndpointField, Qt::AlignLeft);
+
     layout->addWidget(_errorField, Qt::AlignLeft);
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
@@ -164,7 +171,8 @@ void OAuthPageController::setAuthenticationUrl(const QUrl &url)
 void OAuthPageController::copyUrlClicked()
 {
     QClipboard *clipboard = QGuiApplication::clipboard();
-    clipboard->setText(_urlField->text());
+    clipboard->setText(_authEndpoint);
+    // clipboard->setText(_urlField->text());
 }
 
 // I was going to implement an event filter for the tooltip but I think the positioning is risky given our previous issues with popup stuff
@@ -201,6 +209,8 @@ bool OAuthPageController::validate()
 
     _results = {};
     _errorField->clear();
+    _authEndpoint.clear();
+    _authEndpointField->clear();
     _oauth = new OAuth(_authUrl, {}, _accessManager.get(), this);
     connect(_oauth, &OAuth::result, this, &OAuthPageController::handleOauthResult);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::showBrowser);
@@ -210,6 +220,9 @@ bool OAuthPageController::validate()
 
 void OAuthPageController::showBrowser()
 {
+    // possible todo: set the url field to match the "updated" auth link from oauth
+    _authEndpoint = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
+    _authEndpointField->setText(_authEndpoint);
     _oauth->openBrowser();
 }
 

@@ -113,10 +113,13 @@ private:
     QPointer<AccessManager> _accessManager;
     QUrl _serverUrl;
     QUrl _authUrl;
+    // this is calculated by the oauth routine - this is also what the copy button should put in the clipboard!
+    QString _authEndpoint;
     OAuth *_oauth;
     bool _lookupWebfingerUrls = false;
 
     QLineEdit *_urlField;
+    QLabel *_authEndpointField;
     QLabel *_errorField;
     QPushButton *_copyButton;
 
