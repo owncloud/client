@@ -18,8 +18,8 @@ Feature: filter activity for user
             | resource      | action     | account                              |
             | simple-folder | Downloaded | Alice Hansen@%local_server_hostname% |
 
-
-    Scenario: filter not synced activities
+    @skipOnWindows @predefined_users
+    Scenario: filter not synced activities (Linux only)
         Given user "Alice" has been created in the server with default attributes
         And user "Alice" has set up a client with default settings
         And user "Alice" has created a folder "Folder1" inside the sync folder
@@ -35,3 +35,19 @@ Feature: filter activity for user
         Then the following activities should be displayed in not synced table
             | resource         | status      | account                              |
             | Folder1/a\\a.txt | Blacklisted | Alice Hansen@%local_server_hostname% |
+
+    @skipOnLinux @predefined_users
+    Scenario: filter not synced activities (Windows only)
+        Given user "Alice" has been created in the server with default attributes
+        And user "Alice" has set up a client with default settings
+        And user "Alice" has created a folder "Folder1" inside the sync folder
+        When user "Alice" creates the following files inside the sync folder:
+            | files      |
+            | /.htaccess |
+        And the user clicks on the activity tab
+        And the user selects "Not Synced" tab in the activity
+        Then the file ".htaccess" should be excluded
+        When the user unchecks the "Excluded" filter
+        Then the following activities should not be displayed in not synced table
+            | resource  | status   | account                              |
+            | .htaccess | Excluded | Alice Hansen@%local_server_hostname% |
