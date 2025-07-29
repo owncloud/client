@@ -6,7 +6,7 @@ Feature: adding accounts
     Background:
         Given user "Alice" has been created in the server with default attributes
 
-
+    @predefined_users
     Scenario: Check default options in advanced configuration
         Given the user has started the client
         And the user has entered the following account information:
@@ -18,7 +18,7 @@ Feature: adding accounts
         And the VFS option should be selected by default for Windows
         And the user should be able to choose the local download directory
 
-
+    @predefined_users
     Scenario: Adding normal Account
         Given the user has started the client
         When the user adds the following account:
@@ -67,7 +67,7 @@ Feature: adding accounts
         When the user selects download everything option in advanced section
         Then the "Enable virtual file support" button should be available
 
-    @skipOnOC10
+    @skipOnOC10 @predefined_users
     Scenario: Add space manually from sync connection window
         Given user "Alice" has created folder "simple-folder" in the server
         And the user has started the client
