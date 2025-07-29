@@ -426,6 +426,8 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     Q_EMIT accountRemoved(account);
     Q_EMIT accountsChanged();
 
+    account->account()->cleanupForRemoval();
+
     account->deleteLater();
 }
 
