@@ -172,11 +172,11 @@ void Application::updateAutoRun(bool firstRun)
 
     bool shouldSetAutoStart = firstRun;
 
-#ifdef Q_OS_MAC
-    // Don't auto start when not being 'installed'
-    shouldSetAutoStart = shouldSetAutoStart
-        && QCoreApplication::applicationDirPath().startsWith(QLatin1String("/Applications/"));
-#endif
+    if (Utility::isMac()) {
+        // Don't auto start when not being 'installed'
+        shouldSetAutoStart = shouldSetAutoStart && QCoreApplication::applicationDirPath().startsWith(QLatin1String("/Applications/"));
+    }
+
     if (shouldSetAutoStart) {
         Utility::setLaunchOnStartup(Theme::instance()->appName(), Theme::instance()->appNameGUI(), true);
     }

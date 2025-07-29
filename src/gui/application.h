@@ -59,7 +59,7 @@ public:
      * @param firstRun indicates whether this is the first time the application is being run.
      *
      * This value is currently gleaned by checking whether the config file exists or not on start, if not, it's a first run.
-     * We can't check this inside the funciton, unfortunately, because the app startup writes the client version to the config
+     * We can't check this inside the function, unfortunately, because the app startup writes the client version to the config
      * "asap", before the Application is instantiated, so we have to capture the state and pass it to this function after the
      * applicaiton exists.
      * Once we have a real application builder this should be a simpler proccess but for now this is what we have.
