@@ -396,13 +396,19 @@ AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
 
 void AccountManager::deleteAccount(AccountStatePtr account)
 {
-    auto it = std::find(_accounts.begin(), _accounts.end(), account);
-    if (it == _accounts.end()) {
+    // do these notifications asap so anyone trying to use the account stops doing that
+    // unfortunately, if we call these early, the "button" for the account is never removed, and if it's the last
+    // account (so there will be none now) the wizard doesn't auto-pop to create a new one. Obviously something is out of
+    // whack with gui elements holding onto the pointers or who knows what. I leave this here as this should work!
+    // Q_EMIT accountRemoved(account);
+    // Q_EMIT accountsChanged();
+
+    if (!_accounts.contains(account->account()->uuid())) {
+        qDebug() << "why is the account we are trying to remove not in the accounts map?";
         return;
     }
-    // The argument keeps a strong reference to the AccountState, so we can safely remove other
-    // AccountStatePtr occurrences:
-    _accounts.erase(it);
+
+    _accounts.remove(account->account()->uuid());
 
     if (account->account()->hasDefaultSyncRoot()) {
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
@@ -415,8 +421,13 @@ void AccountManager::deleteAccount(AccountStatePtr account)
     auto settings = ConfigFile::settingsWithGroup(accountsC());
     settings->remove(account->account()->id());
 
+    // when called this way the gui stuff gets cleaned up eventually, though not as quickly as I would expect. Still it works
+    // better than having these calls at the start.
     Q_EMIT accountRemoved(account);
     Q_EMIT accountsChanged();
+
+    account->account()->cleanupForRemoval();
+
     account->deleteLater();
 }
 

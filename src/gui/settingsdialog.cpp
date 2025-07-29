@@ -163,12 +163,14 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr accountStatePtr) {
         if (!accountStatePtr)
             return;
+        // todo: #37. using the account after we know it's been removed is not ok.
         Account *acc = accountStatePtr->account().data();
         if (AccountSettings *asw = _widgetForAccount.value(acc)) {
-            _ui->stack->removeWidget(asw);
             _widgetForAccount.remove(acc);
-            asw->deleteLater();
-            // go to the settings page if the last account was removed
+            _ui->stack->removeWidget(asw);
+            delete asw;
+            // asw->deleteLater();
+            //  go to the settings page if the last account was removed
             if (_widgetForAccount.isEmpty()) {
                 _ui->stack->setCurrentWidget(_generalSettings);
             }

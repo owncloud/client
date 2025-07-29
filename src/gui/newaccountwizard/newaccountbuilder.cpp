@@ -38,11 +38,20 @@ void NewAccountBuilder::buildAccount()
 
 void NewAccountBuilder::onAccountStateChanged(AccountState::State state)
 {
-    // consider: what if the new account never successfully connects? how and when is is this possible?
-    // and what on earth can we do about it?
     if (state == AccountState::Connected) {
         disconnect(_accountState, nullptr, this, nullptr);
         completeAccountSetup();
+    }
+    // On the off chance that the server has somehow broken down between first auth during the wizard's info collection process, and "now", when the
+    // user has accepted the wizard and the actual account is created, we want to remove the account and notify there was a problem.
+    else if (state == AccountState::ServiceUnavailable || state == AccountState::NetworkError || state == AccountState::MaintenanceMode
+        || state == AccountState::ConfigurationError) {
+        disconnect(_accountState, nullptr, this, nullptr);
+        QString serverError = _accountState->connectionErrors().isEmpty() ? tr("no error details are available") : _accountState->connectionErrors().first();
+        QString error = tr("Unable to connect to server during account creation: %1.").arg(serverError);
+        Q_EMIT unableToCompleteAccountCreation(error);
+        // do this last as the wizard is going to auto-pop as soon as the account is deleted :/
+        AccountManager::instance()->deleteAccount(_accountState);
     }
 }
 
