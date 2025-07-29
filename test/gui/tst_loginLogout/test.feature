@@ -6,7 +6,7 @@ Feature:  Logout users
     Background:
         Given user "Alice" has been created in the server with default attributes
 
-
+    @predefined_users
     Scenario: logging out
         Given user "Alice" has set up a client with default settings
         When the user "Alice" logs out using the client-UI
