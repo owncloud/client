@@ -410,9 +410,6 @@ void AccountManager::deleteAccount(AccountStatePtr account)
 
     _accounts.remove(account->account()->uuid());
 
-    // Abort any pending jobs: the account credentials are invalidated.
-    account->account()->jobQueue()->clear();
-
     if (account->account()->hasDefaultSyncRoot()) {
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }

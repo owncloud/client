@@ -94,7 +94,10 @@ Account::~Account()
 
 void Account::cleanupForRemoval()
 {
-    // Stop the spaces manager, because it might have resource jobs running that use the resource cache.
+    // Abort any pending jobs: the account credentials are invalidated.
+    jobQueue()->clear();
+
+    // Stop the spaces manager, because it might start a new `Drives` job before the account is deleted.
     if (_spacesManager) {
         delete _spacesManager;
         _spacesManager = nullptr;
