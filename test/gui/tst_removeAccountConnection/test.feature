@@ -14,7 +14,7 @@ Feature: remove account connection
         Then the account with displayname "Brian Murphy" and host "%local_server_hostname%" should not be displayed
         But the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
 
-
+    @predefined_users
     Scenario: remove the only account connection
         Given user "Alice" has been created in the server with default attributes
         And user "Alice" has set up a client with default settings

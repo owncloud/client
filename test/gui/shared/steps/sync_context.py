@@ -1,3 +1,4 @@
+import re
 import squish
 
 from pageObjects.SyncConnectionWizard import SyncConnectionWizard
@@ -17,6 +18,7 @@ from helpers.SetupClientHelper import (
     substitute_inline_codes,
     get_resource_path,
 )
+from helpers.UserHelper import get_displayname_for_user
 
 
 @When('using sync connection folder "|any|"')
@@ -177,6 +179,8 @@ def step(context):
 @When('the user selects "|any|" space in sync connection wizard')
 def step(context, space_name):
     if get_config('ocis'):
+        if get_config('client_name') != 'ownCloud':
+            space_name = get_config('personal_sync_folder')
         SyncConnectionWizard.select_space(space_name)
         SyncConnectionWizard.next_step()
         set_config('syncConnectionName', space_name)
@@ -203,11 +207,15 @@ def step(context, folder_name):
 def step(context, folder_name):
     # There's no remote destination section with oCIS server
     if not get_config('ocis'):
+        if get_config('client_name') != 'ownCloud':
+            folder_name = get_config('client_name')
         SyncConnectionWizard.select_remote_destination_folder(folder_name)
 
 
 @When('the user syncs the "|any|" space')
 def step(context, space_name):
+    if get_config('client_name') != 'ownCloud' and space_name == 'Personal':
+        space_name = get_config('personal_sync_folder')
     SyncConnectionWizard.sync_space(space_name)
 
 
@@ -361,6 +369,11 @@ def step(context, should_or_should_not):
         resource = row[0]
         status = row[1]
         account = substitute_inline_codes(row[2])
+        if get_config('client_name') != 'ownCloud':
+            # get the displayname of user from account string
+            # and replace the existing displayname with predefined user's displayname from the account string
+            displayname = get_displayname_for_user(account.split()[0].strip())
+            account = re.sub(r'^[^@]+', displayname, account)
         test.compare(
             Activity.check_not_synced_table(resource, status, account),
             expected,
