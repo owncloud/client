@@ -447,6 +447,11 @@ int main(int argc, char **argv)
             return 0;
         }
 
+        // we have to collect this value before calling checkClientVersion, as that will create the config, which leaves us
+        // unable to know if this is really the first run later in the sequence, when the Application is instantiated.
+        // basically just save this for later.
+        bool firstRun = !ConfigFile().exists();
+
         // Check if the user upgraded or downgraded. We do this as early as possible, to detect
         // a possible downgrade.
         if (!checkClientVersion()) {
@@ -470,6 +475,7 @@ int main(int argc, char **argv)
         }
 
         auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
+        ocApp->updateAutoRun(firstRun);
 
         QObject::connect(platform.get(), &Platform::requestAttention, ocApp->gui(), &ownCloudGui::slotShowSettings);
 

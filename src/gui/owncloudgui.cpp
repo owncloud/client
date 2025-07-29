@@ -797,10 +797,16 @@ void ownCloudGui::runAccountWizard()
             NewAccountBuilder *builder = new NewAccountBuilder(model, this);
             connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, this, &ownCloudGui::requestSetUpSyncFoldersForAccount);
             connect(builder, &NewAccountBuilder::requestFolderWizard, _settingsDialog, &SettingsDialog::runFolderWizard);
-
+            connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &ownCloudGui::handleAccountSetupError);
             builder->buildAccount();
         }
     }
+}
+
+void ownCloudGui::handleAccountSetupError(const QString &error)
+{
+    QMessageBox::warning(_settingsDialog, tr("New account failure"),
+        tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
 }
 
 void ownCloudGui::setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accounts, bool pause)

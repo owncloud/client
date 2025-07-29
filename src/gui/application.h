@@ -54,7 +54,17 @@ public:
 
     QString displayLanguage() const;
 
-    AccountStatePtr addNewAccount(AccountPtr newAccount);
+    /**
+     * @brief updateAutoRun will automatically turn on the autorun feature if appropriate
+     * @param firstRun indicates whether this is the first time the application is being run.
+     *
+     * This value is currently gleaned by checking whether the config file exists or not on start, if not, it's a first run.
+     * We can't check this inside the function, unfortunately, because the app startup writes the client version to the config
+     * "asap", before the Application is instantiated, so we have to capture the state and pass it to this function after the
+     * applicaiton exists.
+     * Once we have a real application builder this should be a simpler proccess but for now this is what we have.
+     */
+    void updateAutoRun(bool firstRun);
 
 protected Q_SLOTS:
     void slotUseMonoIconsChanged(bool);
