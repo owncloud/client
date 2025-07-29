@@ -60,6 +60,7 @@ ownCloud admins and users.
 * Bugfix - Don't log misleading error if dynamic registration failed: [#11839](https://github.com/owncloud/client/pull/11839)
 * Bugfix - Fix crash after resource job fails: [#12045](https://github.com/owncloud/client/pull/12045)
 * Bugfix - Remove any existing ResourceCache directories for accounts: [#12214](https://github.com/owncloud/client/pull/12214)
+* Bugfix - Delete account-specific caches when an account is removed: [#12224](https://github.com/owncloud/client/pull/12224)
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 * Change - Make messages translatable that occur early in start-up: [#11142](https://github.com/owncloud/client/issues/11142)
 * Change - Remove unused command line option --language: [#11245](https://github.com/owncloud/client/issues/11245)
@@ -188,6 +189,13 @@ ownCloud admins and users.
    directories are now cleaned up before creating a new cache.
 
    https://github.com/owncloud/client/pull/12214
+
+* Bugfix - Delete account-specific caches when an account is removed: [#12224](https://github.com/owncloud/client/pull/12224)
+
+   This includes the cache for space images, as well as certain cached network
+   jobs.
+
+   https://github.com/owncloud/client/pull/12224
 
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 
