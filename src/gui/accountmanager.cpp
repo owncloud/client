@@ -428,7 +428,10 @@ void AccountManager::deleteAccount(AccountStatePtr account)
 
     account->account()->cleanupForRemoval();
 
-    account->deleteLater();
+    delete account;
+    // account->deleteLater();
+
+    Q_EMIT lastAccountRemoved();
 }
 
 AccountPtr AccountManager::createAccount(const QUuid &uuid)
