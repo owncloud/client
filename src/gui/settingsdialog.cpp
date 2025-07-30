@@ -168,8 +168,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
         if (AccountSettings *asw = _widgetForAccount.value(acc)) {
             _widgetForAccount.remove(acc);
             _ui->stack->removeWidget(asw);
-            delete asw;
-            // asw->deleteLater();
+            asw->deleteLater();
             //  go to the settings page if the last account was removed
             if (_widgetForAccount.isEmpty()) {
                 _ui->stack->setCurrentWidget(_generalSettings);
