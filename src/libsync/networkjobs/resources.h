@@ -23,7 +23,7 @@ public:
     QIcon asIcon() const;
 
 protected:
-    explicit ResourceJob(const ResourcesCache *cache, const QUrl &rootUrl, const QString &path, QObject *parent);
+    explicit ResourceJob(ResourcesCache *cache, const QUrl &rootUrl, const QString &path, QObject *parent);
 
 private:
     const ResourcesCache *_cache;
@@ -45,9 +45,12 @@ public:
      */
     explicit ResourcesCache(const QString &cacheDirectory, Account *account);
 
-    ResourceJob *makeGetJob(const QUrl &rootUrl, const QString &path, QObject *parent) const;
-
-    ResourceJob *makeGetJob(const QString &path, QObject *parent) const;
+    /**
+     * Create a simple get job, but store the result in the cache.
+     *
+     * Note: the caller is responsible for deleting the job.
+     */
+    ResourceJob *makeGetJob(const QUrl &url, QObject *parent);
 
     Account *account() const;
 
