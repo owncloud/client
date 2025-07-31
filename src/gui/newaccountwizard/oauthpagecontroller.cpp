@@ -68,10 +68,16 @@ void OAuthPageController::buildPage()
     instructionLabel->setAlignment(Qt::AlignCenter);
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    _urlField = new QLineEdit(_page);
+    /*  _urlField = new QLineEdit(_page);
+      _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+      _urlField->setEnabled(false);
+      _urlField->setAccessibleDescription(tr("Login URL"));
+  */
+    _urlField = new QLabel(_page);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setEnabled(false);
     _urlField->setAccessibleDescription(tr("Login URL"));
+
 
     _copyButton = new QPushButton(copyIcon(), QString(), _page);
     _copyButton->setFlat(true);
@@ -121,7 +127,8 @@ void OAuthPageController::buildPage()
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
 
     layout->addWidget(_errorField, Qt::AlignLeft);
-    layout->addWidget(_authEndpointField, Qt::AlignLeft);
+    // I think this can go but just removing it from view for now
+    // layout->addWidget(_authEndpointField, Qt::AlignLeft);
 
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
@@ -163,7 +170,7 @@ void OAuthPageController::setServerUrl(const QUrl &url)
 void OAuthPageController::setAuthenticationUrl(const QUrl &url)
 {
     _authUrl = url;
-    _urlField->setText(_authUrl.toDisplayString());
+    // _urlField->setText(_authUrl.toDisplayString());
 }
 
 void OAuthPageController::copyUrlClicked()
@@ -209,22 +216,30 @@ bool OAuthPageController::validate()
     _authEndpoint.clear();
     _authEndpointField->clear();
     _oauth = new OAuth(_authUrl, {}, _accessManager.get(), this);
+    // if we ever need to split out the auth link calculation, it's coming from fetchWellKnown which is a subset of
+    // the "full" authentication routine in the oauth impl
+    connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::authUrlReady);
     connect(_oauth, &OAuth::result, this, &OAuthPageController::handleOauthResult);
-    connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::showBrowser);
     _oauth->startAuthentication();
     return false;
 }
 
-void OAuthPageController::showBrowser()
+void OAuthPageController::authUrlReady()
 {
-    // possible todo: set the url field to match the "updated" auth link from oauth
     _authEndpoint = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
+    Q_ASSERT(!_authEndpoint.isEmpty());
+
+    QFontMetrics metrics(_urlField->font());
+    QString elidedText = metrics.elidedText(_authEndpoint, Qt::ElideRight, _urlField->width());
+    _urlField->setText(elidedText);
+
     _authEndpointField->setText(_authEndpoint);
     _oauth->openBrowser();
 }
 
 void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken)
 {
+    QString extraHelp = tr("Please copy the authentication URL using the button above, and provide this information to support.");
     switch (result) {
     case OAuth::Result::LoggedIn: {
         _results.token = token;
@@ -273,11 +288,11 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         if (!capabilitiesResult.success()) {
             // I don't think we want to display the core error message as it's stuff like json errors and not
             // useful to the user but we can change this after we have the discussion about error messages
-            handleError(tr("Unable to retrieve capabilities from server"));
+            handleError(tr("Unable to retrieve capabilities from server."));
             break;
         }
         if (!capabilitiesResult.capabilities.spacesSupport().enabled) {
-            handleError(tr("The server is not supported by this client"));
+            handleError(tr("The server is not supported by this client."));
             break;
         } else
             _results.capabilities = capabilitiesResult.capabilities;
@@ -287,20 +302,22 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         break;
     }
     case OAuth::Result::Error: {
-        handleError(tr("Error while trying to log in to OAuth2-enabled server."));
+        handleError(tr("Error while trying to log in to OAuth2-enabled server. %1").arg(extraHelp));
         break;
     }
+        // todo: this is returned when the oauth routine can't open the browser with that url - this error is misleading as there are multiple
+        // reasons this can fail! Needs further investigation
     case OAuth::Result::NotSupported: {
         // should never happen
-        handleError(tr("Server reports that OAuth2 is not supported."));
+        handleError(tr("Unable to open browser with provided URL. %1").arg(extraHelp));
         break;
     }
     case OAuth::Result::ErrorInsecureUrl: {
-        handleError(tr("OAuth2 authentication requires a secured connection."));
+        handleError(tr("OAuth2 authentication requires a secured connection. %1").arg(extraHelp));
         break;
     }
     case OAuth::Result::ErrorIdPUnreachable: {
-        handleError(tr("Authorization server unreachable."));
+        handleError(tr("Authorization server unreachable. %1").arg(extraHelp));
         break;
     }
     };

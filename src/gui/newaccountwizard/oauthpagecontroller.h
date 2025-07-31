@@ -118,7 +118,8 @@ private:
     OAuth *_oauth;
     bool _lookupWebfingerUrls = false;
 
-    QLineEdit *_urlField;
+    //  QLineEdit *_urlField;
+    QLabel *_urlField;
     QLabel *_authEndpointField;
     QLabel *_errorField;
     QPushButton *_copyButton;
@@ -132,7 +133,7 @@ private:
     /** displays the error in the page, sets the error value in the results and emits failure(results) */
     void handleError(const QString &error);
     void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
-    void showBrowser();
+    void authUrlReady();
 };
 }
 Q_DECLARE_METATYPE(OCC::OAuthPageResults)
