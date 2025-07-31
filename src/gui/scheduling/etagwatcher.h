@@ -34,10 +34,6 @@ public:
 private:
     void updateEtag(Folder *f, const QString &etag);
 
-    // oc10 relies on etag polling, with ocis we use the spaces endpoint
-    void startOC10EtagJob(Folder *f);
-
-
     FolderMan *_folderMan;
 
     struct ETagInfo
