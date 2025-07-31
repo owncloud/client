@@ -135,6 +135,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void accountAdded(AccountStatePtr account);
     void accountRemoved(AccountStatePtr account);
+    void lastAccountRemoved();
 
     // this signal is not formally connected anywhere, but it's used on the Q_PROPERTY declared for "accounts" above
     // the accountManager::accounts prop is used as a model in AccountsBar.qml so the accounts are reevaluated in that gui

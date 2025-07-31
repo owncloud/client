@@ -70,7 +70,7 @@ public:
     uint unsyncedSpaces() const;
     uint syncedSpaces() const;
 
-    auto model() { return _sortModel; }
+    QSortFilterProxyModel *model() { return _sortModel; }
 
 Q_SIGNALS:
     void showIssuesList();

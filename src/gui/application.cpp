@@ -16,18 +16,15 @@
 
 #include "application.h"
 
-#include <random>
 
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "common/version.h"
 #include "common/vfs.h"
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
 #include "settingsdialog.h"
-#include "sharedialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
 
@@ -94,7 +91,7 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     _gui = new ownCloudGui(this);
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &Application::slotAccountStateRemoved);
+    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &Application::lastAccountStateRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
         slotAccountStateAdded(ai);
     }
@@ -125,7 +122,7 @@ Application::~Application()
     FolderMan::instance()->unloadAndDeleteAllFolders();
 }
 
-void Application::slotAccountStateRemoved() const
+void Application::lastAccountStateRemoved() const
 {
     // auto run the wizard if there are no existing accounts
     if (_gui && AccountManager::instance()->accounts().isEmpty()) {
