@@ -171,7 +171,6 @@ void OAuthPageController::setServerUrl(const QUrl &url)
 void OAuthPageController::setAuthenticationUrl(const QUrl &url)
 {
     _authUrl = url;
-    // _urlField->setText(_authUrl.toDisplayString());
 }
 
 void OAuthPageController::copyUrlClicked()
@@ -233,8 +232,11 @@ void OAuthPageController::authUrlReady()
     QFontMetrics metrics(_urlField->font());
     QString elidedText = metrics.elidedText(_authEndpoint, Qt::ElideRight, _urlField->width());
     _urlField->setText(elidedText);
-
     _authEndpointField->setText(_authEndpoint);
+    // try to force an immediate repaint before the browser pops, so there is no chance that the oauth page appears "incomplete"
+    // for a moment
+    // note in my experience mac does not always honor repaint()s
+    _page->repaint();
     _oauth->openBrowser();
 }
 
