@@ -73,7 +73,6 @@ void OAuthPageController::buildPage()
     _urlField->setEnabled(false);
     _urlField->setAccessibleDescription(tr("Login URL"));
 
-    //    QIcon copyIcon = copyIcon();
     _copyButton = new QPushButton(copyIcon(), QString(), _page);
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
@@ -102,8 +101,7 @@ void OAuthPageController::buildPage()
         footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        // this is not the same logo as the header logo but we have no idea what this logo could be.
-        // this is the designer's suggestion so far
+
         footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
     }
 
@@ -172,7 +170,6 @@ void OAuthPageController::copyUrlClicked()
 {
     QClipboard *clipboard = QGuiApplication::clipboard();
     clipboard->setText(_authEndpoint);
-    // clipboard->setText(_urlField->text());
 }
 
 // I was going to implement an event filter for the tooltip but I think the positioning is risky given our previous issues with popup stuff
@@ -180,7 +177,7 @@ void OAuthPageController::copyUrlClicked()
 void OAuthPageController::clipboardChanged()
 {
     QClipboard *clipboard = QGuiApplication::clipboard();
-    if (clipboard->text() == _urlField->text())
+    if (clipboard->text() == _authEndpoint)
         _copyButton->setToolTip(tr("URL copied"));
     else
         _copyButton->setToolTip(tr("Copy URL"));

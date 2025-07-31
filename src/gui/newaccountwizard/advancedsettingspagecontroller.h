@@ -67,3 +67,7 @@ private:
     QLabel *_errorField;
 };
 }
+Q_DECLARE_METATYPE(OCC::AdvancedSettingsResult)
+// this type id is throwaway, we just use it to ensure we declare the meta type only ONCE
+// also this is only required to use the type cross thread, or with QSignalSpy during testing
+static const int advancedSettingsResultTypeId = qRegisterMetaType<OCC::AdvancedSettingsResult>();
