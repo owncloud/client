@@ -428,8 +428,11 @@ void AccountManager::deleteAccount(AccountStatePtr account)
 
     account->account()->cleanupForRemoval();
 
+    // it should be ok to hard delete the account state. if this starts causing trouble we should make sure the destructor
+    // does everything it should to ensure a clean exit.
+    // in this case we really don't want to put the cleanup in the hands of the event loop, as other activities can get in
+    // the way, eg the account wizard auto-run
     delete account;
-    // account->deleteLater();
 
     if (_accounts.isEmpty())
         Q_EMIT lastAccountRemoved();
