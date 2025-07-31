@@ -16,7 +16,6 @@
 
 #include "accountstate.h"
 #include "gui/folderman.h"
-#include "libsync/configfile.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "libsync/syncengine.h"
 
@@ -41,6 +40,11 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
         decltype(_lastEtagJob) intersection;
         for (auto *f : _folderMan->folders()) {
             if (f->accountState() && f->isReady()) {
+                Q_ASSERT(!f->definition().spaceId().isEmpty());
+                Q_ASSERT(f->accountState()->account()->spacesManager());
+                connect(f->accountState()->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, &ETagWatcher::slotSpaceChanged,
+                    Qt::UniqueConnection);
+
                 auto it = _lastEtagJob.find(f);
                 if (it != _lastEtagJob.cend()) {
                     intersection[f] = std::move(it->second);
@@ -59,27 +63,16 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
         }
         _lastEtagJob = std::move(intersection);
     });
+}
 
-    auto *pollTimer = new QTimer(this);
-    pollTimer->setInterval(pollTimeoutC);
-    // check wheter we need to query the etag for oc10 servers
-    connect(pollTimer, &QTimer::timeout, this, [this] {
-        for (auto &info : _lastEtagJob) {
-            if (!info.first->accountState()) {
-                continue;
-            }
-
-            // for spaces we use the etag provided by the SpaceManager
-            Q_ASSERT(info.first->accountState()->supportsSpaces());
-
-            // we could also connect to the spaceChanged signal but for now this will keep it closer to oc10
-            // ensure we already know about the space (startup)
-            if (auto *space = info.first->space()) {
-                updateEtag(info.first, space->drive().getRoot().getETag());
-            }
+void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
+{
+    for (Folder *f : _folderMan->folders()) {
+        if (f->definition().spaceId() == space->id()) {
+            QString etag = Utility::normalizeEtag(space->drive().getRoot().getETag());
+            updateEtag(f, etag);
         }
-    });
-    pollTimer->start();
+    }
 }
 
 void ETagWatcher::updateEtag(Folder *f, const QString &etag)

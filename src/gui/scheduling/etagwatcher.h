@@ -15,6 +15,7 @@
 #pragma once
 
 #include "common/chronoelapsedtimer.h"
+#include "libsync/graphapi/space.h"
 
 #include <QObject>
 
@@ -30,6 +31,9 @@ class ETagWatcher : public QObject
     Q_OBJECT
 public:
     ETagWatcher(FolderMan *folderMan, QObject *parent);
+
+public Q_SLOTS:
+    void slotSpaceChanged(GraphApi::Space *space);
 
 private:
     void updateEtag(Folder *f, const QString &etag);
