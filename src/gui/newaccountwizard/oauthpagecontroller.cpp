@@ -88,6 +88,7 @@ void OAuthPageController::buildPage()
     connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
     _authEndpointField = new QLabel(_page);
+    _authEndpointField->setVisible(false);
     _authEndpointField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _authEndpointField->setWordWrap(true);
     _authEndpointField->setAlignment(Qt::AlignLeft);
@@ -128,7 +129,7 @@ void OAuthPageController::buildPage()
 
     layout->addWidget(_errorField, Qt::AlignLeft);
     // I think this can go but just removing it from view for now
-    // layout->addWidget(_authEndpointField, Qt::AlignLeft);
+    layout->addWidget(_authEndpointField, Qt::AlignLeft);
 
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
