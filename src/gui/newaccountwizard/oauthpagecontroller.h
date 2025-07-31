@@ -118,9 +118,7 @@ private:
     OAuth *_oauth;
     bool _lookupWebfingerUrls = false;
 
-    //  QLineEdit *_urlField;
     QLabel *_urlField;
-    QLabel *_authEndpointField;
     QLabel *_errorField;
     QPushButton *_copyButton;
 

@@ -68,16 +68,10 @@ void OAuthPageController::buildPage()
     instructionLabel->setAlignment(Qt::AlignCenter);
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    /*  _urlField = new QLineEdit(_page);
-      _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-      _urlField->setEnabled(false);
-      _urlField->setAccessibleDescription(tr("Login URL"));
-  */
     _urlField = new QLabel(_page);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setEnabled(false);
     _urlField->setAccessibleDescription(tr("Login URL"));
-
 
     _copyButton = new QPushButton(copyIcon(), QString(), _page);
     _copyButton->setFlat(true);
@@ -86,12 +80,6 @@ void OAuthPageController::buildPage()
     _copyButton->setAccessibleDescription(tr("Copy the login URL to the clipboard"));
     _copyButton->installEventFilter(this);
     connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
-
-    _authEndpointField = new QLabel(_page);
-    _authEndpointField->setVisible(false);
-    _authEndpointField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _authEndpointField->setWordWrap(true);
-    _authEndpointField->setAlignment(Qt::AlignLeft);
 
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
@@ -128,13 +116,14 @@ void OAuthPageController::buildPage()
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
 
     layout->addWidget(_errorField, Qt::AlignLeft);
-    // I think this can go but just removing it from view for now
-    layout->addWidget(_authEndpointField, Qt::AlignLeft);
 
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
     _page->setLayout(layout);
+
+    // seed the copy button tooltip for the first go
+    clipboardChanged();
 }
 
 void OAuthPageController::handleError(const QString &error)
@@ -214,7 +203,8 @@ bool OAuthPageController::validate()
     _results = {};
     _errorField->clear();
     _authEndpoint.clear();
-    _authEndpointField->clear();
+    _urlField->clear();
+
     _oauth = new OAuth(_authUrl, {}, _accessManager.get(), this);
     // if we ever need to split out the auth link calculation, it's coming from fetchWellKnown which is a subset of
     // the "full" authentication routine in the oauth impl
@@ -232,7 +222,6 @@ void OAuthPageController::authUrlReady()
     QFontMetrics metrics(_urlField->font());
     QString elidedText = metrics.elidedText(_authEndpoint, Qt::ElideRight, _urlField->width());
     _urlField->setText(elidedText);
-    _authEndpointField->setText(_authEndpoint);
     // try to force an immediate repaint before the browser pops, so there is no chance that the oauth page appears "incomplete"
     // for a moment
     // note in my experience mac does not always honor repaint()s
