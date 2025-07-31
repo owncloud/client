@@ -122,9 +122,9 @@ void OAuthPageController::buildPage()
     urlAreaLayout->addWidget(_copyButton);
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
 
+    layout->addWidget(_errorField, Qt::AlignLeft);
     layout->addWidget(_authEndpointField, Qt::AlignLeft);
 
-    layout->addWidget(_errorField, Qt::AlignLeft);
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
