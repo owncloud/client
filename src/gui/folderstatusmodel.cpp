@@ -236,6 +236,9 @@ void FolderStatusModel::setAccountState(const AccountStatePtr &accountState)
 
 QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
 {
+    if (_accountState == nullptr)
+        return QVariant();
+
     if (!index.isValid())
         return QVariant();
 
@@ -445,6 +448,9 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
 
 void FolderStatusModel::resetFolders()
 {
+    if (_accountState == nullptr)
+        return;
+    // what does this even do? see the impl
     setAccountState(_accountState);
 }
 

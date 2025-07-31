@@ -84,7 +84,7 @@ class OWNCLOUDGUI_EXPORT ConnectionValidator : public QObject
 {
     Q_OBJECT
 public:
-    explicit ConnectionValidator(AccountPtr account, QObject *parent = nullptr);
+    explicit ConnectionValidator(AccountPtr account, QObject *parent);
     ~ConnectionValidator() override;
 
     enum class ValidationMode {

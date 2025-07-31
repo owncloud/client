@@ -312,7 +312,7 @@ void AccountState::checkConnectivity(bool blockJobs)
 
     // =======  here we setup a new ConnectionValidator
 
-    _connectionValidator = new ConnectionValidator(_account);
+    _connectionValidator = new ConnectionValidator(_account, this);
     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
     connect(_connectionValidator, &ConnectionValidator::sslErrors, this,
         [blockJobs, this](const QList<QSslError> &errors) { handleSslConnectionErrors(errors, blockJobs); });

@@ -800,7 +800,8 @@ void ownCloudGui::runAccountWizard()
             connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &ownCloudGui::handleAccountSetupError);
             builder->buildAccount();
         }
-    }
+    } else
+        qDebug() << "wizard rejected";
 }
 
 void ownCloudGui::handleAccountSetupError(const QString &error)

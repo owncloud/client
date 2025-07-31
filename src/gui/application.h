@@ -70,7 +70,7 @@ protected Q_SLOTS:
     void slotUseMonoIconsChanged(bool);
     void slotCleanup();
     void slotAccountStateAdded(AccountStatePtr accountState) const;
-    void slotAccountStateRemoved() const;
+    void lastAccountStateRemoved() const;
 
 private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
