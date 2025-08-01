@@ -24,49 +24,14 @@ using namespace std::chrono_literals;
 
 using namespace OCC;
 
-namespace {
-constexpr auto pollTimeoutC = 30s;
-}
-
 Q_LOGGING_CATEGORY(lcEtagWatcher, "gui.scheduler.etagwatcher", QtInfoMsg)
 
 ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
     : QObject(parent)
     , _folderMan(folderMan)
 {
-    // Refactoring todo: where/when are info's for removed folders cleaned up? or adds? really only on full folder list changed?
-    // this can/should be incrementally managed instead of constantly moving entries around like this
-    connect(folderMan, &FolderMan::folderListChanged, this, [this] {
-        decltype(_lastEtagJobForSpace) intersection;
-        for (auto *f : _folderMan->folders()) {
-            if (f->accountState() && f->isReady()) {
-                Q_ASSERT(f->accountState()->account()->spacesManager());
-                connect(f->accountState()->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, &ETagWatcher::slotSpaceChanged,
-                    Qt::UniqueConnection);
-
-                QString spaceId = f->definition().spaceId();
-                Q_ASSERT(!spaceId.isEmpty());
-
-                auto it = _lastEtagJobForSpace.find(spaceId);
-                if (it != _lastEtagJobForSpace.cend()) {
-                    intersection[spaceId] = std::move(it->second);
-                } else {
-                    intersection[spaceId] = {};
-                    intersection[spaceId].folder = f;
-                    connect(&f->syncEngine(), &SyncEngine::rootEtag, this, [f, this](const QString &etag, const QDateTime &time) {
-                        QString spaceId = f->definition().spaceId();
-                        auto &info = _lastEtagJobForSpace[spaceId];
-                        info.etag = etag;
-                        info.lastUpdate.reset();
-                        if (f->accountState()) {
-                            f->accountState()->tagLastSuccessfulETagRequest(time);
-                        }
-                    });
-                }
-            }
-        }
-        _lastEtagJobForSpace = std::move(intersection);
-    });
+    // Refactoring todo: use folderAdded/folderAboutToBeRemoved signals when implemented on the FolderMan
+    connect(folderMan, &FolderMan::folderListChanged, this, &ETagWatcher::slotFolderListChanged);
 }
 
 void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
@@ -77,6 +42,39 @@ void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
         QString etag = Utility::normalizeEtag(space->drive().getRoot().getETag());
         updateEtag(spaceId, etag);
     }
+}
+
+void ETagWatcher::slotFolderListChanged()
+{
+    decltype(_lastEtagJobForSpace) newMap;
+
+    for (auto *f : _folderMan->folders()) {
+        if (f->accountState() && f->isReady()) {
+            connect(f->accountState()->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, &ETagWatcher::slotSpaceChanged,
+                Qt::UniqueConnection);
+
+            QString spaceId = f->definition().spaceId();
+
+            auto it = _lastEtagJobForSpace.find(spaceId);
+            if (it != _lastEtagJobForSpace.cend()) {
+                newMap[spaceId] = std::move(it->second);
+            } else {
+                newMap[spaceId] = {};
+                newMap[spaceId].folder = f;
+                connect(&f->syncEngine(), &SyncEngine::rootEtag, this, [f, this](const QString &etag, const QDateTime &time) {
+                    QString spaceId = f->definition().spaceId();
+                    auto &info = _lastEtagJobForSpace[spaceId];
+                    info.etag = etag;
+                    info.lastUpdate.reset();
+                    if (f->accountState()) {
+                        f->accountState()->tagLastSuccessfulETagRequest(time);
+                    }
+                });
+            }
+        }
+    }
+
+    _lastEtagJobForSpace = std::move(newMap);
 }
 
 void ETagWatcher::updateEtag(const QString &spaceId, const QString &etag)

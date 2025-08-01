@@ -34,6 +34,7 @@ public:
 
 public Q_SLOTS:
     void slotSpaceChanged(GraphApi::Space *space);
+    void slotFolderListChanged();
 
 private:
     void updateEtag(const QString &spaceId, const QString &etag);
