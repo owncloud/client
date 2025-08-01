@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include "common/chronoelapsedtimer.h"
 #include "libsync/graphapi/space.h"
 
 #include <QObject>
@@ -45,8 +44,6 @@ private:
     {
         QString etag;
         Folder *folder;
-        // only used with oc10 in order to decide whether we need to query the etag
-        Utility::ChronoElapsedTimer lastUpdate;
     };
 
     std::unordered_map<QString, ETagInfo> _lastEtagJobForSpace;

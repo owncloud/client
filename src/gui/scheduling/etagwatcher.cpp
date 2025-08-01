@@ -65,7 +65,6 @@ void ETagWatcher::slotFolderListChanged()
                     QString spaceId = f->definition().spaceId();
                     auto &info = _lastEtagJobForSpace[spaceId];
                     info.etag = etag;
-                    info.lastUpdate.reset();
                     if (f->accountState()) {
                         f->accountState()->tagLastSuccessfulETagRequest(time);
                     }
@@ -93,7 +92,6 @@ void ETagWatcher::updateEtag(const QString &spaceId, const QString &etag)
                 _folderMan->scheduler()->enqueueFolder(info.folder);
             }
         }
-        info.lastUpdate.reset();
     } else {
         qCWarning(lcEtagWatcher) << "Invalid empty etag received for space" << spaceId;
     }
