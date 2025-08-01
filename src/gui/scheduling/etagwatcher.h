@@ -15,6 +15,7 @@
 #pragma once
 
 #include "common/chronoelapsedtimer.h"
+#include "libsync/graphapi/space.h"
 
 #include <QObject>
 
@@ -31,23 +32,24 @@ class ETagWatcher : public QObject
 public:
     ETagWatcher(FolderMan *folderMan, QObject *parent);
 
+public Q_SLOTS:
+    void slotSpaceChanged(GraphApi::Space *space);
+    void slotFolderListChanged();
+
 private:
-    void updateEtag(Folder *f, const QString &etag);
-
-    // oc10 relies on etag polling, with ocis we use the spaces endpoint
-    void startOC10EtagJob(Folder *f);
-
+    void updateEtag(const QString &spaceId, const QString &etag);
 
     FolderMan *_folderMan;
 
     struct ETagInfo
     {
         QString etag;
+        Folder *folder;
         // only used with oc10 in order to decide whether we need to query the etag
         Utility::ChronoElapsedTimer lastUpdate;
     };
 
-    std::unordered_map<Folder *, ETagInfo> _lastEtagJob;
+    std::unordered_map<QString, ETagInfo> _lastEtagJobForSpace;
 };
 
 }
