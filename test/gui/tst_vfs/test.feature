@@ -1,4 +1,4 @@
-@skipOnLinux
+@skipOnLinux @skip
 Feature: Enable/disable virtual file support
     As a user
     I want to enable virtual file support

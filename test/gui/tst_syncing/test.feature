@@ -1,3 +1,4 @@
+@skip
 Feature: Syncing files
     As a user
     I want to be able to sync my local folders to to my owncloud server

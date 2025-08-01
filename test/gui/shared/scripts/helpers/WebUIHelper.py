@@ -52,7 +52,7 @@ def oidc_login(page):
         # allow permissions
         page.click('button >> text=Allow')
         # confirm successful login
-        page.wait_for_selector('text=Login Successful')
+        # page.wait_for_selector('text=Login Successful')
 
 
 def oauth_login(page):

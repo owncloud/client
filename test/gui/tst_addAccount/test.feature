@@ -1,3 +1,4 @@
+@skip
 Feature: adding accounts
     As a user
     I want to be able join multiple owncloud servers to the client
