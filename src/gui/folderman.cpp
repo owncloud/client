@@ -686,6 +686,8 @@ void FolderMan::removeFolderSync(Folder *f)
 
     qCInfo(lcFolderMan) << "Removing " << f->path();
 
+    Q_EMIT folderAboutToBeRemoved(f);
+
     const bool currentlyRunning = f->isSyncRunning();
     if (currentlyRunning) {
         // abort the sync now
@@ -702,7 +704,6 @@ void FolderMan::removeFolderSync(Folder *f)
 
     disconnectFolder(f);
 
-    Q_EMIT folderRemoved(f);
     Q_EMIT folderListChanged();
 
     f->deleteLater();

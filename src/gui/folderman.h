@@ -330,7 +330,7 @@ Q_SIGNALS:
      * Emitted whenever the list of configured folders changes.
      */
     void folderListChanged();
-    void folderRemoved(Folder *folder);
+    void folderAboutToBeRemoved(Folder *folder);
     // Refactoring todo: we need folderAdded too. The folder model should use that for normal folder updates instead of folderListChanged
     // which causes full rebuild of the model -> crazy inefficient. Ideally folderListChanged should only be emitted for large operations (eg after loading
     // folders from config or from new account)

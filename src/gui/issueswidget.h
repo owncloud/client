@@ -51,6 +51,7 @@ public:
 public Q_SLOTS:
     void slotProgressInfo(Folder *folder, const ProgressInfo &progress);
     void slotItemCompleted(Folder *folder, const SyncFileItemPtr &item);
+    void slotFolderAboutToBeRemoved(Folder *folder);
     void filterDidChange();
 
 Q_SIGNALS:
