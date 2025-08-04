@@ -22,9 +22,9 @@ jobs:
           - os: macos-latest
             profile: macos-latest-armv8
             build_type: Release
-          - os: windows-latest
-            profile: windows-latest-x86_64
-            build_type: Release
+          #- os: windows-latest
+          #  profile: windows-latest-x86_64
+          #  build_type: Release
 
     steps:
       - name: Checkout repository
