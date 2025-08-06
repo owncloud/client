@@ -1,5 +1,5 @@
 #include(ECMQmlModule)
-include(Qt6QmlPublicCMakeHelpers)
+#include(Qt6QmlPublicCMakeHelpers)
 
 
 add_library(owncloudResources SHARED
