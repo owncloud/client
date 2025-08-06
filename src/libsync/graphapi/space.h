@@ -16,11 +16,13 @@
 
 #include "owncloudlib.h"
 
-#include <OAIDrive.h>
+#include "libsync/accountfwd.h"
+
+#include "OpenAPI/LibreGraphAPI/OAIDrive.h"
 
 #include <QIcon>
 #include <QList>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/QtQmlIntegration>
 
 namespace OCC {
 namespace GraphApi {

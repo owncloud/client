@@ -16,7 +16,7 @@
 #include "networkjobs/jsonjob.h"
 
 #include "owncloudlib.h"
-#include <OAIDrive.h>
+#include "OpenAPI/LibreGraphAPI/OAIDrive.h"
 
 namespace OCC {
 namespace GraphApi {
