@@ -23,12 +23,20 @@ set(APPLE_SUPPRESS_X11_WARNING ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(QT 6.7 NAMES Qt6 COMPONENTS Core REQUIRED)
+find_package(QT 6.8 NAMES Qt6 COMPONENTS Core REQUIRED)
 
-find_package(Qt6 COMPONENTS Core Concurrent Network Widgets Xml Quick QuickWidgets QuickControls2 REQUIRED)
+find_package(Qt6 COMPONENTS Core Concurrent Network Widgets Xml Quick Qml QuickWidgets QuickControls2 REQUIRED)
 find_package(Qt6 CONFIG REQUIRED COMPONENTS LinguistTools)
+
 get_target_property (QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
 message(STATUS "Using Qt ${QT_VERSION} (${QT_QMAKE_EXECUTABLE})")
+
+qt6_standard_project_setup()
+
+set(QT_KNOWN_POLICY_QTP0004 TRUE)
+set(QT_KNOWN_POLICY_QTP0005 TRUE)
+
+qt6_policy(GET QTP0005 OLD)
 
 if (UNIX AND NOT APPLE)
     find_package(Qt6 REQUIRED COMPONENTS DBus)
