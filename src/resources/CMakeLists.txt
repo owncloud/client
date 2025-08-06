@@ -1,3 +1,7 @@
+#include(ECMQmlModule)
+include(Qt6QmlPublicCMakeHelpers)
+
+
 add_library(owncloudResources SHARED
     client.qrc
     core_theme.qrc
@@ -13,7 +17,7 @@ generate_theme(owncloudResources OWNCLOUD_SIDEBAR_ICONS)
 # make them available to the whole project
 set(OWNCLOUD_SIDEBAR_ICONS ${OWNCLOUD_SIDEBAR_ICONS} CACHE INTERNAL "Sidebar icons" FORCE)
 
-target_link_libraries(owncloudResources PUBLIC Qt::Core Qt::Gui Qt::Quick)
+target_link_libraries(owncloudResources PUBLIC Qt6::Core Qt6::Gui Qt6::Quick)
 apply_common_target_settings(owncloudResources)
 target_include_directories(owncloudResources PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>)
 target_compile_definitions(owncloudResources PRIVATE APPLICATION_SHORTNAME="${APPLICATION_SHORTNAME}")
@@ -46,6 +50,8 @@ ecm_add_qml_module(owncloudResources
         VERSION 1.0
         NAMESPACE OCC
 )
+
+ecm_target_qml_sources(owncloudResources SOURCES qmlresources.cpp)
 
 ecm_finalize_qml_module(owncloudResources DESTINATION ${KDE_INSTALL_QMLDIR})
 
