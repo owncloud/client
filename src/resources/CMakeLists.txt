@@ -1,7 +1,3 @@
-#include(ECMQmlModule)
-#include(Qt6QmlPublicCMakeHelpers)
-
-
 add_library(owncloudResources SHARED
     client.qrc
     core_theme.qrc
