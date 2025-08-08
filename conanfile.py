@@ -15,6 +15,7 @@ class ClientRecipe(ConanFile):
         'qt/*:qtsvg': True,
         'qt/*:qtimageformats': True,
         'qt/*:qttools': True,
+        'qt/*:qttranslations': True,
         'qt/*:gui': True,
         'qt/*:widgets': True,
         'qt/*:with_dbus': True,
