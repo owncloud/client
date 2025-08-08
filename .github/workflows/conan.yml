@@ -42,19 +42,10 @@ jobs:
           conan remote list
           conan profile show
 
-      - name: Create build directory
-        run: mkdir build
-
-      - name: Install dependencies with conan
+      - name: Build the client with conan
         run: |
-          conan install . --profile=.conan/profiles/${{ matrix.profile }}.conanprofile -s build_type=${{ matrix.build_type }}
-
-      - name: Build the client
-        working-directory: ./build
-        run: |
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          cmake --build .
+          conan build . --profile=.conan/profiles/${{ matrix.profile }}.conanprofile -s build_type=${{ matrix.build_type }}
 
       - name: Run tests
-        working-directory: ./build
+        working-directory: ./build/${{ matrix.build_type }}
         run: ctest --output-on-failure
