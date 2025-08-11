@@ -160,8 +160,8 @@ elseif( WIN32 )
             folderwatcher_win.cpp)
 elseif(UNIX AND NOT APPLE)
     ## handle DBUS for Fdo notifications
-    if (TARGET Qt::DBus)
-        target_link_libraries(owncloudGui PUBLIC Qt::DBus)
+    if (TARGET Qt6::DBus)
+        target_link_libraries(owncloudGui PUBLIC Qt6::DBus)
         target_compile_definitions(owncloudGui PUBLIC "USE_FDO_NOTIFICATIONS")
     endif()
     target_sources(owncloudGui PRIVATE
