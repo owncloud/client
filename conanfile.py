@@ -18,8 +18,13 @@ class ClientRecipe(ConanFile):
         'qt/*:qttranslations': True,
         'qt/*:gui': True,
         'qt/*:widgets': True,
-        'qt/*:with_dbus': True,
     }
+
+    def configure(self):
+        self.options['qt/*'].with_pq = False
+        self.options['qt/*'].with_odbc = False
+        if self.settings.os == "Linux":
+            self.options['qt/*'].with_dbus = True
 
     def requirements(self):
         self.requires("extra-cmake-modules/6.8.0")
