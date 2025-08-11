@@ -33,11 +33,6 @@ message(STATUS "Using Qt ${QT_VERSION} (${QT_QMAKE_EXECUTABLE})")
 
 qt6_standard_project_setup()
 
-set(QT_KNOWN_POLICY_QTP0004 TRUE)
-set(QT_KNOWN_POLICY_QTP0005 TRUE)
-
-qt6_policy(GET QTP0005 OLD)
-
 if (UNIX AND NOT APPLE)
     find_package(Qt6 REQUIRED COMPONENTS DBus)
 endif()
