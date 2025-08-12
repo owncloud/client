@@ -21,10 +21,13 @@ class ClientRecipe(ConanFile):
     }
 
     def configure(self):
+        self.options['qt/*'].with_pq = False
+        self.options['qt/*'].with_odbc = False
         if self.settings.os == "Linux":
             self.options['qt/*'].with_dbus = True
 
     def requirements(self):
+        self.requires("extra-cmake-modules/6.8.0")
         self.requires("zlib/1.3.1")
         self.requires("sqlite3/3.49.1")
         self.requires("openssl/3.4.2")
@@ -38,7 +41,6 @@ class ClientRecipe(ConanFile):
 
     def build_requirements(self):
         self.tool_requires("cmake/3.30.0")
-        self.requires("extra-cmake-modules/6.8.0")
 
     def layout(self):
         cmake_layout(self)
