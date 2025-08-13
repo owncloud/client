@@ -52,6 +52,7 @@ jobs:
         #working-directory: ./build/${{ matrix.build_type }}
         run: |
           ls -la
+          ls -la build
           cd build/${{ matrix.build_type }}
           ls -la
           ctest --output-on-failure
