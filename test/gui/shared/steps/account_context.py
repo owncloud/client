@@ -211,7 +211,7 @@ def step(context, server):
 @When('the user selects manual sync folder option in advanced section')
 def step(context):
     AccountConnectionWizard.select_manual_sync_folder_option()
-    AccountConnectionWizard.next_step()
+    AccountConnectionWizard.finish()
 
 
 @Then('credentials wizard should be visible')
@@ -226,13 +226,13 @@ def step(context):
 @When('the user selects vfs option in advanced section')
 def step(context):
     AccountConnectionWizard.select_vfs_option()
-    AccountConnectionWizard.next_step()
+    AccountConnectionWizard.finish()
 
 
 @When('the user selects download everything option in advanced section')
 def step(context):
     AccountConnectionWizard.select_download_everything_option()
-    AccountConnectionWizard.next_step()
+    AccountConnectionWizard.finish()
 
 
 @When('the user opens the advanced configuration')
