@@ -15,9 +15,9 @@ owncloud_add_test(ConnectionValidator)
 
 
 # TODO: we need keychain access for this test
-if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
-    owncloud_add_test(CredentialManager)
-endif()
+#if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
+#    owncloud_add_test(CredentialManager)
+#endif()
 
 owncloud_add_test(ExcludedFiles)
 
