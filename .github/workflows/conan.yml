@@ -49,10 +49,6 @@ jobs:
       - name: Run tests
         shell: bash
         if: runner.os != 'Linux'
-        #working-directory: ./build/${{ matrix.build_type }}
+        working-directory: ./build
         run: |
-          ls -la
-          ls -la build
-          cd build/${{ matrix.build_type }}
-          ls -la
           ctest --output-on-failure
