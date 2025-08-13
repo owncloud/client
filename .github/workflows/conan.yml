@@ -47,6 +47,11 @@ jobs:
           conan build . --profile=.conan/profiles/${{ matrix.profile }}.conanprofile -s build_type=${{ matrix.build_type }}
 
       - name: Run tests
+        shell: bash
         if: runner.os != 'Linux'
-        working-directory: ./build/${{ matrix.build_type }}
-        run: ctest --output-on-failure
+        #working-directory: ./build/${{ matrix.build_type }}
+        run: |
+          ls -la
+          cd build/${{ matrix.build_type }}
+          ls -la
+          ctest --output-on-failure
