@@ -25,6 +25,11 @@ function(owncloud_add_test test_class)
         set_property(TEST ${OWNCLOUD_TEST_CLASS}Test PROPERTY ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     endif()
 
+    if(WIN32)
+        set(dll_paths $<TARGET_RUNTIME_DLL_DIRS:${OWNCLOUD_TEST_CLASS}Test>)
+        set_property(TEST ${OWNCLOUD_TEST_CLASS}Test PROPERTY ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<JOIN:${dll_paths},\\\;>")
+    endif()
+
     foreach(arg IN LISTS ARGN)
         target_sources(${OWNCLOUD_TEST_CLASS}Test PRIVATE ${arg})
     endforeach()
