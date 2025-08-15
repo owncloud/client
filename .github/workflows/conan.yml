@@ -51,4 +51,4 @@ jobs:
         if: runner.os != 'Linux'
         working-directory: ./build
         run: |
-          ctest --output-on-failure
+          ctest --output-on-failure -C ${{ matrix.build_type }}
