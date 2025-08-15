@@ -18,10 +18,10 @@
 
 #include "libsync/accountfwd.h"
 
-#include <OAIDrive.h>
+#include "OpenAPI/LibreGraphAPI/OAIDrive.h"
 
 #include <QIcon>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/QtQmlIntegration>
 
 namespace OCC {
 namespace GraphApi {
