@@ -169,3 +169,23 @@ endif()
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
+# cpack and install below - worth to be moved to a separate file
+
+set(CONAN_DEPLOY_DIR "${CMAKE_SOURCE_DIR}/full_deploy")
+file(GLOB_RECURSE DEPLOYED_SHARED_LIBS
+        "${CONAN_DEPLOY_DIR}/*.dll"
+        "${CONAN_DEPLOY_DIR}/*.so"
+        "${CONAN_DEPLOY_DIR}/*.so.*"
+        "${CONAN_DEPLOY_DIR}/*.dylib"
+)
+
+if(DEPLOYED_SHARED_LIBS)
+    message(STATUS "Installing shared libs from full_deploy: ${DEPLOYED_SHARED_LIBS}")
+    install(FILES ${DEPLOYED_SHARED_LIBS} DESTINATION lib)
+endif()
+
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_NAME "ownCloud")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_GENERATOR "ZIP") # or DEB, RPM, NSIS, etc.
+include(CPack)
