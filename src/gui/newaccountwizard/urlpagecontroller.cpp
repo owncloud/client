@@ -74,6 +74,7 @@ void UrlPageController::buildPage()
     _urlField = new QLineEdit(_page);
     QPalette urlFieldPalette = _urlField->palette();
     urlFieldPalette.setColor(QPalette::Base, urlFieldPalette.color(QPalette::Button));
+    urlFieldPalette.setColor(QPalette::Text, urlFieldPalette.color(QPalette::ButtonText));
     _urlField->setPalette(urlFieldPalette);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
@@ -94,7 +95,7 @@ void UrlPageController::buildPage()
     QLabel *footerLogoLabel = nullptr;
     if (!Theme::instance()->wizardFooterLogo().isNull()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 54));
+        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
