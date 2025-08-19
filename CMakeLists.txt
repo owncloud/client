@@ -172,20 +172,45 @@ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 # cpack and install below - worth to be moved to a separate file
 
 set(CONAN_DEPLOY_DIR "${CMAKE_SOURCE_DIR}/full_deploy")
-file(GLOB_RECURSE DEPLOYED_SHARED_LIBS
-        "${CONAN_DEPLOY_DIR}/*.dll"
-        "${CONAN_DEPLOY_DIR}/*.so"
-        "${CONAN_DEPLOY_DIR}/*.so.*"
-        "${CONAN_DEPLOY_DIR}/*.dylib"
-)
+set(QT_DEPLOY_DIR "${CMAKE_SOURCE_DIR}/full_deploy/full_deploy/host/qt/6.8.3/Release/x86_64")
+
+# Collect shared libraries from each dependency's lib folder only if present
+set(DEPLOYED_SHARED_LIBS "")
+set(DEPENDENCY_LIB_DIRS "")
+file(GLOB_RECURSE ALL_PATHS LIST_DIRECTORIES true "${CONAN_DEPLOY_DIR}/*")
+foreach(path ${ALL_PATHS})
+    if(IS_DIRECTORY ${path} AND path MATCHES ".*/lib$")
+        list(APPEND DEPENDENCY_LIB_DIRS ${path})
+    endif()
+endforeach()
+
+foreach(DEP_LIB_DIR ${DEPENDENCY_LIB_DIRS})
+    file(GLOB SHARED_LIBS
+        "${DEP_LIB_DIR}/*.dll"
+        "${DEP_LIB_DIR}/*.so"
+        "${DEP_LIB_DIR}/*.dylib"
+        "${DEP_LIB_DIR}/*.so.[0-9]*"
+        "${DEP_LIB_DIR}/*.so.[0-9]*.[0-9]*"
+        "${DEP_LIB_DIR}/*.so.[0-9]*.[0-9]*.[0-9]*"
+    )
+    if(SHARED_LIBS)
+        list(APPEND DEPLOYED_SHARED_LIBS ${SHARED_LIBS})
+    endif()
+endforeach()
 
 if(DEPLOYED_SHARED_LIBS)
     message(STATUS "Installing shared libs from full_deploy: ${DEPLOYED_SHARED_LIBS}")
     install(FILES ${DEPLOYED_SHARED_LIBS} DESTINATION lib)
+    install(DIRECTORY "${QT_DEPLOY_DIR}/plugins"
+            "${QT_DEPLOY_DIR}/qml"
+            "${QT_DEPLOY_DIR}/translations"
+            DESTINATION .)
 endif()
 
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_NAME "ownCloud")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-set(CPACK_GENERATOR "ZIP") # or DEB, RPM, NSIS, etc.
+set(CPACK_GENERATOR "ZIP;PRODUCTBUILD;MSI")
+set(CPACK_SOURCE_IGNORE_FILES ".*/include(/|$)")
+
 include(CPack)

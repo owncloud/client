@@ -174,7 +174,7 @@ if(WITH_AUTO_UPDATER)
     target_compile_definitions(owncloudGui PUBLIC $<BUILD_INTERFACE:WITH_AUTO_UPDATER>)
 endif()
 
-add_executable(owncloud main.cpp)
+add_executable(owncloud MACOSX_BUNDLE main.cpp)
 
 set_target_properties(owncloud PROPERTIES
     OUTPUT_NAME "${APPLICATION_EXECUTABLE}"
@@ -214,7 +214,12 @@ else()
   set_target_properties(owncloud PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist)
 endif()
 
-install(TARGETS owncloud owncloudGui ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS owncloud
+        BUNDLE DESTINATION .
+        RUNTIME DESTINATION bin
+)
+
+install(TARGETS owncloudGui ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 ecm_finalize_qml_module(owncloudGui DESTINATION ${KDE_INSTALL_QMLDIR})
 
 if(UNIX AND NOT APPLE)
