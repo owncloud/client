@@ -142,44 +142,51 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     });
 
     setCurrentPage(SettingsPage::Settings);
-    auto addAccount = [this](AccountStatePtr accountStatePtr) {
-        if (!accountStatePtr)
-            return;
-        auto accountSettings = new AccountSettings(accountStatePtr, this);
-        _ui->stack->addWidget(accountSettings);
-        _widgetForAccount.insert(accountStatePtr->account().data(), accountSettings);
-        // select the first added account
-        if (_widgetForAccount.size() == 1) {
-            setCurrentAccount(accountStatePtr->account().data());
-        }
-    };
-    for (const auto &accountState : AccountManager::instance()->accounts()) {
-        addAccount(accountState);
+
+    // load any existing accounts from the manager.
+    const auto accounts = AccountManager::instance()->accounts();
+    for (const auto &accountState : accounts) {
+        onAccountAdded(accountState);
     }
-    // Refactoring todo: make these real functions. Naive abuse of lambdas obfuscates the responsibilities of the class as important
-    // functionality is hidden in the impl instead of being clearly visible in the interface. This is very bad practice and we
-    // need to start correcting that to support maintainability.
-    connect(AccountManager::instance(), &AccountManager::accountAdded, this, addAccount);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr accountStatePtr) {
-        if (!accountStatePtr)
-            return;
-        // todo: #37. using the account after we know it's been removed is not ok.
-        Account *acc = accountStatePtr->account().data();
-        if (AccountSettings *asw = _widgetForAccount.value(acc)) {
-            _widgetForAccount.remove(acc);
-            _ui->stack->removeWidget(asw);
-            asw->deleteLater();
-            //  go to the settings page if the last account was removed
-            if (_widgetForAccount.isEmpty()) {
-                _ui->stack->setCurrentWidget(_generalSettings);
-            }
-        }
-    });
+    if (!_widgetForAccount.isEmpty()) {
+        setCurrentAccount(accounts.first()->account().get());
+    }
+
+    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &SettingsDialog::onAccountAdded);
+
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &SettingsDialog::onAccountRemoved);
 }
 
 SettingsDialog::~SettingsDialog()
 {
     delete _ui;
+}
+
+void SettingsDialog::onAccountAdded(AccountStatePtr state)
+{
+    if (!state)
+        return;
+    auto accountSettings = new AccountSettings(state, this);
+    _ui->stack->addWidget(accountSettings);
+    _widgetForAccount.insert(state->account().data(), accountSettings);
+    setCurrentAccount(state->account().get());
+}
+
+void SettingsDialog::onAccountRemoved(AccountStatePtr state)
+{
+    if (!state)
+        return;
+    // todo: #37. using the account after we know it's been removed is not ok.
+    Account *acc = state->account().data();
+    if (AccountSettings *asw = _widgetForAccount.value(acc)) {
+        _widgetForAccount.remove(acc);
+        _ui->stack->removeWidget(asw);
+        asw->deleteLater();
+        //  go to the settings page if the last account was removed
+        if (_widgetForAccount.isEmpty()) {
+            _ui->stack->setCurrentWidget(_generalSettings);
+        }
+    }
 }
 
 void SettingsDialog::addModalWidget(QWidget *w)
@@ -279,7 +286,7 @@ Account *SettingsDialog::currentAccount() const
     return _currentAccount;
 }
 
-void SettingsDialog::addAccount()
+void SettingsDialog::createNewAccount()
 {
     ocApp()->gui()->runAccountWizard();
 }
