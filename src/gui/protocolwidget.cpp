@@ -68,11 +68,7 @@ ProtocolWidget::ProtocolWidget(QWidget *parent)
         showFilterMenu(_ui->_filterButton, _sortModel, static_cast<int>(ProtocolItemModel::ProtocolItemRole::Account), tr("Account"));
     });
 
-    connect(FolderMan::instance(), &FolderMan::folderRemoved, this, [this](Folder *f) {
-        _model->remove_if([f](const ProtocolItem &item) {
-            return item.folder() == f;
-        });
-    });
+    connect(FolderMan::instance(), &FolderMan::folderAboutToBeRemoved, this, &ProtocolWidget::slotFolderAboutToBeRemoved);
 }
 
 ProtocolWidget::~ProtocolWidget()
@@ -211,6 +207,12 @@ void ProtocolWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &it
 void ProtocolWidget::filterDidChange()
 {
     _ui->_filterButton->setText(CommonStrings::filterButtonText(_sortModel->filterRegularExpression().pattern().isEmpty() ? 0 : 1));
+}
+
+void ProtocolWidget::slotFolderAboutToBeRemoved(Folder *folder)
+{
+    // Remove all items whose folder matches the folder that's going to be removed
+    _model->remove_if([folder](const ProtocolItem &item) { return item.folder() == folder; });
 }
 
 } // OCC namespace
