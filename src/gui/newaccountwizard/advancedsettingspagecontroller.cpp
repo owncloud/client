@@ -72,20 +72,20 @@ void AdvancedSettingsPageController::buildPage()
     layout->addWidget(syncOptionsLabel, Qt::AlignLeft);
 
     QRadioButton *vfsButton = new QRadioButton(tr("Only sync and dowload files as you use them to save hard drive space"), _page);
-
     vfsButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
     layout->addWidget(vfsButton, Qt::AlignLeft);
 
-    QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download specific folders"), _page);
-    selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download all current folders and files"), _page);
     syncAllButton->setFocusPolicy(Qt::StrongFocus);
-
-    _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
     _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
     layout->addWidget(syncAllButton, Qt::AlignLeft);
+
+    QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download specific folders"), _page);
+    selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
     layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
+
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
     // if the branding does not specify a background color for the wizard we should just let the normal system colors
@@ -121,6 +121,10 @@ void AdvancedSettingsPageController::buildPage()
 
     _rootDirEdit = new QLineEdit(_page);
     _rootDirEdit->setText(_defaultSyncRoot);
+    QPalette dirPalette = _rootDirEdit->palette();
+    dirPalette.setColor(QPalette::Base, dirPalette.color(QPalette::Button));
+    dirPalette.setColor(QPalette::Text, dirPalette.color(QPalette::ButtonText));
+    _rootDirEdit->setPalette(dirPalette);
     _rootDirEdit->setFocusPolicy(Qt::StrongFocus);
     // just clear the error if the user starts typing in the text edit
     connect(_rootDirEdit, &QLineEdit::textEdited, this, [this] {
