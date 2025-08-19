@@ -13,7 +13,6 @@ Feature: adding accounts
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
-        When the user opens the advanced configuration
         Then the download everything option should be selected by default for Linux
         And the VFS option should be selected by default for Windows
         And the user should be able to choose the local download directory

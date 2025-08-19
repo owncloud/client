@@ -99,7 +99,7 @@ config = {
                 "version": "latest",
                 # comma separated list of tags to be used for filtering. E.g. "@tag1,@tag2"
                 "tags": "~@skipOnOCIS",
-                "skip": True,
+                "skip": False,
             },
         },
     },
