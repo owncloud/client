@@ -51,4 +51,4 @@ class ClientRecipe(ConanFile):
         cmake.configure()
         cmake.build()
         if can_run(self):
-            cmake.ctest()
+            cmake.ctest(["--output-on-failure"])

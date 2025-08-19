@@ -47,5 +47,3 @@ jobs:
       - name: Build the client with conan and run tests
         run: |
           conan build . --profile=.conan/profiles/${{ matrix.profile }}.conanprofile -s build_type=${{ matrix.build_type }}
-          cat build/${{ matrix.profile }}/Testing/LastTest.log
-          
