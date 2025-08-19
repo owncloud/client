@@ -71,7 +71,7 @@ void AdvancedSettingsPageController::buildPage()
     layout->addSpacing(8);
     layout->addWidget(syncOptionsLabel, Qt::AlignLeft);
 
-    QRadioButton *vfsButton = new QRadioButton(tr("Only sync and dowload files as you use them to save hard drive space"), _page);
+    QRadioButton *vfsButton = new QRadioButton(tr("Only sync and download files as you use them to save hard drive space"), _page);
     vfsButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
     layout->addWidget(vfsButton, Qt::AlignLeft);
