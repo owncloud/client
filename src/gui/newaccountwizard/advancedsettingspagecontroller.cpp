@@ -71,30 +71,15 @@ void AdvancedSettingsPageController::buildPage()
     layout->addSpacing(8);
     layout->addWidget(syncOptionsLabel, Qt::AlignLeft);
 
-    //    QPalette radioPalette = radioPalette.setColor(QPalette::Text, _page->palette().color(QPalette::Text));
-
     QRadioButton *vfsButton = new QRadioButton(tr("Only sync and dowload files as you use them to save hard drive space"), _page);
-    QPalette radioPalette = vfsButton->palette();
-    QColor textColor = _page->palette().color(QPalette::Text);
-    // radioPalette.setColor(QPalette::ButtonText, textColor);
-    // radioPalette.setColor(QPalette::Text, textColor);
-    // radioPalette.setColor(QPalette::Button, textColor);
-    // this is bad - it makes the whole radio one color
-    // radioPalette.setColor(QPalette::Base, textColor);
-    // wow. That doesn't make much sense to me but ok - this is the only one that works to change the text color and the circle colors of the radio button on
-    // windows
-    radioPalette.setColor(QPalette::WindowText, textColor);
-    radioPalette.setColor(QPalette::Window, textColor);
-    vfsButton->setPalette(radioPalette);
+
     vfsButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
     layout->addWidget(vfsButton, Qt::AlignLeft);
 
     QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download specific folders"), _page);
-    selectiveSyncButton->setPalette(radioPalette);
     selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download all current folders and files"), _page);
-    syncAllButton->setPalette(radioPalette);
     syncAllButton->setFocusPolicy(Qt::StrongFocus);
 
     _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
@@ -103,6 +88,24 @@ void AdvancedSettingsPageController::buildPage()
     layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
+    // if the branding does not specify a background color for the wizard we should just let the normal system colors
+    // rule. If not:
+    if (Theme::instance()->wizardHeaderBackgroundColor().isValid()) {
+        QPalette radioPalette = vfsButton->palette();
+        QColor textColor = _page->palette().color(QPalette::Text);
+        QColor disabledColor(textColor);
+        // eh - I don't know if this will really work in all possible cases but I think it is the simplest way for now
+        disabledColor.setAlpha(128);
+        // unexpected, but these are the only ones that work to change the text color and the circle colors of the radio button
+        // on windows - need to test other platforms for sure
+        radioPalette.setColor(QPalette::WindowText, textColor);
+        radioPalette.setColor(QPalette::Window, textColor);
+        radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
+        radioPalette.setColor(QPalette::Disabled, QPalette::Window, disabledColor);
+        vfsButton->setPalette(radioPalette);
+        syncAllButton->setPalette(radioPalette);
+        selectiveSyncButton->setPalette(radioPalette);
+    }
     if (!_vfsIsAvailable) {
         vfsButton->setEnabled(false);
         vfsButton->setToolTip(tr("Only available on Windows"));
