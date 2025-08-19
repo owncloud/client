@@ -32,6 +32,8 @@ jobs:
 
       - name: Install Conan
         uses: conan-io/setup-conan@v1
+        with:
+          version: '2.19'
 
       - name: Add artifactory & set conan config
         run: |
@@ -48,7 +50,9 @@ jobs:
 
       - name: Run tests
         shell: bash
-        if: runner.os != 'Linux'
-        working-directory: ./build
         run: |
+          cd build
+          if [ -d ${{ matrix.build_type }} ]; then
+            cd ${{ matrix.build_type }}
+          fi
           ctest --output-on-failure -C ${{ matrix.build_type }}
