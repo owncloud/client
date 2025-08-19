@@ -79,15 +79,6 @@ set_target_properties(
         "0"
 )
 
-INSTALL(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/ocsynclib.h
-        ../common/filesystembase.h
-        ../common/utility.h
-    DESTINATION
-        ${KDE_INSTALL_INCLUDEDIR}/${APPLICATION_SHORTNAME}/common
-)
-
 INSTALL(TARGETS csync EXPORT ${APPLICATION_SHORTNAME}Config ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 configure_file(config_csync.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config_csync.h)

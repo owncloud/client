@@ -66,15 +66,6 @@ endif()
 
 set(libsync_SRCS ${libsync_SRCS})
 
-# These headers are installed for libowncloudsync to be used by 3rd party apps
-INSTALL(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/owncloudlib.h
-        logger.h
-        accessmanager.h
-    DESTINATION ${KDE_INSTALL_INCLUDEDIR}/${APPLICATION_SHORTNAME}/libsync
-)
-
 add_library(libsync SHARED ${libsync_SRCS}
     creds/credentialssupport.h)
 set_target_properties(libsync PROPERTIES EXPORT_NAME SyncCore)
