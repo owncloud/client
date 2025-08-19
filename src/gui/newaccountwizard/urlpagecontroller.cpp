@@ -72,6 +72,10 @@ void UrlPageController::buildPage()
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     _urlField = new QLineEdit(_page);
+    QPalette urlFieldPalette = _urlField->palette();
+    urlFieldPalette.setColor(QPalette::Base, urlFieldPalette.color(QPalette::Button));
+    urlFieldPalette.setColor(QPalette::Text, urlFieldPalette.color(QPalette::ButtonText));
+    _urlField->setPalette(urlFieldPalette);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
     _urlField->setFocusPolicy(Qt::StrongFocus);
@@ -80,6 +84,9 @@ void UrlPageController::buildPage()
     QPalette errorPalette = _errorField->palette();
     errorPalette.setColor(QPalette::Text, Qt::red);
     _errorField->setPalette(errorPalette);
+    QFont errorFont = _errorField->font();
+    errorFont.setPixelSize(14);
+    _errorField->setFont(errorFont);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
