@@ -44,15 +44,8 @@ jobs:
           conan remote list
           conan profile show
 
-      - name: Build the client with conan
+      - name: Build the client with conan and run tests
         run: |
           conan build . --profile=.conan/profiles/${{ matrix.profile }}.conanprofile -s build_type=${{ matrix.build_type }}
-
-      - name: Run tests
-        shell: bash
-        run: |
-          cd build
-          if [ -d ${{ matrix.build_type }} ]; then
-            cd ${{ matrix.build_type }}
-          fi
-          ctest --output-on-failure -C ${{ matrix.build_type }}
+          cat build/${{ matrix.profile }}/Testing/LastTest.log
+          
