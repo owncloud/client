@@ -1,11 +1,9 @@
-import test
 import names
 import squish
 
 from pageObjects.EnterPassword import EnterPassword
 
 from helpers.WebUIHelper import authorize_via_webui
-from helpers.ConfigHelper import get_config
 from helpers.SetupClientHelper import (
     create_user_sync_path,
     get_temp_resource_path,
@@ -154,53 +152,26 @@ class AccountConnectionWizard:
         )
         AccountConnectionWizard.sign_in()
 
-        if not get_config("ocis"):
-            try:
-                squish.clickButton(
-                    squish.waitForObject(
-                        AccountConnectionWizard.CONFIRM_INSECURE_CONNECTION_BUTTON, 1000
-                    )
-                )
-            except:
-                test.log("No insecure connection warning for server " + server_url)
-
     @staticmethod
     def accept_certificate():
         squish.clickButton(squish.waitForObject(EnterPassword.ACCEPT_CERTIFICATE_YES))
 
     @staticmethod
-    def add_user_credentials(username, password, oauth=False):
-        if get_config("ocis"):
-            AccountConnectionWizard.oidc_login(username, password)
-        elif oauth:
-            AccountConnectionWizard.oauth_login(username, password)
-        else:
-            AccountConnectionWizard.basic_login(username, password)
-
-    @staticmethod
-    def basic_login(username, password):
-        squish.mouseClick(squish.waitForObject(AccountConnectionWizard.USERNAME_BOX))
-        squish.nativeType(username)
-        squish.mouseClick(squish.waitForObject(AccountConnectionWizard.PASSWORD_BOX))
-        squish.nativeType(password)
-        AccountConnectionWizard.next_step()
+    def add_user_credentials(username, password):
+        AccountConnectionWizard.oidc_login(username, password)
 
     @staticmethod
     def oidc_login(username, password):
-        AccountConnectionWizard.browser_login(username, password, "oidc")
+        AccountConnectionWizard.browser_login(username, password)
 
     @staticmethod
-    def oauth_login(username, password):
-        AccountConnectionWizard.browser_login(username, password, "oauth")
-
-    @staticmethod
-    def browser_login(username, password, login_type=None):
+    def browser_login(username, password):
         # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
         squish.mouseClick(
             squish.waitForObject(AccountConnectionWizard.COPY_URL_TO_CLIPBOARD_BUTTON)
         )
-        authorize_via_webui(username, password, login_type)
+        authorize_via_webui(username, password)
 
     @staticmethod
     def next_step():
@@ -264,13 +235,11 @@ class AccountConnectionWizard:
     def add_account_information(account_details):
         if account_details["server"]:
             AccountConnectionWizard.add_server(account_details["server"])
-            if get_config("ocis"):
-                AccountConnectionWizard.accept_certificate()
+            AccountConnectionWizard.accept_certificate()
         if account_details["user"]:
             AccountConnectionWizard.add_user_credentials(
                 account_details["user"],
                 account_details["password"],
-                account_details["oauth"],
             )
         sync_path = ""
         if account_details["sync_folder"]:
@@ -324,10 +293,7 @@ class AccountConnectionWizard:
     def is_credential_window_visible():
         visible = False
         try:
-            if get_config("ocis"):
-                squish.waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
-            else:
-                squish.waitForObject(AccountConnectionWizard.BASIC_CREDENTIAL_PAGE)
+            squish.waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
             visible = True
         except:
             pass

@@ -4,7 +4,6 @@ import squish
 
 from helpers.SetupClientHelper import (
     get_current_user_sync_path,
-    set_current_user_sync_path,
 )
 from helpers.ConfigHelper import get_config
 
@@ -129,20 +128,6 @@ class SyncConnectionWizard:
     }
 
     @staticmethod
-    def set_sync_path_oc10(sync_path=""):
-        squish.waitForObject(SyncConnectionWizard.ADD_FOLDER_SYNC_CONNECTION_WIZARD)
-        squish.waitForObject(SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER).setText("")
-        if sync_path:
-            squish.type(SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER, sync_path)
-            set_current_user_sync_path(sync_path)
-        else:
-            squish.type(
-                SyncConnectionWizard.CHOOSE_LOCAL_SYNC_FOLDER,
-                get_current_user_sync_path(),
-            )
-        SyncConnectionWizard.next_step()
-
-    @staticmethod
     def set_sync_path_ocis(sync_path):
         if not sync_path:
             sync_path = path.join(
@@ -160,10 +145,7 @@ class SyncConnectionWizard:
 
     @staticmethod
     def set_sync_path(sync_path=""):
-        if get_config("ocis"):
-            SyncConnectionWizard.set_sync_path_ocis(sync_path)
-        else:
-            SyncConnectionWizard.set_sync_path_oc10(sync_path)
+        SyncConnectionWizard.set_sync_path_ocis(sync_path)
 
     @staticmethod
     def next_step():
