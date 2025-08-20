@@ -32,6 +32,12 @@ public:
 
     bool contains(const QString &key) const;
 
+    /**
+     * @brief isEmpty tests the manager to see if it has any keys
+     * @return true if the manager has no keys
+     */
+    bool isEmpty();
+
 protected:
     QString scopedKey(const QString &key) const;
     QString scope() const;
@@ -39,20 +45,20 @@ protected:
 
 private:
     QSettings &credentialsList() const;
-
-    // TestCredentialManager
     QStringList knownKeys(const QString &group = {}) const;
 
     const Account *const _account = nullptr;
     mutable std::unique_ptr<QSettings> _credentialsList;
-
-    friend class TestCredentialManager;
 };
 
 class OWNCLOUDSYNC_EXPORT CredentialJob : public QObject
 {
     Q_OBJECT
+
 public:
+    CredentialJob(CredentialManager *parent, const QString &scopedKey);
+    void start();
+
     QKeychain::Error error() const;
     // this is questionable. variants are implicitly shared so I don't see any value returning a ref
     const QVariant &data() const;
@@ -62,9 +68,6 @@ Q_SIGNALS:
     void finished();
 
 private:
-    // I cannot understand why these are private. review this with cohort
-    CredentialJob(CredentialManager *parent, const QString &scopedKey);
-    void start();
 
     QString _scopedKey;
     QVariant _data;
@@ -74,7 +77,10 @@ private:
     // mac and linux only!
     bool _retryOnKeyChainError = true;
 
-    friend class CredentialManager;
+    // this is "required" to allow the test to get the actual underlying job which is passed to setFallbackEnabled, which is only implemented
+    // in TestCredentialManager. I do not believe tests should ever implement extra functionality that does not exist in the actual runtime,
+    // they should only rely on REAL functionality.
+    // this absolutely breaks that rule and has to be fixed.
     friend class TestCredentialManager;
 };
 

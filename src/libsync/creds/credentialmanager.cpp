@@ -138,6 +138,10 @@ bool CredentialManager::contains(const QString &key) const
 {
     return credentialsList().contains(key);
 }
+bool CredentialManager::isEmpty()
+{
+    return knownKeys().isEmpty();
+}
 
 QStringList CredentialManager::knownKeys(const QString &group) const
 {

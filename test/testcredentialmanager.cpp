@@ -78,7 +78,7 @@ private Q_SLOTS:
                 }
                 connect(jobs[0], &QKeychain::Job::finished, this, [creds, data, jobs, this] {
                     QCOMPARE(jobs[0]->error(), QKeychain::NoError);
-                    QVERIFY(creds->knownKeys().isEmpty());
+                    QVERIFY(creds->isEmpty());
                     _finished = true;
                 });
             });
