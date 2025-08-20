@@ -61,7 +61,7 @@ public:
     enum class ModalWidgetSizePolicy { Minimum = QSizePolicy::Minimum, Expanding = QSizePolicy::Expanding };
     Q_ENUM(ModalWidgetSizePolicy)
 
-    explicit AccountSettings(const AccountStatePtr &accountState, QWidget *parent = nullptr);
+    explicit AccountSettings(AccountState *accountState, QWidget *parent = nullptr);
     ~AccountSettings() override;
 
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
@@ -113,7 +113,7 @@ private:
     FolderStatusModel *_model;
     QSortFilterProxyModel *_sortModel;
     bool _wasDisabledBefore;
-    AccountStatePtr _accountState;
+    QPointer<AccountState> _accountState;
     // are we already in the destructor
     bool _goingDown = false;
     uint _syncedSpaces = 0;

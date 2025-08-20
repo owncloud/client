@@ -79,8 +79,8 @@ Q_SIGNALS:
     void currentAccountChanged();
 
 protected Q_SLOTS:
-    void onAccountAdded(AccountStatePtr state);
-    void onAccountRemoved(AccountStatePtr state);
+    void onAccountAdded(AccountState *state);
+    void onAccountRemoved(AccountState *state);
 
 protected:
     void setVisible(bool visible) override;

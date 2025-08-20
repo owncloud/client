@@ -184,7 +184,7 @@ FolderStatusModel::FolderStatusModel(QObject *parent)
 
 FolderStatusModel::~FolderStatusModel() { }
 
-void FolderStatusModel::setAccountState(const AccountStatePtr &accountState)
+void FolderStatusModel::setAccountState(AccountState *accountState)
 {
     // Refactoring todo: what is the logic here? I especially don't understand why we are expecting current _accountState to
     // be nullptr (via assert) when this is called.

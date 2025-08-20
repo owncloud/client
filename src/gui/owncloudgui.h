@@ -74,7 +74,7 @@ public:
     void runNewestAccountWizard();
 
 Q_SIGNALS:
-    void requestSetUpSyncFoldersForAccount(AccountStatePtr account, bool useVfs);
+    void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
 
 public Q_SLOTS:
     void setupContextMenu();
@@ -113,9 +113,9 @@ public Q_SLOTS:
     void handleAccountSetupError(const QString &error);
 
 private:
-    void setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accounts, bool pause);
+    void setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause);
     void setupActions();
-    void addAccountContextMenu(AccountStatePtr accountState, QMenu *menu);
+    void addAccountContextMenu(AccountState *accountState, QMenu *menu);
 
     Systray *_tray;
     SettingsDialog *_settingsDialog;

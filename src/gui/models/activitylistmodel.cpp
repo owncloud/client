@@ -34,9 +34,9 @@ Q_LOGGING_CATEGORY(lcActivity, "gui.activity", QtInfoMsg)
 ActivityListModel::ActivityListModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](const AccountStatePtr &accountStatePtr) {
-        _activityLists.remove(accountStatePtr.get());
-        if (auto *job = _currentlyFetching.take(accountStatePtr.get())) {
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountState *accountState) {
+        _activityLists.remove(accountState);
+        if (auto *job = _currentlyFetching.take(accountState)) {
             job->abort();
         }
     });
@@ -50,7 +50,7 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
     }
 
     const auto &a = _finalList.at(index.row());
-    const AccountStatePtr accountState = AccountManager::instance()->accountState(a.accountUuid());
+    AccountState *accountState = AccountManager::instance()->accountState(a.accountUuid());
     if (!accountState) {
         return {};
     }
@@ -169,7 +169,7 @@ bool ActivityListModel::canFetchMore(const QModelIndex &) const
         return true;
 
     for (auto i = _activityLists.begin(); i != _activityLists.end(); ++i) {
-        AccountStatePtr accountState = i.key();
+        AccountState *accountState = i.key();
         if (accountState && accountState->isConnected()) {
             ActivityList activities = i.value();
             if (activities.count() == 0 && !_currentlyFetching.contains(accountState)) {
@@ -181,7 +181,7 @@ bool ActivityListModel::canFetchMore(const QModelIndex &) const
     return false;
 }
 
-void ActivityListModel::startFetchJob(AccountStatePtr ast)
+void ActivityListModel::startFetchJob(AccountState *ast)
 {
     if (!ast || !ast->isConnected()) {
         return;
@@ -245,7 +245,7 @@ void ActivityListModel::setActivityList(const ActivityList &&resultList)
 
 void ActivityListModel::fetchMore(const QModelIndex &)
 {
-    for (const AccountStatePtr &asp : AccountManager::instance()->accounts()) {
+    for (AccountState *asp : AccountManager::instance()->accounts()) {
         if (!_activityLists.contains(asp) && asp->isConnected()) {
             _activityLists[asp] = ActivityList();
             startFetchJob(asp);
@@ -253,7 +253,7 @@ void ActivityListModel::fetchMore(const QModelIndex &)
     }
 }
 
-void ActivityListModel::slotRefreshActivity(const AccountStatePtr &ast)
+void ActivityListModel::slotRefreshActivity(AccountState *ast)
 {
     if (ast && _activityLists.contains(ast)) {
         _activityLists.remove(ast);
@@ -261,7 +261,7 @@ void ActivityListModel::slotRefreshActivity(const AccountStatePtr &ast)
     startFetchJob(ast);
 }
 
-void ActivityListModel::slotRemoveAccount(AccountStatePtr ast)
+void ActivityListModel::slotRemoveAccount(AccountState *ast)
 {
     if (_activityLists.contains(ast)) {
         const auto accountToRemove = ast->account()->uuid();

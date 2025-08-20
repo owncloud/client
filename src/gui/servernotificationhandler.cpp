@@ -30,7 +30,7 @@ ServerNotificationHandler::ServerNotificationHandler(QObject *parent)
 {
 }
 
-void ServerNotificationHandler::slotFetchNotifications(AccountStatePtr ptr)
+void ServerNotificationHandler::slotFetchNotifications(AccountState *ptr)
 {
     // check connectivity and credentials
     if (!(ptr && ptr->isConnected() && ptr->account() && ptr->account()->credentials() && ptr->account()->credentials()->ready())) {
@@ -61,7 +61,7 @@ void ServerNotificationHandler::slotFetchNotifications(AccountStatePtr ptr)
     job->start();
 }
 
-void ServerNotificationHandler::slotNotificationsReceived(JsonApiJob *job, const AccountStatePtr &accountState)
+void ServerNotificationHandler::slotNotificationsReceived(JsonApiJob *job, AccountState *accountState)
 {
     if (job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
         qCWarning(lcServerNotification) << "Notifications failed with status code " << job->ocsStatus();

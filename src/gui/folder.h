@@ -189,13 +189,13 @@ public:
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, const AccountStatePtr &accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent = nullptr);
 
     ~Folder() override;
     /**
      * The account the folder is configured on.
      */
-    AccountStatePtr accountState() const { return _accountState; }
+    AccountState *accountState() const { return _accountState; }
 
     const FolderDefinition &definition() const { return _definition; }
 
@@ -503,7 +503,7 @@ private:
 
     void changeVfsMode(Vfs::Mode newMode);
 
-    AccountStatePtr _accountState;
+    QPointer<AccountState> _accountState;
     FolderDefinition _definition;
     QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
 
