@@ -189,6 +189,11 @@ void HttpCredentials::fetchFromKeychainHelper()
     auto job = _account->credentialManager()->get(isUsingOAuth() ? refreshTokenKeyC() : passwordKeyC());
     if (!job) {
         qCWarning(lcHttpCredentials) << "get credentials job is null - most likely the key does not exist in the credentials manager";
+        // doing this temp copy paste since handle error is not particularly reusable. I will fix this in the new class
+        _fetchErrorString = QString();
+        _password.clear();
+        _ready = false;
+        Q_EMIT fetched();
         return;
     }
     connect(job, &CredentialJob::finished, this, [job, this] {
