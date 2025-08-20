@@ -45,8 +45,6 @@ private:
 
     const Account *const _account = nullptr;
     mutable std::unique_ptr<QSettings> _credentialsList;
-    // mac and linux only!
-    bool _retryOnKeyChainError = true;
 
     friend class TestCredentialManager;
 };
@@ -73,6 +71,8 @@ private:
     QKeychain::Error _error = QKeychain::NoError;
     QString _errorString;
     QKeychain::ReadPasswordJob *_job;
+    // mac and linux only!
+    bool _retryOnKeyChainError = true;
 
     friend class CredentialManager;
     friend class TestCredentialManager;
