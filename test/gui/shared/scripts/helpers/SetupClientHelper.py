@@ -71,9 +71,8 @@ def get_resource_path(resource='', user='', space=''):
     sync_path = get_config('currentUserSyncPath')
     if user:
         sync_path = user
-    if get_config('ocis'):
-        space = space or get_config('syncConnectionName')
-        sync_path = join(sync_path, space)
+    space = space or get_config('syncConnectionName')
+    sync_path = join(sync_path, space)
     sync_path = join(get_config('clientRootSyncPath'), sync_path)
     resource = resource.replace(sync_path, '').strip('/').strip('\\')
     if is_windows():

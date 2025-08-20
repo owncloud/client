@@ -1,6 +1,5 @@
-import re
 import squish
-from playwright.sync_api import sync_playwright, expect
+from playwright.sync_api import sync_playwright
 
 from helpers.ConfigHelper import get_config
 
@@ -16,7 +15,7 @@ def get_clipboard_text():
         return squish.getClipboardText()
 
 
-def authorize_via_webui(username, password, login_type='oidc'):
+def authorize_via_webui(username, password):
     global envs
     envs = {
         'OC_USERNAME': username.strip('"'),
@@ -29,10 +28,7 @@ def authorize_via_webui(username, password, login_type='oidc'):
         context = browser.new_context(ignore_https_errors=True)
         page = context.new_page()
         page.goto(envs['OC_AUTH_URL'])
-        if login_type == 'oidc':
-            oidc_login(page)
-        else:
-            oauth_login(page)
+        oidc_login(page)
         context.close()
         browser.close()
 
@@ -53,16 +49,3 @@ def oidc_login(page):
         page.click('button >> text=Allow')
         # confirm successful login
         page.wait_for_selector('text=Login Successful')
-
-
-def oauth_login(page):
-    # login
-    page.fill('#user', envs['OC_USERNAME'])
-    page.fill('#password', envs['OC_PASSWORD'])
-    page.click('button[type=submit]')
-    # authorize
-    page.click('button >> text=Authorize')
-    # confirm successful login
-    expect(page.locator('span.error')).to_have_text(
-        re.compile('The application was authorized successfully')
-    )

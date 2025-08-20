@@ -23,7 +23,7 @@ from types import SimpleNamespace
 from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
 from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
 from helpers.SpaceHelper import delete_project_spaces
-from helpers.api.provisioning import delete_created_groups, delete_created_users
+from helpers.api.provisioning import delete_created_users
 from helpers.SetupClientHelper import wait_until_app_killed
 from helpers.ConfigHelper import (
     init_config,
@@ -35,7 +35,6 @@ from helpers.ConfigHelper import (
 )
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from helpers.ReportHelper import save_video_recording, take_screenshot, is_video_enabled
-import helpers.api.oc10 as oc
 from helpers.UserHelper import init_predefined_users
 from helpers.api.external_api import (
     delete_all_resources,
@@ -189,11 +188,7 @@ def hook(context):
     if get_config("client_name") != "ownCloud":
         delete_all_resources()
         permanently_delete_all_resources()
-    if get_config("ocis"):
-        delete_project_spaces()
-    else:
-        oc.restore_apps_state()
-    delete_created_groups()
+    delete_project_spaces()
     delete_created_users()
 
 

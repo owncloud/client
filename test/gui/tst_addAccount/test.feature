@@ -13,7 +13,6 @@ Feature: adding accounts
             | server   | %local_server% |
             | user     | Alice          |
             | password | 1234           |
-        When the user opens the advanced configuration
         Then the download everything option should be selected by default for Linux
         And the VFS option should be selected by default for Windows
         And the user should be able to choose the local download directory
@@ -40,16 +39,6 @@ Feature: adding accounts
         And the account with displayname "Alice Hansen" and host "%local_server_hostname%" should be displayed
         And the account with displayname "Brian Murphy" and host "%local_server_hostname%" should be displayed
 
-    @skipOnOCIS
-    Scenario: Adding account with wrong credentials
-        Given the user has started the client
-        And the user has entered the following account information:
-            | server   | %local_server% |
-        When the user adds the following user credentials:
-            | user     | Alice |
-            | password | 12345 |
-        Then the error "Invalid credentials" should be displayed in the account connection wizard
-
 
     Scenario: Adding account with self signed certificate for the first time
         Given the user has started the client
@@ -67,7 +56,7 @@ Feature: adding accounts
         When the user selects download everything option in advanced section
         Then the "Enable virtual file support" button should be available
 
-    @skipOnOC10 @predefined_users
+    @predefined_users
     Scenario: Add space manually from sync connection window
         Given user "Alice" has created folder "simple-folder" in the server
         And the user has started the client
@@ -79,23 +68,8 @@ Feature: adding accounts
         And the user syncs the "Personal" space
         Then the folder "simple-folder" should exist on the file system
 
-    @skipOnOCIS
-    Scenario: Check for suffix when sync path exists (OC10)
-        Given the user has created folder "ownCloud" in the default home path
-        And the user has started the client
-        And the user has entered the following account information:
-            | server | %local_server% |
-        When the user adds the following user credentials:
-            | user     | Alice |
-            | password | 1234  |
-        And the user opens the advanced configuration
-        Then the default local sync path should contain "%home%/ownCloud (2)" in the configuration wizard
-        When the user selects download everything option in advanced section
-        And the user opens the sync connection wizard
-        Then the default local sync path should contain "%home%/ownCloud (2) (2)" in the sync connection wizard
 
-    @skipOnOC10
-    Scenario: Check for suffix when sync path exists (oCIS)
+    Scenario: Check for suffix when sync path exists
         Given the user has created folder "ownCloud" in the default home path
         And the user has started the client
         And the user has entered the following account information:
