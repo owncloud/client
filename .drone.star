@@ -22,7 +22,7 @@ OC_UBUNTU = "owncloud/ubuntu:20.04"
 # Todo: update or remove the following images
 # https://github.com/owncloud/client/issues/10070
 OC_CI_CLIENT_FEDORA = "owncloudci/client:fedora-41-amd64"
-OC_CI_SQUISH = "owncloudci/squish:fedora-39-8.0.0-qt67x-linux64"
+OC_CI_SQUISH = "owncloudci/squish:fedora-39-9.1.0-qt68x-linux64"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3:1.4.0"
