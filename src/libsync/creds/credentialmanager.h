@@ -17,7 +17,7 @@ class OWNCLOUDSYNC_EXPORT CredentialManager : public QObject
 {
     Q_OBJECT
 public:
-    // global credentials
+    // generic credentials - this is currently needed by the proxy network settings
     CredentialManager(QObject *parent);
     // account related credentials
     explicit CredentialManager(Account *acc);
@@ -31,7 +31,11 @@ public:
     QVector<QPointer<QKeychain::Job>> clear(const QString &group = {});
 
     bool contains(const QString &key) const;
-    const Account *account() const;
+
+protected:
+    QString scopedKey(const QString &key) const;
+    QString scope() const;
+    QString accountKey() const;
 
 private:
     QSettings &credentialsList() const;
@@ -49,29 +53,24 @@ class OWNCLOUDSYNC_EXPORT CredentialJob : public QObject
 {
     Q_OBJECT
 public:
-    QString key() const;
-
     QKeychain::Error error() const;
-
+    // this is questionable. variants are implicitly shared so I don't see any value returning a ref
     const QVariant &data() const;
-
     QString errorString() const;
 
 Q_SIGNALS:
     void finished();
 
 private:
-    CredentialJob(CredentialManager *parent, const QString &key);
+    // I cannot understand why these are private. review this with cohort
+    CredentialJob(CredentialManager *parent, const QString &scopedKey);
     void start();
 
-    QString _key;
+    QString _scopedKey;
     QVariant _data;
     QKeychain::Error _error = QKeychain::NoError;
     QString _errorString;
-    bool _retryOnKeyChainError = true;
     QKeychain::ReadPasswordJob *_job;
-
-    CredentialManager *const _parent;
 
     friend class CredentialManager;
     friend class TestCredentialManager;

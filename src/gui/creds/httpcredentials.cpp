@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-#include "creds/httpcredentials.h"
+#include "httpcredentials.h"
 
 #include "accessmanager.h"
 #include "account.h"
@@ -187,6 +187,10 @@ void HttpCredentials::fetchFromKeychainHelper()
         return;
     }
     auto job = _account->credentialManager()->get(isUsingOAuth() ? refreshTokenKeyC() : passwordKeyC());
+    if (!job) {
+        qCWarning(lcHttpCredentials) << "get credentials job is null - most likely the key does not exist in the credentials manager";
+        return;
+    }
     connect(job, &CredentialJob::finished, this, [job, this] {
         auto handleError = [job, this] {
             qCWarning(lcHttpCredentials) << "Could not retrieve client password from keychain" << job->errorString();

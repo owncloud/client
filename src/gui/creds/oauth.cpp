@@ -12,7 +12,7 @@
  * for more details.
  */
 
-#include "creds/oauth.h"
+#include "oauth.h"
 
 #include "accessmanager.h"
 #include "account.h"
