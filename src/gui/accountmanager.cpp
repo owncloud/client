@@ -280,12 +280,7 @@ QStringList AccountManager::accountNames() const
 
 QList<AccountState *> AccountManager::accountsRaw() const
 {
-    QList<AccountState *> out;
-    out.reserve(_accounts.size());
-    for (auto &x : _accounts) {
-        out.append(x);
-    }
-    return out;
+    return _accounts.values();
 }
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
@@ -391,9 +386,20 @@ AccountPtr AccountManager::createAccount(const QUuid &uuid)
 void AccountManager::shutdown()
 {
     const auto accounts = std::move(_accounts);
-    for (const auto &acc : accounts) {
+    for (AccountState *acc : accounts) {
         Q_EMIT accountRemoved(acc);
+        delete acc;
     }
+}
+
+const QList<AccountStatePtr> AccountManager::accounts() const
+{
+    QList<AccountStatePtr> ptrs;
+    ptrs.reserve(_accounts.size());
+    for (AccountState *acc : _accounts) {
+        ptrs.append(acc);
+    }
+    return ptrs;
 }
 
 bool AccountManager::isAccountIdAvailable(const QString &id) const
