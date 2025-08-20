@@ -78,7 +78,7 @@ public:
     /**
      * Return a list of all accounts.
      */
-    const QList<AccountStatePtr> accounts() const { return _accounts.values(); }
+    const QList<AccountStatePtr> accounts() const;
 
     /**
      * Return the account state pointer for an account identified by its display name
@@ -144,7 +144,7 @@ Q_SIGNALS:
 
 private:
     AccountManager() {}
-    QMap<QUuid, AccountStatePtr> _accounts;
+    QMap<QUuid, AccountState *> _accounts;
     /// Account ids from settings that weren't read
     QSet<QString> _additionalBlockedAccountIds;
 };
