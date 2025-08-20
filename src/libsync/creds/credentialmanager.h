@@ -45,6 +45,8 @@ private:
 
     const Account *const _account = nullptr;
     mutable std::unique_ptr<QSettings> _credentialsList;
+    // mac and linux only!
+    bool _retryOnKeyChainError = true;
 
     friend class TestCredentialManager;
 };
