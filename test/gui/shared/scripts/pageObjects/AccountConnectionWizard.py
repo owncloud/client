@@ -1,11 +1,9 @@
-import test
 import names
 import squish
 
 from pageObjects.EnterPassword import EnterPassword
 
 from helpers.WebUIHelper import authorize_via_webui
-from helpers.ConfigHelper import get_config
 from helpers.SetupClientHelper import (
     create_user_sync_path,
     get_temp_resource_path,
@@ -16,16 +14,35 @@ from helpers.SyncHelper import listen_sync_status_for_item
 
 class AccountConnectionWizard:
     SERVER_ADDRESS_BOX = {
-        "container": names.setupWizardWindow_contentWidget_QStackedWidget,
-        "name": "urlLineEdit",
+        "aboveWidget": names.server_address_QLabel,
         "type": "QLineEdit",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     NEXT_BUTTON = {
         "container": names.settings_dialogStack_QStackedWidget,
         "name": "nextButton",
         "type": "QPushButton",
         "visible": 1,
+    }
+    SIGN_IN_BUTTON = {
+        "name": "__qt__passive_wizardbutton1",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    }
+    FINISH_BUTTON = {
+        "name": "qt_wizard_finish",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    }
+    ADVANCED_CONFIGURATION_BUTTON = {
+        "name": "__qt__passive_wizardbutton6",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONFIRM_INSECURE_CONNECTION_BUTTON = {
         "text": "Confirm",
@@ -47,16 +64,18 @@ class AccountConnectionWizard:
         "visible": True,
     }
     SELECT_LOCAL_FOLDER = {
-        "container": names.advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox,
-        "name": "localDirectoryLineEdit",
+        "aboveWidget": names.welcome_to_ownCloud_Folder_location_QLabel,
         "type": "QLineEdit",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     DIRECTORY_NAME_BOX = {
-        "container": names.advancedConfigGroupBox_localDirectoryGroupBox_QGroupBox,
-        "name": "chooseLocalDirectoryButton",
-        "type": "QToolButton",
+        "text": "Choose...",
+        "type": "QPushButton",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CHOOSE_BUTTON = {
         "text": "Choose",
@@ -77,21 +96,24 @@ class AccountConnectionWizard:
         "visible": 1,
     }
     OAUTH_CREDENTIAL_PAGE = {
-        "container": names.contentWidget_contentWidget_QStackedWidget,
-        "type": "OCC::Wizard::OAuthCredentialsSetupWizardPage",
+        "type": "QWizardPage",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
-        "container": names.contentWidget_OCC_QmlUtils_OCQuickWidget,
-        "id": "copyToClipboardButton",
-        "type": "Button",
-        "visible": True,
+        "aboveWidget": names.leave_screen_QLabel,
+        "type": "QPushButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONF_SYNC_MANUALLY_RADIO_BUTTON = {
-        "container": names.advancedConfigGroupBox_syncModeGroupBox_QGroupBox,
-        "name": "configureSyncManuallyRadioButton",
+        "text": "Sync and download specific folders",
         "type": "QRadioButton",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     ADVANCED_CONFIGURATION_CHECKBOX = {
         "container": names.setupWizardWindow_contentWidget_QStackedWidget,
@@ -112,10 +134,11 @@ class AccountConnectionWizard:
         "visible": 1,
     }
     SYNC_EVERYTHING_RADIO_BUTTON = {
-        "container": names.advancedConfigGroupBox_syncModeGroupBox_QGroupBox,
-        "name": "syncEverythingRadioButton",
+        "text": "Automatically sync and download all current folders and files",
         "type": "QRadioButton",
+        "unnamed": 1,
         "visible": 1,
+        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
 
     @staticmethod
@@ -127,55 +150,28 @@ class AccountConnectionWizard:
             squish.waitForObject(AccountConnectionWizard.SERVER_ADDRESS_BOX),
             server_url,
         )
-        AccountConnectionWizard.next_step()
-
-        if not get_config("ocis"):
-            try:
-                squish.clickButton(
-                    squish.waitForObject(
-                        AccountConnectionWizard.CONFIRM_INSECURE_CONNECTION_BUTTON, 1000
-                    )
-                )
-            except:
-                test.log("No insecure connection warning for server " + server_url)
+        AccountConnectionWizard.sign_in()
 
     @staticmethod
     def accept_certificate():
         squish.clickButton(squish.waitForObject(EnterPassword.ACCEPT_CERTIFICATE_YES))
 
     @staticmethod
-    def add_user_credentials(username, password, oauth=False):
-        if get_config("ocis"):
-            AccountConnectionWizard.oidc_login(username, password)
-        elif oauth:
-            AccountConnectionWizard.oauth_login(username, password)
-        else:
-            AccountConnectionWizard.basic_login(username, password)
-
-    @staticmethod
-    def basic_login(username, password):
-        squish.mouseClick(squish.waitForObject(AccountConnectionWizard.USERNAME_BOX))
-        squish.nativeType(username)
-        squish.mouseClick(squish.waitForObject(AccountConnectionWizard.PASSWORD_BOX))
-        squish.nativeType(password)
-        AccountConnectionWizard.next_step()
+    def add_user_credentials(username, password):
+        AccountConnectionWizard.oidc_login(username, password)
 
     @staticmethod
     def oidc_login(username, password):
-        AccountConnectionWizard.browser_login(username, password, "oidc")
+        AccountConnectionWizard.browser_login(username, password)
 
     @staticmethod
-    def oauth_login(username, password):
-        AccountConnectionWizard.browser_login(username, password, "oauth")
-
-    @staticmethod
-    def browser_login(username, password, login_type=None):
+    def browser_login(username, password):
         # wait 500ms for copy button to fully load
         squish.snooze(1 / 2)
         squish.mouseClick(
             squish.waitForObject(AccountConnectionWizard.COPY_URL_TO_CLIPBOARD_BUTTON)
         )
-        authorize_via_webui(username, password, login_type)
+        authorize_via_webui(username, password)
 
     @staticmethod
     def next_step():
@@ -184,11 +180,24 @@ class AccountConnectionWizard:
         )
 
     @staticmethod
+    def finish():
+        squish.clickButton(
+            squish.waitForObjectExists(AccountConnectionWizard.FINISH_BUTTON)
+        )
+
+    @staticmethod
+    def sign_in():
+        squish.clickButton(
+            squish.waitForObjectExists(AccountConnectionWizard.SIGN_IN_BUTTON)
+        )
+
+    @staticmethod
     def select_sync_folder(user):
         # create sync folder for user
         sync_path = create_user_sync_path(user)
 
         AccountConnectionWizard.select_advanced_config()
+
         squish.mouseClick(
             squish.waitForObject(AccountConnectionWizard.DIRECTORY_NAME_BOX)
         )
@@ -220,19 +229,17 @@ class AccountConnectionWizard:
     @staticmethod
     def add_account(account_details):
         AccountConnectionWizard.add_account_information(account_details)
-        AccountConnectionWizard.next_step()
+        AccountConnectionWizard.finish()
 
     @staticmethod
     def add_account_information(account_details):
         if account_details["server"]:
             AccountConnectionWizard.add_server(account_details["server"])
-            if get_config("ocis"):
-                AccountConnectionWizard.accept_certificate()
+            AccountConnectionWizard.accept_certificate()
         if account_details["user"]:
             AccountConnectionWizard.add_user_credentials(
                 account_details["user"],
                 account_details["password"],
-                account_details["oauth"],
             )
         sync_path = ""
         if account_details["sync_folder"]:
@@ -286,10 +293,7 @@ class AccountConnectionWizard:
     def is_credential_window_visible():
         visible = False
         try:
-            if get_config("ocis"):
-                squish.waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
-            else:
-                squish.waitForObject(AccountConnectionWizard.BASIC_CREDENTIAL_PAGE)
+            squish.waitForObject(AccountConnectionWizard.OAUTH_CREDENTIAL_PAGE)
             visible = True
         except:
             pass
@@ -297,9 +301,11 @@ class AccountConnectionWizard:
 
     @staticmethod
     def select_advanced_config():
-        squish.waitForObject(
-            AccountConnectionWizard.ADVANCED_CONFIGURATION_CHECKBOX
-        ).setChecked(True)
+        squish.clickButton(
+            squish.waitForObjectExists(
+                AccountConnectionWizard.ADVANCED_CONFIGURATION_BUTTON
+            )
+        )
 
     @staticmethod
     def can_change_local_sync_dir():

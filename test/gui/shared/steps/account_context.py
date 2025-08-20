@@ -146,28 +146,6 @@ def step(context, username):
     wait_for_initial_sync_to_complete(get_resource_path('/', username))
 
 
-@When('user "|any|" logs in using the client-UI with oauth2')
-def step(context, username):
-    AccountSetting.login()
-    password = get_password_for_user(username)
-    enter_password = EnterPassword()
-    enter_password.relogin(username, password, True)
-
-    # wait for files to sync
-    wait_for_initial_sync_to_complete(get_resource_path('/', username))
-
-
-@When('user "|any|" opens login dialog')
-def step(context, _):
-    AccountSetting.login()
-
-
-@When('user "|any|" enters the password "|any|"')
-def step(context, username, password):
-    enter_password = EnterPassword()
-    enter_password.relogin(username, password)
-
-
 @Then('user "|any|" should be connected to the server')
 def step(context, _):
     AccountSetting.wait_until_account_is_connected()
@@ -197,11 +175,6 @@ def step(context):
     AccountConnectionWizard.accept_certificate()
 
 
-@Then('the error "|any|" should be displayed in the account connection wizard')
-def step(context, error_message):
-    test.verify(error_message in AccountConnectionWizard.get_error_message())
-
-
 @When('the user adds the server "|any|"')
 def step(context, server):
     server_url = substitute_inline_codes(server)
@@ -211,7 +184,7 @@ def step(context, server):
 @When('the user selects manual sync folder option in advanced section')
 def step(context):
     AccountConnectionWizard.select_manual_sync_folder_option()
-    AccountConnectionWizard.next_step()
+    AccountConnectionWizard.finish()
 
 
 @Then('credentials wizard should be visible')
@@ -226,13 +199,13 @@ def step(context):
 @When('the user selects vfs option in advanced section')
 def step(context):
     AccountConnectionWizard.select_vfs_option()
-    AccountConnectionWizard.next_step()
+    AccountConnectionWizard.finish()
 
 
 @When('the user selects download everything option in advanced section')
 def step(context):
     AccountConnectionWizard.select_download_everything_option()
-    AccountConnectionWizard.next_step()
+    AccountConnectionWizard.finish()
 
 
 @When('the user opens the advanced configuration')
@@ -275,24 +248,9 @@ def step(context):
     test.compare(True, AccountSetting.is_log_dialog_visible(), 'Log dialog is opened')
 
 
-@When('the user adds the following oauth2 account:')
-def step(context):
-    account_details = get_client_details(context.table)
-    account_details.update({'oauth': True})
-    AccountConnectionWizard.add_account(account_details)
-    # wait for files to sync
-    wait_for_initial_sync_to_complete(get_resource_path('/', account_details['user']))
-
-
 @Step('the user cancels the sync connection wizard')
 def step(context):
     SyncConnectionWizard.cancel_folder_sync_connection_wizard()
-
-
-@When('user "|any|" logs out from the login required dialog')
-def step(context, _):
-    enter_password = EnterPassword()
-    enter_password.logout()
 
 
 @When('the user quits the client')
