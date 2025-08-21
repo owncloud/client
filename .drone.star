@@ -225,8 +225,7 @@ def gui_test_pipeline(ctx):
             steps += ocisService(params["version"]) + \
                      waitForService("ocis", "ocis:9200")
 
-        steps += installPnpm() + \
-                 install_python_modules() + \
+        steps += install_python_modules() + \
                  setGuiTestReportDir() + \
                  gui_tests(ctx, squish_parameters, server) + \
                  uploadGuiTestLogs(ctx, server) + \
@@ -330,7 +329,7 @@ def python_lint():
         "name": "python-lint",
         "image": OC_CI_SQUISH,
         "commands": [
-            "make -C %s pip-install" % dir["guiTest"],
+            "make -C %s install" % dir["guiTest"],
             "make -C %s python-lint" % dir["guiTest"],
         ],
     }]
@@ -596,29 +595,16 @@ def waitForService(name, servers):
         ],
     }]
 
-def installPnpm():
-    return [{
-        "name": "pnpm-install",
-        "image": OC_CI_NODEJS,
-        "environment": {
-            "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
-        },
-        "commands": [
-            'npm i -s -g -f "$(jq -r ".packageManager" < %s/webUI/package.json)"' % dir["guiTest"],
-            "pnpm config set store-dir %s/.pnpm-store" % dir["base"],
-            "make -C %s pnpm-install" % dir["guiTest"],
-            # install required browser
-            "make -C %s pnpm-install-chromium" % dir["guiTest"],
-        ],
-    }]
-
 def install_python_modules():
     return [{
         "name": "install-python-modules",
         "image": OC_CI_SQUISH,
+        "environment": {
+            "PLAYWRIGHT_BROWSERS_PATH": "%s/.playwright" % dir["base"],
+        },
         "user": "0:0",
         "commands": [
-            "make -C %s pip-install" % dir["guiTest"],
+            "make -C %s install" % dir["guiTest"],
         ],
         "volumes": pip_step_volume,
     }]
