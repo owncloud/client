@@ -16,8 +16,8 @@
 
 #include "account.h"
 
-#include <OAICollection_of_drives.h>
-#include <OAIDrive.h>
+#include "OpenAPI/LibreGraphAPI/OAICollection_of_drives.h"
+#include "OpenAPI/LibreGraphAPI/OAIDrive.h"
 
 
 using namespace OCC;
