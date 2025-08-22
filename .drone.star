@@ -27,22 +27,21 @@ OC_CI_SQUISH = "owncloudci/squish:fedora-39-8.0.0-qt67x-linux64"
 
 PLUGINS_GIT_ACTION = "plugins/git-action:1"
 PLUGINS_S3 = "plugins/s3:1.4.0"
-PLUGINS_SLACK = "plugins/slack"
 TOOLHIPPIE_CALENS = "toolhippie/calens:0.4.0"
 
 # npm packages to install
 NPM_GHERLINT = "@gherlint/gherlint@1.1.0"
+
+S3_PUBLIC_CACHE_SERVER = "https://cache.owncloud.com"
+S3_PUBLIC_CACHE_BUCKET = "public"
 
 # secrets used in the pipeline
 secrets = {
     "SQUISH_LICENSEKEY": "squish_license_server",
     "GITHUB_USERNAME": "github_username",
     "GITHUB_TOKEN": "github_token",  # not available for PRs
-    "CACHE_ENDPOINT": "cache_public_s3_server",
-    "CACHE_BUCKET": "cache_public_s3_bucket",
     "AWS_ACCESS_KEY_ID": "cache_public_s3_access_key",
     "AWS_SECRET_ACCESS_KEY": "cache_public_s3_secret_key",
-    "ROCKETCHAT_WEBHOOK": "rocketchat_talk_webhook",
 }
 
 dir = {
@@ -55,15 +54,9 @@ dir = {
     "pythonModules64": "/usr/local/lib64/python3.10/site-packages",
 }
 
-notify_channels = {
-    "desktop-ci": {
-        "type": "channel",
-    },
-}
-
 branch_ref = [
     "refs/heads/master",
-    "refs/heads/5**",
+    "refs/heads/6**",
 ]
 
 trigger_ref = branch_ref + [
@@ -413,35 +406,22 @@ def changelog(ctx):
     }]
 
 def notification():
-    steps = [{
-        "name": "create-template",
-        "image": OC_CI_ALPINE,
-        "environment": {
-            "CACHE_ENDPOINT": from_secret("CACHE_ENDPOINT"),
-            "CACHE_BUCKET": from_secret("CACHE_BUCKET"),
-        },
-        "commands": [
-            "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
-        ],
-    }]
-
-    for channel, params in notify_channels.items():
-        settings = {
-            "webhook": from_secret("ROCKETCHAT_WEBHOOK"),
-            "template": "file:%s/template.md" % dir["base"],
-        }
-        if params["type"] == "user":
-            settings["recipient"] = channel
-        else:
-            settings["channel"] = channel
-
-        steps.append(
-            {
-                "name": "notification-%s" % channel,
-                "image": PLUGINS_SLACK,
-                "settings": settings,
+    steps = [
+        {
+            "name": "notify-matrix",
+            "image": OC_CI_ALPINE,
+            "environment": {
+                "CACHE_ENDPOINT": S3_PUBLIC_CACHE_SERVER,
+                "CACHE_BUCKET": S3_PUBLIC_CACHE_BUCKET,
+                "MATRIX_TOKEN": {
+                    "from_secret": "matrix_token",
+                },
             },
-        )
+            "commands": [
+                "bash %s/drone/notification_template.sh %s" % (dir["guiTest"], dir["base"]),
+            ],
+        },
+    ]
 
     return [{
         "kind": "pipeline",
@@ -637,8 +617,8 @@ def uploadGuiTestLogs(ctx, server_type = "oc10"):
         "name": "upload-gui-test-result",
         "image": PLUGINS_S3,
         "settings": {
-            "bucket": from_secret("CACHE_BUCKET"),
-            "endpoint": from_secret("CACHE_ENDPOINT"),
+            "bucket": S3_PUBLIC_CACHE_BUCKET,
+            "endpoint": S3_PUBLIC_CACHE_SERVER,
             "path_style": True,
             "source": "%s/**/*" % dir["guiTestReport"],
             "strip_prefix": "%s" % dir["guiTestReport"],
