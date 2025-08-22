@@ -133,6 +133,7 @@ bool AccountManager::restore()
     return true;
 }
 
+// todo: DC-111
 bool AccountManager::restoreFromLegacySettings()
 {
     static const auto logPrefix = QStringLiteral("Legacy settings migration: ");
@@ -343,7 +344,11 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
     // We want to only restore settings for that auth type and the user value
+    // this is trash, get rid of it DC-112
     acc->_settingsMap.insert(userC(), settings.value(userC()));
+    // todo DC-112: we need to migrate the http related settings out to new creds
+    // setting scheme. in fact the only thing we need to do is delete these keys from the config and
+    // forget they ever existed
     const QString authTypePrefix = QStringLiteral("http_");
     const auto childKeys = settings.childKeys();
     for (const auto &key : childKeys) {
@@ -385,6 +390,7 @@ AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
         id = generateFreeAccountId();
     }
     newAccount->_id = id;
+
 
     return addAccountState(AccountState::fromNewAccount(newAccount));
 }

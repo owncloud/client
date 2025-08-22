@@ -45,16 +45,6 @@ QString refreshTokenKeyC()
 {
     return QStringLiteral("http/oauthtoken");
 }
-
-QString CredentialVersionKeyC()
-{
-    return QStringLiteral("CredentialVersion");
-}
-
-const QString userIdC()
-{
-    return QStringLiteral("user");
-}
 }
 
 namespace OCC {
@@ -63,6 +53,7 @@ class CredentialsAccessManager : public AccessManager
 {
     Q_OBJECT
 public:
+    // this looks like trouble with the default nullptr on parent
     CredentialsAccessManager(const Credentials *cred, QObject *parent = nullptr)
         : AccessManager(parent)
         , _cred(cred)
@@ -88,37 +79,32 @@ private:
     QPointer<const Credentials> _cred;
 };
 
-Credentials::Credentials(const QString &userId, const QString &token, const QString &refreshToken)
-    : _userId(userId)
+Credentials::Credentials(const QString &token, const QString &refreshToken, Account *account)
+    : AbstractCredentials(account)
     , _accessToken(token)
     , _refreshToken(refreshToken)
-    , _ready(true)
+    , _ready(false)
 {
+    _account = account;
+    if (!token.isEmpty() && !refreshToken.isEmpty())
+        _ready = true;
 }
 
-//
-QString Credentials::credentialsType() const
+Credentials::Credentials(Account *account)
+    : Credentials({}, {}, account)
 {
-    return QStringLiteral("http");
 }
 
 QString Credentials::user() const
 {
-    return _userId;
-}
-
-void Credentials::setAccount(Account *account)
-{
-    AbstractCredentials::setAccount(account);
-    if (_userId.isEmpty()) {
-        fetchUser();
-    }
+    return _account->davUser();
 }
 
 AccessManager *Credentials::createAccessManager() const
 {
     AccessManager *am = new CredentialsAccessManager(this);
 
+    // todo: DC-112 - try to figure out whether this ultimately ends up invoking askFromUser
     connect(am, &QNetworkAccessManager::authenticationRequired, this, &Credentials::slotAuthentication);
 
     return am;
@@ -129,24 +115,10 @@ bool Credentials::ready() const
     return _ready;
 }
 
-QString Credentials::fetchUser()
-{
-    // it makes no sense to overwrite an existing username with a config file value
-    if (_userId.isEmpty()) {
-        qCDebug(lcCredentials) << "user not set, populating from settings";
-        _userId = _account->credentialSetting(userIdC()).toString();
-    } else {
-        qCDebug(lcCredentials) << "user already set, no need to fetch from settings";
-    }
-    return _userId;
-}
 
 void Credentials::fetchFromKeychain()
 {
-    _wasFetched = true;
-
-    // User must be fetched from config file
-    fetchUser();
+    _wasEverFetched = true;
 
     if (!_ready && !_refreshToken.isEmpty()) {
         // This happens if the credentials are still loaded from the keychain, bur we are called
@@ -158,57 +130,43 @@ void Credentials::fetchFromKeychain()
     if (_ready) {
         Q_EMIT fetched();
     } else {
-        fetchFromKeychainHelper();
+        fetchCredentialsFromKeychain();
     }
 }
 
-void Credentials::fetchFromKeychainHelper()
+void Credentials::handleKeychainError(const QString &message)
 {
-    if (_userId.isEmpty()) {
-        _accessToken.clear();
-        _ready = false;
-        Q_EMIT fetched();
-        return;
-    }
+    qCWarning(lcCredentials) << message;
+
+    _fetchErrorString = message;
+    _accessToken.clear();
+    _ready = false;
+    Q_EMIT fetched();
+}
+
+void Credentials::fetchCredentialsFromKeychain()
+{
     auto job = _account->credentialManager()->get(refreshTokenKeyC());
     if (!job) {
-        qCWarning(lcCredentials) << "get credentials job is null - most likely the key does not exist in the credentials manager";
-        // doing this temp copy paste since handle error is not particularly reusable. I will fix this in the new class
-        _fetchErrorString = QString();
-        _accessToken.clear();
-        _ready = false;
-        Q_EMIT fetched();
+        handleKeychainError(QStringLiteral("get credentials job is null - most likely the key does not exist in the credentials manager"));
         return;
     }
     connect(job, &CredentialJob::finished, this, [job, this] {
-        auto handleError = [job, this] {
-            qCWarning(lcCredentials) << "Could not retrieve client password from keychain" << job->errorString();
-
-            // we come here if the password is empty or any other keychain
-            // error happend.
-
-            _fetchErrorString = job->error() != QKeychain::EntryNotFound ? job->errorString() : QString();
-
-            _accessToken.clear();
-            _ready = false;
-            Q_EMIT fetched();
-        };
         if (job->error() != QKeychain::NoError) {
-            handleError();
+            handleKeychainError(job->errorString());
             return;
         }
         const auto data = job->data().toString();
-        if (OC_ENSURE(!data.isEmpty())) {
-                _refreshToken = data;
-                refreshAccessToken();
-
+        if (!data.isEmpty()) {
+            _refreshToken = data;
+            refreshAccessToken();
         } else {
-            handleError();
+            handleKeychainError(QStringLiteral("get credentials data is empty"));
         }
     });
 }
 
-// Lisa todo: this is called periodically, find the trigger
+// Lisa todo: this is called periodically, find the trigger. it's coming mostly from the jobs :(
 bool Credentials::stillValid(QNetworkReply *reply)
 {
     // The function is called in order to determine whether we need to ask the user for a password
@@ -239,99 +197,107 @@ void Credentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *authe
 
 bool Credentials::refreshAccessToken()
 {
-    return refreshAccessTokenInternal(0);
-}
-
-bool Credentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
-{
     if (_refreshToken.isEmpty())
         return false;
-    if (_oAuthJob) {
+    if (_oAuthJob)
         return true;
+
+    refreshAccessTokenInternal();
+    return true;
+}
+
+void Credentials::handleRefreshError(QNetworkReply::NetworkError error, const QString &message)
+{
+    Q_UNUSED(message);
+
+    _oAuthJob->deleteLater();
+    _tokenRefreshRetriesCount++;
+    std::chrono::seconds timeout = {};
+
+    if (!networkAvailable()) {
+        _tokenRefreshRetriesCount = 0;
+        timeout = TokenRefreshDefaultTimeout;
+    } else {
+        switch (error) {
+        case QNetworkReply::ContentNotFoundError:
+            // 404: bigip f5?
+            timeout = 0s;
+            break;
+        case QNetworkReply::HostNotFoundError:
+            [[fallthrough]];
+        case QNetworkReply::TimeoutError:
+            [[fallthrough]];
+        // Qt reports OperationCanceledError if the request timed out
+        case QNetworkReply::OperationCanceledError:
+            [[fallthrough]];
+        case QNetworkReply::TemporaryNetworkFailureError:
+            [[fallthrough]];
+        // VPN not ready?
+        case QNetworkReply::ConnectionRefusedError:
+            _tokenRefreshRetriesCount = 0;
+            [[fallthrough]];
+        default:
+            timeout = TokenRefreshDefaultTimeout;
+        }
     }
 
-    // don't touch _ready or the account state will start a new authentication
-    // _ready = false;
+    if (_tokenRefreshRetriesCount >= TokenRefreshMaxRetries) {
+        qCWarning(lcCredentials) << "Too many failed refreshes" << _tokenRefreshRetriesCount << "-> log out";
+        finishFailedRefresh();
+        _tokenRefreshRetriesCount = 0;
+        return;
+    }
+    QTimer::singleShot(timeout, this, [this] { refreshAccessTokenInternal(); });
+    Q_EMIT authenticationFailed();
+}
 
+void Credentials::handleRefreshSuccess(const QString &accessToken, const QString &refreshToken)
+{
+    _oAuthJob->deleteLater();
+    _tokenRefreshRetriesCount = 0;
+    if (refreshToken.isEmpty()) {
+        qCWarning(lcCredentials) << "Refresh job succeeded but refreshToken is empty -> log out";
+        finishFailedRefresh();
+        return;
+    }
+    _refreshToken = refreshToken;
+    if (!accessToken.isNull()) {
+        _ready = true;
+        _accessToken = accessToken;
+        persist();
+    }
+    Q_EMIT fetched();
+}
+
+void Credentials::finishFailedRefresh()
+{
+    forgetSensitiveData();
+    Q_EMIT authenticationFailed();
+    Q_EMIT fetched();
+}
+
+bool Credentials::networkAvailable()
+{
+    auto qni = QNetworkInformation::instance();
+    if (!qni)
+        return true; // this can allegedly happen on Linux
+    if (qni->reachability() == QNetworkInformation::Reachability::Disconnected || qni->reachability() == QNetworkInformation::Reachability::Unknown)
+        return false;
+    if (qni->isBehindCaptivePortal())
+        return false;
+    return true;
+}
+
+void Credentials::refreshAccessTokenInternal()
+{
     // parent with nam to ensure we reset when the nam is reset
+    // todo: #22 - the parenting here is highly questionable, as is the use of the shared account ptr
     _oAuthJob = new AccountBasedOAuth(_account->sharedFromThis(), _account->accessManager());
-    connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, [tokenRefreshRetriesCount, this](QNetworkReply::NetworkError error, const QString &) {
-        _oAuthJob->deleteLater();
+    connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, &Credentials::handleRefreshError);
+    connect(_oAuthJob, &AccountBasedOAuth::refreshFinished, this, &Credentials::handleRefreshSuccess);
 
-        auto networkUnavailable = []() {
-            if (auto qni = QNetworkInformation::instance()) {
-                if (qni->reachability() == QNetworkInformation::Reachability::Disconnected) {
-                    return true;
-                }
-            }
-
-            return false;
-        };
-
-        int nextTry = tokenRefreshRetriesCount + 1;
-        std::chrono::seconds timeout = {};
-
-        if (networkUnavailable()) {
-            nextTry = 0;
-            timeout = TokenRefreshDefaultTimeout;
-        } else {
-            switch (error) {
-            case QNetworkReply::ContentNotFoundError:
-                // 404: bigip f5?
-                timeout = 0s;
-                break;
-            case QNetworkReply::HostNotFoundError:
-                [[fallthrough]];
-            case QNetworkReply::TimeoutError:
-                [[fallthrough]];
-            // Qt reports OperationCanceledError if the request timed out
-            case QNetworkReply::OperationCanceledError:
-                [[fallthrough]];
-            case QNetworkReply::TemporaryNetworkFailureError:
-                [[fallthrough]];
-            // VPN not ready?
-            case QNetworkReply::ConnectionRefusedError:
-                nextTry = 0;
-                [[fallthrough]];
-            default:
-                timeout = TokenRefreshDefaultTimeout;
-            }
-        }
-
-        if (nextTry >= TokenRefreshMaxRetries) {
-            qCWarning(lcCredentials) << "Too many failed refreshes" << nextTry << "-> log out";
-            forgetSensitiveData();
-            Q_EMIT authenticationFailed();
-            Q_EMIT fetched();
-            return;
-        }
-        QTimer::singleShot(timeout, this, [nextTry, this] {
-            refreshAccessTokenInternal(nextTry);
-        });
-        Q_EMIT authenticationFailed();
-    });
-
-    connect(_oAuthJob, &AccountBasedOAuth::refreshFinished, this, [this](const QString &accessToken, const QString &refreshToken) {
-        _oAuthJob->deleteLater();
-        if (refreshToken.isEmpty()) {
-            // an error occured, log out
-            forgetSensitiveData();
-            Q_EMIT authenticationFailed();
-            Q_EMIT fetched();
-            return;
-        }
-        _refreshToken = refreshToken;
-        if (!accessToken.isNull()) {
-            _ready = true;
-            _accessToken = accessToken;
-            persist();
-        }
-        Q_EMIT fetched();
-    });
     Q_EMIT authenticationStarted();
     _oAuthJob->refreshAuthentication(_refreshToken);
-
-    return true;
 }
 
 void Credentials::invalidateToken()
@@ -341,23 +307,24 @@ void Credentials::invalidateToken()
     if (!_accessToken.isEmpty()) {
         _previousAccessToken = _accessToken;
     }
-    _accessToken = QString();
+    _accessToken.clear();
     _ready = false;
-
-    // User must be fetched from config file to generate a valid key
-    fetchUser();
 
     // clear the session cookie.
     _account->clearCookieJar();
 
     if (!_refreshToken.isEmpty()) {
-        // Only invalidate the access_token (_password) but keep the _refreshToken in the keychain
+        // Only invalidate the access_token but keep the _refreshToken in the keychain
         // (when coming from forgetSensitiveData, the _refreshToken is cleared)
         return;
     }
 
+    // todo: DC-112 decide what to do with this "http" part of the cred keys. AFAIK this should
+    // only be associated with this credential type, and we hope to abandon that...let's see
+    // but it should probably be "migrated" to some new creds id with the rest of the changes
     _account->credentialManager()->clear(QStringLiteral("http"));
-    // let QNAM forget about the password
+
+    // let QNAM forget about the previous credentials it may have been using
     // This needs to be done later in the event loop because we might be called (directly or
     // indirectly) from QNetworkAccessManagerPrivate::authenticationRequired, which itself
     // is a called from a BlockingQueuedConnection from the Qt HTTP thread. And clearing the
@@ -368,24 +335,14 @@ void Credentials::invalidateToken()
 void Credentials::forgetSensitiveData()
 {
     // need to be done before invalidateToken, so it actually deletes the refresh_token from the keychain
+    // to do, make that more explicit
     _refreshToken.clear();
-
     invalidateToken();
     _previousAccessToken.clear();
 }
 
 void Credentials::persist()
 {
-    if (_userId.isEmpty()) {
-        // We never connected or fetched the user, there is nothing to save.
-        return;
-    }
-    // the version key is going away but we should READ it then use it's existence to migrate
-    // any existing creds to the new persistence style
-    _account->addCredentialSetting(CredentialVersionKeyC(), CredentialVersion);
-    _account->addCredentialSetting(userIdC(), _userId);
-    Q_EMIT _account->wantsAccountSaved(_account);
-
     // write secrets to the keychain
         // _refreshToken should only be empty when we are logged out...
         if (!_refreshToken.isEmpty()) {

@@ -159,7 +159,7 @@ QString HttpCredentials::fetchUser()
 
 void HttpCredentials::fetchFromKeychain()
 {
-    _wasFetched = true;
+    _wasEverFetched = true;
 
     // User must be fetched from config file
     fetchUser();
@@ -292,7 +292,6 @@ bool HttpCredentials::refreshAccessTokenInternal(int tokenRefreshRetriesCount)
                     return true;
                 }
             }
-
             return false;
         };
 

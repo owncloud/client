@@ -33,16 +33,15 @@ class OAuth;
 class OWNCLOUDGUI_EXPORT Credentials : public AbstractCredentials
 {
     Q_OBJECT
+    // ick
     friend class CredentialsAccessManager;
 
 public:
     /// Don't add credentials if this is set on a QNetworkRequest
 
-    explicit Credentials(const QString &userId, const QString &token, const QString &refreshToken);
+    explicit Credentials(const QString &token, const QString &refreshToken, Account *account);
 
-    // ideally should go - this string is used to create settings dynamically.
-    QString credentialsType() const override;
-
+    explicit Credentials(Account *account);
     // this access manager is monitored for authenticationRequired signal
     // it also becomes the access manager member in the account. Try to invert this so the account
     // creates it and connects the creds slot to the _am.
@@ -51,49 +50,51 @@ public:
     // the main point is I am not sure the creds should be creating the nam - I think this should be an account responsibility in the end.
     AccessManager *createAccessManager() const override;
 
-    // this needs a naming update. the ready state seems to go to false only when the user actually needs to reauthenticate
-    // but needs review
+    // todo: DC-112 I think this needs a naming update.
     bool ready() const override;
-    // this is invoked by AccountState::checkConnectivity. Totally uncool. This should be private with appropriate logic
-    // to trigger it only under x circumstances - presumably it would be associated with the ready() stuff but not sure yet
+
+    // this is invoked by AccountState::checkConnectivity. Totally uncool.
+    // todo: DC-112 at least rename this to fetchCredentials() or something - also in base class. the "keychain" naming is an
+    // impl detail we don't need to expose
     void fetchFromKeychain() override;
 
     bool stillValid(QNetworkReply *reply) override;
     void persist() override;
+
     QString user() const override;
     void invalidateToken() override;
     void forgetSensitiveData() override;
-    QString fetchUser();
 
-    /* If we still have a valid refresh token, try to refresh it asynchronously and Q_EMIT fetched()
-     * otherwise return false
+
+    /* If we don't have a valid refresh token, return false.
+     * otherwise:
+     *   if the refresh routine is running, return true
+     *   if it is not running, start the refresh and return true.
      */
     bool refreshAccessToken();
 
-    // To fetch the user name as early as possible
-    // Lisa todo: what does that mean? we should already have the user name before we even create the account
-    // this has a special aroma. Also the idea from the base is that the account can only be set once
-    // which is a shining beacon in the night that screams: "this belongs in the ctr"
-    void setAccount(Account *account) override;
-
 protected:
-    Credentials() = default;
+    bool networkAvailable();
+
+
+    void handleRefreshError(QNetworkReply::NetworkError error, const QString &message);
+    void handleRefreshSuccess(const QString &accessToken, const QString &refreshToken);
+    void finishFailedRefresh();
+    void handleKeychainError(const QString &message);
 
     void slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);
-    void fetchFromKeychainHelper();
+    void fetchCredentialsFromKeychain();
+    void refreshAccessTokenInternal();
 
-    QString _userId;
     QString _accessToken;
     QString _refreshToken;
     QString _previousAccessToken;
 
     QString _fetchErrorString;
     bool _ready = false;
+    int _tokenRefreshRetriesCount = 0;
+
     QPointer<AccountBasedOAuth> _oAuthJob;
-
-
-private:
-    bool refreshAccessTokenInternal(int tokenRefreshRetriesCount);
 };
 
 
