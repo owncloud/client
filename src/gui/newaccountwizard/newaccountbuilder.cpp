@@ -32,7 +32,7 @@ void NewAccountBuilder::buildAccount()
     // the account manager triggers the first checkConnection in the state when it's added - there should be no need to call it again explicitly
     // either in the application or the folderman, as was the case previously
     _accountState = AccountManager::instance()->addAccount(_account);
-    connect(_accountState.get(), &AccountState::stateChanged, this, &NewAccountBuilder::onAccountStateChanged);
+    connect(_accountState, &AccountState::stateChanged, this, &NewAccountBuilder::onAccountStateChanged);
     _accountState->setSettingUp(true);
 }
 

@@ -45,13 +45,8 @@ class ShareDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ShareDialog(AccountStatePtr accountState,
-        const QUrl &baseUrl,
-        const QString &sharePath,
-        const QString &localPath,
-        SharePermissions maxSharingPermissions,
-        ShareDialogStartPage startPage,
-        QWidget *parent);
+    explicit ShareDialog(AccountState *accountState, const QUrl &baseUrl, const QString &sharePath, const QString &localPath,
+        SharePermissions maxSharingPermissions, ShareDialogStartPage startPage, QWidget *parent);
     ~ShareDialog() override;
 
     QString localPath() const { return _localPath; }
@@ -65,7 +60,7 @@ private:
     void showSharingUi();
 
     Ui::ShareDialog *_ui;
-    AccountStatePtr _accountState;
+    QPointer<AccountState> _accountState;
     QString _sharePath;
     QString _localPath;
     SharePermissions _maxSharingPermissions;

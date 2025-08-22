@@ -191,7 +191,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     bool allSignedOut = true;
     bool allPaused = true;
     bool allDisconnected = true;
-    QVector<AccountStatePtr> problemAccounts;
+    QVector<AccountState *> problemAccounts;
     auto setStatusText = [&](const QString &text) {
         // Don't overwrite the status if we're currently syncing
         if (FolderMan::instance()->isAnySyncRunning())
@@ -311,7 +311,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     }
 }
 
-void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *menu)
+void ownCloudGui::addAccountContextMenu(AccountState *accountState, QMenu *menu)
 {
     menu->addAction(CommonStrings::showInWebBrowser(), this, [accountState] { QDesktopServices::openUrl(accountState->account()->url()); });
 
@@ -319,7 +319,7 @@ void ownCloudGui::addAccountContextMenu(AccountStatePtr accountState, QMenu *men
     const auto &map = folderMan->folders();
     bool onePaused = false;
     for (auto *folder : map) {
-        if (folder->accountState() != accountState.data()) {
+        if (folder->accountState() != accountState) {
             continue;
         }
 
@@ -810,7 +810,7 @@ void ownCloudGui::handleAccountSetupError(const QString &error)
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
 }
 
-void ownCloudGui::setPauseOnAllFoldersHelper(const QList<AccountStatePtr> &accounts, bool pause)
+void ownCloudGui::setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause)
 {
     for (auto *f : FolderMan::instance()->folders()) {
         if (accounts.contains(f->accountState())) {

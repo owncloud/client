@@ -81,7 +81,7 @@ ActivityWidget::ActivityWidget(QWidget *parent)
     connect(_model, &ActivityListModel::activityJobStatusCode,
         this, &ActivityWidget::slotAccountActivityStatus);
 
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr ast) {
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountState *ast) {
         if (_accountsWithoutActivities.remove(ast->account()->displayNameWithHost())) {
             showLabels();
         }
@@ -117,12 +117,12 @@ ActivityWidget::~ActivityWidget()
     delete _ui;
 }
 
-void ActivityWidget::slotRefreshActivities(const AccountStatePtr &ptr)
+void ActivityWidget::slotRefreshActivities(AccountState *ptr)
 {
     _model->slotRefreshActivity(ptr);
 }
 
-void ActivityWidget::slotRefreshNotifications(const AccountStatePtr &ptr)
+void ActivityWidget::slotRefreshNotifications(AccountState *ptr)
 {
     // start a server notification handler if no notification requests
     // are running
@@ -137,7 +137,7 @@ void ActivityWidget::slotRefreshNotifications(const AccountStatePtr &ptr)
     }
 }
 
-void ActivityWidget::slotRemoveAccount(const AccountStatePtr &ptr)
+void ActivityWidget::slotRemoveAccount(AccountState *ptr)
 {
     _model->slotRemoveAccount(ptr);
 }
@@ -155,7 +155,7 @@ void ActivityWidget::showLabels()
     _ui->_bottomLabel->setText(bottomText);
 }
 
-void ActivityWidget::slotAccountActivityStatus(AccountStatePtr ast, int statusCode)
+void ActivityWidget::slotAccountActivityStatus(AccountState *ast, int statusCode)
 {
     if (!(ast && ast->account())) {
         return;
@@ -485,7 +485,7 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     _tab->setCurrentIndex(1);
 
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this,
-        [this](const AccountStatePtr &accountStatePtr) { _timeSinceLastCheck.take(accountStatePtr); });
+        [this](AccountState *accountStatePtr) { _timeSinceLastCheck.take(accountStatePtr); });
 }
 
 void ActivitySettings::setNotificationRefreshInterval(std::chrono::milliseconds interval)
@@ -534,12 +534,12 @@ void ActivitySettings::slotShowIssuesTab()
     _tab->setCurrentIndex(_syncIssueTabId);
 }
 
-void ActivitySettings::slotRemoveAccount(const AccountStatePtr &ptr)
+void ActivitySettings::slotRemoveAccount(AccountState *ptr)
 {
     _activityWidget->slotRemoveAccount(ptr);
 }
 
-void ActivitySettings::slotRefresh(AccountStatePtr ptr)
+void ActivitySettings::slotRefresh(AccountState *ptr)
 {
     // QElapsedTimer isn't actually constructed as invalid.
     if (!_timeSinceLastCheck.contains(ptr)) {

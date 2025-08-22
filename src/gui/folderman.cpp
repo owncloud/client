@@ -185,7 +185,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
     return _folders.size();
 }
 
-bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStatePtr account)
+bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState *account)
 {
     settings.beginGroup(QStringLiteral("%1/Folders").arg(account->account()->id()));
 
@@ -215,22 +215,22 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountStateP
     return true;
 }
 
-void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs)
+void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
 {
-    if (accountStatePtr->supportsSpaces()) {
-        QObject::connect(accountStatePtr->account()->spacesManager(), &GraphApi::SpacesManager::ready, this,
-            [this, accountStatePtr, useVfs] { loadSpacesWhenReady(accountStatePtr, useVfs); });
+    if (accountState->supportsSpaces()) {
+        QObject::connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::ready, this,
+            [this, accountState, useVfs] { loadSpacesWhenReady(accountState, useVfs); });
         // this is questionable - basically if the spaces aren't ready requesting "checkReady" triggers "getting them ready" - there is no way to directly
         // ask "are you ready?" - in all cases you have to call this function to get the ready signal which is handled here
         // todo: #10
-        accountStatePtr->account()->spacesManager()->checkReady();
+        accountState->account()->spacesManager()->checkReady();
     } else {
         // todo: #20
         setSyncEnabled(false);
-        auto def = FolderDefinition::createNewFolderDefinition(accountStatePtr->account()->davUrl(), {}, {});
-        def.setLocalPath(accountStatePtr->account()->defaultSyncRoot());
+        auto def = FolderDefinition::createNewFolderDefinition(accountState->account()->davUrl(), {}, {});
+        def.setLocalPath(accountState->account()->defaultSyncRoot());
         def.setTargetPath(Theme::instance()->defaultServerFolder());
-        Folder *folder = addFolderFromScratch(accountStatePtr, std::move(def), useVfs);
+        Folder *folder = addFolderFromScratch(accountState, std::move(def), useVfs);
         if (folder) {
             saveFolder(folder);
             _scheduler->enqueueFolder(folder, SyncScheduler::Priority::High);
@@ -240,10 +240,10 @@ void FolderMan::setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool us
 
 
     // todo: #11
-    // accountStatePtr->checkConnectivity();
+    // accountState->checkConnectivity();
 }
 
-void FolderMan::loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs)
+void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
 {
     if (!accountState || !accountState->account())
         return;
@@ -382,7 +382,7 @@ void FolderMan::slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMod
 
 void FolderMan::slotIsConnectedChanged()
 {
-    AccountStatePtr accountState(qobject_cast<AccountState *>(sender()));
+    AccountState *accountState(qobject_cast<AccountState *>(sender()));
     if (!accountState) {
         return;
     }
@@ -424,7 +424,7 @@ void FolderMan::setSyncEnabled(bool enabled)
     Q_EMIT folderSyncStateChange(nullptr);
 }
 
-void FolderMan::slotRemoveFoldersForAccount(const AccountStatePtr &accountState)
+void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
 {
     if (!accountState) {
         return;
@@ -533,7 +533,7 @@ bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinitio
 }
 
 
-Folder *FolderMan::addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition)
+Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition &folderDefinition)
 {
     if (Folder *f = folder(folderDefinition.id())) {
         Q_ASSERT_X(false, "addFolder", "Trying to addFolder but id is already found in the folder list");
@@ -1025,7 +1025,7 @@ bool FolderMan::checkVfsAvailability(const QString &path, Vfs::Mode mode) const
     return unsupportedConfiguration(path) && Vfs::checkAvailability(path, mode);
 }
 
-Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&folderDefinition, bool useVfs)
+Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefinition &&folderDefinition, bool useVfs)
 {
     if (!FolderMan::prepareFolder(folderDefinition.localPath())) {
         return nullptr;
@@ -1044,7 +1044,7 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
         folderDefinition.setVirtualFilesMode(VfsPluginManager::instance().bestAvailableVfsMode());
     }
 
-    auto newFolder = addFolder(accountStatePtr, folderDefinition);
+    auto newFolder = addFolder(accountState, folderDefinition);
 
     if (newFolder) {
         // With spaces we only handle the main folder
@@ -1063,7 +1063,7 @@ Folder *FolderMan::addFolderFromScratch(const AccountStatePtr &accountStatePtr, 
 }
 
 // todo: #1
-void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &description)
+void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &description)
 {
     setSyncEnabled(false);
 
@@ -1071,7 +1071,7 @@ void FolderMan::addFolderFromGui(const AccountStatePtr &accountStatePtr, const S
     definition.setLocalPath(description.localPath);
     definition.setTargetPath(description.remotePath);
     definition.setPriority(description.priority);
-    auto f = addFolderFromScratch(accountStatePtr, std::move(definition), description.useVirtualFiles);
+    auto f = addFolderFromScratch(accountState, std::move(definition), description.useVirtualFiles);
 
 
     if (f) {

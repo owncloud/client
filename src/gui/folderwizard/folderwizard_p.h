@@ -32,7 +32,7 @@ Q_DECLARE_LOGGING_CATEGORY(lcFolderWizard);
 class FolderWizardPrivate
 {
 public:
-    FolderWizardPrivate(FolderWizard *q, const AccountStatePtr &account);
+    FolderWizardPrivate(FolderWizard *q, AccountState *account);
     static QString formatWarnings(const QStringList &warnings, bool isError = false);
 
     QString initialLocalPath() const;
@@ -48,13 +48,13 @@ public:
     bool useVirtualFiles() const;
     QString displayName() const;
 
-    const AccountStatePtr &accountState();
+    AccountState *accountState();
 
 private:
     Q_DECLARE_PUBLIC(FolderWizard)
     FolderWizard *q_ptr;
 
-    AccountStatePtr _account;
+    QPointer<AccountState> _account;
     class SpacesPage *_spacesPage;
     class FolderWizardLocalPath *_folderWizardSourcePage = nullptr;
     class FolderWizardRemotePath *_folderWizardTargetPage = nullptr;

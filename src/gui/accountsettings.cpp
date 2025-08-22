@@ -60,7 +60,7 @@ Q_LOGGING_CATEGORY(lcAccountSettings, "gui.account.settings", QtInfoMsg)
 // also ditch the lambdas which should actually be functions (private if necessary)
 // Also refactoring todo: split the controller behavior out into a controller. A widget should NOT contain
 // business or controller logic!
-AccountSettings::AccountSettings(const AccountStatePtr &accountState, QWidget *parent)
+AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::AccountSettings)
     , _wasDisabledBefore(false)

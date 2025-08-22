@@ -162,7 +162,7 @@ SettingsDialog::~SettingsDialog()
     delete _ui;
 }
 
-void SettingsDialog::onAccountAdded(AccountStatePtr state)
+void SettingsDialog::onAccountAdded(AccountState *state)
 {
     if (!state)
         return;
@@ -172,7 +172,7 @@ void SettingsDialog::onAccountAdded(AccountStatePtr state)
     setCurrentAccount(state->account().get());
 }
 
-void SettingsDialog::onAccountRemoved(AccountStatePtr state)
+void SettingsDialog::onAccountRemoved(AccountState *state)
 {
     if (!state)
         return;
