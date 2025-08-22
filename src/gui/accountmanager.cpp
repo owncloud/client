@@ -286,7 +286,7 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
     settings->endGroup();
 
     // save the account state but only if it actually exists!!!
-    AccountStatePtr state = accountState(account->uuid());
+    AccountState *state = accountState(account->uuid());
     if (state) {
         state->writeToSettings(*settings);
     }
@@ -320,7 +320,7 @@ bool AccountManager::accountForLoginExists(const QUrl &url, const QString &davUs
     return false;
 }
 
-QList<AccountState *> AccountManager::accountsRaw() const
+const QList<AccountState *> AccountManager::accounts() const
 {
     return _accounts.values();
 }
@@ -368,22 +368,22 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     return acc;
 }
 
-AccountStatePtr AccountManager::account(const QString &name)
+AccountState *AccountManager::account(const QString &name)
 {
     for (const auto &acc : std::as_const(_accounts)) {
         if (acc->account()->displayNameWithHost() == name) {
             return acc;
         }
     }
-    return AccountStatePtr();
+    return nullptr;
 }
 
-AccountStatePtr AccountManager::accountState(const QUuid uuid)
+AccountState *AccountManager::accountState(const QUuid uuid)
 {
     return _accounts.value(uuid);
 }
 
-AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
+AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
 {
     auto id = newAccount->id();
     if (id.isEmpty() || !isAccountIdAvailable(id)) {
@@ -395,7 +395,7 @@ AccountStatePtr AccountManager::addAccount(const AccountPtr &newAccount)
     return addAccountState(AccountState::fromNewAccount(newAccount));
 }
 
-void AccountManager::deleteAccount(AccountStatePtr account)
+void AccountManager::deleteAccount(AccountState *account)
 {
     // do these notifications asap so anyone trying to use the account stops doing that
     // unfortunately, if we call these early, the "button" for the account is never removed, and if it's the last
@@ -454,16 +454,6 @@ void AccountManager::shutdown()
     }
 }
 
-const QList<AccountStatePtr> AccountManager::accounts() const
-{
-    QList<AccountStatePtr> ptrs;
-    ptrs.reserve(_accounts.size());
-    for (AccountState *acc : _accounts) {
-        ptrs.append(acc);
-    }
-    return ptrs;
-}
-
 bool AccountManager::isAccountIdAvailable(const QString &id) const
 {
     for (const auto &acc : _accounts) {
@@ -488,9 +478,9 @@ QString AccountManager::generateFreeAccountId() const
     }
 }
 
-AccountStatePtr AccountManager::addAccountState(std::unique_ptr<AccountState> &&accountState)
+AccountState *AccountManager::addAccountState(std::unique_ptr<AccountState> &&accountState)
 {
-    AccountStatePtr statePtr = accountState.release();
+    AccountState *statePtr = accountState.release();
     if (!statePtr) // just bail. I have no idea why this is happening but fine. it's null and not usable
         return statePtr;
 

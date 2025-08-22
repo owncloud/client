@@ -130,18 +130,15 @@ void Application::lastAccountStateRemoved() const
     }
 }
 
-void Application::slotAccountStateAdded(AccountStatePtr accountState) const
+void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     // Hook up the GUI slots to the account state's Q_SIGNALS:
-    connect(accountState.data(), &AccountState::stateChanged,
-        _gui.data(), &ownCloudGui::slotAccountStateChanged);
-    connect(accountState->account().data(), &Account::serverVersionChanged,
-        _gui.data(), [account = accountState->account().data(), this] {
-            _gui->slotTrayMessageIfServerUnsupported(account);
-        });
+    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotAccountStateChanged);
+    connect(accountState->account().data(), &Account::serverVersionChanged, _gui.data(),
+        [account = accountState->account().data(), this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
-    connect(accountState.data(), &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
+    connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(accountState->account().data(), &Account::serverVersionChanged, FolderMan::instance(),
         [account = accountState->account().data()] { FolderMan::instance()->slotServerVersionChanged(account); });
 }

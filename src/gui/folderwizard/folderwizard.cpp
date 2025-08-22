@@ -71,7 +71,7 @@ QString FolderWizardPrivate::defaultSyncRoot() const
     }
 }
 
-FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, const AccountStatePtr &account)
+FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, AccountState *account)
     : q_ptr(q)
     , _account(account)
     , _folderWizardSourcePage(new FolderWizardLocalPath(this))
@@ -151,7 +151,7 @@ QString FolderWizardPrivate::displayName() const
     return QString();
 }
 
-const AccountStatePtr &FolderWizardPrivate::accountState()
+AccountState *FolderWizardPrivate::accountState()
 {
     return _account;
 }
@@ -172,7 +172,7 @@ bool FolderWizardPrivate::useVirtualFiles() const
     return useVirtualFiles;
 }
 
-FolderWizard::FolderWizard(const AccountStatePtr &account, QWidget *parent)
+FolderWizard::FolderWizard(AccountState *account, QWidget *parent)
     : QWizard(parent)
     , d_ptr(new FolderWizardPrivate(this, account))
 {

@@ -63,15 +63,15 @@ public:
 
 
 public Q_SLOTS:
-    void slotRefreshActivity(const AccountStatePtr &ast);
-    void slotRemoveAccount(AccountStatePtr ast);
+    void slotRefreshActivity(AccountState *ast);
+    void slotRemoveAccount(AccountState *ast);
 
 Q_SIGNALS:
-    void activityJobStatusCode(AccountStatePtr ast, int statusCode);
+    void activityJobStatusCode(AccountState *ast, int statusCode);
 
 private:
     void setActivityList(const ActivityList &&resultList);
-    void startFetchJob(AccountStatePtr s);
+    void startFetchJob(AccountState *ast);
     void combineActivityLists();
 
     QMap<AccountState *, ActivityList> _activityLists;

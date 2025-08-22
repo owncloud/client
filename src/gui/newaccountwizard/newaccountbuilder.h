@@ -32,7 +32,7 @@ public:
     void buildAccount();
 
 Q_SIGNALS:
-    void requestSetUpSyncFoldersForAccount(AccountStatePtr, bool useVfs);
+    void requestSetUpSyncFoldersForAccount(AccountState *, bool useVfs);
     void requestFolderWizard(OCC::AccountPtr account);
     void unableToCompleteAccountCreation(const QString &error);
 
@@ -41,7 +41,7 @@ private:
     void completeAccountSetup();
 
     AccountPtr _account = nullptr;
-    AccountStatePtr _accountState = nullptr;
+    AccountState *_accountState = nullptr;
     NewAccount::SyncType _syncType = NewAccount::SyncType::NONE;
 };
 }

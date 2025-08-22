@@ -55,7 +55,6 @@ dir = {
 
 branch_ref = [
     "refs/heads/master",
-    "refs/heads/5**",
 ]
 
 trigger_ref = branch_ref + [
