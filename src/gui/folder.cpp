@@ -60,16 +60,6 @@ namespace {
  */
 constexpr int retrySyncLimitC = 3;
 
-/*
- * [Accounts]
- * 1\Folders\4\version=2
- * 1\FoldersWithPlaceholders\3\version=3
- */
-auto versionC()
-{
-    return QLatin1String("version");
-}
-
 auto davUrlC()
 {
     return QStringLiteral("davUrl");
@@ -1210,9 +1200,6 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &def)
     settings.setValue(priorityC(), def.priority());
 
     settings.setValue(QStringLiteral("virtualFilesMode"), Utility::enumToString(def.virtualFilesMode()));
-
-    // Prevent loading of profiles in old clients
-    settings.setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
 }
 
 FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &id)
