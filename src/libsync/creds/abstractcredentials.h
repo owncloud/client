@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef MIRALL_CREDS_ABSTRACT_CREDENTIALS_H
-#define MIRALL_CREDS_ABSTRACT_CREDENTIALS_H
+#pragma once
 
 #include <QObject>
 
@@ -33,30 +32,39 @@ class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
     Q_OBJECT
 
 public:
-    AbstractCredentials();
+    AbstractCredentials(QObject *parent = nullptr);
     // No need for virtual destructor - QObject already has one.
 
     /** The bound account for the credentials instance.
      *
      * Credentials are always used in conjunction with an account.
      * Calling Account::setCredentials() will call this function.
+     *
+     * todo: DC-112 - related to following comment: I do not see any cleanup of the creds in relation to the account.
+     * I just added the parent arg here as it was missing, will check to see if there is some delete on the creds that
+     * I missed but I think in the end we should just pass the account as parent in the ctr and also set the member there,
+     * then this function can go
      * Credentials only live as long as the underlying account object.
      */
     virtual void setAccount(Account *account);
 
+    // todo: DC-112 eliminate this
     virtual QString credentialsType() const = 0;
+    // todo: DC-112 - remove this completely
     virtual QString user() const = 0;
+
     virtual AccessManager *createAccessManager() const = 0;
 
     /** Whether there are credentials that can be used for a connection attempt. */
     virtual bool ready() const = 0;
 
-    /** Whether fetchFromKeychain() was called before. */
-    bool wasFetched() const { return _wasFetched; }
+    /** Whether fetchFromKeychain() was ever called before. */
+    // todo: DC-112 - evaluate the need for this. it's weird.
+    bool wasEverFetched() const { return _wasEverFetched; }
 
     /** Trigger (async) fetching of credential information
      *
-     * Should set _wasFetched = true, and later Q_EMIT fetched() when done.
+     * Should set _wasEverFetched = true, update the ready() state, and fetched() is emitted
      */
     virtual void fetchFromKeychain() = 0;
 
@@ -66,7 +74,10 @@ public:
      */
     virtual void askFromUser() = 0;
 
+    // todo: this is an unholy impl that is called from all sorts of locations, the most concerning of which is the
+    // abstractnetworkjob
     virtual bool stillValid(QNetworkReply *reply) = 0;
+
     virtual void persist() = 0;
 
     /** Invalidates token used to authorize requests, it will no longer be used.
@@ -109,9 +120,9 @@ Q_SIGNALS:
 
 protected:
     Account *_account;
-    bool _wasFetched;
+
+    // todo: DC-112 I don't understand why this is needed but will try to figure it out
+    bool _wasEverFetched;
 };
 
 } // namespace OCC
-
-#endif

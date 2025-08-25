@@ -13,8 +13,7 @@
  * for more details.
  */
 
-#ifndef MIRALL_CREDS_HTTP_CREDENTIALS_H
-#define MIRALL_CREDS_HTTP_CREDENTIALS_H
+#pragma once
 
 #include "creds/abstractcredentials.h"
 #include "creds/credentialssupport.h"
@@ -98,5 +97,3 @@ private:
 
 
 } // namespace OCC
-
-#endif

@@ -141,9 +141,12 @@ AccountPtr Account::sharedFromThis()
 
 QString Account::davUser() const
 {
-    return _davUser.isEmpty() ? _credentials->user() : _davUser;
+    Q_ASSERT(!_davUser.isEmpty());
+    return _davUser;
 }
 
+// DC-112 - this needs to be removed as the davUser is immutable.
+// replace with arg to account ctr to ensure we always have a userId and that it set only ONCE
 void Account::setDavUser(const QString &newDavUser)
 {
     if (_davUser == newDavUser) {
@@ -233,6 +236,9 @@ void Account::setCredentials(AbstractCredentials *cred)
     // The order for these two is important! Reading the credential's
     // settings accesses the account as well as account->_credentials,
     _credentials.reset(cred);
+
+    // todo:: DC-86 this should not be. the account should simply create the creds, not this two way
+    // setCredentials -> setAccount.
     cred->setAccount(this);
 
     _am = _credentials->createAccessManager();
@@ -326,6 +332,7 @@ QString Account::hostName() const
     return _url.host();
 }
 
+// todo: DC-112 - these credential settings must go
 QVariant Account::credentialSetting(const QString &key) const
 {
     if (_credentials) {

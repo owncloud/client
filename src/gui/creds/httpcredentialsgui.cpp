@@ -13,7 +13,7 @@
  * for more details.
  */
 
-#include "creds/httpcredentialsgui.h"
+#include "httpcredentialsgui.h"
 #include "account.h"
 #include "accountmodalwidget.h"
 #include "application.h"

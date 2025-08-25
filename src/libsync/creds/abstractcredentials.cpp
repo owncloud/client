@@ -22,9 +22,10 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcCredentials, "sync.credentials", QtInfoMsg)
 
-AbstractCredentials::AbstractCredentials()
-    : _account(nullptr)
-    , _wasFetched(false)
+AbstractCredentials::AbstractCredentials(QObject *parent)
+    : QObject(parent)
+    , _account(nullptr)
+    , _wasEverFetched(false)
 {
 }
 
