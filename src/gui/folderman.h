@@ -262,19 +262,6 @@ public:
     static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
 
     /**
-     * While ignoring hidden files can theoretically be switched per folder,
-     * it's currently a global setting that users can only change for all folders
-     * at once.
-     * These helper functions can be removed once it's properly per-folder.
-     */
-    // Refactoring todo: when is the ability to switch ignoreHiddenFiles per folder going to happen? what does it
-    // depend on? if there is no change in sight for this, we should refactor the prop to be a general setting
-    // that applies to all folders, and is persisted in the General settings group of the config. The churn around
-    // moving this setting to the folder defs is absurd if it's not needed (and currently it's not actually needed)
-    bool ignoreHiddenFiles() const;
-    void setIgnoreHiddenFiles(bool ignore);
-
-    /**
      * Returns true if any folder is currently syncing.
      *
      * This might be a FolderMan-scheduled sync, or a externally
@@ -450,6 +437,7 @@ private:
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;
     QString _folderConfigPath;
+    bool _ignoreHiddenFiles;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;

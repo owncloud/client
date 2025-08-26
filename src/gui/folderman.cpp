@@ -84,7 +84,8 @@ const SyncResult &TrayOverallStatusResult::overallStatus() const
 FolderMan *FolderMan::_instance = nullptr;
 
 FolderMan::FolderMan()
-    : _lockWatcher(new LockWatcher)
+    : _ignoreHiddenFiles(true)
+    , _lockWatcher(new LockWatcher)
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
@@ -957,30 +958,6 @@ QString FolderMan::findGoodPathForNewSyncFolder(
     return canonicalPath(normalisedPath);
 }
 
-// todo: #7
-bool FolderMan::ignoreHiddenFiles() const
-{
-    if (_folders.empty()) {
-        return true;
-    }
-    return _folders.first()->ignoreHiddenFiles();
-}
-
-// todo: #7
-void FolderMan::setIgnoreHiddenFiles(bool ignore)
-{
-    // Note that the setting will revert to 'true' if all folders
-    // are deleted...
-    QSettings settings = ConfigFile::makeQSettings();
-    settings.beginGroup("Accounts");
-    for (auto *folder : std::as_const(_folders)) {
-        if (folder->ignoreHiddenFiles() != ignore) {
-            folder->setIgnoreHiddenFiles(ignore);
-            saveFolder(folder, settings);
-        }
-    }
-}
-
 Result<void, QString> FolderMan::unsupportedConfiguration(const QString &path) const
 {
     auto it = _unsupportedConfigurationError.find(path);
@@ -1031,7 +1008,6 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
         return nullptr;
     }
 
-    folderDefinition.setIgnoreHiddenFiles(ignoreHiddenFiles());
     folderDefinition.setJournalPath(SyncJournalDb::makeDbName(folderDefinition.localPath()));
 
     // this is here because allegedly, old clients may not remove the old journal when the sync is removed.

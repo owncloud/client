@@ -117,7 +117,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
         // current impl can result in an invalid engine which is just a mess given the folder is useless without it
         _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
-        _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
+        _engine->setIgnoreHiddenFiles(ConfigFile().ignoreHiddenFiles());
 
         if (!_engine->loadDefaultExcludes()) {
             qCWarning(lcFolder, "Could not read system exclude file");
@@ -919,7 +919,7 @@ void Folder::startSync()
     // generally when we change settings we pause syncs, update whatever values,
     // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode
     // consider allowing the engine to run a "update routine" where it pauses and restarts itself.
-    _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
+    _engine->setIgnoreHiddenFiles(ConfigFile().ignoreHiddenFiles());
     QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
 
     Q_EMIT syncStarted();
@@ -1195,7 +1195,6 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &def)
     settings.setValue(davUrlC(), def.webDavUrl());
     settings.setValue(displayNameC(), def.displayName());
     settings.setValue(QStringLiteral("paused"), def.paused());
-    settings.setValue(QStringLiteral("ignoreHiddenFiles"), def.ignoreHiddenFiles());
     settings.setValue(deployedC(), def.isDeployed());
     settings.setValue(priorityC(), def.priority());
 
@@ -1211,7 +1210,6 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     def.setTargetPath(settings.value(QStringLiteral("targetPath")).toString());
     def._journalPath = settings.value(QStringLiteral("journalPath")).toString();
     def._paused = settings.value(QStringLiteral("paused")).toBool();
-    def._ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"), QVariant(true)).toBool();
     def._deployed = settings.value(deployedC(), false).toBool();
     def._priority = settings.value(priorityC(), 0).toUInt();
 
@@ -1219,6 +1217,16 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     QString vfsModeString = settings.value(QStringLiteral("virtualFilesMode")).toString();
     if (!vfsModeString.isEmpty()) {
         def._virtualFilesMode = Vfs::modeFromString(vfsModeString);
+    }
+
+    const QVariant ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"));
+    if (!ignoreHiddenFiles.isNull()) {
+        // Migration from pre-7.0:
+        settings.remove(QStringLiteral("ignoreHiddenFiles"));
+        ConfigFile cf;
+        if (cf.ignoreHiddenFiles() != ignoreHiddenFiles.toBool()) {
+            cf.setIgnoreHiddenFiles(ignoreHiddenFiles.toBool());
+        }
     }
 
     return def;

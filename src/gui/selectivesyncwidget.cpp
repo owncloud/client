@@ -212,12 +212,12 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     SelectiveSyncTreeViewItem *root = static_cast<SelectiveSyncTreeViewItem *>(_folderTree->topLevelItem(0));
 
     const QString rootPath = Utility::ensureTrailingSlash(Utility::concatUrlPath(davUrl(), _folderPath).path());
+    const bool ignoreHiddenFiles = ConfigFile().ignoreHiddenFiles();
 
     // Check for excludes.
     list.erase(std::remove_if(list.begin(), list.end(),
-                   [&rootPath, this](const QString &it) {
-                       return _excludedFiles.isExcludedRemote(it, rootPath, FolderMan::instance()->ignoreHiddenFiles(), ItemTypeDirectory);
-                   }),
+                   [&rootPath, ignoreHiddenFiles, this](
+                       const QString &it) { return _excludedFiles.isExcludedRemote(it, rootPath, ignoreHiddenFiles, ItemTypeDirectory); }),
         list.end());
 
 
