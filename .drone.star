@@ -46,8 +46,7 @@ dir = {
     "guiTest": "/drone/src/test/gui",
     "guiTestReport": "/drone/src/test/gui/guiReportUpload",
     "build": "/drone/src/build",
-    "pythonModules": "/usr/local/lib/python3.10/site-packages",
-    "pythonModules64": "/usr/local/lib64/python3.10/site-packages",
+    "pythonModules": "/home/headless/squish/python3/lib/python3.10/site-packages",
 }
 
 branch_ref = [
@@ -70,22 +69,14 @@ build_config = {
 
 pip_pipeline_volume = [
     {
-        "name": "python",
-        "temp": {},
-    },
-    {
-        "name": "python64",
+        "name": "python-lib",
         "temp": {},
     },
 ]
 pip_step_volume = [
     {
-        "name": "python",
+        "name": "python-lib",
         "path": dir["pythonModules"],
-    },
-    {
-        "name": "python64",
-        "path": dir["pythonModules64"],
     },
 ]
 
@@ -581,6 +572,7 @@ def install_python_modules():
         "user": "0:0",
         "commands": [
             "make -C %s install" % dir["guiTest"],
+            "python3.10 -m pip list -v",
         ],
         "volumes": pip_step_volume,
     }]
