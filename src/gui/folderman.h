@@ -261,6 +261,9 @@ public:
      */
     static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
 
+    bool ignoreHiddenFiles() const;
+    void setIgnoreHiddenFiles(bool ignore);
+
     /**
      * Returns true if any folder is currently syncing.
      *
@@ -437,7 +440,7 @@ private:
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;
     QString _folderConfigPath;
-    bool _ignoreHiddenFiles;
+    bool _ignoreHiddenFiles = true;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;

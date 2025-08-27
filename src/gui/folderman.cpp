@@ -84,11 +84,11 @@ const SyncResult &TrayOverallStatusResult::overallStatus() const
 FolderMan *FolderMan::_instance = nullptr;
 
 FolderMan::FolderMan()
-    : _ignoreHiddenFiles(true)
-    , _lockWatcher(new LockWatcher)
+    : _lockWatcher(new LockWatcher)
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
+    _ignoreHiddenFiles = ConfigFile().ignoreHiddenFiles();
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
@@ -956,6 +956,33 @@ QString FolderMan::findGoodPathForNewSyncFolder(
     }
     // we failed to find a non existing path
     return canonicalPath(normalisedPath);
+}
+
+bool FolderMan::ignoreHiddenFiles() const
+{
+    return _ignoreHiddenFiles;
+}
+
+void FolderMan::setIgnoreHiddenFiles(bool ignore)
+{
+    if (ignore == _ignoreHiddenFiles) {
+        return;
+    }
+
+    setSyncEnabled(false);
+    ConfigFile().setIgnoreHiddenFiles(ignore);
+    _ignoreHiddenFiles = ignore;
+
+    // This should be done through a signal-slot connection. However, this has to wait until the
+    // engine is passed to the folder (so we can connect the signal/slot) instead of the folder
+    // creating it. See the todo in the Folder constructor.
+    for (Folder *folder : _folders) {
+        if (folder->canSync()) {
+            folder->syncEngine().setIgnoreHiddenFiles(ignore);
+        }
+    }
+
+    setSyncEnabled(true);
 }
 
 Result<void, QString> FolderMan::unsupportedConfiguration(const QString &path) const

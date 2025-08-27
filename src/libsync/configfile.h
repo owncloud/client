@@ -149,7 +149,7 @@ public:
     void setOptionalDesktopNotifications(bool show);
 
     bool ignoreHiddenFiles() const;
-    void setIgnoreHiddenFiles(bool yesno);
+    void setIgnoreHiddenFiles(bool ignore);
 
     std::optional<QStringList> issuesWidgetFilter() const;
     void setIssuesWidgetFilter(const QStringList &checked);

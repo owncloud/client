@@ -910,16 +910,6 @@ void Folder::startSync()
         _localDiscoveryTracker->startSyncFullDiscovery();
     }
 
-    // Refactoring todo: why is this set for every sync instead of when the value actually changes?!
-    // propose: remove the param from the def, and when Folder:setIgnoreHiddenFiles is called it updates the
-    // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
-    // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead
-    // of saving this val for every folder in the config is just silly when it's de facto a global setting.
-    // Erik has no objections
-    // generally when we change settings we pause syncs, update whatever values,
-    // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode
-    // consider allowing the engine to run a "update routine" where it pauses and restarts itself.
-    _engine->setIgnoreHiddenFiles(ConfigFile().ignoreHiddenFiles());
     QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
 
     Q_EMIT syncStarted();
@@ -1223,10 +1213,7 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     if (!ignoreHiddenFiles.isNull()) {
         // Migration from pre-7.0:
         settings.remove(QStringLiteral("ignoreHiddenFiles"));
-        ConfigFile cf;
-        if (cf.ignoreHiddenFiles() != ignoreHiddenFiles.toBool()) {
-            cf.setIgnoreHiddenFiles(ignoreHiddenFiles.toBool());
-        }
+        FolderMan::instance()->setIgnoreHiddenFiles(ignoreHiddenFiles.toBool());
     }
 
     return def;

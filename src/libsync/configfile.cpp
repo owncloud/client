@@ -189,10 +189,10 @@ bool ConfigFile::ignoreHiddenFiles() const
     return settings.value(ignoreHiddenFilesC(), true).toBool();
 }
 
-void ConfigFile::setIgnoreHiddenFiles(bool yesno)
+void ConfigFile::setIgnoreHiddenFiles(bool ignore)
 {
     auto settings = makeQSettings();
-    settings.setValue(ignoreHiddenFilesC(), yesno);
+    settings.setValue(ignoreHiddenFilesC(), ignore);
     settings.sync();
 }
 
