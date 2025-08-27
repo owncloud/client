@@ -59,6 +59,8 @@ ownCloud admins and users.
 * Bugfix - Make open account in browser accessible for keyboard navigation: [#11772](https://github.com/owncloud/client/issues/11772)
 * Bugfix - Don't log misleading error if dynamic registration failed: [#11839](https://github.com/owncloud/client/pull/11839)
 * Bugfix - Fix crash after resource job fails: [#12045](https://github.com/owncloud/client/pull/12045)
+* Bugfix - Remove any existing ResourceCache directories for accounts: [#12214](https://github.com/owncloud/client/pull/12214)
+* Bugfix - Delete account-specific caches when an account is removed: [#12224](https://github.com/owncloud/client/pull/12224)
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 * Change - Make messages translatable that occur early in start-up: [#11142](https://github.com/owncloud/client/issues/11142)
 * Change - Remove unused command line option --language: [#11245](https://github.com/owncloud/client/issues/11245)
@@ -75,6 +77,8 @@ ownCloud admins and users.
 * Change - Only allow to add un-synced spaces: [#11752](https://github.com/owncloud/client/issues/11752)
 * Change - Rewrite of the login widget in QML: [#11856](https://github.com/owncloud/client/pull/11856)
 * Change - Only support APFS on macOS: [#12044](https://github.com/owncloud/client/pull/12044)
+* Change - Bump minimum macOS version to 13.0: [#12245](https://github.com/owncloud/client/pull/12245)
+* Change - Update the sync exclude list for Infinite Scale: [#12262](https://github.com/owncloud/client/pull/12262)
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 * Enhancement - Add option to move files to trash instead of deleting: [#9001](https://github.com/owncloud/client/issues/9001)
 * Enhancement - Prevent same default sync folder for multiple accounts with Spaces: [#11204](https://github.com/owncloud/client/issues/11204)
@@ -179,6 +183,21 @@ ownCloud admins and users.
    icon.
 
    https://github.com/owncloud/client/pull/12045
+
+* Bugfix - Remove any existing ResourceCache directories for accounts: [#12214](https://github.com/owncloud/client/pull/12214)
+
+   Some versions of the client failed to remove the temporary cache directory on
+   exit. This can result in multiple GB of cached space images. These cache
+   directories are now cleaned up before creating a new cache.
+
+   https://github.com/owncloud/client/pull/12214
+
+* Bugfix - Delete account-specific caches when an account is removed: [#12224](https://github.com/owncloud/client/pull/12224)
+
+   This includes the cache for space images, as well as certain cached network
+   jobs.
+
+   https://github.com/owncloud/client/pull/12224
 
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 
@@ -325,6 +344,19 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/12044
 
+* Change - Bump minimum macOS version to 13.0: [#12245](https://github.com/owncloud/client/pull/12245)
+
+   https://github.com/owncloud/client/pull/12245
+   https://github.com/owncloud/client/pull/12246
+
+* Change - Update the sync exclude list for Infinite Scale: [#12262](https://github.com/owncloud/client/pull/12262)
+
+   Files with the extension `.space` and `.psec` are now excluded from sync by
+   default.
+
+   https://github.com/owncloud/client/pull/12262
+   https://github.com/owncloud/client/pull/12093
+
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 
    On platforms that support metered-connection detection, an option is now
@@ -402,6 +434,7 @@ ownCloud admins and users.
    We implemented support for idP's to specify the supported prompt values.
 
    https://github.com/owncloud/client/pull/11729
+   https://github.com/owncloud/client/pull/12163
 
 * Enhancement - New branding option: automatically sync new spaces: [#11751](https://github.com/owncloud/client/issues/11751)
 
