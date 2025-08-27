@@ -10,6 +10,7 @@ owncloud_add_test(SyncJournalDB)
 owncloud_add_test(SyncFileItem)
 owncloud_add_test(ConcatUrl)
 owncloud_add_test(XmlParse)
+owncloud_add_test(OAuthHtmlPage ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp)
 owncloud_add_test(ChecksumValidator)
 owncloud_add_test(ConnectionValidator)
 

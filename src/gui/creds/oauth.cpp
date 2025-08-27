@@ -59,25 +59,6 @@ auto defaultOauthPromptValue()
     return promptValue;
 }
 
-QString renderHttpTemplate(const QString &title, const QString &content)
-{
-    const QString icon = [] {
-        const auto img = Theme::instance()->aboutIcon().pixmap(256).toImage();
-        QByteArray out;
-        QBuffer buffer(&out);
-        img.save(&buffer, "PNG");
-        return QString::fromUtf8(out.toBase64());
-    }();
-    return Resources::Template::renderTemplateFromFile(QStringLiteral(":/client/resources/oauth/oauth.html.in"),
-        {
-            {QStringLiteral("TITLE"), title}, //
-            {QStringLiteral("CONTENT"), content}, //
-            {QStringLiteral("ICON"), icon}, //
-            {QStringLiteral("BACKGROUND_COLOR"), Theme::instance()->wizardHeaderBackgroundColor().name()}, //
-            {QStringLiteral("FONT_COLOR"), Theme::instance()->wizardHeaderTitleColor().name()} //
-        });
-}
-
 seconds defaultTimeout()
 {
     // as the OAuth process can be interactive we don't want 5min of inactivity
@@ -98,6 +79,25 @@ QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *er
     }
     return *out;
 }
+}
+
+QString OAuth::renderHttpTemplate(const QString &title, const QString &content)
+{
+    const QString icon = [] {
+        const auto img = Theme::instance()->aboutIcon().pixmap(256).scaledToHeight(128).toImage();
+        QByteArray out;
+        QBuffer buffer(&out);
+        img.save(&buffer, "PNG");
+        return QString::fromUtf8(out.toBase64());
+    }();
+    return Resources::Template::renderTemplateFromFile(QStringLiteral(":/client/resources/oauth/oauth.html.in"),
+        {
+            {QStringLiteral("TITLE"), title}, //
+            {QStringLiteral("CONTENT"), content}, //
+            {QStringLiteral("ICON"), icon}, //
+            {QStringLiteral("BACKGROUND_COLOR"), Theme::instance()->wizardHeaderBackgroundColor().name()}, //
+            {QStringLiteral("FONT_COLOR"), Theme::instance()->wizardHeaderTitleColor().name()} //
+        });
 }
 
 OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)

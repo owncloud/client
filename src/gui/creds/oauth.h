@@ -70,6 +70,9 @@ public:
     void openBrowser();
     QUrl authorisationLink() const;
 
+    // temporary solution
+    static QString renderHttpTemplate(const QString &title, const QString &content);
+
 Q_SIGNALS:
     /**
      * The state has changed.
