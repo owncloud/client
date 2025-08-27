@@ -313,12 +313,12 @@ File synchronisation desktop utility.</translation>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>You are synchronising %1 out of %n folder</numerusform><numerusform>You are synchronising %1 out of %n folders</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>You are synchronising %1 out of %n space</numerusform><numerusform>You are synchronising %1 out of %n spaces</numerusform></translation>
     </message>
 </context>
 <context>
@@ -600,7 +600,7 @@ File synchronisation desktop utility.</translation>
 <context>
     <name>OCC::Account</name>
     <message>
-        <location filename="../src/libsync/account.cpp" line="158"/>
+        <location filename="../src/libsync/account.cpp" line="178"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
     </message>
@@ -1952,7 +1952,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Bandwidth limits are deprecated and will be removed in a future release!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
@@ -3288,12 +3288,12 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Select a folder to sync it to your computer.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Select a Space to sync it to your computer.</translation>
     </message>
 </context>
 <context>
@@ -3659,7 +3659,7 @@ Are you sure you want to proceed?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>The requested URL failed with query value: %1</translation>
     </message>
 </context>
 <context>
