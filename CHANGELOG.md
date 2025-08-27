@@ -77,6 +77,8 @@ ownCloud admins and users.
 * Change - Only allow to add un-synced spaces: [#11752](https://github.com/owncloud/client/issues/11752)
 * Change - Rewrite of the login widget in QML: [#11856](https://github.com/owncloud/client/pull/11856)
 * Change - Only support APFS on macOS: [#12044](https://github.com/owncloud/client/pull/12044)
+* Change - Bump minimum macOS version to 13.0: [#12245](https://github.com/owncloud/client/pull/12245)
+* Change - Update the sync exclude list for Infinite Scale: [#12262](https://github.com/owncloud/client/pull/12262)
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 * Enhancement - Add option to move files to trash instead of deleting: [#9001](https://github.com/owncloud/client/issues/9001)
 * Enhancement - Prevent same default sync folder for multiple accounts with Spaces: [#11204](https://github.com/owncloud/client/issues/11204)
@@ -341,6 +343,19 @@ ownCloud admins and users.
    characteristics.
 
    https://github.com/owncloud/client/pull/12044
+
+* Change - Bump minimum macOS version to 13.0: [#12245](https://github.com/owncloud/client/pull/12245)
+
+   https://github.com/owncloud/client/pull/12245
+   https://github.com/owncloud/client/pull/12246
+
+* Change - Update the sync exclude list for Infinite Scale: [#12262](https://github.com/owncloud/client/pull/12262)
+
+   Files with the extension `.space` and `.psec` are now excluded from sync by
+   default.
+
+   https://github.com/owncloud/client/pull/12262
+   https://github.com/owncloud/client/pull/12093
 
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 
