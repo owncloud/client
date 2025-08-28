@@ -42,8 +42,15 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
 
-    QLabel *instructionLabel =
-        new QLabel(tr("Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address."), this);
+    QLabel *titleLabel = new QLabel(tr("Sign in required").arg(appName), this);
+    QFont welcomeFont = titleLabel->font();
+    welcomeFont.setWeight(QFont::DemiBold);
+    welcomeFont.setPixelSize(20);
+    titleLabel->setFont(welcomeFont);
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    QLabel *instructionLabel = new QLabel(tr("You may have been automatically disconnected due to a server issue or time out. Please sign in again."), this);
     QFont font = instructionLabel->font();
     font.setPixelSize(14);
     instructionLabel->setFont(font);
@@ -53,14 +60,13 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
 
     _urlField = new QLabel(this);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _urlField->setEnabled(false);
-    _urlField->setAccessibleDescription(tr("Login URL"));
+    _urlField->setAccessibleDescription(tr("URL to sign in"));
 
     QPushButton *copyButton = new QPushButton(_copyIcon, QString(), this);
     copyButton->setFlat(true);
     copyButton->setContentsMargins(0, 0, 0, 0);
     copyButton->setFixedSize(_urlField->height(), _urlField->height());
-    copyButton->setAccessibleDescription(tr("Copy the login URL to the clipboard"));
+    copyButton->setAccessibleDescription(tr("Copy URL to sign in"));
     copyButton->installEventFilter(this);
     connect(copyButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::onCopyUrl);
 
@@ -83,6 +89,11 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
         footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
     }
 
+    QPushButton *cancelButton = new QPushButton(tr("Stay logged out"), this);
+    connect(cancelButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::stayLoggedOutClicked);
+    QPushButton *signInButton = new QPushButton(tr("Sign in"), this);
+    connect(signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
+
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
@@ -97,12 +108,18 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     urlAreaLayout->addWidget(_urlField, Qt::AlignLeft);
     urlAreaLayout->addWidget(_copyButton);
     layout->addLayout(urlAreaLayout, Qt::AlignCenter);
-
     layout->addWidget(_errorField, Qt::AlignLeft);
 
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->addStretch(1);
+    buttonLayout->addWidget(cancelButton);
+    buttonLayout->addWidget(signInButton);
+    layout->addLayout(buttonLayout);
+
     setLayout(layout);
 }
 
