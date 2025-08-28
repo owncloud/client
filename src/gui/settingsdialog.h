@@ -69,7 +69,8 @@ public:
     Account *currentAccount() const;
 
 public Q_SLOTS:
-    void addAccount();
+    // this is a direct call from QML
+    void createNewAccount();
     void runFolderWizard(AccountPtr account);
 
 
@@ -77,6 +78,9 @@ Q_SIGNALS:
     void currentPageChanged();
     void currentAccountChanged();
 
+protected Q_SLOTS:
+    void onAccountAdded(AccountState *state);
+    void onAccountRemoved(AccountState *state);
 
 protected:
     void setVisible(bool visible) override;

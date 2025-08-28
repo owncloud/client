@@ -62,7 +62,7 @@ public:
 
     FolderStatusModel(QObject *parent = nullptr);
     ~FolderStatusModel() override;
-    void setAccountState(const AccountStatePtr &accountState);
+    void setAccountState(AccountState *accountState);
 
     Folder *folder(const QModelIndex &index) const;
 
@@ -81,7 +81,7 @@ private Q_SLOTS:
 private:
     int indexOf(Folder *f) const;
 
-    AccountStatePtr _accountState;
+    QPointer<AccountState> _accountState;
     std::vector<std::unique_ptr<SubFolderInfo>> _folders;
 };
 

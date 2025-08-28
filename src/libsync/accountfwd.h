@@ -15,7 +15,6 @@
 #ifndef SERVERFWD_H
 #define SERVERFWD_H
 
-#include <QPointer>
 #include <QSharedPointer>
 
 namespace OCC {
@@ -24,7 +23,6 @@ class Account;
 class AccountState;
 
 using AccountPtr = QSharedPointer<Account>;
-using AccountStatePtr = QPointer<AccountState>;
 
 
 } // namespace OCC

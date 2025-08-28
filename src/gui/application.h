@@ -69,7 +69,7 @@ public:
 protected Q_SLOTS:
     void slotUseMonoIconsChanged(bool);
     void slotCleanup();
-    void slotAccountStateAdded(AccountStatePtr accountState) const;
+    void slotAccountStateAdded(AccountState *accountState) const;
     void lastAccountStateRemoved() const;
 
 private:

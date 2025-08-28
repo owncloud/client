@@ -73,10 +73,10 @@ public:
     void checkActivityTabVisibility();
 
 public Q_SLOTS:
-    void slotRefreshActivities(const AccountStatePtr &ptr);
-    void slotRefreshNotifications(const AccountStatePtr &ptr);
-    void slotRemoveAccount(const AccountStatePtr &ptr);
-    void slotAccountActivityStatus(AccountStatePtr ast, int statusCode);
+    void slotRefreshActivities(AccountState *ptr);
+    void slotRefreshNotifications(AccountState *ptr);
+    void slotRemoveAccount(AccountState *ptr);
+    void slotAccountActivityStatus(AccountState *ast, int statusCode);
     void slotRequestCleanupAndBlacklist(const Activity &blacklistActivity);
 
 Q_SIGNALS:
@@ -133,8 +133,8 @@ public:
     ~ActivitySettings() override;
 
 public Q_SLOTS:
-    void slotRefresh(AccountStatePtr ptr);
-    void slotRemoveAccount(const AccountStatePtr &ptr);
+    void slotRefresh(AccountState *ptr);
+    void slotRemoveAccount(AccountState *ptr);
 
     void setNotificationRefreshInterval(std::chrono::milliseconds interval);
 

@@ -161,13 +161,13 @@ public:
      *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
      *  a complete/standalone impl.
      */
-    Folder *addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition);
+    Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
 
     /**
      *  sets up sync folders/spaces after adding a new account via the gui
      */
-    void setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs);
+    void setUpInitialSyncFolders(AccountState *accountState, bool useVfs);
 
     // Refactoring todo: this function actually just returns the internal vector of folders. I do not see any evidence of
     // what is docced here, at least related to this specific function.
@@ -313,7 +313,7 @@ public:
      */
     // todo: #1
     // todo: #2
-    void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
+    void addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
 
     // todo: #3
     void removeFolderSettings(Folder *folder);
@@ -360,7 +360,7 @@ private Q_SLOTS:
     void slotFolderSyncStarted();
     void slotFolderSyncFinished(const SyncResult &);
 
-    void slotRemoveFoldersForAccount(const AccountStatePtr &accountState);
+    void slotRemoveFoldersForAccount(AccountState *accountState);
 
     void slotServerVersionChanged(Account *account);
 
@@ -386,14 +386,14 @@ private:
      * from some dynamic operation (eg folders from new account or via the gui add folder sync operations).
      * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
      */
-    Folder *addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
+    Folder *addFolderFromScratch(AccountState *accountState, FolderDefinition &&definition, bool useVfs);
 
     /**
      *  private handler connected to spacesManager::ready signal
      *  this is a bit weird as you have to ask the manager if it's ready then wait for the signal before actually loading
      *  the spaces. this function loads all the spaces into the FolderMan and saves them in an efficient manner
      */
-    void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
+    void loadSpacesWhenReady(AccountState *accountState, bool useVfs);
 
     /**
      *  reads the folder defs from the config for a single account.
@@ -404,7 +404,7 @@ private:
      *
      *  returns false when a downgrade of the database is detected, true otherwise.
      */
-    bool addFoldersFromConfigByAccount(QSettings &settings, AccountStatePtr account);
+    bool addFoldersFromConfigByAccount(QSettings &settings, AccountState *account);
 
     // tests folder def for minimum reqs
     bool validateFolderDefinition(const FolderDefinition &folderDefinition);

@@ -33,10 +33,10 @@ Q_SIGNALS:
     void newNotificationList(ActivityList);
 
 public Q_SLOTS:
-    void slotFetchNotifications(AccountStatePtr ptr);
+    void slotFetchNotifications(AccountState *ptr);
 
 private:
-    void slotNotificationsReceived(JsonApiJob *job, const AccountStatePtr &accountState);
+    void slotNotificationsReceived(JsonApiJob *job, AccountState *accountState);
 };
 }
 

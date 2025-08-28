@@ -34,7 +34,7 @@ namespace OCC {
 class OWNCLOUDGUI_EXPORT AccountManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QList<AccountState *> accounts READ accountsRaw() NOTIFY accountsChanged)
+    Q_PROPERTY(QList<AccountState *> accounts READ accounts() NOTIFY accountsChanged)
     QML_SINGLETON
     QML_ELEMENT
 public:
@@ -68,7 +68,7 @@ public:
      * Typically called from the wizard
      */
     // todo: #28 - this should not be public and should not be called directly by any third party
-    AccountStatePtr addAccount(const AccountPtr &newAccount);
+    AccountState *addAccount(const AccountPtr &newAccount);
 
     /**
      * remove all accounts
@@ -78,22 +78,22 @@ public:
     /**
      * Return a list of all accounts.
      */
-    const QList<AccountStatePtr> accounts() const { return _accounts.values(); }
+    const QList<AccountState *> accounts() const;
 
     /**
      * Return the account state pointer for an account identified by its display name
      */
-    Q_DECL_DEPRECATED_X("Please use the uuid to specify the account") AccountStatePtr account(const QString &name);
+    Q_DECL_DEPRECATED_X("Please use the uuid to specify the account") AccountState *account(const QString &name);
 
     /**
      * Return the accountState state pointer for an accountState identified by its display name
      */
-    AccountStatePtr accountState(const QUuid uuid);
+    AccountState *accountState(const QUuid uuid);
 
     /**
      * Delete the AccountState
      */
-    void deleteAccount(AccountStatePtr account);
+    void deleteAccount(AccountState *account);
 
 
     /**
@@ -113,9 +113,6 @@ public:
     bool accountForLoginExists(const QUrl &url, const QString &davUser) const;
 
 private:
-    // expose raw pointers to qml
-    QList<AccountState *> accountsRaw() const;
-
     // saving and loading Account to settings
     void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
     AccountPtr loadAccountHelper(QSettings &settings);
@@ -126,15 +123,15 @@ private:
     QString generateFreeAccountId() const;
 
     // Adds an account to the tracked list, emitting accountAdded()
-    AccountStatePtr addAccountState(std::unique_ptr<AccountState> &&accountState);
+    AccountState *addAccountState(std::unique_ptr<AccountState> &&accountState);
 
 public Q_SLOTS:
     /// Saves account data, not including the credentials
     void saveAccount(Account *account, bool saveCredentials);
 
 Q_SIGNALS:
-    void accountAdded(AccountStatePtr account);
-    void accountRemoved(AccountStatePtr account);
+    void accountAdded(AccountState *account);
+    void accountRemoved(AccountState *account);
     void lastAccountRemoved();
 
     // this signal is not formally connected anywhere, but it's used on the Q_PROPERTY declared for "accounts" above
@@ -144,7 +141,7 @@ Q_SIGNALS:
 
 private:
     AccountManager() {}
-    QMap<QUuid, AccountStatePtr> _accounts;
+    QMap<QUuid, AccountState *> _accounts;
     /// Account ids from settings that weren't read
     QSet<QString> _additionalBlockedAccountIds;
 };

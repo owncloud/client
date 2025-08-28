@@ -178,12 +178,11 @@ def step(context):
 
 @When('the user selects "|any|" space in sync connection wizard')
 def step(context, space_name):
-    if get_config('ocis'):
-        if get_config('client_name') != 'ownCloud':
-            space_name = get_config('personal_sync_folder')
-        SyncConnectionWizard.select_space(space_name)
-        SyncConnectionWizard.next_step()
-        set_config('syncConnectionName', space_name)
+    if get_config('client_name') != 'ownCloud':
+        space_name = get_config('personal_sync_folder')
+    SyncConnectionWizard.select_space(space_name)
+    SyncConnectionWizard.next_step()
+    set_config('syncConnectionName', space_name)
 
 
 @When('the user sets the sync path in sync connection wizard')
@@ -197,19 +196,9 @@ def step(context):
 def step(context, folder_name):
     sync_path = get_temp_resource_path(folder_name)
     SyncConnectionWizard.set_sync_path(sync_path)
-    if get_config('ocis'):
-        # empty connection name when using temporary locations
-        set_config('syncConnectionName', '')
-        set_current_user_sync_path(sync_path)
-
-
-@When('the user selects "|any|" as a remote destination folder')
-def step(context, folder_name):
-    # There's no remote destination section with oCIS server
-    if not get_config('ocis'):
-        if get_config('client_name') != 'ownCloud':
-            folder_name = get_config('client_name')
-        SyncConnectionWizard.select_remote_destination_folder(folder_name)
+    # empty connection name when using temporary locations
+    set_config('syncConnectionName', '')
+    set_current_user_sync_path(sync_path)
 
 
 @When('the user syncs the "|any|" space')
@@ -284,27 +273,6 @@ def step(context):
     SyncConnectionWizard.back()
 
 
-@When('the user creates a folder "|any|" in the remote destination wizard')
-def step(context, folder_name):
-    if not get_config('ocis'):
-        SyncConnectionWizard.create_folder_in_remote_destination(folder_name)
-
-
-@When('the user refreshes the remote destination in the sync connection wizard')
-def step(context):
-    if not get_config('ocis'):
-        SyncConnectionWizard.refresh_remote()
-
-
-@Then('the folder "|any|" should be present in the remote destination wizard')
-def step(context, folder_name):
-    if not get_config('ocis'):
-        has_folder, folder_selector = SyncConnectionWizard.has_remote_folder(
-            folder_name
-        )
-        test.compare(True, has_folder, 'Folder should be in the remote list')
-
-
 @When('the user selects remove folder sync connection option')
 def step(context):
     SyncConnection.remove_folder_sync_connection()
@@ -324,11 +292,6 @@ def step(context, sync_folder):
 @Then('the file "|any|" should have status "|any|" in the activity tab')
 def step(context, file_name, status):
     Activity.has_sync_status(file_name, status)
-
-
-@When('the user opens the sync connection wizard')
-def step(context):
-    SyncConnectionWizard.open_sync_connection_wizard()
 
 
 @Then('the button to open sync connection wizard should be disabled')

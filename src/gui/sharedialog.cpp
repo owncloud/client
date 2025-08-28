@@ -38,13 +38,8 @@ namespace OCC {
 
 static const int thumbnailSize = 40;
 
-ShareDialog::ShareDialog(AccountStatePtr accountState,
-    const QUrl &baseUrl,
-    const QString &sharePath,
-    const QString &localPath,
-    SharePermissions maxSharingPermissions,
-    ShareDialogStartPage startPage,
-    QWidget *parent)
+ShareDialog::ShareDialog(AccountState *accountState, const QUrl &baseUrl, const QString &sharePath, const QString &localPath,
+    SharePermissions maxSharingPermissions, ShareDialogStartPage startPage, QWidget *parent)
     : QDialog(parent)
     , _ui(new Ui::ShareDialog)
     , _accountState(accountState)
