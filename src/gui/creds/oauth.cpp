@@ -20,17 +20,14 @@
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
 #include "networkjobs/checkserverjobfactory.h"
-#include "resources/template.h"
+#include "oauthhtmlpage.h"
 #include "theme.h"
 
-#include <QBuffer>
 #include <QDesktopServices>
-#include <QIcon>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <QPixmap>
 #include <QRandomGenerator>
 
 using namespace std::chrono;
@@ -57,25 +54,6 @@ auto defaultOauthPromptValue()
         return out;
     }();
     return promptValue;
-}
-
-QString renderHttpTemplate(const QString &title, const QString &content)
-{
-    const QString icon = [] {
-        const auto img = Theme::instance()->aboutIcon().pixmap(256).toImage();
-        QByteArray out;
-        QBuffer buffer(&out);
-        img.save(&buffer, "PNG");
-        return QString::fromUtf8(out.toBase64());
-    }();
-    return Resources::Template::renderTemplateFromFile(QStringLiteral(":/client/resources/oauth/oauth.html.in"),
-        {
-            {QStringLiteral("TITLE"), title}, //
-            {QStringLiteral("CONTENT"), content}, //
-            {QStringLiteral("ICON"), icon}, //
-            {QStringLiteral("BACKGROUND_COLOR"), Theme::instance()->wizardHeaderBackgroundColor().name()}, //
-            {QStringLiteral("FONT_COLOR"), Theme::instance()->wizardHeaderTitleColor().name()} //
-        });
 }
 
 seconds defaultTimeout()
@@ -144,18 +122,13 @@ void OAuth::startAuthentication()
     QObject::connect(&_server, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
 }
 
-void OAuth::httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
-{
-    httpReplyAndClose(_socket, code, title, body, additionalHeader);
-}
-
-void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
+void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, bool success, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
 {
     if (!socket) {
         return; // socket can have been deleted if the browser was closed
     }
 
-    const QByteArray content = renderHttpTemplate(title, body.isEmpty() ? title : body).toUtf8();
+    const QByteArray content = OAuthHtmlPage::buildPage(success, title, body.isEmpty() ? title : body).toUtf8();
     QString header = QStringLiteral("HTTP/1.1 %1\r\n"
                                     "Content-Type: text/html; charset=utf-8\r\n"
                                     "Connection: close\r\n"
@@ -180,13 +153,15 @@ void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, 
 
 void OAuth::finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
 {
-    const QString loginSuccessfulHtml = tr("<h1>Login Successful</h1><p>You can close this window.</p>");
-    const QString loginSuccessfulTitle = tr("Login Successful");
+    const QString brand = Theme::instance()->appNameGUI();
+    const QString loginSuccessfulTitle = tr("Successfully signed in");
+    const QString loginSuccessfulHtml = tr("Now, explore %1 on desktop.").arg(brand);
+
     if (messageUrl.isValid()) {
-        httpReplyAndClose(QStringLiteral("303 See Other"), loginSuccessfulTitle, loginSuccessfulHtml,
+        httpReplyAndClose(_socket, true, QStringLiteral("303 See Other"), loginSuccessfulTitle, loginSuccessfulHtml,
             {QStringLiteral("Location: %1").arg(QString::fromUtf8(messageUrl.toEncoded()))});
     } else {
-        httpReplyAndClose(QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
+        httpReplyAndClose(_socket, true, QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
     }
     Q_EMIT result(LoggedIn, accessToken, refreshToken);
 }
@@ -233,7 +208,7 @@ void OAuth::handleSocketReadyRead()
 
     const auto getPrefix = QByteArrayLiteral("GET /?");
     if (!peek.startsWith(getPrefix)) {
-        httpReplyAndClose(candidateSocket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
+        httpReplyAndClose(candidateSocket, false, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
         return;
     }
     const auto endOfUrl = peek.indexOf(' ', getPrefix.length());
@@ -241,7 +216,7 @@ void OAuth::handleSocketReadyRead()
     _queryArgs = QUrlQuery(QUrl::fromPercentEncoding(peek.mid(getPrefix.length(), endOfUrl - getPrefix.length())));
 
     if (_queryArgs.queryItemValue(QStringLiteral("state")).toUtf8() != _state) {
-        httpReplyAndClose(candidateSocket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
+        httpReplyAndClose(candidateSocket, false, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
         return;
     }
 
@@ -304,7 +279,7 @@ void OAuth::getTokens()
                 errorReason = tr("Unknown Error");
             }
             qCWarning(lcOauth) << "Error when getting the accessToken" << errorReason;
-            httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(errorReason));
+            httpReplyAndClose(_socket, false, QStringLiteral("500 Internal Server Error"), tr("Login Error"), errorReason);
             Q_EMIT result(Error);
             return;
         }
@@ -327,17 +302,16 @@ void OAuth::checkUserInfo()
     const UserInfoResult infoResult = infoAdapter.getResult();
 
     if (!infoResult.success()) {
-        httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(infoResult.error));
+        httpReplyAndClose(_socket, false, QStringLiteral("500 Internal Server Error"), tr("Login Error"), infoResult.error);
         Q_EMIT result(Error);
     } else {
         if (infoResult.userId.compare(_davUser, Qt::CaseInsensitive) != 0) {
             // Connected with the wrong user
             qCWarning(lcOauth) << "We expected the user" << _davUser << "but the server answered with user" << infoResult.userId;
-            const QString message = tr("<h1>Wrong user</h1>"
-                                       "<p>You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
-                                       "Please return to the %3 client and restart the authentication.</p>")
+            const QString message = tr("You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
+                                       "Please return to the %3 client and restart the authentication.")
                                         .arg(infoResult.userId, _davUser, Theme::instance()->appNameGUI());
-            httpReplyAndClose(QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
+            httpReplyAndClose(_socket, false, QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
             Q_EMIT result(Error);
         } else {
             finalize(_accessToken, _refreshToken, _messageUrl);
