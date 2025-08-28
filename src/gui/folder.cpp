@@ -60,16 +60,6 @@ namespace {
  */
 constexpr int retrySyncLimitC = 3;
 
-/*
- * [Accounts]
- * 1\Folders\4\version=2
- * 1\FoldersWithPlaceholders\3\version=3
- */
-auto versionC()
-{
-    return QLatin1String("version");
-}
-
 auto davUrlC()
 {
     return QStringLiteral("davUrl");
@@ -127,7 +117,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
         // current impl can result in an invalid engine which is just a mess given the folder is useless without it
         _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
-        _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
+        _engine->setIgnoreHiddenFiles(ConfigFile().ignoreHiddenFiles());
 
         if (!_engine->loadDefaultExcludes()) {
             qCWarning(lcFolder, "Could not read system exclude file");
@@ -920,16 +910,6 @@ void Folder::startSync()
         _localDiscoveryTracker->startSyncFullDiscovery();
     }
 
-    // Refactoring todo: why is this set for every sync instead of when the value actually changes?!
-    // propose: remove the param from the def, and when Folder:setIgnoreHiddenFiles is called it updates the
-    // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
-    // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead
-    // of saving this val for every folder in the config is just silly when it's de facto a global setting.
-    // Erik has no objections
-    // generally when we change settings we pause syncs, update whatever values,
-    // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode
-    // consider allowing the engine to run a "update routine" where it pauses and restarts itself.
-    _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
     QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
 
     Q_EMIT syncStarted();
@@ -1205,14 +1185,10 @@ void FolderDefinition::save(QSettings &settings, const FolderDefinition &def)
     settings.setValue(davUrlC(), def.webDavUrl());
     settings.setValue(displayNameC(), def.displayName());
     settings.setValue(QStringLiteral("paused"), def.paused());
-    settings.setValue(QStringLiteral("ignoreHiddenFiles"), def.ignoreHiddenFiles());
     settings.setValue(deployedC(), def.isDeployed());
     settings.setValue(priorityC(), def.priority());
 
     settings.setValue(QStringLiteral("virtualFilesMode"), Utility::enumToString(def.virtualFilesMode()));
-
-    // Prevent loading of profiles in old clients
-    settings.setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
 }
 
 FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &id)
@@ -1224,7 +1200,6 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     def.setTargetPath(settings.value(QStringLiteral("targetPath")).toString());
     def._journalPath = settings.value(QStringLiteral("journalPath")).toString();
     def._paused = settings.value(QStringLiteral("paused")).toBool();
-    def._ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"), QVariant(true)).toBool();
     def._deployed = settings.value(deployedC(), false).toBool();
     def._priority = settings.value(priorityC(), 0).toUInt();
 
@@ -1232,6 +1207,13 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     QString vfsModeString = settings.value(QStringLiteral("virtualFilesMode")).toString();
     if (!vfsModeString.isEmpty()) {
         def._virtualFilesMode = Vfs::modeFromString(vfsModeString);
+    }
+
+    const QVariant ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"));
+    if (!ignoreHiddenFiles.isNull()) {
+        // Migration from pre-7.0:
+        settings.remove(QStringLiteral("ignoreHiddenFiles"));
+        FolderMan::instance()->setIgnoreHiddenFiles(ignoreHiddenFiles.toBool());
     }
 
     return def;
