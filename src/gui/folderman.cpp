@@ -88,6 +88,7 @@ FolderMan::FolderMan()
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
+    _ignoreHiddenFiles = ConfigFile().ignoreHiddenFiles();
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
@@ -957,28 +958,31 @@ QString FolderMan::findGoodPathForNewSyncFolder(
     return canonicalPath(normalisedPath);
 }
 
-// todo: #7
 bool FolderMan::ignoreHiddenFiles() const
 {
-    if (_folders.empty()) {
-        return true;
-    }
-    return _folders.first()->ignoreHiddenFiles();
+    return _ignoreHiddenFiles;
 }
 
-// todo: #7
 void FolderMan::setIgnoreHiddenFiles(bool ignore)
 {
-    // Note that the setting will revert to 'true' if all folders
-    // are deleted...
-    QSettings settings = ConfigFile::makeQSettings();
-    settings.beginGroup("Accounts");
-    for (auto *folder : std::as_const(_folders)) {
-        if (folder->ignoreHiddenFiles() != ignore) {
-            folder->setIgnoreHiddenFiles(ignore);
-            saveFolder(folder, settings);
+    if (ignore == _ignoreHiddenFiles) {
+        return;
+    }
+
+    setSyncEnabled(false);
+    ConfigFile().setIgnoreHiddenFiles(ignore);
+    _ignoreHiddenFiles = ignore;
+
+    // This should be done through a signal-slot connection. However, this has to wait until the
+    // engine is passed to the folder (so we can connect the signal/slot) instead of the folder
+    // creating it. See the todo in the Folder constructor.
+    for (Folder *folder : _folders) {
+        if (folder->canSync()) {
+            folder->syncEngine().setIgnoreHiddenFiles(ignore);
         }
     }
+
+    setSyncEnabled(true);
 }
 
 Result<void, QString> FolderMan::unsupportedConfiguration(const QString &path) const
@@ -1031,7 +1035,6 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
         return nullptr;
     }
 
-    folderDefinition.setIgnoreHiddenFiles(ignoreHiddenFiles());
     folderDefinition.setJournalPath(SyncJournalDb::makeDbName(folderDefinition.localPath()));
 
     // this is here because allegedly, old clients may not remove the old journal when the sync is removed.
