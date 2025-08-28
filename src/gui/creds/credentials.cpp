@@ -134,6 +134,15 @@ void Credentials::fetchFromKeychain()
     }
 }
 
+void Credentials::askFromUser()
+{
+    // create a gui
+    //  setup a controller that has the oauth instance
+    //  make the user login
+    //  be sure to emit asked() when done.
+    //  rename all this stuff with DC-112
+}
+
 void Credentials::handleKeychainError(const QString &message)
 {
     qCWarning(lcCredentials) << message;

@@ -58,6 +58,7 @@ public:
     // impl detail we don't need to expose
     void fetchFromKeychain() override;
 
+    void askFromUser() override;
     bool stillValid(QNetworkReply *reply) override;
     void persist() override;
 
