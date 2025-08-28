@@ -90,9 +90,9 @@ void AdvancedSettingsPageController::buildPage()
 
     // if the branding does not specify a background color for the wizard we should just let the normal system colors
     // rule. If not:
+    QPalette radioPalette = vfsButton->palette();
+    QColor textColor = _page->palette().color(QPalette::Text);
     if (Theme::instance()->wizardHeaderBackgroundColor().isValid()) {
-        QPalette radioPalette = vfsButton->palette();
-        QColor textColor = _page->palette().color(QPalette::Text);
         QColor disabledColor(textColor);
         // eh - I don't know if this will really work in all possible cases but I think it is the simplest way for now
         disabledColor.setAlpha(128);
@@ -100,20 +100,21 @@ void AdvancedSettingsPageController::buildPage()
         // on windows - need to test other platforms for sure
         radioPalette.setColor(QPalette::WindowText, textColor);
         radioPalette.setColor(QPalette::Window, textColor);
-        radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
         radioPalette.setColor(QPalette::Disabled, QPalette::Window, disabledColor);
-        vfsButton->setPalette(radioPalette);
-        syncAllButton->setPalette(radioPalette);
-        selectiveSyncButton->setPalette(radioPalette);
     }
+    // for this use case we want the text to remain "normal" regardless of branding. the only time we disable a button is when there
+    // is only one choice
+    radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, textColor);
+    vfsButton->setPalette(radioPalette);
+    syncAllButton->setPalette(radioPalette);
+    selectiveSyncButton->setPalette(radioPalette);
+
     if (!_vfsIsAvailable) {
-        vfsButton->setEnabled(false);
-        vfsButton->setToolTip(tr("Only available on Windows"));
+        vfsButton->setVisible(false);
     } else if (_forceVfs) {
-        selectiveSyncButton->setEnabled(false);
-        selectiveSyncButton->setToolTip(tr("Restricted by admin"));
-        syncAllButton->setEnabled(false);
-        syncAllButton->setToolTip(tr("Restricted by admin"));
+        vfsButton->setEnabled(false);
+        selectiveSyncButton->setVisible(false);
+        syncAllButton->setVisible(false);
     }
 
     Q_ASSERT(_buttonGroup->button(_defaultSyncType));
