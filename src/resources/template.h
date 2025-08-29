@@ -23,7 +23,7 @@ namespace Resources {
     namespace Template {
 
         /**
-         * Replace all occurances of @{} values in template with the values from values
+         * Replace all occurrences of @{} values in template with the values from values
          */
         OWNCLOUDRESOURCES_EXPORT QString renderTemplateFromFile(const QString &filePath, const QMap<QString, QString> &values);
         OWNCLOUDRESOURCES_EXPORT QString renderTemplate(QString &&templ, const QMap<QString, QString> &values);
