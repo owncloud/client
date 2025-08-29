@@ -20,7 +20,7 @@
 {
     Q_UNUSED(center)
     Q_UNUSED(notification)
-    completionHandler(UNNotificationPresentationOptionAlert);
+    completionHandler(UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
 }
 
 @end
@@ -31,7 +31,7 @@ void *createOsXNotificationCenterDelegate()
 {
     auto delegate = [[OurDelegate alloc] init];
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert)
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert)
                           completionHandler:^(BOOL granted, NSError *_Nullable error) {
                               Q_UNUSED(granted)
                               Q_UNUSED(error)
@@ -57,10 +57,6 @@ void sendOsXUserNotification(const QString &title, const QString &message)
 
 
         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-
-        [content release];
-        [trigger release];
-        [request release];
     }
 }
 
