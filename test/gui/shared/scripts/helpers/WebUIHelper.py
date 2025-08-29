@@ -39,7 +39,7 @@ def oidc_login(page):
         page.click('span:text-is("Next")')
         page.fill('#password', envs['OC_PASSWORD'])
         page.click('span:text-is("Sign in")')
-        page.wait_for_selector('text=Login Successful')
+        page.wait_for_selector('text=Successfully signed in')
     else:
         # login
         page.fill('#oc-login-username', envs['OC_USERNAME'])
@@ -48,4 +48,4 @@ def oidc_login(page):
         # allow permissions
         page.click('button >> text=Allow')
         # confirm successful login
-        page.wait_for_selector('text=Login Successful')
+        page.wait_for_selector('text=Successfully signed in')

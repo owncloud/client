@@ -78,6 +78,7 @@ set(client_SRCS
     creds/credentials.cpp
     creds/requestauthenticationwidget.cpp
     creds/requestauthenticationcontroller.cpp
+    creds/oauthhtmlpage.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp
