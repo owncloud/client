@@ -117,8 +117,6 @@ private:
     void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
     AccountPtr loadAccountHelper(QSettings &settings);
 
-    bool restoreFromLegacySettings();
-
     bool isAccountIdAvailable(const QString &id) const;
     QString generateFreeAccountId() const;
 

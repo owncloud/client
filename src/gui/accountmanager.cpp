@@ -73,11 +73,6 @@ auto accountsC()
     return QStringLiteral("Accounts");
 }
 
-auto versionC()
-{
-    return QStringLiteral("version");
-}
-
 auto capabilitesC()
 {
     return QStringLiteral("capabilities");
@@ -113,12 +108,6 @@ bool AccountManager::restore()
 
     // If there are no accounts, check the old format.
     const auto &childGroups = settings->childGroups();
-    if (childGroups.isEmpty()
-        && !settings->contains(versionC())) {
-        restoreFromLegacySettings();
-        return true;
-    }
-
     for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
         if (auto acc = loadAccountHelper(*settings)) {
@@ -132,73 +121,7 @@ bool AccountManager::restore()
 
     return true;
 }
-
-// todo: DC-111
-bool AccountManager::restoreFromLegacySettings()
-{
-    static const auto logPrefix = QStringLiteral("Legacy settings migration: ");
-
-    qCInfo(lcAccountManager) << logPrefix
-                             << "restoreFromLegacySettings, checking settings group"
-                             << Theme::instance()->appName();
-
-    // try to open the correctly themed settings
-    auto settings = ConfigFile::settingsWithGroup(Theme::instance()->appName());
-
-    // if the settings file could not be opened, the childKeys list is empty
-    // then try to load settings from a very old place
-    if (settings->childKeys().isEmpty()) {
-        // Now try to open the original ownCloud settings to see if they exist.
-        QString oCCfgFile = QDir::fromNativeSeparators(settings->fileName());
-        // replace the last two segments with ownCloud/owncloud.cfg
-        oCCfgFile = oCCfgFile.left(oCCfgFile.lastIndexOf(QLatin1Char('/')));
-        oCCfgFile = oCCfgFile.left(oCCfgFile.lastIndexOf(QLatin1Char('/')));
-        oCCfgFile += QLatin1String("/ownCloud/owncloud.cfg");
-
-        qCInfo(lcAccountManager) << logPrefix
-                                 << "checking old config " << oCCfgFile;
-
-#ifdef Q_OS_WIN
-        Utility::NtfsPermissionLookupRAII ntfs_perm;
-#endif
-        QFileInfo fi(oCCfgFile);
-        if (fi.isReadable()) {
-            auto oCSettings = std::make_unique<QSettings>(oCCfgFile, QSettings::IniFormat);
-            oCSettings->beginGroup(QStringLiteral("ownCloud"));
-
-            // Check the theme URL to see if it is the same URL that the oC config was for
-            QString overrideUrl = Theme::instance()->overrideServerUrlV2();
-            if (!overrideUrl.isEmpty()) {
-                if (overrideUrl.endsWith(QLatin1Char('/'))) {
-                    overrideUrl.chop(1);
-                }
-                QString oCUrl = oCSettings->value(urlC()).toString();
-                if (oCUrl.endsWith(QLatin1Char('/'))) {
-                    oCUrl.chop(1);
-                }
-
-                // in case the urls are equal reset the settings object to read from
-                // the ownCloud settings object
-                qCInfo(lcAccountManager) << logPrefix
-                                         << "Migrate oC config if " << oCUrl << " == " << overrideUrl << ":"
-                                         << (oCUrl == overrideUrl ? "Yes" : "No");
-                if (oCUrl == overrideUrl) {
-                    settings = std::move(oCSettings);
-                }
-            }
-        }
-    }
-
-    // Try to load the single account.
-    if (!settings->childKeys().isEmpty()) {
-        if (auto acc = loadAccountHelper(*settings)) {
-            addAccount(acc);
-            return true;
-        }
-    }
-    return false;
-}
-
+  
 AccountPtr AccountManager::createAccount(const NewAccountModel &model)
 {
     auto newAccountPtr = Account::create(QUuid::createUuid());
@@ -239,10 +162,8 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
     settings->beginGroup(account->id());
 
-    settings->setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
     settings->setValue(urlC(), account->_url.toString());
     settings->setValue(davUserC(), account->_davUser);
     settings->setValue(davUserDisplyNameC(), account->_displayName);

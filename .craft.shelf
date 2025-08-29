@@ -26,9 +26,6 @@ version = latest
 [dev-utils/cmake-base]
 version = 3.30.0
 
-[dev-utils/icoutils]
-version = 0.32.3
-
 [dev-utils/jom]
 version = 1_1_3
 
