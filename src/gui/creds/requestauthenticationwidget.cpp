@@ -89,10 +89,10 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
         footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
     }
 
-    QPushButton *cancelButton = new QPushButton(tr("Stay logged out"), this);
-    connect(cancelButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::stayLoggedOutClicked);
-    QPushButton *signInButton = new QPushButton(tr("Sign in"), this);
-    connect(signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
+    _cancelButton = new QPushButton(tr("Stay logged out"), this);
+    connect(_cancelButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::stayLoggedOutClicked);
+    _signInButton = new QPushButton(tr("Sign in"), this);
+    connect(_signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(50, 0, 50, 0);
@@ -116,15 +116,21 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch(1);
-    buttonLayout->addWidget(cancelButton);
-    buttonLayout->addWidget(signInButton);
+    buttonLayout->addWidget(_cancelButton);
+    buttonLayout->addWidget(_signInButton);
     layout->addLayout(buttonLayout);
 
     setLayout(layout);
+
+    // disable buttons until the url has been set
+    _cancelButton->setEnabled(false);
+    _signInButton->setEnabled(false);
 }
 
 void RequestAuthenticationWidget::setAuthUrl(const QString &url)
 {
+    // who knows.
+    Q_ASSERT(!url.isEmpty());
     if (_authUrl != url) {
         _authUrl = url;
         QFontMetrics metrics(_urlField->font());
@@ -132,6 +138,10 @@ void RequestAuthenticationWidget::setAuthUrl(const QString &url)
         _urlField->setText(elidedText);
         // update the copy button tooltip
         onClipboardChanged();
+
+        // and enable the buttons:
+        _cancelButton->setEnabled(true);
+        _signInButton->setEnabled(true);
     }
 }
 

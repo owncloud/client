@@ -46,5 +46,7 @@ private:
     QLabel *_errorField = nullptr;
     QPushButton *_copyButton = nullptr;
     QIcon _copyIcon;
+    QPushButton *_cancelButton = nullptr;
+    QPushButton *_signInButton = nullptr;
 };
 }

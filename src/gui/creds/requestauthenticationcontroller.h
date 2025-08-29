@@ -15,11 +15,35 @@
 
 #include <QObject>
 
+#include "oauth.h"
+
 namespace OCC {
+
+class RequestAuthenticationWidget;
+class AccountBasedOAuth;
+class Account;
+
 class RequestAuthenticationController : public QObject
 {
     Q_OBJECT
 public:
-    explicit RequestAuthenticationController(QObject *parent = nullptr);
+    explicit RequestAuthenticationController(RequestAuthenticationWidget *widget, QObject *parent);
+
+    void startAuthentication(const AccountPtr account);
+
+Q_SIGNALS:
+    void requestLogout();
+    void authenticationSucceeded(const QString &token, const QString &refreshToken);
+    // this is only emitted if the controller is running without a widget.
+    void authenticationFailed(const QString &errorMessage);
+
+private:
+    void handleSignIn();
+    void handleLogOut();
+    void authUrlReady();
+    void handleOAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken);
+
+    RequestAuthenticationWidget *_widget = nullptr;
+    AccountBasedOAuth *_oauth;
 };
 }
