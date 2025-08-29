@@ -148,6 +148,9 @@ public:
     bool optionalDesktopNotifications() const;
     void setOptionalDesktopNotifications(bool show);
 
+    bool ignoreHiddenFiles() const;
+    void setIgnoreHiddenFiles(bool ignore);
+
     std::optional<QStringList> issuesWidgetFilter() const;
     void setIssuesWidgetFilter(const QStringList &checked);
 
@@ -181,15 +184,6 @@ public:
 
     /// Add the system and user exclude file path to the ExcludedFiles instance.
     static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
-
-    /**
-     * The maximum versions that this client can read.
-     *
-     * We don't use these versions anymore, see https://github.com/owncloud/client/issues/10473 .
-     * These values are only written, and that prevents older clients from loading these newer
-     * settings.
-     */
-    static constexpr int UnusedLegacySettingsVersionNumber = 13;
 
 protected:
     QVariant getPolicySetting(const QString &policy, const QVariant &defaultValue = QVariant()) const;

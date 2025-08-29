@@ -81,10 +81,6 @@ public:
     bool paused() const { return _paused; }
     void setPaused(bool pause) { _paused = pause; }
 
-    /// whether the folder syncs hidden files
-    bool ignoreHiddenFiles() const { return _ignoreHiddenFiles; }
-    void setIgnoreHiddenFiles(bool ignore) { _ignoreHiddenFiles = ignore; }
-
     /// Which virtual files setting the folder uses
     Vfs::Mode virtualFilesMode() const { return _virtualFilesMode; }
     void setVirtualFilesMode(Vfs::Mode mode) { _virtualFilesMode = mode; }
@@ -135,8 +131,6 @@ private:
 
     /// whether the folder is paused
     bool _paused = false;
-    /// whether the folder syncs hidden files
-    bool _ignoreHiddenFiles = true;
     /// Which virtual files setting the folder uses
     Vfs::Mode _virtualFilesMode = Vfs::Off;
 
@@ -200,19 +194,6 @@ public:
     const FolderDefinition &definition() const { return _definition; }
 
     QByteArray id() const { return _definition.id(); }
-
-    /**
-     * Ignore syncing of hidden files or not. This is defined in the
-     * folder definition
-     *
-     * Lisa todo: refactor this as
-     * a) it's actually a global setting and
-     * b) the value only matters when it is passed to the engine
-     * it doesn't really need to be in the definition at all.
-     */
-    bool ignoreHiddenFiles() const { return _definition.ignoreHiddenFiles(); }
-
-    void setIgnoreHiddenFiles(bool ignore) { _definition.setIgnoreHiddenFiles(ignore); }
 
     /**
      * remote folder path, usually without trailing /, exception "/"
