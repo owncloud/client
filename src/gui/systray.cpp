@@ -47,7 +47,7 @@ void sendOsXUserNotification(const QString &title, const QString &message);
 
 Systray::Systray(QObject *parent)
     : QSystemTrayIcon(parent)
-#ifdef Q_OS_OSX
+#ifdef Q_OS_MACOS
     , delegate(createOsXNotificationCenterDelegate())
 #endif
 {
