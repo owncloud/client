@@ -127,6 +127,7 @@ void AdvancedSettingsPageController::buildPage()
     dirPalette.setColor(QPalette::Text, dirPalette.color(QPalette::ButtonText));
     _rootDirEdit->setPalette(dirPalette);
     _rootDirEdit->setFocusPolicy(Qt::StrongFocus);
+    _rootDirEdit->setAccessibleName(tr("Sync location on the local machine"));
     // just clear the error if the user starts typing in the text edit
     connect(_rootDirEdit, &QLineEdit::textEdited, this, [this] {
         if (!_errorField->text().isEmpty())
