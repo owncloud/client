@@ -16,8 +16,9 @@
 #include "account.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
+#include "creds/credentials.h"
 #include "guiutility.h"
-#include <creds/httpcredentialsgui.h>
+
 #include <theme.h>
 
 #ifdef Q_OS_WIN
@@ -130,11 +131,13 @@ AccountPtr AccountManager::createAccount(const NewAccountModel &model)
     newAccountPtr->setDavUser(model.davUser());
     newAccountPtr->setDavDisplayName(model.displayName());
 
-    HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
-    newAccountPtr->setCredentials(credentials);
+    //   HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
+    //   newAccountPtr->setCredentials(credentials);
+
+    Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
+    newAccountPtr->setCredentials(creds);
 
     newAccountPtr->addApprovedCerts(model.trustedCertificates());
-
     QString syncRoot = model.defaultSyncRoot();
     if (!syncRoot.isEmpty()) {
         newAccountPtr->setDefaultSyncRoot(syncRoot);
@@ -275,9 +278,12 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     for (const auto &key : childKeys) {
         if (!key.startsWith(authTypePrefix))
             continue;
+        // remove!
         acc->_settingsMap.insert(key, settings.value(key));
     }
-    acc->setCredentials(new HttpCredentialsGui);
+    //   acc->setCredentials(new HttpCredentialsGui);
+
+    acc->setCredentials(new Credentials(acc.get()));
 
     // now the server cert, it is in the general group
     settings.beginGroup(QStringLiteral("General"));

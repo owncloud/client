@@ -22,6 +22,7 @@ namespace OCC {
 class RequestAuthenticationWidget;
 class AccountBasedOAuth;
 class Account;
+class AccountModalWidget;
 
 class RequestAuthenticationController : public QObject
 {
@@ -43,7 +44,11 @@ private:
     void authUrlReady();
     void handleOAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken);
 
-    RequestAuthenticationWidget *_widget = nullptr;
-    AccountBasedOAuth *_oauth;
+    // these will be cleaned up by the SettingsDialog automatically when the AccountModalWidget is "finished"
+    // that is handled internally when accept() or reject() is called
+    QPointer<RequestAuthenticationWidget> _widget;
+    QPointer<AccountModalWidget> _modalWidget;
+    AccountBasedOAuth *_oauth = nullptr;
+    AccountPtr _account = nullptr;
 };
 }

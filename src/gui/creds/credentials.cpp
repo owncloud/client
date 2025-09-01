@@ -15,10 +15,11 @@
 
 #include "accessmanager.h"
 #include "account.h"
-#include "common/asserts.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "oauth.h"
+#include "requestauthenticationcontroller.h"
+#include "requestauthenticationwidget.h"
 
 #include <QAuthenticator>
 #include <QJsonObject>
@@ -132,15 +133,6 @@ void Credentials::fetchFromKeychain()
     } else {
         fetchCredentialsFromKeychain();
     }
-}
-
-void Credentials::askFromUser()
-{
-    // create a gui
-    //  setup a controller that has the oauth instance
-    //  make the user login
-    //  be sure to emit asked() when done.
-    //  rename all this stuff with DC-112
 }
 
 void Credentials::handleKeychainError(const QString &message)
@@ -309,13 +301,47 @@ void Credentials::refreshAccessTokenInternal()
     _oAuthJob->refreshAuthentication(_refreshToken);
 }
 
+void Credentials::askFromUser()
+{
+    // the widget is parented to the AccountModalWidget when it's installed in the main window.
+    // it will be cleaned up there - this is not a leak
+    RequestAuthenticationWidget *widget = new RequestAuthenticationWidget();
+    _requestAuth = new RequestAuthenticationController(widget, this);
+    // we should not connect to the failed signal as we are forcing the user to make the decision using the gui.
+    // if they log in successfully, we get the success signal.
+    // if the auth fails the gui stays until the user gets it right or clicks the stay logged out button.
+    connect(_requestAuth, &RequestAuthenticationController::authenticationSucceeded, this, &Credentials::askFromUserSucceeded);
+    connect(_requestAuth, &RequestAuthenticationController::requestLogout, this, &Credentials::askFromUserLogout);
+    _requestAuth->startAuthentication(_account->sharedFromThis());
+}
+
+void Credentials::askFromUserSucceeded(const QString &token, const QString &refreshToken)
+{
+    _accessToken = token;
+    _refreshToken = refreshToken;
+    _ready = true;
+    persist();
+    Q_EMIT fetched();
+
+    if (_requestAuth) {
+        delete _requestAuth;
+        _requestAuth = nullptr;
+    }
+}
+
+void Credentials::askFromUserLogout()
+{
+    Q_EMIT requestLogout();
+    if (_requestAuth) {
+        delete _requestAuth;
+        _requestAuth = nullptr;
+    }
+}
+
 void Credentials::invalidateToken()
 {
     qCWarning(lcCredentials) << "Invalidating the credentials";
 
-    if (!_accessToken.isEmpty()) {
-        _previousAccessToken = _accessToken;
-    }
     _accessToken.clear();
     _ready = false;
 
@@ -347,7 +373,6 @@ void Credentials::forgetSensitiveData()
     // to do, make that more explicit
     _refreshToken.clear();
     invalidateToken();
-    _previousAccessToken.clear();
 }
 
 void Credentials::persist()

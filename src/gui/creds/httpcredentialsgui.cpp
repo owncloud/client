@@ -116,7 +116,7 @@ void HttpCredentialsGui::startOAuth()
         ownCloudGui::raise();
     });
 
-    ocApp()->gui()->settingsDialog()->accountSettings(_account)->addModalWidget(_modalWidget);
+    ocApp()->gui()->settingsDialog()->accountSettings(_account)->addModalAccountWidget(_modalWidget);
     _asyncAuth->startAuthentication();
 }
 

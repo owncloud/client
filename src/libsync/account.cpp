@@ -241,7 +241,7 @@ void Account::setCredentials(AbstractCredentials *cred)
 
     // todo:: DC-86 this should not be. the account should simply create the creds, not this two way
     // setCredentials -> setAccount.
-    cred->setAccount(this);
+    // cred->setAccount(this);
 
     _am = _credentials->createAccessManager();
 
@@ -335,6 +335,7 @@ QString Account::hostName() const
 }
 
 // todo: DC-112 - these credential settings must go
+// in the process, however, we need to be sure any old settings are removed from the config!
 QVariant Account::credentialSetting(const QString &key) const
 {
     if (_credentials) {

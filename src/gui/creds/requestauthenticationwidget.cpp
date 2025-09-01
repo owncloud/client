@@ -62,17 +62,18 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setAccessibleDescription(tr("URL to sign in"));
 
-    QPushButton *copyButton = new QPushButton(_copyIcon, QString(), this);
-    copyButton->setFlat(true);
-    copyButton->setContentsMargins(0, 0, 0, 0);
-    copyButton->setFixedSize(_urlField->height(), _urlField->height());
-    copyButton->setAccessibleDescription(tr("Copy URL to sign in"));
-    copyButton->installEventFilter(this);
-    connect(copyButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::onCopyUrl);
+    _copyButton = new QPushButton(_copyIcon, QString(), this);
+    _copyButton->setFlat(true);
+    _copyButton->setContentsMargins(0, 0, 0, 0);
+    _copyButton->setFixedSize(_urlField->height(), _urlField->height());
+    _copyButton->setAccessibleDescription(tr("Copy URL to sign in"));
+    _copyButton->installEventFilter(this);
+    connect(_copyButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::onCopyUrl);
 
     _errorField = new QLabel(QString(), this);
     QPalette errorPalette = _errorField->palette();
     errorPalette.setColor(QPalette::Text, Qt::red);
+    errorPalette.setColor(QPalette::WindowText, Qt::red);
     _errorField->setPalette(errorPalette);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
@@ -95,11 +96,12 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     connect(_signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(50, 0, 50, 0);
+    layout->setContentsMargins(50, 50, 50, 50);
     layout->setSpacing(12);
     layout->addStretch(1);
     layout->addWidget(logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
+    layout->addWidget(titleLabel);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
 
     QHBoxLayout *urlAreaLayout = new QHBoxLayout();
@@ -115,10 +117,12 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     layout->addStretch(1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(_cancelButton);
     buttonLayout->addWidget(_signInButton);
-    layout->addLayout(buttonLayout);
+    layout->addLayout(buttonLayout, Qt::AlignRight);
+    // layout->addSpacing(20);
 
     setLayout(layout);
 
@@ -166,9 +170,11 @@ void RequestAuthenticationWidget::updateColors()
     QColor themeBackground = Theme::instance()->wizardHeaderBackgroundColor();
     QColor themeForeground = Theme::instance()->wizardHeaderTitleColor();
     if (themeBackground.isValid()) {
+        palette.setColor(QPalette::Window, themeBackground);
         palette.setColor(QPalette::Base, themeBackground);
     }
     if (themeForeground.isValid()) {
+        palette.setColor(QPalette::WindowText, themeForeground);
         palette.setColor(QPalette::Text, themeForeground);
     }
 

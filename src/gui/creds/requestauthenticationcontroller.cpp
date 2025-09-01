@@ -13,7 +13,12 @@
  */
 #include "requestauthenticationcontroller.h"
 
+#include "accountsettings.h"
+#include "application.h"
 #include "requestauthenticationwidget.h"
+
+#include "accountmodalwidget.h"
+#include "settingsdialog.h"
 
 namespace OCC {
 
@@ -35,19 +40,34 @@ void RequestAuthenticationController::handleSignIn()
 
 void RequestAuthenticationController::handleLogOut()
 {
-    // this ultimately needs to be chained to creds::logoutRequested signal
+    if (_modalWidget) {
+        // this calls finished which deletes the modal widget.
+        // our widget should also be deleted as it has been added to the layout of the modal
+        // widget, which effectively reparents it to the modal widget.
+        _modalWidget->reject();
+    }
+    // this ultimately needs to be chained to creds::requestLogout signal
     Q_EMIT requestLogout();
+    // cleanup();
 }
 
 void RequestAuthenticationController::startAuthentication(const AccountPtr account)
 {
     Q_ASSERT(account);
-    _oauth = new AccountBasedOAuth(account, this);
+    if (_oauth) {
+        delete _oauth;
+        _oauth = nullptr;
+    }
+    _account = account;
+    _oauth = new AccountBasedOAuth(_account, this);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &RequestAuthenticationController::authUrlReady);
     connect(_oauth, &OAuth::result, this, &RequestAuthenticationController::handleOAuthResult);
-    if (_widget) {
+    if (_widget && _modalWidget == nullptr) { // first show of the gui
         connect(_widget, &RequestAuthenticationWidget::connectClicked, this, &RequestAuthenticationController::handleSignIn);
         connect(_widget, &RequestAuthenticationWidget::stayLoggedOutClicked, this, &RequestAuthenticationController::handleLogOut);
+        AccountSettings *settings = ocApp()->gui()->settingsDialog()->accountSettings(account.get());
+        _modalWidget = new AccountModalWidget(QString(), _widget, settings);
+        settings->addModalAccountWidget(_modalWidget);
     }
     _oauth->startAuthentication();
 }
@@ -57,7 +77,7 @@ void RequestAuthenticationController::authUrlReady()
     if (_widget) {
         _widget->setAuthUrl(_oauth->authorisationLink().toString(QUrl::FullyEncoded));
     } else {
-        // we're just running with it
+        // just run with it
         _oauth->openBrowser();
     }
 }
@@ -67,6 +87,9 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
     QString errString;
 
     switch (result) {
+    case OAuth::ErrorIdPUnreachable:
+        errString = tr("IdP is unreachable. Contact your system administrator or try again later.");
+        break;
     case OAuth::NotSupported:
         // also should not happen after initial setup?
         Q_ASSERT(false);
@@ -75,24 +98,29 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         // should not happen after the initial setup
         Q_ASSERT(false);
         [[fallthrough]];
-    case OAuth::ErrorIdPUnreachable:
-        errString = tr("IdP is unreachable. Contact your system administrator or try again later.");
-        // TODO: add user facing error message that authentication is currently not possible - retry is the wrong advice
-        [[fallthrough]];
     case OAuth::Error:
         errString = tr("Authentication failed.");
-        return;
+        break;
     case OAuth::LoggedIn:
-        Q_EMIT authenticationSucceeded(accessToken, refreshToken);
+        errString.clear();
         break;
     }
 
-    if (!errString.isEmpty()) {
-        if (_widget)
-            _widget->setErrorMessage(errString);
-        else
-            Q_EMIT authenticationFailed(errString);
-    }
-}
 
+    if (!errString.isEmpty()) {
+        if (_widget) {
+            _widget->setErrorMessage(errString);
+            startAuthentication(_account);
+        } else
+            Q_EMIT authenticationFailed(errString);
+    } else {
+        if (_modalWidget)
+            _modalWidget->accept();
+        Q_EMIT authenticationSucceeded(accessToken, refreshToken);
+    }
+
+    ownCloudGui::raise();
+    // need to check case where auth fails and user tries again. Does it work to just re-open
+    // the web ui? I have doubts.
+}
 }

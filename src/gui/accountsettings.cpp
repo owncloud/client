@@ -276,7 +276,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
         doForceSyncCurrentFolder(folder);
     });
-    addModalWidget(modalWidget);
+    addModalAccountWidget(modalWidget);
 }
 
 void AccountSettings::slotAddFolder()
@@ -737,7 +737,7 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
 }
 
-void AccountSettings::addModalWidget(AccountModalWidget *widget)
+void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 {
     if (!_accountState) {
         return;

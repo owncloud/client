@@ -29,6 +29,7 @@ class QAuthenticator;
 
 namespace OCC {
 class OAuth;
+class RequestAuthenticationController;
 
 class OWNCLOUDGUI_EXPORT Credentials : public AbstractCredentials
 {
@@ -66,6 +67,9 @@ public:
     void invalidateToken() override;
     void forgetSensitiveData() override;
 
+    // soon to die - used in the settings only
+    QString credentialsType() const override { return QString(); }
+
 
     /* If we don't have a valid refresh token, return false.
      * otherwise:
@@ -87,15 +91,19 @@ protected:
     void fetchCredentialsFromKeychain();
     void refreshAccessTokenInternal();
 
+    void askFromUserSucceeded(const QString &token, const QString &refreshToken);
+    void askFromUserLogout();
+
     QString _accessToken;
     QString _refreshToken;
-    QString _previousAccessToken;
 
     QString _fetchErrorString;
     bool _ready = false;
     int _tokenRefreshRetriesCount = 0;
 
     QPointer<AccountBasedOAuth> _oAuthJob;
+
+    RequestAuthenticationController *_requestAuth = nullptr;
 };
 
 
