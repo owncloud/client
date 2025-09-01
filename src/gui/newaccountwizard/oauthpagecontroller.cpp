@@ -71,8 +71,8 @@ void OAuthPageController::buildPage()
     _urlField = new QLabel(_page);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setEnabled(false);
-    _urlField->setAccessibleName(tr("Login URL")); // Prevent screen readers from reading the full URL!!!
-    _urlField->setAccessibleDescription(tr("To copy the login URL to the clipboard, use the copy button"));
+    _urlField->setAccessibleName(tr("Sign in URL")); // Prevent screen readers from reading the full URL!!!
+    _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
     _copyButton = new QPushButton(copyIcon(), QString(), _page);
     _copyButton->setFlat(true);
