@@ -235,6 +235,10 @@ void Account::setCredentials(AbstractCredentials *cred)
     _credentials.reset(cred);
     cred->setAccount(this);
 
+    // todo:: DC-112 this should not be. the account should simply create the creds, not this two way
+    // setCredentials -> setAccount.
+    // cred->setAccount(this);
+
     _am = _credentials->createAccessManager();
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
@@ -326,7 +330,7 @@ QString Account::hostName() const
     return _url.host();
 }
 
-QVariant Account::credentialSetting(const QString &key) const
+/*QVariant Account::credentialSetting(const QString &key) const
 {
     if (_credentials) {
         QString prefix = _credentials->credentialsType();
@@ -337,15 +341,15 @@ QVariant Account::credentialSetting(const QString &key) const
         return value;
     }
     return QVariant();
-}
+}*/
 
-void Account::addCredentialSetting(const QString &key, const QVariant &value)
+/*void Account::addCredentialSetting(const QString &key, const QVariant &value)
 {
     if (_credentials) {
         QString prefix = _credentials->credentialsType();
         _settingsMap.insert(prefix + QLatin1Char('_') + key, value);
     }
-}
+}*/
 
 JobQueue *Account::jobQueue()
 {

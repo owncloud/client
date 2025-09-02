@@ -39,7 +39,7 @@ constexpr std::chrono::seconds TokenRefreshDefaultTimeout = 30s;
 constexpr int CredentialVersion = 1;
 const char authenticationFailedC[] = "owncloud-authentication-failed";
 
-auto isOAuthC()
+/*auto isOAuthC()
 {
     return QStringLiteral("oauth");
 }
@@ -62,7 +62,7 @@ auto CredentialVersionKey()
 const QString userC()
 {
     return QStringLiteral("user");
-}
+}*/
 }
 
 namespace OCC {
@@ -124,10 +124,10 @@ void HttpCredentials::setAccount(Account *account)
     if (_user.isEmpty()) {
         fetchUser();
     }
-    const auto isOauth = account->credentialSetting(isOAuthC());
-    if (isOauth.isValid()) {
-        _authType = isOauth.toBool() ? OCC::AuthenticationType::OAuth : OCC::AuthenticationType ::Unknown;
-    }
+    // const auto isOauth = account->credentialSetting(isOAuthC());
+    // if (isOauth.isValid()) {
+    _authType = OCC::AuthenticationType::OAuth;
+    //}
 }
 
 AccessManager *HttpCredentials::createAccessManager() const
@@ -150,7 +150,8 @@ QString HttpCredentials::fetchUser()
     // it makes no sense to overwrite an existing username with a config file value
     if (_user.isEmpty()) {
         qCDebug(lcHttpCredentials) << "user not set, populating from settings";
-        _user = _account->credentialSetting(userC()).toString();
+        //_user = _account->credentialSetting(userC()).toString();
+        _user = _account->davUser();
     } else {
         qCDebug(lcHttpCredentials) << "user already set, no need to fetch from settings";
     }
@@ -399,10 +400,10 @@ void HttpCredentials::persist()
         // We never connected or fetched the user, there is nothing to save.
         return;
     }
-    _account->addCredentialSetting(CredentialVersionKey(), CredentialVersion);
-    _account->addCredentialSetting(userC(), _user);
-    _account->addCredentialSetting(isOAuthC(), isUsingOAuth());
-    Q_EMIT _account->wantsAccountSaved(_account);
+    /* _account->addCredentialSetting(CredentialVersionKey(), CredentialVersion);
+     _account->addCredentialSetting(userC(), _user);
+     _account->addCredentialSetting(isOAuthC(), isUsingOAuth());
+     Q_EMIT _account->wantsAccountSaved(_account);
 
     // write secrets to the keychain
     if (isUsingOAuth()) {
@@ -414,7 +415,7 @@ void HttpCredentials::persist()
         if (!_password.isEmpty()) {
             _account->credentialManager()->set(passwordKeyC(), _password);
         }
-    }
+    }*/
 }
 
 } // namespace OCC
