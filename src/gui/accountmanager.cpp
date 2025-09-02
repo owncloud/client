@@ -16,8 +16,9 @@
 #include "account.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
+#include "creds/credentials.h"
 #include "guiutility.h"
-#include <creds/httpcredentialsgui.h>
+
 #include <theme.h>
 
 #ifdef Q_OS_WIN
@@ -121,7 +122,7 @@ bool AccountManager::restore()
 
     return true;
 }
-
+  
 AccountPtr AccountManager::createAccount(const NewAccountModel &model)
 {
     auto newAccountPtr = Account::create(QUuid::createUuid());
@@ -130,11 +131,10 @@ AccountPtr AccountManager::createAccount(const NewAccountModel &model)
     newAccountPtr->setDavUser(model.davUser());
     newAccountPtr->setDavDisplayName(model.displayName());
 
-    HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
-    newAccountPtr->setCredentials(credentials);
+    Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
+    newAccountPtr->setCredentials(creds);
 
     newAccountPtr->addApprovedCerts(model.trustedCertificates());
-
     QString syncRoot = model.defaultSyncRoot();
     if (!syncRoot.isEmpty()) {
         newAccountPtr->setDefaultSyncRoot(syncRoot);
@@ -265,15 +265,21 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
     // We want to only restore settings for that auth type and the user value
+    // this is trash, get rid of it DC-112
     acc->_settingsMap.insert(userC(), settings.value(userC()));
+    // todo DC-112: we need to migrate the http related settings out to new creds
+    // setting scheme. in fact the only thing we need to do is delete these keys from the config and
+    // forget they ever existed
     const QString authTypePrefix = QStringLiteral("http_");
     const auto childKeys = settings.childKeys();
     for (const auto &key : childKeys) {
         if (!key.startsWith(authTypePrefix))
             continue;
+        // remove!
         acc->_settingsMap.insert(key, settings.value(key));
     }
-    acc->setCredentials(new HttpCredentialsGui);
+
+    acc->setCredentials(new Credentials(acc.get()));
 
     // now the server cert, it is in the general group
     settings.beginGroup(QStringLiteral("General"));
@@ -307,6 +313,7 @@ AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
         id = generateFreeAccountId();
     }
     newAccount->_id = id;
+
 
     return addAccountState(AccountState::fromNewAccount(newAccount));
 }

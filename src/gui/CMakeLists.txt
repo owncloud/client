@@ -75,6 +75,9 @@ set(client_SRCS
     creds/httpcredentialsgui.cpp
     creds/qmlcredentials.cpp
     creds/oauth.cpp
+    creds/credentials.cpp
+    creds/requestauthenticationwidget.cpp
+    creds/requestauthenticationcontroller.cpp
     creds/oauthhtmlpage.cpp
 
     models/activitylistmodel.cpp

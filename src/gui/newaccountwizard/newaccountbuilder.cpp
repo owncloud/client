@@ -60,7 +60,7 @@ void NewAccountBuilder::completeAccountSetup()
     AccountManager::instance()->saveAccount(_account.get(), true);
     // emitting credentialsFetched seems to be "required" to get the folder gui to show that x of y folders are synced
     // it appears that credentialsFetched triggers the spaces manager to refresh, and that refresh notifies the gui of the number of synced folders.
-    // this is normally triggered when the httpcredentials have fetched the creds, but when setting up an account we have already collected the creds and
+    // this is normally triggered when the credentials have fetched the creds, but when setting up an account we have already collected the creds and
     // set them in the account at the same time we create it.
     // BUT no one is aware that the account exists at that point in time as everyone is waiting to hear that the account STATE
     // was added before connecting various listeners. If we don't emit the signal directly it takes some time for the update to happen via some polling

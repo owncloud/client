@@ -101,6 +101,9 @@ public:
      *
      * This can very well be different frome the login user that's
      * stored in credentials()->user().
+     *
+     * todo: DC-112 now that we are only using oauth I don't think that is true. the davUser is THE user and isn't even in play wrt the auth credentials.
+     * unfortunately the tests do not seem to define the dave user
      */
     QString davUser() const;
     void setDavUser(const QString &newDavUser);
@@ -264,7 +267,10 @@ private:
     QString _displayName;
     QString _defaultSyncRoot;
     QIcon _avatarImg;
+
+    // todo: DC-112 this can go
     QMap<QString, QVariant> _settingsMap;
+
     QUrl _url;
     QString _cacheDirectory;
 

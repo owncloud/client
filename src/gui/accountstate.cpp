@@ -285,11 +285,17 @@ void AccountState::checkConnectivity(bool blockJobs)
     }
 
     // ======= beginning here are pre-check updates (or so)
-    // If we never fetched credentials, do that now - otherwise connection attempts
+    // If the credentials have never been fetched, try to fetch them - otherwise connection attempts
     // make little sense.
-    if (!account()->credentials()->wasFetched()) {
+    // todo: review this logic to see if that actually belongs here. I really don't understand why this is needed
+
+    if (!account()->credentials()->wasEverFetched()) {
+        // I hope this is never called. ok. it is called on call to AccountState::checkConnectivity which is called during AccountManager::addAccountState
+        // so if we want to refresh the creds explicitly, do it there or prior
         _waitingForNewCredentials = true;
         account()->credentials()->fetchFromKeychain();
+        // the fetch should be allowed to finish before we do anything more
+        return;
     }
     if (account()->hasCapabilities()) {
         // IF the account is connected the connection check can be skipped
@@ -535,6 +541,8 @@ void AccountState::slotInvalidCredentials()
         if (account()->credentials()->ready()) {
             account()->credentials()->invalidateToken();
         }
+        // todo: DC-112 evaluate if this is even needed (it seems to be working fine casting to HttpCredentials which would have failed to cast -> ie it's a
+        // noop), and if it is, fix the abstraction todo: NO! if you have to cast it something is wrong with the abstraction
         if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
             qCInfo(lcAccountState) << "refreshing oauth";
             if (creds->refreshAccessToken()) {

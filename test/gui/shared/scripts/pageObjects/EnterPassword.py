@@ -42,10 +42,10 @@ class EnterPassword:
         "visible": True,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
-        "container": names.groupBox_OCC_QmlUtils_OCQuickWidget,
-        "id": "copyToClipboardButton",
-        "type": "Button",
-        "visible": True,
+        "container": names.stackedWidget_groupBox_QGroupBox,
+        "type": "QPushButton",
+        "unnamed": 1,
+        "visible": 1,
     }
     TLS_CERT_WINDOW = {
         "name": "OCC__TlsErrorDialog",

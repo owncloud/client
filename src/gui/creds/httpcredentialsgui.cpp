@@ -13,7 +13,7 @@
  * for more details.
  */
 
-#include "creds/httpcredentialsgui.h"
+#include "httpcredentialsgui.h"
 #include "account.h"
 #include "accountmodalwidget.h"
 #include "application.h"
@@ -116,7 +116,7 @@ void HttpCredentialsGui::startOAuth()
         ownCloudGui::raise();
     });
 
-    ocApp()->gui()->settingsDialog()->accountSettings(_account)->addModalWidget(_modalWidget);
+    ocApp()->gui()->settingsDialog()->accountSettings(_account)->addModalAccountWidget(_modalWidget);
     _asyncAuth->startAuthentication();
 }
 

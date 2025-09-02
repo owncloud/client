@@ -153,6 +153,8 @@ public:
     void refreshAuthentication(const QString &refreshToken);
 
 Q_SIGNALS:
+    // this can either come from refreshAuthentication or the fetchWellKnown's
+    // checkServerJob
     void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
     void refreshFinished(const QString &accessToken, const QString &refreshToken);
 
