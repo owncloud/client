@@ -15,14 +15,12 @@
 #include "account.h"
 #include "accessmanager.h"
 #include "capabilities.h"
-#include "common/asserts.h"
 #include "cookiejar.h"
 #include "creds/abstractcredentials.h"
 #include "creds/credentialmanager.h"
 #include "graphapi/spacesmanager.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
-#include "theme.h"
 
 #include <QAuthenticator>
 #include <QDir>
@@ -337,31 +335,6 @@ QString Account::hostName() const
 {
     return _url.host();
 }
-
-/*QVariant Account::credentialSetting(const QString &key) const
-
-// todo: DC-112 - these credential settings must go
-// in the process, however, we need to be sure any old settings are removed from the config!
-
-{
-    if (_credentials) {
-        QString prefix = _credentials->credentialsType();
-        QVariant value = _settingsMap.value(prefix + QLatin1Char('_') + key);
-        if (value.isNull()) {
-            value = _settingsMap.value(key);
-        }
-        return value;
-    }
-    return QVariant();
-}*/
-
-/*void Account::addCredentialSetting(const QString &key, const QVariant &value)
-{
-    if (_credentials) {
-        QString prefix = _credentials->credentialsType();
-        _settingsMap.insert(prefix + QLatin1Char('_') + key, value);
-    }
-}*/
 
 JobQueue *Account::jobQueue()
 {
