@@ -378,7 +378,6 @@ void Credentials::forgetSensitiveData()
 void Credentials::persist()
 {
     // write secrets to the keychain
-        // _refreshToken should only be empty when we are logged out...
         if (!_refreshToken.isEmpty()) {
             _account->credentialManager()->set(refreshTokenKeyC(), _refreshToken);
         } 

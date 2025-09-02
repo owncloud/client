@@ -263,8 +263,6 @@ private:
     QString _displayName;
     QString _defaultSyncRoot;
     QIcon _avatarImg;
-
-    // QMap<QString, QVariant> _settingsMap;
     
     QUrl _url;
     QString _cacheDirectory;
