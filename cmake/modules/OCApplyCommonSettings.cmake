@@ -25,6 +25,7 @@ function(apply_common_target_settings targetName)
             QT_NO_FOREACH
             QT_DISABLE_DEPRECATED_BEFORE=0x060200
     )
+    # These are added by ECM:
     remove_definitions(-DQT_NO_KEYWORDS) # We are not a library, and we don't use a 3th party signal/slot library.
     remove_definitions(-DQT_NO_CAST_FROM_ASCII) # Our source code is UTF-8
 
