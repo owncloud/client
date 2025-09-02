@@ -60,7 +60,8 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
 
     _urlField = new QLabel(this);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    _urlField->setAccessibleDescription(tr("URL to sign in"));
+    _urlField->setAccessibleName(tr("Sign in URL")); // Prevent screen readers from reading the full URL!!!
+    _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
     _copyButton = new QPushButton(_copyIcon, QString(), this);
     _copyButton->setFlat(true);
