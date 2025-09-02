@@ -71,8 +71,6 @@ set(client_SRCS
     elidedlabel.cpp
     translations.cpp
 
-    creds/httpcredentials.cpp
-    creds/httpcredentialsgui.cpp
     creds/qmlcredentials.cpp
     creds/oauth.cpp
     creds/credentials.cpp

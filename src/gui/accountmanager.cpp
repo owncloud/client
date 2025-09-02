@@ -256,18 +256,18 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
     // We want to only restore settings for that auth type and the user value
     // this is trash, get rid of it DC-112
-   /* acc->_settingsMap.insert(userC(), settings.value(userC()));
-    // todo DC-112: we need to migrate the http related settings out to new creds
-    // setting scheme. in fact the only thing we need to do is delete these keys from the config and
-    // forget they ever existed
-    const QString authTypePrefix = QStringLiteral("http_");
-    const auto childKeys = settings.childKeys();
-    for (const auto &key : childKeys) {
-        if (!key.startsWith(authTypePrefix))
-            continue;
-        // remove!
-        acc->_settingsMap.insert(key, settings.value(key)); */
-    }
+    /* acc->_settingsMap.insert(userC(), settings.value(userC()));
+     // todo DC-112: we need to migrate the http related settings out to new creds
+     // setting scheme. in fact the only thing we need to do is delete these keys from the config and
+     // forget they ever existed
+     const QString authTypePrefix = QStringLiteral("http_");
+     const auto childKeys = settings.childKeys();
+     for (const auto &key : childKeys) {
+         if (!key.startsWith(authTypePrefix))
+             continue;
+         // remove!
+         acc->_settingsMap.insert(key, settings.value(key));
+     }*/
 
     acc->setCredentials(new Credentials(acc.get()));
 
