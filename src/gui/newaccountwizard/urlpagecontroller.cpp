@@ -79,6 +79,8 @@ void UrlPageController::buildPage()
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
     _urlField->setFocusPolicy(Qt::StrongFocus);
+    _urlField->setAccessibleName(tr("Server address field"));
+    _urlField->setAccessibleDescription(tr("Enter your server address here"));
 
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
