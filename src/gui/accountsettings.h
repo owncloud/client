@@ -65,7 +65,7 @@ public:
     ~AccountSettings() override;
 
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
-    void addModalWidget(AccountModalWidget *widget);
+    void addModalAccountWidget(AccountModalWidget *widget);
 
     uint unsyncedSpaces() const;
     uint syncedSpaces() const;

@@ -24,7 +24,6 @@
 #include "common/utility.h"
 #include "commonstrings.h"
 #include "configfile.h"
-#include "creds/httpcredentialsgui.h"
 #include "folderman.h"
 #include "folderstatusmodel.h"
 #include "folderwizard/folderwizard.h"
@@ -276,7 +275,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
         doForceSyncCurrentFolder(folder);
     });
-    addModalWidget(modalWidget);
+    addModalAccountWidget(modalWidget);
 }
 
 void AccountSettings::slotAddFolder()
@@ -737,7 +736,7 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
 }
 
-void AccountSettings::addModalWidget(AccountModalWidget *widget)
+void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 {
     if (!_accountState) {
         return;
