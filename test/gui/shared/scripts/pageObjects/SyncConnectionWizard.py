@@ -375,3 +375,15 @@ class SyncConnectionWizard:
         return squish.waitForObjectExists(
             SyncConnectionWizard.ADD_FOLDER_SYNC_BUTTON
         ).enabled
+
+    @staticmethod
+    def is_space_available(space_name):
+        selector = SyncConnectionWizard.SPACE_NAME_SELECTOR.copy()
+        selector["text"] = space_name
+        space_available = False
+        try:
+            squish.waitForObject(selector)
+            space_available = True
+        except:
+            pass
+        return space_available

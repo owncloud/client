@@ -1,6 +1,6 @@
 from helpers.api import provisioning, sharing_helper, webdav_helper as webdav
 import helpers.api.oc10 as oc
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import is_owncloud_client
 import helpers.api.external_api as ext
 
 from pageObjects.Toolbar import Toolbar
@@ -16,7 +16,7 @@ def step(context, app_name, action):
     regexp=True,
 )
 def step(context, user_name, resource_name):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         resource_exists = ext.resource_exists(user_name, resource_name)
     else:
         resource_exists = webdav.resource_exists(user_name, resource_name)
@@ -31,7 +31,7 @@ def step(context, user_name, resource_name):
     r'^as "([^"].*)" (?:file|folder) "([^"].*)" should exist in the server', regexp=True
 )
 def step(context, user_name, resource_name):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         resource_exists = ext.resource_exists(user_name, resource_name)
     else:
         resource_exists = webdav.resource_exists(user_name, resource_name)
@@ -44,7 +44,7 @@ def step(context, user_name, resource_name):
 
 @Then('as "|any|" the file "|any|" should have the content "|any|" in the server')
 def step(context, user_name, file_name, content):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         text_content = ext.get_file_content(user_name, file_name)
     else:
         text_content = webdav.get_file_content(user_name, file_name)
@@ -120,7 +120,7 @@ def step(context, resource_name, public_link_password, link_creator):
     regexp=True,
 )
 def step(context, user_name, folder_name, items_number):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         total_items = ext.get_folder_items_count(user_name, folder_name)
     else:
         total_items = webdav.get_folder_items_count(user_name, folder_name)
@@ -131,7 +131,7 @@ def step(context, user_name, folder_name, items_number):
 
 @Given('user "|any|" has created folder "|any|" in the server')
 def step(context, user, folder_name):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         ext.create_folder(user, folder_name)
     else:
         webdav.create_folder(user, folder_name)
@@ -139,7 +139,7 @@ def step(context, user, folder_name):
 
 @Given('user "|any|" has uploaded file with content "|any|" to "|any|" in the server')
 def step(context, user, file_content, file_name):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         ext.upload_file(user, file_name, file_content)
     else:
         webdav.create_file(user, file_name, file_content)
@@ -152,7 +152,7 @@ def step(context):
 
 @When('user "|any|" uploads file with content "|any|" to "|any|" in the server')
 def step(context, user, file_content, file_name):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         ext.upload_file(user, file_name, file_content)
     else:
         webdav.create_file(user, file_name, file_content)
@@ -160,7 +160,7 @@ def step(context, user, file_content, file_name):
 
 @When('user "|any|" deletes the folder "|any|" in the server')
 def step(context, user, folder_name):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         ext.delete_resource(user, folder_name)
     else:
         webdav.delete_resource(user, folder_name)
@@ -238,7 +238,7 @@ def step(context, user):
 
 @Given('user "|any|" has uploaded file "|any|" to "|any|" in the server')
 def step(context, user, file_name, destination):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         ext.upload_file(user, destination)
     else:
         webdav.upload_file(user, file_name, destination)
