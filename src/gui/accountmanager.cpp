@@ -34,16 +34,6 @@ auto urlC()
     return QStringLiteral("url");
 }
 
-auto userC()
-{
-    return QStringLiteral("user");
-}
-
-auto httpUserC()
-{
-    return QStringLiteral("http_user");
-}
-
 auto defaultSyncRootC()
 {
     return QStringLiteral("default_sync_root");
@@ -158,6 +148,7 @@ void AccountManager::save(bool saveCredentials)
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
+// todo: DC-112 I think this save creds thing needs to go. we only persist the refresh token and that should be handled by the creds directly
 void AccountManager::saveAccount(Account *account, bool saveCredentials)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
@@ -182,15 +173,6 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
             // re-persisting them)
             account->_credentials->persist();
         }
-
-        for (auto it = account->_settingsMap.constBegin(); it != account->_settingsMap.constEnd(); ++it) {
-            settings->setValue(it.key(), it.value());
-        }
-
-        // HACK: Save http_user also as user
-        // Refactoring todo: is this still valid? I don't find uses of httpUserC() aside from this instance
-        if (account->_settingsMap.contains(httpUserC()))
-            settings->setValue(userC(), account->_settingsMap.value(httpUserC()));
     }
 
     // Save accepted certificates.
@@ -264,21 +246,6 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     acc->setCapabilities({acc->url(), settings.value(capabilitesC()).value<QVariantMap>()});
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
-    // We want to only restore settings for that auth type and the user value
-    // this is trash, get rid of it DC-112
-    acc->_settingsMap.insert(userC(), settings.value(userC()));
-    // todo DC-112: we need to migrate the http related settings out to new creds
-    // setting scheme. in fact the only thing we need to do is delete these keys from the config and
-    // forget they ever existed
-    const QString authTypePrefix = QStringLiteral("http_");
-    const auto childKeys = settings.childKeys();
-    for (const auto &key : childKeys) {
-        if (!key.startsWith(authTypePrefix))
-            continue;
-        // remove!
-        acc->_settingsMap.insert(key, settings.value(key));
-    }
-
     acc->setCredentials(new Credentials(acc.get()));
 
     // now the server cert, it is in the general group
@@ -287,6 +254,20 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
     acc->setApprovedCerts({certs.begin(), certs.end()});
     settings.endGroup();
+
+    // 7.0 config settings maintenance: clean up legacy settings related to the old style credentials
+    // todo: remove this when we get to 8.0
+    QString credsVersion = QStringLiteral("http_CredentialVersion");
+    if (settings.contains(credsVersion)) {
+        settings.remove(QStringLiteral("user"));
+        const QString authTypePrefix = QStringLiteral("http_");
+        const auto childKeys = settings.childKeys();
+        for (const auto &key : childKeys) {
+            if (!key.startsWith(authTypePrefix))
+                continue;
+            settings.remove(key);
+        }
+    }
 
     return acc;
 }

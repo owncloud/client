@@ -182,10 +182,6 @@ public:
      */
     void addApprovedCerts(const QSet<QSslCertificate> &certs);
 
-    // To be called by credentials only, for storing username and the like
-    QVariant credentialSetting(const QString &key) const;
-    void addCredentialSetting(const QString &key, const QVariant &value);
-
     /** Access the server capabilities */
     const Capabilities &capabilities() const;
     void setCapabilities(const Capabilities &caps);
@@ -267,10 +263,7 @@ private:
     QString _displayName;
     QString _defaultSyncRoot;
     QIcon _avatarImg;
-
-    // todo: DC-112 this can go
-    QMap<QString, QVariant> _settingsMap;
-
+    
     QUrl _url;
     QString _cacheDirectory;
 

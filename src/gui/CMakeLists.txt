@@ -71,9 +71,6 @@ set(client_SRCS
     elidedlabel.cpp
     translations.cpp
 
-    creds/httpcredentials.cpp
-    creds/httpcredentialsgui.cpp
-    creds/qmlcredentials.cpp
     creds/oauth.cpp
     creds/credentials.cpp
     creds/requestauthenticationwidget.cpp
@@ -127,9 +124,6 @@ ecm_add_qml_module(owncloudGui
             qml/AccountButton.qml
             qml/FolderDelegate.qml
             qml/FolderError.qml
-
-            qml/credentials/Credentials.qml
-            qml/credentials/OAuthCredentials.qml
 
             spaces/qml/SpaceDelegate.qml
             spaces/qml/SpacesView.qml
