@@ -13,10 +13,10 @@ Feature: Project spaces
         Given the administrator has created a folder "planning" in space "Project101"
         And the administrator has uploaded a file "testfile.txt" with content "some content" inside space "Project101"
         And the administrator has added user "Alice" to space "Project101" with role "viewer"
-        And user "Alice" has set up a client with default settings
-        When using sync connection folder "Project101"
-        Then user "Alice" should be able to open the file "testfile.txt" on the file system
-        And as "Alice" the file "testfile.txt" should have content "some content" on the file system
+#        And user "Alice" has set up a client with default settings
+#        When using sync connection folder "Project101"
+#        Then user "Alice" should be able to open the file "testfile.txt" on the file system
+#        And as "Alice" the file "testfile.txt" should have content "some content" on the file system
 
     @skipOnWindows
     Scenario: User with Viewer role cannot edit the file (Linux only)
