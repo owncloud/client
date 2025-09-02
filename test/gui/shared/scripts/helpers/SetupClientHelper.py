@@ -9,7 +9,8 @@ import squish
 
 from helpers.ConfigHelper import get_config, set_config, is_windows
 from helpers.ReportHelper import is_video_enabled
-from helpers.UserHelper import get_username_for_user, get_password_for_user
+from helpers.UserHelper import get_username_for_user
+from helpers.api.provisioning import created_users
 
 
 def substitute_inline_codes(value):
@@ -39,7 +40,14 @@ def get_client_details(details):
             client_details.update({'server': row[1]})
         elif row[0] == 'user':
             client_details.update({'user': get_username_for_user(row[1])})
-            client_details.update({'password': get_password_for_user(row[1])})
+        elif row[0] == 'password':
+            if get_config('client_name') != 'ownCloud':
+                for created_user in created_users.values():
+                    if created_user['username'] == client_details['user']:
+                        client_details.update({'password': created_user['password']})
+                        break
+            else:
+                client_details.update({'password': row[1]})
         elif row[0] == 'sync_folder':
             client_details.update({'sync_folder': row[1]})
     return client_details

@@ -66,8 +66,9 @@ def step(context):
     start_client()
     for idx, row in enumerate(context.table):
         username = row[0]
+        password = get_password_for_user(username)
         account_details = get_client_details(
-            [['server', '%local_server%'], ['user', username]]
+            [['server', '%local_server%'], ['user', username], ['password', password]]
         )
         if idx > 0:
             Toolbar.open_new_account_setup()
