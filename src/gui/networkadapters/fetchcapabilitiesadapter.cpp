@@ -53,7 +53,7 @@ FetchCapabilitiesResult FetchCapabilitiesAdapter::getResult()
     req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 
-    // we just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
+    // we just added the Authorization header, don't let the credentials AccessManager tamper with it
     req.setAttribute(DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 

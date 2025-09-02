@@ -131,9 +131,6 @@ AccountPtr AccountManager::createAccount(const NewAccountModel &model)
     newAccountPtr->setDavUser(model.davUser());
     newAccountPtr->setDavDisplayName(model.displayName());
 
-    //   HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
-    //   newAccountPtr->setCredentials(credentials);
-
     Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
     newAccountPtr->setCredentials(creds);
 
@@ -281,7 +278,6 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
         // remove!
         acc->_settingsMap.insert(key, settings.value(key));
     }
-    //   acc->setCredentials(new HttpCredentialsGui);
 
     acc->setCredentials(new Credentials(acc.get()));
 

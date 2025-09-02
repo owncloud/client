@@ -122,7 +122,6 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     buttonLayout->addWidget(_cancelButton);
     buttonLayout->addWidget(_signInButton);
     layout->addLayout(buttonLayout, Qt::AlignRight);
-    // layout->addSpacing(20);
 
     setLayout(layout);
 

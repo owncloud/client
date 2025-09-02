@@ -36,7 +36,6 @@ Q_LOGGING_CATEGORY(lcCredentials, "gui.credentials", QtInfoMsg)
 namespace {
 constexpr int TokenRefreshMaxRetries = 3;
 constexpr std::chrono::seconds TokenRefreshDefaultTimeout = 30s;
-constexpr int CredentialVersion = 1;
 const char authenticationFailedC[] = "owncloud-authentication-failed";
 
 // when creating new keys we should probably stick with this idea related to a creds "type" in case we need to add or remove
@@ -303,6 +302,7 @@ void Credentials::refreshAccessTokenInternal()
 
 void Credentials::askFromUser()
 {
+    Q_ASSERT(_requestAuth == nullptr);
     // the widget is parented to the AccountModalWidget when it's installed in the main window.
     // it will be cleaned up there - this is not a leak
     RequestAuthenticationWidget *widget = new RequestAuthenticationWidget();

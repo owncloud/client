@@ -24,7 +24,6 @@
 #include "common/utility.h"
 #include "commonstrings.h"
 #include "configfile.h"
-#include "creds/httpcredentialsgui.h"
 #include "folderman.h"
 #include "folderstatusmodel.h"
 #include "folderwizard/folderwizard.h"
