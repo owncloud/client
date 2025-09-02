@@ -2,6 +2,8 @@ import re
 import squish
 from playwright.sync_api import sync_playwright, expect
 
+from helpers.ConfigHelper import get_config
+
 envs = {}
 
 
@@ -36,14 +38,21 @@ def authorize_via_webui(username, password, login_type='oidc'):
 
 
 def oidc_login(page):
-    # login
-    page.fill('#oc-login-username', envs['OC_USERNAME'])
-    page.fill('#oc-login-password', envs['OC_PASSWORD'])
-    page.click('button[type=submit]')
-    # allow permissions
-    page.click('button >> text=Allow')
-    # confirm successful login
-    page.wait_for_selector('text=Login Successful')
+    if get_config('client_name') != 'ownCloud':
+        page.fill('#email', envs['OC_USERNAME'])
+        page.click('span:text-is("Next")')
+        page.fill('#password', envs['OC_PASSWORD'])
+        page.click('span:text-is("Sign in")')
+        page.wait_for_selector('text=Login Successful')
+    else:
+        # login
+        page.fill('#oc-login-username', envs['OC_USERNAME'])
+        page.fill('#oc-login-password', envs['OC_PASSWORD'])
+        page.click('button[type=submit]')
+        # allow permissions
+        page.click('button >> text=Allow')
+        # confirm successful login
+        page.wait_for_selector('text=Login Successful')
 
 
 def oauth_login(page):

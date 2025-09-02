@@ -178,3 +178,4 @@ FakesAssemblies/
 test/gui/config.ini
 test/gui/reports
 */**/__pycache__/
+test/gui/users.json
