@@ -1,7 +1,7 @@
 import squish
 from playwright.sync_api import sync_playwright
 
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import is_owncloud_client
 
 envs = {}
 
@@ -34,7 +34,7 @@ def authorize_via_webui(username, password):
 
 
 def oidc_login(page):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         page.fill('#email', envs['OC_USERNAME'])
         page.click('span:text-is("Next")')
         page.fill('#password', envs['OC_PASSWORD'])

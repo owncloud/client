@@ -23,7 +23,10 @@ from types import SimpleNamespace
 from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
 from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
 from helpers.SpaceHelper import delete_project_spaces
-from helpers.api.provisioning import delete_created_users
+from helpers.api.provisioning import (
+    delete_created_users,
+    create_user,
+)
 from helpers.SetupClientHelper import wait_until_app_killed
 from helpers.ConfigHelper import (
     init_config,
@@ -32,6 +35,7 @@ from helpers.ConfigHelper import (
     clear_scenario_config,
     is_windows,
     is_linux,
+    is_owncloud_client,
 )
 from helpers.FilesHelper import prefix_path_namespace, cleanup_created_paths
 from helpers.ReportHelper import save_video_recording, take_screenshot, is_video_enabled
@@ -39,6 +43,8 @@ from helpers.UserHelper import init_predefined_users
 from helpers.api.external_api import (
     delete_all_resources,
     permanently_delete_all_resources,
+    delete_all_spaces,
+    permanently_delete_all_spaces,
 )
 
 from pageObjects.Toolbar import Toolbar
@@ -61,7 +67,7 @@ PREVIOUS_ERROR_RESULT_COUNT = 0
 @OnFeatureStart
 def hook(context):
     init_config()
-    if get_config("client_name") != "ownCloud":
+    if not is_owncloud_client():
         init_predefined_users()
 
 
@@ -70,6 +76,9 @@ def hook(context):
 @OnScenarioStart
 def hook(context):
     clear_scenario_config()
+    # create admin user
+    if not is_owncloud_client():
+        create_user("admin")
 
 
 # runs before every scenario
@@ -185,9 +194,11 @@ def hook(context):
 # server cleanup
 @OnScenarioEnd
 def hook(context):
-    if get_config("client_name") != "ownCloud":
+    if not is_owncloud_client():
         delete_all_resources()
         permanently_delete_all_resources()
+        delete_all_spaces()
+        permanently_delete_all_spaces()
     delete_project_spaces()
     delete_created_users()
 

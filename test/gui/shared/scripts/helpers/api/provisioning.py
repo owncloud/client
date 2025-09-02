@@ -1,12 +1,12 @@
 from helpers.api import ocis
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import is_owncloud_client
 from helpers import UserHelper
 
 created_users = {}
 
 
 def create_user(username):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         user = UserHelper.test_users[username]
         created_users[username] = {
             'username': user.username,
@@ -37,6 +37,6 @@ def create_user(username):
 
 def delete_created_users():
     for username, user_info in list(created_users.items()):
-        if get_config('client_name') == 'ownCloud':
+        if is_owncloud_client():
             ocis.delete_user(user_info['id'])
         del created_users[username]
