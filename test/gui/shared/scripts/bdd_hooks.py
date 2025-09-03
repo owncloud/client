@@ -22,7 +22,11 @@ from datetime import datetime
 from helpers.StacktraceHelper import get_core_dumps, generate_stacktrace
 from helpers.SyncHelper import close_socket_connection, clear_waited_after_sync
 from helpers.SpaceHelper import delete_project_spaces
-from helpers.api.provisioning import delete_created_groups, delete_created_users
+from helpers.api.provisioning import (
+    delete_created_groups,
+    delete_created_users,
+    create_user,
+)
 from helpers.SetupClientHelper import wait_until_app_killed
 from helpers.ConfigHelper import (
     init_config,
@@ -39,6 +43,8 @@ from helpers.UserHelper import init_predefined_users
 from helpers.api.external_api import (
     delete_all_resources,
     permanently_delete_all_resources,
+    delete_all_spaces,
+    permanently_delete_all_spaces,
 )
 
 from pageObjects.Toolbar import Toolbar
@@ -63,6 +69,8 @@ def hook(context):
     init_config()
     if get_config("client_name") != "ownCloud":
         init_predefined_users()
+        # create admin user
+        create_user("admin")
 
 
 # runs before every scenario
@@ -188,6 +196,8 @@ def hook(context):
     if get_config("client_name") != "ownCloud":
         delete_all_resources()
         permanently_delete_all_resources()
+        delete_all_spaces()
+        permanently_delete_all_spaces()
     if get_config("ocis"):
         delete_project_spaces()
     else:

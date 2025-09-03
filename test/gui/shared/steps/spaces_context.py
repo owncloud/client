@@ -6,28 +6,42 @@ from helpers.SpaceHelper import (
     get_file_content,
     resource_exists,
 )
+from helpers.ConfigHelper import get_config
+import helpers.api.external_api as ext
 
 
 @Given('the administrator has created a space "|any|"')
 def step(context, space_name):
-    create_space(space_name)
+    if get_config('client_name') != 'ownCloud':
+        ext.create_space(space_name)
+    else:
+        create_space(space_name)
 
 
 @Given('the administrator has created a folder "|any|" in space "|any|"')
 def step(context, folder_name, space_name):
-    create_space_folder(space_name, folder_name)
+    if get_config('client_name') != 'ownCloud':
+        ext.create_space_folder(space_name, folder_name)
+    else:
+        create_space_folder(space_name, folder_name)
 
 
 @Given(
     'the administrator has uploaded a file "|any|" with content "|any|" inside space "|any|"'
 )
 def step(context, file_name, content, space_name):
-    create_space_file(space_name, file_name, content)
+    if get_config('client_name') != 'ownCloud':
+        ext.upload_space_file(space_name, file_name, content)
+    else:
+        create_space_file(space_name, file_name, content)
 
 
 @Given('the administrator has added user "|any|" to space "|any|" with role "|any|"')
 def step(context, user, space_name, role):
-    add_user_to_space(user, space_name, role)
+    if get_config('client_name') != 'ownCloud':
+        ext.add_user_to_space(user, space_name, role)
+    else:
+        add_user_to_space(user, space_name, role)
 
 
 @Then(
