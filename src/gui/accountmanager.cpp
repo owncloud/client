@@ -97,6 +97,11 @@ bool AccountManager::restore()
         return false;
     }
 
+    if (!settings->value("version").isNull()) {
+        // Migration from pre-7.0:
+        settings->remove("version");
+    }
+
     // If there are no accounts, check the old format.
     const auto &childGroups = settings->childGroups();
     for (const auto &accountId : childGroups) {
@@ -230,6 +235,11 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
+    if (!settings.value("version").isNull()) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
     auto urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings

@@ -1211,6 +1211,11 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
         def._virtualFilesMode = Vfs::modeFromString(vfsModeString);
     }
 
+    if (!settings.value("version").isNull()) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
     const QVariant ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"));
     if (!ignoreHiddenFiles.isNull()) {
         // Migration from pre-7.0:
