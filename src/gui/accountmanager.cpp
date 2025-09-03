@@ -148,7 +148,7 @@ void AccountManager::save(bool saveCredentials)
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
-// todo: DC-112 I think this save creds thing needs to go. we only persist the refresh token and that should be handled by the creds directly
+// todo: DC-128 I think this save creds thing needs to go. we only persist the refresh token and that should be handled by the creds directly
 void AccountManager::saveAccount(Account *account, bool saveCredentials)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();

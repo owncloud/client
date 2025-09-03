@@ -139,13 +139,13 @@ AccountPtr Account::sharedFromThis()
 
 QString Account::davUser() const
 {
-    // todo: DC-112 this does not work in the tests. apparently they only have davUser in the creds :/
+    // todo: DC-128 this does not work in the tests. apparently they only have davUser in the creds :/
     // Q_ASSERT(!_davUser.isEmpty());
     // return _davUser;
     return _davUser.isEmpty() ? _credentials->user() : _davUser;
 }
 
-// DC-112 - this needs to be removed as the davUser is immutable.
+// DC-128 - this needs to be removed as the davUser is immutable.
 // replace with arg to account ctr to ensure we always have a userId and that it set only ONCE
 void Account::setDavUser(const QString &newDavUser)
 {
@@ -237,12 +237,10 @@ void Account::setCredentials(AbstractCredentials *cred)
     // settings accesses the account as well as account->_credentials,
     _credentials.reset(cred);
 
-    // todo:: DC-86 this should not be. the account should simply create the creds, not this two way
-    // setCredentials -> setAccount.
-    // cred->setAccount(this);
 
-    // todo:: DC-112 this should not be. the account should simply create the creds, not this two way
-    // setCredentials -> setAccount.
+    // todo:: DC-128 this should not be but could not easily remove it yet. The account should be passed to creds via ctr as with
+    // new Credentials impl. Furthermore, the account should ideally create the creds itself, but again, the tests rely on this setCredentials
+    // impl to avoid having an abstraction for the account so it can create it's fake creds in the tests
     // cred->setAccount(this);
 
     _am = _credentials->createAccessManager();

@@ -104,7 +104,7 @@ AccessManager *Credentials::createAccessManager() const
 {
     AccessManager *am = new CredentialsAccessManager(this);
 
-    // todo: DC-112 - try to figure out whether this ultimately ends up invoking askFromUser
+    // todo: DC-128 - try to figure out whether this ultimately ends up invoking askFromUser
     connect(am, &QNetworkAccessManager::authenticationRequired, this, &Credentials::slotAuthentication);
 
     return am;
@@ -354,7 +354,7 @@ void Credentials::invalidateToken()
         return;
     }
 
-    // todo: DC-112 decide what to do with this "http" part of the cred keys. AFAIK this should
+    // todo: DC-128 decide what to do with this "http" part of the cred keys. AFAIK this should
     // only be associated with this credential type, and we hope to abandon that...let's see
     // but it should probably be "migrated" to some new creds id with the rest of the changes
     _account->credentialManager()->clear("http");
