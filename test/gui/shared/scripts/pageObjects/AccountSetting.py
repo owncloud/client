@@ -50,6 +50,8 @@ class AccountSetting:
     @staticmethod
     def account_action(action):
         squish.clickButton(squish.waitForObject(AccountSetting.MANAGE_ACCOUNT_BUTTON))
+        # wait 500ms for action menu to load
+        squish.snooze(1 / 2)
         squish.activateItem(
             squish.waitForObjectItem(AccountSetting.ACCOUNT_MENU, action)
         )
