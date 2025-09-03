@@ -43,7 +43,7 @@ const char authenticationFailedC[] = "owncloud-authentication-failed";
 // separate http and oauth creds instead of rolling all of it into the httpCreds "type".
 QString refreshTokenKeyC()
 {
-    return QStringLiteral("http/oauthtoken");
+    return QString("http/oauthtoken");
 }
 }
 
@@ -148,7 +148,7 @@ void Credentials::fetchCredentialsFromKeychain()
 {
     auto job = _account->credentialManager()->get(refreshTokenKeyC());
     if (!job) {
-        handleKeychainError(QStringLiteral("get credentials job is null - most likely the key does not exist in the credentials manager"));
+        handleKeychainError("get credentials job is null - most likely the key does not exist in the credentials manager");
         return;
     }
     connect(job, &CredentialJob::finished, this, [job, this] {
@@ -161,7 +161,7 @@ void Credentials::fetchCredentialsFromKeychain()
             _refreshToken = data;
             refreshAccessToken();
         } else {
-            handleKeychainError(QStringLiteral("get credentials data is empty"));
+            handleKeychainError("get credentials data is empty");
         }
     });
 }
@@ -357,7 +357,7 @@ void Credentials::invalidateToken()
     // todo: DC-112 decide what to do with this "http" part of the cred keys. AFAIK this should
     // only be associated with this credential type, and we hope to abandon that...let's see
     // but it should probably be "migrated" to some new creds id with the rest of the changes
-    _account->credentialManager()->clear(QStringLiteral("http"));
+    _account->credentialManager()->clear("http");
 
     // let QNAM forget about the previous credentials it may have been using
     // This needs to be done later in the event loop because we might be called (directly or
