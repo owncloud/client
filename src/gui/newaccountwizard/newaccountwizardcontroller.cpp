@@ -50,10 +50,9 @@ void NewAccountWizardController::setupWizard()
 
     updateColors();
 
-    QString appName = Theme::instance()->appNameGUI();
     _wizard->setFixedSize(600, 450);
     _wizard->setWizardStyle(QWizard::ModernStyle);
-    _wizard->setWindowTitle(tr("Welcome to %1").arg(appName));
+    _wizard->setWindowTitle(tr("Add account"));
 
     QWizard::WizardOptions origOptions = _wizard->options();
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);

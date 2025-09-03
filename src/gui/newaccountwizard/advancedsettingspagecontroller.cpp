@@ -53,7 +53,7 @@ void AdvancedSettingsPageController::buildPage()
     titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QLabel *syncOptionsLabel = new QLabel(tr("Sync and download options"), _page);
-    QLabel *syncRootLabel = new QLabel(tr("Folder location"));
+    QLabel *syncRootLabel = new QLabel(tr("Download location"));
     QFont sectionFont = syncOptionsLabel->font();
     sectionFont.setPixelSize(16);
     sectionFont.setWeight(QFont::DemiBold);
@@ -71,20 +71,20 @@ void AdvancedSettingsPageController::buildPage()
     layout->addSpacing(8);
     layout->addWidget(syncOptionsLabel, Qt::AlignLeft);
 
-    QRadioButton *vfsButton = new QRadioButton(tr("Only sync and download files as you use them to save hard drive space"), _page);
+    QRadioButton *vfsButton = new QRadioButton(tr("Sync and download files as you use them (saves hard drive space)"), _page);
     vfsButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
     layout->addWidget(vfsButton, Qt::AlignLeft);
 
-    QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download all current folders and files"), _page);
-    syncAllButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
-    layout->addWidget(syncAllButton, Qt::AlignLeft);
-
-    QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download specific folders"), _page);
+    QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download folders manually"), _page);
     selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
     layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
+
+    QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download folders and files"), _page);
+    syncAllButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
+    layout->addWidget(syncAllButton, Qt::AlignLeft);
 
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
@@ -127,7 +127,7 @@ void AdvancedSettingsPageController::buildPage()
     dirPalette.setColor(QPalette::Text, dirPalette.color(QPalette::ButtonText));
     _rootDirEdit->setPalette(dirPalette);
     _rootDirEdit->setFocusPolicy(Qt::StrongFocus);
-    _rootDirEdit->setAccessibleName(tr("Sync location on the local machine"));
+    _rootDirEdit->setAccessibleName(tr("Download location on the local machine"));
     // just clear the error if the user starts typing in the text edit
     connect(_rootDirEdit, &QLineEdit::textEdited, this, [this] {
         if (!_errorField->text().isEmpty())
@@ -135,8 +135,9 @@ void AdvancedSettingsPageController::buildPage()
     });
     connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
-    _folderButton = new QPushButton(tr("Choose..."), _page);
+    _folderButton = new QPushButton(tr("Browse..."), _page);
     _folderButton->setFocusPolicy(Qt::StrongFocus);
+    _folderButton->setAccessibleDescription(tr("Browse for a download location"));
     connect(_folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
 
     layout->addSpacing(8);
