@@ -60,6 +60,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
 
     _urlField = new QLabel(this);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _urlField->installEventFilter(this);
     _urlField->setAccessibleName(tr("Sign in URL")); // Prevent screen readers from reading the full URL!!!
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
@@ -131,14 +132,36 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     _signInButton->setEnabled(false);
 }
 
+bool RequestAuthenticationWidget::eventFilter(QObject *target, QEvent *event)
+{
+    if (target == _urlField && event->type() == QEvent::Resize) {
+        QResizeEvent *e = dynamic_cast<QResizeEvent *>(event);
+        if (e && e->size().width() != e->oldSize().width()) {
+            QString text = elidedUrl(e->size().width());
+            _urlField->setText(text);
+        }
+        return false; // -> don't hijack the event as the target still needs to process it
+    }
+    return QObject::eventFilter(target, event);
+}
+
+QString RequestAuthenticationWidget::elidedUrl(int targetWidth)
+{
+    if (_authUrl.isEmpty())
+        return QString();
+
+    QFontMetrics metrics(_urlField->font());
+    QString elidedText = metrics.elidedText(_authUrl, Qt::ElideRight, targetWidth);
+    return elidedText;
+}
+
 void RequestAuthenticationWidget::setAuthUrl(const QString &url)
 {
     // who knows.
     Q_ASSERT(!url.isEmpty());
     if (_authUrl != url) {
         _authUrl = url;
-        QFontMetrics metrics(_urlField->font());
-        QString elidedText = metrics.elidedText(_authUrl, Qt::ElideRight, _urlField->width());
+        QString elidedText = elidedUrl(_urlField->width());
         _urlField->setText(elidedText);
         // update the copy button tooltip
         onClipboardChanged();

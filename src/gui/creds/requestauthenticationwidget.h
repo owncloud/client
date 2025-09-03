@@ -31,13 +31,17 @@ public:
     void setAuthUrl(const QString &url);
     void setErrorMessage(const QString &error);
 
-Q_SIGNALS:
+protected:
+    bool eventFilter(QObject *target, QEvent *event) override;
+
+signals:
     void connectClicked();
     void stayLoggedOutClicked();
 
 private:
     void onClipboardChanged();
     void onCopyUrl();
+    QString elidedUrl(int targetWidth);
 
     void updateColors();
 
