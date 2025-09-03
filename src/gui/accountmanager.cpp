@@ -97,7 +97,7 @@ bool AccountManager::restore()
         return false;
     }
 
-    if (!settings->value("version").isNull()) {
+    if (!settings->contains("version")) {
         // Migration from pre-7.0:
         settings->remove("version");
     }
