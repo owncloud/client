@@ -139,17 +139,17 @@ AccountPtr AccountManager::createAccount(const NewAccountModel &model)
     return newAccountPtr;
 }
 
-void AccountManager::save(bool saveCredentials)
+void AccountManager::save()
 {
     for (const auto &acc : std::as_const(_accounts)) {
-        saveAccount(acc->account().data(), saveCredentials);
+        saveAccount(acc->account().data());
     }
 
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
 // todo: DC-128 I think this save creds thing needs to go. we only persist the refresh token and that should be handled by the creds directly
-void AccountManager::saveAccount(Account *account, bool saveCredentials)
+void AccountManager::saveAccount(Account *account)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
@@ -164,15 +164,6 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
     }
     if (account->hasDefaultSyncRoot()) {
         settings->setValue(defaultSyncRootC(), account->defaultSyncRoot());
-    }
-    if (account->_credentials) {
-        if (saveCredentials) {
-            // Only persist the credentials if the parameter is set, on migration from 1.8.x
-            // we want to save the accounts but not overwrite the credentials
-            // (This is easier than asynchronously fetching the credentials from keychain and then
-            // re-persisting them)
-            account->_credentials->persist();
-        }
     }
 
     // Save accepted certificates.
@@ -319,6 +310,7 @@ void AccountManager::deleteAccount(AccountState *account)
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }
 
+    // todo: DC-128 try moving these to the account::cleanupForRemoval routine
     // Forget account credentials, cookies
     account->account()->credentials()->forgetSensitiveData();
     account->account()->credentialManager()->clear();
@@ -395,7 +387,7 @@ AccountState *AccountManager::addAccountState(std::unique_ptr<AccountState> &&ac
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
         // persist the account, not the credentials, we don't know whether they are ready yet
         // Refactoring todo: how about we make those two completely different saves? then we can ditch this lambda
-        saveAccount(rawAccount, false);
+        saveAccount(rawAccount);
     });
 
     Q_EMIT accountAdded(statePtr);
