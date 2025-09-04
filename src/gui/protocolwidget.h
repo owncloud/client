@@ -57,6 +57,7 @@ public:
 public Q_SLOTS:
     void slotItemCompleted(Folder *folder, const SyncFileItemPtr &item);
     void filterDidChange();
+    void slotFolderAboutToBeRemoved(Folder *folder);
 
 private Q_SLOTS:
     void slotItemContextMenu(const QPoint &pos);
