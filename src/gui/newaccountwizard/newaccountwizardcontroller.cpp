@@ -52,7 +52,7 @@ void NewAccountWizardController::setupWizard()
 
     _wizard->setFixedSize(600, 450);
     _wizard->setWizardStyle(QWizard::ModernStyle);
-    _wizard->setWindowTitle(tr("Add account"));
+    _wizard->setWindowTitle(tr("Add account..."));
 
     QWizard::WizardOptions origOptions = _wizard->options();
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
