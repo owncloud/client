@@ -29,10 +29,13 @@ private Q_SLOTS:
         new QAbstractItemModelTester(model, this);
 
         auto fakeAm = new FakeAM(FileInfo(), this);
-        auto creds0 = new FakeCredentials{fakeAm};
-        auto creds1 = new FakeCredentials{fakeAm};
-        auto acc1 = TestUtils::createDummyAccount(creds0);
-        auto acc2 = TestUtils::createDummyAccount(creds1);
+        auto acc1 = TestUtils::createDummyAccount();
+        auto acc2 = TestUtils::createDummyAccount();
+
+        auto creds0 = new FakeCredentials(acc1->account(), fakeAm);
+        acc1->account()->setCredentials(creds0);
+        auto creds1 = new FakeCredentials(acc2->account(), fakeAm);
+        acc2->account()->setCredentials(creds1);
 
         model->setActivityList({
             Activity{Activity::ActivityType, QStringLiteral("1"), acc1->account(), QStringLiteral("test"), QStringLiteral("test"), QStringLiteral("foo.cpp"),

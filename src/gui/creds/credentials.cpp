@@ -80,12 +80,11 @@ private:
 };
 
 Credentials::Credentials(const QString &token, const QString &refreshToken, Account *account)
-    : AbstractCredentials(account)
+    : AbstractCredentials(account, account)
     , _accessToken(token)
     , _refreshToken(refreshToken)
     , _ready(false)
 {
-    _account = account;
     if (!token.isEmpty() && !refreshToken.isEmpty())
         _ready = true;
 }
@@ -93,11 +92,6 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
 Credentials::Credentials(Account *account)
     : Credentials({}, {}, account)
 {
-}
-
-QString Credentials::user() const
-{
-    return _account->davUser();
 }
 
 AccessManager *Credentials::createAccessManager() const

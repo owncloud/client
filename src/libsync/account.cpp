@@ -140,9 +140,9 @@ AccountPtr Account::sharedFromThis()
 QString Account::davUser() const
 {
     // todo: DC-128 this does not work in the tests. apparently they only have davUser in the creds :/
-    // Q_ASSERT(!_davUser.isEmpty());
-    // return _davUser;
-    return _davUser.isEmpty() ? _credentials->user() : _davUser;
+    Q_ASSERT(!_davUser.isEmpty());
+    return _davUser;
+    // return _davUser.isEmpty() ? _credentials->user() : _davUser;
 }
 
 // DC-128 - this needs to be removed as the davUser is immutable.

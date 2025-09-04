@@ -845,8 +845,9 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     toDisk(rootDir, filesAreDehydrated ? FileInfo() : fileTemplate);
 
     _fakeAm = new FakeAM(fileTemplate, this);
-    auto creds = new FakeCredentials{_fakeAm};
-    _accountState = std::move(OCC::TestUtils::createDummyAccount(creds));
+    _accountState = OCC::TestUtils::createDummyAccount();
+    auto creds = new FakeCredentials(_accountState->account(), _fakeAm);
+    _accountState->account()->setCredentials(creds);
 
     _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db")));
     // TODO: davUrl

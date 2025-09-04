@@ -134,9 +134,10 @@ public:
         fakeAm = new FakeAM({}, nullptr);
         account = Account::create(QUuid::createUuid());
         account->setUrl(sOpenIdBaseURL);
+        account->setDavUser("admin");
         // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
         // therefore, we should never call fakeAm->setThis(...)
-        account->setCredentials(new FakeCredentials { fakeAm });
+        account->setCredentials(new FakeCredentials(account, fakeAm));
         fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
             if (req.url().path().endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 return this->wellKnownReply(op, req);

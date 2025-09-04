@@ -518,13 +518,16 @@ protected:
 class FakeCredentials : public OCC::AbstractCredentials
 {
 public:
-    FakeCredentials(OCC::AccessManager *am)
-        : _am { am }
+    // this impl is concerning. Unfortunately it's used so many places in tests it's very hard to align it with the real world impl and use of the
+    // AbstractCredentials which makes it pretty questionable at base. anyway, the abstract creds now want an account and a parent in the ctr as the setAccount
+    // member is removed, and yeah, it should have a parent to keep things clean, but refactoring the tests is going to be a very large job so that needs to
+    // happen another time. I find it very concerning that the tests work without any account at all.
+    FakeCredentials(OCC::Account *account, OCC::AccessManager *am)
+        : OCC::AbstractCredentials(account, nullptr)
+        , _am{am}
     {
     }
 
-    QString credentialsType() const override { return QStringLiteral("test"); }
-    QString user() const override { return QStringLiteral("admin"); }
     OCC::AccessManager *createAccessManager() const override { return _am; }
     bool ready() const override { return true; }
     void fetchFromKeychain() override { }
