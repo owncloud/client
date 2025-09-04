@@ -183,7 +183,7 @@ public:
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent = nullptr);
 
     ~Folder() override;
     /**

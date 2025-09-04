@@ -88,7 +88,12 @@ FolderMan::FolderMan()
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
-    _ignoreHiddenFiles = ConfigFile().ignoreHiddenFiles();
+    if (std::optional<bool> configValue = ConfigFile().ignoreHiddenFiles()) {
+        _ignoreHiddenFiles = configValue.value();
+    } else {
+        ConfigFile().setIgnoreHiddenFiles(_ignoreHiddenFiles); // defaults to true
+    }
+
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
@@ -553,7 +558,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
         return nullptr;
     }
 
-    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), this);
+    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible

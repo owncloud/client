@@ -148,7 +148,7 @@ public:
     bool optionalDesktopNotifications() const;
     void setOptionalDesktopNotifications(bool show);
 
-    bool ignoreHiddenFiles() const;
+    std::optional<bool> ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
 
     std::optional<QStringList> issuesWidgetFilter() const;

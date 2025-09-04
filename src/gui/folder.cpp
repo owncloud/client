@@ -92,7 +92,7 @@ using namespace FileSystem::SizeLiterals;
 
 Q_LOGGING_CATEGORY(lcFolder, "gui.folder", QtInfoMsg)
 
-Folder::Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent)
+Folder::Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _definition(definition)
@@ -117,7 +117,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
         // current impl can result in an invalid engine which is just a mess given the folder is useless without it
         _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
-        _engine->setIgnoreHiddenFiles(ConfigFile().ignoreHiddenFiles());
+        _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
 
         if (!_engine->loadDefaultExcludes()) {
             qCWarning(lcFolder, "Could not read system exclude file");

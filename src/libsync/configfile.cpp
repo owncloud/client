@@ -183,10 +183,13 @@ void ConfigFile::setOptionalDesktopNotifications(bool show)
     settings.sync();
 }
 
-bool ConfigFile::ignoreHiddenFiles() const
+std::optional<bool> ConfigFile::ignoreHiddenFiles() const
 {
     auto settings = makeQSettings();
-    return settings.value(ignoreHiddenFilesC(), true).toBool();
+    auto value = settings.value(ignoreHiddenFilesC());
+    if (value.isNull())
+        return {};
+    return value.toBool();
 }
 
 void ConfigFile::setIgnoreHiddenFiles(bool ignore)
