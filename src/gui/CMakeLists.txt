@@ -108,7 +108,7 @@ set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
 target_include_directories(owncloudGui PRIVATE models spaces creds)
 target_link_libraries(owncloudGui
     PUBLIC
-        Qt::Widgets Qt::Network Qt::Xml Qt::Quick Qt::QuickWidgets Qt::QuickControls2
+        Qt6::Widgets Qt6::Network Qt6::Xml Qt6::Quick Qt6::QuickWidgets Qt6::QuickControls2
         folderwizard
         libsync
         Qt6Keychain::Qt6Keychain
@@ -158,8 +158,8 @@ elseif( WIN32 )
             folderwatcher_win.cpp)
 elseif(UNIX AND NOT APPLE)
     ## handle DBUS for Fdo notifications
-    if (TARGET Qt::DBus)
-        target_link_libraries(owncloudGui PUBLIC Qt::DBus)
+    if (TARGET Qt6::DBus)
+        target_link_libraries(owncloudGui PUBLIC Qt6::DBus)
         target_compile_definitions(owncloudGui PUBLIC "USE_FDO_NOTIFICATIONS")
     endif()
     target_sources(owncloudGui PRIVATE

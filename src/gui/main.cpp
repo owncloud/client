@@ -29,7 +29,7 @@
 #include "libsync/logger.h"
 #include "socketapi/socketapi.h"
 
-#include <kdsingleapplication.h>
+#include <kdsingleapplication-qt6/kdsingleapplication.h>
 
 #ifdef WITH_AUTO_UPDATER
 #include "updater/updater.h"
