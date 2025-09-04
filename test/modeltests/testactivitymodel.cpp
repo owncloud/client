@@ -32,9 +32,9 @@ private Q_SLOTS:
         auto acc1 = TestUtils::createDummyAccount();
         auto acc2 = TestUtils::createDummyAccount();
 
-        auto creds0 = new FakeCredentials(acc1->account(), fakeAm);
+        auto creds0 = new FakeCredentials(acc1->account().get(), fakeAm);
         acc1->account()->setCredentials(creds0);
-        auto creds1 = new FakeCredentials(acc2->account(), fakeAm);
+        auto creds1 = new FakeCredentials(acc2->account().get(), fakeAm);
         acc2->account()->setCredentials(creds1);
 
         model->setActivityList({

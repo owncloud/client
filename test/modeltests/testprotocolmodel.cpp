@@ -35,7 +35,7 @@ private Q_SLOTS:
 
         auto fakeAm = new FakeAM(FileInfo(), this);
         auto newAccountState = TestUtils::createDummyAccount();
-        auto creds = new FakeCredentials(newAccountState->account(), fakeAm);
+        auto creds = new FakeCredentials(newAccountState->account().get(), fakeAm);
         newAccountState->account()->setCredentials(creds);
 
         const QDir d(dir.path());

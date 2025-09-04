@@ -9,9 +9,7 @@
 #include "testutils.h"
 
 #include "accessmanager.h"
-#include "gui/accountmanager.h"
 #include "httplogger.h"
-#include "libsync/configfile.h"
 #include "libsync/syncresult.h"
 
 #include <thread>
@@ -846,7 +844,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
 
     _fakeAm = new FakeAM(fileTemplate, this);
     _accountState = OCC::TestUtils::createDummyAccount();
-    auto creds = new FakeCredentials(_accountState->account(), _fakeAm);
+    auto creds = new FakeCredentials(_accountState->account().get(), _fakeAm);
     _accountState->account()->setCredentials(creds);
 
     _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db")));

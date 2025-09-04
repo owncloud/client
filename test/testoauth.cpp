@@ -137,7 +137,7 @@ public:
         account->setDavUser("admin");
         // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
         // therefore, we should never call fakeAm->setThis(...)
-        account->setCredentials(new FakeCredentials(account, fakeAm));
+        account->setCredentials(new FakeCredentials(account.get(), fakeAm));
         fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
             if (req.url().path().endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 return this->wellKnownReply(op, req);
