@@ -54,7 +54,7 @@ qsizetype numberOfSyncJournals(const QString &path)
 namespace OCC {
 Q_LOGGING_CATEGORY(lcFolderMan, "gui.folder.manager", QtInfoMsg)
 
-static std::string_view IgnoreHiddenFilesKey = "ignoreHiddenFiles";
+inline static const QString IgnoreHiddenFilesKey = "ignoreHiddenFiles";
 
 void TrayOverallStatusResult::addResult(Folder *f)
 {
