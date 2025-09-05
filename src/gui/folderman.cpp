@@ -88,7 +88,13 @@ FolderMan::FolderMan()
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
-    _ignoreHiddenFiles = ConfigFile().ignoreHiddenFiles();
+    auto settings = ConfigFile::makeQSettings();
+    if (settings.contains(IgnoreHiddenFilesKey)) {
+        _ignoreHiddenFiles = settings.value(IgnoreHiddenFilesKey).toBool();
+    } else {
+        settings.setValue(IgnoreHiddenFilesKey, _ignoreHiddenFiles); // defaults to true
+    }
+
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
@@ -553,7 +559,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
         return nullptr;
     }
 
-    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), this);
+    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
@@ -970,13 +976,14 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     }
 
     setSyncEnabled(false);
-    ConfigFile().setIgnoreHiddenFiles(ignore);
+    auto settings = ConfigFile::makeQSettings();
+    settings.setValue(IgnoreHiddenFilesKey, ignore);
     _ignoreHiddenFiles = ignore;
 
     // This should be done through a signal-slot connection. However, this has to wait until the
     // engine is passed to the folder (so we can connect the signal/slot) instead of the folder
     // creating it. See the todo in the Folder constructor.
-    for (Folder *folder : _folders) {
+    for (Folder *folder : std::as_const(_folders)) {
         if (folder->canSync()) {
             folder->syncEngine().setIgnoreHiddenFiles(ignore);
         }

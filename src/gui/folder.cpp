@@ -92,7 +92,7 @@ using namespace FileSystem::SizeLiterals;
 
 Q_LOGGING_CATEGORY(lcFolder, "gui.folder", QtInfoMsg)
 
-Folder::Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent)
+Folder::Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _definition(definition)
@@ -117,7 +117,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
         // current impl can result in an invalid engine which is just a mess given the folder is useless without it
         _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
-        _engine->setIgnoreHiddenFiles(ConfigFile().ignoreHiddenFiles());
+        _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
 
         if (!_engine->loadDefaultExcludes()) {
             qCWarning(lcFolder, "Could not read system exclude file");
@@ -1178,19 +1178,19 @@ uint32_t FolderDefinition::priority() const
 
 void FolderDefinition::save(QSettings &settings, const FolderDefinition &def)
 {
-    settings.setValue(QStringLiteral("localPath"), def.localPath());
-    settings.setValue(QStringLiteral("journalPath"), def.journalPath());
-    settings.setValue(QStringLiteral("targetPath"), def.targetPath());
+    settings.setValue("localPath", def.localPath());
+    settings.setValue("journalPath", def.journalPath());
+    settings.setValue("targetPath", def.targetPath());
     if (!def.spaceId().isEmpty()) {
         settings.setValue(spaceIdC(), def.spaceId());
     }
     settings.setValue(davUrlC(), def.webDavUrl());
     settings.setValue(displayNameC(), def.displayName());
-    settings.setValue(QStringLiteral("paused"), def.paused());
+    settings.setValue("paused", def.paused());
     settings.setValue(deployedC(), def.isDeployed());
     settings.setValue(priorityC(), def.priority());
 
-    settings.setValue(QStringLiteral("virtualFilesMode"), Utility::enumToString(def.virtualFilesMode()));
+    settings.setValue("virtualFilesMode", Utility::enumToString(def.virtualFilesMode()));
 }
 
 FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &id)
@@ -1198,10 +1198,10 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     Q_ASSERT(!id.isEmpty());
 
     FolderDefinition def{id, settings.value(davUrlC()).toUrl(), settings.value(spaceIdC()).toString(), settings.value(displayNameC()).toString()};
-    def.setLocalPath(settings.value(QStringLiteral("localPath")).toString());
-    def.setTargetPath(settings.value(QStringLiteral("targetPath")).toString());
-    def._journalPath = settings.value(QStringLiteral("journalPath")).toString();
-    def._paused = settings.value(QStringLiteral("paused")).toBool();
+    def.setLocalPath(settings.value("localPath").toString());
+    def.setTargetPath(settings.value("targetPath").toString());
+    def._journalPath = settings.value("journalPath").toString();
+    def._paused = settings.value("paused").toBool();
     def._deployed = settings.value(deployedC(), false).toBool();
     def._priority = settings.value(priorityC(), 0).toUInt();
 
@@ -1211,10 +1211,15 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
         def._virtualFilesMode = Vfs::modeFromString(vfsModeString);
     }
 
-    const QVariant ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"));
+    if (settings.contains("version")) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
+    const QVariant ignoreHiddenFiles = settings.value("ignoreHiddenFiles");
     if (!ignoreHiddenFiles.isNull()) {
         // Migration from pre-7.0:
-        settings.remove(QStringLiteral("ignoreHiddenFiles"));
+        settings.remove("ignoreHiddenFiles");
         FolderMan::instance()->setIgnoreHiddenFiles(ignoreHiddenFiles.toBool());
     }
 
