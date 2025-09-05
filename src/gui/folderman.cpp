@@ -54,8 +54,6 @@ qsizetype numberOfSyncJournals(const QString &path)
 namespace OCC {
 Q_LOGGING_CATEGORY(lcFolderMan, "gui.folder.manager", QtInfoMsg)
 
-inline static const QString IgnoreHiddenFilesKey = "ignoreHiddenFiles";
-
 void TrayOverallStatusResult::addResult(Folder *f)
 {
     _overallStatus._numNewConflictItems += f->syncResult()._numNewConflictItems;

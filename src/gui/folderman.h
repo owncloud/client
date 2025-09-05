@@ -457,6 +457,8 @@ private:
 
     static FolderMan *_instance;
     friend class OCC::Application;
+
+    inline static const QString IgnoreHiddenFilesKey = "ignoreHiddenFiles";
 };
 
 } // namespace OCC
