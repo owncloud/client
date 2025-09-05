@@ -885,6 +885,8 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
 
     // todo: #41
     _accountState = createDummyAccountWithFileSupport(fileTemplate);
+    _fakeAm = dynamic_cast<FakeAM *>(_accountState->account()->accessManager());
+    Q_ASSERT(_fakeAm);
 
     _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db")));
     // TODO: davUrl

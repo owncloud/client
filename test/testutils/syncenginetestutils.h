@@ -561,9 +561,9 @@ private:
 class FakeFolder : public QObject
 {
     Q_OBJECT
+    FakeAM *_fakeAm;
     const QTemporaryDir _tempDir = OCC::TestUtils::createTempDir();
     DiskFileModifier _localModifier;
-    FakeAM *_fakeAm;
     OCC::TestUtils::TestUtilsPrivate::AccountStateRaii _accountState =
         OCC::TestUtils::TestUtilsPrivate::AccountStateRaii{nullptr, &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
     std::unique_ptr<OCC::SyncJournalDb> _journalDb;

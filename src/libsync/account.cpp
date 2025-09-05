@@ -284,7 +284,7 @@ void Account::clearCookieJar()
 
 AccessManager *Account::accessManager()
 {
-    return _am.data();
+    return _am;
 }
 
 QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, QNetworkRequest req, QIODevice *data)
