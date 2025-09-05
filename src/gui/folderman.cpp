@@ -54,6 +54,8 @@ qsizetype numberOfSyncJournals(const QString &path)
 namespace OCC {
 Q_LOGGING_CATEGORY(lcFolderMan, "gui.folder.manager", QtInfoMsg)
 
+static std::string_view IgnoreHiddenFilesKey = "ignoreHiddenFiles";
+
 void TrayOverallStatusResult::addResult(Folder *f)
 {
     _overallStatus._numNewConflictItems += f->syncResult()._numNewConflictItems;
@@ -88,10 +90,11 @@ FolderMan::FolderMan()
     , _scheduler(new SyncScheduler(this))
     , _socketApi(new SocketApi)
 {
-    if (std::optional<bool> configValue = ConfigFile().ignoreHiddenFiles()) {
-        _ignoreHiddenFiles = configValue.value();
+    auto settings = ConfigFile::makeQSettings();
+    if (settings.contains(IgnoreHiddenFilesKey)) {
+        _ignoreHiddenFiles = settings.value(IgnoreHiddenFilesKey).toBool();
     } else {
-        ConfigFile().setIgnoreHiddenFiles(_ignoreHiddenFiles); // defaults to true
+        settings.setValue(IgnoreHiddenFilesKey, _ignoreHiddenFiles); // defaults to true
     }
 
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
@@ -975,13 +978,14 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     }
 
     setSyncEnabled(false);
-    ConfigFile().setIgnoreHiddenFiles(ignore);
+    auto settings = ConfigFile::makeQSettings();
+    settings.setValue(IgnoreHiddenFilesKey, ignore);
     _ignoreHiddenFiles = ignore;
 
     // This should be done through a signal-slot connection. However, this has to wait until the
     // engine is passed to the folder (so we can connect the signal/slot) instead of the folder
     // creating it. See the todo in the Folder constructor.
-    for (Folder *folder : _folders) {
+    for (Folder *folder : std::as_const(_folders)) {
         if (folder->canSync()) {
             folder->syncEngine().setIgnoreHiddenFiles(ignore);
         }

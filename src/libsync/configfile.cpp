@@ -59,10 +59,6 @@ const QString optionalDesktopNotificationsC()
 {
     return QStringLiteral("optionalDesktopNotifications");
 }
-const QString ignoreHiddenFilesC()
-{
-    return QStringLiteral("ignoreHiddenFiles");
-}
 const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
 const QString updateChannelC() { return QStringLiteral("updateChannel"); }
@@ -180,22 +176,6 @@ void ConfigFile::setOptionalDesktopNotifications(bool show)
 {
     auto settings = makeQSettings();
     settings.setValue(optionalDesktopNotificationsC(), show);
-    settings.sync();
-}
-
-std::optional<bool> ConfigFile::ignoreHiddenFiles() const
-{
-    auto settings = makeQSettings();
-    auto value = settings.value(ignoreHiddenFilesC());
-    if (value.isNull())
-        return {};
-    return value.toBool();
-}
-
-void ConfigFile::setIgnoreHiddenFiles(bool ignore)
-{
-    auto settings = makeQSettings();
-    settings.setValue(ignoreHiddenFilesC(), ignore);
     settings.sync();
 }
 
