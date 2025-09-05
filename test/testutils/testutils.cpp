@@ -9,18 +9,6 @@
 namespace OCC {
 
 namespace TestUtils {
-    TestUtilsPrivate::AccountStateRaii createDummyAccount()
-    {
-        // ensure we have an instance of folder man
-        std::ignore = folderMan();
-        // don't use the account manager to create the account, it would try to use widgets
-        auto acc = Account::create(QUuid::createUuid());
-        acc->setDavUser(QStringLiteral("admin"));
-        acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
-        acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
-        acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});
-        return {OCC::AccountManager::instance()->addAccount(acc), &TestUtilsPrivate::accountStateDeleter};
-    }
 
     // We have more than one of these?
     FolderDefinition createDummyFolderDefinition(const AccountPtr &account, const QString &path)

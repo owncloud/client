@@ -64,6 +64,8 @@ AccountState::AccountState(AccountPtr account)
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
+    Q_ASSERT(_account);
+
     connectAccount();
     connectNetworkInformation();
 
@@ -77,9 +79,7 @@ AccountState::AccountState(AccountPtr account)
     connect(timer, &QTimer::timeout, this, [this] { checkConnectivity(false); });
     timer->start();
 
-    connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
-        setState(State::SignedOut);
-    });
+    connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
 
     if (FolderMan::instance()) {
         FolderMan::instance()->socketApi()->registerAccount(account);

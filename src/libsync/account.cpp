@@ -220,11 +220,18 @@ QString Account::id() const
 
 AbstractCredentials *Account::credentials() const
 {
-    return _credentials.data();
+    return _credentials;
 }
 
+// the credentials should be instantiated with the account as parent. we have to pass the creds in as the tests use their own
+// sublcass of AbstractCredentials = FakeCredentials.
 void Account::setCredentials(AbstractCredentials *cred)
 {
+    Q_ASSERT(cred);
+
+    if (_credentials == cred)
+        return;
+
     // set active credential manager
     QNetworkCookieJar *jar = nullptr;
     if (_am) {
@@ -233,9 +240,7 @@ void Account::setCredentials(AbstractCredentials *cred)
         _am->deleteLater();
     }
 
-    // The order for these two is important! Reading the credential's
-    // settings accesses the account as well as account->_credentials,
-    _credentials.reset(cred);
+    _credentials = cred;
 
 
     // todo:: DC-128 this should not be but could not easily remove it yet. The account should be passed to creds via ctr as with
@@ -248,21 +253,18 @@ void Account::setCredentials(AbstractCredentials *cred)
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
     const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(_cacheDirectory));
-    qCDebug(lcAccount) << "Cache location for account" << this << "set to" << networkCacheLocation;
     _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
 
     if (jar) {
         _am->setCookieJar(jar);
     }
-    connect(_credentials.data(), &AbstractCredentials::fetched, this, [this] {
+    connect(_credentials, &AbstractCredentials::fetched, this, [this] {
         Q_EMIT credentialsFetched();
         _queueGuard.unblock();
     });
-    connect(_credentials.data(), &AbstractCredentials::authenticationStarted, this, [this] {
-        _queueGuard.block();
-    });
-    connect(_credentials.data(), &AbstractCredentials::authenticationFailed, this, [this] { _queueGuard.clear(); });
+    connect(_credentials, &AbstractCredentials::authenticationStarted, this, [this] { _queueGuard.block(); });
+    connect(_credentials, &AbstractCredentials::authenticationFailed, this, [this] { _queueGuard.clear(); });
 }
 
 QUrl Account::davUrl() const
