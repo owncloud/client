@@ -46,7 +46,7 @@ public:
     /**
      * Saves the accounts to a given settings file
      */
-    void save(bool saveCredentials = true);
+    void save();
 
     /**
      * @brief createAccount creates an account from scratch
@@ -125,7 +125,7 @@ private:
 
 public Q_SLOTS:
     /// Saves account data, not including the credentials
-    void saveAccount(Account *account, bool saveCredentials);
+    void saveAccount(Account *account /*, bool saveCredentials*/);
 
 Q_SIGNALS:
     void accountAdded(AccountState *account);

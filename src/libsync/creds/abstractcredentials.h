@@ -32,26 +32,9 @@ class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
     Q_OBJECT
 
 public:
-    AbstractCredentials(QObject *parent = nullptr);
+    // note the account is also the parent and effective owner of the creds!!!
+    AbstractCredentials(Account *account, QObject *parent);
     // No need for virtual destructor - QObject already has one.
-
-    /** The bound account for the credentials instance.
-     *
-     * Credentials are always used in conjunction with an account.
-     * Calling Account::setCredentials() will call this function.
-     *
-     * todo: DC-112 - related to following comment: I do not see any cleanup of the creds in relation to the account.
-     * I just added the parent arg here as it was missing, will check to see if there is some delete on the creds that
-     * I missed but I think in the end we should just pass the account as parent in the ctr and also set the member there,
-     * then this function can go
-     * Credentials only live as long as the underlying account object.
-     */
-    virtual void setAccount(Account *account);
-
-    // todo: DC-112 eliminate this
-    virtual QString credentialsType() const = 0;
-    // todo: DC-112 - remove this completely
-    virtual QString user() const = 0;
 
     virtual AccessManager *createAccessManager() const = 0;
 
@@ -59,7 +42,7 @@ public:
     virtual bool ready() const = 0;
 
     /** Whether fetchFromKeychain() was ever called before. */
-    // todo: DC-112 - evaluate the need for this. it's weird.
+    // todo: DC-128 - evaluate the need for this. it's weird.
     bool wasEverFetched() const { return _wasEverFetched; }
 
     /** Trigger (async) fetching of credential information
@@ -119,6 +102,8 @@ Q_SIGNALS:
     void requestLogout();
 
 protected:
+    // the account should be the parent of the creds, so it should not go out of scope while we are using this.
+    // however, those may be famous last words depending on how the tear
     Account *_account;
 
     // todo: DC-112 I don't understand why this is needed but will try to figure it out

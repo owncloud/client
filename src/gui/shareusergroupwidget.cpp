@@ -157,7 +157,7 @@ void ShareUserGroupWidget::searchForSharees()
     ShareeModel::ShareeSet blacklist;
 
     // Add the current user to _sharees since we can't share with ourself
-    QSharedPointer<Sharee> currentUser(new Sharee(_account->credentials()->user(), QString(), Sharee::Type::User));
+    QSharedPointer<Sharee> currentUser(new Sharee(_account->davUser(), QString(), Sharee::Type::User));
     blacklist << currentUser;
 
     const auto &shareUserLines = _ui->scrollArea->findChildren<ShareUserLine *>();

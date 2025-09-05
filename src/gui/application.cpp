@@ -151,7 +151,7 @@ void Application::slotCleanup()
 
     // by now the credentials are supposed to be persisted
     // don't start async credentials jobs during shutdown
-    AccountManager::instance()->save(false);
+    AccountManager::instance()->save();
 
     FolderMan::instance()->unloadAndDeleteAllFolders();
 

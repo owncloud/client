@@ -33,9 +33,7 @@ private Q_SLOTS:
 
         auto dir = TestUtils::createTempDir();
 
-        auto fakeAm = new FakeAM(FileInfo(), this);
-        auto creds = new FakeCredentials{fakeAm};
-        auto newAccountState = TestUtils::createDummyAccount(creds);
+        auto newAccountState = createDummyAccount();
 
         const QDir d(dir.path());
         QVERIFY(d.mkdir(QStringLiteral("foo")));

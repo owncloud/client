@@ -63,12 +63,8 @@ public:
     bool stillValid(QNetworkReply *reply) override;
     void persist() override;
 
-    QString user() const override;
     void invalidateToken() override;
     void forgetSensitiveData() override;
-
-    // soon to die - used in the settings only
-    QString credentialsType() const override { return QString(); }
 
 
     /* If we don't have a valid refresh token, return false.

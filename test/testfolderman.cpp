@@ -51,9 +51,8 @@ private Q_SLOTS:
         }
         QString dirPath = dir2.canonicalPath();
 
-        auto fakeAm = new FakeAM(FileInfo(), this);
-        auto creds = new FakeCredentials{fakeAm};
-        auto newAccountState = TestUtils::createDummyAccount(creds);
+        auto newAccountState = createDummyAccount();
+
         FolderMan *folderman = TestUtils::folderMan();
         QCOMPARE(folderman, FolderMan::instance());
         QVERIFY(folderman->addFolder(
@@ -180,9 +179,7 @@ private Q_SLOTS:
         QVERIFY(dir2.mkpath(QStringLiteral("free2/sub")));
         QString dirPath = dir2.canonicalPath();
 
-        auto fakeAm = new FakeAM(FileInfo(), this);
-        auto creds = new FakeCredentials{fakeAm};
-        auto newAccountState = TestUtils::createDummyAccount(creds);
+        auto newAccountState = createDummyAccount();
 
         FolderMan *folderman = TestUtils::folderMan();
         QVERIFY(folderman->addFolder(

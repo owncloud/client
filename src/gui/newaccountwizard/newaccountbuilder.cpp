@@ -57,7 +57,10 @@ void NewAccountBuilder::onAccountStateChanged(AccountState::State state)
 
 void NewAccountBuilder::completeAccountSetup()
 {
-    AccountManager::instance()->saveAccount(_account.get(), true);
+    AccountManager::instance()->saveAccount(_account.get());
+
+    // creds->persist? I think that should happen internal to the creds but verify
+
     // emitting credentialsFetched seems to be "required" to get the folder gui to show that x of y folders are synced
     // it appears that credentialsFetched triggers the spaces manager to refresh, and that refresh notifies the gui of the number of synced folders.
     // this is normally triggered when the credentials have fetched the creds, but when setting up an account we have already collected the creds and
@@ -67,6 +70,7 @@ void NewAccountBuilder::completeAccountSetup()
     // mechanism
     if (_account->credentials()->ready())
         Q_EMIT _account->credentialsFetched();
+
     // if we are doing sync all or vfs the folder man should configure all the folders automatically
     if (_syncType != NewAccount::SyncType::SELECTIVE_SYNC) {
         bool useVfs = (_syncType == NewAccount::SyncType::USE_VFS);

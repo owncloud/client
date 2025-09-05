@@ -64,6 +64,8 @@ AccountState::AccountState(AccountPtr account)
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
+    Q_ASSERT(_account);
+
     connectAccount();
     connectNetworkInformation();
 
@@ -77,9 +79,7 @@ AccountState::AccountState(AccountPtr account)
     connect(timer, &QTimer::timeout, this, [this] { checkConnectivity(false); });
     timer->start();
 
-    connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
-        setState(State::SignedOut);
-    });
+    connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
 
     if (FolderMan::instance()) {
         FolderMan::instance()->socketApi()->registerAccount(account);
@@ -540,7 +540,7 @@ void AccountState::slotInvalidCredentials()
         if (account()->credentials()->ready()) {
             account()->credentials()->invalidateToken();
         }
-        // todo: DC-112 evaluate if this is even needed (it seems to be working fine casting to HttpCredentials which would have failed to cast -> ie it's a
+        // todo: DC-128 evaluate if this is even needed (it seems to be working fine casting to HttpCredentials which would have failed to cast -> ie it's a
         // noop), and if it is, fix the abstraction todo: NO! if you have to cast it something is wrong with the abstraction
         /* if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
              qCInfo(lcAccountState) << "refreshing oauth";

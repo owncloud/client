@@ -272,7 +272,7 @@ private:
     QPointer<AccessManager> _am;
     QPointer<QNetworkDiskCache> _networkCache = nullptr;
     QPointer<ResourcesCache> _resourcesCache;
-    QScopedPointer<AbstractCredentials> _credentials;
+    QPointer<AbstractCredentials> _credentials;
     bool _http2Supported = false;
 
     JobQueue _jobQueue;
