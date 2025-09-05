@@ -458,7 +458,8 @@ private:
     static FolderMan *_instance;
     friend class OCC::Application;
 
-    inline static const QString IgnoreHiddenFilesKey = "ignoreHiddenFiles";
+    // the literal is needed to get the tests to build
+    inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
 };
 
 } // namespace OCC
