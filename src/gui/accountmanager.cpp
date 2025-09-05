@@ -235,7 +235,7 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    if (!settings.value("version").isNull()) {
+    if (settings.contains("version")) {
         // Migration from pre-7.0:
         settings.remove("version");
     }
