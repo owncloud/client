@@ -95,6 +95,7 @@ private:
     QPointer<QWizardPage> _page;
     QPointer<AccessManager> _accessManager;
 
+    QLabel *_instructionLabel;
     QLineEdit *_urlField;
     QLabel *_errorField;
 

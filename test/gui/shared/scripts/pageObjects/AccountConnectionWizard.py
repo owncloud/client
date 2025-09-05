@@ -71,7 +71,7 @@ class AccountConnectionWizard:
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     DIRECTORY_NAME_BOX = {
-        "text": "Choose...",
+        "text": "Browse...",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
@@ -109,7 +109,7 @@ class AccountConnectionWizard:
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONF_SYNC_MANUALLY_RADIO_BUTTON = {
-        "text": "Sync and download specific folders",
+        "text": "Sync and download folders manually",
         "type": "QRadioButton",
         "unnamed": 1,
         "visible": 1,
@@ -134,7 +134,7 @@ class AccountConnectionWizard:
         "visible": 1,
     }
     SYNC_EVERYTHING_RADIO_BUTTON = {
-        "text": "Automatically sync and download all current folders and files",
+        "text": "Automatically sync and download folders and files",
         "type": "QRadioButton",
         "unnamed": 1,
         "visible": 1,
