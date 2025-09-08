@@ -102,7 +102,6 @@ bool AccountManager::restore()
         settings->remove("version");
     }
 
-    // If there are no accounts, check the old format.
     const auto &childGroups = settings->childGroups();
     for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
@@ -235,17 +234,33 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    if (settings.contains("version")) {
-        // Migration from pre-7.0:
-        settings.remove("version");
-    }
-
     auto urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
         return AccountPtr();
     }
+
+    // 7.0 change - this special handling can be removed in 8.0
+    if (settings.contains("supportsSpaces")) {
+        bool canCreate = settings.value("supportsSpaces").toBool();
+        if (!canCreate) {
+            // remove all the keys related to this account and log warning
+            qCWarning(lcAccountManager) << "The server for this account " << urlConfig << " is not supported by this client";
+            // this should remove all keys in the group.
+            settings.remove("");
+            Q_ASSERT(settings.childKeys().isEmpty());
+            return AccountPtr();
+        } else
+            // even if we can load the account, get rid of the supportsSpaces key
+            settings.remove("supportsSpaces");
+    }
+
+    if (settings.contains("version")) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
 
     auto acc = createAccount(settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid());
 
