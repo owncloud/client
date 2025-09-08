@@ -240,20 +240,24 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
         return AccountPtr();
     }
+    QUrl url = urlConfig.toUrl();
+    QVariantMap capsValue = settings.value(capabilitesC()).value<QVariantMap>();
+    Capabilities caps(url, capsValue);
+    // if spaces are not enabled, this is an oc10 account = nogo.
+    // if the starting caps are not even valid, forget all of it as well
+    if (caps.isValid() || !caps.spacesSupport().enabled) {
+        // ignore this account and strip it from the config
+        qCWarning(lcAccountManager) << "The capabilities for this account " << urlConfig << " are not supported by this client";
+        // this should remove all keys in the group which == the account index
+        settings.remove("");
+        Q_ASSERT(settings.childKeys().isEmpty());
+        return AccountPtr();
+    }
 
     // 7.0 change - this special handling can be removed in 8.0
-    if (settings.contains("supportsSpaces")) {
-        bool canCreate = settings.value("supportsSpaces").toBool();
-        if (!canCreate) {
-            // remove all the keys related to this account and log warning
-            qCWarning(lcAccountManager) << "The server for this account " << urlConfig << " is not supported by this client";
-            // this should remove all keys in the group.
-            settings.remove("");
-            Q_ASSERT(settings.childKeys().isEmpty());
-            return AccountPtr();
-        } else
-            // even if we can load the account, get rid of the supportsSpaces key
-            settings.remove("supportsSpaces");
+    QString supportsSpacesKey = "supportsSpaces";
+    if (settings.contains(supportsSpacesKey)) {
+        settings.remove(supportsSpacesKey);
     }
 
     if (settings.contains("version")) {
@@ -264,11 +268,11 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
     auto acc = createAccount(settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid());
 
-    acc->setUrl(urlConfig.toUrl());
+    acc->setUrl(url);
 
     acc->_davUser = settings.value(davUserC()).toString();
     acc->_displayName = settings.value(davUserDisplyNameC()).toString();
-    acc->setCapabilities({acc->url(), settings.value(capabilitesC()).value<QVariantMap>()});
+    acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
     acc->setCredentials(new Credentials(acc.get()));

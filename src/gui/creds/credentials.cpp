@@ -302,7 +302,9 @@ void Credentials::refreshAccessTokenInternal()
 
 void Credentials::askFromUser()
 {
-    Q_ASSERT(_requestAuth == nullptr);
+    Q_ASSERT(_requestAuth == nullptr); // crash here...investigate. I think it happened when the ask from user was already posted, not addressed,
+    // then asked again?! the _requestAuth should always be dead when we get here normally
+
     // the widget is parented to the AccountModalWidget when it's installed in the main window.
     // it will be cleaned up there - this is not a leak
     RequestAuthenticationWidget *widget = new RequestAuthenticationWidget();
