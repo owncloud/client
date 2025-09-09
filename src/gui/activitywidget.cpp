@@ -12,16 +12,14 @@
  * for more details.
  */
 
-#include <QtGui>
-#include <QtWidgets>
 
-#include "account.h"
 #include "activitywidget.h"
 #include "issueswidget.h"
 #include "protocolwidget.h"
-#include "theme.h"
 
-#include <climits>
+#include <QHBoxLayout>
+#include <QTabWidget>
+
 
 namespace OCC {
 
@@ -29,25 +27,26 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     : QWidget(parent)
 {
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    setLayout(hbox);
 
     // create a tab widget for the three activity views
     _tab = new QTabWidget(this);
     hbox->addWidget(_tab);
+    setLayout(hbox);
+
+    // todo: rename ProtocolWidget to, oh I don't know...LocalActivityWidget?
     _protocolWidget = new ProtocolWidget(this);
-    _tab->addTab(_protocolWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
+    _localActivityTabId = _tab->addTab(_protocolWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
     _issuesWidget = new IssuesWidget(this);
     _syncIssueTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
     slotShowIssueItemCount(0); // to display the label.
-    connect(_issuesWidget, &IssuesWidget::issueCountUpdated,
-        this, &ActivitySettings::slotShowIssueItemCount);
+    connect(_issuesWidget, &IssuesWidget::issueCountUpdated, this, &ActivitySettings::slotShowIssueItemCount);
 
-    // We want the protocol be the default
-    _tab->setCurrentIndex(1);
+    // We want the local activity tab to be the default
+    _tab->setCurrentIndex(_localActivityTabId);
 }
 
-void ActivitySettings::slotShowIssueItemCount(const int cnt) const
+void ActivitySettings::slotShowIssueItemCount(int cnt)
 {
     QString cntText = tr("Not Synced");
     if (cnt) {
@@ -55,13 +54,6 @@ void ActivitySettings::slotShowIssueItemCount(const int cnt) const
         cntText = tr("Not Synced (%1)").arg(cnt);
     }
     _tab->setTabText(_syncIssueTabId, cntText);
-}
-
-void ActivitySettings::slotShowIssuesTab() const
-{
-    if (_syncIssueTabId == -1)
-        return;
-    _tab->setCurrentIndex(_syncIssueTabId);
 }
 
 ActivitySettings::~ActivitySettings()

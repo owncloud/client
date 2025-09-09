@@ -12,21 +12,23 @@
  * for more details.
  */
 
-#include <QtGui>
-#include <QtWidgets>
 
+#include "issueswidget.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "commonstrings.h"
+#include "expandingheaderview.h"
 #include "folder.h"
 #include "folderman.h"
-#include "issueswidget.h"
 #include "libsync/configfile.h"
 #include "models/models.h"
 #include "protocolwidget.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
 #include "theme.h"
+
+#include <QActionGroup>
+#include <QTimer>
 
 #include "ui_issueswidget.h"
 
@@ -153,7 +155,7 @@ private:
             // There is a filter, but it can be empty (user unchecked all checkboxes), and in that case we do not want to reset the filter.
             filterNeedsReset = false;
 
-            for (const QString &s : checked.value()) {
+            for (const QString &s : std::as_const(checked.value())) {
                 auto status = Utility::stringToEnum<SyncFileItem::Status>(s);
                 if (static_cast<int8_t>(status) == -1) {
                     // The string value is not a valid enum value, so stop processing, and queue a reset.
@@ -227,9 +229,9 @@ IssuesWidget::IssuesWidget(QWidget *parent)
     header->setExpandingColumn(static_cast<int>(ProtocolItemModel::ProtocolItemRole::Action));
     header->setSortIndicator(static_cast<int>(ProtocolItemModel::ProtocolItemRole::Time), Qt::DescendingOrder);
 
-    connect(_ui->_tableView, &QTreeView::customContextMenuRequested, this, &IssuesWidget::slotItemContextMenu);
+    connect(_ui->_tableView, &QTableView::customContextMenuRequested, this, &IssuesWidget::slotItemContextMenu);
     _ui->_tableView->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(header, &QHeaderView::customContextMenuRequested, [this, header]() {
+    connect(header, &QHeaderView::customContextMenuRequested, this, [this, header]() {
         auto menu = showFilterMenu(header);
         menu->addAction(tr("Reset column sizes"), header, [header] { header->resizeColumns(true); });
     });
@@ -281,7 +283,7 @@ QMenu *IssuesWidget::showFilterMenu(QWidget *parent)
     QTimer::singleShot(0, menu, [menu] {
         // FIXME: when activated by the keyboard, this position can be anywhere.
         menu->popup(QCursor::pos());
-        // accassebility
+        // accessibility
         menu->setFocus();
     });
 
@@ -372,6 +374,7 @@ void IssuesWidget::slotItemContextMenu(const QPoint &pos)
         rows[i] = _statusSortModel->mapToSource(rows[i]);
         rows[i] = _sortModel->mapToSource(rows[i]);
     }
+    // WHAT IS THIS?!
     ProtocolWidget::showContextMenu(this, _ui->_tableView, _sortModel, _model, rows, pos);
 }
 

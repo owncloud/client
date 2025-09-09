@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef PROTOCOLWIDGET_H
-#define PROTOCOLWIDGET_H
+#pragma once
 
 #include <QDialog>
 #include <QDateTime>
@@ -23,21 +22,16 @@
 #include "owncloudgui.h"
 #include "models/protocolitemmodel.h"
 
-#include "protocolitem.h"
-
 #include "models/models.h"
 
-class QPushButton;
 class QSortFilterProxyModel;
 class QTableView;
 
 namespace OCC {
-class ExpandingHeaderView;
 
 namespace Ui {
     class ProtocolWidget;
 }
-class Application;
 
 /**
  * @brief The ProtocolWidget class
@@ -50,6 +44,7 @@ public:
     explicit ProtocolWidget(QWidget *parent = nullptr);
     ~ProtocolWidget() override;
 
+    // these absolutely do not belong here. move them to an independent impl which can be shared between the protocolWidget and the issuesWidget
     static void showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
         const QModelIndexList &items, const QPoint &pos);
     static QMenu *showFilterMenu(QWidget *parent, Models::SignalledQSortFilterProxyModel *model, int role, const QString &columnName);
@@ -67,4 +62,3 @@ private:
     Ui::ProtocolWidget *_ui;
 };
 }
-#endif // PROTOCOLWIDGET_H

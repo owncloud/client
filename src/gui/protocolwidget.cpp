@@ -12,9 +12,6 @@
  * for more details.
  */
 
-#include <QtGui>
-#include <QtWidgets>
-
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "commonstrings.h"
@@ -26,6 +23,9 @@
 #include "syncfileitem.h"
 
 #include "models/expandingheaderview.h"
+
+#include <QActionGroup>
+#include <QClipboard>
 
 #include "ui_protocolwidget.h"
 
@@ -40,7 +40,7 @@ ProtocolWidget::ProtocolWidget(QWidget *parent)
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted,
         this, &ProtocolWidget::slotItemCompleted);
 
-    connect(_ui->_tableView, &QTreeWidget::customContextMenuRequested, this, &ProtocolWidget::slotItemContextMenu);
+    connect(_ui->_tableView, &QTableView::customContextMenuRequested, this, &ProtocolWidget::slotItemContextMenu);
 
     // Build the model-view "stack":
     //  _model <- _sortModel <- _statusSortModel <- _tableView
@@ -189,7 +189,7 @@ void ProtocolWidget::showContextMenu(QWidget *parent, QTableView *table, Models:
     }
 
     menu->popup(table->mapToGlobal(pos));
-    menu->setFocus(); // For accassability
+    menu->setFocus(); // For accassibility
 }
 
 void ProtocolWidget::slotItemContextMenu(const QPoint &pos)
