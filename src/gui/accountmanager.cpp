@@ -260,7 +260,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
         // todo: future: refactor the credentials manager to store the creds keys in the account's group! you can't create a credentialsManager without
         // an account so that is where the settings belong to avoid this mess.
         std::unique_ptr<QSettings> credsGroup = ConfigFile::settingsWithGroup("Credentials");
-        QStringList credsKeys = credsGroup->childKeys();
+        QStringList credsKeys = credsGroup->allKeys();
         for (const QString &key : std::as_const(credsKeys)) {
             if (key.contains(uid.toString(QUuid::WithoutBraces)))
                 credsGroup->remove(key);
