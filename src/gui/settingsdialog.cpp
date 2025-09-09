@@ -115,19 +115,13 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     _activitySettings = new ActivitySettings;
     _ui->stack->addWidget(_activitySettings);
-    connect(_activitySettings, &ActivitySettings::guiLog, _gui,
-        [this](const QString &title, const QString &msg) {
-            _gui->slotShowOptionalTrayMessage(title, msg);
-        });
-    ConfigFile cfg;
-    _activitySettings->setNotificationRefreshInterval(cfg.notificationRefreshInterval());
 
     _generalSettings = new GeneralSettings;
     _ui->stack->addWidget(_generalSettings);
     connect(_generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
     connect(_generalSettings, &GeneralSettings::syncOptionsChanged, FolderMan::instance(), &FolderMan::slotReloadSyncOptions);
 
-    cfg.restoreGeometry(this);
+    ConfigFile().restoreGeometry(this);
 #ifdef Q_OS_MAC
     setActivationPolicy(ActivationPolicy::Accessory);
 #endif

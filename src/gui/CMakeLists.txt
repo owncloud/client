@@ -10,14 +10,12 @@ set(client_UI_SRCS
     networksettings.ui
     protocolwidget.ui
     issueswidget.ui
-    activitywidget.ui
     settingsdialog.ui
     sharedialog.ui
     sharelinkwidget.ui
     shareusergroupwidget.ui
     shareuserline.ui
     tlserrordialog.ui
-    notificationwidget.ui
     logbrowser.ui
 )
 
@@ -50,7 +48,6 @@ set(client_SRCS
     protocolwidget.cpp
     protocolitem.cpp
     issueswidget.cpp
-    activitydata.cpp
     activitywidget.cpp
     selectivesyncwidget.cpp
     settingsdialog.cpp
@@ -62,9 +59,6 @@ set(client_SRCS
     tlserrordialog.cpp
     syncrunfilelog.cpp
     accountstate.cpp
-    notificationwidget.cpp
-    notificationconfirmjob.cpp
-    servernotificationhandler.cpp
     guiutility.cpp
     elidedlabel.cpp
     translations.cpp
@@ -75,7 +69,6 @@ set(client_SRCS
     creds/requestauthenticationcontroller.cpp
     creds/oauthhtmlpage.cpp
 
-    models/activitylistmodel.cpp
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
