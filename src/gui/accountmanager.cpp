@@ -243,14 +243,28 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     QUrl url = urlConfig.toUrl();
     QVariantMap capsValue = settings.value(capabilitesC()).value<QVariantMap>();
     Capabilities caps(url, capsValue);
+    QUuid uid = settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid();
     // if spaces are not enabled, this is an oc10 account = nogo.
     // if the starting caps are not even valid, forget all of it as well
-    if (caps.isValid() || !caps.spacesSupport().enabled) {
+    if (!caps.isValid() || !caps.spacesSupport().enabled) {
         // ignore this account and strip it from the config
         qCWarning(lcAccountManager) << "The capabilities for this account " << urlConfig << " are not supported by this client";
         // this should remove all keys in the group which == the account index
         settings.remove("");
         Q_ASSERT(settings.childKeys().isEmpty());
+
+        // also kill any credentials associated with this account. This makes me very unhappy but the creds are stored in a top level group
+        // and I don't want to mess up the group used for the actual account settings so just do a one off instance here. Yes it adds overhead
+        // but should happen so rarely I think it's worth the trade-off to safeguard the more important behavior of the account settings, which is
+        // ACTUALLY what we should be dealing with.
+        // todo: future: refactor the credentials manager to store the creds keys in the account's group! you can't create a credentialsManager without
+        // an account so that is where the settings belong to avoid this mess.
+        std::unique_ptr<QSettings> credsGroup = ConfigFile::settingsWithGroup("Credentials");
+        QStringList credsKeys = credsGroup->childKeys();
+        for (const QString &key : std::as_const(credsKeys)) {
+            if (key.contains(uid.toString(QUuid::WithoutBraces)))
+                credsGroup->remove(key);
+        }
         return AccountPtr();
     }
 
@@ -266,7 +280,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     }
 
 
-    auto acc = createAccount(settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid());
+    auto acc = createAccount(uid);
 
     acc->setUrl(url);
 
