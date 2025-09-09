@@ -16,9 +16,6 @@
 #include "account.h"
 #include "accountstate.h"
 #include "models.h"
-#include "gui/folderman.h"
-
-#include "theme.h"
 
 #include <QIcon>
 

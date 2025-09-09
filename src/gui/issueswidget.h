@@ -12,30 +12,25 @@
  * for more details.
  */
 
-#ifndef ISSUESWIDGET_H
-#define ISSUESWIDGET_H
+#pragma once
 
-#include <QDialog>
-#include <QDateTime>
-#include <QLocale>
-#include <QTimer>
+#include <QWidget>
 
-#include "models/expandingheaderview.h"
-#include "models/models.h"
-#include "models/protocolitemmodel.h"
-#include "owncloudgui.h"
 #include "progressdispatcher.h"
 
-class QSortFilterProxyModel;
-
 namespace OCC {
-class SyncResult;
+
 class SyncFileItemStatusSetSortFilterProxyModel;
+class ProtocolItemModel;
+class Folder;
+
+namespace Models {
+    class SignalledQSortFilterProxyModel;
+}
 
 namespace Ui {
     class IssuesWidget;
 }
-class Application;
 
 /**
  * @brief The ProtocolWidget class
@@ -71,5 +66,3 @@ private:
     Ui::IssuesWidget *_ui;
 };
 }
-
-#endif

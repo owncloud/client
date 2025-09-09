@@ -14,8 +14,7 @@
 
 #pragma once
 
-#include "progressdispatcher.h"
-#include "models/models.h"
+#include <QWidget>
 
 class QTabWidget;
 
@@ -28,8 +27,7 @@ class IssuesWidget;
  * @brief The ActivitySettings class
  * @ingroup gui
  *
- * Implements a tab for the settings dialog, displaying the three activity
- * lists.
+ * Implements a tab for the settings dialog, displaying lists of local activities and sync issues
  */
 class ActivitySettings : public QWidget
 {
@@ -38,17 +36,16 @@ public:
     explicit ActivitySettings(QWidget *parent = nullptr);
     ~ActivitySettings() override;
 
-public Q_SLOTS:
-    void slotShowIssuesTab() const;
 
 private Q_SLOTS:
-    void slotShowIssueItemCount(int cnt) const;
+    void slotShowIssueItemCount(int cnt);
 
 private:
-    QTabWidget *_tab;
-    int _syncIssueTabId;
+    QTabWidget *_tab = nullptr;
+    int _syncIssueTabId = -1;
+    int _localActivityTabId = -1;
 
-    ProtocolWidget *_protocolWidget;
-    IssuesWidget *_issuesWidget;
+    ProtocolWidget *_protocolWidget = nullptr;
+    IssuesWidget *_issuesWidget = nullptr;
 };
 }
