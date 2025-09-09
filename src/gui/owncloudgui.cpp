@@ -38,14 +38,11 @@
 #include "newaccountwizard/newaccountwizard.h"
 #include "newaccountwizard/newaccountwizardcontroller.h"
 
-#include "libsync/graphapi/spacesmanager.h"
-
 #include "resources/resources.h"
 
 #include <QApplication>
 #include <QDesktopServices>
 #include <QDialog>
-#include <QHBoxLayout>
 #include <QMessageBox>
 
 #ifdef Q_OS_WIN
@@ -58,7 +55,7 @@ namespace OCC {
 
 ownCloudGui::ownCloudGui(Application *parent)
     : QObject(parent)
-    , _tray(new Systray(this))
+    , _tray(new QSystemTrayIcon(this))
     , _settingsDialog(new SettingsDialog(this))
     , _recentActionsMenu(nullptr)
     , _app(parent)
@@ -230,7 +227,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         for (const auto &a : std::as_const(problemAccounts)) {
             accountNames.append(a->account()->displayNameWithHost());
         }
-        _tray->setToolTip(tr("Disconnected from %1").arg(accountNames.join(QLatin1String(", "))));
+        setToolTip(tr("Disconnected from %1").arg(accountNames.join(QLatin1String(", "))));
 #else
         QStringList messages;
         messages.append(tr("Disconnected from accounts:"));
@@ -241,19 +238,19 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             }
             messages.append(message);
         }
-        _tray->setToolTip(messages.join(QLatin1String("\n\n")));
+        setToolTip(messages.join(QLatin1String("\n\n")));
 #endif
         return;
     }
 
     if (allSignedOut) {
         _tray->setIcon(getIconFromStatus(SyncResult::Status::Offline));
-        _tray->setToolTip(tr("Please sign in"));
+        setToolTip(tr("Please sign in"));
         setStatusText(tr("Signed out"));
         return;
     } else if (allPaused) {
         _tray->setIcon(getIconFromStatus(SyncResult::Paused));
-        _tray->setToolTip(tr("Account synchronization is disabled"));
+        setToolTip(tr("Account synchronization is disabled"));
         setStatusText(tr("Synchronization is paused"));
         return;
     }
@@ -280,7 +277,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     }
     trayMessage = allStatusStrings.join(QLatin1String("\n"));
 #endif
-    _tray->setToolTip(trayMessage);
+    setToolTip(trayMessage);
 
     switch (trayOverallStatusResult.overallStatus().status()) {
     case SyncResult::Problem:
@@ -303,7 +300,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         setStatusText(tr("Up to date (%1)").arg(lastSyncDoneString));
     } break;
     case SyncResult::Undefined:
-        _tray->setToolTip(tr("There are no sync folders configured."));
+        setToolTip(tr("There are no sync folders configured."));
         setStatusText(tr("No sync folders configured"));
         break;
     default:
@@ -606,9 +603,9 @@ void ownCloudGui::updateContextMenu()
         captivePortalCheckbox->setCheckable(true);
         captivePortalCheckbox->setChecked(NetworkInformation::instance()->isForcedCaptivePortal());
         connect(captivePortalCheckbox, &QAction::triggered, [](bool checked) { NetworkInformation::instance()->setForcedCaptivePortal(checked); });
-    }
 
-    _contextMenu->addSeparator();
+        _contextMenu->addSeparator();
+    }
 
     if (!Theme::instance()->helpUrl().isEmpty()) {
         _contextMenu->addAction(tr("Help"), this, &ownCloudGui::slotHelp);
@@ -659,6 +656,10 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
     }
 }
 
+void ownCloudGui::setToolTip(const QString &tip) const
+{
+    _tray->setToolTip(QString("%1: %2").arg(Theme::instance()->appNameGUI(), tip));
+}
 
 /*
  * open the folder with the given Alias

@@ -61,7 +61,6 @@ set(client_SRCS
     sharee.cpp
     tlserrordialog.cpp
     syncrunfilelog.cpp
-    systray.cpp
     accountstate.cpp
     notificationwidget.cpp
     notificationconfirmjob.cpp
@@ -146,7 +145,6 @@ target_include_directories(owncloudGui PUBLIC
 
 IF( APPLE )
     target_sources(owncloudGui PRIVATE
-            systray.mm
             settingsdialog_mac.mm
             guiutility_mac.mm
             folderwatcher_mac.cpp)
@@ -159,7 +157,6 @@ elseif(UNIX AND NOT APPLE)
     ## handle DBUS for Fdo notifications
     if (TARGET Qt::DBus)
         target_link_libraries(owncloudGui PUBLIC Qt::DBus)
-        target_compile_definitions(owncloudGui PUBLIC "USE_FDO_NOTIFICATIONS")
     endif()
     target_sources(owncloudGui PRIVATE
             folderwatcher_linux.cpp
