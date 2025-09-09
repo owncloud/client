@@ -84,6 +84,7 @@ namespace TestUtils {
             }
             return out;
         }();
+        // clang-format off
         return {{QStringLiteral("core"),
                     QVariantMap{{QStringLiteral("status"),
                         QVariantMap{{QStringLiteral("installed"), QStringLiteral("1")}, {QStringLiteral("maintenance"), QStringLiteral("0")},
@@ -91,9 +92,12 @@ namespace TestUtils {
                             {QStringLiteral("versionstring"), QStringLiteral("10.11.0")}, {QStringLiteral("edition"), QStringLiteral("Community")},
                             {QStringLiteral("productname"), QStringLiteral("Infinite Scale")}, {QStringLiteral("product"), QStringLiteral("Infinite Scale")},
                             {QStringLiteral("productversion"), QStringLiteral("2.0.0-beta1+7c2e3201b")}}}}},
-            {QStringLiteral("files"), QVariantList{}}, {QStringLiteral("dav"), QVariantMap{{QStringLiteral("chunking"), QStringLiteral("1.0")}}},
-            {QStringLiteral("checksums"),
-                QVariantMap{{QStringLiteral("preferredUploadType"), Utility::enumToString(algo)}, {QStringLiteral("supportedTypes"), algorithmNames}}}};
+            {QStringLiteral("files"), QVariantList{}},
+            {QStringLiteral("spaces"), QVariantMap{{QStringLiteral("enabled"), QStringLiteral("true")}}},
+            {QStringLiteral("dav"), QVariantMap{{QStringLiteral("chunking"), QStringLiteral("1.0")}}},
+            {QStringLiteral("checksums"), QVariantMap{{QStringLiteral("preferredUploadType"), Utility::enumToString(algo)}, {QStringLiteral("supportedTypes"), algorithmNames}}}
+        };
+        // clang-format on
     }
 
     void TestUtilsPrivate::accountStateDeleter(OCC::AccountState *acc)
