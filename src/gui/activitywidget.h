@@ -12,111 +12,17 @@
  * for more details.
  */
 
-#ifndef ACTIVITYWIDGET_H
-#define ACTIVITYWIDGET_H
-
-#include <QDialog>
-#include <QDateTime>
-#include <QLocale>
-#include <QAbstractListModel>
-#include <chrono>
+#pragma once
 
 #include "progressdispatcher.h"
-#include "owncloudgui.h"
-#include "account.h"
-#include "activitydata.h"
-
 #include "models/models.h"
 
-class QPushButton;
-class QProgressIndicator;
 class QTabWidget;
-class QVBoxLayout;
 
 namespace OCC {
 
-class Account;
-class AccountStatusPtr;
 class ProtocolWidget;
 class IssuesWidget;
-class JsonApiJob;
-class NotificationWidget;
-class ActivityListModel;
-
-namespace Ui {
-    class ActivityWidget;
-}
-class Application;
-
-/**
- * @brief The ActivityWidget class
- * @ingroup gui
- *
- * The list widget to display the activities, contained in the
- * subsequent ActivitySettings widget.
- */
-
-class ActivityWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit ActivityWidget(QWidget *parent = nullptr);
-    ~ActivityWidget() override;
-    void storeActivityList(QTextStream &ts);
-
-    /**
-     * Adjusts the activity tab's and some widgets' visibility
-     *
-     * Based on whether activities are enabled and whether notifications are
-     * available.
-     */
-    void checkActivityTabVisibility();
-
-public Q_SLOTS:
-    void slotRefreshActivities(AccountState *ptr);
-    void slotRefreshNotifications(AccountState *ptr);
-    void slotRemoveAccount(AccountState *ptr);
-    void slotAccountActivityStatus(AccountState *ast, int statusCode);
-    void slotRequestCleanupAndBlacklist(const Activity &blacklistActivity);
-
-Q_SIGNALS:
-    void guiLog(const QString &, const QString &);
-    void dataChanged();
-    void hideActivityTab(bool);
-    void newNotification();
-
-private Q_SLOTS:
-    void slotBuildNotificationDisplay(const ActivityList &list);
-    void slotSendNotificationRequest(const QString &accountName, const QString &link, const QByteArray &verb);
-    void endNotificationRequest(NotificationWidget *widget, bool success);
-    void scheduleWidgetToRemove(NotificationWidget *widget, int milliseconds = 100);
-    void slotCheckToCleanWidgets();
-
-private:
-    void slotItemContextMenu();
-    void showLabels();
-    QString timeString(QDateTime dt, QLocale::FormatType format) const;
-    Ui::ActivityWidget *_ui;
-    QPushButton *_copyBtn;
-
-    QSet<QString> _accountsWithoutActivities;
-    QMap<QString, NotificationWidget *> _widgetForNotifId;
-    QElapsedTimer _guiLogTimer;
-    QSet<QString> _guiLoggedNotifications;
-    ActivityList _blacklistedNotifications;
-
-    QHash<NotificationWidget *, QDateTime> _widgetsToRemove;
-    QTimer _removeTimer;
-
-    // number of currently running notification requests. If non zero,
-    // no query for notifications is started.
-    int _notificationRequestsRunning;
-
-    ActivityListModel *_model;
-    Models::SignalledQSortFilterProxyModel *_sortModel;
-    QVBoxLayout *_notificationsLayout;
-};
-
 
 /**
  * @brief The ActivitySettings class
@@ -133,36 +39,16 @@ public:
     ~ActivitySettings() override;
 
 public Q_SLOTS:
-    void slotRefresh(AccountState *ptr);
-    void slotRemoveAccount(AccountState *ptr);
-
-    void setNotificationRefreshInterval(std::chrono::milliseconds interval);
-
-    void slotShowIssuesTab();
+    void slotShowIssuesTab() const;
 
 private Q_SLOTS:
-    void setActivityTabHidden(bool hidden);
-    void slotRegularNotificationCheck();
-    void slotShowIssueItemCount(int cnt);
-    void slotShowActivityTab();
-
-Q_SIGNALS:
-    void guiLog(const QString &, const QString &);
+    void slotShowIssueItemCount(int cnt) const;
 
 private:
-    bool event(QEvent *e) override;
-
     QTabWidget *_tab;
-    int _activityTabId;
-    int _protocolTabId;
     int _syncIssueTabId;
 
-    ActivityWidget *_activityWidget;
     ProtocolWidget *_protocolWidget;
     IssuesWidget *_issuesWidget;
-    QProgressIndicator *_progressIndicator;
-    QTimer _notificationCheckTimer;
-    QHash<AccountState *, QElapsedTimer> _timeSinceLastCheck;
 };
 }
-#endif // ActivityWIDGET_H
