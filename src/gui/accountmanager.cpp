@@ -28,45 +28,46 @@
 #include <QDir>
 #include <QSettings>
 
+// todo: move these to static const instances in the class once the tests are fixed to allow qstring from ascii
 namespace {
-auto urlC()
+QString urlC()
 {
-    return QStringLiteral("url");
+    return "url";
 }
 
-auto defaultSyncRootC()
+QString defaultSyncRootC()
 {
-    return QStringLiteral("default_sync_root");
+    return "default_sync_root";
 }
 
-const QString davUserC()
+QString davUserC()
 {
-    return QStringLiteral("dav_user");
+    return "dav_user";
 }
 
-const QString davUserDisplyNameC()
+QString davUserDisplyNameC()
 {
-    return QStringLiteral("display-name");
+    return "display-name";
 }
 
-const QString userUUIDC()
+QString userUUIDC()
 {
-    return QStringLiteral("uuid");
+    return "uuid";
 }
 
-auto caCertsKeyC()
+QString caCertsKeyC()
 {
-    return QStringLiteral("CaCertificates");
+    return "CaCertificates";
 }
 
-auto accountsC()
+QString accountsC()
 {
-    return QStringLiteral("Accounts");
+    return "Accounts";
 }
 
-auto capabilitesC()
+QString capabilitesC()
 {
-    return QStringLiteral("capabilities");
+    return "capabilities";
 }
 }
 
@@ -180,7 +181,7 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
     }
 
     // Save accepted certificates.
-    settings->beginGroup(QStringLiteral("General"));
+    settings->beginGroup("General");
     qCInfo(lcAccountManager) << "Saving " << account->approvedCerts().count() << " unknown certs.";
     const auto approvedCerts = account->approvedCerts();
     QByteArray certs;
@@ -292,7 +293,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     acc->setCredentials(new Credentials(acc.get()));
 
     // now the server cert, it is in the general group
-    settings.beginGroup(QStringLiteral("General"));
+    settings.beginGroup("General");
     const auto certs = QSslCertificate::fromData(settings.value(caCertsKeyC()).toByteArray());
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
     acc->setApprovedCerts({certs.begin(), certs.end()});
@@ -300,15 +301,14 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
     // 7.0 config settings maintenance: clean up legacy settings related to the old style credentials
     // todo: remove this when we get to 8.0
-    QString credsVersion = QStringLiteral("http_CredentialVersion");
+    QString credsVersion = "http_CredentialVersion";
     if (settings.contains(credsVersion)) {
-        settings.remove(QStringLiteral("user"));
-        const QString authTypePrefix = QStringLiteral("http_");
+        settings.remove("user");
+        const QString authTypePrefix = "http_";
         const auto childKeys = settings.childKeys();
         for (const auto &key : childKeys) {
-            if (!key.startsWith(authTypePrefix))
-                continue;
-            settings.remove(key);
+            if (key.startsWith(authTypePrefix))
+                settings.remove(key);
         }
     }
 

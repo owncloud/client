@@ -302,10 +302,9 @@ void Credentials::refreshAccessTokenInternal()
 
 void Credentials::askFromUser()
 {
-    // this can happen when the re-auth process has already quasi started and is waiting for user input, but
-    // we get a prompt to log in again. I am not quite sure
+    // I think this can happen when the re-auth process has already quasi started and is waiting for user input, but
+    // we get a prompt to log in again. I am not quite sure as it's very hard to reproduce.
     if (_requestAuth) {
-        QString check = _account->davDisplayName();
         // let the existing instance ride
         return;
     }
