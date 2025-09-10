@@ -50,8 +50,6 @@ class OWNCLOUDGUI_EXPORT AccountState : public QObject
     Q_OBJECT
     Q_PROPERTY(Account *account READ accountForQml CONSTANT)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
-    // todo: #16
-    Q_PROPERTY(bool supportsSpaces READ supportsSpaces NOTIFY supportsSpacesChanged)
     Q_PROPERTY(AccountState::State state READ state NOTIFY stateChanged)
     QML_ELEMENT
     QML_UNCREATABLE("Only created by AccountManager")
@@ -140,11 +138,6 @@ public:
 
     bool isConnected() const;
 
-    // weather the account was created after spaces where implemented
-    bool supportsSpaces() const;
-
-    QuotaInfo *quotaInfo();
-
     /** Returns a new settings object for this account, already in the right groups. */
     std::unique_ptr<QSettings> settings();
 
@@ -176,7 +169,6 @@ Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
     void isSettingUpChanged(bool settingUp);
-    void supportsSpacesChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);

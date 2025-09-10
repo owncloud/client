@@ -17,7 +17,6 @@
 #include "accountstate.h"
 #include "folderman.h"
 #include "gui/networkinformation.h"
-#include "gui/quotainfo.h"
 #include "theme.h"
 
 #include "libsync/graphapi/space.h"
@@ -203,10 +202,10 @@ void FolderStatusModel::setAccountState(AccountState *accountState)
 
         connect(FolderMan::instance(), &FolderMan::folderSyncStateChange, this, &FolderStatusModel::slotFolderSyncStateChange);
 
-        if (accountState->supportsSpaces()) {
-            connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this,
+        if (_accountState && _accountState->account() && _accountState->account()->spacesManager()) {
+            connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this,
                 [this] { Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0)); });
-            connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](auto *space) {
+            connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](auto *space) {
                 for (int i = 0; i < rowCount(); ++i) {
                     if (_folders[i]->_folder->space() == space) {
                         Q_EMIT dataChanged(index(i, 0), index(i, 0));
@@ -217,9 +216,9 @@ void FolderStatusModel::setAccountState(AccountState *accountState)
         }
     }
     for (const auto &f : FolderMan::instance()->folders()) {
-        if (!accountState)
+        if (!_accountState)
             break;
-        if (f->accountState() != accountState)
+        if (f->accountState() != _accountState)
             continue;
 
         _folders.push_back(std::make_unique<SubFolderInfo>(f));
@@ -292,18 +291,15 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     case Roles::Quota: {
         qint64 used{};
         qint64 total{};
-        if (_accountState->supportsSpaces()) {
-            if (auto *space = f->space()) {
-                const auto quota = space->drive().getQuota();
-                if (quota.isValid()) {
-                    used = quota.getUsed();
-                    total = quota.getTotal();
-                }
+
+        if (auto *space = f->space()) {
+            const auto quota = space->drive().getQuota();
+            if (quota.isValid()) {
+                used = quota.getUsed();
+                total = quota.getTotal();
             }
-        } else {
-            used = f->accountState()->quotaInfo()->lastQuotaUsedBytes();
-            total = f->accountState()->quotaInfo()->lastQuotaTotalBytes();
         }
+
         if (total <= 0) {
             return {};
         }
