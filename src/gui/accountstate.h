@@ -138,9 +138,6 @@ public:
 
     bool isConnected() const;
 
-    // weather the account was created after spaces where implemented
-    bool supportsSpaces() const;
-
     /** Returns a new settings object for this account, already in the right groups. */
     std::unique_ptr<QSettings> settings();
 

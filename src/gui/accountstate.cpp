@@ -573,13 +573,6 @@ std::unique_ptr<QSettings> AccountState::settings()
     return s;
 }
 
-bool AccountState::supportsSpaces() const
-{
-    Q_ASSERT(_account->hasCapabilities() && _account->capabilities().spacesSupport().enabled);
-    return true;
-}
-
-
 bool AccountState::isSettingUp() const
 {
     return _settingUp;
