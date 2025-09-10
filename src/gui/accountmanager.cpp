@@ -28,45 +28,46 @@
 #include <QDir>
 #include <QSettings>
 
+// todo: move these to static const instances in the class once the tests are fixed to allow qstring from ascii
 namespace {
-auto urlC()
+QString urlC()
 {
-    return QStringLiteral("url");
+    return "url";
 }
 
-auto defaultSyncRootC()
+QString defaultSyncRootC()
 {
-    return QStringLiteral("default_sync_root");
+    return "default_sync_root";
 }
 
-const QString davUserC()
+QString davUserC()
 {
-    return QStringLiteral("dav_user");
+    return "dav_user";
 }
 
-const QString davUserDisplyNameC()
+QString davUserDisplyNameC()
 {
-    return QStringLiteral("display-name");
+    return "display-name";
 }
 
-const QString userUUIDC()
+QString userUUIDC()
 {
-    return QStringLiteral("uuid");
+    return "uuid";
 }
 
-auto caCertsKeyC()
+QString caCertsKeyC()
 {
-    return QStringLiteral("CaCertificates");
+    return "CaCertificates";
 }
 
-auto accountsC()
+QString accountsC()
 {
-    return QStringLiteral("Accounts");
+    return "Accounts";
 }
 
-auto capabilitesC()
+QString capabilitesC()
 {
-    return QStringLiteral("capabilities");
+    return "capabilities";
 }
 }
 
@@ -102,7 +103,6 @@ bool AccountManager::restore()
         settings->remove("version");
     }
 
-    // If there are no accounts, check the old format.
     const auto &childGroups = settings->childGroups();
     for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
@@ -172,7 +172,7 @@ void AccountManager::saveAccount(Account *account)
     }
 
     // Save accepted certificates.
-    settings->beginGroup(QStringLiteral("General"));
+    settings->beginGroup("General");
     qCInfo(lcAccountManager) << "Saving " << account->approvedCerts().count() << " unknown certs.";
     const auto approvedCerts = account->approvedCerts();
     QByteArray certs;
@@ -226,31 +226,65 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    if (settings.contains("version")) {
-        // Migration from pre-7.0:
-        settings.remove("version");
-    }
-
     auto urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
         return AccountPtr();
     }
+    QUrl url = urlConfig.toUrl();
+    QVariantMap capsValue = settings.value(capabilitesC()).value<QVariantMap>();
+    Capabilities caps(url, capsValue);
+    QUuid uid = settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid();
+    // if spaces are not enabled, this is an oc10 account = nogo.
+    // if the starting caps are not even valid, forget all of it as well
+    if (!caps.isValid() || !caps.spacesSupport().enabled) {
+        // ignore this account and strip it from the config
+        qCWarning(lcAccountManager) << "The capabilities for this account " << urlConfig << " are not supported by this client";
+        // this should remove all keys in the group which == the account index
+        settings.remove("");
+        Q_ASSERT(settings.childKeys().isEmpty());
 
-    auto acc = createAccount(settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid());
+        // also kill any credentials associated with this account. This makes me very unhappy but the creds are stored in a top level group
+        // and I don't want to mess up the group used for the actual account settings so just do a one off instance here. Yes it adds overhead
+        // but should happen so rarely I think it's worth the trade-off to safeguard the more important behavior of the account settings, which is
+        // ACTUALLY what we should be dealing with.
+        // todo: future: refactor the credentials manager to store the creds keys in the account's group! you can't create a credentialsManager without
+        // an account so that is where the settings belong to avoid this mess.
+        std::unique_ptr<QSettings> credsGroup = ConfigFile::settingsWithGroup("Credentials");
+        QStringList credsKeys = credsGroup->allKeys();
+        for (const QString &key : std::as_const(credsKeys)) {
+            if (key.contains(uid.toString(QUuid::WithoutBraces)))
+                credsGroup->remove(key);
+        }
+        return AccountPtr();
+    }
 
-    acc->setUrl(urlConfig.toUrl());
+    // 7.0 change - this special handling can be removed in 8.0
+    QString supportsSpacesKey = "supportsSpaces";
+    if (settings.contains(supportsSpacesKey)) {
+        settings.remove(supportsSpacesKey);
+    }
+
+    if (settings.contains("version")) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
+
+    auto acc = createAccount(uid);
+
+    acc->setUrl(url);
 
     acc->_davUser = settings.value(davUserC()).toString();
     acc->_displayName = settings.value(davUserDisplyNameC()).toString();
-    acc->setCapabilities({acc->url(), settings.value(capabilitesC()).value<QVariantMap>()});
+    acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
     acc->setCredentials(new Credentials(acc.get()));
 
     // now the server cert, it is in the general group
-    settings.beginGroup(QStringLiteral("General"));
+    settings.beginGroup("General");
     const auto certs = QSslCertificate::fromData(settings.value(caCertsKeyC()).toByteArray());
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
     acc->setApprovedCerts({certs.begin(), certs.end()});
@@ -258,15 +292,14 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 
     // 7.0 config settings maintenance: clean up legacy settings related to the old style credentials
     // todo: remove this when we get to 8.0
-    QString credsVersion = QStringLiteral("http_CredentialVersion");
+    QString credsVersion = "http_CredentialVersion";
     if (settings.contains(credsVersion)) {
-        settings.remove(QStringLiteral("user"));
-        const QString authTypePrefix = QStringLiteral("http_");
+        settings.remove("user");
+        const QString authTypePrefix = "http_";
         const auto childKeys = settings.childKeys();
         for (const auto &key : childKeys) {
-            if (!key.startsWith(authTypePrefix))
-                continue;
-            settings.remove(key);
+            if (key.startsWith(authTypePrefix))
+                settings.remove(key);
         }
     }
 

@@ -23,7 +23,7 @@ namespace {
 constexpr auto tiemoutC = 5s;
 QString credentialKeyC()
 {
-    return QStringLiteral("%1_credentials").arg(Theme::instance()->appName());
+    return QString("%1_credentials").arg(Theme::instance()->appName());
 }
 }
 
@@ -53,7 +53,7 @@ QString CredentialManager::accountKey() const
     if (!_account || _account->url().isEmpty())
         return QString();
 
-    return QStringLiteral("%1:%2:%3").arg(credentialKeyC(), _account->url().host(), _account->uuid().toString(QUuid::WithoutBraces));
+    return QString("%1:%2:%3").arg(credentialKeyC(), _account->url().host(), _account->uuid().toString(QUuid::WithoutBraces));
 }
 
 CredentialJob *CredentialManager::get(const QString &key)
@@ -168,7 +168,7 @@ QSettings &CredentialManager::credentialsList() const
 {
     // delayed init as scope requires a fully inizialised acc
     if (!_credentialsList) {
-        _credentialsList = ConfigFile::settingsWithGroup(QStringLiteral("Credentials/") + scope());
+        _credentialsList = ConfigFile::settingsWithGroup("Credentials/" + scope());
     }
     return *_credentialsList;
 }

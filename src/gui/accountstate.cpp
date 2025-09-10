@@ -42,10 +42,7 @@ inline const QLatin1String userExplicitlySignedOutC()
 {
     return QLatin1String("userExplicitlySignedOut");
 }
-auto supportsSpacesC()
-{
-    return QLatin1String("supportsSpaces");
-}
+
 } // anonymous namespace
 
 namespace OCC {
@@ -126,7 +123,7 @@ std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account,
         // see writeToSettings below
         accountState->setState(SignedOut);
     }
-    accountState->_supportsSpaces = settings.value(supportsSpacesC(), false).toBool();
+
     return accountState;
 }
 
@@ -147,7 +144,6 @@ void AccountState::writeToSettings(QSettings &settings) const
     // SignedOut state to indicate that the client should not try to re-connect the next time it
     // is started.
     settings.setValue(userExplicitlySignedOutC(), _state == SignedOut);
-    settings.setValue(supportsSpacesC(), _supportsSpaces);
 }
 
 AccountPtr AccountState::account() const
@@ -581,7 +577,8 @@ std::unique_ptr<QSettings> AccountState::settings()
 
 bool AccountState::supportsSpaces() const
 {
-    return _supportsSpaces && _account->hasCapabilities() && _account->capabilities().spacesSupport().enabled;
+    Q_ASSERT(_account->hasCapabilities() && _account->capabilities().spacesSupport().enabled);
+    return true;
 }
 
 QuotaInfo *AccountState::quotaInfo()

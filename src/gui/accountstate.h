@@ -192,7 +192,6 @@ private:
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
-    bool _supportsSpaces = true;
     bool _settingUp = false;
 
     ConnectionValidator *_connectionValidator;

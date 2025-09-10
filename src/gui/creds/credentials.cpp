@@ -296,7 +296,13 @@ void Credentials::refreshAccessTokenInternal()
 
 void Credentials::askFromUser()
 {
-    Q_ASSERT(_requestAuth == nullptr);
+    // I think this can happen when the re-auth process has already quasi started and is waiting for user input, but
+    // we get a prompt to log in again. I am not quite sure as it's very hard to reproduce.
+    if (_requestAuth) {
+        // let the existing instance ride
+        return;
+    }
+
     // the widget is parented to the AccountModalWidget when it's installed in the main window.
     // it will be cleaned up there - this is not a leak
     RequestAuthenticationWidget *widget = new RequestAuthenticationWidget();
