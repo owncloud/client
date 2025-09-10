@@ -53,8 +53,6 @@ public:
     explicit ownCloudGui(Application *parent = nullptr);
     ~ownCloudGui() override;
 
-    bool checkAccountExists(bool openSettings);
-
     /**
      * Raises our main Window to the front with the raiseWidget in focus.
      * If raiseWidget is a dialog and not visible yet, ->open will be called.
@@ -70,7 +68,6 @@ public:
     SettingsDialog *settingsDialog() const;
 
     void runAccountWizard();
-    void runNewestAccountWizard();
 
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
@@ -125,18 +122,8 @@ private:
     // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
     QScopedPointer<QMenu> _contextMenu;
 
-    // Manually tracking whether the context menu is visible via aboutToShow
-    // and aboutToHide. Unfortunately aboutToHide isn't reliable everywhere
-    // so this only gets used with _workaroundManualVisibility (when the tray's
-    // isVisible() is unreliable)
-    bool _contextMenuVisibleManual = false;
-
     QMenu *_recentActionsMenu;
     QVector<QMenu *> _accountMenus;
-    bool _workaroundShowAndHideTray = false;
-    bool _workaroundNoAboutToShowUpdate = false;
-    bool _workaroundFakeDoubleClick = false;
-    bool _workaroundManualVisibility = false;
     QTimer _delayedTrayUpdateTimer;
     QPointer<ShareDialog> _shareDialog;
 
