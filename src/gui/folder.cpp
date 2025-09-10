@@ -185,7 +185,7 @@ Result<void, QString> Folder::checkPathLength(const QString &path)
 
 GraphApi::Space *Folder::space() const
 {
-    if (_accountState && _accountState->supportsSpaces() && _accountState->account() && _accountState->account()->spacesManager()) {
+    if (_accountState && _accountState->account() && _accountState->account()->spacesManager()) {
         return _accountState->account()->spacesManager()->space(_definition.spaceId());
     }
     return nullptr;

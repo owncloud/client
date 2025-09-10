@@ -20,7 +20,6 @@
 
 #include "libsync/creds/abstractcredentials.h"
 
-#include "quotainfo.h"
 #include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 
@@ -206,7 +205,6 @@ void AccountState::setState(State state)
                 if (oldState == Connected || _state == Connected) {
                     _fetchCapabilitiesJob.clear();
                     Q_EMIT isConnectedChanged();
-                    Q_EMIT supportsSpacesChanged();
                 }
             });
             _fetchCapabilitiesJob->start();
@@ -573,22 +571,6 @@ std::unique_ptr<QSettings> AccountState::settings()
     auto s = ConfigFile::settingsWithGroup(QStringLiteral("Accounts"));
     s->beginGroup(_account->id());
     return s;
-}
-
-bool AccountState::supportsSpaces() const
-{
-    Q_ASSERT(_account->hasCapabilities() && _account->capabilities().spacesSupport().enabled);
-    return true;
-}
-
-QuotaInfo *AccountState::quotaInfo()
-{
-    // QuotaInfo should not be used with spaces
-    Q_ASSERT(!supportsSpaces());
-    if (!_quotaInfo) {
-        _quotaInfo = new QuotaInfo(this);
-    }
-    return _quotaInfo;
 }
 
 bool AccountState::isSettingUp() const

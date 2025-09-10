@@ -224,30 +224,14 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
 void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
 {
-    if (accountState->supportsSpaces()) {
+    if (accountState && accountState->account() && accountState->account()->spacesManager()) {
         QObject::connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::ready, this,
             [this, accountState, useVfs] { loadSpacesWhenReady(accountState, useVfs); });
         // this is questionable - basically if the spaces aren't ready requesting "checkReady" triggers "getting them ready" - there is no way to directly
-        // ask "are you ready?" - in all cases you have to call this function to get the ready signal which is handled here
+        // ask "are you ready?" - in all cases you have to call this function to get the ready signal which is handled above
         // todo: #10
         accountState->account()->spacesManager()->checkReady();
-    } else {
-        // todo: #20
-        setSyncEnabled(false);
-        auto def = FolderDefinition::createNewFolderDefinition(accountState->account()->davUrl(), {}, {});
-        def.setLocalPath(accountState->account()->defaultSyncRoot());
-        def.setTargetPath(Theme::instance()->defaultServerFolder());
-        Folder *folder = addFolderFromScratch(accountState, std::move(def), useVfs);
-        if (folder) {
-            saveFolder(folder);
-            _scheduler->enqueueFolder(folder, SyncScheduler::Priority::High);
-        }
-        setSyncEnabled(true);
     }
-
-
-    // todo: #11
-    // accountState->checkConnectivity();
 }
 
 void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
