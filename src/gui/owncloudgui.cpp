@@ -300,10 +300,6 @@ void ownCloudGui::setupContextMenu()
     // it will trigger a bug in Ubuntu's SNI bridge patch (11.10, 12.04).
     _tray->setContextMenu(_contextMenu.data());
 
-    connect(&_delayedTrayUpdateTimer, &QTimer::timeout, this, &ownCloudGui::updateContextMenu);
-    _delayedTrayUpdateTimer.setInterval(2s);
-    _delayedTrayUpdateTimer.setSingleShot(true);
-
     connect(_contextMenu.data(), &QMenu::aboutToShow, this, &ownCloudGui::slotContextMenuAboutToShow);
     // unfortunately aboutToHide is unreliable, it seems to work on OSX though
     connect(_contextMenu.data(), &QMenu::aboutToHide, this, &ownCloudGui::slotContextMenuAboutToHide);
@@ -314,14 +310,6 @@ void ownCloudGui::setupContextMenu()
 
 void ownCloudGui::updateContextMenu()
 {
-    // If it's visible, we can't update live, and it won't be updated lazily: reschedule
-    if (contextMenuVisible()) {
-        if (!_delayedTrayUpdateTimer.isActive()) {
-            _delayedTrayUpdateTimer.start();
-        }
-        return;
-    }
-
     _contextMenu->clear();
 
     const auto &accountList = AccountManager::instance()->accounts();

@@ -22,7 +22,6 @@
 #include <QPointer>
 #include <QMenu>
 #include <QSystemTrayIcon>
-#include <QTimer>
 
 namespace OCC {
 
@@ -115,8 +114,6 @@ private:
     // has no parent to clean it  up. Important: the system tray context menu should share the same parent (widget). see example impl
     // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
     QScopedPointer<QMenu> _contextMenu;
-
-    QTimer _delayedTrayUpdateTimer;
     QPointer<ShareDialog> _shareDialog;
 
     Application *_app;
