@@ -400,47 +400,6 @@ void SocketApi::broadcastMessage(const QString &msg, bool doWait)
     }
 }
 
-void SocketApi::processShareRequest(const QString &localFile, SocketListener *listener)
-{
-    auto theme = Theme::instance();
-
-    auto fileData = FileData::get(localFile);
-    auto shareFolder = fileData.folder;
-    if (!shareFolder) {
-        const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
-        // files that are not within a sync folder are not synced.
-        listener->sendMessage(message);
-    } else if (!shareFolder->accountState()->isConnected()) {
-        const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
-        // if the folder isn't connected, don't open the share dialog
-        listener->sendMessage(message);
-    } else if (!theme->linkSharing() && !theme->userGroupSharing()) {
-        const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
-        listener->sendMessage(message);
-    } else {
-        // If the file doesn't have a journal record, it might not be uploaded yet
-        if (!fileData.journalRecord().isValid()) {
-            const QString message = QLatin1String("SHARE:NOTSYNCED:") + QDir::toNativeSeparators(localFile);
-            listener->sendMessage(message);
-            return;
-        }
-
-        auto &remotePath = fileData.serverRelativePath;
-
-        // Can't share root folder
-        if (remotePath == QLatin1String("/")) {
-            const QString message = QLatin1String("SHARE:CANNOTSHAREROOT:") + QDir::toNativeSeparators(localFile);
-            listener->sendMessage(message);
-            return;
-        }
-
-        const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
-        listener->sendMessage(message);
-
-        Q_EMIT shareCommandReceived(remotePath, fileData.localPath);
-    }
-}
-
 void SocketApi::broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus)
 {
     QString msg = buildMessage(QStringLiteral("STATUS"), systemPath, fileStatus.toSocketAPIString());
@@ -480,7 +439,43 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
-    processShareRequest(localFile, listener);
+    auto theme = Theme::instance();
+
+    auto fileData = FileData::get(localFile);
+    auto shareFolder = fileData.folder;
+    if (!shareFolder) {
+        const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
+        // files that are not within a sync folder are not synced.
+        listener->sendMessage(message);
+    } else if (!shareFolder->accountState()->isConnected()) {
+        const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
+        // if the folder isn't connected, don't open the share dialog
+        listener->sendMessage(message);
+    } else if (!theme->linkSharing() && !theme->userGroupSharing()) {
+        const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
+        listener->sendMessage(message);
+    } else {
+        // If the file doesn't have a journal record, it might not be uploaded yet
+        if (!fileData.journalRecord().isValid()) {
+            const QString message = QLatin1String("SHARE:NOTSYNCED:") + QDir::toNativeSeparators(localFile);
+            listener->sendMessage(message);
+            return;
+        }
+
+        auto &remotePath = fileData.serverRelativePath;
+
+        // Can't share root folder
+        if (remotePath == QLatin1String("/")) {
+            const QString message = QLatin1String("SHARE:CANNOTSHAREROOT:") + QDir::toNativeSeparators(localFile);
+            listener->sendMessage(message);
+            return;
+        }
+
+        const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
+        listener->sendMessage(message);
+
+        Q_EMIT shareCommandReceived(remotePath, fileData.localPath);
+    }
 }
 
 void SocketApi::command_VERSION(const QString &, SocketListener *listener)

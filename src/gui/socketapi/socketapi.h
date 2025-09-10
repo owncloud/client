@@ -101,9 +101,6 @@ private:
 
     void broadcastMessage(const QString &msg, bool doWait = false);
 
-    // opens share dialog, sends reply
-    void processShareRequest(const QString &localFile, SocketListener *listener);
-
     Q_INVOKABLE void command_RETRIEVE_FOLDER_STATUS(const QString &argument, SocketListener *listener);
     Q_INVOKABLE void command_RETRIEVE_FILE_STATUS(const QString &argument, SocketListener *listener);
 
