@@ -62,8 +62,6 @@ public:
     /// Whether the tray menu is visible
     bool contextMenuVisible() const;
 
-    void hideAndShowTray();
-
     SettingsDialog *settingsDialog() const;
 
     void runAccountWizard();
@@ -73,10 +71,6 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void setupContextMenu();
-    void updateContextMenu();
-    void updateContextMenuNeeded();
-    void slotContextMenuAboutToShow();
-    void slotContextMenuAboutToHide();
     void slotComputeOverallSyncStatus();
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
@@ -108,11 +102,6 @@ private:
 
     QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;
-    // tray's menu
-    // Refactoring todo: get rid of this scoped pointer - it is only reset on creating the menu and this seems to be used as the menu
-    // has no parent to clean it  up. Important: the system tray context menu should share the same parent (widget). see example impl
-    // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
-    QScopedPointer<QMenu> _contextMenu;
     QPointer<ShareDialog> _shareDialog;
 
     Application *_app;

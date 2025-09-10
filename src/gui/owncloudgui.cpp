@@ -62,7 +62,7 @@ ownCloudGui::ownCloudGui(Application *parent)
 
     setupContextMenu();
 
-    // init systry
+    // init systray
     slotComputeOverallSyncStatus();
     _tray->show();
 
@@ -79,11 +79,6 @@ ownCloudGui::ownCloudGui(Application *parent)
     FolderMan *folderMan = FolderMan::instance();
     connect(folderMan, &FolderMan::folderSyncStateChange,
         this, &ownCloudGui::slotSyncStateChange);
-
-    connect(AccountManager::instance(), &AccountManager::accountAdded,
-        this, &ownCloudGui::updateContextMenuNeeded);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved,
-        this, &ownCloudGui::updateContextMenuNeeded);
 }
 
 ownCloudGui::~ownCloudGui()
@@ -130,7 +125,6 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
 void ownCloudGui::slotSyncStateChange(Folder *folder)
 {
     slotComputeOverallSyncStatus();
-    updateContextMenuNeeded();
 
     if (!folder) {
         return; // Valid, just a general GUI redraw was needed.
@@ -144,12 +138,10 @@ void ownCloudGui::slotSyncStateChange(Folder *folder)
 void ownCloudGui::slotFoldersChanged()
 {
     slotComputeOverallSyncStatus();
-    updateContextMenuNeeded();
 }
 
 void ownCloudGui::slotAccountStateChanged()
 {
-    updateContextMenuNeeded();
     slotComputeOverallSyncStatus();
 }
 
@@ -263,60 +255,24 @@ SettingsDialog *ownCloudGui::settingsDialog() const
     return _settingsDialog;
 }
 
-void ownCloudGui::slotContextMenuAboutToShow()
-{
-    // Update icon in sys tray, as it might change depending on the context menu state
-    slotComputeOverallSyncStatus();
-    updateContextMenu();
-}
-
-void ownCloudGui::slotContextMenuAboutToHide()
-{
-    // Update icon in sys tray, as it might change depending on the context menu state
-    slotComputeOverallSyncStatus();
-}
-
 bool ownCloudGui::contextMenuVisible() const
 {
-    return _contextMenu->isVisible();
-}
-
-void ownCloudGui::hideAndShowTray()
-{
-    _tray->hide();
-    _tray->show();
+    return _tray->contextMenu() && _tray->contextMenu()->isVisible();
 }
 
 void ownCloudGui::setupContextMenu()
 {
-    if (_contextMenu) {
-        return;
-    }
+    auto menu = new QMenu(_settingsDialog);
+    menu->setTitle(Theme::instance()->appNameGUI());
 
-    _contextMenu.reset(new QMenu());
-    _contextMenu->setTitle(Theme::instance()->appNameGUI());
-
-    // this must be called only once after creating the context menu, or
-    // it will trigger a bug in Ubuntu's SNI bridge patch (11.10, 12.04).
-    _tray->setContextMenu(_contextMenu.data());
-
-    connect(_contextMenu.data(), &QMenu::aboutToShow, this, &ownCloudGui::slotContextMenuAboutToShow);
-    // unfortunately aboutToHide is unreliable, it seems to work on OSX though
-    connect(_contextMenu.data(), &QMenu::aboutToHide, this, &ownCloudGui::slotContextMenuAboutToHide);
+    _tray->setContextMenu(menu);
 
     // Populate the context menu now.
-    updateContextMenu();
-}
-
-void ownCloudGui::updateContextMenu()
-{
-    _contextMenu->clear();
-
-    _contextMenu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotShowSettings);
-    _contextMenu->addSeparator();
+    menu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotShowSettings);
+    menu->addSeparator();
 
     if (_app->debugMode()) {
-        auto *debugMenu = _contextMenu->addMenu(QStringLiteral("Debug actions"));
+        auto *debugMenu = menu->addMenu(QStringLiteral("Debug actions"));
         debugMenu->addAction(QStringLiteral("Crash if asserts enabled - OC_ENSURE"), _app, [] {
             if (OC_ENSURE(false)) {
                 Q_UNREACHABLE();
@@ -333,27 +289,18 @@ void ownCloudGui::updateContextMenu()
         captivePortalCheckbox->setChecked(NetworkInformation::instance()->isForcedCaptivePortal());
         connect(captivePortalCheckbox, &QAction::triggered, [](bool checked) { NetworkInformation::instance()->setForcedCaptivePortal(checked); });
 
-        _contextMenu->addSeparator();
+        menu->addSeparator();
     }
 
     if (!Theme::instance()->helpUrl().isEmpty()) {
-        _contextMenu->addAction(tr("Help"), this, &ownCloudGui::slotHelp);
+        menu->addAction(tr("Help"), this, &ownCloudGui::slotHelp);
     }
 
     if (! Theme::instance()->about().isEmpty()) {
-        _contextMenu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotAbout);
+        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotAbout);
     }
 
-    _contextMenu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
-}
-
-void ownCloudGui::updateContextMenuNeeded()
-{
-    // if it's visible and we can update live: update now
-    if (contextMenuVisible()) {
-        updateContextMenu();
-        return;
-    }
+    menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
 }
 
 void ownCloudGui::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
