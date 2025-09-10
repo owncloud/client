@@ -28,7 +28,6 @@
 #include "guiutility.h"
 #include "libsync/theme.h"
 #include "logbrowser.h"
-#include "openfilemanager.h"
 #include "progressdispatcher.h"
 #include "settingsdialog.h"
 #include "sharedialog.h"
@@ -57,7 +56,6 @@ ownCloudGui::ownCloudGui(Application *parent)
     : QObject(parent)
     , _tray(new QSystemTrayIcon(this))
     , _settingsDialog(new SettingsDialog(this))
-    , _recentActionsMenu(nullptr)
     , _app(parent)
 {
     connect(_tray, &QSystemTrayIcon::activated,
@@ -148,11 +146,6 @@ void ownCloudGui::slotFoldersChanged()
 {
     slotComputeOverallSyncStatus();
     updateContextMenuNeeded();
-}
-
-void ownCloudGui::slotOpenPath(const QString &path)
-{
-    showInFileManager(path);
 }
 
 void ownCloudGui::slotAccountStateChanged()
@@ -336,8 +329,6 @@ void ownCloudGui::setupContextMenu()
     _contextMenu.reset(new QMenu());
     _contextMenu->setTitle(Theme::instance()->appNameGUI());
 
-    _recentActionsMenu = new QMenu(tr("Recent Changes"), _contextMenu.data());
-
     // this must be called only once after creating the context menu, or
     // it will trigger a bug in Ubuntu's SNI bridge patch (11.10, 12.04).
     _tray->setContextMenu(_contextMenu.data());
@@ -365,7 +356,6 @@ void ownCloudGui::updateContextMenu()
     }
 
     _contextMenu->clear();
-    slotRebuildRecentMenus();
 
     // We must call deleteLater because we might be called from the press in one of the actions.
     for (auto *menu : std::as_const(_accountMenus)) {
@@ -375,16 +365,7 @@ void ownCloudGui::updateContextMenu()
 
     const auto &accountList = AccountManager::instance()->accounts();
 
-    bool isConfigured = (!accountList.isEmpty());
-    bool atLeastOneConnected = false;
     bool atLeastOnePaused = false;
-    for (const auto &a : accountList) {
-        if (a->isConnected()) {
-            atLeastOneConnected = true;
-            break;
-        }
-    }
-
     for (auto *f : FolderMan::instance()->folders()) {
         if (f->syncPaused()) {
             atLeastOnePaused = true;
@@ -413,12 +394,6 @@ void ownCloudGui::updateContextMenu()
 
             addAccountContextMenu(account, accountMenu);
         }
-    }
-
-    _contextMenu->addSeparator();
-
-    if (isConfigured && atLeastOneConnected) {
-        _contextMenu->addMenu(_recentActionsMenu);
     }
 
     _contextMenu->addSeparator();
@@ -504,59 +479,11 @@ void ownCloudGui::slotFolderOpenAction(Folder *f)
     }
 }
 
-void ownCloudGui::slotRebuildRecentMenus()
-{
-    _recentActionsMenu->clear();
-    if (!_recentItemsActions.isEmpty()) {
-        for (auto *a : std::as_const(_recentItemsActions)) {
-            _recentActionsMenu->addAction(a);
-        }
-        _recentActionsMenu->addSeparator();
-    } else {
-        _recentActionsMenu->addAction(tr("No items synced recently"))->setEnabled(false);
-    }
-    // add a more... entry.
-    _recentActionsMenu->addAction(tr("Details..."), this, &ownCloudGui::slotShowSyncProtocol);
-}
-
-/// Returns true if the completion of a given item should show up in the
-/// 'Recent Activity' menu
-static bool shouldShowInRecentsMenu(const SyncFileItem &item)
-{
-    return !Progress::isIgnoredKind(item._status) && item.instruction() != CSYNC_INSTRUCTION_NONE;
-}
-
 void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progress)
 {
     if (progress.status() == ProgressInfo::Discovery) {
     } else if (progress.status() == ProgressInfo::Done) {
         QTimer::singleShot(2s, this, &ownCloudGui::slotComputeOverallSyncStatus);
-    }
-    if (progress.status() != ProgressInfo::Propagation) {
-        return;
-    }
-
-    if (!progress._lastCompletedItem.isEmpty() && shouldShowInRecentsMenu(progress._lastCompletedItem)) {
-        QString kindStr = Progress::asResultString(progress._lastCompletedItem);
-        QString timeStr = QTime::currentTime().toString(QStringLiteral("hh:mm"));
-        QString actionText = tr("%1 (%2, %3)").arg(progress._lastCompletedItem._file, kindStr, timeStr);
-        QAction *action = new QAction(actionText, this);
-        QString fullPath = folder->path() + QLatin1Char('/') + progress._lastCompletedItem._file;
-        if (QFile(fullPath).exists()) {
-            connect(action, &QAction::triggered, this, [this, fullPath] { this->slotOpenPath(fullPath); });
-        } else {
-            action->setEnabled(false);
-        }
-        if (_recentItemsActions.length() > 5) {
-            _recentItemsActions.takeFirst()->deleteLater();
-        }
-        _recentItemsActions.append(action);
-
-        // Update the "Recent" menu if the context menu is being shown,
-        // otherwise it'll be updated later, when the context menu is opened.
-        if (contextMenuVisible()) {
-            slotRebuildRecentMenus();
-        }
     }
 }
 
@@ -607,13 +534,6 @@ void ownCloudGui::slotShowSettings()
 {
     raise();
 }
-
-void ownCloudGui::slotShowSyncProtocol()
-{
-    slotShowSettings();
-    _settingsDialog->setCurrentPage(SettingsDialog::SettingsPage::Activity);
-}
-
 
 void ownCloudGui::slotShutdown()
 {

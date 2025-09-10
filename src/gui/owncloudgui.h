@@ -82,11 +82,9 @@ public Q_SLOTS:
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotFolderOpenAction(Folder *f);
-    void slotRebuildRecentMenus();
     void slotUpdateProgress(Folder *folder, const ProgressInfo &progress);
     void slotFoldersChanged();
     void slotShowSettings();
-    void slotShowSyncProtocol();
     void slotShutdown();
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
@@ -94,7 +92,6 @@ public Q_SLOTS:
     void slotOpenSettingsDialog();
     void slotHelp();
     void slotAbout();
-    void slotOpenPath(const QString &path);
     void slotAccountStateChanged();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
@@ -121,12 +118,10 @@ private:
     // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
     QScopedPointer<QMenu> _contextMenu;
 
-    QMenu *_recentActionsMenu;
     QVector<QMenu *> _accountMenus;
     QTimer _delayedTrayUpdateTimer;
     QPointer<ShareDialog> _shareDialog;
 
-    QList<QAction *> _recentItemsActions;
     Application *_app;
 
     // keeping a pointer on those dialogs allows us to make sure they will be shown only once
