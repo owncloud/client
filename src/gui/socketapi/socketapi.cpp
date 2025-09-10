@@ -29,7 +29,6 @@
 #include "folder.h"
 #include "folderman.h"
 #include "guiutility.h"
-#include "sharemanager.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
 #include "theme.h"
@@ -402,7 +401,7 @@ void SocketApi::broadcastMessage(const QString &msg, bool doWait)
     }
 }
 
-void SocketApi::processShareRequest(const QString &localFile, SocketListener *listener, ShareDialogStartPage startPage)
+void SocketApi::processShareRequest(const QString &localFile, SocketListener *listener)
 {
     auto theme = Theme::instance();
 
@@ -439,7 +438,7 @@ void SocketApi::processShareRequest(const QString &localFile, SocketListener *li
         const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
 
-        Q_EMIT shareCommandReceived(remotePath, fileData.localPath, startPage);
+        Q_EMIT shareCommandReceived(remotePath, fileData.localPath);
     }
 }
 
@@ -482,12 +481,12 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
-    processShareRequest(localFile, listener, ShareDialogStartPage::UsersAndGroups);
+    // processShareRequest(localFile, listener, ShareDialogStartPage::UsersAndGroups);
 }
 
 void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener)
 {
-    processShareRequest(localFile, listener, ShareDialogStartPage::PublicLinks);
+    // processShareRequest(localFile, listener, ShareDialogStartPage::PublicLinks);
 }
 
 void SocketApi::command_VERSION(const QString &, SocketListener *listener)
@@ -500,113 +499,113 @@ void SocketApi::command_SHARE_MENU_TITLE(const QString &, SocketListener *listen
     listener->sendMessage(QLatin1String("SHARE_MENU_TITLE:") + tr("Share with %1", "parameter is ownCloud").arg(Theme::instance()->appNameGUI()));
 }
 
-class GetOrCreatePublicLinkShare : public QObject
-{
-    Q_OBJECT
-public:
-    GetOrCreatePublicLinkShare(const AccountPtr &account,
-        const QString &serverPath, QObject *parent)
-        : QObject(parent)
-        , _account(account)
-        , _shareManager(account)
-        , _serverPath(serverPath)
-    {
-        connect(&_shareManager, &ShareManager::sharesFetched,
-            this, &GetOrCreatePublicLinkShare::sharesFetched);
-        connect(&_shareManager, &ShareManager::linkShareCreated,
-            this, &GetOrCreatePublicLinkShare::linkShareCreated);
-        connect(&_shareManager, &ShareManager::linkShareCreationForbidden,
-            this, &GetOrCreatePublicLinkShare::linkShareCreationForbidden);
-        connect(&_shareManager, &ShareManager::serverError,
-            this, &GetOrCreatePublicLinkShare::serverError);
-    }
+// class GetOrCreatePublicLinkShare : public QObject
+// {
+//     Q_OBJECT
+// public:
+//     GetOrCreatePublicLinkShare(const AccountPtr &account,
+//         const QString &serverPath, QObject *parent)
+//         : QObject(parent)
+//         , _account(account)
+//         , _shareManager(account)
+//         , _serverPath(serverPath)
+//     {
+//         connect(&_shareManager, &ShareManager::sharesFetched,
+//             this, &GetOrCreatePublicLinkShare::sharesFetched);
+//         connect(&_shareManager, &ShareManager::linkShareCreated,
+//             this, &GetOrCreatePublicLinkShare::linkShareCreated);
+//         connect(&_shareManager, &ShareManager::linkShareCreationForbidden,
+//             this, &GetOrCreatePublicLinkShare::linkShareCreationForbidden);
+//         connect(&_shareManager, &ShareManager::serverError,
+//             this, &GetOrCreatePublicLinkShare::serverError);
+//     }
 
-    void run()
-    {
-        qCDebug(lcPublicLink) << "Fetching shares";
-        _shareManager.fetchShares(_serverPath);
-    }
+//     void run()
+//     {
+//         qCDebug(lcPublicLink) << "Fetching shares";
+//         _shareManager.fetchShares(_serverPath);
+//     }
 
-private Q_SLOTS:
-    void sharesFetched(const QList<QSharedPointer<Share>> &shares)
-    {
-        auto shareName = SocketApi::tr("Context menu share");
+// private Q_SLOTS:
+//     void sharesFetched(const QList<QSharedPointer<Share>> &shares)
+//     {
+//         auto shareName = SocketApi::tr("Context menu share");
 
-        // If shares will expire, create a new one every day.
-        QDate expireDate;
-        if (_account->capabilities().sharePublicLinkDefaultExpire()) {
-            shareName = SocketApi::tr("Context menu share %1").arg(QDate::currentDate().toString(Qt::ISODate));
-            expireDate = QDate::currentDate().addDays(
-                _account->capabilities().sharePublicLinkDefaultExpireDateDays());
-        }
+//         // If shares will expire, create a new one every day.
+//         QDate expireDate;
+//         if (_account->capabilities().sharePublicLinkDefaultExpire()) {
+//             shareName = SocketApi::tr("Context menu share %1").arg(QDate::currentDate().toString(Qt::ISODate));
+//             expireDate = QDate::currentDate().addDays(
+//                 _account->capabilities().sharePublicLinkDefaultExpireDateDays());
+//         }
 
-        // If there already is a context menu share, reuse it
-        for (const auto &share : shares) {
-            const auto linkShare = qSharedPointerDynamicCast<LinkShare>(share);
-            if (!linkShare)
-                continue;
+//         // If there already is a context menu share, reuse it
+//         for (const auto &share : shares) {
+//             const auto linkShare = qSharedPointerDynamicCast<LinkShare>(share);
+//             if (!linkShare)
+//                 continue;
 
-            if (linkShare->getName() == shareName) {
-                qCDebug(lcPublicLink) << "Found existing share, reusing";
-                return success(linkShare->getLink().toString());
-            }
-        }
+//             if (linkShare->getName() == shareName) {
+//                 qCDebug(lcPublicLink) << "Found existing share, reusing";
+//                 return success(linkShare->getLink().toString());
+//             }
+//         }
 
-        // otherwise create a new one
-        qCDebug(lcPublicLink) << "Creating new share";
-        QString noPassword;
-        _shareManager.createLinkShare(_serverPath, shareName, noPassword, expireDate);
-    }
+//         // otherwise create a new one
+//         qCDebug(lcPublicLink) << "Creating new share";
+//         QString noPassword;
+//         _shareManager.createLinkShare(_serverPath, shareName, noPassword, expireDate);
+//     }
 
-    void linkShareCreated(const QSharedPointer<LinkShare> &share)
-    {
-        qCDebug(lcPublicLink) << "New share created";
-        success(share->getLink().toString());
-    }
+//     void linkShareCreated(const QSharedPointer<LinkShare> &share)
+//     {
+//         qCDebug(lcPublicLink) << "New share created";
+//         success(share->getLink().toString());
+//     }
 
-    void linkShareCreationForbidden(const QString &message)
-    {
-        qCInfo(lcPublicLink) << "Could not create link share:" << message;
-        Q_EMIT error(message);
-        deleteLater();
-    }
+//     void linkShareCreationForbidden(const QString &message)
+//     {
+//         qCInfo(lcPublicLink) << "Could not create link share:" << message;
+//         Q_EMIT error(message);
+//         deleteLater();
+//     }
 
-    void serverError(int code, const QString &message)
-    {
-        qCWarning(lcPublicLink) << "Share fetch/create error" << code << message;
-        Q_EMIT error(message);
-        deleteLater();
-    }
+//     void serverError(int code, const QString &message)
+//     {
+//         qCWarning(lcPublicLink) << "Share fetch/create error" << code << message;
+//         Q_EMIT error(message);
+//         deleteLater();
+//     }
 
-Q_SIGNALS:
-    void done(const QString &link);
-    void error(const QString &message);
+// Q_SIGNALS:
+//     void done(const QString &link);
+//     void error(const QString &message);
 
-private:
-    void success(const QString &link)
-    {
-        Q_EMIT done(link);
-        deleteLater();
-    }
+// private:
+//     void success(const QString &link)
+//     {
+//         Q_EMIT done(link);
+//         deleteLater();
+//     }
 
-    AccountPtr _account;
-    ShareManager _shareManager;
-    QString _serverPath;
-};
+//     AccountPtr _account;
+//     ShareManager _shareManager;
+//     QString _serverPath;
+// };
 
 void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListener *)
 {
-    auto fileData = FileData::get(localFile);
-    if (!fileData.folder)
-        return;
+    // auto fileData = FileData::get(localFile);
+    // if (!fileData.folder)
+    //     return;
 
-    AccountPtr account = fileData.folder->accountState()->account();
-    auto job = new GetOrCreatePublicLinkShare(account, fileData.serverRelativePath, this);
-    connect(job, &GetOrCreatePublicLinkShare::done, this,
-        [](const QString &url) { copyUrlToClipboard(QUrl(url)); });
-    connect(job, &GetOrCreatePublicLinkShare::error, this,
-        [=]() { Q_EMIT shareCommandReceived(fileData.serverRelativePath, fileData.localPath, ShareDialogStartPage::PublicLinks); });
-    job->run();
+    // AccountPtr account = fileData.folder->accountState()->account();
+    // auto job = new GetOrCreatePublicLinkShare(account, fileData.serverRelativePath, this);
+    // connect(job, &GetOrCreatePublicLinkShare::done, this,
+    //     [](const QString &url) { copyUrlToClipboard(QUrl(url)); });
+    // connect(job, &GetOrCreatePublicLinkShare::error, this,
+    //     [=]() { Q_EMIT shareCommandReceived(fileData.serverRelativePath, fileData.localPath, ShareDialogStartPage::PublicLinks); });
+    // job->run();
 }
 
 // Fetches the private link url asynchronously and then calls the target slot
@@ -881,23 +880,15 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
     // If sharing is globally disabled, do not show any sharing entries.
     // If there is no permission to share for this file, add a disabled entry saying so
     if (isOnTheServer && !record._remotePerm.isNull() && !record._remotePerm.hasPermission(RemotePermissions::CanReshare)) {
-        listener->sendMessage(QStringLiteral("MENU_ITEM:DISABLED:d:") + (!record.isDirectory() ? tr("Resharing this file is not allowed") : tr("Resharing this folder is not allowed")));
+        listener->sendMessage(QStringLiteral("MENU_ITEM:DISABLED:d:")
+            + (record.isDirectory() ? tr("Resharing this folder is not allowed") : tr("Resharing this file is not allowed")));
     } else {
         listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share..."));
 
         // Do we have public links?
         bool publicLinksEnabled = theme->linkSharing() && capabilities.sharePublicLink();
 
-        // It is possible to create a public link without user choices?
-        bool canCreateDefaultPublicLink = publicLinksEnabled
-            && !capabilities.sharePublicLinkEnforcePasswordForReadOnly();
-
-        if (canCreateDefaultPublicLink) {
-            // if (fileData.folder->accountState()->supportsSpaces()) {
-            // TODO: See https://github.com/owncloud/client/issues/10845 : oCIS is getting a new sharing API, waiting for that before implementing a
-            // temporary solution.
-            // }
-        } else if (publicLinksEnabled) {
+        if (publicLinksEnabled) {
             listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Manage public links"));
         }
     }
