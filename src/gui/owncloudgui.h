@@ -110,7 +110,6 @@ public Q_SLOTS:
 
 private:
     void setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause);
-    void setupActions();
     void addAccountContextMenu(AccountState *accountState, QMenu *menu);
     void setToolTip(const QString &tip) const;
 
@@ -126,8 +125,6 @@ private:
     QVector<QMenu *> _accountMenus;
     QTimer _delayedTrayUpdateTimer;
     QPointer<ShareDialog> _shareDialog;
-
-    QAction *_actionStatus;
 
     QList<QAction *> _recentItemsActions;
     Application *_app;

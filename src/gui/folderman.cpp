@@ -475,19 +475,6 @@ void FolderMan::slotServerVersionChanged(Account *account)
     }
 }
 
-bool FolderMan::isAnySyncRunning() const
-{
-    if (_scheduler->hasCurrentRunningSyncRunning()) {
-        return true;
-    }
-
-    for (auto f : _folders) {
-        if (f->isSyncRunning())
-            return true;
-    }
-    return false;
-}
-
 void FolderMan::slotFolderSyncStarted()
 {
     auto f = qobject_cast<Folder *>(sender());

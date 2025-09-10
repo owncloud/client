@@ -264,14 +264,6 @@ public:
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
 
-    /**
-     * Returns true if any folder is currently syncing.
-     *
-     * This might be a FolderMan-scheduled sync, or a externally
-     * managed sync like a placeholder hydration.
-     */
-    bool isAnySyncRunning() const;
-
     /** Simple save and remove all folders on shut down */
     void unloadAndDeleteAllFolders();
 

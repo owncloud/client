@@ -63,7 +63,6 @@ ownCloudGui::ownCloudGui(Application *parent)
     connect(_tray, &QSystemTrayIcon::activated,
         this, &ownCloudGui::slotTrayClicked);
 
-    setupActions();
     setupContextMenu();
 
     // init systry
@@ -179,14 +178,7 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     auto getIconFromStatus = [getIcon](const SyncResult::Status &status) { return getIcon(SyncResult{status}); };
     bool allSignedOut = true;
     bool allPaused = true;
-    bool allDisconnected = true;
     QVector<AccountState *> problemAccounts;
-    auto setStatusText = [&](const QString &text) {
-        // Don't overwrite the status if we're currently syncing
-        if (FolderMan::instance()->isAnySyncRunning())
-            return;
-        _actionStatus->setText(text);
-    };
 
     for (const auto &a : AccountManager::instance()->accounts()) {
         if (!a->isSignedOut()) {
@@ -194,8 +186,6 @@ void ownCloudGui::slotComputeOverallSyncStatus()
         }
         if (!a->isConnected()) {
             problemAccounts.append(a);
-        } else {
-            allDisconnected = false;
         }
     }
 
@@ -208,11 +198,6 @@ void ownCloudGui::slotComputeOverallSyncStatus()
 
     if (!problemAccounts.empty()) {
         _tray->setIcon(getIconFromStatus(SyncResult::Status::Offline));
-        if (allDisconnected) {
-            setStatusText(tr("Disconnected"));
-        } else {
-            setStatusText(tr("Disconnected from some accounts"));
-        }
 #ifdef Q_OS_WIN
         // Windows has a 128-char tray tooltip length limit.
         QStringList accountNames;
@@ -238,12 +223,10 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     if (allSignedOut) {
         _tray->setIcon(getIconFromStatus(SyncResult::Status::Offline));
         setToolTip(tr("Please sign in"));
-        setStatusText(tr("Signed out"));
         return;
     } else if (allPaused) {
         _tray->setIcon(getIconFromStatus(SyncResult::Paused));
         setToolTip(tr("Account synchronization is disabled"));
-        setStatusText(tr("Synchronization is paused"));
         return;
     }
 
@@ -273,30 +256,13 @@ void ownCloudGui::slotComputeOverallSyncStatus()
 
     switch (trayOverallStatusResult.overallStatus().status()) {
     case SyncResult::Problem:
-        if (trayOverallStatusResult.overallStatus().hasUnresolvedConflicts()) {
-            setStatusText(tr("Unresolved %1 conflicts").arg(QString::number(trayOverallStatusResult.overallStatus().numNewConflictItems())));
-            break;
-        } else if (trayOverallStatusResult.overallStatus().numBlacklistErrors() != 0) {
-            setStatusText(tr("Ignored errors %1").arg(QString::number(trayOverallStatusResult.overallStatus().numBlacklistErrors())));
-            break;
-        }
         [[fallthrough]];
     case SyncResult::Success: {
-        QString lastSyncDoneString;
-        // display only the time in case the last sync was today
-        if (QDateTime::currentDateTime().date() == trayOverallStatusResult.lastSyncDone.date()) {
-            lastSyncDoneString = QLocale().toString(trayOverallStatusResult.lastSyncDone.time());
-        } else {
-            lastSyncDoneString = QLocale().toString(trayOverallStatusResult.lastSyncDone);
-        }
-        setStatusText(tr("Up to date (%1)").arg(lastSyncDoneString));
     } break;
     case SyncResult::Undefined:
         setToolTip(tr("There are no sync folders configured."));
-        setStatusText(tr("No sync folders configured"));
         break;
-    default:
-        setStatusText(FolderMan::trayTooltipStatusString(trayOverallStatusResult.overallStatus(), false));
+    default:;
     }
 }
 
@@ -451,7 +417,6 @@ void ownCloudGui::updateContextMenu()
 
     _contextMenu->addSeparator();
 
-    _contextMenu->addAction(_actionStatus);
     if (isConfigured && atLeastOneConnected) {
         _contextMenu->addMenu(_recentActionsMenu);
     }
@@ -539,12 +504,6 @@ void ownCloudGui::slotFolderOpenAction(Folder *f)
     }
 }
 
-void ownCloudGui::setupActions()
-{
-    _actionStatus = new QAction(tr("Unknown status"), this);
-    _actionStatus->setEnabled(false);
-}
-
 void ownCloudGui::slotRebuildRecentMenus()
 {
     _recentActionsMenu->clear();
@@ -570,46 +529,11 @@ static bool shouldShowInRecentsMenu(const SyncFileItem &item)
 void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progress)
 {
     if (progress.status() == ProgressInfo::Discovery) {
-        if (!progress._currentDiscoveredRemoteFolder.isEmpty()) {
-            _actionStatus->setText(tr("Checking for changes in remote '%1'")
-                                       .arg(progress._currentDiscoveredRemoteFolder));
-        } else if (!progress._currentDiscoveredLocalFolder.isEmpty()) {
-            _actionStatus->setText(tr("Checking for changes in local '%1'")
-                                       .arg(progress._currentDiscoveredLocalFolder));
-        }
     } else if (progress.status() == ProgressInfo::Done) {
         QTimer::singleShot(2s, this, &ownCloudGui::slotComputeOverallSyncStatus);
     }
     if (progress.status() != ProgressInfo::Propagation) {
         return;
-    }
-
-    if (progress.totalSize() == 0) {
-        qint64 currentFile = progress.currentFile();
-        qint64 totalFileCount = qMax(progress.totalFiles(), currentFile);
-        QString msg;
-        if (progress.trustEta()) {
-            msg = tr("Syncing %1 of %2  (%3 left)")
-                      .arg(currentFile)
-                      .arg(totalFileCount)
-                      .arg(Utility::durationToDescriptiveString2(std::chrono::milliseconds(progress.totalProgress().estimatedEta)));
-        } else {
-            msg = tr("Syncing %1 of %2")
-                      .arg(currentFile)
-                      .arg(totalFileCount);
-        }
-        _actionStatus->setText(msg);
-    } else {
-        QString totalSizeStr = Utility::octetsToString(progress.totalSize());
-        QString msg;
-        if (progress.trustEta()) {
-            msg = tr("Syncing %1 (%2 left)")
-                      .arg(totalSizeStr, Utility::durationToDescriptiveString2(std::chrono::milliseconds(progress.totalProgress().estimatedEta)));
-        } else {
-            msg = tr("Syncing %1")
-                      .arg(totalSizeStr);
-        }
-        _actionStatus->setText(msg);
     }
 
     if (!progress._lastCompletedItem.isEmpty() && shouldShowInRecentsMenu(progress._lastCompletedItem)) {
