@@ -17,7 +17,6 @@
 #include "accountstate.h"
 #include "folderman.h"
 #include "gui/networkinformation.h"
-#include "gui/quotainfo.h"
 #include "theme.h"
 
 #include "libsync/graphapi/space.h"

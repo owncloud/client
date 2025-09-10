@@ -352,7 +352,7 @@ public:
      *
      * Defaults: "/"
      */
-    virtual QString quotaBaseFolder() const;
+    [[deprecated("quota folder support has been removed as of client 7.0")]] virtual QString quotaBaseFolder() const;
 
     /**
      * The OAuth client_id, secret pair.

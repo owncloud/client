@@ -20,7 +20,6 @@
 
 #include "libsync/creds/abstractcredentials.h"
 
-#include "quotainfo.h"
 #include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 

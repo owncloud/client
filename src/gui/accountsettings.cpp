@@ -36,7 +36,6 @@
 #include "guiutility.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "openfilemanager.h"
-#include "quotainfo.h"
 #include "scheduling/syncscheduler.h"
 #include "settingsdialog.h"
 #include "theme.h"

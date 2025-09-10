@@ -62,7 +62,6 @@ set(client_SRCS
     tlserrordialog.cpp
     syncrunfilelog.cpp
     systray.cpp
-    quotainfo.cpp
     accountstate.cpp
     notificationwidget.cpp
     notificationconfirmjob.cpp
