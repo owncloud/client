@@ -169,7 +169,6 @@ Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
     void isSettingUpChanged(bool settingUp);
-    // void supportsSpacesChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);

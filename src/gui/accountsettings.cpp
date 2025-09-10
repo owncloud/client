@@ -574,11 +574,10 @@ void AccountSettings::slotAccountStateChanged()
             icon = StatusIcon::Warning;
         }
         showConnectionLabel(tr("Connected"), icon, errors);
-            connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
-                Qt::UniqueConnection);
-            // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
-            // triggering the slot? ie duplicate call to slotSpacesUpdated?
-            slotSpacesUpdated();
+        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated, Qt::UniqueConnection);
+        // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
+        // triggering the slot? ie duplicate call to slotSpacesUpdated?
+        slotSpacesUpdated();
 
         break;
     }
