@@ -757,13 +757,6 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
             + (record.isDirectory() ? tr("Resharing this folder is not allowed") : tr("Resharing this file is not allowed")));
     } else {
         listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share..."));
-
-        // Do we have public links?
-        bool publicLinksEnabled = theme->linkSharing() && capabilities.sharePublicLink();
-
-        if (publicLinksEnabled) {
-            listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Manage public links"));
-        }
     }
 
     if (capabilities.privateLinkPropertyAvailable()) {
