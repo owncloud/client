@@ -742,28 +742,6 @@ TrayOverallStatusResult FolderMan::trayOverallStatus(const QVector<Folder *> &fo
     return result;
 }
 
-QString FolderMan::trayTooltipStatusString(const SyncResult &result, bool paused)
-{
-    QString folderMessage;
-    switch (result.status()) {
-    case SyncResult::Success:
-        [[fallthrough]];
-    case SyncResult::Problem:
-        if (result.hasUnresolvedConflicts()) {
-            folderMessage = tr("Sync was successful, unresolved conflicts.");
-            break;
-        }
-        [[fallthrough]];
-    default:
-        return Utility::enumToDisplayName(result.status());
-    }
-    if (paused) {
-        // sync is disabled.
-        folderMessage = tr("%1 (Sync is paused)").arg(folderMessage);
-    }
-    return folderMessage;
-}
-
 // QFileInfo::canonicalPath returns an empty string if the file does not exist.
 // This function also works with files that does not exist and resolve the symlinks in the
 // parent directories.

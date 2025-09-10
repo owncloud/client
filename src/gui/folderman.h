@@ -22,7 +22,6 @@
 
 #include <QList>
 #include <QObject>
-#include <QQueue>
 
 namespace OCC {
 
@@ -230,9 +229,6 @@ public:
      */
     static bool ensureJournalGone(const QString &journalDbFile);
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
-
-    /// Produce text for use in the tray tooltip
-    static QString trayTooltipStatusString(const SyncResult &result, bool paused);
 
     /**
      * Compute status summarizing multiple folders

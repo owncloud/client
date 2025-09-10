@@ -98,7 +98,6 @@ public Q_SLOTS:
     void handleAccountSetupError(const QString &error);
 
 private:
-    void setToolTip(const QString &tip) const;
 
     QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;
