@@ -64,7 +64,7 @@ QString FolderWizardPrivate::formatWarnings(const QStringList &warnings, bool is
 QString FolderWizardPrivate::defaultSyncRoot() const
 {
     if (!_account->account()->hasDefaultSyncRoot()) {
-        const auto folderType = _account->supportsSpaces() ? FolderMan::NewFolderType::SpacesSyncRoot : FolderMan::NewFolderType::OC10SyncRoot;
+        const auto folderType = FolderMan::NewFolderType::SpacesSyncRoot; // todo: #43 : FolderMan::NewFolderType::OC10SyncRoot;
         return FolderMan::suggestSyncFolder(folderType, _account->account()->uuid());
     } else {
         return _account->account()->defaultSyncRoot();
@@ -77,18 +77,12 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, AccountState *account)
     , _folderWizardSourcePage(new FolderWizardLocalPath(this))
     , _folderWizardSelectiveSyncPage(nullptr)
 {
-    if (account->supportsSpaces()) {
         _spacesPage = new SpacesPage(account->account(), q);
         q->setPage(FolderWizard::Page_Space, _spacesPage);
-    }
+
 
     q->setPage(FolderWizard::Page_Source, _folderWizardSourcePage);
 
-    // apparently also oc10 only per deprecation message on singleSyncFolder()
-    if (!_account->supportsSpaces() && !Theme::instance()->singleSyncFolder()) {
-        _folderWizardTargetPage = new FolderWizardRemotePath(this);
-        q->setPage(FolderWizard::Page_Target, _folderWizardTargetPage);
-    }
 
     // When VFS is available (currently only with Windows' CFApi), and it is forced on, Spaces are meant to be synced as a whole.
     const bool showPage = VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi || !Theme::instance()->forceVirtualFilesOption();
@@ -100,14 +94,8 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, AccountState *account)
 
 QString FolderWizardPrivate::initialLocalPath() const
 {
-    if (_account->supportsSpaces()) {
-        return FolderMan::findGoodPathForNewSyncFolder(
-            defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->account()->uuid());
-    }
-
-    // Split default sync root:
-    const QFileInfo path(defaultSyncRoot());
-    return FolderMan::findGoodPathForNewSyncFolder(path.path(), path.fileName(), FolderMan::NewFolderType::OC10SyncRoot, _account->account()->uuid());
+    return FolderMan::findGoodPathForNewSyncFolder(
+        defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->account()->uuid());
 }
 
 QString FolderWizardPrivate::remotePath() const
@@ -117,38 +105,26 @@ QString FolderWizardPrivate::remotePath() const
 
 uint32_t FolderWizardPrivate::priority() const
 {
-    if (_account->supportsSpaces()) {
-        return _spacesPage->currentSpace()->priority();
-    }
-    return 0;
+    return _spacesPage->currentSpace()->priority();
 }
 
 QUrl FolderWizardPrivate::davUrl() const
 {
-    if (_account->supportsSpaces()) {
-        auto url = _spacesPage->currentSpace()->webdavUrl();
-        if (!url.path().endsWith(QLatin1Char('/'))) {
-            url.setPath(url.path() + QLatin1Char('/'));
-        }
-        return url;
+    auto url = _spacesPage->currentSpace()->webdavUrl();
+    if (!url.path().endsWith(QLatin1Char('/'))) {
+        url.setPath(url.path() + QLatin1Char('/'));
     }
-    return _account->account()->davUrl();
+    return url;
 }
 
 QString FolderWizardPrivate::spaceId() const
 {
-    if (_account->supportsSpaces()) {
-        return _spacesPage->currentSpace()->id();
-    }
-    return {};
+    return _spacesPage->currentSpace()->id();
 }
 
 QString FolderWizardPrivate::displayName() const
 {
-    if (_account->supportsSpaces()) {
-        return _spacesPage->currentSpace()->displayName();
-    }
-    return QString();
+    return _spacesPage->currentSpace()->displayName();
 }
 
 AccountState *FolderWizardPrivate::accountState()

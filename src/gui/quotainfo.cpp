@@ -72,13 +72,7 @@ void QuotaInfo::slotRequestFailed()
 
 bool QuotaInfo::canGetQuota() const
 {
-    if (!_accountState || !_active || _accountState->supportsSpaces()) {
         return false;
-    }
-    AccountPtr account = _accountState->account();
-    return _accountState->isConnected()
-        && account->credentials()
-        && account->credentials()->ready();
 }
 
 QString QuotaInfo::quotaBaseFolder() const

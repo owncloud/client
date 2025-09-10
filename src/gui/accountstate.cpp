@@ -580,15 +580,6 @@ bool AccountState::supportsSpaces() const
     return true;
 }
 
-QuotaInfo *AccountState::quotaInfo()
-{
-    // QuotaInfo should not be used with spaces
-    Q_ASSERT(!supportsSpaces());
-    if (!_quotaInfo) {
-        _quotaInfo = new QuotaInfo(this);
-    }
-    return _quotaInfo;
-}
 
 bool AccountState::isSettingUp() const
 {

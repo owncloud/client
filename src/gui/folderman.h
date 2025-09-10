@@ -86,7 +86,7 @@ public:
      * Or in case of a space folder, that if the new folder is in a Space sync root, it is the sync root of the same account.
      */
     enum class NewFolderType {
-        OC10SyncRoot,
+        OC10SyncRoot, // todo: #43
         SpacesSyncRoot,
         SpacesFolder,
     };
