@@ -358,12 +358,22 @@ bool Account::hasCapabilities() const
 
 void Account::setCapabilities(const Capabilities &caps)
 {
-    const bool versionChanged = caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
+    if (!caps.isValid())
+        return;
+
+    // this should not happen:
+    if (!caps.spacesSupport().enabled) {
+        qCWarning(lcAccount) << "trying to set capabilities instance that doesn't support spaces - aborting";
+        return;
+    }
+
+    const bool versionChanged =
+        caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
     _capabilities = caps;
     if (versionChanged) {
         Q_EMIT serverVersionChanged();
     }
-    if (!_spacesManager && _capabilities.spacesSupport().enabled) {
+    if (!_spacesManager) {
         _spacesManager = new GraphApi::SpacesManager(this);
     }
 }
