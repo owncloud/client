@@ -439,8 +439,6 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
-    auto theme = Theme::instance();
-
     auto fileData = FileData::get(localFile);
     auto shareFolder = fileData.folder;
     if (!shareFolder) {
@@ -451,7 +449,8 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
         const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
         // if the folder isn't connected, don't open the share dialog
         listener->sendMessage(message);
-    } else if (!theme->linkSharing() && !theme->userGroupSharing()) {
+    } else if (!shareFolder->accountState()->account()->capabilities().shareAPI()
+        || !shareFolder->accountState()->account()->capabilities().sharePublicLink()) {
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
     } else {
@@ -741,8 +740,7 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
     auto flagString = isOnTheServer ? QStringLiteral("::") : QStringLiteral(":d:");
 
     auto capabilities = fileData.folder->accountState()->account()->capabilities();
-    auto theme = Theme::instance();
-    if (!capabilities.shareAPI() || !(theme->userGroupSharing() || (theme->linkSharing() && capabilities.sharePublicLink())))
+    if (!capabilities.shareAPI() || !capabilities.sharePublicLink())
         return;
 
     // If sharing is globally disabled, do not show any sharing entries.
