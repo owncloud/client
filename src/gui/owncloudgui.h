@@ -81,7 +81,6 @@ public Q_SLOTS:
     void slotComputeOverallSyncStatus();
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
-    void slotFolderOpenAction(Folder *f);
     void slotUpdateProgress(Folder *folder, const ProgressInfo &progress);
     void slotFoldersChanged();
     void slotShowSettings();
@@ -107,7 +106,6 @@ public Q_SLOTS:
 
 private:
     void setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause);
-    void addAccountContextMenu(AccountState *accountState, QMenu *menu);
     void setToolTip(const QString &tip) const;
 
     QSystemTrayIcon *_tray;
@@ -118,7 +116,6 @@ private:
     // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
     QScopedPointer<QMenu> _contextMenu;
 
-    QVector<QMenu *> _accountMenus;
     QTimer _delayedTrayUpdateTimer;
     QPointer<ShareDialog> _shareDialog;
 

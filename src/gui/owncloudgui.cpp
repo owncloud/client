@@ -23,7 +23,6 @@
 #include "configfile.h"
 #include "folderman.h"
 #include "gui/accountsettings.h"
-#include "gui/commonstrings.h"
 #include "gui/networkinformation.h"
 #include "guiutility.h"
 #include "libsync/theme.h"
@@ -259,38 +258,6 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     }
 }
 
-void ownCloudGui::addAccountContextMenu(AccountState *accountState, QMenu *menu)
-{
-    menu->addAction(CommonStrings::showInWebBrowser(), this, [accountState] { QDesktopServices::openUrl(accountState->account()->url()); });
-
-    FolderMan *folderMan = FolderMan::instance();
-    const auto &map = folderMan->folders();
-    bool onePaused = false;
-    for (auto *folder : map) {
-        if (folder->accountState() != accountState) {
-            continue;
-        }
-
-        if (folder->syncPaused()) {
-            onePaused = true;
-        }
-        menu->addAction(tr("Open folder '%1'").arg(folder->shortGuiLocalPath()), this, [this, folder] { slotFolderOpenAction(folder); });
-    }
-
-    menu->addSeparator();
-    if (onePaused) {
-        menu->addAction(tr("Resume synchronization"), this, [accountState, this] { setPauseOnAllFoldersHelper({accountState}, false); });
-    } else {
-        menu->addAction(tr("Stop synchronization"), this, [accountState, this] { setPauseOnAllFoldersHelper({accountState}, true); });
-    }
-
-    if (accountState->isSignedOut()) {
-        menu->addAction(tr("Log in..."), this, [accountState] { accountState->signIn(); });
-    } else {
-        menu->addAction(tr("Log out"), this, [accountState] { accountState->signOutByUi(); });
-    }
-}
-
 SettingsDialog *ownCloudGui::settingsDialog() const
 {
     return _settingsDialog;
@@ -357,12 +324,6 @@ void ownCloudGui::updateContextMenu()
 
     _contextMenu->clear();
 
-    // We must call deleteLater because we might be called from the press in one of the actions.
-    for (auto *menu : std::as_const(_accountMenus)) {
-        menu->deleteLater();
-    }
-    _accountMenus.clear();
-
     const auto &accountList = AccountManager::instance()->accounts();
 
     bool atLeastOnePaused = false;
@@ -385,18 +346,7 @@ void ownCloudGui::updateContextMenu()
             _contextMenu->addAction(tr("Stop synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts(), true); });
         }
         _contextMenu->addSeparator();
-
-        // submenus for accounts
-        for (const auto &account : accountList) {
-            QMenu *accountMenu = new QMenu(account->account()->displayNameWithHost(), _contextMenu.data());
-            _accountMenus.append(accountMenu);
-            _contextMenu->addMenu(accountMenu);
-
-            addAccountContextMenu(account, accountMenu);
-        }
     }
-
-    _contextMenu->addSeparator();
 
     if (_app->debugMode()) {
         auto *debugMenu = _contextMenu->addMenu(QStringLiteral("Debug actions"));
@@ -455,28 +405,6 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
 void ownCloudGui::setToolTip(const QString &tip) const
 {
     _tray->setToolTip(QString("%1: %2").arg(Theme::instance()->appNameGUI(), tip));
-}
-
-/*
- * open the folder with the given Alias
- */
-void ownCloudGui::slotFolderOpenAction(Folder *f)
-{
-    if (f) {
-        qCInfo(lcApplication) << "opening local URL " << f->path();
-        QUrl url = QUrl::fromLocalFile(f->path());
-
-#ifdef Q_OS_WIN
-        // work around a bug in QDesktopServices on Win32, see i-net
-        QString filePath = f->path();
-
-        if (filePath.startsWith(QLatin1String("\\\\")) || filePath.startsWith(QLatin1String("//")))
-            url = QUrl::fromLocalFile(QDir::toNativeSeparators(filePath));
-        else
-            url = QUrl::fromLocalFile(filePath);
-#endif
-        QDesktopServices::openUrl(url);
-    }
 }
 
 void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progress)
