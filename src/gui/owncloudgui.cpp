@@ -312,29 +312,8 @@ void ownCloudGui::updateContextMenu()
 {
     _contextMenu->clear();
 
-    const auto &accountList = AccountManager::instance()->accounts();
-
-    bool atLeastOnePaused = false;
-    for (auto *f : FolderMan::instance()->folders()) {
-        if (f->syncPaused()) {
-            atLeastOnePaused = true;
-            break;
-        }
-    }
-
     _contextMenu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotShowSettings);
     _contextMenu->addSeparator();
-
-    if (accountList.isEmpty()) {
-        _contextMenu->addAction(tr("Create a new account"), this, &ownCloudGui::runAccountWizard);
-    } else {
-        if (atLeastOnePaused) {
-            _contextMenu->addAction(tr("Resume synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts(), false); });
-        } else {
-            _contextMenu->addAction(tr("Stop synchronization"), this, [this] { setPauseOnAllFoldersHelper(AccountManager::instance()->accounts(), true); });
-        }
-        _contextMenu->addSeparator();
-    }
 
     if (_app->debugMode()) {
         auto *debugMenu = _contextMenu->addMenu(QStringLiteral("Debug actions"));
@@ -432,18 +411,6 @@ void ownCloudGui::handleAccountSetupError(const QString &error)
 {
     QMessageBox::warning(_settingsDialog, tr("New account failure"),
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
-}
-
-void ownCloudGui::setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause)
-{
-    for (auto *f : FolderMan::instance()->folders()) {
-        if (accounts.contains(f->accountState())) {
-            f->setSyncPaused(pause);
-            if (pause) {
-                f->slotTerminateSync(tr("User paused sync for account '%1'").arg(f->accountState()->account()->displayNameWithHost()));
-            }
-        }
-    }
 }
 
 void ownCloudGui::slotShowSettings()

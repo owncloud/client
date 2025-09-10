@@ -104,7 +104,6 @@ public Q_SLOTS:
     void handleAccountSetupError(const QString &error);
 
 private:
-    void setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause);
     void setToolTip(const QString &tip) const;
 
     QSystemTrayIcon *_tray;
