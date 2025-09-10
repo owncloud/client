@@ -13,16 +13,15 @@
  */
 
 #pragma once
+
 #include "account.h"
 #include "gui/owncloudguilib.h"
 #include "progressdispatcher.h"
-#include "systray.h"
 
 #include <QObject>
 #include <QPointer>
-#include <QAction>
 #include <QMenu>
-#include <QSize>
+#include <QSystemTrayIcon>
 #include <QTimer>
 
 namespace OCC {
@@ -116,8 +115,9 @@ private:
     void setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause);
     void setupActions();
     void addAccountContextMenu(AccountState *accountState, QMenu *menu);
+    void setToolTip(const QString &tip) const;
 
-    Systray *_tray;
+    QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;
     // tray's menu
     // Refactoring todo: get rid of this scoped pointer - it is only reset on creating the menu and this seems to be used as the menu
