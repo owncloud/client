@@ -68,19 +68,19 @@ Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
 
 public Q_SLOTS:
-    void setupContextMenu();
-    void slotComputeOverallSyncStatus() const;
-    void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {}) const;
-    void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {}) const;
+    void setupTrayContextMenu();
+    void slotComputeOverallSyncStatus();
+    void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
+    void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowSettings();
-    void slotShutdown() const;
+    void slotShutdown();
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
-    void slotToggleLogBrowser() const;
+    void slotToggleLogBrowser();
     void slotOpenSettingsDialog();
     void slotHelp();
     void slotAbout();
-    void slotTrayMessageIfServerUnsupported(Account *account) const;
+    void slotTrayMessageIfServerUnsupported(Account *account);
 
     /**
      * Open a share dialog for a file or folder.
@@ -90,10 +90,10 @@ public Q_SLOTS:
      * to the folder).
      */
     void slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
-    void handleAccountSetupError(const QString &error) const;
+    void handleAccountSetupError(const QString &error);
 
 private:
-    QIcon getIcon(const SyncResult::Status &status) const;
+    QIcon getTrayStatusIcon(const SyncResult::Status &status) const;
 
     QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;

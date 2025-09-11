@@ -73,7 +73,7 @@ ownCloudGui::ownCloudGui(Application *parent)
     connect(_tray, &QSystemTrayIcon::activated,
         this, &ownCloudGui::slotTrayClicked);
 
-    setupContextMenu();
+    setupTrayContextMenu();
 
     // init systray
     slotComputeOverallSyncStatus();
@@ -141,7 +141,7 @@ void ownCloudGui::slotSyncStateChange(Folder *folder)
     qCInfo(lcApplication) << "Sync state changed for folder " << folder->remoteUrl().toString() << ": " << Utility::enumToDisplayName(result.status());
 }
 
-void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account) const
+void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account)
 {
     if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
         slotShowTrayMessage(tr("Unsupported Server Version"),
@@ -152,16 +152,16 @@ void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account) const
     }
 }
 
-QIcon ownCloudGui::getIcon(const SyncResult::Status &status) const
+QIcon ownCloudGui::getTrayStatusIcon(const SyncResult::Status &status) const
 {
     auto contextMenuVisible = _tray->contextMenu() && _tray->contextMenu()->isVisible();
     return Theme::instance()->themeTrayIcon(SyncResult{status}, contextMenuVisible);
 }
 
-void ownCloudGui::slotComputeOverallSyncStatus() const
+void ownCloudGui::slotComputeOverallSyncStatus()
 {
     auto status = trayOverallStatus();
-    const QIcon statusIcon = getIcon(status);
+    const QIcon statusIcon = getTrayStatusIcon(status);
     _tray->setIcon(statusIcon);
 }
 
@@ -170,7 +170,7 @@ SettingsDialog *ownCloudGui::settingsDialog() const
     return _settingsDialog;
 }
 
-void ownCloudGui::setupContextMenu()
+void ownCloudGui::setupTrayContextMenu()
 {
     // using the main windows (_settingsDialog) as parent for memory management
     auto menu = new QMenu(_settingsDialog);
@@ -214,12 +214,12 @@ void ownCloudGui::setupContextMenu()
     menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
 }
 
-void ownCloudGui::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon) const
+void ownCloudGui::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
 {
     _tray->showMessage(title, msg, icon.isNull() ? Resources::getCoreIcon(QStringLiteral("states/information")) : icon);
 }
 
-void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon) const
+void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
 {
     ConfigFile cfg;
     if (cfg.optionalDesktopNotifications()) {
@@ -252,7 +252,7 @@ void ownCloudGui::runAccountWizard()
         qDebug() << "wizard rejected";
 }
 
-void ownCloudGui::handleAccountSetupError(const QString &error) const
+void ownCloudGui::handleAccountSetupError(const QString &error)
 {
     QMessageBox::warning(_settingsDialog, tr("New account failure"),
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
@@ -263,7 +263,7 @@ void ownCloudGui::slotShowSettings()
     raise();
 }
 
-void ownCloudGui::slotShutdown() const
+void ownCloudGui::slotShutdown()
 {
     // explicitly close windows. This is somewhat of a hack to ensure
     // that saving the geometries happens ASAP during an OS shutdown
@@ -272,7 +272,7 @@ void ownCloudGui::slotShutdown() const
     _settingsDialog->close();
 }
 
-void ownCloudGui::slotToggleLogBrowser() const
+void ownCloudGui::slotToggleLogBrowser()
 {
     auto logBrowser = new LogBrowser(settingsDialog());
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
