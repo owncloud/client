@@ -51,6 +51,19 @@ using namespace std::chrono_literals;
 
 namespace OCC {
 
+// simple helper to compute the overall status for the tray icon
+SyncResult::Status trayOverallStatus()
+{
+    TrayOverallStatusResult result;
+    for (auto *folder : FolderMan::instance()->folders()) {
+        result.addResult(folder);
+    }
+    if (result.overallStatus().status() == SyncResult::Undefined) {
+        return SyncResult::Offline;
+    }
+    return result.overallStatus().status();
+}
+
 ownCloudGui::ownCloudGui(Application *parent)
     : QObject(parent)
     , _tray(new QSystemTrayIcon(this))
@@ -128,7 +141,7 @@ void ownCloudGui::slotSyncStateChange(Folder *folder)
     qCInfo(lcApplication) << "Sync state changed for folder " << folder->remoteUrl().toString() << ": " << Utility::enumToDisplayName(result.status());
 }
 
-void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account)
+void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account) const
 {
     if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
         slotShowTrayMessage(tr("Unsupported Server Version"),
@@ -147,42 +160,8 @@ QIcon ownCloudGui::getIcon(const SyncResult::Status &status) const
 
 void ownCloudGui::slotComputeOverallSyncStatus() const
 {
-    bool allSignedOut = true;
-    bool allPaused = true;
-    QVector<AccountState *> problemAccounts;
-
-    for (const auto &a : AccountManager::instance()->accounts()) {
-        if (!a->isSignedOut()) {
-            allSignedOut = false;
-        }
-        if (!a->isConnected()) {
-            problemAccounts.append(a);
-        }
-    }
-
-    const auto &map = FolderMan::instance()->folders();
-    for (auto *f : map) {
-        if (!f->syncPaused()) {
-            allPaused = false;
-        }
-    }
-
-    if (!problemAccounts.empty()) {
-        _tray->setIcon(getIcon(SyncResult::Status::Offline));
-        return;
-    }
-
-    if (allSignedOut) {
-        _tray->setIcon(getIcon(SyncResult::Status::Offline));
-        return;
-    }
-    if (allPaused) {
-        _tray->setIcon(getIcon(SyncResult::Paused));
-        return;
-    }
-
-    auto trayOverallStatusResult = FolderMan::trayOverallStatus(map);
-    const QIcon statusIcon = getIcon(trayOverallStatusResult.overallStatus().status());
+    auto status = trayOverallStatus();
+    const QIcon statusIcon = getIcon(status);
     _tray->setIcon(statusIcon);
 }
 

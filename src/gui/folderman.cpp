@@ -65,9 +65,15 @@ void TrayOverallStatusResult::addResult(Folder *f)
         lastSyncDone = time;
     }
 
+    // use status of the older
     auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()
         ? SyncResult::Paused
         : f->syncResult().status();
+    // in case the linked account is not connected -> we are offline
+    if (!f->accountState()->isConnected()) {
+        status = SyncResult::Offline;
+    }
+    // undefined state means we are in trouble
     if (status == SyncResult::Undefined) {
         status = SyncResult::Problem;
     }
@@ -727,19 +733,6 @@ void FolderMan::setDirtyNetworkLimits()
             f->setDirtyNetworkLimits();
         }
     }
-}
-
-TrayOverallStatusResult FolderMan::trayOverallStatus(const QVector<Folder *> &folders)
-{
-    TrayOverallStatusResult result;
-
-    // if one of them has an error -> show error
-    // if one is paused, but others ok, show ok
-    //
-    for (auto *folder : folders) {
-        result.addResult(folder);
-    }
-    return result;
 }
 
 // QFileInfo::canonicalPath returns an empty string if the file does not exist.

@@ -80,7 +80,7 @@ public Q_SLOTS:
     void slotOpenSettingsDialog();
     void slotHelp();
     void slotAbout();
-    void slotTrayMessageIfServerUnsupported(Account *account);
+    void slotTrayMessageIfServerUnsupported(Account *account) const;
 
     /**
      * Open a share dialog for a file or folder.

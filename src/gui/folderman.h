@@ -230,12 +230,6 @@ public:
     static bool ensureJournalGone(const QString &journalDbFile);
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
-    /**
-     * Compute status summarizing multiple folders
-     * @return tuple containing folders, status, unresolvedConflicts and lastSyncDone
-     */
-    static TrayOverallStatusResult trayOverallStatus(const QVector<Folder *> &folders);
-
     SocketApi *socketApi();
 
     /**

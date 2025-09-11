@@ -133,6 +133,7 @@ void Application::lastAccountStateRemoved() const
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     // Hook up the GUI slots to the account state's Q_SIGNALS:
+    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
     connect(accountState->account().data(), &Account::serverVersionChanged, _gui.data(),
         [account = accountState->account().data(), this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
