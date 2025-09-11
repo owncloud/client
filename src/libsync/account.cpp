@@ -141,10 +141,7 @@ AccountPtr Account::sharedFromThis()
 
 QString Account::davUser() const
 {
-    // todo: DC-128 this does not work in the tests. apparently they only have davUser in the creds :/
-    Q_ASSERT(!_davUser.isEmpty());
     return _davUser;
-    // return _davUser.isEmpty() ? _credentials->user() : _davUser;
 }
 
 QIcon Account::avatar() const
@@ -232,12 +229,6 @@ void Account::setCredentials(AbstractCredentials *cred)
     }
 
     _credentials = cred;
-
-
-    // todo:: DC-128 this should not be but could not easily remove it yet. The account should be passed to creds via ctr as with
-    // new Credentials impl. Furthermore, the account should ideally create the creds itself, but again, the tests rely on this setCredentials
-    // impl to avoid having an abstraction for the account so it can create it's fake creds in the tests
-    // cred->setAccount(this);
 
     _am = _credentials->createAccessManager();
 

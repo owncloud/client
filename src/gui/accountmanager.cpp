@@ -104,10 +104,10 @@ bool AccountManager::restore()
     }
 
     const auto &childGroups = settings->childGroups();
-    for (const auto &accountId : childGroups) {
-        settings->beginGroup(accountId);
+    for (const auto &accountIndex : childGroups) {
+        settings->beginGroup(accountIndex);
         if (auto acc = loadAccountHelper(*settings)) {
-            acc->_groupIndex = accountId;
+            acc->_groupIndex = accountIndex;
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
                 addAccountState(std::move(accState));
             }
@@ -353,7 +353,9 @@ void AccountManager::deleteAccount(AccountState *account)
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }
 
-    // todo: DC-128 try moving these to the account::cleanupForRemoval routine
+    // todo: DC-150 try moving these to the account::cleanupForRemoval routine. I'm worried that calling these
+    // after the accountRemoved/accountsChanged signals could cause problems, as we had when I put those notifications
+    // at the start
     // Forget account credentials, cookies
     account->account()->credentials()->forgetSensitiveData();
     account->account()->credentialManager()->clear();
@@ -387,10 +389,10 @@ void AccountManager::shutdown()
     }
 }
 
-bool AccountManager::isAccountIndexAvailable(const QString &id) const
+bool AccountManager::isAccountIndexAvailable(const QString &index) const
 {
     for (const auto &acc : _accounts) {
-        if (acc->account()->groupIndex() == id) {
+        if (acc->account()->groupIndex() == index) {
             return false;
         }
     }
@@ -402,9 +404,9 @@ QString AccountManager::generateFreeAccountIndex() const
 {
     int i = 0;
     while (true) {
-        QString id = QString::number(i);
-        if (isAccountIndexAvailable(id)) {
-            return id;
+        QString index = QString::number(i);
+        if (isAccountIndexAvailable(index)) {
+            return index;
         }
         ++i;
     }

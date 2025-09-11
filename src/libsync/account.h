@@ -97,6 +97,12 @@ public:
     AccountPtr sharedFromThis();
 
     /**
+     *  The unique identifier for the account.
+     *  This value is immutable after construction
+     */
+    QUuid uuid() const;
+
+    /**
      * The user associated with the account.
      * This value is immutable after construction.
      *
@@ -207,8 +213,6 @@ public:
     AccessManager *accessManager();
 
     JobQueue *jobQueue();
-
-    QUuid uuid() const;
 
     CredentialManager *credentialManager() const;
 

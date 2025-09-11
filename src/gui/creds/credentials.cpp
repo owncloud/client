@@ -353,9 +353,8 @@ void Credentials::invalidateToken()
         return;
     }
 
-    // todo: DC-128 decide what to do with this "http" part of the cred keys. AFAIK this should
-    // only be associated with this credential type, and we hope to abandon that...let's see
-    // but it should probably be "migrated" to some new creds id with the rest of the changes
+    // i hoped we could change this to a new, more useful identifier but since the value is related to what is in the keychain, I don't
+    // think this can be changed easily so I'm leaving it for now.
     _account->credentialManager()->clear("http");
 
     // let QNAM forget about the previous credentials it may have been using

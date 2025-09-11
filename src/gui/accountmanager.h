@@ -121,7 +121,7 @@ private:
     void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
     AccountPtr loadAccountHelper(QSettings &settings);
 
-    bool isAccountIndexAvailable(const QString &id) const;
+    bool isAccountIndexAvailable(const QString &index) const;
     QString generateFreeAccountIndex() const;
 
     // Adds an account to the tracked list, emitting accountAdded()
