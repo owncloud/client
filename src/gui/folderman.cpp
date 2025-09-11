@@ -65,7 +65,7 @@ void TrayOverallStatusResult::addResult(Folder *f)
         lastSyncDone = time;
     }
 
-    // use status of the older
+    // use status of the folder
     auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()
         ? SyncResult::Paused
         : f->syncResult().status();

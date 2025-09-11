@@ -60,7 +60,7 @@ public:
      */
     static void raise();
 
-    [[nodiscard]] SettingsDialog *settingsDialog() const;
+    SettingsDialog *settingsDialog() const;
 
     void runAccountWizard();
 
@@ -93,7 +93,7 @@ public Q_SLOTS:
     void handleAccountSetupError(const QString &error) const;
 
 private:
-    [[nodiscard]] QIcon getIcon(const SyncResult::Status &status) const;
+    QIcon getIcon(const SyncResult::Status &status) const;
 
     QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;

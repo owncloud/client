@@ -172,6 +172,7 @@ SettingsDialog *ownCloudGui::settingsDialog() const
 
 void ownCloudGui::setupContextMenu()
 {
+    // using the main windows (_settingsDialog) as parent for memory management
     auto menu = new QMenu(_settingsDialog);
     menu->setTitle(Theme::instance()->appNameGUI());
 
