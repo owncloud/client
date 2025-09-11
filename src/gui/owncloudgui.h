@@ -17,10 +17,11 @@
 #include "account.h"
 #include "gui/owncloudguilib.h"
 #include "progressdispatcher.h"
+#include "syncresult.h"
 
+#include <QMenu>
 #include <QObject>
 #include <QPointer>
-#include <QMenu>
 #include <QSystemTrayIcon>
 
 namespace OCC {
@@ -59,10 +60,7 @@ public:
      */
     static void raise();
 
-    /// Whether the tray menu is visible
-    bool contextMenuVisible() const;
-
-    SettingsDialog *settingsDialog() const;
+    [[nodiscard]] SettingsDialog *settingsDialog() const;
 
     void runAccountWizard();
 
@@ -71,20 +69,17 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void setupContextMenu();
-    void slotComputeOverallSyncStatus();
-    void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
-    void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
-    void slotUpdateProgress(Folder *folder, const ProgressInfo &progress);
-    void slotFoldersChanged();
+    void slotComputeOverallSyncStatus() const;
+    void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {}) const;
+    void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {}) const;
     void slotShowSettings();
-    void slotShutdown();
+    void slotShutdown() const;
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
-    void slotToggleLogBrowser();
+    void slotToggleLogBrowser() const;
     void slotOpenSettingsDialog();
     void slotHelp();
     void slotAbout();
-    void slotAccountStateChanged();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
     /**
@@ -95,9 +90,10 @@ public Q_SLOTS:
      * to the folder).
      */
     void slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
-    void handleAccountSetupError(const QString &error);
+    void handleAccountSetupError(const QString &error) const;
 
 private:
+    [[nodiscard]] QIcon getIcon(const SyncResult::Status &status) const;
 
     QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;

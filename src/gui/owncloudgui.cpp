@@ -71,11 +71,6 @@ ownCloudGui::ownCloudGui(Application *parent)
     // or a dep that is instantiated inside the class (also with a member kept)
     // in cases like this one, the external deps should be instantiated externally and connected externally. This is normally part
     // of an app building routine. The global singletons have to go and this is an important step to achieving that.
-
-    ProgressDispatcher *pd = ProgressDispatcher::instance();
-    connect(pd, &ProgressDispatcher::progressInfo, this,
-        &ownCloudGui::slotUpdateProgress);
-
     FolderMan *folderMan = FolderMan::instance();
     connect(folderMan, &FolderMan::folderSyncStateChange,
         this, &ownCloudGui::slotSyncStateChange);
@@ -118,8 +113,6 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
         slotOpenSettingsDialog();
 #endif
     }
-    // FIXME: Also make sure that any auto updater dialogue https://github.com/owncloud/client/issues/5613
-    // or SSL error dialog also comes to front.
 }
 
 void ownCloudGui::slotSyncStateChange(Folder *folder)
@@ -135,16 +128,6 @@ void ownCloudGui::slotSyncStateChange(Folder *folder)
     qCInfo(lcApplication) << "Sync state changed for folder " << folder->remoteUrl().toString() << ": " << Utility::enumToDisplayName(result.status());
 }
 
-void ownCloudGui::slotFoldersChanged()
-{
-    slotComputeOverallSyncStatus();
-}
-
-void ownCloudGui::slotAccountStateChanged()
-{
-    slotComputeOverallSyncStatus();
-}
-
 void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account)
 {
     if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
@@ -156,10 +139,14 @@ void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account)
     }
 }
 
-void ownCloudGui::slotComputeOverallSyncStatus()
+QIcon ownCloudGui::getIcon(const SyncResult::Status &status) const
 {
-    auto getIcon = [this](const SyncResult &result) { return Theme::instance()->themeTrayIcon(result, contextMenuVisible()); };
-    auto getIconFromStatus = [getIcon](const SyncResult::Status &status) { return getIcon(SyncResult{status}); };
+    auto contextMenuVisible = _tray->contextMenu() && _tray->contextMenu()->isVisible();
+    return Theme::instance()->themeTrayIcon(SyncResult{status}, contextMenuVisible);
+}
+
+void ownCloudGui::slotComputeOverallSyncStatus() const
+{
     bool allSignedOut = true;
     bool allPaused = true;
     QVector<AccountState *> problemAccounts;
@@ -181,32 +168,27 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     }
 
     if (!problemAccounts.empty()) {
-        _tray->setIcon(getIconFromStatus(SyncResult::Status::Offline));
+        _tray->setIcon(getIcon(SyncResult::Status::Offline));
         return;
     }
 
     if (allSignedOut) {
-        _tray->setIcon(getIconFromStatus(SyncResult::Status::Offline));
+        _tray->setIcon(getIcon(SyncResult::Status::Offline));
         return;
     }
     if (allPaused) {
-        _tray->setIcon(getIconFromStatus(SyncResult::Paused));
+        _tray->setIcon(getIcon(SyncResult::Paused));
         return;
     }
 
     auto trayOverallStatusResult = FolderMan::trayOverallStatus(map);
-    const QIcon statusIcon = getIcon(trayOverallStatusResult.overallStatus());
+    const QIcon statusIcon = getIcon(trayOverallStatusResult.overallStatus().status());
     _tray->setIcon(statusIcon);
 }
 
 SettingsDialog *ownCloudGui::settingsDialog() const
 {
     return _settingsDialog;
-}
-
-bool ownCloudGui::contextMenuVisible() const
-{
-    return _tray->contextMenu() && _tray->contextMenu()->isVisible();
 }
 
 void ownCloudGui::setupContextMenu()
@@ -252,24 +234,16 @@ void ownCloudGui::setupContextMenu()
     menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
 }
 
-void ownCloudGui::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
+void ownCloudGui::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon) const
 {
     _tray->showMessage(title, msg, icon.isNull() ? Resources::getCoreIcon(QStringLiteral("states/information")) : icon);
 }
 
-void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
+void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon) const
 {
     ConfigFile cfg;
     if (cfg.optionalDesktopNotifications()) {
         slotShowTrayMessage(title, msg, icon);
-    }
-}
-
-void ownCloudGui::slotUpdateProgress(Folder *folder, const ProgressInfo &progress)
-{
-    if (progress.status() == ProgressInfo::Discovery) {
-    } else if (progress.status() == ProgressInfo::Done) {
-        QTimer::singleShot(2s, this, &ownCloudGui::slotComputeOverallSyncStatus);
     }
 }
 
@@ -298,7 +272,7 @@ void ownCloudGui::runAccountWizard()
         qDebug() << "wizard rejected";
 }
 
-void ownCloudGui::handleAccountSetupError(const QString &error)
+void ownCloudGui::handleAccountSetupError(const QString &error) const
 {
     QMessageBox::warning(_settingsDialog, tr("New account failure"),
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
@@ -309,16 +283,16 @@ void ownCloudGui::slotShowSettings()
     raise();
 }
 
-void ownCloudGui::slotShutdown()
+void ownCloudGui::slotShutdown() const
 {
     // explicitly close windows. This is somewhat of a hack to ensure
-    // that saving the geometries happens ASAP during a OS shutdown
+    // that saving the geometries happens ASAP during an OS shutdown
 
     // those do delete on close
     _settingsDialog->close();
 }
 
-void ownCloudGui::slotToggleLogBrowser()
+void ownCloudGui::slotToggleLogBrowser() const
 {
     auto logBrowser = new LogBrowser(settingsDialog());
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
