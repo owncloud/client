@@ -204,9 +204,9 @@ void Account::setDavDisplayName(const QString &newDisplayName)
     }
 }
 
-QString Account::id() const
+QString Account::groupIndex() const
 {
-    return _id;
+    return _groupIndex;
 }
 
 AbstractCredentials *Account::credentials() const

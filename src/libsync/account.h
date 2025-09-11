@@ -138,8 +138,8 @@ public:
     QString initials() const;
     QGradient::Preset avatarGradient() const;
 
-    /// The internal id of the account.
-    Q_DECL_DEPRECATED_X("Use uuid") QString id() const;
+    /// The value used to group the account's setttings
+    QString groupIndex() const;
 
     QString hostName() const;
 
@@ -246,8 +246,6 @@ Q_SIGNALS:
     // the signal exists on the Account object as the Approvider itself can change during runtime
     void appProviderErrorOccured(const QString &error);
 
-    // void urlChanged();
-
 private:
     // directory all newly created accounts store their various caches in
     static QString _customCommonCacheDirectory;
@@ -256,7 +254,7 @@ private:
     void setSharedThis(AccountPtr sharedThis);
 
     QWeakPointer<Account> _sharedThis;
-    QString _id;
+    QString _groupIndex;
     QUuid _uuid;
     QString _davUser;
     QString _displayName;

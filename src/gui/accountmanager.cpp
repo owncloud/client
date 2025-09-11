@@ -107,7 +107,7 @@ bool AccountManager::restore()
     for (const auto &accountId : childGroups) {
         settings->beginGroup(accountId);
         if (auto acc = loadAccountHelper(*settings)) {
-            acc->_id = accountId;
+            acc->_groupIndex = accountId;
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
                 addAccountState(std::move(accState));
             }
@@ -151,12 +151,11 @@ void AccountManager::save()
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
-// todo: DC-128 I think this save creds thing needs to go. we only persist the refresh token and that should be handled by the creds directly
 void AccountManager::saveAccount(Account *account)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->beginGroup(account->id());
+    settings->beginGroup(account->groupIndex());
 
     settings->setValue(urlC(), account->_url.toString());
     settings->setValue(davUserC(), account->_davUser);
@@ -324,11 +323,11 @@ AccountState *AccountManager::accountState(const QUuid uuid)
 
 AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
 {
-    auto id = newAccount->id();
-    if (id.isEmpty() || !isAccountIdAvailable(id)) {
-        id = generateFreeAccountId();
+    auto id = newAccount->groupIndex();
+    if (id.isEmpty() || !isAccountIndexAvailable(id)) {
+        id = generateFreeAccountIndex();
     }
-    newAccount->_id = id;
+    newAccount->_groupIndex = id;
 
 
     return addAccountState(AccountState::fromNewAccount(newAccount));
@@ -360,7 +359,7 @@ void AccountManager::deleteAccount(AccountState *account)
     account->account()->credentialManager()->clear();
 
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->remove(account->account()->id());
+    settings->remove(account->account()->groupIndex());
 
     // when called this way the gui stuff gets cleaned up eventually, though not as quickly as I would expect. Still it works
     // better than having these calls at the start.
@@ -388,24 +387,23 @@ void AccountManager::shutdown()
     }
 }
 
-bool AccountManager::isAccountIdAvailable(const QString &id) const
+bool AccountManager::isAccountIndexAvailable(const QString &id) const
 {
     for (const auto &acc : _accounts) {
-        if (acc->account()->id() == id) {
+        if (acc->account()->groupIndex() == id) {
             return false;
         }
     }
-    if (_additionalBlockedAccountIds.contains(id))
-        return false;
+
     return true;
 }
 
-QString AccountManager::generateFreeAccountId() const
+QString AccountManager::generateFreeAccountIndex() const
 {
     int i = 0;
     while (true) {
         QString id = QString::number(i);
-        if (isAccountIdAvailable(id)) {
+        if (isAccountIndexAvailable(id)) {
             return id;
         }
         ++i;

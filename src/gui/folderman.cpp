@@ -165,12 +165,9 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
     qCInfo(lcFolderMan) << "Setup folders from settings file";
 
     for (const auto &account : AccountManager::instance()->accounts()) {
-        // ignore the deprecation warning on account()->id() for now. It's basically a zero based index relative to
-        // the account instances. It looks fragile to me but Erik said "don't touch it!" I'm guessing it would
-        // require some migration step at least to switch from this id to the preferred uuid
-        const auto accountId = account->account()->id();
-        Q_ASSERT(!accountId.isEmpty());
-        if (!accountsWithSettings.contains(accountId)) {
+        const auto accountIndex = account->account()->groupIndex();
+        Q_ASSERT(!accountIndex.isEmpty());
+        if (!accountsWithSettings.contains(accountIndex)) {
             qCWarning(lcFolderMan) << "Account id from account manager is missing from Config";
             continue;
         }
@@ -194,7 +191,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 
 bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState *account)
 {
-    settings.beginGroup(QStringLiteral("%1/Folders").arg(account->account()->id()));
+    settings.beginGroup(QStringLiteral("%1/Folders").arg(account->account()->groupIndex()));
 
     const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
@@ -421,7 +418,7 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
         return;
     }
     QSettings settings = ConfigFile::makeQSettings();
-    QString accountGroup = QStringLiteral("Accounts/%1").arg(accountState->account()->id());
+    QString accountGroup = QStringLiteral("Accounts/%1").arg(accountState->account()->groupIndex());
     settings.beginGroup(accountGroup);
     QList<Folder *> foldersToRemove;
     // reserve a magic number
@@ -455,7 +452,7 @@ void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
 void FolderMan::removeFolderSettings(Folder *folder)
 {
     QSettings settings = ConfigFile::makeQSettings();
-    QString accountGroup = QStringLiteral("Accounts/%1").arg(folder->accountState()->account()->id());
+    QString accountGroup = QStringLiteral("Accounts/%1").arg(folder->accountState()->account()->groupIndex());
     settings.beginGroup(accountGroup);
     removeFolderSettings(folder, settings);
 }
@@ -610,7 +607,7 @@ void FolderMan::saveFolder(Folder *folder, QSettings &settings)
     Q_ASSERT(settings.group() == QStringLiteral("Accounts"));
 
     auto strId = QString::fromUtf8(folder->definition().id());
-    QString targetGroup = QStringLiteral("%1/Folders/%2").arg(folder->accountState()->account()->id(), strId);
+    QString targetGroup = QStringLiteral("%1/Folders/%2").arg(folder->accountState()->account()->groupIndex(), strId);
     settings.beginGroup(targetGroup);
     FolderDefinition::save(settings, folder->definition());
     settings.endGroup();

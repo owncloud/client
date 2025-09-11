@@ -569,7 +569,7 @@ Account *AccountState::accountForQml() const
 std::unique_ptr<QSettings> AccountState::settings()
 {
     auto s = ConfigFile::settingsWithGroup(QStringLiteral("Accounts"));
-    s->beginGroup(_account->id());
+    s->beginGroup(_account->groupIndex());
     return s;
 }
 

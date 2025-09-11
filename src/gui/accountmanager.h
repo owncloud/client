@@ -102,17 +102,6 @@ public:
 
     bool accountForLoginExists(const QUrl &url, const QString &davUser) const;
 
-private:
-    // saving and loading Account to settings
-    void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
-    AccountPtr loadAccountHelper(QSettings &settings);
-
-    bool isAccountIdAvailable(const QString &id) const;
-    QString generateFreeAccountId() const;
-
-    // Adds an account to the tracked list, emitting accountAdded()
-    AccountState *addAccountState(std::unique_ptr<AccountState> &&accountState);
-
 public Q_SLOTS:
     /// Saves account data, not including the credentials
     void saveAccount(Account *account /*, bool saveCredentials*/);
@@ -128,9 +117,17 @@ Q_SIGNALS:
     void accountsChanged();
 
 private:
+    // saving and loading Account to settings
+    void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
+    AccountPtr loadAccountHelper(QSettings &settings);
+
+    bool isAccountIndexAvailable(const QString &id) const;
+    QString generateFreeAccountIndex() const;
+
+    // Adds an account to the tracked list, emitting accountAdded()
+    AccountState *addAccountState(std::unique_ptr<AccountState> &&accountState);
+
     AccountManager() {}
     QMap<QUuid, AccountState *> _accounts;
-    /// Account ids from settings that weren't read
-    QSet<QString> _additionalBlockedAccountIds;
 };
 }
