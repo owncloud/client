@@ -137,7 +137,8 @@ SocketApi::SocketApi(QObject *parent)
     SocketApiServer::removeServer(_socketPath);
 
     // Create the socket path:
-    if (!Utility::isMac()) {
+    if (!Utility::isMac() && !Utility::isWindows()) {
+        // Not on Windows: a named pipe doesn't need a directory in the filesystem
         // Not on macOS: there the directory is there, and created for us by the sandboxing
         // environment, because we belong to an App Group.
         QFileInfo info(_socketPath);
