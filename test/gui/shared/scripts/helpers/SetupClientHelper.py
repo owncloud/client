@@ -7,7 +7,7 @@ import test
 import psutil
 import squish
 
-from helpers.ConfigHelper import get_config, set_config, is_windows
+from helpers.ConfigHelper import get_config, set_config, is_windows, is_owncloud_client
 from helpers.ReportHelper import is_video_enabled
 from helpers.UserHelper import get_username_for_user
 from helpers.api.provisioning import created_users
@@ -41,7 +41,7 @@ def get_client_details(details):
         elif row[0] == 'user':
             client_details.update({'user': get_username_for_user(row[1])})
         elif row[0] == 'password':
-            if get_config('client_name') != 'ownCloud':
+            if not is_owncloud_client():
                 for created_user in created_users.values():
                     if created_user['username'] == client_details['user']:
                         client_details.update({'password': created_user['password']})
