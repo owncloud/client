@@ -722,7 +722,6 @@ void SocketApi::command_GET_STRINGS(const QString &argument, SocketListener *lis
         { QStringLiteral("SHARE_MENU_TITLE"), tr("Share...") },
         { QStringLiteral("CONTEXT_MENU_TITLE"), Theme::instance()->appNameGUI() },
         { QStringLiteral("COPY_PRIVATE_LINK_MENU_TITLE"), tr("Copy private link to clipboard") },
-        { QStringLiteral("EMAIL_PRIVATE_LINK_MENU_TITLE"), tr("Send private link by email...") },
     } };
     listener->sendMessage(QStringLiteral("GET_STRINGS:BEGIN"));
     for (auto key_value : strings) {
