@@ -95,16 +95,6 @@ public:
      */
     void deleteAccount(AccountState *account);
 
-
-    /**
-     * Creates an account and sets up some basic handlers.
-     * Does *not* add the account to the account manager just yet.
-     */
-
-    // todo: #28 - this has to be updated - it only works in tandem with the loadAccountHelper and should not even
-    //  be public. also, any create account scheme *should* register the new instance in the account manager
-    static AccountPtr createAccount(const QUuid &uuid);
-
     /**
      * Returns a sorted list of displayNames
      */

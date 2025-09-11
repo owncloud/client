@@ -51,9 +51,11 @@ QString Account::commonCacheDirectory()
     return _customCommonCacheDirectory;
 }
 
-Account::Account(const QUuid &uuid, QObject *parent)
+Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent)
     : QObject(parent)
     , _uuid(uuid)
+    , _davUser(user)
+    , _url(url)
     , _capabilities({}, {})
     , _jobQueue(this)
     , _queueGuard(&_jobQueue)
@@ -79,9 +81,9 @@ Account::Account(const QUuid &uuid, QObject *parent)
     _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
 }
 
-AccountPtr Account::create(const QUuid &uuid)
+AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
 {
-    AccountPtr acc = AccountPtr(new Account(uuid));
+    AccountPtr acc = AccountPtr(new Account(uuid, user, url));
     acc->setSharedThis(acc);
     return acc;
 }
@@ -143,17 +145,6 @@ QString Account::davUser() const
     Q_ASSERT(!_davUser.isEmpty());
     return _davUser;
     // return _davUser.isEmpty() ? _credentials->user() : _davUser;
-}
-
-// DC-128 - this needs to be removed as the davUser is immutable.
-// replace with arg to account ctr to ensure we always have a userId and that it set only ONCE
-void Account::setDavUser(const QString &newDavUser)
-{
-    if (_davUser == newDavUser) {
-        return;
-    }
-    _davUser = newDavUser;
-    Q_EMIT wantsAccountSaved(this);
 }
 
 QIcon Account::avatar() const
@@ -318,14 +309,6 @@ void Account::addApprovedCerts(const QSet<QSslCertificate> &certs)
     Q_EMIT wantsAccountSaved(this);
 }
 
-void Account::setUrl(const QUrl &url)
-{
-    if (_url != url) {
-        _url = url;
-        Q_EMIT urlChanged();
-    }
-}
-
 QUrl Account::url() const
 {
     return _url;
@@ -400,6 +383,8 @@ QString Account::defaultSyncRoot() const
 {
     return _defaultSyncRoot;
 }
+// todo: #43 this seems to be used as a quasi switch for filtering oc10 from spaces support but needs more investigation
+// if we need to eg update the sync root because it is not yet set, use defaultSyncRoot.isEmpty, not this thing.
 bool Account::hasDefaultSyncRoot() const
 {
     return !_defaultSyncRoot.isEmpty();

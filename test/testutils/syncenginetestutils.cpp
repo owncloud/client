@@ -790,14 +790,12 @@ OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccountWithFileSup
     // ensure we have an instance of folder man
     std::ignore = OCC::TestUtils::folderMan();
     // don't use the account manager to create the account, it would try to use widgets
-    auto acc = OCC::Account::create(QUuid::createUuid());
+    auto acc = OCC::Account::create(QUuid::createUuid(), QStringLiteral("admin"), QUrl(QStringLiteral("http://localhost/owncloud")));
 
     // todo: #41
     FakeAM *am = new FakeAM(intialRoot, nullptr);
     auto creds = new FakeCredentials(acc.get(), am, acc.get());
     acc->setCredentials(creds);
-    acc->setDavUser(QStringLiteral("admin"));
-    acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
     acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
     acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});
 
@@ -809,11 +807,9 @@ OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccount()
     // ensure we have an instance of folder man
     std::ignore = OCC::TestUtils::folderMan();
     // don't use the account manager to create the account, it would try to use widgets
-    auto acc = OCC::Account::create(QUuid::createUuid());
+    auto acc = OCC::Account::create(QUuid::createUuid(), QStringLiteral("admin"), QUrl(QStringLiteral("http://localhost/owncloud")));
     auto creds = new FakeCredentials(acc.get(), acc.get());
     acc->setCredentials(creds);
-    acc->setDavUser(QStringLiteral("admin"));
-    acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
     acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
     acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});
 

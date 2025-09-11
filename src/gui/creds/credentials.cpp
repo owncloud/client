@@ -98,7 +98,6 @@ AccessManager *Credentials::createAccessManager() const
 {
     AccessManager *am = new CredentialsAccessManager(this);
 
-    // todo: DC-128 - try to figure out whether this ultimately ends up invoking askFromUser
     connect(am, &QNetworkAccessManager::authenticationRequired, this, &Credentials::slotAuthentication);
 
     return am;

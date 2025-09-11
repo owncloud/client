@@ -21,10 +21,10 @@
 #include "appprovider.h"
 #include "capabilities.h"
 #include "jobqueue.h"
-#include "resources/resources.h"
 
 #include <QByteArray>
 #include <QGradient>
+#include <QIcon>
 #include <QNetworkAccessManager>
 #include <QNetworkCookie>
 #include <QNetworkDiskCache>
@@ -71,14 +71,14 @@ class OWNCLOUDSYNC_EXPORT Account : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QUuid uid READ uuid CONSTANT)
-    Q_PROPERTY(QString davUser MEMBER _davUser)
+    Q_PROPERTY(QString davUser READ davUser CONSTANT)
     Q_PROPERTY(QString davDisplayName READ davDisplayName NOTIFY displayNameChanged)
     Q_PROPERTY(QString displayNameWithHost READ displayNameWithHost NOTIFY displayNameChanged)
     Q_PROPERTY(QString initials READ initials NOTIFY displayNameChanged)
-    Q_PROPERTY(QString hostName READ hostName NOTIFY urlChanged)
+    Q_PROPERTY(QString hostName READ hostName CONSTANT)
     Q_PROPERTY(bool hasAvatar READ hasAvatar NOTIFY avatarChanged)
     Q_PROPERTY(QGradient::Preset avatarGradient READ avatarGradient NOTIFY displayNameChanged)
-    Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
+    Q_PROPERTY(QUrl url READ url CONSTANT)
     QML_ELEMENT
     QML_UNCREATABLE("Only created in the C++ code")
 
@@ -89,7 +89,7 @@ public:
     static void setCommonCacheDirectory(const QString &directory);
     static QString commonCacheDirectory();
 
-    static AccountPtr create(const QUuid &uuid);
+    static AccountPtr create(const QUuid &uuid, const QString &user, const QUrl &url);
     ~Account() override;
 
     void cleanupForRemoval();
@@ -97,25 +97,27 @@ public:
     AccountPtr sharedFromThis();
 
     /**
-     * The user that can be used in dav url.
+     * The user associated with the account.
+     * This value is immutable after construction.
      *
-     * This can very well be different frome the login user that's
-     * stored in credentials()->user().
-     *
-     * todo: DC-112 now that we are only using oauth I don't think that is true. the davUser is THE user and isn't even in play wrt the auth credentials.
-     * unfortunately the tests do not seem to define the dave user
      */
     QString davUser() const;
-    void setDavUser(const QString &newDavUser);
+
+    /**
+     * url is the user endpoint for the account
+     * This value is immutable after construction.
+     */
+    QUrl url() const;
 
     /***
-     * With spaces this will be the default folder containing all spaces.
+     * This is the default folder containing all spaces.
      */
     QString defaultSyncRoot() const;
 
     /***
      * Whether we have defaultSyncRoot defined.
      */
+    // todo: #43
     bool hasDefaultSyncRoot() const;
 
     /***
@@ -139,9 +141,6 @@ public:
     /// The internal id of the account.
     Q_DECL_DEPRECATED_X("Use uuid") QString id() const;
 
-    /** Server url of the account */
-    void setUrl(const QUrl &url);
-    QUrl url() const;
     QString hostName() const;
 
     /**
@@ -247,13 +246,13 @@ Q_SIGNALS:
     // the signal exists on the Account object as the Approvider itself can change during runtime
     void appProviderErrorOccured(const QString &error);
 
-    void urlChanged();
+    // void urlChanged();
 
 private:
     // directory all newly created accounts store their various caches in
     static QString _customCommonCacheDirectory;
 
-    Account(const QUuid &uuid, QObject *parent = nullptr);
+    Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent = nullptr);
     void setSharedThis(AccountPtr sharedThis);
 
     QWeakPointer<Account> _sharedThis;

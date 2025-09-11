@@ -120,10 +120,8 @@ bool AccountManager::restore()
   
 AccountPtr AccountManager::createAccount(const NewAccountModel &model)
 {
-    auto newAccountPtr = Account::create(QUuid::createUuid());
+    auto newAccountPtr = Account::create(QUuid::createUuid(), model.davUser(), model.effectiveUserInfoUrl());
 
-    newAccountPtr->setUrl(model.effectiveUserInfoUrl());
-    newAccountPtr->setDavUser(model.davUser());
     newAccountPtr->setDavDisplayName(model.displayName());
 
     Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
@@ -226,13 +224,19 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    auto urlConfig = settings.value(urlC());
+    QVariant urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
         return AccountPtr();
     }
+    QString user = settings.value(davUserC()).toString();
+    if (user.isEmpty()) {
+        qCWarning(lcAccountManager) << "No user name provided for account " << settings.group();
+        return AccountPtr();
+    }
     QUrl url = urlConfig.toUrl();
+
     QVariantMap capsValue = settings.value(capabilitesC()).value<QVariantMap>();
     Capabilities caps(url, capsValue);
     QUuid uid = settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid();
@@ -272,12 +276,9 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     }
 
 
-    auto acc = createAccount(uid);
+    auto acc = Account::create(uid, user, url);
 
-    acc->setUrl(url);
-
-    acc->_davUser = settings.value(davUserC()).toString();
-    acc->_displayName = settings.value(davUserDisplyNameC()).toString();
+    acc->setDavDisplayName(settings.value(davUserDisplyNameC()).toString());
     acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
@@ -376,12 +377,6 @@ void AccountManager::deleteAccount(AccountState *account)
 
     if (_accounts.isEmpty())
         Q_EMIT lastAccountRemoved();
-}
-
-AccountPtr AccountManager::createAccount(const QUuid &uuid)
-{
-    AccountPtr acc = Account::create(uuid);
-    return acc;
 }
 
 void AccountManager::shutdown()
