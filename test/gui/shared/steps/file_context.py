@@ -324,6 +324,8 @@ def step(context, user, file_name):
     if not is_owncloud_client():
         user = get_username_for_user(user)
     file_path = get_resource_path(file_name, user)
+    if not os.path.exists(file_path):
+        raise ValueError(f'Could not find resource {file_path}')
     test.compare(can_read(file_path), True, 'File should be readable')
 
 
@@ -341,6 +343,8 @@ def step(context, user, file_name):
     if not is_owncloud_client():
         user = get_username_for_user(user)
     file_path = get_resource_path(file_name, user)
+    if not os.path.exists(file_path):
+        raise ValueError(f'Could not find resource {file_path}')
     test.compare(not can_write(file_path), True, 'File should not be writable')
 
 
