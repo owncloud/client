@@ -13,13 +13,13 @@
  */
 
 
-#include "issueswidget.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "commonstrings.h"
 #include "expandingheaderview.h"
 #include "folder.h"
 #include "folderman.h"
+#include "syncerrorwidget.h"
 #include "libsync/configfile.h"
 #include "models/models.h"
 #include "localactivitywidget.h"
@@ -30,7 +30,7 @@
 #include <QActionGroup>
 #include <QTimer>
 
-#include "ui_issueswidget.h"
+#include "ui_syncerrorwidget.h"
 
 namespace {
 bool persistsUntilLocalDiscovery(const OCC::ProtocolItem &data)
@@ -185,16 +185,16 @@ private:
  * to avoid performance issues around sorting this many issues.
  */
 
-IssuesWidget::IssuesWidget(QWidget *parent)
+SyncErrorWidget::SyncErrorWidget(QWidget *parent)
     : QWidget(parent)
-    , _ui(new Ui::IssuesWidget)
+    , _ui(new Ui::SyncErrorWidget)
 {
     _ui->setupUi(this);
 
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo,
-        this, &IssuesWidget::slotProgressInfo);
+        this, &SyncErrorWidget::slotProgressInfo);
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted,
-        this, &IssuesWidget::slotItemCompleted);
+        this, &SyncErrorWidget::slotItemCompleted);
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::syncError,
         this, [this](Folder *folder, const QString &message, ErrorCategory) {
             auto item = SyncFileItemPtr::create();
@@ -213,10 +213,10 @@ IssuesWidget::IssuesWidget(QWidget *parent)
 
     _model = new ProtocolItemModel(20000, true, this);
     _sortModel = new Models::SignalledQSortFilterProxyModel(this);
-    connect(_sortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &IssuesWidget::filterDidChange);
+    connect(_sortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &SyncErrorWidget::filterDidChange);
     _sortModel->setSourceModel(_model);
     _statusSortModel = new SyncFileItemStatusSetSortFilterProxyModel(this); // Note: this will restore a previously set filter, if there was one.
-    connect(_statusSortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &IssuesWidget::filterDidChange);
+    connect(_statusSortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &SyncErrorWidget::filterDidChange);
     _statusSortModel->setSourceModel(_sortModel);
     _statusSortModel->setSortRole(Qt::DisplayRole); // Sorting should be done based on the text in the column cells, but...
     _statusSortModel->setFilterRole(Models::UnderlyingDataRole); // ... filtering should be done on the underlying enum value.
@@ -229,7 +229,7 @@ IssuesWidget::IssuesWidget(QWidget *parent)
     header->setExpandingColumn(static_cast<int>(ProtocolItemModel::ProtocolItemRole::Action));
     header->setSortIndicator(static_cast<int>(ProtocolItemModel::ProtocolItemRole::Time), Qt::DescendingOrder);
 
-    connect(_ui->_tableView, &QTableView::customContextMenuRequested, this, &IssuesWidget::slotItemContextMenu);
+    connect(_ui->_tableView, &QTableView::customContextMenuRequested, this, &SyncErrorWidget::slotItemContextMenu);
     _ui->_tableView->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(header, &QHeaderView::customContextMenuRequested, this, [this, header]() {
         auto menu = showFilterMenu(header);
@@ -263,12 +263,12 @@ IssuesWidget::IssuesWidget(QWidget *parent)
     });
 }
 
-IssuesWidget::~IssuesWidget()
+SyncErrorWidget::~SyncErrorWidget()
 {
     delete _ui;
 }
 
-QMenu *IssuesWidget::showFilterMenu(QWidget *parent)
+QMenu *SyncErrorWidget::showFilterMenu(QWidget *parent)
 {
     auto menu = new QMenu(parent);
     menu->setAttribute(Qt::WA_DeleteOnClose);
@@ -290,7 +290,7 @@ QMenu *IssuesWidget::showFilterMenu(QWidget *parent)
     return menu;
 }
 
-void IssuesWidget::addResetFiltersAction(QMenu *menu, const QList<std::function<void()>> &resetFunctions)
+void SyncErrorWidget::addResetFiltersAction(QMenu *menu, const QList<std::function<void()>> &resetFunctions)
 {
     menu->addAction(QCoreApplication::translate("OCC::Models", "Reset Filters"), [resetFunctions]() {
         for (const auto &reset : resetFunctions) {
@@ -299,7 +299,7 @@ void IssuesWidget::addResetFiltersAction(QMenu *menu, const QList<std::function<
     });
 }
 
-void IssuesWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progress)
+void SyncErrorWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progress)
 {
     if (progress.status() == ProgressInfo::Reconcile) {
         // Wipe all non-persistent entries - as well as the persistent ones
@@ -348,14 +348,14 @@ void IssuesWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progress
     }
 }
 
-void IssuesWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &item)
+void SyncErrorWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &item)
 {
     if (!item->showInIssuesTab())
         return;
     _model->addProtocolItem(ProtocolItem { folder, item });
 }
 
-void IssuesWidget::filterDidChange()
+void SyncErrorWidget::filterDidChange()
 {
     // We have two filters here: the filter by status (which can have multiple items checked *off*...
     int filterCount = _statusSortModel->filterCount();
@@ -367,7 +367,7 @@ void IssuesWidget::filterDidChange()
     _ui->_filterButton->setText(filterCount > 0 ? CommonStrings::filterButtonText(filterCount) : tr("Filter"));
 }
 
-void IssuesWidget::slotItemContextMenu(const QPoint &pos)
+void SyncErrorWidget::slotItemContextMenu(const QPoint &pos)
 {
     auto rows = _ui->_tableView->selectionModel()->selectedRows();
     for (int i = 0; i < rows.size(); ++i) {
@@ -378,7 +378,7 @@ void IssuesWidget::slotItemContextMenu(const QPoint &pos)
     LocalActivityWidget::showContextMenu(this, _ui->_tableView, _sortModel, _model, rows, pos);
 }
 
-std::function<void(void)> IssuesWidget::addStatusFilter(QMenu *menu)
+std::function<void(void)> SyncErrorWidget::addStatusFilter(QMenu *menu)
 {
     menu->addAction(QCoreApplication::translate("OCC::Models", "Status Filter:"))->setEnabled(false);
 

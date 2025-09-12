@@ -19,7 +19,7 @@ class Activity:
         "visible": 1,
     }
     NOT_SYNCED_TABLE = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_IssuesWidget_OCC_IssuesWidget,
+        "container": names.qt_tabwidget_stackedwidget_OCC_SyncErrorWidget_OCC_SyncErrorWidget,
         "name": "_tableView",
         "type": "QTableView",
         "visible": 1,
@@ -43,7 +43,7 @@ class Activity:
         "visible": 1,
     }
     NOT_SYNCED_FILTER_BUTTON = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_IssuesWidget_OCC_IssuesWidget,
+        "container": names.qt_tabwidget_stackedwidget_OCC_SyncErrorWidget_OCC_SyncErrorWidget,
         "name": "_filterButton",
         "type": "QPushButton",
         "visible": 1,
@@ -62,7 +62,7 @@ class Activity:
         "visible": 1,
     }
     NOT_SYNCED_ACTIVITY_TABLE_HEADER_SELECTOR = {
-        "container": names.oCC_IssuesWidget_tableView_QTableView,
+        "container": names.oCC_SyncErrorWidget_tableView_QTableView,
         "name": "ActivityErrorListHeaderV2",
         "orientation": 1,
         "type": "OCC::ExpandingHeaderView",

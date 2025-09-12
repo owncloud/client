@@ -29,19 +29,19 @@ namespace Models {
 }
 
 namespace Ui {
-    class IssuesWidget;
+    class SyncErrorWidget;
 }
 
 /**
- * @brief The LocalActivityWidget class
+ * @brief The SyncErrorWidget class
  * @ingroup gui
  */
-class IssuesWidget : public QWidget
+class SyncErrorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit IssuesWidget(QWidget *parent = nullptr);
-    ~IssuesWidget() override;
+    explicit SyncErrorWidget(QWidget *parent = nullptr);
+    ~SyncErrorWidget() override;
 
 public Q_SLOTS:
     void slotProgressInfo(Folder *folder, const ProgressInfo &progress);
@@ -63,6 +63,6 @@ private:
     Models::SignalledQSortFilterProxyModel *_sortModel;
     SyncFileItemStatusSetSortFilterProxyModel *_statusSortModel;
 
-    Ui::IssuesWidget *_ui;
+    Ui::SyncErrorWidget *_ui;
 };
 }

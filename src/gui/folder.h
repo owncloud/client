@@ -437,9 +437,9 @@ private Q_SLOTS:
 
     void slotLogPropagationStart();
 
-    /** Adjust sync result based on conflict data from IssuesWidget.
+    /** Adjust sync result based on conflict data from SyncErrorWidget.
      *
-     * This is pretty awkward, but IssuesWidget just keeps better track
+     * This is pretty awkward, but SyncErrorWidget just keeps better track
      * of conflicts across partial local discovery.
      */
     void slotFolderConflicts(Folder *folder, const QStringList &conflictPaths);

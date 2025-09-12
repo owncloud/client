@@ -14,9 +14,9 @@
 
 
 #include "activitysettings.h"
-#include "issueswidget.h"
 #include "localactivitywidget.h"
 #include "resources.h"
+#include "syncerrorwidget.h"
 
 #include <QHBoxLayout>
 #include <QTabWidget>
@@ -36,10 +36,10 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     _localActivityWidget = new LocalActivityWidget(this);
     _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
-    _issuesWidget = new IssuesWidget(this);
-    _syncIssueTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
+    _issuesWidget = new SyncErrorWidget(this);
+    _syncErrorTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
     slotShowIssueItemCount(0); // to display the label.
-    connect(_issuesWidget, &IssuesWidget::issueCountUpdated, this, &ActivitySettings::slotShowIssueItemCount);
+    connect(_issuesWidget, &SyncErrorWidget::issueCountUpdated, this, &ActivitySettings::slotShowIssueItemCount);
 
     // We want the local activity tab to be the default
     _tab->setCurrentIndex(_localActivityTabId);
@@ -56,6 +56,6 @@ void ActivitySettings::slotShowIssueItemCount(const int cnt)
         //: %1 is the number of not synced files.
         cntText = tr("Not Synced (%1)").arg(cnt);
     }
-    _tab->setTabText(_syncIssueTabId, cntText);
+    _tab->setTabText(_syncErrorTabId, cntText);
 }
 }
