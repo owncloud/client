@@ -11,6 +11,7 @@ from helpers.ConfigHelper import get_config, is_windows, set_config
 from helpers.SyncHelper import (
     wait_for_resource_to_sync,
     wait_for_resource_to_have_sync_error,
+    wait_for_initial_sync_to_complete,
 )
 from helpers.SetupClientHelper import (
     get_temp_resource_path,
@@ -24,6 +25,8 @@ from helpers.UserHelper import get_displayname_for_user
 @When('using sync connection folder "|any|"')
 def step(context, sync_folder):
     set_config('syncConnectionName', sync_folder)
+    # wait for files to sync
+    wait_for_initial_sync_to_complete(get_resource_path('/', space=sync_folder))
 
 
 @Given('the user has paused the file sync')
