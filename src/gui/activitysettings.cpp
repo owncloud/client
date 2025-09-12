@@ -13,16 +13,16 @@
  */
 
 
-#include "activitywidget.h"
+#include "activitysettings.h"
 #include "issueswidget.h"
 #include "protocolwidget.h"
+#include "resources.h"
 
 #include <QHBoxLayout>
 #include <QTabWidget>
 
 
 namespace OCC {
-
 ActivitySettings::ActivitySettings(QWidget *parent)
     : QWidget(parent)
 {
@@ -46,7 +46,11 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     _tab->setCurrentIndex(_localActivityTabId);
 }
 
-void ActivitySettings::slotShowIssueItemCount(int cnt)
+ActivitySettings::~ActivitySettings()
+{
+}
+
+void ActivitySettings::slotShowIssueItemCount(const int cnt)
 {
     QString cntText = tr("Not Synced");
     if (cnt) {
@@ -54,9 +58,5 @@ void ActivitySettings::slotShowIssueItemCount(int cnt)
         cntText = tr("Not Synced (%1)").arg(cnt);
     }
     _tab->setTabText(_syncIssueTabId, cntText);
-}
-
-ActivitySettings::~ActivitySettings()
-{
 }
 }
