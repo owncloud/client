@@ -104,10 +104,10 @@ bool AccountManager::restore()
     }
 
     const auto &childGroups = settings->childGroups();
-    for (const auto &accountId : childGroups) {
-        settings->beginGroup(accountId);
+    for (const auto &accountIndex : childGroups) {
+        settings->beginGroup(accountIndex);
         if (auto acc = loadAccountHelper(*settings)) {
-            acc->_id = accountId;
+            acc->_groupIndex = accountIndex;
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
                 addAccountState(std::move(accState));
             }
@@ -120,10 +120,8 @@ bool AccountManager::restore()
   
 AccountPtr AccountManager::createAccount(const NewAccountModel &model)
 {
-    auto newAccountPtr = Account::create(QUuid::createUuid());
+    auto newAccountPtr = Account::create(QUuid::createUuid(), model.davUser(), model.effectiveUserInfoUrl());
 
-    newAccountPtr->setUrl(model.effectiveUserInfoUrl());
-    newAccountPtr->setDavUser(model.davUser());
     newAccountPtr->setDavDisplayName(model.displayName());
 
     Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
@@ -144,21 +142,20 @@ AccountPtr AccountManager::createAccount(const NewAccountModel &model)
     return newAccountPtr;
 }
 
-void AccountManager::save(bool saveCredentials)
+void AccountManager::save()
 {
     for (const auto &acc : std::as_const(_accounts)) {
-        saveAccount(acc->account().data(), saveCredentials);
+        saveAccount(acc->account().data());
     }
 
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
-// todo: DC-112 I think this save creds thing needs to go. we only persist the refresh token and that should be handled by the creds directly
-void AccountManager::saveAccount(Account *account, bool saveCredentials)
+void AccountManager::saveAccount(Account *account)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->beginGroup(account->id());
+    settings->beginGroup(account->groupIndex());
 
     settings->setValue(urlC(), account->_url.toString());
     settings->setValue(davUserC(), account->_davUser);
@@ -169,15 +166,6 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
     }
     if (account->hasDefaultSyncRoot()) {
         settings->setValue(defaultSyncRootC(), account->defaultSyncRoot());
-    }
-    if (account->_credentials) {
-        if (saveCredentials) {
-            // Only persist the credentials if the parameter is set, on migration from 1.8.x
-            // we want to save the accounts but not overwrite the credentials
-            // (This is easier than asynchronously fetching the credentials from keychain and then
-            // re-persisting them)
-            account->_credentials->persist();
-        }
     }
 
     // Save accepted certificates.
@@ -235,13 +223,19 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    auto urlConfig = settings.value(urlC());
+    QVariant urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
         return AccountPtr();
     }
+    QString user = settings.value(davUserC()).toString();
+    if (user.isEmpty()) {
+        qCWarning(lcAccountManager) << "No user name provided for account " << settings.group();
+        return AccountPtr();
+    }
     QUrl url = urlConfig.toUrl();
+
     QVariantMap capsValue = settings.value(capabilitesC()).value<QVariantMap>();
     Capabilities caps(url, capsValue);
     QUuid uid = settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid();
@@ -281,12 +275,9 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     }
 
 
-    auto acc = createAccount(uid);
+    auto acc = Account::create(uid, user, url);
 
-    acc->setUrl(url);
-
-    acc->_davUser = settings.value(davUserC()).toString();
-    acc->_displayName = settings.value(davUserDisplyNameC()).toString();
+    acc->setDavDisplayName(settings.value(davUserDisplyNameC()).toString());
     acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
@@ -332,11 +323,11 @@ AccountState *AccountManager::accountState(const QUuid uuid)
 
 AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
 {
-    auto id = newAccount->id();
-    if (id.isEmpty() || !isAccountIdAvailable(id)) {
-        id = generateFreeAccountId();
+    auto id = newAccount->groupIndex();
+    if (id.isEmpty() || !isAccountIndexAvailable(id)) {
+        id = generateFreeAccountIndex();
     }
-    newAccount->_id = id;
+    newAccount->_groupIndex = id;
 
 
     return addAccountState(AccountState::fromNewAccount(newAccount));
@@ -362,12 +353,15 @@ void AccountManager::deleteAccount(AccountState *account)
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }
 
+    // todo: DC-150 try moving these to the account::cleanupForRemoval routine. I'm worried that calling these
+    // after the accountRemoved/accountsChanged signals could cause problems, as we had when I put those notifications
+    // at the start
     // Forget account credentials, cookies
     account->account()->credentials()->forgetSensitiveData();
     account->account()->credentialManager()->clear();
 
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->remove(account->account()->id());
+    settings->remove(account->account()->groupIndex());
 
     // when called this way the gui stuff gets cleaned up eventually, though not as quickly as I would expect. Still it works
     // better than having these calls at the start.
@@ -386,12 +380,6 @@ void AccountManager::deleteAccount(AccountState *account)
         Q_EMIT lastAccountRemoved();
 }
 
-AccountPtr AccountManager::createAccount(const QUuid &uuid)
-{
-    AccountPtr acc = Account::create(uuid);
-    return acc;
-}
-
 void AccountManager::shutdown()
 {
     const auto accounts = std::move(_accounts);
@@ -401,25 +389,24 @@ void AccountManager::shutdown()
     }
 }
 
-bool AccountManager::isAccountIdAvailable(const QString &id) const
+bool AccountManager::isAccountIndexAvailable(const QString &index) const
 {
     for (const auto &acc : _accounts) {
-        if (acc->account()->id() == id) {
+        if (acc->account()->groupIndex() == index) {
             return false;
         }
     }
-    if (_additionalBlockedAccountIds.contains(id))
-        return false;
+
     return true;
 }
 
-QString AccountManager::generateFreeAccountId() const
+QString AccountManager::generateFreeAccountIndex() const
 {
     int i = 0;
     while (true) {
-        QString id = QString::number(i);
-        if (isAccountIdAvailable(id)) {
-            return id;
+        QString index = QString::number(i);
+        if (isAccountIndexAvailable(index)) {
+            return index;
         }
         ++i;
     }
@@ -436,9 +423,7 @@ AccountState *AccountManager::addAccountState(std::unique_ptr<AccountState> &&ac
     auto *rawAccount = statePtr->account().get();
     // this slot can't be connected until the account state exists because saveAccount uses the state
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
-        // persist the account, not the credentials, we don't know whether they are ready yet
-        // Refactoring todo: how about we make those two completely different saves? then we can ditch this lambda
-        saveAccount(rawAccount, false);
+        saveAccount(rawAccount);
     });
 
     Q_EMIT accountAdded(statePtr);
