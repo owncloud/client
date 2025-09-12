@@ -81,7 +81,7 @@ class TestAdaptersAM : public FakeAM
 
 public:
     TestAdaptersAM(const QUrl &urlWithoutPath, const QString &authToken = {})
-        : FakeAM({}, nullptr)
+        : FakeAM(nullptr)
         , _urlWithoutPath(urlWithoutPath)
         , _authToken(authToken)
     {

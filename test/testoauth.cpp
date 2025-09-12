@@ -131,12 +131,13 @@ public:
 
     virtual std::unique_ptr<AccountBasedOAuth> prepareOauth()
     {
-        fakeAm = new FakeAM({}, nullptr);
-        account = Account::create(QUuid::createUuid());
-        account->setUrl(sOpenIdBaseURL);
+        fakeAm = new FakeAM(nullptr);
+        account = Account::create(QUuid::createUuid(), "admin", sOpenIdBaseURL);
+
         // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
         // therefore, we should never call fakeAm->setThis(...)
-        account->setCredentials(new FakeCredentials { fakeAm });
+        // Lisa todo: ???
+        account->setCredentials(new FakeCredentials(account.get(), fakeAm, account.get()));
         fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
             if (req.url().path().endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 return this->wellKnownReply(op, req);
