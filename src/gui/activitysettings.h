@@ -36,7 +36,6 @@ public:
     explicit ActivitySettings(QWidget *parent = nullptr);
     ~ActivitySettings() override;
 
-
 private Q_SLOTS:
     void slotShowIssueItemCount(int cnt);
 

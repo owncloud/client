@@ -17,7 +17,7 @@
 
 #include "accountmanager.h"
 #include "accountsettings.h"
-#include "activitywidget.h"
+#include "activitysettings.h"
 #include "application.h"
 #include "configfile.h"
 #include "generalsettings.h"
