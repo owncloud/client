@@ -17,8 +17,8 @@
 
 #include "account.h"
 #include "activitysettings.h"
-#include "issueswidget.h"
 #include "localactivitywidget.h"
+#include "syncerrorwidget.h"
 #include "theme.h"
 
 #include <climits>
@@ -37,10 +37,10 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     _localActivityWidget = new LocalActivityWidget(this);
     _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
-    _issuesWidget = new IssuesWidget(this);
+    _issuesWidget = new SyncErrorWidget(this);
     _syncIssueTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
     slotShowIssueItemCount(0); // to display the label.
-    connect(_issuesWidget, &IssuesWidget::issueCountUpdated,
+    connect(_issuesWidget, &SyncErrorWidget::issueCountUpdated,
         this, &ActivitySettings::slotShowIssueItemCount);
 
     // We want the protocol be the default
