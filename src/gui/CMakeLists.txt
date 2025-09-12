@@ -9,7 +9,7 @@ set(client_UI_SRCS
     ignorelisteditor.ui
     networksettings.ui
     localactivitywidget.ui
-    issueswidget.ui
+    syncerrorwidget.ui
     settingsdialog.ui
     sharedialog.ui
     sharelinkwidget.ui
@@ -47,7 +47,7 @@ set(client_SRCS
     owncloudgui.cpp
     localactivitywidget.cpp
     protocolitem.cpp
-    issueswidget.cpp
+    syncerrorwidget.cpp
     activitysettings.cpp
     selectivesyncwidget.cpp
     settingsdialog.cpp

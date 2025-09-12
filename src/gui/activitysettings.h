@@ -21,7 +21,7 @@ class QTabWidget;
 namespace OCC {
 
 class LocalActivityWidget;
-class IssuesWidget;
+class SyncErrorWidget;
 
 /**
  * @brief The ActivitySettings class
@@ -41,10 +41,10 @@ private Q_SLOTS:
 
 private:
     QTabWidget *_tab = nullptr;
-    int _syncIssueTabId = -1;
+    int _syncErrorTabId = -1;
     int _localActivityTabId = -1;
 
     LocalActivityWidget *_localActivityWidget = nullptr;
-    IssuesWidget *_issuesWidget = nullptr;
+    SyncErrorWidget *_issuesWidget = nullptr;
 };
 }
