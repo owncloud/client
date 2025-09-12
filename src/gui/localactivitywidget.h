@@ -15,10 +15,8 @@
 #pragma once
 
 #include <QDialog>
-#include <QDateTime>
 #include <QLocale>
 
-#include "progressdispatcher.h"
 #include "owncloudgui.h"
 #include "models/protocolitemmodel.h"
 
@@ -30,19 +28,19 @@ class QTableView;
 namespace OCC {
 
 namespace Ui {
-    class ProtocolWidget;
+    class LocalActivityWidget;
 }
 
 /**
- * @brief The ProtocolWidget class
+ * @brief The LocalActivityWidget class
  * @ingroup gui
  */
-class ProtocolWidget : public QWidget
+class LocalActivityWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProtocolWidget(QWidget *parent = nullptr);
-    ~ProtocolWidget() override;
+    explicit LocalActivityWidget(QWidget *parent = nullptr);
+    ~LocalActivityWidget() override;
 
     // these absolutely do not belong here. move them to an independent impl which can be shared between the protocolWidget and the issuesWidget
     static void showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
@@ -59,6 +57,6 @@ private Q_SLOTS:
 private:
     ProtocolItemModel *_model;
     Models::SignalledQSortFilterProxyModel *_sortModel;
-    Ui::ProtocolWidget *_ui;
+    Ui::LocalActivityWidget *_ui;
 };
 }

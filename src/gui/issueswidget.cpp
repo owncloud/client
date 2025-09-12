@@ -22,7 +22,7 @@
 #include "folderman.h"
 #include "libsync/configfile.h"
 #include "models/models.h"
-#include "protocolwidget.h"
+#include "localactivitywidget.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
 #include "theme.h"
@@ -375,7 +375,7 @@ void IssuesWidget::slotItemContextMenu(const QPoint &pos)
         rows[i] = _sortModel->mapToSource(rows[i]);
     }
     // WHAT IS THIS?!
-    ProtocolWidget::showContextMenu(this, _ui->_tableView, _sortModel, _model, rows, pos);
+    LocalActivityWidget::showContextMenu(this, _ui->_tableView, _sortModel, _model, rows, pos);
 }
 
 std::function<void(void)> IssuesWidget::addStatusFilter(QMenu *menu)

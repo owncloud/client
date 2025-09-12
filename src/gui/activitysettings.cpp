@@ -15,7 +15,7 @@
 
 #include "activitysettings.h"
 #include "issueswidget.h"
-#include "protocolwidget.h"
+#include "localactivitywidget.h"
 #include "resources.h"
 
 #include <QHBoxLayout>
@@ -33,9 +33,8 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     hbox->addWidget(_tab);
     setLayout(hbox);
 
-    // todo: rename ProtocolWidget to, oh I don't know...LocalActivityWidget?
-    _protocolWidget = new ProtocolWidget(this);
-    _localActivityTabId = _tab->addTab(_protocolWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
+    _localActivityWidget = new LocalActivityWidget(this);
+    _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
     _issuesWidget = new IssuesWidget(this);
     _syncIssueTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
