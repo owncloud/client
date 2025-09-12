@@ -44,9 +44,6 @@ public:
 
     const QSet<QString> &selectiveSyncBlackList() const;
 
-private Q_SLOTS:
-    void virtualFilesCheckboxClicked();
-
 private:
     SelectiveSyncWidget *_selectiveSync;
     QCheckBox *_virtualFilesCheckBox = nullptr;
