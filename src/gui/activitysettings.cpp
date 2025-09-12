@@ -18,7 +18,7 @@
 #include "account.h"
 #include "activitysettings.h"
 #include "issueswidget.h"
-#include "protocolwidget.h"
+#include "localactivitywidget.h"
 #include "theme.h"
 
 #include <climits>
@@ -34,8 +34,8 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     // create a tab widget for the three activity views
     _tab = new QTabWidget(this);
     hbox->addWidget(_tab);
-    _protocolWidget = new ProtocolWidget(this);
-    _tab->addTab(_protocolWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
+    _localActivityWidget = new LocalActivityWidget(this);
+    _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
     _issuesWidget = new IssuesWidget(this);
     _syncIssueTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());

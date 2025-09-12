@@ -12,12 +12,7 @@
  * for more details.
  */
 
-#ifndef PROTOCOLWIDGET_H
-#define PROTOCOLWIDGET_H
-
-#include <QDialog>
-#include <QDateTime>
-#include <QLocale>
+#pragma once
 
 #include "progressdispatcher.h"
 #include "owncloudgui.h"
@@ -35,20 +30,20 @@ namespace OCC {
 class ExpandingHeaderView;
 
 namespace Ui {
-    class ProtocolWidget;
+    class LocalActivityWidget;
 }
 class Application;
 
 /**
- * @brief The ProtocolWidget class
+ * @brief The LocalActivityWidget class
  * @ingroup gui
  */
-class ProtocolWidget : public QWidget
+class LocalActivityWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProtocolWidget(QWidget *parent = nullptr);
-    ~ProtocolWidget() override;
+    explicit LocalActivityWidget(QWidget *parent = nullptr);
+    ~LocalActivityWidget() override;
 
     static void showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
         const QModelIndexList &items, const QPoint &pos);
@@ -64,7 +59,6 @@ private Q_SLOTS:
 private:
     ProtocolItemModel *_model;
     Models::SignalledQSortFilterProxyModel *_sortModel;
-    Ui::ProtocolWidget *_ui;
+    Ui::LocalActivityWidget *_ui;
 };
 }
-#endif // PROTOCOLWIDGET_H

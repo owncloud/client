@@ -8,7 +8,7 @@ set(client_UI_SRCS
     generalsettings.ui
     ignorelisteditor.ui
     networksettings.ui
-    protocolwidget.ui
+    localactivitywidget.ui
     issueswidget.ui
     settingsdialog.ui
     sharedialog.ui
@@ -45,7 +45,7 @@ set(client_SRCS
     ocssharejob.cpp
     openfilemanager.cpp
     owncloudgui.cpp
-    protocolwidget.cpp
+    localactivitywidget.cpp
     protocolitem.cpp
     issueswidget.cpp
     activitysettings.cpp

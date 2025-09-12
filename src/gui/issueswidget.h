@@ -38,7 +38,7 @@ namespace Ui {
 class Application;
 
 /**
- * @brief The ProtocolWidget class
+ * @brief The LocalActivityWidget class
  * @ingroup gui
  */
 class IssuesWidget : public QWidget

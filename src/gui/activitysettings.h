@@ -21,14 +21,14 @@ class QTabWidget;
 
 namespace OCC {
 
-class ProtocolWidget;
+class LocalActivityWidget;
 class IssuesWidget;
 
 /**
  * @brief The ActivitySettings class
  * @ingroup gui
  *
- * Implements a tab for the settings dialog, displaying the three activity
+ * Implements a tab for the settings dialog, displaying the two activity
  * lists.
  */
 class ActivitySettings : public QWidget
@@ -48,7 +48,7 @@ private:
     QTabWidget *_tab;
     int _syncIssueTabId;
 
-    ProtocolWidget *_protocolWidget;
+    LocalActivityWidget *_localActivityWidget;
     IssuesWidget *_issuesWidget;
 };
 }
