@@ -150,23 +150,7 @@ public:
 
     bool shareAPI() const;
     bool sharePublicLink() const;
-    bool sharePublicLinkAllowUpload() const;
-    bool sharePublicLinkSupportsUploadOnly() const;
 
-    /** Whether read-only link shares require a password.
-     *
-     * Returns sharePublicLinkEnforcePassword() if the fine-grained
-     * permission isn't available.
-     */
-    bool sharePublicLinkEnforcePasswordForReadOnly() const;
-    bool sharePublicLinkEnforcePasswordForReadWrite() const;
-    bool sharePublicLinkEnforcePasswordForUploadOnly() const;
-
-    bool sharePublicLinkDefaultExpire() const;
-    int sharePublicLinkDefaultExpireDateDays() const;
-    bool sharePublicLinkEnforceExpireDate() const;
-    bool sharePublicLinkMultiple() const;
-    bool shareResharing() const;
     /** Remote Poll interval.
      *
      *  returns the requested poll interval in seconds to be used by the client.
