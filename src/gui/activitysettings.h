@@ -12,32 +12,43 @@
  * for more details.
  */
 
-#ifndef SERVERNOTIFICATIONHANDLER_H
-#define SERVERNOTIFICATIONHANDLER_H
+#pragma once
 
-#include <QtCore>
+#include "progressdispatcher.h"
+#include "models/models.h"
 
-#include "activitywidget.h"
-
-class QJsonDocument;
+class QTabWidget;
 
 namespace OCC {
 
-class ServerNotificationHandler : public QObject
+class LocalActivityWidget;
+class SyncErrorWidget;
+
+/**
+ * @brief The ActivitySettings class
+ * @ingroup gui
+ *
+ * Implements a tab for the settings dialog, displaying the two activity
+ * lists.
+ */
+class ActivitySettings : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ServerNotificationHandler(QObject *parent = nullptr);
-
-Q_SIGNALS:
-    void newNotificationList(ActivityList);
+    explicit ActivitySettings(QWidget *parent = nullptr);
+    ~ActivitySettings() override;
 
 public Q_SLOTS:
-    void slotFetchNotifications(AccountState *ptr);
+    void slotShowIssuesTab();
+
+private Q_SLOTS:
+    void slotShowIssueItemCount(int cnt);
 
 private:
-    void slotNotificationsReceived(JsonApiJob *job, AccountState *accountState);
+    QTabWidget *_tab;
+    int _syncIssueTabId;
+
+    LocalActivityWidget *_localActivityWidget;
+    SyncErrorWidget *_issuesWidget;
 };
 }
-
-#endif // SERVERNOTIFICATIONHANDLER_H

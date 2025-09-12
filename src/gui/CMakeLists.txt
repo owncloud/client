@@ -8,16 +8,14 @@ set(client_UI_SRCS
     generalsettings.ui
     ignorelisteditor.ui
     networksettings.ui
-    protocolwidget.ui
-    issueswidget.ui
-    activitywidget.ui
+    localactivitywidget.ui
+    syncerrorwidget.ui
     settingsdialog.ui
     sharedialog.ui
     sharelinkwidget.ui
     shareusergroupwidget.ui
     shareuserline.ui
     tlserrordialog.ui
-    notificationwidget.ui
     logbrowser.ui
 )
 
@@ -47,11 +45,10 @@ set(client_SRCS
     ocssharejob.cpp
     openfilemanager.cpp
     owncloudgui.cpp
-    protocolwidget.cpp
+    localactivitywidget.cpp
     protocolitem.cpp
-    issueswidget.cpp
-    activitydata.cpp
-    activitywidget.cpp
+    syncerrorwidget.cpp
+    activitysettings.cpp
     selectivesyncwidget.cpp
     settingsdialog.cpp
     sharedialog.cpp
@@ -62,9 +59,6 @@ set(client_SRCS
     tlserrordialog.cpp
     syncrunfilelog.cpp
     accountstate.cpp
-    notificationwidget.cpp
-    notificationconfirmjob.cpp
-    servernotificationhandler.cpp
     guiutility.cpp
     elidedlabel.cpp
     translations.cpp
@@ -75,7 +69,6 @@ set(client_SRCS
     creds/requestauthenticationcontroller.cpp
     creds/oauthhtmlpage.cpp
 
-    models/activitylistmodel.cpp
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
