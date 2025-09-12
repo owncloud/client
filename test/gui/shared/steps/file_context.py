@@ -322,6 +322,8 @@ def step(context, username, source, destination):
 @Then('user "|any|" should be able to open the file "|any|" on the file system')
 def step(context, user, file_name):
     file_path = get_resource_path(file_name, user)
+    if not os.path.exists(file_path):
+        raise ValueError(f'Could not find resource {file_path}')
     test.compare(can_read(file_path), True, 'File should be readable')
 
 
@@ -335,6 +337,8 @@ def step(context, user, file_name, content):
 @Then('user "|any|" should not be able to edit the file "|any|" on the file system')
 def step(context, user, file_name):
     file_path = get_resource_path(file_name, user)
+    if not os.path.exists(file_path):
+        raise ValueError(f'Could not find resource {file_path}')
     test.compare(not can_write(file_path), True, 'File should not be writable')
 
 
