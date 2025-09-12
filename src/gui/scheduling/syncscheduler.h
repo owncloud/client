@@ -54,8 +54,6 @@ public:
 
     void stop();
 
-    bool hasCurrentRunningSyncRunning() const;
-
     void setPauseSyncWhenMetered(bool pauseSyncWhenMetered);
 
 

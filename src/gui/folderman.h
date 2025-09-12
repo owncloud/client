@@ -22,7 +22,6 @@
 
 #include <QList>
 #include <QObject>
-#include <QQueue>
 
 namespace OCC {
 
@@ -231,15 +230,6 @@ public:
     static bool ensureJournalGone(const QString &journalDbFile);
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
-    /// Produce text for use in the tray tooltip
-    static QString trayTooltipStatusString(const SyncResult &result, bool paused);
-
-    /**
-     * Compute status summarizing multiple folders
-     * @return tuple containing folders, status, unresolvedConflicts and lastSyncDone
-     */
-    static TrayOverallStatusResult trayOverallStatus(const QVector<Folder *> &folders);
-
     SocketApi *socketApi();
 
     /**
@@ -263,14 +253,6 @@ public:
 
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
-
-    /**
-     * Returns true if any folder is currently syncing.
-     *
-     * This might be a FolderMan-scheduled sync, or a externally
-     * managed sync like a placeholder hydration.
-     */
-    bool isAnySyncRunning() const;
 
     /** Simple save and remove all folders on shut down */
     void unloadAndDeleteAllFolders();

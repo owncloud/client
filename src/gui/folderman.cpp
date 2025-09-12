@@ -65,9 +65,15 @@ void TrayOverallStatusResult::addResult(Folder *f)
         lastSyncDone = time;
     }
 
+    // use status of the folder
     auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()
         ? SyncResult::Paused
         : f->syncResult().status();
+    // in case the linked account is not connected -> we are offline
+    if (!f->accountState()->isConnected()) {
+        status = SyncResult::Offline;
+    }
+    // undefined state means we are in trouble
     if (status == SyncResult::Undefined) {
         status = SyncResult::Problem;
     }
@@ -475,19 +481,6 @@ void FolderMan::slotServerVersionChanged(Account *account)
     }
 }
 
-bool FolderMan::isAnySyncRunning() const
-{
-    if (_scheduler->hasCurrentRunningSyncRunning()) {
-        return true;
-    }
-
-    for (auto f : _folders) {
-        if (f->isSyncRunning())
-            return true;
-    }
-    return false;
-}
-
 void FolderMan::slotFolderSyncStarted()
 {
     auto f = qobject_cast<Folder *>(sender());
@@ -740,41 +733,6 @@ void FolderMan::setDirtyNetworkLimits()
             f->setDirtyNetworkLimits();
         }
     }
-}
-
-TrayOverallStatusResult FolderMan::trayOverallStatus(const QVector<Folder *> &folders)
-{
-    TrayOverallStatusResult result;
-
-    // if one of them has an error -> show error
-    // if one is paused, but others ok, show ok
-    //
-    for (auto *folder : folders) {
-        result.addResult(folder);
-    }
-    return result;
-}
-
-QString FolderMan::trayTooltipStatusString(const SyncResult &result, bool paused)
-{
-    QString folderMessage;
-    switch (result.status()) {
-    case SyncResult::Success:
-        [[fallthrough]];
-    case SyncResult::Problem:
-        if (result.hasUnresolvedConflicts()) {
-            folderMessage = tr("Sync was successful, unresolved conflicts.");
-            break;
-        }
-        [[fallthrough]];
-    default:
-        return Utility::enumToDisplayName(result.status());
-    }
-    if (paused) {
-        // sync is disabled.
-        folderMessage = tr("%1 (Sync is paused)").arg(folderMessage);
-    }
-    return folderMessage;
 }
 
 // QFileInfo::canonicalPath returns an empty string if the file does not exist.
