@@ -39,10 +39,10 @@ public:
     ~ActivitySettings() override;
 
 public Q_SLOTS:
-    void slotShowIssuesTab() const;
+    void slotShowIssuesTab();
 
 private Q_SLOTS:
-    void slotShowIssueItemCount(int cnt) const;
+    void slotShowIssueItemCount(int cnt);
 
 private:
     QTabWidget *_tab;

@@ -16,7 +16,7 @@
 #include <QtWidgets>
 
 #include "account.h"
-#include "activitywidget.h"
+#include "activitysettings.h"
 #include "issueswidget.h"
 #include "protocolwidget.h"
 #include "theme.h"
@@ -47,7 +47,11 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     _tab->setCurrentIndex(1);
 }
 
-void ActivitySettings::slotShowIssueItemCount(const int cnt) const
+ActivitySettings::~ActivitySettings()
+{
+}
+
+void ActivitySettings::slotShowIssueItemCount(const int cnt)
 {
     QString cntText = tr("Not Synced");
     if (cnt) {
@@ -57,14 +61,10 @@ void ActivitySettings::slotShowIssueItemCount(const int cnt) const
     _tab->setTabText(_syncIssueTabId, cntText);
 }
 
-void ActivitySettings::slotShowIssuesTab() const
+void ActivitySettings::slotShowIssuesTab()
 {
     if (_syncIssueTabId == -1)
         return;
     _tab->setCurrentIndex(_syncIssueTabId);
-}
-
-ActivitySettings::~ActivitySettings()
-{
 }
 }
