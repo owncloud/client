@@ -20,7 +20,7 @@ class QTabWidget;
 
 namespace OCC {
 
-class ProtocolWidget;
+class LocalActivityWidget;
 class IssuesWidget;
 
 /**
@@ -44,7 +44,7 @@ private:
     int _syncIssueTabId = -1;
     int _localActivityTabId = -1;
 
-    ProtocolWidget *_protocolWidget = nullptr;
+    LocalActivityWidget *_localActivityWidget = nullptr;
     IssuesWidget *_issuesWidget = nullptr;
 };
 }

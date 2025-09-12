@@ -16,8 +16,7 @@
 #include "account.h"
 #include "accountstate.h"
 #include "models.h"
-
-#include <QIcon>
+#include "resources.h"
 
 using namespace OCC;
 

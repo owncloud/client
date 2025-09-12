@@ -25,7 +25,7 @@ class Activity:
         "visible": 1,
     }
     LOCAL_ACTIVITY_FILTER_BUTTON = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_ProtocolWidget_OCC_ProtocolWidget,
+        "container": names.qt_tabwidget_stackedwidget_OCC_LocalActivityWidget_OCC_LocalActivityWidget,
         "name": "_filterButton",
         "type": "QPushButton",
         "visible": 1,
@@ -37,7 +37,7 @@ class Activity:
         "window": names.settings_OCC_SettingsDialog,
     }
     SYNCED_ACTIVITY_TABLE = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_ProtocolWidget_OCC_ProtocolWidget,
+        "container": names.qt_tabwidget_stackedwidget_OCC_LocalActivityWidget_OCC_LocalActivityWidget,
         "name": "_tableView",
         "type": "QTableView",
         "visible": 1,
@@ -55,7 +55,7 @@ class Activity:
         "window": names.settings_OCC_SettingsDialog,
     }
     SYNCED_ACTIVITY_TABLE_HEADER_SELECTOR = {
-        "container": names.oCC_ProtocolWidget_tableView_QTableView,
+        "container": names.oCC_LocalActivityWidget_tableView_QTableView,
         "name": "ActivityListHeaderV2",
         "orientation": 1,
         "type": "OCC::ExpandingHeaderView",
