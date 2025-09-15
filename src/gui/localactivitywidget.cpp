@@ -189,7 +189,7 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
     }
 
     menu->popup(table->mapToGlobal(pos));
-    menu->setFocus(); // For accassibility
+    menu->setFocus(); // For accessibility
 }
 
 void LocalActivityWidget::slotItemContextMenu(const QPoint &pos)

@@ -28,21 +28,21 @@ ActivitySettings::ActivitySettings(QWidget *parent)
 {
     QHBoxLayout *hbox = new QHBoxLayout(this);
 
-    // create a tab widget for the three activity views
+    // create a tab widget for the activity views
     _tab = new QTabWidget(this);
     hbox->addWidget(_tab);
     setLayout(hbox);
 
-    _localActivityWidget = new LocalActivityWidget(this);
-    _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
+    auto _localActivityWidget = new LocalActivityWidget(this);
+    auto localActivityTabId = _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
-    _issuesWidget = new SyncErrorWidget(this);
-    _syncErrorTabId = _tab->addTab(_issuesWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
+    auto _syncErrorWidget = new SyncErrorWidget(this);
+    _syncErrorTabId = _tab->addTab(_syncErrorWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
     slotShowIssueItemCount(0); // to display the label.
-    connect(_issuesWidget, &SyncErrorWidget::issueCountUpdated, this, &ActivitySettings::slotShowIssueItemCount);
+    connect(_syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, &ActivitySettings::slotShowIssueItemCount);
 
     // We want the local activity tab to be the default
-    _tab->setCurrentIndex(_localActivityTabId);
+    _tab->setCurrentIndex(localActivityTabId);
 }
 
 ActivitySettings::~ActivitySettings()
