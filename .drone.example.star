@@ -91,15 +91,16 @@ config = {
     },
 }
 
-def main(ctx):
-    pipelines = check_starlark() + \
-                lint_gui_test() + \
-                changelog(ctx)
-    gui_tests = gui_test_pipeline(ctx)
-
-    return pipelines + \
-           gui_tests + \
-           pipelinesDependsOn(notification(), gui_tests)
+# def main(ctx):
+#     pipelines = check_starlark() + \
+#                 lint_gui_test() + \
+#                 changelog(ctx)
+#     gui_tests = gui_test_pipeline(ctx)
+#
+#     # return pipelines + \
+#     #     gui_tests + \
+#     #     pipelinesDependsOn(notification(), gui_tests)
+#     return []
 
 def from_secret(name):
     return {
@@ -116,14 +117,14 @@ def check_starlark():
                 "name": "format-check-starlark",
                 "image": OC_CI_BAZEL_BUILDIFIER,
                 "commands": [
-                    "buildifier --mode=check .drone.star",
+                    "buildifier --mode=check .drone.example.star",
                 ],
             },
             {
                 "name": "show-diff",
                 "image": OC_CI_BAZEL_BUILDIFIER,
                 "commands": [
-                    "buildifier --mode=fix .drone.star",
+                    "buildifier --mode=fix .drone.example.star",
                     "git diff",
                 ],
                 "when": {

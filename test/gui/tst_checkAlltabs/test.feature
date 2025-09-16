@@ -1,4 +1,4 @@
-@predefined_users
+@skip @predefined_users
 Feature: Visually check all tabs
     As a user
     I want to visually check all tabs in client

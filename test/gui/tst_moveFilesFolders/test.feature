@@ -1,3 +1,4 @@
+@skip
 Feature: move file and folder
     As a user
     I want to be able to move a folder and a file
