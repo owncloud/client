@@ -226,7 +226,7 @@ void ConnectionValidator::slotAuthFailed()
     if (job->reply()->error() == QNetworkReply::SslHandshakeFailedError) {
         _errors << job->errorStringParsingBody();
         stat = NetworkInformation::instance()->isBehindCaptivePortal() ? CaptivePortal : SslError;
-
+        // dc-150 credentials::stillValid always returns true. the logic here needs fix
     } else if (job->reply()->error() == QNetworkReply::AuthenticationRequiredError || !_account->credentials()->stillValid(job->reply())) {
         qCWarning(lcConnectionValidator) << "******** Password is wrong!" << job->reply()->error() << job;
         _errors << tr("The provided credentials are not correct");
