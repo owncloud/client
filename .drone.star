@@ -32,7 +32,7 @@ S3_PUBLIC_CACHE_BUCKET = "public"
 
 # secrets used in the pipeline
 secrets = {
-    "SQUISH_LICENSEKEY": "squish_license_server",
+    "SQUISH_LICENSEKEY": "squish_license_server_new",
     "GITHUB_USERNAME": "github_username",
     "GITHUB_TOKEN": "github_token",  # not available for PRs
     "AWS_ACCESS_KEY_ID": "cache_public_s3_access_key",
