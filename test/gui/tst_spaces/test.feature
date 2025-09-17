@@ -15,6 +15,7 @@ Feature: Project spaces
         And the administrator has added user "Alice" to space "Project101" with role "viewer"
         And user "Alice" has set up a client with default settings
         When using sync connection folder "Project101"
+        And the user waits for file "testfile.txt" to be synced
         Then user "Alice" should be able to open the file "testfile.txt" on the file system
         And as "Alice" the file "testfile.txt" should have content "some content" on the file system
 
@@ -25,6 +26,7 @@ Feature: Project spaces
         And the administrator has added user "Alice" to space "Project101" with role "viewer"
         And user "Alice" has set up a client with default settings
         When using sync connection folder "Project101"
+        And the user waits for file "testfile.txt" to be synced
         Then user "Alice" should not be able to edit the file "testfile.txt" on the file system
         And as "Alice" the file "testfile.txt" in the space "Project101" should have content "some content" in the server
 
@@ -35,6 +37,7 @@ Feature: Project spaces
         And the administrator has added user "Alice" to space "Project101" with role "viewer"
         And user "Alice" has set up a client with default settings
         When using sync connection folder "Project101"
+        And the user waits for file "testfile.txt" to be synced
         And the user overwrites the file "testfile.txt" with content "overwrite some content"
         And the user clicks on the activity tab
         And the user selects "Not Synced" tab in the activity
@@ -48,6 +51,7 @@ Feature: Project spaces
         And the administrator has added user "Alice" to space "Project101" with role "editor"
         And user "Alice" has set up a client with default settings
         When using sync connection folder "Project101"
+        And the user waits for file "testfile.txt" to be synced
         And the user overwrites the file "testfile.txt" with content "some content edited"
         And the user waits for file "testfile.txt" to be synced
         Then as "Alice" the file "testfile.txt" in the space "Project101" should have content "some content edited" in the server
