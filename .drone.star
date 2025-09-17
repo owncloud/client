@@ -160,8 +160,8 @@ def gui_test_pipeline(ctx):
             continue
 
         # also skip in commit push
-        if params.get("skip_in_pr", False) and ctx.build.event == "push":
-            continue
+        #if params.get("skip_in_pr", False) and ctx.build.event == "push":
+            #continue
 
         pipeline_name = "GUI-tests-%s" % server
 
