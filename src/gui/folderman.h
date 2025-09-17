@@ -22,7 +22,6 @@
 
 #include <QList>
 #include <QObject>
-#include <QQueue>
 
 namespace OCC {
 
@@ -86,7 +85,7 @@ public:
      * Or in case of a space folder, that if the new folder is in a Space sync root, it is the sync root of the same account.
      */
     enum class NewFolderType {
-        OC10SyncRoot,
+        OC10SyncRoot, // todo: #43
         SpacesSyncRoot,
         SpacesFolder,
     };
@@ -231,15 +230,6 @@ public:
     static bool ensureJournalGone(const QString &journalDbFile);
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
-    /// Produce text for use in the tray tooltip
-    static QString trayTooltipStatusString(const SyncResult &result, bool paused);
-
-    /**
-     * Compute status summarizing multiple folders
-     * @return tuple containing folders, status, unresolvedConflicts and lastSyncDone
-     */
-    static TrayOverallStatusResult trayOverallStatus(const QVector<Folder *> &folders);
-
     SocketApi *socketApi();
 
     /**
@@ -261,26 +251,8 @@ public:
      */
     static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
 
-    /**
-     * While ignoring hidden files can theoretically be switched per folder,
-     * it's currently a global setting that users can only change for all folders
-     * at once.
-     * These helper functions can be removed once it's properly per-folder.
-     */
-    // Refactoring todo: when is the ability to switch ignoreHiddenFiles per folder going to happen? what does it
-    // depend on? if there is no change in sight for this, we should refactor the prop to be a general setting
-    // that applies to all folders, and is persisted in the General settings group of the config. The churn around
-    // moving this setting to the folder defs is absurd if it's not needed (and currently it's not actually needed)
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
-
-    /**
-     * Returns true if any folder is currently syncing.
-     *
-     * This might be a FolderMan-scheduled sync, or a externally
-     * managed sync like a placeholder hydration.
-     */
-    bool isAnySyncRunning() const;
 
     /** Simple save and remove all folders on shut down */
     void unloadAndDeleteAllFolders();
@@ -450,6 +422,7 @@ private:
     QSet<Folder *> _disabledFolders;
     QVector<Folder *> _folders;
     QString _folderConfigPath;
+    bool _ignoreHiddenFiles = true;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;
@@ -466,6 +439,9 @@ private:
 
     static FolderMan *_instance;
     friend class OCC::Application;
+
+    // the literal is needed to get the tests to build
+    inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
 };
 
 } // namespace OCC

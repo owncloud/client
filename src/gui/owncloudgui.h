@@ -13,17 +13,16 @@
  */
 
 #pragma once
+
 #include "account.h"
 #include "gui/owncloudguilib.h"
 #include "progressdispatcher.h"
-#include "systray.h"
+#include "syncresult.h"
 
+#include <QMenu>
 #include <QObject>
 #include <QPointer>
-#include <QAction>
-#include <QMenu>
-#include <QSize>
-#include <QTimer>
+#include <QSystemTrayIcon>
 
 namespace OCC {
 
@@ -54,8 +53,6 @@ public:
     explicit ownCloudGui(Application *parent = nullptr);
     ~ownCloudGui() override;
 
-    bool checkAccountExists(bool openSettings);
-
     /**
      * Raises our main Window to the front with the raiseWidget in focus.
      * If raiseWidget is a dialog and not visible yet, ->open will be called.
@@ -63,34 +60,19 @@ public:
      */
     static void raise();
 
-    /// Whether the tray menu is visible
-    bool contextMenuVisible() const;
-
-    void hideAndShowTray();
-
     SettingsDialog *settingsDialog() const;
 
     void runAccountWizard();
-    void runNewestAccountWizard();
 
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
 
 public Q_SLOTS:
-    void setupContextMenu();
-    void updateContextMenu();
-    void updateContextMenuNeeded();
-    void slotContextMenuAboutToShow();
-    void slotContextMenuAboutToHide();
+    void setupTrayContextMenu();
     void slotComputeOverallSyncStatus();
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
-    void slotFolderOpenAction(Folder *f);
-    void slotRebuildRecentMenus();
-    void slotUpdateProgress(Folder *folder, const ProgressInfo &progress);
-    void slotFoldersChanged();
     void slotShowSettings();
-    void slotShowSyncProtocol();
     void slotShutdown();
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
@@ -98,8 +80,6 @@ public Q_SLOTS:
     void slotOpenSettingsDialog();
     void slotHelp();
     void slotAbout();
-    void slotOpenPath(const QString &path);
-    void slotAccountStateChanged();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
     /**
@@ -113,36 +93,12 @@ public Q_SLOTS:
     void handleAccountSetupError(const QString &error);
 
 private:
-    void setPauseOnAllFoldersHelper(const QList<AccountState *> &accounts, bool pause);
-    void setupActions();
-    void addAccountContextMenu(AccountState *accountState, QMenu *menu);
+    QIcon getTrayStatusIcon(const SyncResult::Status &status) const;
 
-    Systray *_tray;
+    QSystemTrayIcon *_tray;
     SettingsDialog *_settingsDialog;
-    // tray's menu
-    // Refactoring todo: get rid of this scoped pointer - it is only reset on creating the menu and this seems to be used as the menu
-    // has no parent to clean it  up. Important: the system tray context menu should share the same parent (widget). see example impl
-    // for system tray icon + menu here for possible solutions: https://doc.qt.io/qt-6/qtwidgets-desktop-systray-example.html
-    QScopedPointer<QMenu> _contextMenu;
-
-    // Manually tracking whether the context menu is visible via aboutToShow
-    // and aboutToHide. Unfortunately aboutToHide isn't reliable everywhere
-    // so this only gets used with _workaroundManualVisibility (when the tray's
-    // isVisible() is unreliable)
-    bool _contextMenuVisibleManual = false;
-
-    QMenu *_recentActionsMenu;
-    QVector<QMenu *> _accountMenus;
-    bool _workaroundShowAndHideTray = false;
-    bool _workaroundNoAboutToShowUpdate = false;
-    bool _workaroundFakeDoubleClick = false;
-    bool _workaroundManualVisibility = false;
-    QTimer _delayedTrayUpdateTimer;
     QPointer<ShareDialog> _shareDialog;
 
-    QAction *_actionStatus;
-
-    QList<QAction *> _recentItemsActions;
     Application *_app;
 
     // keeping a pointer on those dialogs allows us to make sure they will be shown only once

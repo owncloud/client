@@ -15,7 +15,8 @@
         <file alias="resources/core/open.svg">font-awesome/arrow-up-right-from-square-solid.svg</file>
         <file alias="resources/core/undo.svg">font-awesome/undo-solid.svg</file>
         <file alias="resources/wizard/style.qss">wizard/style.qss</file>
-        <file alias="resources/oauth/oauth.html.in">oauth/oauth.html.in</file>
+        <file alias="resources/oauth/success.html.in">oauth/success.html</file>
+        <file alias="resources/oauth/error.html.in">oauth/error.html</file>
         <file alias="resources/core/space.svg">remixicon/space.svg</file>
         <file alias="resources/core/states/error.svg">font-awesome/states/error.svg</file>
         <file alias="resources/core/states/information.svg">font-awesome/states/information.svg</file>

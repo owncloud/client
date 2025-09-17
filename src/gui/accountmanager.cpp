@@ -16,8 +16,9 @@
 #include "account.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
+#include "creds/credentials.h"
 #include "guiutility.h"
-#include <creds/httpcredentialsgui.h>
+
 #include <theme.h>
 
 #ifdef Q_OS_WIN
@@ -27,60 +28,46 @@
 #include <QDir>
 #include <QSettings>
 
+// todo: move these to static const instances in the class once the tests are fixed to allow qstring from ascii
 namespace {
-auto urlC()
+QString urlC()
 {
-    return QStringLiteral("url");
+    return "url";
 }
 
-auto userC()
+QString defaultSyncRootC()
 {
-    return QStringLiteral("user");
+    return "default_sync_root";
 }
 
-auto httpUserC()
+QString davUserC()
 {
-    return QStringLiteral("http_user");
+    return "dav_user";
 }
 
-auto defaultSyncRootC()
+QString davUserDisplyNameC()
 {
-    return QStringLiteral("default_sync_root");
+    return "display-name";
 }
 
-const QString davUserC()
+QString userUUIDC()
 {
-    return QStringLiteral("dav_user");
+    return "uuid";
 }
 
-const QString davUserDisplyNameC()
+QString caCertsKeyC()
 {
-    return QStringLiteral("display-name");
+    return "CaCertificates";
 }
 
-const QString userUUIDC()
+QString accountsC()
 {
-    return QStringLiteral("uuid");
+    return "Accounts";
 }
 
-auto caCertsKeyC()
+QString capabilitesC()
 {
-    return QStringLiteral("CaCertificates");
-}
-
-auto accountsC()
-{
-    return QStringLiteral("Accounts");
-}
-
-auto versionC()
-{
-    return QStringLiteral("version");
-}
-
-auto capabilitesC()
-{
-    return QStringLiteral("capabilities");
+    return "capabilities";
 }
 }
 
@@ -111,18 +98,16 @@ bool AccountManager::restore()
         return false;
     }
 
-    // If there are no accounts, check the old format.
-    const auto &childGroups = settings->childGroups();
-    if (childGroups.isEmpty()
-        && !settings->contains(versionC())) {
-        restoreFromLegacySettings();
-        return true;
+    if (settings->contains("version")) {
+        // Migration from pre-7.0:
+        settings->remove("version");
     }
 
-    for (const auto &accountId : childGroups) {
-        settings->beginGroup(accountId);
+    const auto &childGroups = settings->childGroups();
+    for (const auto &accountIndex : childGroups) {
+        settings->beginGroup(accountIndex);
         if (auto acc = loadAccountHelper(*settings)) {
-            acc->_id = accountId;
+            acc->_groupIndex = accountIndex;
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
                 addAccountState(std::move(accState));
             }
@@ -132,85 +117,17 @@ bool AccountManager::restore()
 
     return true;
 }
-
-bool AccountManager::restoreFromLegacySettings()
-{
-    static const auto logPrefix = QStringLiteral("Legacy settings migration: ");
-
-    qCInfo(lcAccountManager) << logPrefix
-                             << "restoreFromLegacySettings, checking settings group"
-                             << Theme::instance()->appName();
-
-    // try to open the correctly themed settings
-    auto settings = ConfigFile::settingsWithGroup(Theme::instance()->appName());
-
-    // if the settings file could not be opened, the childKeys list is empty
-    // then try to load settings from a very old place
-    if (settings->childKeys().isEmpty()) {
-        // Now try to open the original ownCloud settings to see if they exist.
-        QString oCCfgFile = QDir::fromNativeSeparators(settings->fileName());
-        // replace the last two segments with ownCloud/owncloud.cfg
-        oCCfgFile = oCCfgFile.left(oCCfgFile.lastIndexOf(QLatin1Char('/')));
-        oCCfgFile = oCCfgFile.left(oCCfgFile.lastIndexOf(QLatin1Char('/')));
-        oCCfgFile += QLatin1String("/ownCloud/owncloud.cfg");
-
-        qCInfo(lcAccountManager) << logPrefix
-                                 << "checking old config " << oCCfgFile;
-
-#ifdef Q_OS_WIN
-        Utility::NtfsPermissionLookupRAII ntfs_perm;
-#endif
-        QFileInfo fi(oCCfgFile);
-        if (fi.isReadable()) {
-            auto oCSettings = std::make_unique<QSettings>(oCCfgFile, QSettings::IniFormat);
-            oCSettings->beginGroup(QStringLiteral("ownCloud"));
-
-            // Check the theme URL to see if it is the same URL that the oC config was for
-            QString overrideUrl = Theme::instance()->overrideServerUrlV2();
-            if (!overrideUrl.isEmpty()) {
-                if (overrideUrl.endsWith(QLatin1Char('/'))) {
-                    overrideUrl.chop(1);
-                }
-                QString oCUrl = oCSettings->value(urlC()).toString();
-                if (oCUrl.endsWith(QLatin1Char('/'))) {
-                    oCUrl.chop(1);
-                }
-
-                // in case the urls are equal reset the settings object to read from
-                // the ownCloud settings object
-                qCInfo(lcAccountManager) << logPrefix
-                                         << "Migrate oC config if " << oCUrl << " == " << overrideUrl << ":"
-                                         << (oCUrl == overrideUrl ? "Yes" : "No");
-                if (oCUrl == overrideUrl) {
-                    settings = std::move(oCSettings);
-                }
-            }
-        }
-    }
-
-    // Try to load the single account.
-    if (!settings->childKeys().isEmpty()) {
-        if (auto acc = loadAccountHelper(*settings)) {
-            addAccount(acc);
-            return true;
-        }
-    }
-    return false;
-}
-
+  
 AccountPtr AccountManager::createAccount(const NewAccountModel &model)
 {
-    auto newAccountPtr = Account::create(QUuid::createUuid());
+    auto newAccountPtr = Account::create(QUuid::createUuid(), model.davUser(), model.effectiveUserInfoUrl());
 
-    newAccountPtr->setUrl(model.effectiveUserInfoUrl());
-    newAccountPtr->setDavUser(model.davUser());
     newAccountPtr->setDavDisplayName(model.displayName());
 
-    HttpCredentialsGui *credentials = new HttpCredentialsGui(model.davUser(), model.authToken(), model.refreshToken());
-    newAccountPtr->setCredentials(credentials);
+    Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
+    newAccountPtr->setCredentials(creds);
 
     newAccountPtr->addApprovedCerts(model.trustedCertificates());
-
     QString syncRoot = model.defaultSyncRoot();
     if (!syncRoot.isEmpty()) {
         newAccountPtr->setDefaultSyncRoot(syncRoot);
@@ -225,23 +142,21 @@ AccountPtr AccountManager::createAccount(const NewAccountModel &model)
     return newAccountPtr;
 }
 
-void AccountManager::save(bool saveCredentials)
+void AccountManager::save()
 {
     for (const auto &acc : std::as_const(_accounts)) {
-        saveAccount(acc->account().data(), saveCredentials);
+        saveAccount(acc->account().data());
     }
 
     qCInfo(lcAccountManager) << "Saved all account settings";
 }
 
-void AccountManager::saveAccount(Account *account, bool saveCredentials)
+void AccountManager::saveAccount(Account *account)
 {
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
-    settings->beginGroup(account->id());
+    settings->beginGroup(account->groupIndex());
 
-    settings->setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
     settings->setValue(urlC(), account->_url.toString());
     settings->setValue(davUserC(), account->_davUser);
     settings->setValue(davUserDisplyNameC(), account->_displayName);
@@ -252,27 +167,9 @@ void AccountManager::saveAccount(Account *account, bool saveCredentials)
     if (account->hasDefaultSyncRoot()) {
         settings->setValue(defaultSyncRootC(), account->defaultSyncRoot());
     }
-    if (account->_credentials) {
-        if (saveCredentials) {
-            // Only persist the credentials if the parameter is set, on migration from 1.8.x
-            // we want to save the accounts but not overwrite the credentials
-            // (This is easier than asynchronously fetching the credentials from keychain and then
-            // re-persisting them)
-            account->_credentials->persist();
-        }
-
-        for (auto it = account->_settingsMap.constBegin(); it != account->_settingsMap.constEnd(); ++it) {
-            settings->setValue(it.key(), it.value());
-        }
-
-        // HACK: Save http_user also as user
-        // Refactoring todo: is this still valid? I don't find uses of httpUserC() aside from this instance
-        if (account->_settingsMap.contains(httpUserC()))
-            settings->setValue(userC(), account->_settingsMap.value(httpUserC()));
-    }
 
     // Save accepted certificates.
-    settings->beginGroup(QStringLiteral("General"));
+    settings->beginGroup("General");
     qCInfo(lcAccountManager) << "Saving " << account->approvedCerts().count() << " unknown certs.";
     const auto approvedCerts = account->approvedCerts();
     QByteArray certs;
@@ -326,39 +223,85 @@ const QList<AccountState *> AccountManager::accounts() const
 
 AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
 {
-    auto urlConfig = settings.value(urlC());
+    QVariant urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
         return AccountPtr();
     }
+    QString user = settings.value(davUserC()).toString();
+    if (user.isEmpty()) {
+        qCWarning(lcAccountManager) << "No user name provided for account " << settings.group();
+        return AccountPtr();
+    }
+    QUrl url = urlConfig.toUrl();
 
-    auto acc = createAccount(settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid());
+    QVariantMap capsValue = settings.value(capabilitesC()).value<QVariantMap>();
+    Capabilities caps(url, capsValue);
+    QUuid uid = settings.value(userUUIDC(), QVariant::fromValue(QUuid::createUuid())).toUuid();
+    // if spaces are not enabled, this is an oc10 account = nogo.
+    // if the starting caps are not even valid, forget all of it as well
+    if (!caps.isValid() || !caps.spacesSupport().enabled) {
+        // ignore this account and strip it from the config
+        qCWarning(lcAccountManager) << "The capabilities for this account " << urlConfig << " are not supported by this client";
+        // this should remove all keys in the group which == the account index
+        settings.remove("");
+        Q_ASSERT(settings.childKeys().isEmpty());
 
-    acc->setUrl(urlConfig.toUrl());
+        // also kill any credentials associated with this account. This makes me very unhappy but the creds are stored in a top level group
+        // and I don't want to mess up the group used for the actual account settings so just do a one off instance here. Yes it adds overhead
+        // but should happen so rarely I think it's worth the trade-off to safeguard the more important behavior of the account settings, which is
+        // ACTUALLY what we should be dealing with.
+        // todo: future: refactor the credentials manager to store the creds keys in the account's group! you can't create a credentialsManager without
+        // an account so that is where the settings belong to avoid this mess.
+        std::unique_ptr<QSettings> credsGroup = ConfigFile::settingsWithGroup("Credentials");
+        QStringList credsKeys = credsGroup->allKeys();
+        for (const QString &key : std::as_const(credsKeys)) {
+            if (key.contains(uid.toString(QUuid::WithoutBraces)))
+                credsGroup->remove(key);
+        }
+        return AccountPtr();
+    }
 
-    acc->_davUser = settings.value(davUserC()).toString();
-    acc->_displayName = settings.value(davUserDisplyNameC()).toString();
-    acc->setCapabilities({acc->url(), settings.value(capabilitesC()).value<QVariantMap>()});
+    // 7.0 change - this special handling can be removed in 8.0
+    QString supportsSpacesKey = "supportsSpaces";
+    if (settings.contains(supportsSpacesKey)) {
+        settings.remove(supportsSpacesKey);
+    }
+
+    if (settings.contains("version")) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
+
+    auto acc = Account::create(uid, user, url);
+
+    acc->setDavDisplayName(settings.value(davUserDisplyNameC()).toString());
+    acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
-    // We want to only restore settings for that auth type and the user value
-    acc->_settingsMap.insert(userC(), settings.value(userC()));
-    const QString authTypePrefix = QStringLiteral("http_");
-    const auto childKeys = settings.childKeys();
-    for (const auto &key : childKeys) {
-        if (!key.startsWith(authTypePrefix))
-            continue;
-        acc->_settingsMap.insert(key, settings.value(key));
-    }
-    acc->setCredentials(new HttpCredentialsGui);
+    acc->setCredentials(new Credentials(acc.get()));
 
     // now the server cert, it is in the general group
-    settings.beginGroup(QStringLiteral("General"));
+    settings.beginGroup("General");
     const auto certs = QSslCertificate::fromData(settings.value(caCertsKeyC()).toByteArray());
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
     acc->setApprovedCerts({certs.begin(), certs.end()});
     settings.endGroup();
+
+    // 7.0 config settings maintenance: clean up legacy settings related to the old style credentials
+    // todo: remove this when we get to 8.0
+    QString credsVersion = "http_CredentialVersion";
+    if (settings.contains(credsVersion)) {
+        settings.remove("user");
+        const QString authTypePrefix = "http_";
+        const auto childKeys = settings.childKeys();
+        for (const auto &key : childKeys) {
+            if (key.startsWith(authTypePrefix))
+                settings.remove(key);
+        }
+    }
 
     return acc;
 }
@@ -380,11 +323,12 @@ AccountState *AccountManager::accountState(const QUuid uuid)
 
 AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
 {
-    auto id = newAccount->id();
-    if (id.isEmpty() || !isAccountIdAvailable(id)) {
-        id = generateFreeAccountId();
+    auto id = newAccount->groupIndex();
+    if (id.isEmpty() || !isAccountIndexAvailable(id)) {
+        id = generateFreeAccountIndex();
     }
-    newAccount->_id = id;
+    newAccount->_groupIndex = id;
+
 
     return addAccountState(AccountState::fromNewAccount(newAccount));
 }
@@ -409,12 +353,15 @@ void AccountManager::deleteAccount(AccountState *account)
         Utility::unmarkDirectoryAsSyncRoot(account->account()->defaultSyncRoot());
     }
 
+    // todo: DC-150 try moving these to the account::cleanupForRemoval routine. I'm worried that calling these
+    // after the accountRemoved/accountsChanged signals could cause problems, as we had when I put those notifications
+    // at the start
     // Forget account credentials, cookies
     account->account()->credentials()->forgetSensitiveData();
     account->account()->credentialManager()->clear();
 
     auto settings = ConfigFile::settingsWithGroup(accountsC());
-    settings->remove(account->account()->id());
+    settings->remove(account->account()->groupIndex());
 
     // when called this way the gui stuff gets cleaned up eventually, though not as quickly as I would expect. Still it works
     // better than having these calls at the start.
@@ -433,12 +380,6 @@ void AccountManager::deleteAccount(AccountState *account)
         Q_EMIT lastAccountRemoved();
 }
 
-AccountPtr AccountManager::createAccount(const QUuid &uuid)
-{
-    AccountPtr acc = Account::create(uuid);
-    return acc;
-}
-
 void AccountManager::shutdown()
 {
     const auto accounts = std::move(_accounts);
@@ -448,25 +389,24 @@ void AccountManager::shutdown()
     }
 }
 
-bool AccountManager::isAccountIdAvailable(const QString &id) const
+bool AccountManager::isAccountIndexAvailable(const QString &index) const
 {
     for (const auto &acc : _accounts) {
-        if (acc->account()->id() == id) {
+        if (acc->account()->groupIndex() == index) {
             return false;
         }
     }
-    if (_additionalBlockedAccountIds.contains(id))
-        return false;
+
     return true;
 }
 
-QString AccountManager::generateFreeAccountId() const
+QString AccountManager::generateFreeAccountIndex() const
 {
     int i = 0;
     while (true) {
-        QString id = QString::number(i);
-        if (isAccountIdAvailable(id)) {
-            return id;
+        QString index = QString::number(i);
+        if (isAccountIndexAvailable(index)) {
+            return index;
         }
         ++i;
     }
@@ -483,9 +423,7 @@ AccountState *AccountManager::addAccountState(std::unique_ptr<AccountState> &&ac
     auto *rawAccount = statePtr->account().get();
     // this slot can't be connected until the account state exists because saveAccount uses the state
     connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
-        // persist the account, not the credentials, we don't know whether they are ready yet
-        // Refactoring todo: how about we make those two completely different saves? then we can ditch this lambda
-        saveAccount(rawAccount, false);
+        saveAccount(rawAccount);
     });
 
     Q_EMIT accountAdded(statePtr);

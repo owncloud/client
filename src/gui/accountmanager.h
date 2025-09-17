@@ -46,7 +46,7 @@ public:
     /**
      * Saves the accounts to a given settings file
      */
-    void save(bool saveCredentials = true);
+    void save();
 
     /**
      * @brief createAccount creates an account from scratch
@@ -95,16 +95,6 @@ public:
      */
     void deleteAccount(AccountState *account);
 
-
-    /**
-     * Creates an account and sets up some basic handlers.
-     * Does *not* add the account to the account manager just yet.
-     */
-
-    // todo: #28 - this has to be updated - it only works in tandem with the loadAccountHelper and should not even
-    //  be public. also, any create account scheme *should* register the new instance in the account manager
-    static AccountPtr createAccount(const QUuid &uuid);
-
     /**
      * Returns a sorted list of displayNames
      */
@@ -112,22 +102,9 @@ public:
 
     bool accountForLoginExists(const QUrl &url, const QString &davUser) const;
 
-private:
-    // saving and loading Account to settings
-    void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
-    AccountPtr loadAccountHelper(QSettings &settings);
-
-    bool restoreFromLegacySettings();
-
-    bool isAccountIdAvailable(const QString &id) const;
-    QString generateFreeAccountId() const;
-
-    // Adds an account to the tracked list, emitting accountAdded()
-    AccountState *addAccountState(std::unique_ptr<AccountState> &&accountState);
-
 public Q_SLOTS:
     /// Saves account data, not including the credentials
-    void saveAccount(Account *account, bool saveCredentials);
+    void saveAccount(Account *account /*, bool saveCredentials*/);
 
 Q_SIGNALS:
     void accountAdded(AccountState *account);
@@ -140,9 +117,17 @@ Q_SIGNALS:
     void accountsChanged();
 
 private:
+    // saving and loading Account to settings
+    void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
+    AccountPtr loadAccountHelper(QSettings &settings);
+
+    bool isAccountIndexAvailable(const QString &index) const;
+    QString generateFreeAccountIndex() const;
+
+    // Adds an account to the tracked list, emitting accountAdded()
+    AccountState *addAccountState(std::unique_ptr<AccountState> &&accountState);
+
     AccountManager() {}
     QMap<QUuid, AccountState *> _accounts;
-    /// Account ids from settings that weren't read
-    QSet<QString> _additionalBlockedAccountIds;
 };
 }

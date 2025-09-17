@@ -786,7 +786,7 @@ void SocketApi::command_V2_LIST_ACCOUNTS(const QSharedPointer<SocketApiJobV2> &j
     QJsonArray out;
     for (auto acc : AccountManager::instance()->accounts()) {
         OC_DISABLE_DEPRECATED_WARNING; // allow use of id
-        out << QJsonObject({{QStringLiteral("name"), acc->account()->displayNameWithHost()}, {QStringLiteral("id"), acc->account()->id()},
+        out << QJsonObject({{QStringLiteral("name"), acc->account()->displayNameWithHost()}, {QStringLiteral("id"), acc->account()->groupIndex()},
             {QStringLiteral("uuid"), acc->account()->uuid().toString(QUuid::WithoutBraces)}});
         OC_ENABLE_DEPRECATED_WARNING
     }
@@ -893,12 +893,10 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
             && !capabilities.sharePublicLinkEnforcePasswordForReadOnly();
 
         if (canCreateDefaultPublicLink) {
-            if (fileData.folder->accountState()->supportsSpaces()) {
-                // TODO: See https://github.com/owncloud/client/issues/10845 : oCIS is getting a new sharing API, waiting for that before implementing a
-                // temporary solution.
-            } else {
-                listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + tr("Create and copy public link to clipboard"));
-            }
+            // if (fileData.folder->accountState()->supportsSpaces()) {
+            // TODO: See https://github.com/owncloud/client/issues/10845 : oCIS is getting a new sharing API, waiting for that before implementing a
+            // temporary solution.
+            // }
         } else if (publicLinksEnabled) {
             listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Manage public links"));
         }

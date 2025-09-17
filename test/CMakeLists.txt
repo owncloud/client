@@ -10,9 +10,9 @@ owncloud_add_test(SyncJournalDB)
 owncloud_add_test(SyncFileItem)
 owncloud_add_test(ConcatUrl)
 owncloud_add_test(XmlParse)
+owncloud_add_test(OAuthHtmlPage ../src/gui/creds/oauthhtmlpage.cpp)
 owncloud_add_test(ChecksumValidator)
 owncloud_add_test(ConnectionValidator)
-
 
 # TODO: we need keychain access for this test
 if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
@@ -61,7 +61,7 @@ owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
-owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp)
+owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp)
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Daniel Molkentin <danimo@owncloud.com>
+* Copyright (C) by Olivier Goffart <ogoffart@woboq.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,22 +12,16 @@
  * for more details.
  */
 
-#include <QLoggingCategory>
-
-#include "account.h"
-#include "common/asserts.h"
-#include "creds/abstractcredentials.h"
+#pragma once
+#include <QString>
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcCredentials, "sync.credentials", QtInfoMsg)
-
-AbstractCredentials::AbstractCredentials(Account *account, QObject *parent)
-    : QObject(parent)
-    , _account(account)
-    , _wasEverFetched(false)
+class OAuthHtmlPage
 {
-}
+public:
+    static QString buildPage(bool success, const QString &title, const QString &message);
+};
 
+} // OCC
 
-} // namespace OCC

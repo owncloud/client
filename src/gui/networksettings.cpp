@@ -161,6 +161,10 @@ void NetworkSettings::loadProxySettings()
         ClientProxy::setupQtProxyFromConfig(legacyPassword);
     } else {
         auto job = _credentialManager->get(proxyPasswordC());
+        if (!job) {
+            qCWarning(lcNetworkSettings) << "get credentials job is null - most likely the key does not exist in the credentials manager";
+            return;
+        }
         connect(job, &CredentialJob::finished, this, [job, this] {
             const QString password = job->data().toString();
             _ui->passwordLineEdit->setText(password);

@@ -15,14 +15,12 @@
 #include "account.h"
 #include "accessmanager.h"
 #include "capabilities.h"
-#include "common/asserts.h"
 #include "cookiejar.h"
 #include "creds/abstractcredentials.h"
 #include "creds/credentialmanager.h"
 #include "graphapi/spacesmanager.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
-#include "theme.h"
 
 #include <QAuthenticator>
 #include <QDir>
@@ -53,9 +51,11 @@ QString Account::commonCacheDirectory()
     return _customCommonCacheDirectory;
 }
 
-Account::Account(const QUuid &uuid, QObject *parent)
+Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent)
     : QObject(parent)
     , _uuid(uuid)
+    , _davUser(user)
+    , _url(url)
     , _capabilities({}, {})
     , _jobQueue(this)
     , _queueGuard(&_jobQueue)
@@ -81,9 +81,9 @@ Account::Account(const QUuid &uuid, QObject *parent)
     _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
 }
 
-AccountPtr Account::create(const QUuid &uuid)
+AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
 {
-    AccountPtr acc = AccountPtr(new Account(uuid));
+    AccountPtr acc = AccountPtr(new Account(uuid, user, url));
     acc->setSharedThis(acc);
     return acc;
 }
@@ -141,16 +141,7 @@ AccountPtr Account::sharedFromThis()
 
 QString Account::davUser() const
 {
-    return _davUser.isEmpty() ? _credentials->user() : _davUser;
-}
-
-void Account::setDavUser(const QString &newDavUser)
-{
-    if (_davUser == newDavUser) {
-        return;
-    }
-    _davUser = newDavUser;
-    Q_EMIT wantsAccountSaved(this);
+    return _davUser;
 }
 
 QIcon Account::avatar() const
@@ -210,18 +201,25 @@ void Account::setDavDisplayName(const QString &newDisplayName)
     }
 }
 
-QString Account::id() const
+QString Account::groupIndex() const
 {
-    return _id;
+    return _groupIndex;
 }
 
 AbstractCredentials *Account::credentials() const
 {
-    return _credentials.data();
+    return _credentials;
 }
 
+// the credentials should be instantiated with the account as parent. we have to pass the creds in as the tests use their own
+// sublcass of AbstractCredentials = FakeCredentials.
 void Account::setCredentials(AbstractCredentials *cred)
 {
+    Q_ASSERT(cred);
+
+    if (_credentials == cred)
+        return;
+
     // set active credential manager
     QNetworkCookieJar *jar = nullptr;
     if (_am) {
@@ -230,31 +228,25 @@ void Account::setCredentials(AbstractCredentials *cred)
         _am->deleteLater();
     }
 
-    // The order for these two is important! Reading the credential's
-    // settings accesses the account as well as account->_credentials,
-    _credentials.reset(cred);
-    cred->setAccount(this);
+    _credentials = cred;
 
     _am = _credentials->createAccessManager();
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
     const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(_cacheDirectory));
-    qCDebug(lcAccount) << "Cache location for account" << this << "set to" << networkCacheLocation;
     _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
 
     if (jar) {
         _am->setCookieJar(jar);
     }
-    connect(_credentials.data(), &AbstractCredentials::fetched, this, [this] {
+    connect(_credentials, &AbstractCredentials::fetched, this, [this] {
         Q_EMIT credentialsFetched();
         _queueGuard.unblock();
     });
-    connect(_credentials.data(), &AbstractCredentials::authenticationStarted, this, [this] {
-        _queueGuard.block();
-    });
-    connect(_credentials.data(), &AbstractCredentials::authenticationFailed, this, [this] { _queueGuard.clear(); });
+    connect(_credentials, &AbstractCredentials::authenticationStarted, this, [this] { _queueGuard.block(); });
+    connect(_credentials, &AbstractCredentials::authenticationFailed, this, [this] { _queueGuard.clear(); });
 }
 
 QUrl Account::davUrl() const
@@ -274,7 +266,7 @@ void Account::clearCookieJar()
 
 AccessManager *Account::accessManager()
 {
-    return _am.data();
+    return _am;
 }
 
 QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, QNetworkRequest req, QIODevice *data)
@@ -308,14 +300,6 @@ void Account::addApprovedCerts(const QSet<QSslCertificate> &certs)
     Q_EMIT wantsAccountSaved(this);
 }
 
-void Account::setUrl(const QUrl &url)
-{
-    if (_url != url) {
-        _url = url;
-        Q_EMIT urlChanged();
-    }
-}
-
 QUrl Account::url() const
 {
     return _url;
@@ -324,27 +308,6 @@ QUrl Account::url() const
 QString Account::hostName() const
 {
     return _url.host();
-}
-
-QVariant Account::credentialSetting(const QString &key) const
-{
-    if (_credentials) {
-        QString prefix = _credentials->credentialsType();
-        QVariant value = _settingsMap.value(prefix + QLatin1Char('_') + key);
-        if (value.isNull()) {
-            value = _settingsMap.value(key);
-        }
-        return value;
-    }
-    return QVariant();
-}
-
-void Account::addCredentialSetting(const QString &key, const QVariant &value)
-{
-    if (_credentials) {
-        QString prefix = _credentials->credentialsType();
-        _settingsMap.insert(prefix + QLatin1Char('_') + key, value);
-    }
 }
 
 JobQueue *Account::jobQueue()
@@ -369,12 +332,22 @@ bool Account::hasCapabilities() const
 
 void Account::setCapabilities(const Capabilities &caps)
 {
-    const bool versionChanged = caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
+    if (!caps.isValid())
+        return;
+
+    // this should not happen:
+    if (!caps.spacesSupport().enabled) {
+        qCWarning(lcAccount) << "trying to set capabilities instance that doesn't support spaces - aborting";
+        return;
+    }
+
+    const bool versionChanged =
+        caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
     _capabilities = caps;
     if (versionChanged) {
         Q_EMIT serverVersionChanged();
     }
-    if (!_spacesManager && _capabilities.spacesSupport().enabled) {
+    if (!_spacesManager) {
         _spacesManager = new GraphApi::SpacesManager(this);
     }
 }
@@ -401,6 +374,8 @@ QString Account::defaultSyncRoot() const
 {
     return _defaultSyncRoot;
 }
+// todo: #43 this seems to be used as a quasi switch for filtering oc10 from spaces support but needs more investigation
+// if we need to eg update the sync root because it is not yet set, use defaultSyncRoot.isEmpty, not this thing.
 bool Account::hasDefaultSyncRoot() const
 {
     return !_defaultSyncRoot.isEmpty();

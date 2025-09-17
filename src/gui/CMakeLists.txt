@@ -61,8 +61,6 @@ set(client_SRCS
     sharee.cpp
     tlserrordialog.cpp
     syncrunfilelog.cpp
-    systray.cpp
-    quotainfo.cpp
     accountstate.cpp
     notificationwidget.cpp
     notificationconfirmjob.cpp
@@ -71,10 +69,11 @@ set(client_SRCS
     elidedlabel.cpp
     translations.cpp
 
-    creds/httpcredentials.cpp
-    creds/httpcredentialsgui.cpp
-    creds/qmlcredentials.cpp
     creds/oauth.cpp
+    creds/credentials.cpp
+    creds/requestauthenticationwidget.cpp
+    creds/requestauthenticationcontroller.cpp
+    creds/oauthhtmlpage.cpp
 
     models/activitylistmodel.cpp
     models/expandingheaderview.cpp
@@ -124,9 +123,6 @@ ecm_add_qml_module(owncloudGui
             qml/FolderDelegate.qml
             qml/FolderError.qml
 
-            qml/credentials/Credentials.qml
-            qml/credentials/OAuthCredentials.qml
-
             spaces/qml/SpaceDelegate.qml
             spaces/qml/SpacesView.qml
 )
@@ -149,7 +145,6 @@ target_include_directories(owncloudGui PUBLIC
 
 IF( APPLE )
     target_sources(owncloudGui PRIVATE
-            systray.mm
             settingsdialog_mac.mm
             guiutility_mac.mm
             folderwatcher_mac.cpp)
@@ -162,7 +157,6 @@ elseif(UNIX AND NOT APPLE)
     ## handle DBUS for Fdo notifications
     if (TARGET Qt::DBus)
         target_link_libraries(owncloudGui PUBLIC Qt::DBus)
-        target_compile_definitions(owncloudGui PUBLIC "USE_FDO_NOTIFICATIONS")
     endif()
     target_sources(owncloudGui PRIVATE
             folderwatcher_linux.cpp

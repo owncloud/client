@@ -18,10 +18,8 @@
 
 #include "fetchserversettings.h"
 
-#include "creds/httpcredentials.h"
 #include "libsync/creds/abstractcredentials.h"
 
-#include "quotainfo.h"
 #include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 
@@ -43,10 +41,7 @@ inline const QLatin1String userExplicitlySignedOutC()
 {
     return QLatin1String("userExplicitlySignedOut");
 }
-auto supportsSpacesC()
-{
-    return QLatin1String("supportsSpaces");
-}
+
 } // anonymous namespace
 
 namespace OCC {
@@ -65,6 +60,8 @@ AccountState::AccountState(AccountPtr account)
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
+    Q_ASSERT(_account);
+
     connectAccount();
     connectNetworkInformation();
 
@@ -78,9 +75,7 @@ AccountState::AccountState(AccountPtr account)
     connect(timer, &QTimer::timeout, this, [this] { checkConnectivity(false); });
     timer->start();
 
-    connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
-        setState(State::SignedOut);
-    });
+    connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
 
     if (FolderMan::instance()) {
         FolderMan::instance()->socketApi()->registerAccount(account);
@@ -127,7 +122,7 @@ std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account,
         // see writeToSettings below
         accountState->setState(SignedOut);
     }
-    accountState->_supportsSpaces = settings.value(supportsSpacesC(), false).toBool();
+
     return accountState;
 }
 
@@ -148,7 +143,6 @@ void AccountState::writeToSettings(QSettings &settings) const
     // SignedOut state to indicate that the client should not try to re-connect the next time it
     // is started.
     settings.setValue(userExplicitlySignedOutC(), _state == SignedOut);
-    settings.setValue(supportsSpacesC(), _supportsSpaces);
 }
 
 AccountPtr AccountState::account() const
@@ -211,7 +205,6 @@ void AccountState::setState(State state)
                 if (oldState == Connected || _state == Connected) {
                     _fetchCapabilitiesJob.clear();
                     Q_EMIT isConnectedChanged();
-                    Q_EMIT supportsSpacesChanged();
                 }
             });
             _fetchCapabilitiesJob->start();
@@ -285,11 +278,17 @@ void AccountState::checkConnectivity(bool blockJobs)
     }
 
     // ======= beginning here are pre-check updates (or so)
-    // If we never fetched credentials, do that now - otherwise connection attempts
+    // If the credentials have never been fetched, try to fetch them - otherwise connection attempts
     // make little sense.
-    if (!account()->credentials()->wasFetched()) {
+    // todo: review this logic to see if that actually belongs here. I really don't understand why this is needed
+
+    if (!account()->credentials()->wasEverFetched()) {
+        // I hope this is never called. ok. it is called on call to AccountState::checkConnectivity which is called during AccountManager::addAccountState
+        // so if we want to refresh the creds explicitly, do it there or prior
         _waitingForNewCredentials = true;
         account()->credentials()->fetchFromKeychain();
+        // the fetch should be allowed to finish before we do anything more
+        return;
     }
     if (account()->hasCapabilities()) {
         // IF the account is connected the connection check can be skipped
@@ -535,13 +534,15 @@ void AccountState::slotInvalidCredentials()
         if (account()->credentials()->ready()) {
             account()->credentials()->invalidateToken();
         }
-        if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
-            qCInfo(lcAccountState) << "refreshing oauth";
-            if (creds->refreshAccessToken()) {
-                return;
-            }
-            qCInfo(lcAccountState) << "refreshing oauth failed";
-        }
+        // todo: evaluate if this is even needed (it seems to be working fine casting to HttpCredentials which would have failed to cast -> ie it's a
+        // noop), and if it is, fix the abstraction as casting to the subclass is stinky
+        /* if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
+             qCInfo(lcAccountState) << "refreshing oauth";
+             if (creds->refreshAccessToken()) {
+                 return;
+             }
+             qCInfo(lcAccountState) << "refreshing oauth failed";
+         }*/
         qCInfo(lcAccountState) << "asking user";
         account()->credentials()->askFromUser();
         setState(AskingCredentials);
@@ -568,23 +569,8 @@ Account *AccountState::accountForQml() const
 std::unique_ptr<QSettings> AccountState::settings()
 {
     auto s = ConfigFile::settingsWithGroup(QStringLiteral("Accounts"));
-    s->beginGroup(_account->id());
+    s->beginGroup(_account->groupIndex());
     return s;
-}
-
-bool AccountState::supportsSpaces() const
-{
-    return _supportsSpaces && _account->hasCapabilities() && _account->capabilities().spacesSupport().enabled;
-}
-
-QuotaInfo *AccountState::quotaInfo()
-{
-    // QuotaInfo should not be used with spaces
-    Q_ASSERT(!supportsSpaces());
-    if (!_quotaInfo) {
-        _quotaInfo = new QuotaInfo(this);
-    }
-    return _quotaInfo;
 }
 
 bool AccountState::isSettingUp() const

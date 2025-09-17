@@ -21,10 +21,10 @@
 #include "appprovider.h"
 #include "capabilities.h"
 #include "jobqueue.h"
-#include "resources/resources.h"
 
 #include <QByteArray>
 #include <QGradient>
+#include <QIcon>
 #include <QNetworkAccessManager>
 #include <QNetworkCookie>
 #include <QNetworkDiskCache>
@@ -71,14 +71,14 @@ class OWNCLOUDSYNC_EXPORT Account : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QUuid uid READ uuid CONSTANT)
-    Q_PROPERTY(QString davUser MEMBER _davUser)
+    Q_PROPERTY(QString davUser READ davUser CONSTANT)
     Q_PROPERTY(QString davDisplayName READ davDisplayName NOTIFY displayNameChanged)
     Q_PROPERTY(QString displayNameWithHost READ displayNameWithHost NOTIFY displayNameChanged)
     Q_PROPERTY(QString initials READ initials NOTIFY displayNameChanged)
-    Q_PROPERTY(QString hostName READ hostName NOTIFY urlChanged)
+    Q_PROPERTY(QString hostName READ hostName CONSTANT)
     Q_PROPERTY(bool hasAvatar READ hasAvatar NOTIFY avatarChanged)
     Q_PROPERTY(QGradient::Preset avatarGradient READ avatarGradient NOTIFY displayNameChanged)
-    Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
+    Q_PROPERTY(QUrl url READ url CONSTANT)
     QML_ELEMENT
     QML_UNCREATABLE("Only created in the C++ code")
 
@@ -89,7 +89,7 @@ public:
     static void setCommonCacheDirectory(const QString &directory);
     static QString commonCacheDirectory();
 
-    static AccountPtr create(const QUuid &uuid);
+    static AccountPtr create(const QUuid &uuid, const QString &user, const QUrl &url);
     ~Account() override;
 
     void cleanupForRemoval();
@@ -97,22 +97,33 @@ public:
     AccountPtr sharedFromThis();
 
     /**
-     * The user that can be used in dav url.
+     *  The unique identifier for the account.
+     *  This value is immutable after construction
+     */
+    QUuid uuid() const;
+
+    /**
+     * The user associated with the account.
+     * This value is immutable after construction.
      *
-     * This can very well be different frome the login user that's
-     * stored in credentials()->user().
      */
     QString davUser() const;
-    void setDavUser(const QString &newDavUser);
+
+    /**
+     * url is the user endpoint for the account
+     * This value is immutable after construction.
+     */
+    QUrl url() const;
 
     /***
-     * With spaces this will be the default folder containing all spaces.
+     * This is the default folder containing all spaces.
      */
     QString defaultSyncRoot() const;
 
     /***
      * Whether we have defaultSyncRoot defined.
      */
+    // todo: #43
     bool hasDefaultSyncRoot() const;
 
     /***
@@ -133,12 +144,9 @@ public:
     QString initials() const;
     QGradient::Preset avatarGradient() const;
 
-    /// The internal id of the account.
-    Q_DECL_DEPRECATED_X("Use uuid") QString id() const;
+    /// The value used to group the account's setttings
+    QString groupIndex() const;
 
-    /** Server url of the account */
-    void setUrl(const QUrl &url);
-    QUrl url() const;
     QString hostName() const;
 
     /**
@@ -179,10 +187,6 @@ public:
      */
     void addApprovedCerts(const QSet<QSslCertificate> &certs);
 
-    // To be called by credentials only, for storing username and the like
-    QVariant credentialSetting(const QString &key) const;
-    void addCredentialSetting(const QString &key, const QVariant &value);
-
     /** Access the server capabilities */
     const Capabilities &capabilities() const;
     void setCapabilities(const Capabilities &caps);
@@ -209,8 +213,6 @@ public:
     AccessManager *accessManager();
 
     JobQueue *jobQueue();
-
-    QUuid uuid() const;
 
     CredentialManager *credentialManager() const;
 
@@ -248,23 +250,21 @@ Q_SIGNALS:
     // the signal exists on the Account object as the Approvider itself can change during runtime
     void appProviderErrorOccured(const QString &error);
 
-    void urlChanged();
-
 private:
     // directory all newly created accounts store their various caches in
     static QString _customCommonCacheDirectory;
 
-    Account(const QUuid &uuid, QObject *parent = nullptr);
+    Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent = nullptr);
     void setSharedThis(AccountPtr sharedThis);
 
     QWeakPointer<Account> _sharedThis;
-    QString _id;
+    QString _groupIndex;
     QUuid _uuid;
     QString _davUser;
     QString _displayName;
     QString _defaultSyncRoot;
     QIcon _avatarImg;
-    QMap<QString, QVariant> _settingsMap;
+    
     QUrl _url;
     QString _cacheDirectory;
 
@@ -273,7 +273,7 @@ private:
     QPointer<AccessManager> _am;
     QPointer<QNetworkDiskCache> _networkCache = nullptr;
     QPointer<ResourcesCache> _resourcesCache;
-    QScopedPointer<AbstractCredentials> _credentials;
+    QPointer<AbstractCredentials> _credentials;
     bool _http2Supported = false;
 
     JobQueue _jobQueue;

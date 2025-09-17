@@ -9,9 +9,8 @@
 #include "testutils.h"
 
 #include "accessmanager.h"
-#include "gui/accountmanager.h"
+#include "accountmanager.h"
 #include "httplogger.h"
-#include "libsync/configfile.h"
 #include "libsync/syncresult.h"
 
 #include <thread>
@@ -781,6 +780,42 @@ FakeAM::FakeAM(FileInfo initialRoot, QObject *parent)
     setCookieJar(new OCC::CookieJar);
 }
 
+FakeAM::FakeAM(QObject *parent)
+    : FakeAM({}, parent)
+{
+}
+
+OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccountWithFileSupport(FileInfo intialRoot)
+{
+    // ensure we have an instance of folder man
+    std::ignore = OCC::TestUtils::folderMan();
+    // don't use the account manager to create the account, it would try to use widgets
+    auto acc = OCC::Account::create(QUuid::createUuid(), QStringLiteral("admin"), QUrl(QStringLiteral("http://localhost/owncloud")));
+
+    // todo: #41
+    FakeAM *am = new FakeAM(intialRoot, nullptr);
+    auto creds = new FakeCredentials(acc.get(), am, acc.get());
+    acc->setCredentials(creds);
+    acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
+    acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});
+
+    return {OCC::AccountManager::instance()->addAccount(acc), &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
+}
+
+OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccount()
+{
+    // ensure we have an instance of folder man
+    std::ignore = OCC::TestUtils::folderMan();
+    // don't use the account manager to create the account, it would try to use widgets
+    auto acc = OCC::Account::create(QUuid::createUuid(), QStringLiteral("admin"), QUrl(QStringLiteral("http://localhost/owncloud")));
+    auto creds = new FakeCredentials(acc.get(), acc.get());
+    acc->setCredentials(creds);
+    acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
+    acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});
+
+    return {OCC::AccountManager::instance()->addAccount(acc), &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
+}
+
 QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData)
 {
     QNetworkReply *reply = nullptr;
@@ -844,9 +879,10 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     qDebug() << "FakeFolder operating on" << rootDir;
     toDisk(rootDir, filesAreDehydrated ? FileInfo() : fileTemplate);
 
-    _fakeAm = new FakeAM(fileTemplate, this);
-    auto creds = new FakeCredentials{_fakeAm};
-    _accountState = std::move(OCC::TestUtils::createDummyAccount(creds));
+    // todo: #41
+    _accountState = createDummyAccountWithFileSupport(fileTemplate);
+    _fakeAm = dynamic_cast<FakeAM *>(_accountState->account()->accessManager());
+    Q_ASSERT(_fakeAm);
 
     _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db")));
     // TODO: davUrl

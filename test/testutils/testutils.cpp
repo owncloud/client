@@ -2,7 +2,6 @@
 
 #include "common/checksums.h"
 #include "gui/accountmanager.h"
-#include "gui/creds/httpcredentials.h"
 
 #include <QCoreApplication>
 #include <QRandomGenerator>
@@ -10,18 +9,6 @@
 namespace OCC {
 
 namespace TestUtils {
-    TestUtilsPrivate::AccountStateRaii createDummyAccount(AbstractCredentials *cred)
-    {
-        // ensure we have an instance of folder man
-        std::ignore = folderMan();
-        // don't use the account manager to create the account, it would try to use widgets
-        auto acc = Account::create(QUuid::createUuid());
-        acc->setCredentials(cred);
-        acc->setUrl(QUrl(QStringLiteral("http://localhost/owncloud")));
-        acc->setDavDisplayName(QStringLiteral("fakename") + acc->uuid().toString(QUuid::WithoutBraces));
-        acc->setCapabilities({acc->url(), OCC::TestUtils::testCapabilities()});
-        return {OCC::AccountManager::instance()->addAccount(acc), &TestUtilsPrivate::accountStateDeleter};
-    }
 
     // We have more than one of these?
     FolderDefinition createDummyFolderDefinition(const AccountPtr &account, const QString &path)
@@ -85,6 +72,7 @@ namespace TestUtils {
             }
             return out;
         }();
+        // clang-format off
         return {{QStringLiteral("core"),
                     QVariantMap{{QStringLiteral("status"),
                         QVariantMap{{QStringLiteral("installed"), QStringLiteral("1")}, {QStringLiteral("maintenance"), QStringLiteral("0")},
@@ -92,9 +80,12 @@ namespace TestUtils {
                             {QStringLiteral("versionstring"), QStringLiteral("10.11.0")}, {QStringLiteral("edition"), QStringLiteral("Community")},
                             {QStringLiteral("productname"), QStringLiteral("Infinite Scale")}, {QStringLiteral("product"), QStringLiteral("Infinite Scale")},
                             {QStringLiteral("productversion"), QStringLiteral("2.0.0-beta1+7c2e3201b")}}}}},
-            {QStringLiteral("files"), QVariantList{}}, {QStringLiteral("dav"), QVariantMap{{QStringLiteral("chunking"), QStringLiteral("1.0")}}},
-            {QStringLiteral("checksums"),
-                QVariantMap{{QStringLiteral("preferredUploadType"), Utility::enumToString(algo)}, {QStringLiteral("supportedTypes"), algorithmNames}}}};
+            {QStringLiteral("files"), QVariantList{}},
+            {QStringLiteral("spaces"), QVariantMap{{QStringLiteral("enabled"), QStringLiteral("true")}}},
+            {QStringLiteral("dav"), QVariantMap{{QStringLiteral("chunking"), QStringLiteral("1.0")}}},
+            {QStringLiteral("checksums"), QVariantMap{{QStringLiteral("preferredUploadType"), Utility::enumToString(algo)}, {QStringLiteral("supportedTypes"), algorithmNames}}}
+        };
+        // clang-format on
     }
 
     void TestUtilsPrivate::accountStateDeleter(OCC::AccountState *acc)

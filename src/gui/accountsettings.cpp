@@ -24,7 +24,6 @@
 #include "common/utility.h"
 #include "commonstrings.h"
 #include "configfile.h"
-#include "creds/httpcredentialsgui.h"
 #include "folderman.h"
 #include "folderstatusmodel.h"
 #include "folderwizard/folderwizard.h"
@@ -37,7 +36,6 @@
 #include "guiutility.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "openfilemanager.h"
-#include "quotainfo.h"
 #include "scheduling/syncscheduler.h"
 #include "settingsdialog.h"
 #include "theme.h"
@@ -276,7 +274,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
         folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
         doForceSyncCurrentFolder(folder);
     });
-    addModalWidget(modalWidget);
+    addModalAccountWidget(modalWidget);
 }
 
 void AccountSettings::slotAddFolder()
@@ -576,13 +574,11 @@ void AccountSettings::slotAccountStateChanged()
             icon = StatusIcon::Warning;
         }
         showConnectionLabel(tr("Connected"), icon, errors);
-        if (_accountState->supportsSpaces()) {
-            connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated,
-                Qt::UniqueConnection);
-            // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
-            // triggering the slot? ie duplicate call to slotSpacesUpdated?
-            slotSpacesUpdated();
-        }
+        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated, Qt::UniqueConnection);
+        // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
+        // triggering the slot? ie duplicate call to slotSpacesUpdated?
+        slotSpacesUpdated();
+
         break;
     }
     case AccountState::ServiceUnavailable:
@@ -621,8 +617,7 @@ void AccountSettings::slotAccountStateChanged()
 
 void AccountSettings::slotSpacesUpdated()
 {
-    if (!_accountState || !_accountState->supportsSpaces()) {
-        // oC10 does not support spaces, and there is no `SpacesManager` available.
+    if (!_accountState || !_accountState->account() || !_accountState->account()->spacesManager()) {
         return;
     }
 
@@ -737,7 +732,7 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
 }
 
-void AccountSettings::addModalWidget(AccountModalWidget *widget)
+void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 {
     if (!_accountState) {
         return;
@@ -787,16 +782,6 @@ void AccountSettings::slotDeleteAccount()
         }
     });
     messageBox->open();
-}
-
-bool AccountSettings::event(QEvent *e)
-{
-    if (e->type() == QEvent::Hide || e->type() == QEvent::Show) {
-        if (_accountState && !_accountState->supportsSpaces()) {
-            _accountState->quotaInfo()->setActive(isVisible());
-        }
-    }
-    return QWidget::event(e);
 }
 
 } // namespace OCC

@@ -93,6 +93,8 @@ void SpacesManager::refresh()
 
 Space *SpacesManager::space(const QString &id) const
 {
+    if (id.isEmpty())
+        return nullptr;
     return _spacesMap.value(id);
 }
 

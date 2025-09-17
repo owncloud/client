@@ -109,9 +109,7 @@ private:
     void checkUserInfo();
     void finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
     void httpReplyAndClose(
-        QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
-
-    void httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader = {});
+        QPointer<QTcpSocket> socket, bool success, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
 
     QByteArray generateRandomString(size_t size) const;
 
@@ -155,6 +153,8 @@ public:
     void refreshAuthentication(const QString &refreshToken);
 
 Q_SIGNALS:
+    // this can either come from refreshAuthentication or the fetchWellKnown's
+    // checkServerJob
     void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
     void refreshFinished(const QString &accessToken, const QString &refreshToken);
 

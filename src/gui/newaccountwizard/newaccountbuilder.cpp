@@ -57,16 +57,22 @@ void NewAccountBuilder::onAccountStateChanged(AccountState::State state)
 
 void NewAccountBuilder::completeAccountSetup()
 {
-    AccountManager::instance()->saveAccount(_account.get(), true);
-    // emitting credentialsFetched seems to be "required" to get the folder gui to show that x of y folders are synced
-    // it appears that credentialsFetched triggers the spaces manager to refresh, and that refresh notifies the gui of the number of synced folders.
-    // this is normally triggered when the httpcredentials have fetched the creds, but when setting up an account we have already collected the creds and
-    // set them in the account at the same time we create it.
-    // BUT no one is aware that the account exists at that point in time as everyone is waiting to hear that the account STATE
-    // was added before connecting various listeners. If we don't emit the signal directly it takes some time for the update to happen via some polling
-    // mechanism
-    if (_account->credentials()->ready())
+    AccountManager::instance()->saveAccount(_account.get());
+
+    // the creds should always be ready when creating new account as we don't get here unless the auth and all other checks succeeded
+    // the check is perfunctory.
+    if (_account->credentials()->ready()) {
+        // this really should be called by the creds, internally. Unfortunately there is no good way to do that yet. I think the account
+        // should call a creds->finishSetup in account::setCredentials or something like that to ensure the creds are fully viable once the account exists.
+        // unfortuantely, at the moment the account is not fully configured at the point that we call setCredentails, due to the upside
+        // down deps with accountState, which is why the account state has to check "was ever fetched" on the creds, then run the
+        // keychain retrieval for the first time if necessary = the creds are FINALLY ready to go. Someday we will be able to correct this, sadly, not now.
+        _account->credentials()->persist();
+        // emitting credentialsFetched is required because we didn't use the credentials to auth the new user/account. In theory we should have a
+        // way to trigger the creds to emit this itself, but this is a future topic. same with calling persist. todo for future.
         Q_EMIT _account->credentialsFetched();
+    }
+
     // if we are doing sync all or vfs the folder man should configure all the folders automatically
     if (_syncType != NewAccount::SyncType::SELECTIVE_SYNC) {
         bool useVfs = (_syncType == NewAccount::SyncType::USE_VFS);
