@@ -882,12 +882,12 @@ void ownCloudGui::raise()
 }
 
 
-void ownCloudGui::slotShowShareDialog(const QString &sharePath, const QString &localPath)
+void ownCloudGui::slotShowShareInBrowser(const QString &sharePath, const QString &localPath)
 {
     QString file;
     const auto folder = FolderMan::instance()->folderForPath(localPath, &file);
     if (!folder) {
-        qCWarning(lcApplication) << "Could not open share dialog for" << localPath << "no responsible folder found";
+        qCWarning(lcApplication) << "Could not open browser share page for" << localPath << "no responsible folder found";
         return;
     }
 

@@ -281,8 +281,8 @@ public:
      *
      * Allow link sharing and or user/group sharing
      */
-    [[deprecated("themable link sharing has been removed as of client 8.0")]] virtual bool linkSharing() const;
-    [[deprecated("oc10 user group sharing has been removed as of client 8.0")]] virtual bool userGroupSharing() const;
+    virtual bool linkSharing() const;
+    virtual bool userGroupSharing() const;
 
     /**
      * If this returns true, the user cannot configure the proxy in the network settings.

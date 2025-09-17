@@ -103,7 +103,7 @@ public Q_SLOTS:
      * localPath is the absolute local path to it (so not relative
      * to the folder).
      */
-    void slotShowShareDialog(const QString &sharePath, const QString &localPath);
+    void slotShowShareInBrowser(const QString &sharePath, const QString &localPath);
     void handleAccountSetupError(const QString &error);
 
 private:
