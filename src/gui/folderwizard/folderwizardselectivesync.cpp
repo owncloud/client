@@ -41,12 +41,12 @@ FolderWizardSelectiveSync::FolderWizardSelectiveSync(FolderWizardPrivate *parent
     _selectiveSync = new SelectiveSyncWidget(folderWizardPrivate()->accountState()->account(), this);
     layout->addWidget(_selectiveSync);
 
-    if (!Theme::instance()->forceVirtualFilesOption() && Theme::instance()->showVirtualFilesOption()
-        && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
+    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
         _virtualFilesCheckBox = new QCheckBox(tr("Use virtual files instead of downloading content immediately"));
         connect(_virtualFilesCheckBox, &QCheckBox::checkStateChanged, this, &FolderWizardSelectiveSync::slotVfsStateChanged);
         _virtualFilesCheckBox->setChecked(true);
         layout->addWidget(_virtualFilesCheckBox);
+        _virtualFilesCheckBox->setDisabled(Theme::instance()->forceVirtualFilesOption());
     }
 }
 
