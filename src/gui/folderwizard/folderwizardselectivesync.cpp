@@ -27,7 +27,6 @@
 #include "libsync/theme.h"
 
 #include "common/vfs.h"
-#include "gui/settingsdialog.h"
 
 #include <QCheckBox>
 #include <QVBoxLayout>
@@ -45,8 +44,7 @@ FolderWizardSelectiveSync::FolderWizardSelectiveSync(FolderWizardPrivate *parent
     if (!Theme::instance()->forceVirtualFilesOption() && Theme::instance()->showVirtualFilesOption()
         && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
         _virtualFilesCheckBox = new QCheckBox(tr("Use virtual files instead of downloading content immediately"));
-        connect(
-            _virtualFilesCheckBox, &QCheckBox::checkStateChanged, this, [this](Qt::CheckState state) { _selectiveSync->setEnabled(state == Qt::Unchecked); });
+        connect(_virtualFilesCheckBox, &QCheckBox::checkStateChanged, this, &FolderWizardSelectiveSync::slotVfsStateChanged);
         _virtualFilesCheckBox->setChecked(true);
         layout->addWidget(_virtualFilesCheckBox);
     }
@@ -84,4 +82,10 @@ bool FolderWizardSelectiveSync::useVirtualFiles() const
 const QSet<QString> &FolderWizardSelectiveSync::selectiveSyncBlackList() const
 {
     return _selectiveSyncBlackList;
+}
+
+void FolderWizardSelectiveSync::slotVfsStateChanged(Qt::CheckState state)
+{
+    // Enable the selective sync widget when VFS is *not* used, disable it if VFS *is* used.
+    _selectiveSync->setEnabled(state == Qt::Unchecked);
 }
