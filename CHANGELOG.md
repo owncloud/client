@@ -1,5 +1,6 @@
 # Table of Contents
 
+* [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
 * [Changelog for 6.0.0](#changelog-for-owncloud-desktop-client-600-2025-09-08)
 * [Changelog for 5.3.2](#changelog-for-owncloud-desktop-client-532-2025-01-20)
 * [Changelog for 5.3.1](#changelog-for-owncloud-desktop-client-531-2024-06-11)
@@ -37,6 +38,27 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v6.0.0...master
+
+## Summary
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12305](https://github.com/owncloud/client/pull/12305)
+
+## Details
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12305](https://github.com/owncloud/client/pull/12305)
+
+   On the last page of the folder wizard, there is a checkbox to select/deselect
+   VFS. By default this is checked. The bug was that after unchecking this
+   checkbox, it could not be checked again. This has now been fixed.
+
+   https://github.com/owncloud/client/pull/12305
+
 # Changelog for ownCloud Desktop Client [6.0.0] (2025-09-08)
 
 The following sections list the changes in ownCloud Desktop Client 6.0.0 relevant to
