@@ -15,7 +15,6 @@
 #include "gui/clientproxy.h"
 #include "gui/fetchserversettings.h"
 #include "gui/networkinformation.h"
-#include "gui/tlserrordialog.h"
 #include "libsync/account.h"
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/networkjobs.h"
@@ -42,7 +41,7 @@ namespace {
     };
 }
 
-ConnectionValidator::ConnectionValidator(AccountPtr account, QObject *parent)
+ConnectionValidator::ConnectionValidator(Account *account, QObject *parent)
     : QObject(parent)
     , _account(account)
     , _checkServerJob(nullptr)
@@ -112,9 +111,14 @@ void ConnectionValidator::systemProxyLookupDone(const QNetworkProxy &proxy)
 // The actual check
 void ConnectionValidator::slotCheckServerAndAuth()
 {
-    Q_ASSERT(_checkServerJob == nullptr);
-    auto checkServerFactory = CheckServerJobFactory::createFromAccount(_account, _clearCookies, this);
+    if (!_account) {
+        qCWarning(lcConnectionValidator) << "Bailing out, Account had been deleted";
+        reportResult(NotConfigured);
+        return;
+    }
 
+    Q_ASSERT(_checkServerJob == nullptr);
+    auto checkServerFactory = CheckServerJobFactory::createFromAccount(_account->sharedFromThis(), _clearCookies, this);
     _checkServerJob = checkServerFactory.startJob(_account->url(), this);
 
     connect(_checkServerJob->reply()->manager(), &AccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
@@ -127,6 +131,12 @@ void ConnectionValidator::slotCheckServerAndAuth()
 
 void ConnectionValidator::checkServerJobFinished()
 {
+    if (!_account) {
+        qCWarning(lcConnectionValidator) << "Bailing out, Account had been deleted";
+        reportResult(NotConfigured);
+        return;
+    }
+
     if (_checkServerJob->success()) {
         const auto result = _checkServerJob->result().value<CheckServerJobResult>();
 
@@ -169,6 +179,12 @@ void ConnectionValidator::checkServerJobFinished()
 
 void ConnectionValidator::statusFound(const QUrl &url, const QJsonObject &info)
 {
+    if (!_account) {
+        qCWarning(lcConnectionValidator) << "Bailing out, Account had been deleted";
+        reportResult(NotConfigured);
+        return;
+    }
+
     // status.php was found.
     qCInfo(lcConnectionValidator) << "** Application: ownCloud found: "
                                   << url << " with version "
@@ -207,8 +223,14 @@ void ConnectionValidator::checkAuthentication()
     // simply GET the WebDAV root, will fail if credentials are wrong.
     // continue in slotAuthCheck here :-)
 
+    if (!_account) {
+        _errors << tr("No ownCloud account configured");
+        reportResult(NotConfigured);
+        return;
+    }
+
     // we explicitly use a legacy dav path here
-    auto *job = new PropfindJob(_account, _account->url(), Theme::instance()->webDavPath(), PropfindJob::Depth::Zero, this);
+    auto *job = new PropfindJob(_account->sharedFromThis(), _account->url(), Theme::instance()->webDavPath(), PropfindJob::Depth::Zero, this);
     job->setAuthenticationJob(true); // don't retry
     job->setTimeout(timeoutToUse());
     job->setProperties({ QByteArrayLiteral("getlastmodified") });
@@ -220,6 +242,12 @@ void ConnectionValidator::checkAuthentication()
 // Lisa todo: I hit this once and nothing happened in the gui?!
 void ConnectionValidator::slotAuthFailed()
 {
+    if (!_account) {
+        qCWarning(lcConnectionValidator) << "Bailing out, Account had been deleted";
+        reportResult(NotConfigured);
+        return;
+    }
+
     auto job = qobject_cast<PropfindJob *>(sender());
     Status stat = Timeout;
 
@@ -248,9 +276,15 @@ void ConnectionValidator::slotAuthFailed()
 
 void ConnectionValidator::slotAuthSuccess()
 {
+    if (!_account) {
+        qCWarning(lcConnectionValidator) << "Bailing out, Account had been deleted";
+        reportResult(NotConfigured);
+        return;
+    }
+
     _errors.clear();
     if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
-        auto *fetchSetting = new FetchServerSettingsJob(_account, this);
+        auto *fetchSetting = new FetchServerSettingsJob(_account->sharedFromThis(), this);
         const auto unsupportedServerError = [this] {
             _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
         };
