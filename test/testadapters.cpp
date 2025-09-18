@@ -93,6 +93,8 @@ public:
 protected:
     virtual QNetworkReply *handleRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device)
     {
+        Q_UNUSED(device)
+
         if (op == QNetworkAccessManager::GetOperation) {
             QString reqPath = req.url().path();
             if (reqPath == QStringLiteral("/.well-known/webfinger")) {

@@ -24,13 +24,10 @@
 #include "httplogger.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
-#include "propagateuploadfile.h"
-#include "propagatorjobs.h"
 #include "syncengine.h"
 
 #include <QFileInfo>
 
-#include <cmath>
 #include <memory>
 
 namespace {
@@ -145,7 +142,7 @@ void PropagateUploadFileTUS::startNextChunk()
     }();
 
     QNetworkRequest req = prepareRequest(chunkSize);
-    auto device = prepareDevice(chunkSize);
+    UploadDevice *device = prepareDevice(chunkSize);
     if (!device) {
         return;
     }
@@ -166,7 +163,7 @@ void PropagateUploadFileTUS::startNextChunk()
 
     addChildJob(job);
     connect(job, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileTUS::slotChunkFinished);
-    job->addNewReplyHook([device, this](QNetworkReply *reply) {
+    job->addNewReplyHook([this](QNetworkReply *reply) {
         connect(reply, &QNetworkReply::uploadProgress, this, [this](qint64 bytesSent, qint64) {
             propagator()->reportProgress(*_item, _currentOffset + bytesSent);
         });
