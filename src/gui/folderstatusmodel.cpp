@@ -352,7 +352,7 @@ void FolderStatusModel::slotUpdateFolderState(Folder *folder)
 {
     if (!folder)
         return;
-    for (int i = 0; i < _folders.size(); ++i) {
+    for (size_t i = 0; i < _folders.size(); ++i) {
         if (_folders.at(i)->_folder == folder) {
             Q_EMIT dataChanged(index(i, 0), index(i, 0));
         }

@@ -46,6 +46,8 @@ void Platform::setApplication(QCoreApplication *application)
             new CrashReporter::Handler(QDir::tempPath(), true, QStringLiteral("%1/" CRASHREPORTER_EXECUTABLE).arg(application->applicationDirPath()));
         connect(application, &QCoreApplication::aboutToQuit, this, [crashHandler] { delete crashHandler; });
     }
+#else
+    Q_UNUSED(application)
 #endif
 }
 
