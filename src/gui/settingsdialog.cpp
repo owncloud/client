@@ -73,8 +73,6 @@ public:
     {
         const auto qmlIcon = OCC::Resources::QMLResources::parseIcon(id);
         const auto accountState = OCC::AccountManager::instance()->accountState(QUuid::fromString(qmlIcon.iconName));
-        if (!accountState || !accountState->account())
-            return {};
         return OCC::Resources::pixmap(requestedSize, accountState->account()->avatar(), qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
     }
 };
