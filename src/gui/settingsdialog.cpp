@@ -166,7 +166,7 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::onAccountAdded(AccountState *state)
 {
-    if (!state || !state->account())
+    if (!state)
         return;
     auto accountSettings = new AccountSettings(state, this);
     _ui->stack->addWidget(accountSettings);
@@ -176,7 +176,7 @@ void SettingsDialog::onAccountAdded(AccountState *state)
 
 void SettingsDialog::onAccountRemoved(AccountState *state)
 {
-    if (!state || !state->account())
+    if (!state)
         return;
     // todo: #37. using the account after we know it's been removed is not ok.
     Account *acc = state->account().data();
@@ -202,9 +202,6 @@ void SettingsDialog::addModalWidget(QWidget *w)
 
 void SettingsDialog::requestModality(Account *account)
 {
-    if (!account)
-        return;
-
     _ui->quickWidget->setEnabled(false);
     if (_modalStack.isEmpty()) {
         setCurrentAccount(account);
@@ -215,7 +212,7 @@ void SettingsDialog::requestModality(Account *account)
 
 void SettingsDialog::ceaseModality(Account *account)
 {
-    if (account && _modalStack.contains(account)) {
+    if (_modalStack.contains(account)) {
         _modalStack.removeOne(account);
         if (!_modalStack.isEmpty()) {
             setCurrentAccount(_modalStack.first());
@@ -275,7 +272,7 @@ SettingsDialog::SettingsPage SettingsDialog::currentPage() const
 
 void SettingsDialog::setCurrentAccount(Account *account)
 {
-    if (!account || account == _currentAccount)
+    if (account == _currentAccount)
         return;
 
     _currentAccount = account;
