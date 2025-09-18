@@ -73,6 +73,7 @@ CheckServerJobFactory CheckServerJobFactory::createFromAccount(const AccountPtr 
     // in order to receive all ssl erorrs we need a fresh QNam
     auto nam = account->credentials()->createAccessManager();
     nam->setCustomTrustedCaCertificates(account->approvedCerts());
+    // todo: DC-150 this means the nam does not get deleted with the job but hangs around until the parent is gone? investigate!
     nam->setParent(parent);
     // do we start with the old cookies or new
     if (!(clearCookies && Theme::instance()->connectionValidatorClearCookies())) {

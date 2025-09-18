@@ -133,7 +133,7 @@ void Application::lastAccountStateRemoved() const
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     // Hook up the GUI slots to the account state's Q_SIGNALS:
-    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotAccountStateChanged);
+    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
     connect(accountState->account().data(), &Account::serverVersionChanged, _gui.data(),
         [account = accountState->account().data(), this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
@@ -151,7 +151,7 @@ void Application::slotCleanup()
 
     // by now the credentials are supposed to be persisted
     // don't start async credentials jobs during shutdown
-    AccountManager::instance()->save(false);
+    AccountManager::instance()->save();
 
     FolderMan::instance()->unloadAndDeleteAllFolders();
 

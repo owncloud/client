@@ -204,11 +204,6 @@ void SyncScheduler::stop()
     _running = false;
 }
 
-bool SyncScheduler::hasCurrentRunningSyncRunning() const
-{
-    return _currentSync;
-}
-
 void SyncScheduler::setPauseSyncWhenMetered(bool pauseSyncWhenMetered)
 {
     _pauseSyncWhenMetered = pauseSyncWhenMetered;

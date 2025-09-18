@@ -37,6 +37,11 @@ using namespace OCC::FileSystem::SizeLiterals;
 
 QString getFilePathFromUrl(const QUrl &url);
 
+class FileInfo;
+
+OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccount();
+
+OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccountWithFileSupport(FileInfo intialRoot);
 
 inline QByteArray generateEtag()
 {
@@ -502,7 +507,10 @@ private:
     Override _override;
 
 public:
+    FakeAM(QObject *parent);
     FakeAM(FileInfo initialRoot, QObject *parent);
+    // void setRemoteState(FileInfo info);
+    //->use in FakeFolder after createDummyAccount around line 775
     FileInfo &currentRemoteState() { return _remoteRootFileInfo; }
     FileInfo &uploadState() { return _uploadFileInfo; }
 
@@ -515,16 +523,28 @@ protected:
         QIODevice *outgoingData = nullptr) override;
 };
 
+
 class FakeCredentials : public OCC::AbstractCredentials
 {
 public:
-    FakeCredentials(OCC::AccessManager *am)
-        : _am { am }
+    // this impl is concerning. Unfortunately it's used so many places in tests it's very hard to align it with the real world impl and use of the
+    // AbstractCredentials which makes it pretty questionable at base. anyway, the abstract creds now want an account and a parent in the ctr as the setAccount
+    // member is removed, and yeah, it should have a parent to keep things clean, but refactoring the tests is going to be a very large job so that needs to
+    // happen another time. I find it very concerning that the tests work without any account at all.
+    FakeCredentials(OCC::Account *account, QObject *parent)
+        : OCC::AbstractCredentials(account, parent)
     {
+        _am = new FakeAM({}, this);
     }
 
-    QString credentialsType() const override { return QStringLiteral("test"); }
-    QString user() const override { return QStringLiteral("admin"); }
+    FakeCredentials(OCC::Account *account, FakeAM *am, QObject *parent)
+        : OCC::AbstractCredentials(account, parent)
+        , _am(am)
+    {
+        if (_am->parent() == nullptr)
+            _am->setParent(this);
+    }
+
     OCC::AccessManager *createAccessManager() const override { return _am; }
     bool ready() const override { return true; }
     void fetchFromKeychain() override { }
@@ -541,9 +561,9 @@ private:
 class FakeFolder : public QObject
 {
     Q_OBJECT
+    FakeAM *_fakeAm;
     const QTemporaryDir _tempDir = OCC::TestUtils::createTempDir();
     DiskFileModifier _localModifier;
-    FakeAM *_fakeAm;
     OCC::TestUtils::TestUtilsPrivate::AccountStateRaii _accountState =
         OCC::TestUtils::TestUtilsPrivate::AccountStateRaii{nullptr, &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
     std::unique_ptr<OCC::SyncJournalDb> _journalDb;
