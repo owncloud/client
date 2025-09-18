@@ -476,6 +476,9 @@ void OAuth::openBrowser()
     }
 }
 
+// todo: I was contemplating how we can make sure the passed account isn't null before we use it
+// to seed the OAuth ctr, and really, I'm not sure this should be a subclass of oauth in the first place. Instead it could simply use an
+// oauth instance to complete the tasks it can't do itself -> this could possibly be a "has a" not an "is a" impl
 AccountBasedOAuth::AccountBasedOAuth(Account *account, QObject *parent)
     : OAuth(account->url(), account->davUser(), account->accessManager(), parent)
     , _account(account)
@@ -520,7 +523,8 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
         return;
     }
 
-    // I don't see where this ever gets set to false
+    // I don't see where this ever gets set to false - seems to rely on a one shot run before creating a new instance where the value
+    // is initialized to false. hm.
     _isRefreshingToken = true;
 
 

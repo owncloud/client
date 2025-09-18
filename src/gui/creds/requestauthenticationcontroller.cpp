@@ -118,6 +118,6 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         Q_EMIT authenticationSucceeded(accessToken, refreshToken);
     }
 
-    ownCloudGui::raise();.
+    ownCloudGui::raise();
 }
 }
