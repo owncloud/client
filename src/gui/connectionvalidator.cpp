@@ -118,7 +118,7 @@ void ConnectionValidator::slotCheckServerAndAuth()
     }
 
     Q_ASSERT(_checkServerJob == nullptr);
-    auto checkServerFactory = CheckServerJobFactory::createFromAccount(_account->sharedFromThis(), _clearCookies, this);
+    auto checkServerFactory = CheckServerJobFactory::createFromAccount(_account, _clearCookies);
     _checkServerJob = checkServerFactory.startJob(_account->url(), this);
 
     connect(_checkServerJob->reply()->manager(), &AccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {

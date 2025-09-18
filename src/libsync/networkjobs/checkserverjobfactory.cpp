@@ -68,13 +68,16 @@ QUrl CheckServerJobResult::serverUrl() const
 // could signal out "finished" with a copy of the result?
 // once "finished" it could delete the job, woopie do!
 // caller could keep an adapter around as member for re-use if needed, or hit and quit.
-CheckServerJobFactory CheckServerJobFactory::createFromAccount(const AccountPtr &account, bool clearCookies, QObject *parent)
+CheckServerJobFactory CheckServerJobFactory::createFromAccount(const Account *account, bool clearCookies)
 {
+    // this is horrid but we can't return an "empty" factory so just crash.
+    // TODO: the jobs need a lot of work.
+    Q_ASSERT(account);
+
     // in order to receive all ssl erorrs we need a fresh QNam
+    // see startJob where we parent the nam to the job itself to ensure it is cleaned up asap
     auto nam = account->credentials()->createAccessManager();
     nam->setCustomTrustedCaCertificates(account->approvedCerts());
-    // todo: DC-150 this means the nam does not get deleted with the job but hangs around until the parent is gone? investigate!
-    nam->setParent(parent);
     // do we start with the old cookies or new
     if (!(clearCookies && Theme::instance()->connectionValidatorClearCookies())) {
         const auto newJar = account->accessManager()->ownCloudCookieJar()->clone();
@@ -94,7 +97,12 @@ CoreJob *CheckServerJobFactory::startJob(const QUrl &url, QObject *parent)
     req.setRawHeader(QByteArrayLiteral("OC-Connection-Validator"), QByteArrayLiteral("desktop"));
     req.setMaximumRedirectsAllowed(0);
 
-    auto job = new CheckServerCoreJob(nam()->get(req), parent);
+    auto job = new CheckServerCoreJob(_nam->get(req), parent);
+    // this looks shady, but for the check server jobs we create a new nam on every run. The old approach was to parent it to the value
+    // passed to the factory but in fact that was often the connection validator which lives for a really long time, and hence is not the
+    // best parent for that temp nam.
+    // setting the job as parent is a more reasonable choice but this is not a great place for it -
+    _nam->setParent(job);
 
     // make this handle maintenance mode - only if necessary
     /*  QObject::connect(job->reply(), &QNetworkReply::redirected, job, [job] {

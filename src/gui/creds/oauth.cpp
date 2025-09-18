@@ -489,9 +489,14 @@ void AccountBasedOAuth::startAuthentication()
 
 void AccountBasedOAuth::fetchWellKnown()
 {
+    if (!_account) {
+        qCWarning(lcOauth) << "Unable to fetch well known, account has been deleted";
+        return;
+    }
+
     qCDebug(lcOauth) << "starting CheckServerJob before fetching" << wellKnownPathC;
 
-    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account, true, this).startJob(_serverUrl, this);
+    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account.get(), true).startJob(_serverUrl, this);
 
     connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
         if (checkServerJob->success()) {
