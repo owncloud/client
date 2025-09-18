@@ -119,8 +119,8 @@ Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accoun
         status = SyncResult::Paused;
     }
     setSyncState(status);
-    // check if the local path exists
-    if (checkLocalPath()) {
+    // check if the starting conditions are legit
+    if (_accountState && _accountState->account() && checkLocalPath()) {
         prepareFolder(path());
         // those errors should not persist over sessions
         _journal.wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
@@ -132,7 +132,7 @@ Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accoun
             qCWarning(lcFolder, "Could not read system exclude file");
         }
 
-        connect(_accountState.data(), &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
+        connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
 
         connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
         connect(_engine.data(), &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
@@ -194,7 +194,7 @@ Result<void, QString> Folder::checkPathLength(const QString &path)
 
 GraphApi::Space *Folder::space() const
 {
-    if (_accountState->supportsSpaces() && _accountState->account()->spacesManager()) {
+    if (_accountState && _accountState->supportsSpaces() && _accountState->account() && _accountState->account()->spacesManager()) {
         return _accountState->account()->spacesManager()->space(_definition.spaceId());
     }
     return nullptr;
@@ -376,12 +376,9 @@ QString Folder::remotePath() const
 
 QUrl Folder::webDavUrl() const
 {
-    const QString spaceId = _definition.spaceId();
-    if (!spaceId.isEmpty()) {
-        if (auto *space = _accountState->account()->spacesManager()->space(spaceId)) {
-            return QUrl(space->drive().getRoot().getWebDavUrl());
-        }
-    }
+    GraphApi::Space *sp = space();
+    if (sp)
+        return QUrl(sp->drive().getRoot().getWebDavUrl());
     return _definition.webDavUrl();
 }
 
@@ -407,7 +404,9 @@ bool Folder::syncPaused() const
 
 bool Folder::canSync() const
 {
-    return _engine && !syncPaused() && accountState()->readyForSync() && isReady() && _accountState->account()->hasCapabilities() && _folderWatcher;
+    if (!_engine || !_accountState || !_accountState->account() || !_folderWatcher)
+        return false;
+    return !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
 }
 
 bool Folder::isReady() const
@@ -555,6 +554,9 @@ void Folder::createGuiLog(const QString &filename, LogStatus status, int count,
 
 void Folder::startVfs()
 {
+    if (!_accountState || !_accountState->account())
+        return;
+
     OC_ENFORCE(_vfs);
     OC_ENFORCE(_vfs->mode() == _definition.virtualFilesMode);
 
@@ -1329,7 +1331,7 @@ QString FolderDefinition::displayName() const
 
 bool Folder::groupInSidebar() const
 {
-    if (_accountState->account()->hasDefaultSyncRoot()) {
+    if (_accountState && _accountState->account() && _accountState->account()->hasDefaultSyncRoot()) {
         // QFileInfo is horrible and "/foo/" is treated different to "/foo"
         const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
         Q_ASSERT(QFileInfo(parentDir) != QFileInfo(path()));
