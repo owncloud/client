@@ -20,7 +20,10 @@ else:
 
     if not os.path.exists(syncstate_lib_file):
         response = request.get(
-            'https://raw.github.com/owncloud/client-desktop-shell-integration-nautilus/master/src/syncstate.py',
+            (
+                'https://raw.githubusercontent.com/'
+                'owncloud/client-desktop-shell-integration-nautilus/master/src/syncstate.py'
+            )
         )
         assert response.status_code == 200, 'Failed to get content of syncstate file'
         with open(syncstate_lib_file, 'w', encoding='utf-8') as f:
