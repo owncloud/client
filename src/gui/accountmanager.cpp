@@ -422,9 +422,7 @@ AccountState *AccountManager::addAccountState(std::unique_ptr<AccountState> &&ac
 
     auto *rawAccount = statePtr->account().get();
     // this slot can't be connected until the account state exists because saveAccount uses the state
-    connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] {
-        saveAccount(rawAccount);
-    });
+    connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] { saveAccount(rawAccount); });
 
     Q_EMIT accountAdded(statePtr);
     Q_EMIT accountsChanged();

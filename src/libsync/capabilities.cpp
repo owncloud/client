@@ -52,64 +52,6 @@ bool Capabilities::sharePublicLink() const
     return shareAPI() && _fileSharingPublicCapabilities.value(QStringLiteral("enabled"), true).toBool();
 }
 
-bool Capabilities::sharePublicLinkAllowUpload() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("upload")).toBool();
-}
-
-bool Capabilities::sharePublicLinkSupportsUploadOnly() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("supports_upload_only")).toBool();
-}
-
-static bool getEnforcePasswordCapability(const QVariantMap &fileSharingPublicCapabilities, const QString &name)
-{
-    auto value = fileSharingPublicCapabilities[QStringLiteral("password")].toMap()[QStringLiteral("enforced_for")].toMap()[name];
-    if (!value.isValid())
-        return fileSharingPublicCapabilities[QStringLiteral("password")].toMap()[QStringLiteral("enforced")].toBool();
-    return value.toBool();
-}
-
-bool Capabilities::sharePublicLinkEnforcePasswordForReadOnly() const
-{
-    return getEnforcePasswordCapability(_fileSharingPublicCapabilities, QStringLiteral("read_only"));
-}
-
-bool Capabilities::sharePublicLinkEnforcePasswordForReadWrite() const
-{
-    return getEnforcePasswordCapability(_fileSharingPublicCapabilities, QStringLiteral("read_write"));
-}
-
-bool Capabilities::sharePublicLinkEnforcePasswordForUploadOnly() const
-{
-    return getEnforcePasswordCapability(_fileSharingPublicCapabilities, QStringLiteral("upload_only"));
-}
-
-bool Capabilities::sharePublicLinkDefaultExpire() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("enabled")).toBool();
-}
-
-int Capabilities::sharePublicLinkDefaultExpireDateDays() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("days")).toInt();
-}
-
-bool Capabilities::sharePublicLinkEnforceExpireDate() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("enforced")).toBool();
-}
-
-bool Capabilities::sharePublicLinkMultiple() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("multiple")).toBool();
-}
-
-bool Capabilities::shareResharing() const
-{
-    return _fileSharingCapabilities.value(QStringLiteral("resharing")).toBool();
-}
-
 int Capabilities::defaultPermissions() const
 {
     return _fileSharingCapabilities.value(QStringLiteral("default_permissions"), 1).toInt();

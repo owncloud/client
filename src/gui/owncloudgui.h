@@ -37,11 +37,6 @@ class ShareDialog;
 class Application;
 class LogBrowser;
 
-enum class ShareDialogStartPage {
-    UsersAndGroups,
-    PublicLinks,
-};
-
 /**
  * @brief The ownCloudGui class
  * @ingroup gui
@@ -89,7 +84,7 @@ public Q_SLOTS:
      * localPath is the absolute local path to it (so not relative
      * to the folder).
      */
-    void slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
+    void slotShowShareInBrowser(const QString &sharePath, const QString &localPath);
     void handleAccountSetupError(const QString &error);
 
 private:
