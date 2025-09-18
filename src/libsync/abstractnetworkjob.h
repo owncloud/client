@@ -56,13 +56,6 @@ public:
 
     virtual void start();
 
-    // todo: this is used by FolderWizardRemotePath - get rid of it then get rid of this accessor
-    QString path() const { return _path; }
-
-    /*
-     * The absolute url: baseUrl() + path() + query()
-     */
-    QUrl url() const;
 
     QNetworkReply *reply() const;
 
@@ -169,6 +162,11 @@ Q_SIGNALS:
     void finishedSignal(QPrivateSignal);
 
 protected:
+    /*
+     * The absolute url: baseUrl() + path() + query()
+     */
+    QUrl url() const;
+
     /** Initiate a network request, returning a QNetworkReply.
      *
      * Calls setReply() and setupConnections() on it.
@@ -191,8 +189,6 @@ protected:
      */
     virtual void finished() = 0;
 
-    QByteArray _responseTimestamp;
-
     QString replyStatusString();
 
     /*
@@ -201,9 +197,10 @@ protected:
      * The query must be fully encoded.
      */
     void setQuery(const QUrlQuery &query);
-    QUrlQuery query() const;
 
     AccountPtr _account;
+    QUrlQuery _query;
+    QByteArray _responseTimestamp;
 
 private:
     /** Makes this job drive a pre-made QNetworkReply
@@ -216,8 +213,6 @@ private:
 
     const QUrl _baseUrl;
     const QString _path;
-
-    QUrlQuery _query;
 
     std::chrono::seconds _timeout = httpTimeout;
     bool _timedout = false; // set to true when the timeout slot is received

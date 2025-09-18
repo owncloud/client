@@ -37,7 +37,10 @@ public:
 
     QString initialLocalPath() const;
 
-    QString remotePath() const;
+    // todo: #44 this used to be calculated by the folderWizardRemotePath impl, which was oc10 specific and is not longer used
+    // However! the folder defition still wants this value so I'm leaving this dummy here for now (which is the value returned for non oc10
+    // accounts), to be investigated later
+    QString remotePath() const { return QString(); }
 
     uint32_t priority() const;
 
@@ -57,7 +60,6 @@ private:
     QPointer<AccountState> _account;
     class SpacesPage *_spacesPage;
     class FolderWizardLocalPath *_folderWizardSourcePage = nullptr;
-    class FolderWizardRemotePath *_folderWizardTargetPage = nullptr;
     class FolderWizardSelectiveSync *_folderWizardSelectiveSyncPage = nullptr;
 };
 

@@ -64,18 +64,13 @@ AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, 
 
 QUrl AbstractNetworkJob::url() const
 {
-    return Utility::concatUrlPath(_baseUrl, path(), query());
+    return Utility::concatUrlPath(_baseUrl, _path, _query);
 }
 
 
 void AbstractNetworkJob::setQuery(const QUrlQuery &query)
 {
     _query = query;
-}
-
-QUrlQuery AbstractNetworkJob::query() const
-{
-    return _query;
 }
 
 void AbstractNetworkJob::setTimeout(const std::chrono::seconds sec)

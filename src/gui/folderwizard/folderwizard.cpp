@@ -16,7 +16,6 @@
 #include "folderwizard_p.h"
 
 #include "folderwizardlocalpath.h"
-#include "folderwizardremotepath.h"
 #include "folderwizardselectivesync.h"
 
 #include "spacespage.h"
@@ -99,11 +98,6 @@ QString FolderWizardPrivate::initialLocalPath() const
 {
     return FolderMan::findGoodPathForNewSyncFolder(
         defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->account()->uuid());
-}
-
-QString FolderWizardPrivate::remotePath() const
-{
-    return _folderWizardTargetPage ? _folderWizardTargetPage->targetPath() : QString();
 }
 
 uint32_t FolderWizardPrivate::priority() const
