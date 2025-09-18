@@ -114,7 +114,8 @@ void PropagateRemoteMkdir::slotMkcolJobFinished()
     _item->_fileId = _job->reply()->rawHeader("OC-FileId");
 
     propagator()->_activeJobList.append(this);
-    auto propfindJob = new PropfindJob(_job->account(), _job->baseUrl(), _job->path(), PropfindJob::Depth::Zero, this);
+    auto propfindJob =
+        new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
     propfindJob->setProperties({"http://owncloud.org/ns:permissions"});
     connect(propfindJob, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &result) {
         propagator()->_activeJobList.removeOne(this);

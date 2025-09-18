@@ -56,13 +56,8 @@ public:
 
     virtual void start();
 
-    AccountPtr account() const { return _account; }
+    // todo: this is used by FolderWizardRemotePath - get rid of it then get rid of this accessor
     QString path() const { return _path; }
-
-    /*
-     * A base Url, for most of the jobs this will be the WebDAV entry point.
-     */
-    QUrl baseUrl() const;
 
     /*
      * The absolute url: baseUrl() + path() + query()

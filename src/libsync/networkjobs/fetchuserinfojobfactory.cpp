@@ -53,7 +53,7 @@ CoreJob *FetchUserInfoJobFactory::startJob(const QUrl &url, QObject *parent)
     req.setAttribute(OCC::DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
-    auto *job = new CoreJob(nam()->get(req), parent);
+    auto *job = new CoreJob(_nam->get(req), parent);
 
     QObject::connect(job->reply(), &QNetworkReply::finished, job, [job] {
         const auto data = job->reply()->readAll();

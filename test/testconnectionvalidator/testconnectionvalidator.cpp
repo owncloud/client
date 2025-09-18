@@ -147,7 +147,7 @@ private Q_SLOTS:
             return nullptr;
         });
 
-        ConnectionValidator val(fakeFolder.account(), nullptr);
+        ConnectionValidator val(fakeFolder.account().get(), nullptr);
         val.checkServer(ConnectionValidator::ValidationMode::ValidateAuthAndUpdate);
 
         QSignalSpy spy(&val, &ConnectionValidator::connectionResult);

@@ -25,8 +25,8 @@
 #include <QApplication>
 #include <QFileIconProvider>
 #include <QRandomGenerator>
+#include <QWidget>
 
-#include <set>
 
 using namespace std::chrono_literals;
 

@@ -19,7 +19,6 @@
 #include "common/asserts.h"
 #include "networkjobs.h"
 #include "account.h"
-#include "owncloudpropagator.h"
 #include "httplogger.h"
 
 #include "creds/abstractcredentials.h"
@@ -58,14 +57,14 @@ AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, 
     Q_ASSERT(baseUrl.isValid());
 }
 
-QUrl AbstractNetworkJob::baseUrl() const
+/*QUrl AbstractNetworkJob::baseUrl() const
 {
     return _baseUrl;
-}
+}*/
 
 QUrl AbstractNetworkJob::url() const
 {
-    return Utility::concatUrlPath(baseUrl(), path(), query());
+    return Utility::concatUrlPath(_baseUrl, path(), query());
 }
 
 
@@ -423,8 +422,7 @@ QDebug operator<<(QDebug debug, const OCC::AbstractNetworkJob *job)
 {
     QDebugStateSaver saver(debug);
     debug.setAutoInsertSpaces(false);
-    debug << job->metaObject()->className() << "(" << job->account().data() << ", " << job->url().toDisplayString()
-          << ", " << job->_verb;
+    debug << job->metaObject()->className() << "(" << job->url().toDisplayString() << ", " << job->_verb;
     if (auto reply = job->_reply) {
         debug << ", Original-Request-ID: " << reply->request().rawHeader("Original-Request-ID")
               << ", X-Request-ID: " << reply->request().rawHeader("X-Request-ID");

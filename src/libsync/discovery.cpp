@@ -14,7 +14,6 @@
 
 #include "discovery.h"
 #include "csync.h"
-#include "owncloudpropagator.h"
 #include "syncfileitem.h"
 
 #include "csync/csync_exclude.h"
@@ -25,7 +24,6 @@
 
 #include "libsync/theme.h"
 
-#include <algorithm>
 
 #include <QFile>
 #include <QFileInfo>

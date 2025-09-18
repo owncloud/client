@@ -264,7 +264,7 @@ void Account::clearCookieJar()
     _am->setCookieJar(new CookieJar);
 }
 
-AccessManager *Account::accessManager()
+AccessManager *Account::accessManager() const
 {
     return _am;
 }
