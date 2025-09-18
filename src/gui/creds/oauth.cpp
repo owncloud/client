@@ -476,7 +476,7 @@ void OAuth::openBrowser()
     }
 }
 
-AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)
+AccountBasedOAuth::AccountBasedOAuth(Account *account, QObject *parent)
     : OAuth(account->url(), account->davUser(), account->accessManager(), parent)
     , _account(account)
 {
@@ -496,7 +496,7 @@ void AccountBasedOAuth::fetchWellKnown()
 
     qCDebug(lcOauth) << "starting CheckServerJob before fetching" << wellKnownPathC;
 
-    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account.get(), true).startJob(_serverUrl, this);
+    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account, true).startJob(_serverUrl, this);
 
     connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
         if (checkServerJob->success()) {

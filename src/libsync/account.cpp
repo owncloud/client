@@ -212,25 +212,31 @@ AbstractCredentials *Account::credentials() const
 }
 
 // the credentials should be instantiated with the account as parent. we have to pass the creds in as the tests use their own
-// sublcass of AbstractCredentials = FakeCredentials.
+// subclass of AbstractCredentials = FakeCredentials.
 void Account::setCredentials(AbstractCredentials *cred)
 {
-    Q_ASSERT(cred);
-
-    if (_credentials == cred)
+    if (!cred || _credentials == cred)
         return;
 
-    // set active credential manager
+    // keep any cookies for new nam
     QNetworkCookieJar *jar = nullptr;
     if (_am) {
         jar = _am->cookieJar();
         jar->setParent(nullptr);
-        _am->deleteLater();
+    }
+    // get rid of the old credentials if they exist - imo this should never happen but who knows
+    // note the access manager is parented by the creds so let that take care of deleting the am, but verify it's gone
+    if (_credentials) {
+        delete _credentials;
+        _credentials = nullptr;
+        Q_ASSERT(_am == nullptr);
     }
 
     _credentials = cred;
-
     _am = _credentials->createAccessManager();
+    if (jar) {
+        _am->setCookieJar(jar);
+    }
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
@@ -238,9 +244,6 @@ void Account::setCredentials(AbstractCredentials *cred)
     _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
 
-    if (jar) {
-        _am->setCookieJar(jar);
-    }
     connect(_credentials, &AbstractCredentials::fetched, this, [this] {
         Q_EMIT credentialsFetched();
         _queueGuard.unblock();

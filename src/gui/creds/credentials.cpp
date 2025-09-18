@@ -75,7 +75,8 @@ protected:
 private:
     // The credentials object dies along with the account, while the QNAM might
     // outlive both.
-    // Lisa todo: that statement is very concerning. investigate.
+    // Lisa todo: that statement is very concerning. investigate -> In fact the nam is parented by the creds by default so no, it
+    // should not outlive the creds unless there are shenanigans wrt reparenting it.
     QPointer<const Credentials> _cred;
 };
 
@@ -283,9 +284,11 @@ bool Credentials::networkAvailable()
 
 void Credentials::refreshAccessTokenInternal()
 {
+    if (!_account)
+        return;
     // parent with nam to ensure we reset when the nam is reset
     // todo: #22 - the parenting here is highly questionable, as is the use of the shared account ptr
-    _oAuthJob = new AccountBasedOAuth(_account->sharedFromThis(), _account->accessManager());
+    _oAuthJob = new AccountBasedOAuth(_account, this);
     connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, &Credentials::handleRefreshError);
     connect(_oAuthJob, &AccountBasedOAuth::refreshFinished, this, &Credentials::handleRefreshSuccess);
 
@@ -297,7 +300,7 @@ void Credentials::askFromUser()
 {
     // I think this can happen when the re-auth process has already quasi started and is waiting for user input, but
     // we get a prompt to log in again. I am not quite sure as it's very hard to reproduce.
-    if (_requestAuth) {
+    if (_requestAuth || !_account) {
         // let the existing instance ride
         return;
     }
@@ -311,7 +314,7 @@ void Credentials::askFromUser()
     // if the auth fails the gui stays until the user gets it right or clicks the stay logged out button.
     connect(_requestAuth, &RequestAuthenticationController::authenticationSucceeded, this, &Credentials::askFromUserSucceeded);
     connect(_requestAuth, &RequestAuthenticationController::requestLogout, this, &Credentials::askFromUserLogout);
-    _requestAuth->startAuthentication(_account->sharedFromThis());
+    _requestAuth->startAuthentication(_account);
 }
 
 void Credentials::askFromUserSucceeded(const QString &token, const QString &refreshToken)

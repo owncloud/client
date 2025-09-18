@@ -155,7 +155,7 @@ public:
 
         QObject::connect(&desktopServiceHook, &DesktopServiceHook::hooked, this, &OAuthTestCase::openBrowserHook);
 
-        auto out = std::make_unique<AccountBasedOAuth>(account);
+        auto out = std::make_unique<AccountBasedOAuth>(account.get(), nullptr);
         QObject::connect(out.get(), &OAuth::result, this, &OAuthTestCase::oauthResult);
         return out;
     }

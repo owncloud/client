@@ -30,7 +30,7 @@ class RequestAuthenticationController : public QObject
 public:
     explicit RequestAuthenticationController(RequestAuthenticationWidget *widget, QObject *parent);
 
-    void startAuthentication(const AccountPtr account);
+    void startAuthentication(Account *account);
 
 Q_SIGNALS:
     void requestLogout();
@@ -44,11 +44,12 @@ private:
     void authUrlReady();
     void handleOAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken);
 
+    AccountBasedOAuth *_oauth = nullptr;
+    QPointer<Account> _account = nullptr;
+
     // these will be cleaned up by the SettingsDialog automatically when the AccountModalWidget is "finished"
     // that is handled internally when accept() or reject() is called
     QPointer<RequestAuthenticationWidget> _widget;
     QPointer<AccountModalWidget> _modalWidget;
-    AccountBasedOAuth *_oauth = nullptr;
-    AccountPtr _account = nullptr;
 };
 }
