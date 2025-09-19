@@ -12,59 +12,57 @@
  * for more details.
  */
 
-#ifndef PROTOCOLWIDGET_H
-#define PROTOCOLWIDGET_H
+#pragma once
 
-#include <QDialog>
-#include <QDateTime>
-#include <QLocale>
+#include <QWidget>
 
 #include "progressdispatcher.h"
-#include "owncloudgui.h"
-#include "models/protocolitemmodel.h"
-
-#include "protocolitem.h"
-
-#include "models/models.h"
-
-class QPushButton;
-class QSortFilterProxyModel;
-class QTableView;
 
 namespace OCC {
-class ExpandingHeaderView;
+
+class SyncFileItemStatusSetSortFilterProxyModel;
+class ProtocolItemModel;
+class Folder;
+
+namespace Models {
+    class SignalledQSortFilterProxyModel;
+}
 
 namespace Ui {
-    class ProtocolWidget;
+    class SyncErrorWidget;
 }
-class Application;
 
 /**
- * @brief The ProtocolWidget class
+ * @brief The SyncErrorWidget class
  * @ingroup gui
  */
-class ProtocolWidget : public QWidget
+class SyncErrorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProtocolWidget(QWidget *parent = nullptr);
-    ~ProtocolWidget() override;
-
-    static void showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
-        const QModelIndexList &items, const QPoint &pos);
-    static QMenu *showFilterMenu(QWidget *parent, Models::SignalledQSortFilterProxyModel *model, int role, const QString &columnName);
+    explicit SyncErrorWidget(QWidget *parent = nullptr);
+    ~SyncErrorWidget() override;
 
 public Q_SLOTS:
+    void slotProgressInfo(Folder *folder, const ProgressInfo &progress);
     void slotItemCompleted(Folder *folder, const SyncFileItemPtr &item);
     void filterDidChange();
 
+Q_SIGNALS:
+    void issueCountUpdated(int);
+
 private Q_SLOTS:
+    QMenu *showFilterMenu(QWidget *parent);
     void slotItemContextMenu(const QPoint &pos);
 
 private:
+    static void addResetFiltersAction(QMenu *menu, const QList<std::function<void()>> &resetFunctions);
+    std::function<void()> addStatusFilter(QMenu *menu);
+
     ProtocolItemModel *_model;
     Models::SignalledQSortFilterProxyModel *_sortModel;
-    Ui::ProtocolWidget *_ui;
+    SyncFileItemStatusSetSortFilterProxyModel *_statusSortModel;
+
+    Ui::SyncErrorWidget *_ui;
 };
 }
-#endif // PROTOCOLWIDGET_H

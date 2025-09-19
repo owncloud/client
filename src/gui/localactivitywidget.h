@@ -12,64 +12,51 @@
  * for more details.
  */
 
-#ifndef ISSUESWIDGET_H
-#define ISSUESWIDGET_H
+#pragma once
 
 #include <QDialog>
-#include <QDateTime>
 #include <QLocale>
-#include <QTimer>
 
-#include "models/expandingheaderview.h"
-#include "models/models.h"
-#include "models/protocolitemmodel.h"
 #include "owncloudgui.h"
-#include "progressdispatcher.h"
+#include "models/protocolitemmodel.h"
+
+#include "models/models.h"
 
 class QSortFilterProxyModel;
+class QTableView;
 
 namespace OCC {
-class SyncResult;
-class SyncFileItemStatusSetSortFilterProxyModel;
 
 namespace Ui {
-    class IssuesWidget;
+    class LocalActivityWidget;
 }
-class Application;
 
 /**
- * @brief The ProtocolWidget class
+ * @brief The LocalActivityWidget class
  * @ingroup gui
  */
-class IssuesWidget : public QWidget
+class LocalActivityWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit IssuesWidget(QWidget *parent = nullptr);
-    ~IssuesWidget() override;
+    explicit LocalActivityWidget(QWidget *parent = nullptr);
+    ~LocalActivityWidget() override;
+
+    // these absolutely do not belong here. move them to an independent impl which can be shared between the protocolWidget and the issuesWidget
+    static void showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
+        const QModelIndexList &items, const QPoint &pos);
+    static QMenu *showFilterMenu(QWidget *parent, Models::SignalledQSortFilterProxyModel *model, int role, const QString &columnName);
 
 public Q_SLOTS:
-    void slotProgressInfo(Folder *folder, const ProgressInfo &progress);
     void slotItemCompleted(Folder *folder, const SyncFileItemPtr &item);
     void filterDidChange();
 
-Q_SIGNALS:
-    void issueCountUpdated(int);
-
 private Q_SLOTS:
-    QMenu *showFilterMenu(QWidget *parent);
     void slotItemContextMenu(const QPoint &pos);
 
 private:
-    static void addResetFiltersAction(QMenu *menu, const QList<std::function<void()>> &resetFunctions);
-    std::function<void()> addStatusFilter(QMenu *menu);
-
     ProtocolItemModel *_model;
     Models::SignalledQSortFilterProxyModel *_sortModel;
-    SyncFileItemStatusSetSortFilterProxyModel *_statusSortModel;
-
-    Ui::IssuesWidget *_ui;
+    Ui::LocalActivityWidget *_ui;
 };
 }
-
-#endif

@@ -12,32 +12,32 @@
  * for more details.
  */
 
-#ifndef SERVERNOTIFICATIONHANDLER_H
-#define SERVERNOTIFICATIONHANDLER_H
+#pragma once
 
-#include <QtCore>
+#include <QWidget>
 
-#include "activitywidget.h"
-
-class QJsonDocument;
+class QTabWidget;
 
 namespace OCC {
 
-class ServerNotificationHandler : public QObject
+/**
+ * @brief The ActivitySettings class
+ * @ingroup gui
+ *
+ * Implements a tab for the settings dialog, displaying lists of local activities and sync issues
+ */
+class ActivitySettings : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ServerNotificationHandler(QObject *parent = nullptr);
+    explicit ActivitySettings(QWidget *parent = nullptr);
+    ~ActivitySettings() override;
 
-Q_SIGNALS:
-    void newNotificationList(ActivityList);
-
-public Q_SLOTS:
-    void slotFetchNotifications(AccountState *ptr);
+private Q_SLOTS:
+    void slotShowIssueItemCount(int cnt);
 
 private:
-    void slotNotificationsReceived(JsonApiJob *job, AccountState *accountState);
+    QTabWidget *_tab = nullptr;
+    int _syncErrorTabId = -1;
 };
 }
-
-#endif // SERVERNOTIFICATIONHANDLER_H

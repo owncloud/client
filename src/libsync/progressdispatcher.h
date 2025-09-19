@@ -269,7 +269,7 @@ namespace ErrorCategoryPrivate {
     /** Type of error
      *
      * Used for ProgressDispatcher::syncError. May trigger error interactivity
-     * in IssuesWidget.
+     * in SyncErrorWidget.
      */
     enum class ErrorCategory {
         Normal,

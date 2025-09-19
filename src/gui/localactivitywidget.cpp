@@ -12,9 +12,6 @@
  * for more details.
  */
 
-#include <QtGui>
-#include <QtWidgets>
-
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "commonstrings.h"
@@ -22,31 +19,34 @@
 #include "folderman.h"
 #include "guiutility.h"
 #include "openfilemanager.h"
-#include "protocolwidget.h"
+#include "localactivitywidget.h"
 #include "syncfileitem.h"
 
 #include "models/expandingheaderview.h"
 
-#include "ui_protocolwidget.h"
+#include <QActionGroup>
+#include <QClipboard>
+
+#include "ui_localactivitywidget.h"
 
 namespace OCC {
 
-ProtocolWidget::ProtocolWidget(QWidget *parent)
+LocalActivityWidget::LocalActivityWidget(QWidget *parent)
     : QWidget(parent)
-    , _ui(new Ui::ProtocolWidget)
+    , _ui(new Ui::LocalActivityWidget)
 {
     _ui->setupUi(this);
 
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted,
-        this, &ProtocolWidget::slotItemCompleted);
+        this, &LocalActivityWidget::slotItemCompleted);
 
-    connect(_ui->_tableView, &QTreeWidget::customContextMenuRequested, this, &ProtocolWidget::slotItemContextMenu);
+    connect(_ui->_tableView, &QTableView::customContextMenuRequested, this, &LocalActivityWidget::slotItemContextMenu);
 
     // Build the model-view "stack":
     //  _model <- _sortModel <- _statusSortModel <- _tableView
     _model = new ProtocolItemModel(2000, false, this);
     _sortModel = new Models::SignalledQSortFilterProxyModel(this);
-    connect(_sortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &ProtocolWidget::filterDidChange);
+    connect(_sortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &LocalActivityWidget::filterDidChange);
     _sortModel->setSourceModel(_model);
     _sortModel->setSortRole(Models::UnderlyingDataRole);
     _ui->_tableView->setModel(_sortModel);
@@ -75,7 +75,7 @@ ProtocolWidget::ProtocolWidget(QWidget *parent)
     });
 }
 
-ProtocolWidget::~ProtocolWidget()
+LocalActivityWidget::~LocalActivityWidget()
 {
     delete _ui;
 }
@@ -89,7 +89,7 @@ ProtocolWidget::~ProtocolWidget()
  * @param columnName the name column on which the filter is done
  * @return
  */
-QMenu *ProtocolWidget::showFilterMenu(QWidget *parent, Models::SignalledQSortFilterProxyModel *model, int role, const QString &columnName)
+QMenu *LocalActivityWidget::showFilterMenu(QWidget *parent, Models::SignalledQSortFilterProxyModel *model, int role, const QString &columnName)
 {
     auto menu = new QMenu(parent);
     menu->setAttribute(Qt::WA_DeleteOnClose);
@@ -103,7 +103,7 @@ QMenu *ProtocolWidget::showFilterMenu(QWidget *parent, Models::SignalledQSortFil
     return menu;
 }
 
-void ProtocolWidget::showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
+void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
     const QModelIndexList &items, const QPoint &pos)
 {
     auto menu = new QMenu(parent);
@@ -189,10 +189,10 @@ void ProtocolWidget::showContextMenu(QWidget *parent, QTableView *table, Models:
     }
 
     menu->popup(table->mapToGlobal(pos));
-    menu->setFocus(); // For accassability
+    menu->setFocus(); // For accessibility
 }
 
-void ProtocolWidget::slotItemContextMenu(const QPoint &pos)
+void LocalActivityWidget::slotItemContextMenu(const QPoint &pos)
 {
     auto rows = _ui->_tableView->selectionModel()->selectedRows();
     for (int i = 0; i < rows.size(); ++i) {
@@ -201,14 +201,14 @@ void ProtocolWidget::slotItemContextMenu(const QPoint &pos)
     showContextMenu(this, _ui->_tableView, _sortModel, _model, rows, pos);
 }
 
-void ProtocolWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &item)
+void LocalActivityWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &item)
 {
     if (!item->showInProtocolTab())
         return;
     _model->addProtocolItem(ProtocolItem { folder, item });
 }
 
-void ProtocolWidget::filterDidChange()
+void LocalActivityWidget::filterDidChange()
 {
     _ui->_filterButton->setText(CommonStrings::filterButtonText(_sortModel->filterRegularExpression().pattern().isEmpty() ? 0 : 1));
 }
