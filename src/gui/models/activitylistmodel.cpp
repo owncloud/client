@@ -208,8 +208,8 @@ void ActivityListModel::startFetchJob(AccountState *ast)
             list.reserve(activities.size());
             for (const auto &activ : activities) {
                 const auto json = activ.toObject();
-                list.append(Activity{Activity::ActivityType, json.value(QStringLiteral("id")).toString(), ast->account(),
-                    json.value(QStringLiteral("subject")).toString(), json.value(QStringLiteral("message")).toString(),
+                list.append(Activity{Activity::ActivityType, json.value(QStringLiteral("id")).toString(), ast->account()->displayNameWithHost(),
+                    ast->account()->uuid(), json.value(QStringLiteral("subject")).toString(), json.value(QStringLiteral("message")).toString(),
                     json.value(QStringLiteral("file")).toString(), QUrl(json.value(QStringLiteral("link")).toString()),
                     QDateTime::fromString(json.value(QStringLiteral("date")).toString(), Qt::ISODate)});
             }

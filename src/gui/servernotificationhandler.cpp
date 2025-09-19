@@ -63,6 +63,9 @@ void ServerNotificationHandler::slotFetchNotifications(AccountState *ptr)
 
 void ServerNotificationHandler::slotNotificationsReceived(JsonApiJob *job, AccountState *accountState)
 {
+    if (!accountState || !accountState->account())
+        return;
+
     if (job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
         qCWarning(lcServerNotification) << "Notifications failed with status code " << job->ocsStatus();
         return;
@@ -98,16 +101,10 @@ void ServerNotificationHandler::slotNotificationsReceived(JsonApiJob *job, Accou
         al._isPrimary = false;
         linkList.append(al);
 
-        list.append(Activity {
-            Activity::NotificationType,
-            id,
-            accountState->account(),
-            json.value(QStringLiteral("subject")).toString(),
-            json.value(QStringLiteral("message")).toString(),
-            QString(),
-            QUrl(json.value(QStringLiteral("link")).toString()),
-            QDateTime::fromString(json.value(QStringLiteral("datetime")).toString(), Qt::ISODate),
-            std::move(linkList) });
+        list.append(Activity{Activity::NotificationType, id, accountState->account()->displayNameWithHost(), accountState->account()->uuid(),
+            json.value(QStringLiteral("subject")).toString(), json.value(QStringLiteral("message")).toString(), QString(),
+            QUrl(json.value(QStringLiteral("link")).toString()), QDateTime::fromString(json.value(QStringLiteral("datetime")).toString(), Qt::ISODate),
+            std::move(linkList)});
     }
     Q_EMIT newNotificationList(list);
 }
