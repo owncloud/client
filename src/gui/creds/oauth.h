@@ -63,7 +63,7 @@ public:
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
-    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,QObject *parent);
+    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent);
     ~OAuth() override;
 
     virtual void startAuthentication();
@@ -146,7 +146,7 @@ class AccountBasedOAuth : public OAuth
     Q_OBJECT
 
 public:
-    explicit AccountBasedOAuth(AccountPtr account, QObject *parent = nullptr);
+    explicit AccountBasedOAuth(Account *account, QObject *parent);
 
     void startAuthentication() override;
 
@@ -162,7 +162,7 @@ protected:
     void fetchWellKnown() override;
 
 private:
-    AccountPtr _account;
+    QPointer<Account> _account;
 };
 
 QString toString(OAuth::PromptValuesSupportedFlags s);

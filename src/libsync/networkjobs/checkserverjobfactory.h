@@ -45,8 +45,10 @@ public:
      * clearCookies: Whether to clear the cookies before we start the CheckServerJob job
      * This option also depends on Theme::instance()->connectionValidatorClearCookies()
      */
-    static CheckServerJobFactory createFromAccount(const AccountPtr &account, bool clearCookies, QObject *parent);
+    static CheckServerJobFactory createFromAccount(const Account *account, bool clearCookies);
 
+    // the parent arg should be a fallback - we should be deleting jobs explicitly as soon as they are finished
+    // also note we create a "one off" nam for each checkServerJob so that is parented by the job for ensured cleanup
     CoreJob *startJob(const QUrl &url, QObject *parent) override;
 
 };

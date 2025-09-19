@@ -26,10 +26,10 @@ AbstractCoreJobFactory::~AbstractCoreJobFactory()
 {
 }
 
-QNetworkAccessManager *AbstractCoreJobFactory::nam() const
+/*QNetworkAccessManager *AbstractCoreJobFactory::nam() const
 {
     return _nam;
-}
+}*/
 
 void AbstractCoreJobFactory::setJobResult(CoreJob *job, const QVariant &result)
 {
