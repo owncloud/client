@@ -2,8 +2,8 @@ import os
 import re
 import sys
 import test
-import urllib.request
 import squish
+import helpers.api.http_helper as request
 
 from helpers.ConfigHelper import get_config, is_linux, is_windows
 from helpers.FilesHelper import sanitize_path
@@ -19,10 +19,15 @@ else:
     os.makedirs(custom_lib, exist_ok=True)
 
     if not os.path.exists(syncstate_lib_file):
-        urllib.request.urlretrieve(
-            'https://raw.github.com/owncloud/client-desktop-shell-integration-nautilus/master/src/syncstate.py',
-            os.path.join(custom_lib, 'syncstate.py'),
+        response = request.get(
+            (
+                'https://raw.githubusercontent.com/'
+                'owncloud/client-desktop-shell-integration-nautilus/master/src/syncstate.py'
+            )
         )
+        assert response.status_code == 200, 'Failed to get content of syncstate file'
+        with open(syncstate_lib_file, 'w', encoding='utf-8') as f:
+            f.write(response.text)
 
     # the script needs to use the system-wide python
     # to switch from the built-in interpreter
