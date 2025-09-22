@@ -240,7 +240,7 @@ public:
     /**
      * The SHA sum of the released git commit
      */
-    // TODO: only used in aboutVersions - can be removed from public interface
+    [[deprecated("gitSHA1 is only used in aboutVersions - can be removed from public interface and removed as of client 7.0")]]
     QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
 
     /**
