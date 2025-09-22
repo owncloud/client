@@ -57,11 +57,6 @@ AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, 
     Q_ASSERT(baseUrl.isValid());
 }
 
-/*QUrl AbstractNetworkJob::baseUrl() const
-{
-    return _baseUrl;
-}*/
-
 QUrl AbstractNetworkJob::url() const
 {
     return Utility::concatUrlPath(_baseUrl, _path, _query);
@@ -94,11 +89,6 @@ QNetworkReply *AbstractNetworkJob::reply() const
     return _reply;
 }
 
-bool AbstractNetworkJob::isAuthenticationJob() const
-{
-    return _isAuthenticationJob;
-}
-
 void AbstractNetworkJob::setAuthenticationJob(bool b)
 {
     _isAuthenticationJob = b;
@@ -106,7 +96,7 @@ void AbstractNetworkJob::setAuthenticationJob(bool b)
 
 bool AbstractNetworkJob::needsRetry() const
 {
-    if (isAuthenticationJob()) {
+    if (_isAuthenticationJob) {
         qCDebug(lcNetworkJob) << "Not Retry auth job" << this << url();
         return false;
     }
@@ -160,7 +150,7 @@ void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     _request.setPriority(_priority);
     _request.setTransferTimeout(duration_cast<milliseconds>(_timeout).count());
 
-    if (!isAuthenticationJob() && _account->jobQueue()->enqueue(this)) {
+    if (!_isAuthenticationJob && _account->jobQueue()->enqueue(this)) {
         return;
     }
 
@@ -190,8 +180,15 @@ void AbstractNetworkJob::adoptRequest(QPointer<QNetworkReply> reply)
 }
 
 void AbstractNetworkJob::slotFinished()
-{
+{        
     _finished = true;
+
+    if (!_reply) {
+        qCWarning(lcNetworkJob) << "Network job finished but reply is nullptr - aborting" << this;
+        Q_EMIT networkError(nullptr);
+        deleteLater();
+        return;
+    }
 
     if (!_account->credentials()->stillValid(_reply) && !ignoreCredentialFailure()) {
         _account->invalidCredentialsEncountered();
@@ -212,9 +209,11 @@ void AbstractNetworkJob::slotFinished()
     // get the Date timestamp from reply
     _responseTimestamp = _reply->rawHeader("Date");
 
-    if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull() && !(isAuthenticationJob() || reply()->request().hasRawHeader(QByteArrayLiteral("OC-Connection-Validator")))) {
+    if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull()
+        && !(_isAuthenticationJob || reply()->request().hasRawHeader(QByteArrayLiteral("OC-Connection-Validator")))) {
         Q_EMIT _account->unknownConnectionState();
-        qCWarning(lcNetworkJob) << this << "Unsupported redirect on" << _reply->url().toString() << "to" << reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+        qCWarning(lcNetworkJob) << this << "Unsupported redirect on" << _reply->url().toString() << "to"
+                                << reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
         Q_EMIT networkError(_reply);
         if (_account->jobQueue()->retry(this)) {
             qCWarning(lcNetworkJob) << "Retry Nr:" << _retryCount << _reply->url();
@@ -431,7 +430,7 @@ QDebug operator<<(QDebug debug, const OCC::AbstractNetworkJob *job)
         }
     }
     if (job->_timedout) {
-        debug << ", timedout";
+        debug << ", timed out";
     }
     debug << ")";
     return debug.maybeSpace();

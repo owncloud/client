@@ -381,8 +381,7 @@ void SyncEngine::startSync()
     }
 
     qCInfo(lcEngine) << "#### Discovery start ####################################################" << _duration.duration();
-    qCInfo(lcEngine) << "Server" << account()->capabilities().status().versionString()
-                     << (account()->isHttp2Supported() ? "Using HTTP/2" : "");
+    qCInfo(lcEngine) << "Server" << _account->capabilities().status().versionString() << (_account->isHttp2Supported() ? "Using HTTP/2" : "");
     _progressInfo->_status = ProgressInfo::Discovery;
     Q_EMIT transmissionProgress(*_progressInfo);
 
@@ -710,10 +709,10 @@ void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
     }
 }
 
-AccountPtr SyncEngine::account() const
+/*AccountPtr SyncEngine::account() const
 {
     return _account;
-}
+}*/
 
 void SyncEngine::setLocalDiscoveryOptions(LocalDiscoveryStyle style, std::set<QString> paths)
 {

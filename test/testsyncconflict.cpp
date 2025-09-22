@@ -119,7 +119,7 @@ private Q_SLOTS:
         } else {
             // Verify that the conflict names don't have the user name
             for (const auto &name : conflicts) {
-                QVERIFY(!name.contains(fakeFolder.syncEngine().account()->davDisplayName()));
+                QVERIFY(!name.contains(fakeFolder.account()->davDisplayName()));
             }
 
             QVERIFY(expectAndWipeConflict(fakeFolder, QStringLiteral("A/a1")));
@@ -178,7 +178,7 @@ private Q_SLOTS:
             QCOMPARE(Utility::conflictFileBaseNameFromPattern(conflictMap[a1FileId].toUtf8()), QByteArray("A/a1"));
 
             // Check that the conflict file contains the username
-            QVERIFY(conflictMap[a1FileId].contains(QString::fromLatin1("(conflicted copy %1 ").arg(fakeFolder.syncEngine().account()->davDisplayName())));
+            QVERIFY(conflictMap[a1FileId].contains(QString::fromLatin1("(conflicted copy %1 ").arg(fakeFolder.account()->davDisplayName())));
 
             QCOMPARE(remote.find(conflictMap[a1FileId])->contentChar, 'L');
             QCOMPARE(remote.find(QStringLiteral("A/a1"))->contentChar, 'R');

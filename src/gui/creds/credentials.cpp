@@ -169,7 +169,7 @@ bool Credentials::stillValid(QNetworkReply *reply)
     if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
         slotAuthentication(reply, nullptr);
     }
-        return true;
+    return true;
 }
 
 void Credentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator)

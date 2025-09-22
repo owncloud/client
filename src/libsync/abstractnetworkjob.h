@@ -120,7 +120,6 @@ public:
     static constexpr std::chrono::seconds DefaultHttpTimeout { 5 * 60 };
 
     /** whether or noth this job should be restarted after authentication */
-    bool  isAuthenticationJob() const;
     void  setAuthenticationJob(bool b);
 
     /** How many times was that job retried */
