@@ -941,7 +941,7 @@ Result<void, QString> FolderMan::unsupportedConfiguration(const QString &path) c
                                          "This configuration is know to lead to dataloss and is no longer supported.\n"
                                          "Please consider removing this folder from the account and adding it again.")
                                           .arg(path);
-                if (Resources::isVanillaTheme()) {
+                if (Theme::instance()->warnOnMultipleDb()) {
                     qCWarning(lcFolderMan) << error;
                     return error;
                 } else {
