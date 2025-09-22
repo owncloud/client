@@ -222,15 +222,16 @@ void ConnectionValidator::checkAuthentication()
 {
     // simply GET the WebDAV root, will fail if credentials are wrong.
     // continue in slotAuthCheck here :-)
-
     if (!_account) {
-        _errors << tr("No ownCloud account configured");
+        _errors << tr("No account configured");
         reportResult(NotConfigured);
         return;
     }
 
-    // we explicitly use a legacy dav path here
-    auto *job = new PropfindJob(_account->sharedFromThis(), _account->url(), Theme::instance()->webDavPath(), PropfindJob::Depth::Zero, this);
+    // we explicitly use a legacy dav path here - remote.php/webdav is available across all former, current and future server implementations (oc10, oCIS and
+    // Kiteworks PDN)
+    auto *job = new PropfindJob(_account->sharedFromThis(), _account->url(), QString("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
+
     job->setAuthenticationJob(true); // don't retry
     job->setTimeout(timeoutToUse());
     job->setProperties({ QByteArrayLiteral("getlastmodified") });

@@ -579,19 +579,4 @@ bool Theme::withCrashReporter() const
 #endif
 }
 
-template <>
-OWNCLOUDSYNC_EXPORT QString Utility::enumToDisplayName(Theme::UserIDType userIdType)
-{
-    switch (userIdType) {
-    case Theme::UserIDUserName:
-        return QCoreApplication::translate("Type of user ID", "Username");
-    case Theme::UserIDEmail:
-        return QCoreApplication::translate("Type of user ID", "E-mail address");
-    case Theme::UserIDCustom:
-        return Theme::instance()->customUserID();
-    default:
-        Q_UNREACHABLE();
-    }
-}
-
 } // end namespace client

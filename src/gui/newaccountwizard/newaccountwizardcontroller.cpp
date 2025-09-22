@@ -85,9 +85,6 @@ void NewAccountWizardController::buildPages()
     _authSuccessPageIndex = _wizard->addPage(authSuccessPage, authSuccessController);
     authSuccessPage->setFinalPage(true);
 
-    // todo: #26 - is this actually in play in real life or should it be deprecated?
-    //  if (!Theme::instance()->wizardSkipAdvancedPage()) {
-
     QWizardPage *advancedSettingsPage = new QWizardPage(_wizard);
     AdvancedSettingsPageController *advancedSettingsController = new AdvancedSettingsPageController(advancedSettingsPage, this);
     connect(advancedSettingsController, &AdvancedSettingsPageController::success, this, &NewAccountWizardController::onAdvancedSettingsCompleted);
@@ -97,7 +94,6 @@ void NewAccountWizardController::buildPages()
     AdvancedSettingsResult defaultAdvancedSettings = advancedSettingsController->defaultResult();
     _model->setDefaultSyncRoot(defaultAdvancedSettings.syncRoot);
     _model->setSyncType(defaultAdvancedSettings.syncType);
-    //  }
 }
 
 void NewAccountWizardController::buildButtonLayouts()

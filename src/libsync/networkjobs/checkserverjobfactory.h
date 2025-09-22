@@ -43,7 +43,6 @@ public:
 
     /**
      * clearCookies: Whether to clear the cookies before we start the CheckServerJob job
-     * This option also depends on Theme::instance()->connectionValidatorClearCookies()
      */
     static CheckServerJobFactory createFromAccount(const Account *account, bool clearCookies);
 

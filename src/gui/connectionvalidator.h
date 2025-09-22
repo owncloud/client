@@ -117,7 +117,6 @@ public:
 
 
     /** Whether to clear the cookies before we start the CheckServerJob job
-     * This option also depends on Theme::instance()->connectionValidatorClearCookies()
      */
     void setClearCookies(bool clearCookies);
 

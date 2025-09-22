@@ -79,7 +79,7 @@ CheckServerJobFactory CheckServerJobFactory::createFromAccount(const Account *ac
     auto nam = account->credentials()->createAccessManager();
     nam->setCustomTrustedCaCertificates(account->approvedCerts());
     // do we start with the old cookies or new
-    if (!(clearCookies && Theme::instance()->connectionValidatorClearCookies())) {
+    if (!clearCookies) {
         const auto newJar = account->accessManager()->ownCloudCookieJar()->clone();
         nam->setCookieJar(newJar);
     }
