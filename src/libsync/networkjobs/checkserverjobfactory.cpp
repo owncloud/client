@@ -76,7 +76,7 @@ CheckServerJobFactory CheckServerJobFactory::createFromAccount(const AccountPtr 
     // todo: DC-150 this means the nam does not get deleted with the job but hangs around until the parent is gone? investigate!
     nam->setParent(parent);
     // do we start with the old cookies or new
-    if (!(clearCookies && Theme::instance()->connectionValidatorClearCookies())) {
+    if (!(clearCookies)) {
         const auto newJar = account->accessManager()->ownCloudCookieJar()->clone();
         nam->setCookieJar(newJar);
     }

@@ -43,7 +43,7 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
         return res;
 
     // we explicitly use a legacy dav path here
-    QNetworkRequest req = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, Theme::instance()->webDavPath()));
+    QNetworkRequest req = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, QStringLiteral("remote.php/webdav/")));
 
     req.setAttribute(DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);

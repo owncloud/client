@@ -208,7 +208,7 @@ void ConnectionValidator::checkAuthentication()
     // continue in slotAuthCheck here :-)
 
     // we explicitly use a legacy dav path here
-    auto *job = new PropfindJob(_account, _account->url(), Theme::instance()->webDavPath(), PropfindJob::Depth::Zero, this);
+    auto *job = new PropfindJob(_account, _account->url(), QStringLiteral("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
     job->setAuthenticationJob(true); // don't retry
     job->setTimeout(timeoutToUse());
     job->setProperties({ QByteArrayLiteral("getlastmodified") });

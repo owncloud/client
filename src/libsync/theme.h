@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef _THEME_H
-#define _THEME_H
+#pragma once
 
 #include "common/utility.h"
 #include "resources/resources.h"
@@ -25,7 +24,6 @@
 #include <qquickwindow.h>
 
 namespace OCC {
-
 class SyncResult;
 
 /**
@@ -214,6 +212,7 @@ public:
     /**
      * The default folder name without path on the server at setup time.
      */
+    [[deprecated("defaultServerFolder is unused and removed as of client 7.0")]]
     virtual QString defaultServerFolder() const;
 
 
@@ -222,8 +221,10 @@ public:
 
     /** @return color for the setup wizard.  This is effectively the background color for each page*/
     virtual QColor wizardHeaderBackgroundColor() const;
-    // todo: #26 I can only find this used in Credentials.qml so far. I don't understand what the intended purpose is.
+
+    [[deprecated("primaryButtonColor is unused and removed as of client 7.0")]]
     virtual QmlButtonColor primaryButtonColor() const;
+    [[deprecated("primaryButtonColor is unused and removed as of client 7.0")]]
     virtual QmlButtonColor secondaryButtonColor() const;
 
     /** @return logo for the setup wizard. */
@@ -239,6 +240,7 @@ public:
     /**
      * The SHA sum of the released git commit
      */
+    // TODO: only used in aboutVersions - can be removed from public interface
     QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
 
     /**
@@ -266,6 +268,7 @@ public:
     /**
      * Skip the advanced page and create a sync with the default settings
      */
+    [[deprecated("wizardSkipAdvancedPage is unused and removed as of client 7.0")]]
     virtual bool wizardSkipAdvancedPage() const;
 
     /**
@@ -274,6 +277,7 @@ public:
      * Attention: Make sure that this string does NOT have a leading slash and that
      * it has a trailing slash, for example "remote.php/webdav/".
      */
+    [[deprecated("webDavPath is unused and removed as of client 7.0")]]
     virtual QString webDavPath() const;
 
     /**
@@ -309,6 +313,7 @@ public:
      *
      *  @return UserIDType::UserIDUserName, unless reimplemented
      */
+    [[deprecated("userIDType is unused and removed as of client 7.0")]]
     virtual UserIDType userIDType() const;
 
     /**
@@ -319,6 +324,7 @@ public:
      *
      * @return An empty string, unless reimplemented
      */
+    [[deprecated("customUserID is unused and removed as of client 7.0")]]
     virtual QString customUserID() const;
 
     /**
@@ -327,6 +333,7 @@ public:
      *
      * @return An empty string, unless reimplemented
      */
+    [[deprecated("userIDHint is unused and removed as of client 7.0")]]
     virtual QString userIDHint() const;
 
     /**
@@ -335,6 +342,7 @@ public:
      *
      * @return An empty string, unless reimplemented
      */
+    [[deprecated("wizardUrlPostfix is unused and removed as of client 7.0")]]
     virtual QString wizardUrlPostfix() const;
 
     /**
@@ -366,6 +374,7 @@ public:
      * can be set to http://127.0.0.1 reasons.
      * This option is only available with oauth2 not with OpenID Connect.
      */
+    [[deprecated("oauthLocalhost is unused and removed as of client 7.0")]]
     virtual QString oauthLocalhost() const;
 
     /**
@@ -407,6 +416,7 @@ public:
      * By default, it's a combination of appName(), version(), the GIT SHA1 and some
      * important dependency versions.
      */
+    [[deprecated("versionSwitchOutput is unused and removed as of client 7.0")]]
     virtual QString versionSwitchOutput() const;
 
     /**
@@ -422,8 +432,8 @@ public:
      * Whether to clear cookies before checking status.php
      * This is used with F5 BIG-IP setups.
      */
+    [[deprecated("connectionValidatorClearCookies is unused and removed as of client 7.0")]]
     virtual bool connectionValidatorClearCookies() const;
-
 
     /**
      * Enables the response of V2/GET_CLIENT_ICON, default true.
@@ -431,11 +441,11 @@ public:
      */
     virtual bool enableSocketApiIconSupport() const;
 
-
     /**
      * Warn if we find multiple db files in the sync root.
      * This can indicate that the sync dir is shared between multiple clients or accounts
      */
+    [[deprecated("warnOnMultipleDb is unused and removed as of client 7.0")]]
     virtual bool warnOnMultipleDb() const;
 
 
@@ -461,6 +471,7 @@ public:
      * Whether to enable move-to-trash instead of deleting files that are gone from the server.
      * Default: true
      */
+    [[deprecated("enableMoveToTrash is unused and removed as of client 7.0")]]
     virtual bool enableMoveToTrash() const;
 
     /**
@@ -511,7 +522,4 @@ private:
     bool _mono = false;
 };
 
-template <>
-QString OCC::Utility::enumToDisplayName(Theme::UserIDType userIdType);
 }
-#endif // _THEME_H
