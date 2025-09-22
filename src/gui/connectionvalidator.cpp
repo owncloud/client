@@ -207,8 +207,9 @@ void ConnectionValidator::checkAuthentication()
     // simply GET the WebDAV root, will fail if credentials are wrong.
     // continue in slotAuthCheck here :-)
 
-    // we explicitly use a legacy dav path here
-    auto *job = new PropfindJob(_account, _account->url(), QStringLiteral("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
+    // we explicitly use a legacy dav path here - remote.php/webdav is available across all former, current and future server implementations (oc10, oCIS and
+    // Kiteworks PDN)
+    auto *job = new PropfindJob(_account, _account->url(), QString("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
     job->setAuthenticationJob(true); // don't retry
     job->setTimeout(timeoutToUse());
     job->setProperties({ QByteArrayLiteral("getlastmodified") });

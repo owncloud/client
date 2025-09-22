@@ -70,13 +70,13 @@ QUrl CheckServerJobResult::serverUrl() const
 // caller could keep an adapter around as member for re-use if needed, or hit and quit.
 CheckServerJobFactory CheckServerJobFactory::createFromAccount(const AccountPtr &account, bool clearCookies, QObject *parent)
 {
-    // in order to receive all ssl erorrs we need a fresh QNam
+    // in order to receive all ssl errors we need a fresh QNam
     auto nam = account->credentials()->createAccessManager();
     nam->setCustomTrustedCaCertificates(account->approvedCerts());
     // todo: DC-150 this means the nam does not get deleted with the job but hangs around until the parent is gone? investigate!
     nam->setParent(parent);
     // do we start with the old cookies or new
-    if (!(clearCookies)) {
+    if (!clearCookies) {
         const auto newJar = account->accessManager()->ownCloudCookieJar()->clone();
         nam->setCookieJar(newJar);
     }
