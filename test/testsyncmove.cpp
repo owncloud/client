@@ -1001,10 +1001,6 @@ private Q_SLOTS:
     void testMovedWithError()
     {
         QFETCH(Vfs::Mode, vfsMode);
-        const auto getName = [vfsMode] (const QString &s)
-        {
-            return s;
-        };
         const QString src = QStringLiteral("folder/folderA/file.txt");
         const QString dest = QStringLiteral("folder/folderB/file.txt");
         FakeFolder fakeFolder{ FileInfo{ QString(), { FileInfo{ QStringLiteral("folder"), { FileInfo{ QStringLiteral("folderA"), { { QStringLiteral("file.txt"), 400 } } }, QStringLiteral("folderB") } } } } };
@@ -1027,7 +1023,7 @@ private Q_SLOTS:
 
 
         fakeFolder.serverErrorPaths().append(src, 403);
-        fakeFolder.localModifier().rename(getName(src), getName(dest));
+        fakeFolder.localModifier().rename(src, dest);
         QVERIFY(fakeFolder.currentRemoteState().find(src));
         QVERIFY(!fakeFolder.currentRemoteState().find(dest));
 
@@ -1044,7 +1040,7 @@ private Q_SLOTS:
         }
 
         QVERIFY(!fakeFolder.currentLocalState().find(src));
-        QVERIFY(fakeFolder.currentLocalState().find(getName(dest)));
+        QVERIFY(fakeFolder.currentLocalState().find(dest));
         QVERIFY(fakeFolder.currentRemoteState().find(src));
         QVERIFY(!fakeFolder.currentRemoteState().find(dest));
     }
