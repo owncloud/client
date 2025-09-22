@@ -212,7 +212,7 @@ public:
     /**
      * The default folder name without path on the server at setup time.
      */
-    [[deprecated("defaultServerFolder is unused and removed as of client 7.0")]]
+    [[deprecated("defaultServerFolder is unsupported and removed as of client 7.0")]]
     virtual QString defaultServerFolder() const;
 
 
@@ -222,9 +222,9 @@ public:
     /** @return color for the setup wizard.  This is effectively the background color for each page*/
     virtual QColor wizardHeaderBackgroundColor() const;
 
-    [[deprecated("primaryButtonColor is unused and removed as of client 7.0")]]
+    [[deprecated("primaryButtonColor is unsupported and removed as of client 7.0")]]
     virtual QmlButtonColor primaryButtonColor() const;
-    [[deprecated("primaryButtonColor is unused and removed as of client 7.0")]]
+    [[deprecated("primaryButtonColor is unsupported and removed as of client 7.0")]]
     virtual QmlButtonColor secondaryButtonColor() const;
 
     /** @return logo for the setup wizard. */
@@ -268,7 +268,7 @@ public:
     /**
      * Skip the advanced page and create a sync with the default settings
      */
-    [[deprecated("wizardSkipAdvancedPage is unused and removed as of client 7.0")]]
+    [[deprecated("wizardSkipAdvancedPage is unsupported and removed as of client 7.0")]]
     virtual bool wizardSkipAdvancedPage() const;
 
     /**
@@ -277,7 +277,7 @@ public:
      * Attention: Make sure that this string does NOT have a leading slash and that
      * it has a trailing slash, for example "remote.php/webdav/".
      */
-    [[deprecated("webDavPath is unused and removed as of client 7.0")]]
+    [[deprecated("webDavPath is unsupported and removed as of client 7.0")]]
     virtual QString webDavPath() const;
 
     /**
@@ -313,7 +313,7 @@ public:
      *
      *  @return UserIDType::UserIDUserName, unless reimplemented
      */
-    [[deprecated("userIDType is unused and removed as of client 7.0")]]
+    [[deprecated("userIDType is unsupported and removed as of client 7.0")]]
     virtual UserIDType userIDType() const;
 
     /**
@@ -324,7 +324,7 @@ public:
      *
      * @return An empty string, unless reimplemented
      */
-    [[deprecated("customUserID is unused and removed as of client 7.0")]]
+    [[deprecated("customUserID is unsupported and removed as of client 7.0")]]
     virtual QString customUserID() const;
 
     /**
@@ -333,7 +333,7 @@ public:
      *
      * @return An empty string, unless reimplemented
      */
-    [[deprecated("userIDHint is unused and removed as of client 7.0")]]
+    [[deprecated("userIDHint is unsupported and removed as of client 7.0")]]
     virtual QString userIDHint() const;
 
     /**
@@ -342,7 +342,7 @@ public:
      *
      * @return An empty string, unless reimplemented
      */
-    [[deprecated("wizardUrlPostfix is unused and removed as of client 7.0")]]
+    [[deprecated("wizardUrlPostfix is unsupported and removed as of client 7.0")]]
     virtual QString wizardUrlPostfix() const;
 
     /**
@@ -374,7 +374,7 @@ public:
      * can be set to http://127.0.0.1 reasons.
      * This option is only available with oauth2 not with OpenID Connect.
      */
-    [[deprecated("oauthLocalhost is unused and removed as of client 7.0")]]
+    [[deprecated("oauthLocalhost is unsupported and removed as of client 7.0")]]
     virtual QString oauthLocalhost() const;
 
     /**
@@ -416,7 +416,7 @@ public:
      * By default, it's a combination of appName(), version(), the GIT SHA1 and some
      * important dependency versions.
      */
-    [[deprecated("versionSwitchOutput is unused and removed as of client 7.0")]]
+    [[deprecated("versionSwitchOutput is unsupported and removed as of client 7.0")]]
     virtual QString versionSwitchOutput() const;
 
     /**
@@ -432,7 +432,7 @@ public:
      * Whether to clear cookies before checking status.php
      * This is used with F5 BIG-IP setups.
      */
-    [[deprecated("connectionValidatorClearCookies is unused and removed as of client 7.0")]]
+    [[deprecated("connectionValidatorClearCookies is unsupported and removed as of client 7.0")]]
     virtual bool connectionValidatorClearCookies() const;
 
     /**
@@ -445,7 +445,7 @@ public:
      * Warn if we find multiple db files in the sync root.
      * This can indicate that the sync dir is shared between multiple clients or accounts
      */
-    [[deprecated("warnOnMultipleDb is unused and removed as of client 7.0")]]
+    [[deprecated("warnOnMultipleDb is unsupported and removed as of client 7.0")]]
     virtual bool warnOnMultipleDb() const;
 
 
@@ -471,7 +471,7 @@ public:
      * Whether to enable move-to-trash instead of deleting files that are gone from the server.
      * Default: true
      */
-    [[deprecated("enableMoveToTrash is unused and removed as of client 7.0")]]
+    [[deprecated("enableMoveToTrash is unsupported and removed as of client 7.0")]]
     virtual bool enableMoveToTrash() const;
 
     /**
