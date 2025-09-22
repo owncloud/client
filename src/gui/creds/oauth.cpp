@@ -85,7 +85,7 @@ OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManage
     , _networkAccessManager(networkAccessManager)
     , _clientId(Theme::instance()->oauthClientId())
     , _clientSecret(Theme::instance()->oauthClientSecret())
-    , _redirectUrl(Theme::instance()->oauthLocalhost())
+    , _redirectUrl(QString("http://localhost"))
     , _supportedPromptValues(defaultOauthPromptValue())
 {
 }
