@@ -28,11 +28,11 @@
 
 #include "csync.h"
 
-#include "common/filesystembase.h"
-#include "common/vfs.h"
 #include "vio/csync_vio_local.h"
+#include "common/vfs.h"
 
 #include <QtCore/QLoggingCategory>
+#include <QtCore/QFile>
 
 Q_LOGGING_CATEGORY(lcCSyncVIOLocal, "sync.csync.vio_local", QtInfoMsg)
 
@@ -48,7 +48,7 @@ struct csync_vio_handle_t {
 csync_vio_handle_t *csync_vio_local_opendir(const QString &name) {
     std::unique_ptr<csync_vio_handle_t> handle(new csync_vio_handle_t{});
 
-    auto dirname = OCC::FileSystem::encodeFileName(name);
+    auto dirname = QFile::encodeName(name);
 
     handle->dh = opendir(dirname.constData());
     if (!handle->dh) {
@@ -77,7 +77,7 @@ std::unique_ptr<csync_file_stat_t> csync_vio_local_readdir(csync_vio_handle_t *h
     } while (qstrcmp(dirent->d_name, ".") == 0 || qstrcmp(dirent->d_name, "..") == 0);
 
   file_stat.reset(new csync_file_stat_t);
-  file_stat->path = OCC::FileSystem::decodeFileName(dirent->d_name);
+  file_stat->path = QFile::decodeName(dirent->d_name);
 
   /* Check for availability of d_type, see manpage. */
 #if defined(_DIRENT_HAVE_D_TYPE) || defined(__APPLE__)
@@ -120,8 +120,8 @@ int csync_vio_local_stat(const QString &uri, csync_file_stat_t *buf)
 {
     struct stat sb;
 
-    if (lstat(OCC::FileSystem::encodeFileName(uri).constData(), &sb) < 0) {
-      return -1;
+    if (lstat(QFile::encodeName(uri).constData(), &sb) < 0) {
+        return -1;
     }
 
     switch (sb.st_mode & S_IFMT) {
