@@ -265,9 +265,7 @@ public:
 
     SyncScheduler *scheduler() { return _scheduler; }
 
-
     void setDirtyProxy();
-    void setDirtyNetworkLimits();
 
     /** Whether or not vfs is supported in the location. */
     bool checkVfsAvailability(const QString &path, Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode()) const;
