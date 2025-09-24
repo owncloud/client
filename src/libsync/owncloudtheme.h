@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef OWNCLOUD_THEME_H
-#define OWNCLOUD_THEME_H
+#pragma once
 
 #include "theme.h"
 
@@ -32,8 +31,5 @@ public:
     QColor wizardHeaderTitleColor() const override;
     QIcon wizardHeaderLogo() const override;
     QIcon aboutIcon() const override;
-    QmlButtonColor primaryButtonColor() const override;
-    QmlButtonColor secondaryButtonColor() const override;
 };
 }
-#endif // OWNCLOUD_THEME_H

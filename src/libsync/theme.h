@@ -224,7 +224,7 @@ public:
 
     [[deprecated("primaryButtonColor is unsupported and removed as of client 7.0")]]
     virtual QmlButtonColor primaryButtonColor() const;
-    [[deprecated("primaryButtonColor is unsupported and removed as of client 7.0")]]
+    [[deprecated("secondaryButtonColor is unsupported and removed as of client 7.0")]]
     virtual QmlButtonColor secondaryButtonColor() const;
 
     /** @return logo for the setup wizard. */

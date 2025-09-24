@@ -45,15 +45,4 @@ QIcon ownCloudTheme::aboutIcon() const
 {
     return Resources::themeUniversalIcon(QStringLiteral("oc-image-about"));
 }
-
-QmlButtonColor ownCloudTheme::primaryButtonColor() const
-{
-    const QColor button("#709cd2");
-    return {button, Qt::white, button.darker()};
-}
-
-QmlButtonColor ownCloudTheme::secondaryButtonColor() const
-{
-    return {"#d4d3d0", Qt::black, QColor(Qt::black).lighter()};
-}
 }
