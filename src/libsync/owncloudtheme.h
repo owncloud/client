@@ -31,5 +31,6 @@ public:
     QColor wizardHeaderTitleColor() const override;
     QIcon wizardHeaderLogo() const override;
     QIcon aboutIcon() const override;
+    bool moveToTrashDefaultValue() const override;
 };
 }
