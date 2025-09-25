@@ -41,7 +41,9 @@ namespace {
 bool writeToFile(std::string_view command, const QString &fileName, QIODevice::OpenMode mode, const QByteArray &data)
 {
 #ifndef Q_OS_WIN
-    QFile f(fileName);
+    // Write to a temporary file, then rename it to the correct name. This prevents Qt from changing the normalization form of the file name.
+    QString tmpName = fileName + u".tmp";
+    QFile f(tmpName);
     if (!f.open(mode)) {
         cerr << "Error: cannot open file '" << qPrintable(fileName) << "' for " << command << " command: "
              << qPrintable(f.errorString()) << endl;
@@ -61,6 +63,12 @@ bool writeToFile(std::string_view command, const QString &fileName, QIODevice::O
         return false;
     }
     f.close();
+
+    QString err;
+    if (!OCC::FileSystem::uncheckedRenameReplace(tmpName, fileName, &err)) {
+        cerr << "Error: cannot rename temp file to '" << qPrintable(fileName) << "': " << qPrintable(err) << endl;
+        return false;
+    }
 #else
     // Qt bug: [INSERT BUG HERE]
     // When opening a cloud file results in a cfapi error, Qt does not report an error.
