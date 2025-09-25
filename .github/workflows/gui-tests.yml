@@ -1,0 +1,124 @@
+name: GUI Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+    tags: [ "*" ]
+
+env:
+  DEFAULT_PHP_VERSION: "7.4"
+  MYSQL: "mysql:8.0"
+  OC_CI_ALPINE: "owncloudci/alpine:latest"
+  OC_CI_CLIENT: "owncloudci/client:latest"
+  OC_CI_DRONE_SKIP_PIPELINE: "owncloudci/drone-skip-pipeline"
+#  OC_CI_NODEJS: "owncloudci/nodejs:18"
+  OC_CI_PHP: "owncloudci/php:%s"
+  OC_CI_WAIT_FOR: "owncloudci/wait-for:latest"
+#  OC_OCIS: "owncloud/ocis-rolling:%s"
+  OC_UBUNTU: "owncloud/ubuntu:20.04"
+#  OC_CI_SQUISH: "owncloudci/squish:fedora-42-8.1.0-qt68x-linux64"
+  PLUGINS_GIT_ACTION: "plugins/git-action:1"
+  PLUGINS_S3: "plugins/s3:1.4.0"
+  TOOLHIPPIE_CALENS: "toolhippie/calens:0.4.0"
+  # npm packages to install
+  NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
+  S3_PUBLIC_CACHE_SERVER: "https://cache.owncloud.com"
+  S3_PUBLIC_CACHE_BUCKET: "public"
+
+jobs:
+  lint-gui-test:
+    runs-on: ubuntu-latest
+    container:
+      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Python lint
+        run: |
+          make -C test/gui install
+          make -C test/gui python-lint
+
+      - name: Gherkin lint
+        run: |
+          npm install -g ${{ env.NPM_GHERLINT }}
+          make -C test/gui gherkin-lint
+
+  gui-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+    services:
+      ocis:
+        image: owncloud/ocis-rolling:latest
+        env:
+          OCIS_URL: https://ocis:9200
+          IDM_ADMIN_PASSWORD: admin
+          STORAGE_HOME_DRIVER: ocis
+          STORAGE_USERS_DRIVER: ocis
+          OCIS_INSECURE: true
+          PROXY_ENABLE_BASIC_AUTH: true
+          OCIS_LOG_LEVEL: error
+          OCIS_LOG_PRETTY: true
+          OCIS_LOG_COLOR: true
+        ports:
+          - 9200:9200
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build client
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TESTING=OFF -S ..
+          ninja
+
+      - name: Install Python Modules
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: .playwright
+        run: |
+          make -C test/gui install
+          python3.10 -m pip list -v
+
+      - name: Create GUI test report directory
+        run: |
+          mkdir test/gui/guiReportUpload/screenshots -p
+          chmod 777 test/gui -R
+
+      - name: Set squish parameters
+        run: |
+          SQUISH_PARAMETERS="--testsuite test/gui \
+          --reportgen html,test/gui/guiReportUpload \
+          --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false \
+          --tags ~@skip \
+          --tags ~@skipOnLinux"
+
+      - name: Run GUI test
+        env:
+          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
+          GUI_TEST_REPORT_DIR: test/gui/guiReportUpload
+          CLIENT_REPO: .
+          BACKEND_HOST: https://ocis:9200
+          SECURE_BACKEND_HOST: https://ocis:9200
+          OCIS: true
+          SERVER_INI: test/gui/drone/server.server.ini
+          SQUISH_PARAMETERS: ${{ env.SQUISH_PARAMETERS }}
+          STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
+          PLAYWRIGHT_BROWSERS_PATH: .playwright
+          OWNCLOUD_CORE_DUMP: 1
+          RECORD_VIDEO_ON_FAILURE: false
+          # allow to use any available pnpm version
+          COREPACK_ENABLE_STRICT: 0
+        run: |
+          echo "HOME: $HOME"
+          echo "Current Working Directory: $(pwd)"
+          ls -la /
+          ls -la /opt
+          bash /dockerstartup/entrypoint.sh
