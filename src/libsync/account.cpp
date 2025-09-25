@@ -79,6 +79,8 @@ Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObjec
     }
     QDir().mkpath(resourcesCacheDir);
     _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
+
+    _spacesManager = new GraphApi::SpacesManager(this);
 }
 
 AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
@@ -211,8 +213,9 @@ AbstractCredentials *Account::credentials() const
     return _credentials;
 }
 
-// the credentials should be instantiated with the account as parent. we have to pass the creds in as the tests use their own
-// subclass of AbstractCredentials = FakeCredentials.
+// todo: in a sane world the credentials should be instantiated by the account (as parent) as using this setter there isthe chance that it could be set or unset
+// randomly or even multiple times like this is really not good. For now we have to pass the creds in as the tests use their own subclass of AbstractCredentials
+// = FakeCredentials, so that has to be worked out before we can move this creds handling into the account proper, where it should be.
 void Account::setCredentials(AbstractCredentials *cred)
 {
     if (!cred || _credentials == cred)
@@ -349,9 +352,6 @@ void Account::setCapabilities(const Capabilities &caps)
     _capabilities = caps;
     if (versionChanged) {
         Q_EMIT serverVersionChanged();
-    }
-    if (!_spacesManager) {
-        _spacesManager = new GraphApi::SpacesManager(this);
     }
 }
 

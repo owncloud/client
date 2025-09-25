@@ -257,7 +257,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
         settings.beginGroup("Accounts");
 
         // prepare the root - reality check this as I think the user can change this from default?
-        const QString localDir(spacesMgr->account()->defaultSyncRoot());
+        const QString localDir(accountState->account()->defaultSyncRoot());
         if (!prepareFolder(localDir)) {
             return;
         }
@@ -270,7 +270,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
 
             folderDef.setPriority(space->priority());
 
-            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, spacesMgr->account()->uuid());
+            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, accountState->account()->uuid());
             folderDef.setLocalPath(localPath);
             folderDef.setTargetPath({});
 

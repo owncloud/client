@@ -1267,27 +1267,27 @@ void ProcessDirectoryJob::dbError()
 
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 {
-    auto serverJob = new DiscoverySingleDirectoryJob(_discoveryData->_account, _discoveryData->_baseUrl,
-        _discoveryData->_remoteFolder + _currentFolder._server, this);
+    auto discoveryJob =
+        new DiscoverySingleDirectoryJob(_discoveryData->_account, _discoveryData->_baseUrl, _discoveryData->_remoteFolder + _currentFolder._server, this);
     if (!_dirItem)
-        serverJob->setIsRootPath(); // query the fingerprint on the root
-    connect(serverJob, &DiscoverySingleDirectoryJob::etag, this, &ProcessDirectoryJob::etag);
+        discoveryJob->setIsRootPath(); // query the fingerprint on the root
+    connect(discoveryJob, &DiscoverySingleDirectoryJob::etag, this, &ProcessDirectoryJob::etag);
     _discoveryData->_currentlyActiveJobs++;
     _pendingAsyncJobs++;
-    connect(serverJob, &DiscoverySingleDirectoryJob::finished, this, [this, serverJob](const auto &results) {
+    connect(discoveryJob, &DiscoverySingleDirectoryJob::finished, this, [this, discoveryJob](const auto &results) {
         _discoveryData->_currentlyActiveJobs--;
         _pendingAsyncJobs--;
         if (results) {
             _serverNormalQueryEntries = *results;
             _serverQueryDone = true;
-            if (!serverJob->_dataFingerprint.isEmpty() && _discoveryData->_dataFingerprint.isEmpty())
-                _discoveryData->_dataFingerprint = serverJob->_dataFingerprint;
+            if (!discoveryJob->_dataFingerprint.isEmpty() && _discoveryData->_dataFingerprint.isEmpty())
+                _discoveryData->_dataFingerprint = discoveryJob->_dataFingerprint;
             if (_localQueryDone)
                 this->process();
         } else {
             auto code = results.error().code;
             qCWarning(lcDisco) << "Server error in directory" << _currentFolder._server << code;
-            if (serverJob->isRootPath()) {
+            if (discoveryJob->isRootPath()) {
                 if (code == 404 && _discoveryData->isSpace()) {
                     Q_EMIT _discoveryData->fatalError(tr("This Space is currently unavailable"));
                     return;
@@ -1314,10 +1314,9 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
                     .arg(_currentFolder._server.isEmpty() ? QStringLiteral("/") : _currentFolder._server, results.error().message));
         }
     });
-    connect(serverJob, &DiscoverySingleDirectoryJob::firstDirectoryPermissions, this,
-        [this](const RemotePermissions &perms) { _rootPermissions = perms; });
-    serverJob->start();
-    return serverJob;
+    connect(discoveryJob, &DiscoverySingleDirectoryJob::firstDirectoryPermissions, this, [this](const RemotePermissions &perms) { _rootPermissions = perms; });
+    discoveryJob->start();
+    return discoveryJob;
 }
 
 void ProcessDirectoryJob::startAsyncLocalQuery()

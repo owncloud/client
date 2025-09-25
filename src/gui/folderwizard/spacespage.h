@@ -15,8 +15,6 @@
 
 #include "gui/spaces/spacesmodel.h"
 
-#include "accountfwd.h"
-
 #include <QWizardPage>
 
 
@@ -25,12 +23,15 @@ class SpacesPage;
 }
 
 namespace OCC {
+
+class GraphApi::SpacesManager;
+
 class SpacesPage : public QWizardPage
 {
     Q_OBJECT
 
 public:
-    explicit SpacesPage(AccountPtr acc, QWidget *parent = nullptr);
+    explicit SpacesPage(GraphApi::SpacesManager *spacesMgr, QWidget *parent);
     ~SpacesPage();
 
     bool isComplete() const override;

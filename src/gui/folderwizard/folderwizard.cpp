@@ -65,31 +65,38 @@ QString FolderWizardPrivate::defaultSyncRoot() const
 {
     // this should never happen when we have set up the account using spaces - there is ALWAYS a default root when spaces are in play
     // and they are always in play so this check is bogus. todo: #43
-    if (!_account->account()->hasDefaultSyncRoot()) {
+    if (!_account->hasDefaultSyncRoot()) {
         const auto folderType = FolderMan::NewFolderType::SpacesSyncRoot; // todo: #43 : FolderMan::NewFolderType::OC10SyncRoot;
-        return FolderMan::suggestSyncFolder(folderType, _account->account()->uuid());
+        return FolderMan::suggestSyncFolder(folderType, _account->uuid());
     } else {
-        return _account->account()->defaultSyncRoot();
+        return _account->defaultSyncRoot();
     }
 }
 
-FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, AccountState *account)
+QUuid FolderWizardPrivate::uuid() const
+{
+    if (_account)
+        return _account->uuid();
+    return {};
+}
+
+FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
     : q_ptr(q)
     , _account(account)
     , _folderWizardSourcePage(new FolderWizardLocalPath(this))
     , _folderWizardSelectiveSyncPage(nullptr)
 {
-        _spacesPage = new SpacesPage(account->account(), q);
+    if (_account) {
+        _spacesPage = new SpacesPage(account->spacesManager(), q);
         q->setPage(FolderWizard::Page_Space, _spacesPage);
-
+    }
 
     q->setPage(FolderWizard::Page_Source, _folderWizardSourcePage);
-
 
     // When VFS is available (currently only with Windows' CFApi), and it is forced on, Spaces are meant to be synced as a whole.
     const bool showPage = VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi || !Theme::instance()->forceVirtualFilesOption();
     if (showPage) {
-        _folderWizardSelectiveSyncPage = new FolderWizardSelectiveSync(this);
+        _folderWizardSelectiveSyncPage = new FolderWizardSelectiveSync(_account, this);
         q->setPage(FolderWizard::Page_SelectiveSync, _folderWizardSelectiveSyncPage);
     }
 }
@@ -97,7 +104,7 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, AccountState *account)
 QString FolderWizardPrivate::initialLocalPath() const
 {
     return FolderMan::findGoodPathForNewSyncFolder(
-        defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->account()->uuid());
+        defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->uuid());
 }
 
 uint32_t FolderWizardPrivate::priority() const
@@ -124,10 +131,10 @@ QString FolderWizardPrivate::displayName() const
     return _spacesPage->currentSpace()->displayName();
 }
 
-AccountState *FolderWizardPrivate::accountState()
+/*AccountState *FolderWizardPrivate::accountState()
 {
-    return _account;
-}
+    return _accountState;
+}*/
 
 bool FolderWizardPrivate::useVirtualFiles() const
 {
@@ -145,7 +152,7 @@ bool FolderWizardPrivate::useVirtualFiles() const
     return useVirtualFiles;
 }
 
-FolderWizard::FolderWizard(AccountState *account, QWidget *parent)
+FolderWizard::FolderWizard(Account *account, QWidget *parent)
     : QWizard(parent)
     , d_ptr(new FolderWizardPrivate(this, account))
 {
@@ -155,18 +162,14 @@ FolderWizard::FolderWizard(AccountState *account, QWidget *parent)
     setWizardStyle(QWizard::ModernStyle);
 }
 
-FolderWizard::~FolderWizard()
-{
-}
-
 FolderMan::SyncConnectionDescription FolderWizard::result()
 {
     Q_D(FolderWizard);
 
     const QString localPath = d->_folderWizardSourcePage->localPath();
-    if (!d->_account->account()->hasDefaultSyncRoot()) {
+    if (!d->_account->hasDefaultSyncRoot()) {
         if (FileSystem::isChildPathOf(localPath, d->defaultSyncRoot())) {
-            d->_account->account()->setDefaultSyncRoot(d->defaultSyncRoot());
+            d->_account->setDefaultSyncRoot(d->defaultSyncRoot());
             if (!QFileInfo::exists(d->defaultSyncRoot())) {
                 OC_ASSERT(QDir().mkpath(d->defaultSyncRoot()));
             }
