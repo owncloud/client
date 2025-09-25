@@ -634,31 +634,6 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
     return nullptr;
 }
 
-QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const AccountPtr acc)
-{
-    QStringList re;
-
-    // We'll be comparing against Folder::remotePath which always starts with /
-    QString serverPath = relPath;
-    if (!serverPath.startsWith(QLatin1Char('/')))
-        serverPath.prepend(QLatin1Char('/'));
-
-    for (auto *folder : std::as_const(_folders)) {
-        if (acc != nullptr && folder->accountState()->account() != acc) {
-            continue;
-        }
-        if (!serverPath.startsWith(folder->remotePath()))
-            continue;
-
-        QString path = folder->cleanPath() + QLatin1Char('/');
-        path += serverPath.mid(folder->remotePathTrailingSlash().length());
-        if (QFile::exists(path)) {
-            re.append(path);
-        }
-    }
-    return re;
-}
-
 void FolderMan::removeFolderSync(Folder *f)
 {
     if (!OC_ENSURE(f)) {
