@@ -681,7 +681,8 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 
 bool ConfigFile::moveToTrash() const
 {
-    return getValue(moveToTrashC(), QString(), false).toBool();
+    auto defaultValue = Theme::instance()->moveToTrashDefaultValue();
+    return getValue(moveToTrashC(), QString(), defaultValue).toBool();
 }
 
 void ConfigFile::setMoveToTrash(bool isChecked)

@@ -45,4 +45,10 @@ QIcon ownCloudTheme::aboutIcon() const
 {
     return Resources::themeUniversalIcon(QStringLiteral("oc-image-about"));
 }
+
+bool ownCloudTheme::moveToTrashDefaultValue() const
+{
+    // for the vanilla ownCloud client move-to-trash option is enabled by default
+    return true;
+}
 }
