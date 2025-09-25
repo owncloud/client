@@ -84,11 +84,6 @@ const QString proxyUserC()
 }
 const QString proxyNeedsAuthC() { return QStringLiteral("Proxy/needsAuth"); }
 
-const QString useUploadLimitC() { return QStringLiteral("BWLimit/useUploadLimit"); }
-const QString useDownloadLimitC() { return QStringLiteral("BWLimit/useDownloadLimit"); }
-const QString uploadLimitC() { return QStringLiteral("BWLimit/uploadLimit"); }
-const QString downloadLimitC() { return QStringLiteral("BWLimit/downloadLimit"); }
-
 const QString pauseSyncWhenMeteredC()
 {
     return QStringLiteral("pauseWhenMetered");
@@ -627,46 +622,6 @@ bool ConfigFile::proxyNeedsAuth() const
 QString ConfigFile::proxyUser() const
 {
     return getValue(proxyUserC()).toString();
-}
-
-int ConfigFile::useUploadLimit() const
-{
-    return getValue(useUploadLimitC(), QString(), 0).toInt();
-}
-
-int ConfigFile::useDownloadLimit() const
-{
-    return getValue(useDownloadLimitC(), QString(), 0).toInt();
-}
-
-void ConfigFile::setUseUploadLimit(int val)
-{
-    setValue(useUploadLimitC(), val);
-}
-
-void ConfigFile::setUseDownloadLimit(int val)
-{
-    setValue(useDownloadLimitC(), val);
-}
-
-int ConfigFile::uploadLimit() const
-{
-    return getValue(uploadLimitC(), QString(), 10).toInt();
-}
-
-int ConfigFile::downloadLimit() const
-{
-    return getValue(downloadLimitC(), QString(), 80).toInt();
-}
-
-void ConfigFile::setUploadLimit(int kbytes)
-{
-    setValue(uploadLimitC(), kbytes);
-}
-
-void ConfigFile::setDownloadLimit(int kbytes)
-{
-    setValue(downloadLimitC(), kbytes);
 }
 
 bool ConfigFile::pauseSyncWhenMetered() const

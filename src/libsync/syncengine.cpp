@@ -53,8 +53,6 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _remotePath(remotePath)
     , _journal(journal)
     , _progressInfo(new ProgressInfo)
-    , _uploadLimit(0)
-    , _downloadLimit(0)
 {
     // Refactoring todo: reality check that we actually need to use these types in queued connections. if so,
     // we should move to a one shot registration method a) to make it really easy to see which types may
@@ -568,9 +566,6 @@ void SyncEngine::slotDiscoveryFinished()
         connect(_propagator.data(), &OwncloudPropagator::insufficientRemoteStorage, this, &SyncEngine::slotInsufficientRemoteStorage);
         connect(_propagator.data(), &OwncloudPropagator::newItem, this, &SyncEngine::slotNewItem);
 
-        // apply the network limits to the propagator
-        setNetworkLimits(_uploadLimit, _downloadLimit);
-
         deleteStaleDownloadInfos(_syncItems);
         deleteStaleUploadInfos(_syncItems);
         deleteStaleErrorBlacklistEntries(_syncItems);
@@ -587,18 +582,6 @@ void SyncEngine::slotDiscoveryFinished()
     };
 
     finish();
-}
-
-void SyncEngine::setNetworkLimits(int upload, int download)
-{
-    _uploadLimit = upload;
-    _downloadLimit = download;
-
-    if (_propagator) {
-        if (upload != 0 || download != 0) {
-            qCInfo(lcEngine) << "Network Limits (down/up) " << upload << download;
-        }
-    }
 }
 
 void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
