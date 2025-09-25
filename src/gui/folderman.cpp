@@ -722,16 +722,6 @@ void FolderMan::setDirtyProxy()
     }
 }
 
-void FolderMan::setDirtyNetworkLimits()
-{
-    for (auto *f : std::as_const(_folders)) {
-        // set only in busy folders. Otherwise they read the config anyway.
-        if (f && f->isSyncRunning()) {
-            f->setDirtyNetworkLimits();
-        }
-    }
-}
-
 // QFileInfo::canonicalPath returns an empty string if the file does not exist.
 // This function also works with files that does not exist and resolve the symlinks in the
 // parent directories.

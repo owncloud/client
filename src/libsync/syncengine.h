@@ -57,7 +57,6 @@ public:
     ~SyncEngine() override;
 
     Q_INVOKABLE void startSync();
-    void setNetworkLimits(int upload, int download);
 
     /* Abort the sync. Called from the main thread */
     void abort(const QString &reason);
@@ -232,10 +231,6 @@ private:
 
     // If ignored files should be ignored
     bool _ignore_hidden_files = false;
-
-
-    int _uploadLimit;
-    int _downloadLimit;
 
     std::optional<SyncOptions> _syncOptions;
 
