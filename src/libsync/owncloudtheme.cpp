@@ -56,4 +56,10 @@ QmlButtonColor ownCloudTheme::secondaryButtonColor() const
 {
     return {"#d4d3d0", Qt::black, QColor(Qt::black).lighter()};
 }
+
+bool ownCloudTheme::moveToTrashDefaultValue() const
+{
+    // for the vanilla ownCloud client move-to-trash option is enabled by default
+    return true;
+}
 }
