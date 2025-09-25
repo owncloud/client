@@ -550,6 +550,11 @@ bool Theme::enableMoveToTrash() const
     return true;
 }
 
+bool Theme::moveToTrashDefaultValue() const
+{
+    return false;
+}
+
 bool Theme::syncNewlyDiscoveredSpaces() const
 {
     return false;

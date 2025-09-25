@@ -34,6 +34,7 @@ public:
     QIcon aboutIcon() const override;
     QmlButtonColor primaryButtonColor() const override;
     QmlButtonColor secondaryButtonColor() const override;
+    bool moveToTrashDefaultValue() const override;
 };
 }
 #endif // OWNCLOUD_THEME_H
