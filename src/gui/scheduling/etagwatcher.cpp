@@ -32,6 +32,7 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
 {
     // Refactoring todo: use folderAdded/folderAboutToBeRemoved signals when implemented on the FolderMan
     connect(folderMan, &FolderMan::folderListChanged, this, &ETagWatcher::slotFolderListChanged);
+    connect(folderMan, &FolderMan::folderAboutToBeRemoved, this, &ETagWatcher::slotFolderAboutToBeRemoved);
 }
 
 void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
@@ -74,6 +75,12 @@ void ETagWatcher::slotFolderListChanged()
     }
 
     _lastEtagJobForSpace = std::move(newMap);
+}
+
+void ETagWatcher::slotFolderAboutToBeRemoved(Folder *folder)
+{
+    QString spaceId = folder->definition().spaceId();
+    _lastEtagJobForSpace.erase(spaceId);
 }
 
 void ETagWatcher::updateEtag(const QString &spaceId, const QString &etag)

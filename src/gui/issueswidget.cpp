@@ -254,11 +254,7 @@ IssuesWidget::IssuesWidget(QWidget *parent)
         tr("There were conflicts. <a href=\"%1\">Check the documentation on how to resolve them.</a>")
             .arg(Theme::instance()->conflictHelpUrl()));
 
-    connect(FolderMan::instance(), &FolderMan::folderRemoved, this, [this](Folder *f) {
-        _model->remove_if([f](const ProtocolItem &item) {
-            return item.folder() == f;
-        });
-    });
+    connect(FolderMan::instance(), &FolderMan::folderAboutToBeRemoved, this, &IssuesWidget::slotFolderAboutToBeRemoved);
 }
 
 IssuesWidget::~IssuesWidget()
@@ -351,6 +347,12 @@ void IssuesWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &item
     if (!item->showInIssuesTab())
         return;
     _model->addProtocolItem(ProtocolItem { folder, item });
+}
+
+void IssuesWidget::slotFolderAboutToBeRemoved(Folder *folder)
+{
+    // Remove all items whose folder matches the folder that's going to be removed
+    _model->remove_if([folder](const ProtocolItem &item) { return item.folder() == folder; });
 }
 
 void IssuesWidget::filterDidChange()
