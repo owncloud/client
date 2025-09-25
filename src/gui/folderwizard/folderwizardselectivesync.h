@@ -20,7 +20,6 @@
 #pragma once
 
 #include "gui/folderwizard/folderwizard_p.h"
-#include "libsync/accountfwd.h"
 
 namespace OCC {
 
@@ -45,7 +44,7 @@ public:
     const QSet<QString> &selectiveSyncBlackList() const;
 
 private Q_SLOTS:
-    void virtualFilesCheckboxClicked();
+    void slotVfsStateChanged(Qt::CheckState state);
 
 private:
     SelectiveSyncWidget *_selectiveSync;
