@@ -449,10 +449,17 @@ public:
 
 
     /**
-     * Whether or not to enable move-to-trash instead of deleting files that are gone from the server.
+     * Defines if the move to trash feature is available or no. If available it is still disabled by default.
+     * User has ot explicit enable this feature. See Theme::moveToTrashDefaultValue() to theme the default behavior.
      * Default: true
      */
     virtual bool enableMoveToTrash() const;
+
+    /**
+     * Set the default value for move to trash option
+     * Default: false
+     */
+    virtual bool moveToTrashDefaultValue() const;
 
     /**
      * @brief Automatically add sync connections for newly discovered Spaces.
