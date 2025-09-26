@@ -24,7 +24,9 @@ class SpacesPage;
 
 namespace OCC {
 
-class GraphApi::SpacesManager;
+namespace GraphApi {
+    class SpacesManager;
+}
 
 class SpacesPage : public QWizardPage
 {
