@@ -515,3 +515,22 @@ Feature: Syncing files
         Then the sync folder list should be empty
         And the folder "simple-folder" should exist on the file system
         And as "Alice" folder "simple-folder" should exist in the server
+
+    @issue-12333
+    Scenario: sync resources having European characters
+        Given user "Alice" has created folder "źäćöśęüóńł" in the server
+        And user "Alice" has uploaded file with content "test content" to "źäćöśęüóńł.txt" in the server
+        And user "Alice" has set up a client with default settings
+        When user "Alice" creates a folder "äöüąćęłńóśź" inside the sync folder
+        And user "Alice" creates a file "ąćęłńóśźäöü.txt" with the following content inside the sync folder
+            """
+            test content
+            """
+        And the user waits for the files to sync
+        Then as "Alice" folder "äöüąćęłńóśź" should exist in the server
+        And as "Alice" file "ąćęłńóśźäöü.txt" should exist in the server
+        And the folder "źäćöśęüóńł" should exist on the file system
+        And the file "źäćöśęüóńł.txt" should exist on the file system with the following content
+            """
+            test content
+            """
