@@ -197,6 +197,8 @@ FolderStatusModel::FolderStatusModel(AccountState *accountState, QObject *parent
     resetFolders();
 }
 
+FolderStatusModel::~FolderStatusModel() { }
+
 QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
 {
     if (_accountState == nullptr)
