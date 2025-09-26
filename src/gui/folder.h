@@ -277,8 +277,6 @@ public:
 
     void setSyncState(SyncResult::Status state);
 
-    void setDirtyNetworkLimits();
-
     void reloadSyncOptions();
 
 

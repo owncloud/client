@@ -46,14 +46,9 @@ QIcon ownCloudTheme::aboutIcon() const
     return Resources::themeUniversalIcon(QStringLiteral("oc-image-about"));
 }
 
-QmlButtonColor ownCloudTheme::primaryButtonColor() const
+bool ownCloudTheme::moveToTrashDefaultValue() const
 {
-    const QColor button("#709cd2");
-    return {button, Qt::white, button.darker()};
-}
-
-QmlButtonColor ownCloudTheme::secondaryButtonColor() const
-{
-    return {"#d4d3d0", Qt::black, QColor(Qt::black).lighter()};
+    // for the vanilla ownCloud client move-to-trash option is enabled by default
+    return true;
 }
 }
