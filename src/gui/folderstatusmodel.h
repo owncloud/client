@@ -60,9 +60,9 @@ public:
     };
     Q_ENUMS(Roles)
 
-    FolderStatusModel(QObject *parent = nullptr);
-    ~FolderStatusModel() override;
-    void setAccountState(AccountState *accountState);
+    FolderStatusModel(AccountState *accountState, QObject *parent = nullptr);
+
+    //  void setAccountState(AccountState *accountState);
 
     Folder *folder(const QModelIndex &index) const;
 

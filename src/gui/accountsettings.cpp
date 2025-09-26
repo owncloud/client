@@ -68,13 +68,10 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     // as usual we do too many things in the ctr and we need to eval all the code paths to make sure they handle
     // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
-    Q_ASSERT(_accountState && _accountState->account());
+    if (!_accountState || !_accountState->account())
+        return;
 
-
-    _model = new FolderStatusModel(this);
-
-    // see comments in this impl as it needs work
-    _model->setAccountState(_accountState);
+    _model = new FolderStatusModel(_accountState, this);
 
     auto weightedModel = new QSortFilterProxyModel(this);
     weightedModel->setSourceModel(_model);
@@ -146,7 +143,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
     // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
     // to id
-    Q_ASSERT(_accountState);
+    Q_ASSERT(_accountState && _accountState->account());
 
     // qpointer for async calls
     const auto isDeployed = folder->isDeployed();
