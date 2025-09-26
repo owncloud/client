@@ -61,12 +61,11 @@ SpacesBrowser::~SpacesBrowser()
     delete ui;
 }
 
-void SpacesBrowser::setAccount(OCC::AccountPtr acc)
+void SpacesBrowser::setSpacesManager(OCC::GraphApi::SpacesManager *spacesMgr)
 {
-    _acc = acc;
-    if (acc) {
-        _model->setSpacesManager(acc->spacesManager());
-        ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(acc));
+    if (spacesMgr) {
+        _model->setSpacesManager(spacesMgr);
+        ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(spacesMgr));
     }
 }
 

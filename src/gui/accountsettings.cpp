@@ -68,13 +68,10 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     // as usual we do too many things in the ctr and we need to eval all the code paths to make sure they handle
     // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
-    Q_ASSERT(_accountState);
+    if (!_accountState || !_accountState->account())
+        return;
 
-
-    _model = new FolderStatusModel(this);
-
-    // see comments in this impl as it needs work
-    _model->setAccountState(_accountState);
+    _model = new FolderStatusModel(_accountState, this);
 
     auto weightedModel = new QSortFilterProxyModel(this);
     weightedModel->setSourceModel(_model);
@@ -83,19 +80,19 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     _sortModel = weightedModel;
 
-    ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()));
+    ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
     connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
 
     ui->connectionStatusLabel->clear();
 
-    connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
-    slotAccountStateChanged();
+    connect(_accountState, &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
+    slotAccountStateChanged(_accountState->state());
 
     buildManageAccountMenu();
 
-    connect(_accountState.get(), &AccountState::isSettingUpChanged, this, &AccountSettings::accountSettingUpChanged);
+    connect(_accountState, &AccountState::isSettingUpChanged, this, &AccountSettings::accountSettingUpChanged);
 
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this,
         [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->quickWidget); });
@@ -146,7 +143,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
     // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
     // to id
-    Q_ASSERT(_accountState);
+    Q_ASSERT(_accountState && _accountState->account());
 
     // qpointer for async calls
     const auto isDeployed = folder->isDeployed();
@@ -257,11 +254,11 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
 
 void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
-    auto *selectiveSync = new SelectiveSyncWidget(_accountState->account(), this);
+    auto *selectiveSync = new SelectiveSyncWidget(_accountState->account().get(), this);
     selectiveSync->setDavUrl(folder->webDavUrl());
     bool ok;
     selectiveSync->setFolderInfo(
@@ -279,11 +276,11 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 
 void AccountSettings::slotAddFolder()
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
-    FolderWizard *folderWizard = new FolderWizard(_accountState, this);
+    FolderWizard *folderWizard = new FolderWizard(_accountState->account().get(), this);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
@@ -550,13 +547,12 @@ void AccountSettings::buildManageAccountMenu()
 }
 
 // Refactoring todo: the signal sends the new account state, refactor this to use that param
-void AccountSettings::slotAccountStateChanged()
+void AccountSettings::slotAccountStateChanged(AccountState::State state)
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
-    const AccountState::State state = _accountState->state();
     const AccountPtr account = _accountState->account();
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 

@@ -23,6 +23,7 @@
 
 namespace OCC {
 
+class Account;
 class SelectiveSyncWidget;
 
 /**
@@ -33,7 +34,7 @@ class FolderWizardSelectiveSync : public FolderWizardPage
 {
     Q_OBJECT
 public:
-    explicit FolderWizardSelectiveSync(FolderWizardPrivate *parent);
+    explicit FolderWizardSelectiveSync(Account *account, FolderWizardPrivate *parent);
     ~FolderWizardSelectiveSync() override;
 
     bool validatePage() override;

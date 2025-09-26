@@ -14,17 +14,19 @@
 #include "spacespage.h"
 #include "ui_spacespage.h"
 
+#include "spacesmanager.h"
+
 #include "theme.h"
 
 using namespace OCC;
 
-SpacesPage::SpacesPage(AccountPtr acc, QWidget *parent)
+SpacesPage::SpacesPage(GraphApi::SpacesManager *spacesMgr, QWidget *parent)
     : QWizardPage(parent)
     , ui(new Ui::SpacesPage)
 {
     ui->setupUi(this);
 
-    ui->widget->setAccount(acc);
+    ui->widget->setSpacesManager(spacesMgr);
     ui->label->setText(
         Theme::instance()->spacesAreCalledFolders() ? tr("Select a folder to sync it to your computer.") : tr("Select a Space to sync it to your computer."));
 

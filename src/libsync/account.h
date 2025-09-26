@@ -210,7 +210,7 @@ public:
 
     void clearCookieJar();
 
-    AccessManager *accessManager();
+    AccessManager *accessManager() const;
 
     JobQueue *jobQueue();
 

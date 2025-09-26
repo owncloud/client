@@ -156,6 +156,9 @@ void SpaceImage::update()
 
         _etag = newEtag;
         _url = QUrl(img->getWebDavUrl());
+
+        // todo DC-150: this job should run in the spaces manager, then just set the image on this spaceImage object. We don't need all these deps floating
+        // around at every level and we *definitely* don't want the spaces manager to hand out the account to whoever wants it
         auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, this);
 
         // TODO: next problem = this routine is correctly run when the icon has changed on the server, but the icon in the gui does not get refreshed!

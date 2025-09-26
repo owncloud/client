@@ -188,11 +188,10 @@ bool DiscoveryPhase::isSpace() const
     return !(Utility::urlEqual(_account->davUrl(), _baseUrl) || _account->davUrl().isParentOf(_baseUrl));
 }
 
-DiscoverySingleLocalDirectoryJob::DiscoverySingleLocalDirectoryJob(const AccountPtr &account, const QString &localPath, OCC::Vfs *vfs, QObject *parent)
+DiscoverySingleLocalDirectoryJob::DiscoverySingleLocalDirectoryJob(const QString &localPath, OCC::Vfs *vfs, QObject *parent)
     : QObject(parent)
     , QRunnable()
     , _localPath(localPath)
-    , _account(account)
     , _vfs(vfs)
 {
     qRegisterMetaType<QVector<LocalInfo> >("QVector<LocalInfo>");

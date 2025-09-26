@@ -45,8 +45,7 @@ public:
     };
     Q_ENUM(PageType)
 
-    explicit FolderWizard(AccountState *account, QWidget *parent = nullptr);
-    ~FolderWizard() override;
+    explicit FolderWizard(Account *account, QWidget *parent);
 
     FolderMan::SyncConnectionDescription result();
 

@@ -24,7 +24,6 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QRunnable>
-#include <deque>
 #include "syncoptions.h"
 #include "syncfileitem.h"
 
@@ -86,7 +85,7 @@ class DiscoverySingleLocalDirectoryJob : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit DiscoverySingleLocalDirectoryJob(const AccountPtr &account, const QString &localPath, OCC::Vfs *vfs, QObject *parent = nullptr);
+    explicit DiscoverySingleLocalDirectoryJob(const QString &localPath, OCC::Vfs *vfs, QObject *parent = nullptr);
 
     void run() override;
 Q_SIGNALS:
@@ -99,7 +98,6 @@ Q_SIGNALS:
 private Q_SLOTS:
 private:
     QString _localPath;
-    AccountPtr _account;
     OCC::Vfs* _vfs;
 public:
 };

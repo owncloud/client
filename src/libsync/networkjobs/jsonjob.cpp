@@ -65,7 +65,7 @@ JsonApiJob::JsonApiJob(AccountPtr account, const QString &path, const QByteArray
 {
     _request.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
 
-    auto q = query();
+    auto q = _query;
     // HACK: q will  be empty for POST, PUT, PATCH request as we utilise the body (see SimpleNetworkJob)
     // however the oc api requires the format header to be part of the url
     q.addQueryItem(QStringLiteral("format"), QStringLiteral("json"));

@@ -47,7 +47,7 @@ SpacesManager::SpacesManager(Account *parent)
 
 void SpacesManager::refresh()
 {
-    if (!OC_ENSURE(_account->accessManager())) {
+    if (!_account || !_account->accessManager()) {
         return;
     }
     if (!_account->credentials()->ready()) {
@@ -59,7 +59,7 @@ void SpacesManager::refresh()
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {
         // a system which provides multiple personal spaces the name of the drive is always used as display name
-        auto hasManyPersonalSpaces = this->account()->capabilities().spacesSupport().hasMultiplePersonalSpaces;
+        auto hasManyPersonalSpaces = _account->capabilities().spacesSupport().hasMultiplePersonalSpaces;
 
         drivesJob->deleteLater();
         if (drivesJob->httpStatusCode() == 200) {
@@ -75,7 +75,7 @@ void SpacesManager::refresh()
                 }
                 Q_EMIT spaceChanged(space);
             }
-            for (const QString &id : oldKeys) {
+            for (const QString &id : std::as_const(oldKeys)) {
                 auto *oldSpace = _spacesMap.take(id);
                 oldSpace->deleteLater();
             }
@@ -95,17 +95,7 @@ Space *SpacesManager::space(const QString &id) const
 {
     if (id.isEmpty())
         return nullptr;
-    return _spacesMap.value(id);
-}
-
-Space *SpacesManager::spaceByUrl(const QUrl &url) const
-{
-    auto it = std::find_if(_spacesMap.cbegin(), _spacesMap.cend(),
-        [url](const auto *space) { return OCC::Utility::urlEqual(QUrl(space->drive().getRoot().getWebDavUrl()), url); });
-    if (it != _spacesMap.cend()) {
-        return *it;
-    }
-    return {};
+    return _spacesMap.value(id, nullptr);
 }
 
 Account *SpacesManager::account() const

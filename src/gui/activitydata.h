@@ -52,8 +52,8 @@ public:
         NotificationType
     };
     Activity() = default;
-    explicit Activity(Type type, const QString &id, AccountPtr acc, const QString &subject, const QString &message, const QString &file, const QUrl &link,
-        const QDateTime &dateTime, const QVector<ActivityLink> &&links = {});
+    explicit Activity(Type type, const QString &id, const QString &accName, const QUuid &uid, const QString &subject, const QString &message,
+        const QString &file, const QUrl &link, const QDateTime &dateTime, const QVector<ActivityLink> &&links = {});
 
     Type type() const;
 

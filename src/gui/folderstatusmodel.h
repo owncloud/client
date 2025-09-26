@@ -60,9 +60,11 @@ public:
     };
     Q_ENUMS(Roles)
 
-    FolderStatusModel(QObject *parent = nullptr);
+    FolderStatusModel(AccountState *accountState, QObject *parent = nullptr);
+
+    // todo: #45 this only "needs" to exist as if it is removed there are gcc errors on the unique_ptr for the SubFolderInfo (which is reported as "incomplete"
+    // type?) in the anonymous namspace
     ~FolderStatusModel() override;
-    void setAccountState(AccountState *accountState);
 
     Folder *folder(const QModelIndex &index) const;
 
@@ -82,6 +84,8 @@ private:
     int indexOf(Folder *f) const;
 
     QPointer<AccountState> _accountState;
+
+    // todo: #45 I don't see why these need to be unique pointers instead of simple instances.
     std::vector<std::unique_ptr<SubFolderInfo>> _folders;
 };
 
