@@ -61,24 +61,16 @@
 // This is the version that is returned when the client asks for the VERSION.
 // The first number should be changed if there is an incompatible change that breaks old clients.
 // The second number should be changed when there are new features.
-#define MIRALL_SOCKET_API_VERSION "1.1"
+#define SOCKET_API_VERSION "1.1"
 
 namespace {
 
-const QString unregisterPathMessageC()
-{
-    return QStringLiteral("UNREGISTER_PATH");
-}
-
-const QLatin1Char RecordSeparator()
-{
-    return QLatin1Char('\x1e');
-}
-
 QStringList split(const QString &data)
 {
+    auto seperator = QLatin1Char('\x1e');
+
     // TODO: string ref?
-    return data.split(RecordSeparator());
+    return data.split(seperator);
 }
 
 QString buildMessage(const QString &verb, const QString &path, const QString &status = QString())
@@ -127,7 +119,6 @@ SocketApi::SocketApi(QObject *parent)
     : QObject(parent)
 {
     qRegisterMetaType<SocketListener *>("SocketListener*");
-    qRegisterMetaType<QSharedPointer<SocketApiJob>>("QSharedPointer<SocketApiJob>");
     qRegisterMetaType<QSharedPointer<SocketApiJobV2>>("QSharedPointer<SocketApiJobV2>");
 
     _socketPath = Utility::socketApiSocketPath();
@@ -250,9 +241,7 @@ void SocketApi::slotReadSocket()
         const QString command = line.mid(0, argPos).toUpper();
         const int indexOfMethod = [&] {
             QByteArray functionWithArguments = QByteArrayLiteral("command_");
-            if (command.startsWith(QLatin1String("ASYNC_"))) {
-                functionWithArguments += command.toUtf8() + QByteArrayLiteral("(QSharedPointer<SocketApiJob>)");
-            } else if (command.startsWith(QLatin1String("V2/"))) {
+            if (command.startsWith(QLatin1String("V2/"))) {
                 functionWithArguments += QByteArrayLiteral("V2_") + command.mid(3).toUtf8() + QByteArrayLiteral("(QSharedPointer<SocketApiJobV2>)");
             } else {
                 functionWithArguments += command.toUtf8() + QByteArrayLiteral("(QString,SocketListener*)");
@@ -266,28 +255,7 @@ void SocketApi::slotReadSocket()
         }();
 
         const auto argument = argPos != -1 ? line.mid(argPos + 1) : QString();
-        if (command.startsWith(QLatin1String("ASYNC_"))) {
-            auto arguments = argument.split(QLatin1Char('|'));
-            if (arguments.size() != 2) {
-                listener->sendError(QStringLiteral("argument count is wrong"));
-                return;
-            }
-
-            auto json = QJsonDocument::fromJson(arguments[1].toUtf8()).object();
-
-            auto jobId = arguments[0];
-
-            auto socketApiJob = QSharedPointer<SocketApiJob>(new SocketApiJob(jobId, listener, json), &QObject::deleteLater);
-            if (indexOfMethod != -1) {
-                staticMetaObject.method(indexOfMethod)
-                    .invoke(this, Qt::QueuedConnection,
-                        Q_ARG(QSharedPointer<SocketApiJob>, socketApiJob));
-            } else {
-                qCWarning(lcSocketApi) << "The command is not supported by this version of the client:" << command
-                                       << "with argument:" << argument;
-                socketApiJob->reject(QStringLiteral("command not found"));
-            }
-        } else if (command.startsWith(QLatin1String("V2/"))) {
+        if (command.startsWith(QLatin1String("V2/"))) {
             QJsonParseError error;
             const auto json = QJsonDocument::fromJson(argument.toUtf8(), &error).object();
             if (error.error != QJsonParseError::NoError) {
@@ -336,7 +304,7 @@ void SocketApi::unregisterAccount(const AccountPtr &a)
     }
 
     if (a->hasDefaultSyncRoot()) {
-        broadcastMessage(buildMessage(unregisterPathMessageC(), Utility::stripTrailingSlash(a->defaultSyncRoot())));
+        broadcastMessage(buildMessage("UNREGISTER_PATH", Utility::stripTrailingSlash(a->defaultSyncRoot())));
     }
     _registeredAccounts.remove(a);
 }
@@ -356,7 +324,7 @@ void SocketApi::slotUnregisterPath(Folder *folder)
     if (!_registeredFolders.contains(folder))
         return;
 
-    broadcastMessage(buildMessage(unregisterPathMessageC(), Utility::stripTrailingSlash(folder->path()), QString()), true);
+    broadcastMessage(buildMessage("UNREGISTER_PATH", Utility::stripTrailingSlash(folder->path()), QString()), true);
     _registeredFolders.remove(folder);
 }
 
@@ -486,7 +454,7 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
 
 void SocketApi::command_VERSION(const QString &, SocketListener *listener)
 {
-    listener->sendMessage(QStringLiteral("VERSION:%1:%2").arg(OCC::Version::versionWithBuildNumber().toString(), QStringLiteral(MIRALL_SOCKET_API_VERSION)));
+    listener->sendMessage(QStringLiteral("VERSION:%1:%2").arg(OCC::Version::versionWithBuildNumber().toString(), QStringLiteral(SOCKET_API_VERSION)));
 }
 
 void SocketApi::command_SHARE_MENU_TITLE(const QString &, SocketListener *listener)
@@ -661,7 +629,7 @@ void SocketApi::command_MOVE_ITEM(const QString &localFile, SocketListener *)
     }
 }
 
-void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile, [[maybe_unused]] SocketListener *listener)
+void SocketApi::command_OPEN_APP_LINK(const QString &localFile, [[maybe_unused]] SocketListener *listener)
 {
     const auto data = FileData::get(localFile);
     if (!data.folder) {
@@ -726,7 +694,7 @@ void SocketApi::emailPrivateLink(const QUrl &link)
         nullptr);
 }
 
-void OCC::SocketApi::openPrivateLink(const QUrl &link)
+void SocketApi::openPrivateLink(const QUrl &link)
 {
     Utility::openBrowser(link, nullptr);
 }
@@ -787,7 +755,7 @@ SocketApi::FileData SocketApi::FileData::get(const QString &localFile)
     return data;
 }
 
-bool OCC::SocketApi::FileData::isSyncFolder() const
+bool SocketApi::FileData::isSyncFolder() const
 {
     return folderRelativePath.isEmpty();
 }
@@ -996,21 +964,6 @@ QString SocketApi::buildRegisterPathMessage(const QString &path)
     QString message = QStringLiteral("REGISTER_PATH:");
     message.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
     return message;
-}
-
-void SocketApiJob::resolve(const QString &response)
-{
-    _socketListener->sendMessage(QStringLiteral("RESOLVE|") + _jobId + QLatin1Char('|') + response);
-}
-
-void SocketApiJob::resolve(const QJsonObject &response)
-{
-    resolve(QString::fromUtf8(QJsonDocument { response }.toJson()));
-}
-
-void SocketApiJob::reject(const QString &response)
-{
-    _socketListener->sendMessage(QStringLiteral("REJECT|") + _jobId + QLatin1Char('|') + response);
 }
 
 SocketApiJobV2::SocketApiJobV2(const QSharedPointer<SocketListener> &socketListener, const QString &command, const QJsonObject &arguments)
