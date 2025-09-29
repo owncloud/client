@@ -56,7 +56,6 @@ if( UNIX AND NOT APPLE )
     owncloud_add_test(InotifyWatcher)
 endif(UNIX AND NOT APPLE)
 
-
 owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
@@ -65,8 +64,18 @@ owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/us
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 
-
 owncloud_add_test(JobQueue)
 
-
 add_subdirectory(modeltests)
+
+if(WIN32)
+    find_file(cldapi_FOUND CldApi.dll)
+    if (cldapi_FOUND)
+        include("${CMAKE_SOURCE_DIR}/test/owncloud_add_test.cmake")
+        owncloud_add_test(WinVfs)
+        target_link_libraries(WinVfsTest vfs_plugin_win_static)
+        add_dependencies(WinVfsTest vfs_wincfapi)
+    else()
+        message(WARNING "Failed to detect CldApi.dll: Skipping WinVfsTest")
+    endif()
+endif()
