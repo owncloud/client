@@ -594,6 +594,13 @@ void SocketApi::command_MAKE_ONLINE_ONLY(const QString &filesArg, SocketListener
 void SocketApi::command_DELETE_ITEM(const QString &localFile, SocketListener *)
 {
     QFileInfo info(localFile);
+    // ensure the given path is under control by ownCloud
+    auto data = FileData::get(localFile);
+    if (!data.isValid() || !data.folder->isReady())
+        return;
+    // ensure the given path exists locally
+    if (!info.exists())
+        return;
 
     auto result = QMessageBox::question(
         nullptr, tr("Confirm deletion"),
