@@ -46,7 +46,6 @@
 #include <array>
 
 
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QWidget>
@@ -82,7 +81,7 @@ QStringList split(const QString &data)
     return data.split(RecordSeparator());
 }
 
-static QString buildMessage(const QString &verb, const QString &path, const QString &status = QString())
+QString buildMessage(const QString &verb, const QString &path, const QString &status = QString())
 {
     QString msg(verb);
 
@@ -247,7 +246,7 @@ void SocketApi::slotReadSocket()
         line.chop(1); // remove the '\n'
 
         qCInfo(lcSocketApi) << "Received SocketAPI message <--" << line << "from" << socket;
-        const int argPos = line.indexOf(QLatin1Char(':'));
+        const qsizetype argPos = line.indexOf(QLatin1Char(':'));
         const QString command = line.mid(0, argPos).toUpper();
         const int indexOfMethod = [&] {
             QByteArray functionWithArguments = QByteArrayLiteral("command_");
@@ -263,7 +262,6 @@ void SocketApi::slotReadSocket()
             if (out == -1) {
                 listener->sendError(QStringLiteral("Function %1 not found").arg(QString::fromUtf8(functionWithArguments)));
             }
-            OC_ASSERT(out != -1);
             return out;
         }();
 
@@ -663,15 +661,16 @@ void SocketApi::command_MOVE_ITEM(const QString &localFile, SocketListener *)
     }
 }
 
-Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile, [[maybe_unused]] SocketListener *listener)
+void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile, [[maybe_unused]] SocketListener *listener)
 {
     const auto data = FileData::get(localFile);
-    if (OC_ENSURE(data.folder)) {
-        const auto &provider = data.folder->accountState()->account()->appProvider();
-        const auto record = data.journalRecord();
-        if (record.isValid()) {
-            provider.open(data.folder->accountState()->account(), localFile, record._fileId);
-        }
+    if (!data.folder) {
+        return;
+    }
+    const auto &provider = data.folder->accountState()->account()->appProvider();
+    const auto record = data.journalRecord();
+    if (record.isValid()) {
+        provider.open(data.folder->accountState()->account(), localFile, record._fileId);
     }
 }
 
