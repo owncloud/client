@@ -77,8 +77,9 @@ AccountState::AccountState(AccountPtr account)
 
     connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
 
+    // todo: no we should not directly register the account, but let accountAdded signal trigger it
     if (FolderMan::instance()) {
-        FolderMan::instance()->socketApi()->registerAccount(account);
+        FolderMan::instance()->socketApi()->registerAccount(_account.get());
     }
 }
 
