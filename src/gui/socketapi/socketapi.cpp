@@ -234,9 +234,15 @@ void SocketApi::slotReadSocket()
     // a SocketListener that doesn't send any messages.
     static auto invalidListener = QSharedPointer<SocketListener>::create(nullptr);
     const auto listener = _listeners.value(socket, invalidListener);
-    while (socket->canReadLine()) {
-        // Make sure to normalize the input from the socket to
-        // make sure that the path will match, especially on OS X.
+    while (true) {
+        // listener->socket is a QPointer and will be null as soon as the socket is deleted in the read loop
+        auto listenerSocket = listener->socket;
+        if (listenerSocket.isNull()) {
+            break;
+        }
+        if (!socket->canReadLine()) {
+            break;
+        }
         QString line = QString::fromUtf8(socket->readLine()).normalized(QString::NormalizationForm_C);
         // Note: do NOT use QString::trimmed() here! That will also remove any trailing spaces (which _are_ part of the filename)!
         line.chop(1); // remove the '\n'
@@ -709,6 +715,13 @@ void SocketApi::command_MAKE_ONLINE_ONLY(const QString &filesArg, SocketListener
 void SocketApi::command_DELETE_ITEM(const QString &localFile, SocketListener *)
 {
     QFileInfo info(localFile);
+    // ensure the given path is under control by ownCloud
+    auto data = FileData::get(localFile);
+    if (!data.isValid() || !data.folder->isReady())
+        return;
+    // ensure the given path exists locally
+    if (!info.exists())
+        return;
 
     auto result = QMessageBox::question(
         nullptr, tr("Confirm deletion"),
