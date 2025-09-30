@@ -17,6 +17,7 @@
 #include "socketapi.h"
 #include "scheduling/syncscheduler.h"
 #include "socketapi_p.h"
+#include "socket_protocol.h"
 
 #include "gui/commonstrings.h"
 
@@ -67,10 +68,8 @@ namespace {
 
 QStringList split(const QString &data)
 {
-    auto seperator = QLatin1Char('\x1e');
-
     // TODO: string ref?
-    return data.split(seperator);
+    return data.split(OCC::SocketProtocol::PathSeparator);
 }
 
 QString buildMessage(const QString &verb, const QString &path, const QString &status = QString())
@@ -304,7 +303,7 @@ void SocketApi::unregisterAccount(const AccountPtr &a)
     }
 
     if (a->hasDefaultSyncRoot()) {
-        broadcastMessage(buildMessage("UNREGISTER_PATH", Utility::stripTrailingSlash(a->defaultSyncRoot())));
+        broadcastMessage(buildMessage(SocketProtocol::CommandUnregisterPath, Utility::stripTrailingSlash(a->defaultSyncRoot())));
     }
     _registeredAccounts.remove(a);
 }
@@ -324,7 +323,7 @@ void SocketApi::slotUnregisterPath(Folder *folder)
     if (!_registeredFolders.contains(folder))
         return;
 
-    broadcastMessage(buildMessage("UNREGISTER_PATH", Utility::stripTrailingSlash(folder->path()), QString()), true);
+    broadcastMessage(buildMessage(SocketProtocol::CommandUnregisterPath, Utility::stripTrailingSlash(folder->path()), QString()), true);
     _registeredFolders.remove(folder);
 }
 
@@ -349,20 +348,20 @@ void SocketApi::slotUpdateFolderView(Folder *f)
             const QString rootPath = Utility::stripTrailingSlash(f->path());
             broadcastStatusPushMessage(rootPath, f->syncEngine().syncFileStatusTracker().fileStatus(QString()));
 
-            broadcastMessage(buildMessage(QStringLiteral("UPDATE_VIEW"), rootPath));
+            broadcastMessage(buildMessage(SocketProtocol::CommandUpdateView, rootPath));
             break;
         }
         case SyncResult::SetupError:
             [[fallthrough]];
-        case OCC::SyncResult::Undefined:
+        case SyncResult::Undefined:
             Q_FALLTHROUGH();
-        case OCC::SyncResult::NotYetStarted:
+        case SyncResult::NotYetStarted:
             Q_FALLTHROUGH();
-        case OCC::SyncResult::SyncRunning:
+        case SyncResult::SyncRunning:
             Q_FALLTHROUGH();
-        case OCC::SyncResult::SyncAbortRequested:
+        case SyncResult::SyncAbortRequested:
             [[fallthrough]];
-        case OCC::SyncResult::Offline:
+        case SyncResult::Offline:
             qCDebug(lcSocketApi) << "Not sending UPDATE_VIEW for" << f->path() << "because status() is" << f->syncResult().status();
         }
     }
@@ -377,7 +376,7 @@ void SocketApi::broadcastMessage(const QString &msg, bool doWait)
 
 void SocketApi::broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus)
 {
-    QString msg = buildMessage(QStringLiteral("STATUS"), systemPath, fileStatus.toSocketAPIString());
+    QString msg = buildMessage(SocketProtocol::CommandStatus, systemPath, fileStatus.toSocketAPIString());
     Q_ASSERT(!systemPath.endsWith(QLatin1Char('/')));
     auto directoryHash = qHash(systemPath.left(systemPath.lastIndexOf(QLatin1Char('/'))));
     for (const auto &listener : std::as_const(_listeners)) {
@@ -702,9 +701,9 @@ void SocketApi::openPrivateLink(const QUrl &link)
 void SocketApi::command_GET_STRINGS(const QString &argument, SocketListener *listener)
 {
     static std::array<std::pair<QString, QString>, 5> strings { {
-        { QStringLiteral("SHARE_MENU_TITLE"), tr("Share...") },
-        { QStringLiteral("CONTEXT_MENU_TITLE"), Theme::instance()->appNameGUI() },
-        { QStringLiteral("COPY_PRIVATE_LINK_MENU_TITLE"), tr("Copy private link to clipboard") },
+        { SocketProtocol::CommandShareMenuTitle, tr("Share...") },
+        { SocketProtocol::CommandContextMenuTitle, Theme::instance()->appNameGUI() },
+        { SocketProtocol::CommandCopyPrivateLinkMenuTitle, tr("Copy private link to clipboard") },
     } };
     listener->sendMessage(QStringLiteral("GET_STRINGS:BEGIN"));
     for (auto key_value : strings) {
@@ -961,7 +960,7 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
 QString SocketApi::buildRegisterPathMessage(const QString &path)
 {
     QFileInfo fi(path);
-    QString message = QStringLiteral("REGISTER_PATH:");
+    QString message = SocketProtocol::CommandRegisterPath + ":";
     message.append(QDir::toNativeSeparators(fi.absoluteFilePath()));
     return message;
 }
