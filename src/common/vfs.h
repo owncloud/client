@@ -29,17 +29,21 @@
 
 #include <memory>
 
+
 namespace OCC {
 
-class Account;
 class SyncJournalDb;
 class SyncFileItem;
 class SyncEngine;
 
+class Account;
+
 /** Collection of parameters for initializing a Vfs instance. */
 struct OCSYNC_EXPORT VfsSetupParams
 {
-    explicit VfsSetupParams(const AccountPtr &account, const QUrl &baseUrl, bool groupInSidebar, SyncEngine *syncEngine);
+    // todo: the account is only used to get the displayNameWithHost + capabilities.preferredUploadChecksumType - both of which I would think are const
+    // once the account is created? if so, consider replacing the account ptr with those much simpler, safer values asap
+    explicit VfsSetupParams(Account *account, const QUrl &baseUrl, bool groupInSidebar, SyncEngine *syncEngine);
     /** The full path to the folder on the local filesystem
      *
      * Always ends with /.
@@ -53,7 +57,7 @@ struct OCSYNC_EXPORT VfsSetupParams
     QString remotePath;
 
     /// Account url, credentials etc. for network calls
-    AccountPtr account;
+    Account *account;
 
     /** Access to the sync folder's database.
      *
