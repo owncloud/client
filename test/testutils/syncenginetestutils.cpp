@@ -887,7 +887,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db")));
     // TODO: davUrl
 
-    _syncEngine.reset(new OCC::SyncEngine(account(), account()->davUrl(), localPath(), QString(), _journalDb.get()));
+    _syncEngine.reset(new OCC::SyncEngine(account().get(), account()->davUrl(), localPath(), QString(), _journalDb.get()));
     _syncEngine->setSyncOptions(OCC::SyncOptions { QSharedPointer<OCC::Vfs>(OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode).release()) });
 
     // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
@@ -926,7 +926,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
     opts._vfs = vfs;
     _syncEngine->setSyncOptions(opts);
 
-    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), false, &syncEngine());
+    OCC::VfsSetupParams vfsParams(account()->sharedFromThis(), account()->davUrl(), false, &syncEngine());
     vfsParams.filesystemPath = localPath();
     vfsParams.remotePath = QLatin1Char('/');
     vfsParams.journal = _journalDb.get();

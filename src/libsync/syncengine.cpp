@@ -44,7 +44,7 @@ Q_LOGGING_CATEGORY(lcEngine, "sync.engine", QtInfoMsg)
 // doc in header
 std::chrono::seconds SyncEngine::minimumFileAgeForUpload(2s);
 
-SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
+SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
     : _account(account)
     , _baseUrl(baseUrl)
     , _needsUpdate(false)
@@ -256,6 +256,9 @@ void SyncEngine::conflictRecordMaintenance()
 
 void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 {
+    if (!_account)
+        return;
+
     if (Utility::isConflictFile(item->_file))
         _seenConflictFiles.insert(item->_file);
     if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
@@ -296,6 +299,9 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
 void SyncEngine::startSync()
 {
+    if (!_account)
+        return;
+
     if (_syncRunning) {
         OC_ASSERT(false);
         return;
@@ -385,7 +391,7 @@ void SyncEngine::startSync()
 
     // TODO: add a constructor to DiscoveryPhase
     // pass a syncEngine object rather than copying everything to another object
-    _discoveryPhase.reset(new DiscoveryPhase(_account, syncOptions(), _baseUrl));
+    _discoveryPhase.reset(new DiscoveryPhase(_account->sharedFromThis(), syncOptions(), _baseUrl));
     _discoveryPhase->_excludes = _excludedFiles.get();
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
@@ -552,7 +558,7 @@ void SyncEngine::slotDiscoveryFinished()
         // do a database commit
         _journal->commit(QStringLiteral("post treewalk"));
 
-        _propagator = QSharedPointer<OwncloudPropagator>::create(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal);
+        _propagator = QSharedPointer<OwncloudPropagator>::create(_account->sharedFromThis(), syncOptions(), _baseUrl, _localPath, _remotePath, _journal);
         connect(_propagator.data(), &OwncloudPropagator::itemCompleted,
             this, &SyncEngine::slotItemCompleted);
         connect(_propagator.data(), &OwncloudPropagator::progress,
