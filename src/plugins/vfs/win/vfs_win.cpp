@@ -1,7 +1,7 @@
 /*
  * This file was originally licensed under ownCloud Commercial License.
  * see <https://owncloud.com/licenses/owncloud-commercial/>
- * As of 2025, it is relicensed under MIT.
+ * As of 2025, it is relicensed under GPL 2.0 or later.
  */
 // SPDX-License-Identifier: GPL-2.0-or-later
 
