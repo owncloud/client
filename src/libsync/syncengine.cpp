@@ -559,7 +559,7 @@ void SyncEngine::slotDiscoveryFinished()
         // do a database commit
         _journal->commit(QStringLiteral("post treewalk"));
 
-        _propagator = QSharedPointer<OwncloudPropagator>::create(_account->sharedFromThis(), syncOptions(), _baseUrl, _localPath, _remotePath, _journal);
+        _propagator = QSharedPointer<OwncloudPropagator>::create(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal);
         connect(_propagator.data(), &OwncloudPropagator::itemCompleted,
             this, &SyncEngine::slotItemCompleted);
         connect(_propagator.data(), &OwncloudPropagator::progress,

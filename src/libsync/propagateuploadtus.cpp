@@ -84,7 +84,7 @@ SimpleNetworkJob *PropagateUploadFileTUS::makeCreationWithUploadJob(QNetworkRequ
 
     request->setRawHeader(QByteArrayLiteral("Upload-Metadata"), encodedMetaData.join(','));
     request->setRawHeader(QByteArrayLiteral("Upload-Length"), QByteArray::number(_item->_size));
-    return new SimpleNetworkJob(propagator()->account().get(), propagator()->webDavUrl(), {}, "POST", device, *request, this);
+    return new SimpleNetworkJob(propagator()->account(), propagator()->webDavUrl(), {}, "POST", device, *request, this);
 }
 
 QNetworkRequest PropagateUploadFileTUS::prepareRequest(const quint64 &chunkSize)
@@ -120,7 +120,7 @@ void PropagateUploadFileTUS::doStartUpload()
     if (info.validate(_item->_size, _item->_modtime, _item->_checksumHeader)) {
         _location = info._url;
         Q_ASSERT(_location.isValid());
-        auto job = new SimpleNetworkJob(propagator()->account().get(), _location, {}, "HEAD", nullptr, {}, this);
+        auto job = new SimpleNetworkJob(propagator()->account(), _location, {}, "HEAD", nullptr, {}, this);
         connect(job, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileTUS::slotChunkFinished);
         job->start();
     } else {
@@ -150,7 +150,7 @@ void PropagateUploadFileTUS::startNextChunk()
     SimpleNetworkJob *job;
     if (_currentOffset != 0) {
         qCDebug(lcPropagateUploadTUS) << "Starting to patch upload:" << propagator()->fullRemotePath(_item->_file);
-        job = new SimpleNetworkJob(propagator()->account().get(), _location, {}, "PATCH", device, req, this);
+        job = new SimpleNetworkJob(propagator()->account(), _location, {}, "PATCH", device, req, this);
     } else {
         Q_ASSERT(_location.isEmpty());
         qCDebug(lcPropagateUploadTUS) << "Starting creation with upload:" << propagator()->fullRemotePath(_item->_file);
@@ -189,7 +189,7 @@ void PropagateUploadFileTUS::slotChunkFinished()
             qCWarning(lcPropagateUploadTUS) << propagator()->fullRemotePath(_item->_file) << "Encountered a timeout -> get progress for" << _location;
             QNetworkRequest req;
             setTusVersionHeader(req);
-            auto updateJob = new SimpleNetworkJob(propagator()->account().get(), propagator()->webDavUrl(), _location.path(), "HEAD", {}, req, this);
+            auto updateJob = new SimpleNetworkJob(propagator()->account(), propagator()->webDavUrl(), _location.path(), "HEAD", {}, req, this);
             addChildJob(updateJob);
             connect(updateJob, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileTUS::slotChunkFinished);
             updateJob->start();
@@ -255,8 +255,8 @@ void PropagateUploadFileTUS::slotChunkFinished()
     if (!_finished) {
         // Either the ETag or the remote Permissions were not in the headers of the reply.
         // Start a PROPFIND to fetch these data from the server.
-        auto check = new PropfindJob(
-            propagator()->account().get(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
+        auto check =
+            new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
         addChildJob(check);
         check->setProperties({ "http://owncloud.org/ns:fileid", "http://owncloud.org/ns:permissions", "getetag" });
         connect(check, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &map) {

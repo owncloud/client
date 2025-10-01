@@ -570,7 +570,7 @@ void PropagateDownloadFile::startFullDownload()
 
     if (_item->_directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
-        _job = new GETFileJob(propagator()->account().get(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), &_tmpFile, headers,
+        _job = new GETFileJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), &_tmpFile, headers,
             _expectedEtagForResume, _resumeStart, this);
     } else {
         // We were provided a direct URL, use that one
@@ -581,7 +581,7 @@ void PropagateDownloadFile::startFullDownload()
         }
 
         QUrl url = QUrl::fromUserInput(_item->_directDownloadUrl);
-        _job = new GETFileJob(propagator()->account().get(), url, {}, &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
+        _job = new GETFileJob(propagator()->account(), url, {}, &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
     }
     _job->setExpectedContentLength(_item->_size - _resumeStart);
 

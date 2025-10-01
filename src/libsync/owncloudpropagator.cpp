@@ -75,11 +75,6 @@ qint64 freeSpaceLimit()
     return value;
 }
 
-OwncloudPropagator::~OwncloudPropagator()
-{
-}
-
-
 int OwncloudPropagator::maximumActiveTransferJob()
 {
     if (!_syncOptions._parallelNetworkJobs) {
@@ -715,7 +710,7 @@ void OwncloudPropagator::reportProgress(const SyncFileItem &item, qint64 bytes)
     Q_EMIT progress(item, bytes);
 }
 
-AccountPtr OwncloudPropagator::account() const
+Account *OwncloudPropagator::account() const
 {
     return _account;
 }

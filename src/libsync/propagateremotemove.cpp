@@ -71,7 +71,7 @@ void PropagateRemoteMove::start()
 
     auto itemType = _item->_type;
     OC_ASSERT(itemType != ItemTypeVirtualFileDownload && itemType != ItemTypeVirtualFileDehydration);
-    _job = new MoveJob(propagator()->account().get(), propagator()->webDavUrl(), remoteSource, remoteDestination, {}, this);
+    _job = new MoveJob(propagator()->account(), propagator()->webDavUrl(), remoteSource, remoteDestination, {}, this);
     connect(_job.data(), &MoveJob::finishedSignal, this, &PropagateRemoteMove::slotMoveJobFinished);
     propagator()->_activeJobList.append(this);
     _job->start();
