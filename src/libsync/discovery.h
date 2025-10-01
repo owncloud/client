@@ -50,6 +50,7 @@ class ProcessDirectoryJob : public QObject
     Q_OBJECT
 
     struct PathTuple;
+
 public:
     enum QueryMode {
         NormalQuery,

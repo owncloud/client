@@ -285,7 +285,7 @@ void ConnectionValidator::slotAuthSuccess()
 
     _errors.clear();
     if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
-        auto *fetchSetting = new FetchServerSettingsJob(_account->sharedFromThis(), this);
+        auto *fetchSetting = new FetchServerSettingsJob(_account, this);
         const auto unsupportedServerError = [this] {
             _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
         };

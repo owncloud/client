@@ -24,7 +24,6 @@
 #include "discovery.h"
 #include "discoveryphase.h"
 #include "owncloudpropagator.h"
-#include "propagateremotedelete.h"
 
 #include <chrono>
 
@@ -299,8 +298,10 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
 void SyncEngine::startSync()
 {
-    if (!_account)
+    if (!_account) {
+        finalize(false);
         return;
+    }
 
     if (_syncRunning) {
         OC_ASSERT(false);
@@ -391,7 +392,7 @@ void SyncEngine::startSync()
 
     // TODO: add a constructor to DiscoveryPhase
     // pass a syncEngine object rather than copying everything to another object
-    _discoveryPhase.reset(new DiscoveryPhase(_account->sharedFromThis(), syncOptions(), _baseUrl));
+    _discoveryPhase.reset(new DiscoveryPhase(_account, syncOptions(), _baseUrl));
     _discoveryPhase->_excludes = _excludedFiles.get();
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
@@ -697,11 +698,6 @@ void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
         }
     }
 }
-
-/*AccountPtr SyncEngine::account() const
-{
-    return _account;
-}*/
 
 void SyncEngine::setLocalDiscoveryOptions(LocalDiscoveryStyle style, std::set<QString> paths)
 {

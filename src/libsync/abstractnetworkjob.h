@@ -197,11 +197,12 @@ protected:
      */
     void setQuery(const QUrlQuery &query);
 
-    QPointer<Account> _account;
     QUrlQuery _query;
     QByteArray _responseTimestamp;
 
 private:
+    QPointer<Account> _account;
+
     /** Makes this job drive a pre-made QNetworkReply
      *
      * This reply cannot have a QIODevice request body because we can't get

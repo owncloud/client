@@ -39,6 +39,8 @@ void ProcessDirectoryJob::start()
 
     if (_queryServer == NormalQuery) {
         _serverJob = startAsyncServerQuery();
+        if (!_serverJob)
+            return;
     } else {
         _serverQueryDone = true;
     }
@@ -548,8 +550,12 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             done = true;
         } else {
             // we need to make a request to the server to know that the original file is deleted on the server
+            if (_discoveryData->_account == nullptr) {
+                Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+                return;
+            }
             _pendingAsyncJobs++;
-            auto job = new RequestEtagJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, _discoveryData->_remoteFolder + originalPath, this);
+            auto job = new RequestEtagJob(_discoveryData->_account, _discoveryData->_baseUrl, _discoveryData->_remoteFolder + originalPath, this);
             connect(job, &RequestEtagJob::finishedSignal, this, [=]() mutable {
                 _pendingAsyncJobs--;
                 QTimer::singleShot(0, _discoveryData, &DiscoveryPhase::scheduleMoreJobs);
@@ -910,6 +916,11 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
     if (wasDeletedOnClient.first) {
         finalize(processRename(path), wasDeletedOnClient.second.toUtf8() == base._etag ? ParentNotChanged : NormalQuery);
     } else {
+        if (_discoveryData->_account == nullptr) {
+            Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+            return;
+        }
+
         // We must query the server to know if the etag has not changed
         _pendingAsyncJobs++;
         QString serverOriginalPath = _discoveryData->_remoteFolder + _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
@@ -1267,8 +1278,13 @@ void ProcessDirectoryJob::dbError()
 
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 {
+    if (_discoveryData->_account == nullptr) {
+        Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+        return nullptr;
+    }
+
     auto discoveryJob =
-        new DiscoverySingleDirectoryJob(_discoveryData->_account, _discoveryData->_baseUrl, _discoveryData->_remoteFolder + _currentFolder._server, this);
+        new DiscoverySingleDirectoryJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, _discoveryData->_remoteFolder + _currentFolder._server, this);
     if (!_dirItem)
         discoveryJob->setIsRootPath(); // query the fingerprint on the root
     connect(discoveryJob, &DiscoverySingleDirectoryJob::etag, this, &ProcessDirectoryJob::etag);
