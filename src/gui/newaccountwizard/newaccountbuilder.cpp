@@ -29,6 +29,7 @@ NewAccountBuilder::NewAccountBuilder(const NewAccountModel &model, QObject *pare
 
 void NewAccountBuilder::buildAccount()
 {
+    Q_ASSERT(_account);
     // the account manager triggers the first checkConnection in the state when it's added - there should be no need to call it again explicitly
     // either in the application or the folderman, as was the case previously
     _accountState = AccountManager::instance()->addAccount(_account);
@@ -57,7 +58,9 @@ void NewAccountBuilder::onAccountStateChanged(AccountState::State state)
 
 void NewAccountBuilder::completeAccountSetup()
 {
-    AccountManager::instance()->saveAccount(_account.get());
+    Q_ASSERT(_account);
+
+    AccountManager::instance()->saveAccount(_account);
 
     // the creds should always be ready when creating new account as we don't get here unless the auth and all other checks succeeded
     // the check is perfunctory.
@@ -84,7 +87,7 @@ void NewAccountBuilder::completeAccountSetup()
 
     // if selective sync is selected, we need to run the folder wizard asap.
     if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC)
-        Q_EMIT requestFolderWizard(_account.get());
+        Q_EMIT requestFolderWizard(_account);
 
     deleteLater();
 }

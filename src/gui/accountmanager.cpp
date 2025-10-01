@@ -109,7 +109,7 @@ bool AccountManager::restore()
         if (auto acc = loadAccountHelper(*settings)) {
             acc->_groupIndex = accountIndex;
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
-                addAccountState(std::move(accState));
+                addAccountState(accState);
             }
         }
         settings->endGroup();
@@ -117,35 +117,35 @@ bool AccountManager::restore()
 
     return true;
 }
-  
-AccountPtr AccountManager::createAccount(const NewAccountModel &model)
+
+Account *AccountManager::createAccount(const NewAccountModel &model)
 {
-    auto newAccountPtr = Account::create(QUuid::createUuid(), model.davUser(), model.effectiveUserInfoUrl());
+    auto account = new Account(QUuid::createUuid(), model.davUser(), model.effectiveUserInfoUrl());
 
-    newAccountPtr->setDavDisplayName(model.displayName());
+    account->setDavDisplayName(model.displayName());
 
-    Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), newAccountPtr.get());
-    newAccountPtr->setCredentials(creds);
+    Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), account);
+    account->setCredentials(creds);
 
-    newAccountPtr->addApprovedCerts(model.trustedCertificates());
+    account->addApprovedCerts(model.trustedCertificates());
     QString syncRoot = model.defaultSyncRoot();
     if (!syncRoot.isEmpty()) {
-        newAccountPtr->setDefaultSyncRoot(syncRoot);
+        account->setDefaultSyncRoot(syncRoot);
         if (!QFileInfo::exists(syncRoot)) {
             OC_ASSERT(QDir().mkpath(syncRoot));
         }
-        Utility::markDirectoryAsSyncRoot(syncRoot, newAccountPtr->uuid());
+        Utility::markDirectoryAsSyncRoot(syncRoot, account->uuid());
     }
 
-    newAccountPtr->setCapabilities(model.capabilities());
+    account->setCapabilities(model.capabilities());
 
-    return newAccountPtr;
+    return account;
 }
 
 void AccountManager::save()
 {
     for (const auto &acc : std::as_const(_accounts)) {
-        saveAccount(acc->account().data());
+        saveAccount(acc->account());
     }
 
     qCInfo(lcAccountManager) << "Saved all account settings";
@@ -153,6 +153,9 @@ void AccountManager::save()
 
 void AccountManager::saveAccount(Account *account)
 {
+    if (!account)
+        return;
+
     qCDebug(lcAccountManager) << "Saving account" << account->url().toString();
     auto settings = ConfigFile::settingsWithGroup(accountsC());
     settings->beginGroup(account->groupIndex());
@@ -206,9 +209,9 @@ QStringList AccountManager::accountNames() const
 bool AccountManager::accountForLoginExists(const QUrl &url, const QString &davUser) const
 {
     for (const auto &state : _accounts) {
-        if (state) {
-            AccountPtr account = state->account();
-            if (account && account->url() == url && account->davUser() == davUser) {
+        if (state && state->account()) {
+            Account *account = state->account();
+            if (account->url() == url && account->davUser() == davUser) {
                 return true;
             }
         }
@@ -221,18 +224,19 @@ const QList<AccountState *> AccountManager::accounts() const
     return _accounts.values();
 }
 
-AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
+Account *AccountManager::loadAccountHelper(QSettings &settings)
 {
     QVariant urlConfig = settings.value(urlC());
     if (!urlConfig.isValid()) {
         // No URL probably means a corrupted entry in the account settings
         qCWarning(lcAccountManager) << "No URL for account " << settings.group();
-        return AccountPtr();
+        return nullptr;
     }
+
     QString user = settings.value(davUserC()).toString();
     if (user.isEmpty()) {
         qCWarning(lcAccountManager) << "No user name provided for account " << settings.group();
-        return AccountPtr();
+        return nullptr;
     }
     QUrl url = urlConfig.toUrl();
 
@@ -260,7 +264,7 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
             if (key.contains(uid.toString(QUuid::WithoutBraces)))
                 credsGroup->remove(key);
         }
-        return AccountPtr();
+        return nullptr;
     }
 
     // 7.0 change - this special handling can be removed in 8.0
@@ -275,13 +279,13 @@ AccountPtr AccountManager::loadAccountHelper(QSettings &settings)
     }
 
 
-    auto acc = Account::create(uid, user, url);
+    auto acc = new Account(uid, user, url);
 
     acc->setDavDisplayName(settings.value(davUserDisplyNameC()).toString());
     acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
-    acc->setCredentials(new Credentials(acc.get()));
+    acc->setCredentials(new Credentials(acc));
 
     // now the server cert, it is in the general group
     settings.beginGroup("General");
@@ -321,7 +325,7 @@ AccountState *AccountManager::accountState(const QUuid uuid)
     return _accounts.value(uuid);
 }
 
-AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
+AccountState *AccountManager::addAccount(Account *newAccount)
 {
     auto id = newAccount->groupIndex();
     if (id.isEmpty() || !isAccountIndexAvailable(id)) {
@@ -330,7 +334,7 @@ AccountState *AccountManager::addAccount(const AccountPtr &newAccount)
     newAccount->_groupIndex = id;
 
 
-    return addAccountState(AccountState::fromNewAccount(newAccount));
+    return addAccountState(new AccountState(newAccount));
 }
 
 void AccountManager::deleteAccount(AccountState *account)
@@ -412,23 +416,22 @@ QString AccountManager::generateFreeAccountIndex() const
     }
 }
 
-AccountState *AccountManager::addAccountState(std::unique_ptr<AccountState> &&accountState)
+AccountState *AccountManager::addAccountState(AccountState *accountState)
 {
-    AccountState *statePtr = accountState.release();
-    if (!statePtr) // just bail. I have no idea why this is happening but fine. it's null and not usable
-        return statePtr;
+    if (!accountState || !accountState->account()) // just bail. I have no idea why this is happening but fine. it's null and not usable
+        return nullptr;
 
-    _accounts.insert(statePtr->account()->uuid(), statePtr);
+    _accounts.insert(accountState->account()->uuid(), accountState);
 
-    auto *rawAccount = statePtr->account().get();
+    Account *acc = accountState->account();
+
     // this slot can't be connected until the account state exists because saveAccount uses the state
-    connect(rawAccount, &Account::wantsAccountSaved, this, [rawAccount, this] { saveAccount(rawAccount); });
+    connect(acc, &Account::wantsAccountSaved, this, [acc, this] { saveAccount(acc); });
 
-    Q_EMIT accountAdded(statePtr);
+    Q_EMIT accountAdded(accountState);
     Q_EMIT accountsChanged();
+    accountState->checkConnectivity();
 
-    statePtr->checkConnectivity();
-
-    return statePtr;
+    return accountState;
 }
 }

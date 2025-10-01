@@ -134,7 +134,7 @@ void ProtocolWidget::showContextMenu(QWidget *parent, QTableView *table, Models:
         // "Open in Browser" action
         auto showInWebBrowserAction = menu->addAction(CommonStrings::showInWebBrowser());
         showInWebBrowserAction->setEnabled(false);
-        fetchPrivateLinkUrl(data.folder()->accountState()->account().get(), data.folder()->webDavUrl(), data.folder()->remotePathTrailingSlash() + data.path(),
+        fetchPrivateLinkUrl(data.folder()->accountState()->account(), data.folder()->webDavUrl(), data.folder()->remotePathTrailingSlash() + data.path(),
             parent, [showInWebBrowserAction, parent, pos = menu->actions().size(), menu = QPointer<QMenu>(menu)](const QUrl &url) {
                 // as fetchPrivateLinkUrl is async we need to check the menu still exists
                 if (menu) {

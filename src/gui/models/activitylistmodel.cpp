@@ -71,12 +71,12 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
                 return Utility::timeAgoInWords(a.dateTime());
             }
         case ActivityRole::Path: {
-            QStringList list = FolderMan::instance()->findFileInLocalFolders(a.file(), accountState->account().get());
+            QStringList list = FolderMan::instance()->findFileInLocalFolders(a.file(), accountState->account());
             if (!list.isEmpty()) {
                 return list.at(0);
             }
             // File does not exist anymore? Let's try to open its path
-            list = FolderMan::instance()->findFileInLocalFolders(QFileInfo(a.file()).path(), accountState->account().get());
+            list = FolderMan::instance()->findFileInLocalFolders(QFileInfo(a.file()).path(), accountState->account());
             if (!list.isEmpty()) {
                 return list.at(0);
             }
@@ -186,7 +186,7 @@ void ActivityListModel::startFetchJob(AccountState *accountState)
     if (!accountState || !accountState->isConnected() || !accountState->account()) {
         return;
     }
-    auto *job = new JsonApiJob(accountState->account().get(), QStringLiteral("ocs/v2.php/cloud/activity"),
+    auto *job = new JsonApiJob(accountState->account(), QStringLiteral("ocs/v2.php/cloud/activity"),
         {{QStringLiteral("page"), QStringLiteral("0")}, {QStringLiteral("pagesize"), QStringLiteral("100")}}, {}, this);
 
     QObject::connect(job, &JsonApiJob::finishedSignal, this, [job, accountState, this] {

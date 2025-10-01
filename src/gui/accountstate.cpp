@@ -48,7 +48,7 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountState, "gui.account.state", QtInfoMsg)
 
-AccountState::AccountState(AccountPtr account)
+AccountState::AccountState(Account *account)
     : QObject()
     , _account(account)
     , _queueGuard(_account->jobQueue())
@@ -115,9 +115,9 @@ void AccountState::connectNetworkInformation()
     connect(NetworkInformation::instance(), &NetworkInformation::isBehindCaptivePortalChanged, this, &AccountState::onBehindCaptivePortalChanged);
 }
 
-std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
+AccountState *AccountState::loadFromSettings(Account *account, const QSettings &settings)
 {
-    auto accountState = std::unique_ptr<AccountState>(new AccountState(account));
+    auto accountState = new AccountState(account);
     const bool userExplicitlySignedOut = settings.value(userExplicitlySignedOutC(), false).toBool();
     if (userExplicitlySignedOut) {
         // see writeToSettings below
@@ -127,14 +127,14 @@ std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account,
     return accountState;
 }
 
-std::unique_ptr<AccountState> AccountState::fromNewAccount(AccountPtr account)
+/*std::unique_ptr<AccountState> AccountState::fromNewAccount(AccountPtr account)
 {
     // todo: #22. In essence this function creates a unique pointer which in the caller is immediately added to the _accounts map
     // as a QPointer. Meanwhile the parent is a shared pointer (the account) so who knows when this thing will ever get cleaned up?
     // add to this that I rarely see anyone checking an account state to see if it's null. We need a consistent impl that reflects
     // the ownership status of these elements, and make the lifetime concrete
     return std::unique_ptr<AccountState>(new AccountState(account));
-}
+}*/
 
 void AccountState::writeToSettings(QSettings &settings) const
 {
@@ -146,7 +146,13 @@ void AccountState::writeToSettings(QSettings &settings) const
     settings.setValue(userExplicitlySignedOutC(), _state == SignedOut);
 }
 
-AccountPtr AccountState::account() const
+// this is SOOO temporary
+AccountPtr AccountState::accountShared() const
+{
+    return _account->sharedFromThis();
+}
+
+Account *AccountState::account() const
 {
     return _account;
 }
@@ -168,6 +174,9 @@ AccountState::State AccountState::state() const
 
 void AccountState::setState(State state)
 {
+    if (!_account)
+        return;
+
     const State oldState = _state;
     if (_state != state) {
         qCInfo(lcAccountState) << "AccountState state change: " << _state << "->" << state;
@@ -200,7 +209,7 @@ void AccountState::setState(State state)
             // ensure the connection validator is done
             _queueGuard.unblock();
             // update capabilities and fetch relevant settings
-            _fetchCapabilitiesJob = new FetchServerSettingsJob(account().get(), this);
+            _fetchCapabilitiesJob = new FetchServerSettingsJob(_account, this);
             connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
                 // Lisa todo: I do not understand this logic at all - review it
                 if (oldState == Connected || _state == Connected) {
@@ -224,11 +233,14 @@ bool AccountState::isSignedOut() const
 
 void AccountState::signOutByUi()
 {
-    account()->credentials()->forgetSensitiveData();
-    account()->clearCookieJar();
+    if (!_account)
+        return;
+
+    _account->credentials()->forgetSensitiveData();
+    _account->clearCookieJar();
     setState(SignedOut);
     // persist that we are signed out
-    Q_EMIT account()->wantsAccountSaved(account().data());
+    Q_EMIT _account->wantsAccountSaved(_account);
 }
 
 void AccountState::freshConnectionAttempt()
@@ -240,11 +252,13 @@ void AccountState::freshConnectionAttempt()
 
 void AccountState::signIn()
 {
+    if (!_account)
+        return;
     if (_state == SignedOut) {
         _waitingForNewCredentials = false;
         setState(Disconnected);
         // persist that we are no longer signed out
-        Q_EMIT account()->wantsAccountSaved(account().data());
+        Q_EMIT account()->wantsAccountSaved(_account);
     }
 }
 
@@ -564,7 +578,7 @@ void AccountState::slotCredentialsFetched()
 
 Account *AccountState::accountForQml() const
 {
-    return _account.data();
+    return _account;
 }
 
 std::unique_ptr<QSettings> AccountState::settings()

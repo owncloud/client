@@ -471,7 +471,7 @@ void FolderMan::slotServerVersionChanged(Account *account)
                                << "pausing all folders on the account";
 
         for (auto &f : std::as_const(_folders)) {
-            if (f->accountState()->account().data() == account) {
+            if (f->accountState()->account() == account) {
                 f->setSyncPaused(true);
             }
         }
@@ -644,7 +644,7 @@ QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Acco
         serverPath.prepend(QLatin1Char('/'));
 
     for (auto *folder : std::as_const(_folders)) {
-        if (acc && folder->accountState() && folder->accountState()->account().get() != acc) {
+        if (acc && folder->accountState() && folder->accountState()->account() != acc) {
             continue;
         }
         if (!serverPath.startsWith(folder->remotePath()))

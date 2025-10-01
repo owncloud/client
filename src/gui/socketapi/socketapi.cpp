@@ -332,7 +332,7 @@ void SocketApi::unregisterAccount(AccountState *state)
     if (!state || !state->account())
         return;
 
-    Account *a = state->account().get();
+    Account *a = state->account();
 
     if (!a->defaultSyncRoot().isEmpty()) {
         broadcastMessage(buildMessage(unregisterPathMessageC(), Utility::stripTrailingSlash(a->defaultSyncRoot())));
@@ -508,7 +508,7 @@ void SocketApi::fetchPrivateLinkUrlHelper(const QString &localFile, const std::f
             return;
     }
 
-    fetchPrivateLinkUrl(fileData.folder->accountState()->account().get(), fileData.folder->webDavUrl(), fileData.serverRelativePath, this, targetFun);
+    fetchPrivateLinkUrl(fileData.folder->accountState()->account(), fileData.folder->webDavUrl(), fileData.serverRelativePath, this, targetFun);
 }
 
 void SocketApi::command_COPY_PRIVATE_LINK(const QString &localFile, SocketListener *)
@@ -530,11 +530,10 @@ void SocketApi::command_OPEN_PRIVATE_LINK_VERSIONS(const QString &localFile, Soc
 {
     const auto fileData = FileData::get(localFile);
     if (fileData.isValid() && fileData.folder->accountState()->account()->capabilities().filesSharing().sharing_roles) {
-        fetchPrivateLinkUrl(
-            fileData.folder->accountState()->account().get(), fileData.folder->webDavUrl(), fileData.serverRelativePath, this, [](const QUrl &url) {
-                const auto queryUrl = Utility::concatUrlPath(url, QString(), {{QStringLiteral("details"), QStringLiteral("versions")}});
-                Utility::openBrowser(queryUrl, nullptr);
-            });
+        fetchPrivateLinkUrl(fileData.folder->accountState()->account(), fileData.folder->webDavUrl(), fileData.serverRelativePath, this, [](const QUrl &url) {
+            const auto queryUrl = Utility::concatUrlPath(url, QString(), {{QStringLiteral("details"), QStringLiteral("versions")}});
+            Utility::openBrowser(queryUrl, nullptr);
+        });
     } else {
         fetchPrivateLinkUrlHelper(localFile, [](const QUrl &link) {
             Utility::openBrowser(Utility::concatUrlPath(link, {}, {{QStringLiteral("details"), QStringLiteral("versionsTabView")}}), nullptr);
@@ -663,7 +662,7 @@ Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile,
         const auto &provider = data.folder->accountState()->account()->appProvider();
         const auto record = data.journalRecord();
         if (record.isValid()) {
-            provider.open(data.folder->accountState()->account().get(), localFile, record._fileId);
+            provider.open(data.folder->accountState()->account(), localFile, record._fileId);
         }
     }
 }

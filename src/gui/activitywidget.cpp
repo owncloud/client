@@ -315,9 +315,10 @@ void ActivityWidget::slotSendNotificationRequest(const QString &accountName, con
     };
 
     if (validVerbs.contains(verb)) {
-        if (auto acc = AccountManager::instance()->account(accountName)) {
+        auto acc = AccountManager::instance()->account(accountName);
+        if (acc && acc->account()) {
             // TODO: host validation?
-            auto *job = new NotificationConfirmJob(acc->account().get(), QUrl(link), verb, this);
+            auto *job = new NotificationConfirmJob(acc->account(), QUrl(link), verb, this);
             job->setWidget(theSender);
             connect(job, &NotificationConfirmJob::finishedSignal,
                 this, [job, this] {

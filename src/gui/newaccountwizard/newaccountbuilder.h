@@ -40,7 +40,7 @@ private:
     void onAccountStateChanged(AccountState::State state);
     void completeAccountSetup();
 
-    AccountPtr _account = nullptr;
+    Account *_account = nullptr;
     AccountState *_accountState = nullptr;
     NewAccount::SyncType _syncType = NewAccount::SyncType::NONE;
 };

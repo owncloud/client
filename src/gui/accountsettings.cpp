@@ -187,7 +187,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
         QString path = folder->remotePathTrailingSlash();
         menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
-            fetchPrivateLinkUrl(_accountState->account().get(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
+            fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
         });
     }
 
@@ -258,7 +258,7 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
         return;
     }
 
-    auto *selectiveSync = new SelectiveSyncWidget(_accountState->account().get(), this);
+    auto *selectiveSync = new SelectiveSyncWidget(_accountState->account(), this);
     selectiveSync->setDavUrl(folder->webDavUrl());
     bool ok;
     selectiveSync->setFolderInfo(
@@ -280,7 +280,7 @@ void AccountSettings::slotAddFolder()
         return;
     }
 
-    FolderWizard *folderWizard = new FolderWizard(_accountState->account().get(), this);
+    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), this);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
@@ -553,7 +553,7 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
         return;
     }
 
-    Account *account = _accountState->account().get();
+    Account *account = _accountState->account();
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 
     FolderMan *folderMan = FolderMan::instance();
@@ -716,21 +716,21 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
     Q_ASSERT(widget->testAttribute(Qt::WA_DeleteOnClose));
 
     // Refactoring todo: eval this more completely
-    Q_ASSERT(_accountState);
+    Q_ASSERT(_accountState && _accountState->account());
 
     connect(widget, &QWidget::destroyed, this, [this, outerWidget] {
         outerWidget->deleteLater();
         if (!_goingDown) {
-            ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account().get());
+            ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
         }
     });
     widget->setVisible(true);
-    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
+    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
 void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
@@ -739,9 +739,9 @@ void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 
     connect(widget, &AccountModalWidget::finished, this, [widget, this] {
         widget->deleteLater();
-        ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account().get());
+        ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
     });
-    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
+    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
 uint AccountSettings::unsyncedSpaces() const

@@ -575,7 +575,7 @@ public:
 
     void switchToVfs(QSharedPointer<OCC::Vfs> vfs);
 
-    OCC::Account *account() const { return _accountState->account().get(); }
+    OCC::Account *account() const { return _accountState->account(); }
     OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
     OCC::SyncJournalDb &syncJournal() const { return *_journalDb; }
 

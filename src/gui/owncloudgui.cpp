@@ -319,7 +319,7 @@ void ownCloudGui::slotShowShareInBrowser(const QString &sharePath, const QString
     }
 
     if (folder->accountState()->account()->capabilities().filesSharing().sharing_roles) {
-        fetchPrivateLinkUrl(folder->accountState()->account().get(), folder->webDavUrl(), sharePath, this, [](const QUrl &url) {
+        fetchPrivateLinkUrl(folder->accountState()->account(), folder->webDavUrl(), sharePath, this, [](const QUrl &url) {
             const auto queryUrl = Utility::concatUrlPath(url, QString(), {{QStringLiteral("details"), QStringLiteral("sharing")}});
             Utility::openBrowser(queryUrl, nullptr);
         });

@@ -89,7 +89,8 @@ public:
     static void setCommonCacheDirectory(const QString &directory);
     static QString commonCacheDirectory();
 
-    static AccountPtr create(const QUuid &uuid, const QString &user, const QUrl &url);
+    // static AccountPtr create(const QUuid &uuid, const QString &user, const QUrl &url);
+    Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent = nullptr);
     ~Account() override;
 
     void cleanupForRemoval();
@@ -254,7 +255,6 @@ private:
     // directory all newly created accounts store their various caches in
     static QString _customCommonCacheDirectory;
 
-    Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent = nullptr);
     void setSharedThis(AccountPtr sharedThis);
 
     QWeakPointer<Account> _sharedThis;

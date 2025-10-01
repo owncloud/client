@@ -83,12 +83,12 @@ Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObjec
     _spacesManager = new GraphApi::SpacesManager(this);
 }
 
-AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
+/*AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
 {
     AccountPtr acc = AccountPtr(new Account(uuid, user, url));
     acc->setSharedThis(acc);
     return acc;
-}
+}*/
 
 Account::~Account()
 {
