@@ -230,7 +230,7 @@ void ConnectionValidator::checkAuthentication()
 
     // we explicitly use a legacy dav path here - remote.php/webdav is available across all former, current and future server implementations (oc10, oCIS and
     // Kiteworks PDN)
-    auto *job = new PropfindJob(_account->sharedFromThis(), _account->url(), QString("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
+    auto *job = new PropfindJob(_account, _account->url(), QString("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
 
     job->setAuthenticationJob(true); // don't retry
     job->setTimeout(timeoutToUse());

@@ -46,7 +46,7 @@ seconds AbstractNetworkJob::httpTimeout = [] {
     return seconds(def);
 }();
 
-AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, const QString &path, QObject *parent)
+AbstractNetworkJob::AbstractNetworkJob(Account *account, const QUrl &baseUrl, const QString &path, QObject *parent)
     : QObject(parent)
     , _account(account)
     , _baseUrl(baseUrl)
@@ -128,6 +128,11 @@ bool AbstractNetworkJob::needsRetry() const
 void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     const QNetworkRequest &req, QIODevice *requestBody)
 {
+    if (!_account) {
+        slotFinished();
+        return;
+    }
+
     _verb = verb;
 
     _request = req;
@@ -183,8 +188,8 @@ void AbstractNetworkJob::slotFinished()
 {        
     _finished = true;
 
-    if (!_reply) {
-        qCWarning(lcNetworkJob) << "Network job finished but reply is nullptr - aborting" << this;
+    if (!_reply || !_account) {
+        qCWarning(lcNetworkJob) << "Network job finished but reply and/or account is nullptr - aborting" << this;
         Q_EMIT networkError(nullptr);
         deleteLater();
         return;

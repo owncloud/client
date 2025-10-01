@@ -274,7 +274,7 @@ DiscoverySingleDirectoryJob::DiscoverySingleDirectoryJob(const AccountPtr &accou
 void DiscoverySingleDirectoryJob::start()
 {
     // Start the actual HTTP job
-    _proFindJob = new PropfindJob(_account, _baseUrl, _subPath, PropfindJob::Depth::One, this);
+    _proFindJob = new PropfindJob(_account.get(), _baseUrl, _subPath, PropfindJob::Depth::One, this);
 
     QList<QByteArray> props {
         "resourcetype",

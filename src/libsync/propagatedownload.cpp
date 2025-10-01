@@ -152,9 +152,8 @@ QString OWNCLOUDSYNC_EXPORT createDownloadTmpFileName(const QString &previous)
 }
 
 // DOES NOT take ownership of the device.
-GETFileJob::GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device,
-    const QMap<QByteArray, QByteArray> &headers, const QString &expectedEtagForResume,
-    qint64 resumeStart, QObject *parent)
+GETFileJob::GETFileJob(Account *account, const QUrl &url, const QString &path, QIODevice *device, const QMap<QByteArray, QByteArray> &headers,
+    const QString &expectedEtagForResume, qint64 resumeStart, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
     , _device(device)
     , _headers(headers)
@@ -571,9 +570,8 @@ void PropagateDownloadFile::startFullDownload()
 
     if (_item->_directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
-        _job = new GETFileJob(propagator()->account(), propagator()->webDavUrl(),
-            propagator()->fullRemotePath(_item->_file),
-            &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
+        _job = new GETFileJob(propagator()->account().get(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), &_tmpFile, headers,
+            _expectedEtagForResume, _resumeStart, this);
     } else {
         // We were provided a direct URL, use that one
         qCInfo(lcPropagateDownload) << "directDownloadUrl given for " << _item->_file << _item->_directDownloadUrl;
@@ -583,10 +581,7 @@ void PropagateDownloadFile::startFullDownload()
         }
 
         QUrl url = QUrl::fromUserInput(_item->_directDownloadUrl);
-        _job = new GETFileJob(propagator()->account(),
-            url,
-            {},
-            &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
+        _job = new GETFileJob(propagator()->account().get(), url, {}, &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
     }
     _job->setExpectedContentLength(_item->_size - _resumeStart);
 

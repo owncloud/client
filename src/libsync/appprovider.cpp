@@ -81,7 +81,7 @@ bool AppProvider::open(Account *account, const QString &localPath, const QByteAr
     const auto &a = app(localPath);
     if (a.isValid()) {
         SimpleNetworkJob::UrlQuery query { { QStringLiteral("file_id"), QString::fromUtf8(fileId) } };
-        auto *job = new JsonJob(account->sharedFromThis(), account->capabilities().appProviders().openWebUrl, {}, "POST", query);
+        auto *job = new JsonJob(account, account->capabilities().appProviders().openWebUrl, {}, "POST", query);
         QObject::connect(job, &JsonJob::finishedSignal, [account, job, localPath] {
             if (job->httpStatusCode() == 200) {
                 const auto url = QUrl(job->data().value(QStringLiteral("uri")).toString());

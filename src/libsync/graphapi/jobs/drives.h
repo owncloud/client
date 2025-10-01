@@ -26,7 +26,7 @@ namespace GraphApi {
     {
         Q_OBJECT
     public:
-        Drives(const AccountPtr &account, QObject *parent = nullptr);
+        Drives(Account *account, QObject *parent = nullptr);
         ~Drives();
         const QList<OpenAPI::OAIDrive> &drives() const;
 

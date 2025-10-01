@@ -44,7 +44,7 @@ FetchServerSettingsJob::FetchServerSettingsJob(const OCC::AccountPtr &account, Q
 void FetchServerSettingsJob::start()
 {
     // The main flow now needs the capabilities
-    auto *job = new JsonApiJob(_account, QStringLiteral("ocs/v2.php/cloud/capabilities"), {}, {}, this);
+    auto *job = new JsonApiJob(_account.get(), QStringLiteral("ocs/v2.php/cloud/capabilities"), {}, {}, this);
     job->setAuthenticationJob(isAuthJob());
     job->setTimeout(fetchSettingsTimeout());
 
@@ -71,7 +71,7 @@ void FetchServerSettingsJob::start()
                 Q_EMIT finishedSignal(Result::UnsupportedServer);
                 return;
             }
-            auto *userJob = new JsonApiJob(_account, QStringLiteral("ocs/v2.php/cloud/user"), SimpleNetworkJob::UrlQuery{}, QNetworkRequest{}, this);
+            auto *userJob = new JsonApiJob(_account.get(), QStringLiteral("ocs/v2.php/cloud/user"), SimpleNetworkJob::UrlQuery{}, QNetworkRequest{}, this);
             userJob->setAuthenticationJob(isAuthJob());
             userJob->setTimeout(fetchSettingsTimeout());
             connect(userJob, &JsonApiJob::finishedSignal, this, [userJob, this] {
@@ -124,13 +124,13 @@ void FetchServerSettingsJob::runAsyncUpdates()
     // so we just set them free
     if (_account->capabilities().avatarsAvailable()) {
         // the avatar job uses the legacy WebDAV URL and ocis will require a new approach
-        auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
+        auto *avatarJob = new AvatarJob(_account.get(), _account->davUser(), 128, nullptr);
         connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
         avatarJob->start();
     };
 
     if (_account->capabilities().appProviders().enabled) {
-        auto *jsonJob = new JsonJob(_account, _account->capabilities().appProviders().appsUrl, {}, "GET");
+        auto *jsonJob = new JsonJob(_account.get(), _account->capabilities().appProviders().appsUrl, {}, "GET");
         connect(jsonJob, &JsonJob::finishedSignal, this, [jsonJob, this] { _account->setAppProvider(AppProvider{jsonJob->data()}); });
         jsonJob->start();
     }

@@ -549,7 +549,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
         } else {
             // we need to make a request to the server to know that the original file is deleted on the server
             _pendingAsyncJobs++;
-            auto job = new RequestEtagJob(_discoveryData->_account, _discoveryData->_baseUrl, _discoveryData->_remoteFolder + originalPath, this);
+            auto job = new RequestEtagJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, _discoveryData->_remoteFolder + originalPath, this);
             connect(job, &RequestEtagJob::finishedSignal, this, [=]() mutable {
                 _pendingAsyncJobs--;
                 QTimer::singleShot(0, _discoveryData, &DiscoveryPhase::scheduleMoreJobs);
@@ -913,7 +913,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
         // We must query the server to know if the etag has not changed
         _pendingAsyncJobs++;
         QString serverOriginalPath = _discoveryData->_remoteFolder + _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
-        auto job = new RequestEtagJob(_discoveryData->_account, _discoveryData->_baseUrl, serverOriginalPath, this);
+        auto job = new RequestEtagJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, serverOriginalPath, this);
         connect(job, &RequestEtagJob::finishedSignal, this,
             [job, recurseQueryServer, path = path, postProcessLocalNew, processRename, base, item, originalPath, this] {
                 if (job->httpStatusCode() == 404 || (job->etag().toUtf8() != base._etag && !item->isDirectory()) || _discoveryData->isRenamed(originalPath)) {

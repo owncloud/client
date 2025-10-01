@@ -36,8 +36,6 @@
 
 #include "ui_activitywidget.h"
 
-#include <climits>
-
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
@@ -319,7 +317,7 @@ void ActivityWidget::slotSendNotificationRequest(const QString &accountName, con
     if (validVerbs.contains(verb)) {
         if (auto acc = AccountManager::instance()->account(accountName)) {
             // TODO: host validation?
-            auto *job = new NotificationConfirmJob(acc->account(), QUrl(link), verb, this);
+            auto *job = new NotificationConfirmJob(acc->account().get(), QUrl(link), verb, this);
             job->setWidget(theSender);
             connect(job, &NotificationConfirmJob::finishedSignal,
                 this, [job, this] {

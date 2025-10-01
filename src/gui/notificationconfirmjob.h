@@ -41,7 +41,7 @@ class NotificationConfirmJob : public JsonApiJob
     Q_OBJECT
 
 public:
-    explicit NotificationConfirmJob(AccountPtr account, const QUrl &root, const QByteArray &verb, QObject *parent = nullptr);
+    explicit NotificationConfirmJob(Account *account, const QUrl &root, const QByteArray &verb, QObject *parent = nullptr);
 
     /**
      * @brief Start the OCS request

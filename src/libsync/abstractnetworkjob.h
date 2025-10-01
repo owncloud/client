@@ -51,7 +51,7 @@ class OWNCLOUDSYNC_EXPORT AbstractNetworkJob : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
+    explicit AbstractNetworkJob(Account *account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
     ~AbstractNetworkJob() override;
 
     virtual void start();
@@ -197,7 +197,7 @@ protected:
      */
     void setQuery(const QUrlQuery &query);
 
-    AccountPtr _account;
+    QPointer<Account> _account;
     QUrlQuery _query;
     QByteArray _responseTimestamp;
 

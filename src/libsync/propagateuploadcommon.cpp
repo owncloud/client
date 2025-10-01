@@ -99,9 +99,7 @@ void PropagateUploadCommon::start()
         return slotComputeContentChecksum();
     }
 
-    auto job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(),
-        propagator()->fullRemotePath(_item->_file),
-        this);
+    auto job = new DeleteJob(propagator()->account().get(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), this);
     addChildJob(job);
     connect(job, &DeleteJob::finishedSignal, this, &PropagateUploadCommon::slotComputeContentChecksum);
     job->start();
@@ -374,8 +372,8 @@ void PropagateUploadCommon::finalize()
 
     if (_item->_remotePerm.isNull()) {
         qCWarning(lcPropagateUpload) << "PropagateUploadCommon::finalize: Missing permissions for" << propagator()->fullRemotePath(_item->_file);
-        auto *permCheck =
-            new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
+        auto *permCheck = new PropfindJob(
+            propagator()->account().get(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
         addChildJob(permCheck);
         permCheck->setProperties({ "http://owncloud.org/ns:permissions" });
         connect(permCheck, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &map) {

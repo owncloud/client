@@ -30,18 +30,19 @@ ServerNotificationHandler::ServerNotificationHandler(QObject *parent)
 {
 }
 
-void ServerNotificationHandler::slotFetchNotifications(AccountState *ptr)
+void ServerNotificationHandler::slotFetchNotifications(AccountState *accountState)
 {
     // check connectivity and credentials
-    if (!(ptr && ptr->isConnected() && ptr->account() && ptr->account()->credentials() && ptr->account()->credentials()->ready())) {
+    if (!(accountState && accountState->isConnected() && accountState->account() && accountState->account()->credentials()
+            && accountState->account()->credentials()->ready())) {
         deleteLater();
         return;
     }
     // check if the account has notifications enabled. If the capabilities are
     // not yet valid, its assumed that notifications are available.
-    if (ptr->account()->hasCapabilities()) {
-        if (!ptr->account()->capabilities().notificationsAvailable()) {
-            qCInfo(lcServerNotification) << "Account" << ptr->account()->displayNameWithHost() << "does not have notifications enabled.";
+    if (accountState->account()->hasCapabilities()) {
+        if (!accountState->account()->capabilities().notificationsAvailable()) {
+            qCInfo(lcServerNotification) << "Account" << accountState->account()->displayNameWithHost() << "does not have notifications enabled.";
             deleteLater();
             return;
         }
@@ -51,12 +52,11 @@ void ServerNotificationHandler::slotFetchNotifications(AccountState *ptr)
     }
 
     // if the previous notification job has finished, start next.
-    auto *job = new JsonApiJob(ptr->account(), notificationsPath, {}, {}, this);
-    QObject::connect(job, &JsonApiJob::finishedSignal,
-        this, [job, ptr, this] {
-            slotNotificationsReceived(job, ptr);
-            deleteLater();
-        });
+    auto *job = new JsonApiJob(accountState->account().get(), notificationsPath, {}, {}, this);
+    QObject::connect(job, &JsonApiJob::finishedSignal, this, [job, accountState, this] {
+        slotNotificationsReceived(job, accountState);
+        deleteLater();
+    });
 
     job->start();
 }

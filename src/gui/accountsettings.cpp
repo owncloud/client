@@ -187,7 +187,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
         QString path = folder->remotePathTrailingSlash();
         menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
-            fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
+            fetchPrivateLinkUrl(_accountState->account().get(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
         });
     }
 

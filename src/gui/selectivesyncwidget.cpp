@@ -104,7 +104,7 @@ void SelectiveSyncWidget::refreshFolders()
     if (!_account)
         return;
 
-    auto *job = new PropfindJob(_account->sharedFromThis(), davUrl(), _folderPath, PropfindJob::Depth::One, this);
+    auto *job = new PropfindJob(_account, davUrl(), _folderPath, PropfindJob::Depth::One, this);
     job->setProperties({QByteArrayLiteral("resourcetype"), QByteArrayLiteral("http://owncloud.org/ns:size")});
     connect(job, &PropfindJob::directoryListingSubfolders, this, &SelectiveSyncWidget::slotUpdateDirectories);
     connect(job, &PropfindJob::finishedWithError, this, [job, this] {
@@ -301,7 +301,7 @@ void SelectiveSyncWidget::slotItemExpanded(QTreeWidgetItem *item)
     if (dir.isEmpty()) {
         return;
     }
-    PropfindJob *job = new PropfindJob(_account->sharedFromThis(), davUrl(), Utility::concatUrlPathItems({_folderPath, dir}), PropfindJob::Depth::One, this);
+    PropfindJob *job = new PropfindJob(_account, davUrl(), Utility::concatUrlPathItems({_folderPath, dir}), PropfindJob::Depth::One, this);
     job->setProperties({QByteArrayLiteral("resourcetype"), QByteArrayLiteral("http://owncloud.org/ns:size")});
     connect(job, &PropfindJob::directoryListingSubfolders, this, &SelectiveSyncWidget::slotUpdateDirectories);
     job->start();

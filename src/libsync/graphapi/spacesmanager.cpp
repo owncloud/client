@@ -55,7 +55,7 @@ void SpacesManager::refresh()
     }
 
     // TODO: leak the job until we fixed the ownership https://github.com/owncloud/client/issues/11203
-    auto drivesJob = new Drives(_account->sharedFromThis(), nullptr);
+    auto drivesJob = new Drives(_account, nullptr);
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {
         // a system which provides multiple personal spaces the name of the drive is always used as display name
