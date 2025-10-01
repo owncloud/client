@@ -53,7 +53,7 @@ public:
     const Provider &app(const QMimeType &mimeType) const;
     const Provider &app(const QString &localPath) const;
 
-    bool open(const AccountPtr &account, const QString &localPath, const QByteArray &fileId) const;
+    bool open(Account *account, const QString &localPath, const QByteArray &fileId) const;
 
 
 private:

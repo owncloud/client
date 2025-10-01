@@ -553,7 +553,7 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
         return;
     }
 
-    const AccountPtr account = _accountState->account();
+    Account *account = _accountState->account().get();
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 
     FolderMan *folderMan = FolderMan::instance();

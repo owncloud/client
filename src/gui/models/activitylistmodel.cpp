@@ -51,7 +51,7 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
 
     const auto &a = _finalList.at(index.row());
     AccountState *accountState = AccountManager::instance()->accountState(a.accountUuid());
-    if (!accountState) {
+    if (!accountState || !accountState->account()) {
         return {};
     }
     const auto column = static_cast<ActivityRole>(index.column());
@@ -71,12 +71,12 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
                 return Utility::timeAgoInWords(a.dateTime());
             }
         case ActivityRole::Path: {
-            QStringList list = FolderMan::instance()->findFileInLocalFolders(a.file(), accountState->account());
+            QStringList list = FolderMan::instance()->findFileInLocalFolders(a.file(), accountState->account().get());
             if (!list.isEmpty()) {
                 return list.at(0);
             }
             // File does not exist anymore? Let's try to open its path
-            list = FolderMan::instance()->findFileInLocalFolders(QFileInfo(a.file()).path(), accountState->account());
+            list = FolderMan::instance()->findFileInLocalFolders(QFileInfo(a.file()).path(), accountState->account().get());
             if (!list.isEmpty()) {
                 return list.at(0);
             }

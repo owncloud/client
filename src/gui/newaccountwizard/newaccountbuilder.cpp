@@ -84,7 +84,7 @@ void NewAccountBuilder::completeAccountSetup()
 
     // if selective sync is selected, we need to run the folder wizard asap.
     if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC)
-        Q_EMIT requestFolderWizard(_account);
+        Q_EMIT requestFolderWizard(_account.get());
 
     deleteLater();
 }

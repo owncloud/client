@@ -667,7 +667,7 @@ Q_INVOKABLE void OCC::SocketApi::command_OPEN_APP_LINK(const QString &localFile,
         const auto &provider = data.folder->accountState()->account()->appProvider();
         const auto record = data.journalRecord();
         if (record.isValid()) {
-            provider.open(data.folder->accountState()->account(), localFile, record._fileId);
+            provider.open(data.folder->accountState()->account().get(), localFile, record._fileId);
         }
     }
 }

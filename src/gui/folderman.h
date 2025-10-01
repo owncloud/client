@@ -217,7 +217,7 @@ public:
       * incoming relative server path. The method checks with all existing sync
       * folders.
       */
-    QStringList findFileInLocalFolders(const QString &relPath, const AccountPtr acc);
+    QStringList findFileInLocalFolders(const QString &relPath, const Account *acc);
 
     /** Returns the folder by id or NULL if no folder with the id exists. */
     [[deprecated("directly reference the folder")]] Folder *folder(const QByteArray &id);

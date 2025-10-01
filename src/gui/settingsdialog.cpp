@@ -296,9 +296,11 @@ void SettingsDialog::createNewAccount()
     ocApp()->gui()->runAccountWizard();
 }
 
-void SettingsDialog::runFolderWizard(AccountPtr account)
+void SettingsDialog::runFolderWizard(Account *account)
 {
-    setCurrentAccount(account.get());
+    if (!account)
+        return;
+    setCurrentAccount(account);
     accountSettings(_currentAccount)->slotAddFolder();
 }
 

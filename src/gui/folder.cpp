@@ -115,7 +115,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
         _journal.wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
         // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
         // current impl can result in an invalid engine which is just a mess given the folder is useless without it
-        _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
+        _engine.reset(new SyncEngine(_accountState->account().get(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
         _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
 
