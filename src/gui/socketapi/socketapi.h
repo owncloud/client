@@ -18,8 +18,10 @@
 
 #include "common/syncfilestatus.h"
 #include "common/syncjournalfilerecord.h"
-#include "libsync/accountfwd.h"
+#include "libsync/account.h"
 #include "syncfileitem.h"
+
+#include <QPointer>
 
 #if defined(Q_OS_MAC)
 #include "socketapisocket_mac.h"
@@ -34,6 +36,7 @@ class QLocalSocket;
 
 namespace OCC {
 
+class AccountState;
 class SyncFileStatus;
 class Folder;
 class SocketListener;
@@ -57,8 +60,11 @@ public:
     void startShellIntegration();
 
 public Q_SLOTS:
-    void registerAccount(const AccountPtr &a);
-    void unregisterAccount(const AccountPtr &a);
+    // todo: registerAccount is called directly in accountState ctr but should be connected to AccountManager::accountAdded instead asap
+    void registerAccount(Account *a);
+    // unregisterAccount *is* connected to accountRemoved but hopefully we can get rid of the AccountState part and send the account itself
+    // asap.
+    void unregisterAccount(AccountState *state);
     void slotUpdateFolderView(Folder *f);
     void slotUnregisterPath(Folder *f);
     void slotRegisterPath(Folder *f);
@@ -150,7 +156,9 @@ private:
 
     QString _socketPath;
     QSet<Folder *> _registeredFolders;
-    QSet<AccountPtr> _registeredAccounts;
+    // todo: we really should not keep any pointer to the account, as we only ever need the defaultSyncRoot, but this needs to go into a future
+    // refactoring to ensure full testing of that change. IMO we could just store the defaultSyncRoot alone, no uuid or account required at all
+    QHash<QUuid, QPointer<Account>> _registeredAccounts;
     QMap<SocketApiSocket *, QSharedPointer<SocketListener>> _listeners;
     SocketApiServer _localServer;
 };

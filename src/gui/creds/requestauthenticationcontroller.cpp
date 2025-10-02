@@ -48,10 +48,9 @@ void RequestAuthenticationController::handleLogOut()
     }
     // this ultimately needs to be chained to creds::requestLogout signal
     Q_EMIT requestLogout();
-    // cleanup();
 }
 
-void RequestAuthenticationController::startAuthentication(const AccountPtr account)
+void RequestAuthenticationController::startAuthentication(Account *account)
 {
     Q_ASSERT(account);
     if (_oauth) {
@@ -65,7 +64,7 @@ void RequestAuthenticationController::startAuthentication(const AccountPtr accou
     if (_widget && _modalWidget == nullptr) { // first show of the gui
         connect(_widget, &RequestAuthenticationWidget::connectClicked, this, &RequestAuthenticationController::handleSignIn);
         connect(_widget, &RequestAuthenticationWidget::stayLoggedOutClicked, this, &RequestAuthenticationController::handleLogOut);
-        AccountSettings *settings = ocApp()->gui()->settingsDialog()->accountSettings(account.get());
+        AccountSettings *settings = ocApp()->gui()->settingsDialog()->accountSettings(_account);
         _modalWidget = new AccountModalWidget(QString(), _widget, settings);
         settings->addModalAccountWidget(_modalWidget);
     }
@@ -107,7 +106,7 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
     }
 
 
-    if (!errString.isEmpty()) {
+    if (!errString.isEmpty() && _account) {
         if (_widget) {
             _widget->setErrorMessage(errString);
             startAuthentication(_account);
@@ -120,7 +119,5 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
     }
 
     ownCloudGui::raise();
-    // need to check case where auth fails and user tries again. Does it work to just re-open
-    // the web ui? I have doubts.
 }
 }

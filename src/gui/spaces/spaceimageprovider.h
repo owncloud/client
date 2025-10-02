@@ -14,7 +14,8 @@
 
 #pragma once
 
-#include "libsync/account.h"
+#include "spacesmanager.h"
+#include <QPointer>
 
 #include <QQuickImageProvider>
 
@@ -23,12 +24,12 @@ class SpaceImageProvider : public QQuickImageProvider
 {
     Q_OBJECT
 public:
-    SpaceImageProvider(const AccountPtr &account);
+    SpaceImageProvider(GraphApi::SpacesManager *spacesMgr);
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize) override;
 
 
 private:
-    Account *_account;
+    QPointer<GraphApi::SpacesManager> _spacesManager;
 };
 
 }

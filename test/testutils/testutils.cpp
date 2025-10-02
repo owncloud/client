@@ -11,7 +11,7 @@ namespace OCC {
 namespace TestUtils {
 
     // We have more than one of these?
-    FolderDefinition createDummyFolderDefinition(const AccountPtr &account, const QString &path)
+    FolderDefinition createDummyFolderDefinition(Account *account, const QString &path)
     {
         // TODO: legacy
         auto d = OCC::FolderDefinition::createNewFolderDefinition(account->davUrl(), {});

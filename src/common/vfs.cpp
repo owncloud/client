@@ -276,7 +276,7 @@ const VfsPluginManager &VfsPluginManager::instance()
     return *_instance;
 }
 
-VfsSetupParams::VfsSetupParams(const AccountPtr &account, const QUrl &baseUrl, bool groupInSidebar, SyncEngine *syncEngine)
+VfsSetupParams::VfsSetupParams(Account *account, const QUrl &baseUrl, bool groupInSidebar, SyncEngine *syncEngine)
     : account(account)
     , _baseUrl(baseUrl)
     , _groupInSidebar(groupInSidebar)

@@ -19,7 +19,6 @@
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
-#include "creds/abstractcredentials.h"
 #include "jobqueue.h"
 
 #include "account.h"
@@ -92,15 +91,15 @@ public:
     /// The actual current connectivity status.
     typedef ConnectionValidator::Status ConnectionStatus;
 
+    /// Use the account as parent
+    explicit AccountState(Account *account);
     ~AccountState() override;
 
     /** Creates an account state from settings and an Account object.
      *
      * Use from AccountManager with a prepared QSettings object only.
      */
-    static std::unique_ptr<AccountState> loadFromSettings(AccountPtr account, const QSettings &settings);
-
-    static std::unique_ptr<AccountState> fromNewAccount(AccountPtr account);
+    static AccountState *loadFromSettings(Account *account, const QSettings &settings);
 
     /** Writes account state information to settings.
      *
@@ -108,7 +107,7 @@ public:
      */
     void writeToSettings(QSettings &settings) const;
 
-    AccountPtr account() const;
+    Account *account() const;
 
     ConnectionStatus connectionStatus() const;
     QStringList connectionErrors() const;
@@ -160,8 +159,6 @@ public:
     void checkConnectivity(bool blockJobs = false);
 
 private:
-    /// Use the account as parent
-    explicit AccountState(AccountPtr account);
 
     void setState(State state);
 
@@ -177,7 +174,7 @@ protected Q_SLOTS:
 
 private:
     Account *accountForQml() const;
-    AccountPtr _account;
+    QPointer<Account> _account;
     JobQueueGuard _queueGuard;
     State _state;
     ConnectionStatus _connectionStatus;

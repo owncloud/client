@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include "account.h"
 #include "gui/owncloudguilib.h"
 #include "progressdispatcher.h"
 #include "syncresult.h"
@@ -29,6 +28,8 @@ namespace OCC {
 namespace Wizard {
     class SetupWizardController;
 }
+class AccountState;
+class Account;
 class Folder;
 
 class AboutDialog;

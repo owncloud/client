@@ -21,8 +21,8 @@
 #include "gui/commonstrings.h"
 
 #include "accountmanager.h"
+#include "accountstate.h"
 #include "common/asserts.h"
-#include "common/depreaction.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
 #include "filesystem.h"
@@ -154,11 +154,7 @@ SocketApi::SocketApi(QObject *parent)
     // Wire up the server instance to us, so we can accept new connections:
     connect(&_localServer, &SocketApiServer::newConnection, this, &SocketApi::slotNewConnection);
 
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](const auto &accountState) {
-        if (_registeredAccounts.contains(accountState->account())) {
-            unregisterAccount(accountState->account());
-        }
-    });
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &SocketApi::unregisterAccount);
 }
 
 SocketApi::~SocketApi()
@@ -208,7 +204,7 @@ void SocketApi::slotNewConnection()
     auto listener = QSharedPointer<SocketListener>::create(socket);
     _listeners.insert(socket, listener);
     for (const auto &a : std::as_const(_registeredAccounts)) {
-        if (a->hasDefaultSyncRoot()) {
+        if (a && !a->defaultSyncRoot().isEmpty()) {
             broadcastMessage(buildRegisterPathMessage(Utility::stripTrailingSlash(a->defaultSyncRoot())));
         }
     }
@@ -318,29 +314,31 @@ void SocketApi::slotReadSocket()
 }
 
 
-void SocketApi::registerAccount(const AccountPtr &a)
+void SocketApi::registerAccount(Account *a)
 {
     // Make sure not to register twice to each connected client
-    if (_registeredAccounts.contains(a)) {
+    if (!a || _registeredAccounts.contains(a->uuid())) {
         return;
     }
 
-    if (a->hasDefaultSyncRoot()) {
+    _registeredAccounts.insert(a->uuid(), a);
+
+    if (!a->defaultSyncRoot().isEmpty()) {
         broadcastMessage(buildRegisterPathMessage(Utility::stripTrailingSlash(a->defaultSyncRoot())));
     }
-    _registeredAccounts.insert(a);
 }
 
-void SocketApi::unregisterAccount(const AccountPtr &a)
+void SocketApi::unregisterAccount(AccountState *state)
 {
-    if (!_registeredAccounts.contains(a)) {
+    if (!state || !state->account())
         return;
-    }
 
-    if (a->hasDefaultSyncRoot()) {
+    Account *a = state->account();
+
+    if (!a->defaultSyncRoot().isEmpty()) {
         broadcastMessage(buildMessage(unregisterPathMessageC(), Utility::stripTrailingSlash(a->defaultSyncRoot())));
     }
-    _registeredAccounts.remove(a);
+    _registeredAccounts.remove(a->uuid());
 }
 
 void SocketApi::slotRegisterPath(Folder *folder)
@@ -511,12 +509,7 @@ void SocketApi::fetchPrivateLinkUrlHelper(const QString &localFile, const std::f
             return;
     }
 
-    fetchPrivateLinkUrl(
-        fileData.folder->accountState()->account(),
-        fileData.folder->webDavUrl(),
-        fileData.serverRelativePath,
-        this,
-        targetFun);
+    fetchPrivateLinkUrl(fileData.folder->accountState()->account(), fileData.folder->webDavUrl(), fileData.serverRelativePath, this, targetFun);
 }
 
 void SocketApi::command_COPY_PRIVATE_LINK(const QString &localFile, SocketListener *)

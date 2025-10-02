@@ -17,7 +17,6 @@
 
 #include "QProgressIndicator.h"
 
-#include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "activitywidget.h"
@@ -35,8 +34,6 @@
 #include "models/models.h"
 
 #include "ui_activitywidget.h"
-
-#include <climits>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -317,7 +314,8 @@ void ActivityWidget::slotSendNotificationRequest(const QString &accountName, con
     };
 
     if (validVerbs.contains(verb)) {
-        if (auto acc = AccountManager::instance()->account(accountName)) {
+        auto acc = AccountManager::instance()->account(accountName);
+        if (acc && acc->account()) {
             // TODO: host validation?
             auto *job = new NotificationConfirmJob(acc->account(), QUrl(link), verb, this);
             job->setWidget(theSender);

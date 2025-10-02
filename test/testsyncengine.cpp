@@ -713,7 +713,7 @@ private Q_SLOTS:
             cap[QStringLiteral("dav")] = dav;
             return cap;
         };
-        fakeFolder.syncEngine().account()->setCapabilities({fakeFolder.account()->url(), invalidFilenameRegexCapabilities(QStringLiteral("my[fgh]ile"))});
+        fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), invalidFilenameRegexCapabilities(QStringLiteral("my[fgh]ile"))});
         fakeFolder.localModifier().insert(QStringLiteral("C/myfile.txt"));
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/myfile.txt")));

@@ -61,7 +61,7 @@ Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObjec
     , _queueGuard(&_jobQueue)
     , _credentialManager(new CredentialManager(this))
 {
-    qRegisterMetaType<AccountPtr>("AccountPtr");
+    qRegisterMetaType<Account>("Account");
 
     _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(commonCacheDirectory(), _uuid.toString(QUuid::WithoutBraces));
     QDir().mkpath(_cacheDirectory);
@@ -79,13 +79,8 @@ Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObjec
     }
     QDir().mkpath(resourcesCacheDir);
     _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
-}
 
-AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
-{
-    AccountPtr acc = AccountPtr(new Account(uuid, user, url));
-    acc->setSharedThis(acc);
-    return acc;
+    _spacesManager = new GraphApi::SpacesManager(this);
 }
 
 Account::~Account()
@@ -117,12 +112,6 @@ QString Account::davPath() const
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
 }
 
-// todo: #20. I'm speechless
-void Account::setSharedThis(AccountPtr sharedThis)
-{
-    _sharedThis = sharedThis.toWeakRef();
-}
-
 CredentialManager *Account::credentialManager() const
 {
     return _credentialManager;
@@ -131,12 +120,6 @@ CredentialManager *Account::credentialManager() const
 QUuid Account::uuid() const
 {
     return _uuid;
-}
-
-// todo: #20
-AccountPtr Account::sharedFromThis()
-{
-    return _sharedThis.toStrongRef();
 }
 
 QString Account::davUser() const
@@ -211,26 +194,33 @@ AbstractCredentials *Account::credentials() const
     return _credentials;
 }
 
-// the credentials should be instantiated with the account as parent. we have to pass the creds in as the tests use their own
-// sublcass of AbstractCredentials = FakeCredentials.
+// todo: in a sane world the credentials should be instantiated by the account (as parent) as using this setter there isthe chance that it could be set or unset
+// randomly or even multiple times like this is really not good. For now we have to pass the creds in as the tests use their own subclass of AbstractCredentials
+// = FakeCredentials, so that has to be worked out before we can move this creds handling into the account proper, where it should be.
 void Account::setCredentials(AbstractCredentials *cred)
 {
-    Q_ASSERT(cred);
-
-    if (_credentials == cred)
+    if (!cred || _credentials == cred)
         return;
 
-    // set active credential manager
+    // keep any cookies for new nam
     QNetworkCookieJar *jar = nullptr;
     if (_am) {
         jar = _am->cookieJar();
         jar->setParent(nullptr);
-        _am->deleteLater();
+    }
+    // get rid of the old credentials if they exist - imo this should never happen but who knows
+    // note the access manager is parented by the creds so let that take care of deleting the am, but verify it's gone
+    if (_credentials) {
+        delete _credentials;
+        _credentials = nullptr;
+        Q_ASSERT(_am == nullptr);
     }
 
     _credentials = cred;
-
     _am = _credentials->createAccessManager();
+    if (jar) {
+        _am->setCookieJar(jar);
+    }
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
@@ -238,9 +228,6 @@ void Account::setCredentials(AbstractCredentials *cred)
     _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
 
-    if (jar) {
-        _am->setCookieJar(jar);
-    }
     connect(_credentials, &AbstractCredentials::fetched, this, [this] {
         Q_EMIT credentialsFetched();
         _queueGuard.unblock();
@@ -264,7 +251,7 @@ void Account::clearCookieJar()
     _am->setCookieJar(new CookieJar);
 }
 
-AccessManager *Account::accessManager()
+AccessManager *Account::accessManager() const
 {
     return _am;
 }
@@ -346,9 +333,6 @@ void Account::setCapabilities(const Capabilities &caps)
     _capabilities = caps;
     if (versionChanged) {
         Q_EMIT serverVersionChanged();
-    }
-    if (!_spacesManager) {
-        _spacesManager = new GraphApi::SpacesManager(this);
     }
 }
 

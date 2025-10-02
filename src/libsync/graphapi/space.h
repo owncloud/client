@@ -16,8 +16,6 @@
 
 #include "owncloudlib.h"
 
-#include "libsync/accountfwd.h"
-
 #include <OAIDrive.h>
 
 #include <QIcon>

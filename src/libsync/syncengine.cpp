@@ -24,7 +24,6 @@
 #include "discovery.h"
 #include "discoveryphase.h"
 #include "owncloudpropagator.h"
-#include "propagateremotedelete.h"
 
 #include <chrono>
 
@@ -44,7 +43,7 @@ Q_LOGGING_CATEGORY(lcEngine, "sync.engine", QtInfoMsg)
 // doc in header
 std::chrono::seconds SyncEngine::minimumFileAgeForUpload(2s);
 
-SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
+SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
     : _account(account)
     , _baseUrl(baseUrl)
     , _needsUpdate(false)
@@ -256,6 +255,9 @@ void SyncEngine::conflictRecordMaintenance()
 
 void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 {
+    if (!_account)
+        return;
+
     if (Utility::isConflictFile(item->_file))
         _seenConflictFiles.insert(item->_file);
     if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
@@ -296,6 +298,11 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
 void SyncEngine::startSync()
 {
+    if (!_account) {
+        finalize(false);
+        return;
+    }
+
     if (_syncRunning) {
         OC_ASSERT(false);
         return;
@@ -379,8 +386,7 @@ void SyncEngine::startSync()
     }
 
     qCInfo(lcEngine) << "#### Discovery start ####################################################" << _duration.duration();
-    qCInfo(lcEngine) << "Server" << account()->capabilities().status().versionString()
-                     << (account()->isHttp2Supported() ? "Using HTTP/2" : "");
+    qCInfo(lcEngine) << "Server" << _account->capabilities().status().versionString() << (_account->isHttp2Supported() ? "Using HTTP/2" : "");
     _progressInfo->_status = ProgressInfo::Discovery;
     Q_EMIT transmissionProgress(*_progressInfo);
 
@@ -691,11 +697,6 @@ void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
             break;
         }
     }
-}
-
-AccountPtr SyncEngine::account() const
-{
-    return _account;
 }
 
 void SyncEngine::setLocalDiscoveryOptions(LocalDiscoveryStyle style, std::set<QString> paths)

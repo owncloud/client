@@ -71,7 +71,7 @@ public:
 public Q_SLOTS:
     // this is a direct call from QML
     void createNewAccount();
-    void runFolderWizard(AccountPtr account);
+    void runFolderWizard(Account *account);
 
 
 Q_SIGNALS:

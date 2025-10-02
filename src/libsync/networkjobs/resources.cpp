@@ -82,7 +82,7 @@ QIcon ResourceJob::asIcon() const
 }
 
 ResourceJob::ResourceJob(ResourcesCache *cache, const QUrl &rootUrl, const QString &path, QObject *parent)
-    : SimpleNetworkJob(cache->account()->sharedFromThis(), rootUrl, path, "GET", {}, {}, parent)
+    : SimpleNetworkJob(cache->account(), rootUrl, path, "GET", {}, {}, parent)
     , _cache(cache)
 {
     setStoreInCache(true);

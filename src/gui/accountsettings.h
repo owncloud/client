@@ -78,7 +78,7 @@ Q_SIGNALS:
     void syncedSpacesChanged();
 
 public Q_SLOTS:
-    void slotAccountStateChanged();
+    void slotAccountStateChanged(AccountState::State state);
     void slotSpacesUpdated();
     void slotAddFolder();
 

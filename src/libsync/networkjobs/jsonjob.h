@@ -63,8 +63,8 @@ class OWNCLOUDSYNC_EXPORT JsonApiJob : public JsonJob
 {
     Q_OBJECT
 public:
-    explicit JsonApiJob(AccountPtr account, const QString &path, const QByteArray &verb, const UrlQuery &arguments, const QNetworkRequest &req, QObject *parent);
-    explicit JsonApiJob(AccountPtr account, const QString &path, const UrlQuery &arguments, const QNetworkRequest &req, QObject *parent);
+    explicit JsonApiJob(Account *account, const QString &path, const QByteArray &verb, const UrlQuery &arguments, const QNetworkRequest &req, QObject *parent);
+    explicit JsonApiJob(Account *account, const QString &path, const UrlQuery &arguments, const QNetworkRequest &req, QObject *parent);
 
     // the OCS status code: 100 (!) for success
     int ocsStatus() const;

@@ -19,12 +19,12 @@
 
 namespace OCC {
 
-Activity::Activity(Activity::Type type, const QString &id, AccountPtr acc, const QString &subject, const QString &message, const QString &file,
-    const QUrl &link, const QDateTime &dateTime, const QVector<ActivityLink> &&links)
+Activity::Activity(Activity::Type type, const QString &id, const QString &accName, const QUuid &uid, const QString &subject, const QString &message,
+    const QString &file, const QUrl &link, const QDateTime &dateTime, const QVector<ActivityLink> &&links)
     : _type(type)
     , _id(id)
-    , _accName(acc->displayNameWithHost())
-    , _uuid(acc->uuid())
+    , _accName(accName)
+    , _uuid(uid)
     , _subject(subject)
     , _message(message)
     , _file(file)

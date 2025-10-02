@@ -99,9 +99,7 @@ void PropagateUploadCommon::start()
         return slotComputeContentChecksum();
     }
 
-    auto job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(),
-        propagator()->fullRemotePath(_item->_file),
-        this);
+    auto job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), this);
     addChildJob(job);
     connect(job, &DeleteJob::finishedSignal, this, &PropagateUploadCommon::slotComputeContentChecksum);
     job->start();

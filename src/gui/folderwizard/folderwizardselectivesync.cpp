@@ -34,11 +34,11 @@
 
 using namespace OCC;
 
-FolderWizardSelectiveSync::FolderWizardSelectiveSync(FolderWizardPrivate *parent)
+FolderWizardSelectiveSync::FolderWizardSelectiveSync(Account *account, FolderWizardPrivate *parent)
     : FolderWizardPage(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
-    _selectiveSync = new SelectiveSyncWidget(folderWizardPrivate()->accountState()->account(), this);
+    _selectiveSync = new SelectiveSyncWidget(account, this);
     layout->addWidget(_selectiveSync);
 
     if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {

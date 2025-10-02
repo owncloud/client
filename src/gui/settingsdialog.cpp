@@ -151,7 +151,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
         onAccountAdded(accountState);
     }
     if (!_widgetForAccount.isEmpty()) {
-        setCurrentAccount(accounts.first()->account().get());
+        setCurrentAccount(accounts.first()->account());
     }
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &SettingsDialog::onAccountAdded);
@@ -170,8 +170,8 @@ void SettingsDialog::onAccountAdded(AccountState *state)
         return;
     auto accountSettings = new AccountSettings(state, this);
     _ui->stack->addWidget(accountSettings);
-    _widgetForAccount.insert(state->account().data(), accountSettings);
-    setCurrentAccount(state->account().get());
+    _widgetForAccount.insert(state->account(), accountSettings);
+    setCurrentAccount(state->account());
 }
 
 void SettingsDialog::onAccountRemoved(AccountState *state)
@@ -179,7 +179,7 @@ void SettingsDialog::onAccountRemoved(AccountState *state)
     if (!state || !state->account())
         return;
     // todo: #37. using the account after we know it's been removed is not ok.
-    Account *acc = state->account().data();
+    Account *acc = state->account();
     if (AccountSettings *asw = _widgetForAccount.value(acc)) {
         _widgetForAccount.remove(acc);
         _ui->stack->removeWidget(asw);
@@ -296,9 +296,11 @@ void SettingsDialog::createNewAccount()
     ocApp()->gui()->runAccountWizard();
 }
 
-void SettingsDialog::runFolderWizard(AccountPtr account)
+void SettingsDialog::runFolderWizard(Account *account)
 {
-    setCurrentAccount(account.get());
+    if (!account)
+        return;
+    setCurrentAccount(account);
     accountSettings(_currentAccount)->slotAddFolder();
 }
 

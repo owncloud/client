@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef ACTIVITYWIDGET_H
-#define ACTIVITYWIDGET_H
+#pragma once
 
 #include <QDialog>
 #include <QDateTime>
@@ -21,9 +20,7 @@
 #include <QAbstractListModel>
 #include <chrono>
 
-#include "progressdispatcher.h"
 #include "owncloudgui.h"
-#include "account.h"
 #include "activitydata.h"
 
 #include "models/models.h"
@@ -35,8 +32,8 @@ class QVBoxLayout;
 
 namespace OCC {
 
-class Account;
-class AccountStatusPtr;
+class AccountState;
+//class AccountStatusPtr;
 class ProtocolWidget;
 class IssuesWidget;
 class JsonApiJob;
@@ -162,7 +159,8 @@ private:
     IssuesWidget *_issuesWidget;
     QProgressIndicator *_progressIndicator;
     QTimer _notificationCheckTimer;
+    // todo: *never* hash on a pointer - this is so dangerous
+    // replace the pointer with the account uuid for safety
     QHash<AccountState *, QElapsedTimer> _timeSinceLastCheck;
 };
 }
-#endif // ActivityWIDGET_H

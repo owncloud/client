@@ -3,7 +3,6 @@ add_library(folderwizard STATIC
     folderwizardlocalpath.cpp
     folderwizardsourcepage.ui
 
-    folderwizardremotepath.cpp
     folderwizardtargetpage.ui
 
     folderwizardselectivesync.cpp

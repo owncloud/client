@@ -15,10 +15,9 @@
 
 #pragma once
 
-#include "accountfwd.h"
+#include "account.h"
 #include "common/checksums.h"
 #include "common/chronoelapsedtimer.h"
-#include "common/utility.h"
 #include "discoveryphase.h"
 #include "progressdispatcher.h"
 #include "syncfileitem.h"
@@ -30,7 +29,7 @@
 #include <QSet>
 #include <QMap>
 #include <QStringList>
-#include <QSharedPointer>
+#include <QPointer>
 
 #include <optional>
 #include <set>
@@ -52,8 +51,7 @@ class OWNCLOUDSYNC_EXPORT SyncEngine : public QObject
 {
     Q_OBJECT
 public:
-    SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath,
-        const QString &remotePath, SyncJournalDb *journal);
+    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal);
     ~SyncEngine() override;
 
     Q_INVOKABLE void startSync();
@@ -87,7 +85,6 @@ public:
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }
 
-    AccountPtr account() const;
     SyncJournalDb *journal() const { return _journal; }
     QString localPath() const { return _localPath; }
 
@@ -205,7 +202,7 @@ private:
     // Must only be acessed during update and reconcile
     SyncFileItemSet _syncItems;
 
-    AccountPtr _account;
+    QPointer<Account> _account;
     const QUrl _baseUrl;
     bool _needsUpdate;
     bool _syncRunning;

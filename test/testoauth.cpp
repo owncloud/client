@@ -125,19 +125,19 @@ public:
     QNetworkAccessManager realQNAM;
     QPointer<QNetworkReply> browserReply = nullptr;
     QString code = QString::fromUtf8(generateEtag());
-    OCC::AccountPtr account;
+    OCC::Account *account;
 
     std::unique_ptr<AccountBasedOAuth> oauth;
 
     virtual std::unique_ptr<AccountBasedOAuth> prepareOauth()
     {
         fakeAm = new FakeAM(nullptr);
-        account = Account::create(QUuid::createUuid(), "admin", sOpenIdBaseURL);
+        account = new Account(QUuid::createUuid(), "admin", sOpenIdBaseURL);
 
         // the account seizes ownership over the qnam in account->setCredentials(...) by keeping a shared pointer on it
         // therefore, we should never call fakeAm->setThis(...)
         // Lisa todo: ???
-        account->setCredentials(new FakeCredentials(account.get(), fakeAm, account.get()));
+        account->setCredentials(new FakeCredentials(account, fakeAm, account));
         fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) {
             if (req.url().path().endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 return this->wellKnownReply(op, req);
@@ -155,7 +155,7 @@ public:
 
         QObject::connect(&desktopServiceHook, &DesktopServiceHook::hooked, this, &OAuthTestCase::openBrowserHook);
 
-        auto out = std::make_unique<AccountBasedOAuth>(account);
+        auto out = std::make_unique<AccountBasedOAuth>(account, nullptr);
         QObject::connect(out.get(), &OAuth::result, this, &OAuthTestCase::oauthResult);
         return out;
     }
