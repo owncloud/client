@@ -295,11 +295,11 @@ private Q_SLOTS:
 
         // Should still get the status for different casing on macOS and Windows.
         QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("a")),
-            SyncFileStatus(Utility::fsCasePreserving() ? SyncFileStatus::StatusWarning : SyncFileStatus::StatusNone));
+            SyncFileStatus(Utility::fsCasePreservingButCaseInsensitive() ? SyncFileStatus::StatusWarning : SyncFileStatus::StatusNone));
         QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/A1")),
-            SyncFileStatus(Utility::fsCasePreserving() ? SyncFileStatus::StatusError : SyncFileStatus::StatusNone));
+            SyncFileStatus(Utility::fsCasePreservingButCaseInsensitive() ? SyncFileStatus::StatusError : SyncFileStatus::StatusNone));
         QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("b")),
-            SyncFileStatus(Utility::fsCasePreserving() ? SyncFileStatus::StatusExcluded : SyncFileStatus::StatusNone));
+            SyncFileStatus(Utility::fsCasePreservingButCaseInsensitive() ? SyncFileStatus::StatusExcluded : SyncFileStatus::StatusNone));
     }
 
     void parentsGetWarningStatusForError() {

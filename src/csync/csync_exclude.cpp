@@ -737,7 +737,7 @@ void ExcludedFiles::prepare()
             .arg(fullFileDirKeep, fullDirKeep, bnameFileDirKeep, bnameDirKeep, fullFileDirRemove, fullDirRemove, bnameFileDirRemove, bnameDirRemove));
 
     QRegularExpression::PatternOptions patternOptions = QRegularExpression::NoPatternOption;
-    if (OCC::Utility::fsCasePreserving())
+    if (OCC::Utility::fsCasePreservingButCaseInsensitive())
         patternOptions |= QRegularExpression::CaseInsensitiveOption;
     _bnameTraversalRegexFile.setPatternOptions(patternOptions);
     _bnameTraversalRegexFile.optimize();
