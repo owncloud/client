@@ -17,6 +17,7 @@
 #include <QFile>
 #include <QScopeGuard>
 
+#include <fstream>
 #include <iostream>
 #include <vector>
 
@@ -41,34 +42,16 @@ namespace {
 bool writeToFile(std::string_view command, const QString &fileName, QIODevice::OpenMode mode, const QByteArray &data)
 {
 #ifndef Q_OS_WIN
-    // Write to a temporary file, then rename it to the correct name. This prevents Qt from changing the normalization form of the file name.
-    QString tmpName = fileName + u".tmp";
-    QFile f(tmpName);
-    if (!f.open(mode)) {
-        cerr << "Error: cannot open file '" << qPrintable(fileName) << "' for " << command << " command: "
-             << qPrintable(f.errorString()) << endl;
-        return false;
-    }
-    const auto written = f.write(data);
+    // Use io streams, so we can be sure no-one plays around with normalizing the file name.
 
-    if (mode & QFile::Append) {
-        if (!f.seek(f.size())) {
-            cerr << "Error: cannot seek to EOF in '" << qPrintable(fileName) << "' for " << command << " command" << endl;
-            return false;
-        }
-    }
-
-    if (written != data.size()) {
-        cerr << "Error: wrote " << written << " bytes to '" << qPrintable(fileName) << "' instead of requested " << data.size() << " bytes" << endl;
-        return false;
-    }
-    f.close();
-
-    QString err;
-    if (!OCC::FileSystem::uncheckedRenameReplace(tmpName, fileName, &err)) {
-        cerr << "Error: cannot rename temp file to '" << qPrintable(fileName) << "': " << qPrintable(err) << endl;
-        return false;
-    }
+    ios::openmode oMode = ios::binary | ios::out;
+    if (mode & QIODevice::Append)
+        oMode |= ios::app;
+    if (mode & QIODevice::Truncate)
+        oMode |= ios::trunc;
+    ofstream out(fileName.toUtf8().constData(), oMode);
+    out.write(data.constData(), data.size());
+    out.close();
 #else
     // Qt bug: [INSERT BUG HERE]
     // When opening a cloud file results in a cfapi error, Qt does not report an error.
