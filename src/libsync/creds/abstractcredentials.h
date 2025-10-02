@@ -18,7 +18,7 @@
 #include <QPointer>
 
 #include "accessmanager.h"
-#include "accountfwd.h"
+#include "account.h"
 #include "owncloudlib.h"
 #include <csync.h>
 

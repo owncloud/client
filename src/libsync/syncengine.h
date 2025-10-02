@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "accountfwd.h"
+#include "account.h"
 #include "common/checksums.h"
 #include "common/chronoelapsedtimer.h"
 #include "discoveryphase.h"
@@ -29,7 +29,7 @@
 #include <QSet>
 #include <QMap>
 #include <QStringList>
-#include <QSharedPointer>
+#include <QPointer>
 
 #include <optional>
 #include <set>

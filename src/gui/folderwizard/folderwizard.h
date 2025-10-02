@@ -17,7 +17,6 @@
 #include <QUrl>
 #include <QWizard>
 
-#include "accountfwd.h"
 #include "gui/folderman.h"
 
 class QCheckBox;

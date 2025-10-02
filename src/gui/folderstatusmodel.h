@@ -12,12 +12,12 @@
  * for more details.
  */
 
-#ifndef FOLDERSTATUSMODEL_H
-#define FOLDERSTATUSMODEL_H
+#pragma once
 
-#include "accountfwd.h"
+#include "accountstate.h"
 #include "progressdispatcher.h"
 
+#include <QPointer>
 #include <QAbstractItemModel>
 #include <QElapsedTimer>
 #include <QLoggingCategory>
@@ -91,4 +91,3 @@ private:
 
 
 } // namespace OCC
-#endif // FOLDERSTATUSMODEL_H

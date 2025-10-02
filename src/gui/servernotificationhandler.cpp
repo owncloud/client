@@ -15,6 +15,7 @@
 #include "servernotificationhandler.h"
 #include "accountstate.h"
 #include "capabilities.h"
+#include "creds/abstractcredentials.h"
 #include "networkjobs/jsonjob.h"
 
 #include <QJsonObject>

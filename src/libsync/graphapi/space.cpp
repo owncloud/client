@@ -14,7 +14,6 @@
 
 #include "space.h"
 
-#include "libsync/account.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/resources.h"

@@ -17,7 +17,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "common/chronoelapsedtimer.h"
-#include "libsync/accountfwd.h"
+#include "libsync/account.h"
 
 #include <QNetworkReply>
 #include <QObject>

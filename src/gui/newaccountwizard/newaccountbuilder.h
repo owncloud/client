@@ -16,12 +16,13 @@
 #include "newaccountmodel.h"
 #include <QObject>
 
-#include "accountfwd.h"
+#include "libsync/account.h"
 #include "accountstate.h"
 
 #include "newaccountenums.h"
 
 namespace OCC {
+
 
 class NewAccountBuilder : public QObject
 {

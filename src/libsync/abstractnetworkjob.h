@@ -15,12 +15,9 @@
 
 #pragma once
 
-#include "accountfwd.h"
-#include "jobqueue.h"
-
-#include "common/asserts.h"
-
 #include "owncloudlib.h"
+#include "account.h"
+#include "jobqueue.h"
 
 #include <QDateTime>
 #include <QElapsedTimer>

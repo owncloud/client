@@ -27,7 +27,6 @@
 #include "gui/settingsdialog.h"
 #include "theme.h"
 
-#include "gui/accountstate.h"
 #include "gui/folderman.h"
 
 #include "libsync/graphapi/space.h"
@@ -130,11 +129,6 @@ QString FolderWizardPrivate::displayName() const
 {
     return _spacesPage->currentSpace()->displayName();
 }
-
-/*AccountState *FolderWizardPrivate::accountState()
-{
-    return _accountState;
-}*/
 
 bool FolderWizardPrivate::useVirtualFiles() const
 {

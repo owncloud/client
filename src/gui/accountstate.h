@@ -19,7 +19,6 @@
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
-#include "creds/abstractcredentials.h"
 #include "jobqueue.h"
 
 #include "account.h"
@@ -108,7 +107,6 @@ public:
      */
     void writeToSettings(QSettings &settings) const;
 
-    AccountPtr accountShared() const;
     Account *account() const;
 
     ConnectionStatus connectionStatus() const;

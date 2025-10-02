@@ -13,8 +13,10 @@
  */
 
 #pragma once
-#include "accountfwd.h"
+
 #include "owncloudlib.h"
+
+#include "account.h"
 
 #include <QNetworkReply>
 #include <QPointer>

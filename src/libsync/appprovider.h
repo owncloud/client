@@ -17,8 +17,6 @@
  */
 #pragma once
 
-#include "accountfwd.h"
-#include "capabilities.h"
 #include "owncloudlib.h"
 
 #include <QJsonObject>
@@ -28,6 +26,9 @@
 #include <QVariantMap>
 
 namespace OCC {
+
+class Account;
+
 class OWNCLOUDSYNC_EXPORT AppProvider
 {
 public:

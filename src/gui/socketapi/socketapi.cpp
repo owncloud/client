@@ -21,6 +21,7 @@
 #include "gui/commonstrings.h"
 
 #include "accountmanager.h"
+#include "accountstate.h"
 #include "common/asserts.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"

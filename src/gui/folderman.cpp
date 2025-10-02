@@ -17,8 +17,8 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "accessmanager.h"
 #include "common/asserts.h"
-#include "common/depreaction.h"
 #include "configfile.h"
 #include "folder.h"
 #include "gui/networkinformation.h"
@@ -39,7 +39,6 @@
 #include <QMutableSetIterator>
 #include <QNetworkProxy>
 #include <QStringLiteral>
-#include <QtCore>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;

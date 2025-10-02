@@ -18,8 +18,10 @@
 
 #include "common/syncfilestatus.h"
 #include "common/syncjournalfilerecord.h"
-#include "libsync/accountfwd.h"
+#include "libsync/account.h"
 #include "syncfileitem.h"
+
+#include <QPointer>
 
 #if defined(Q_OS_MAC)
 #include "socketapisocket_mac.h"
@@ -34,6 +36,7 @@ class QLocalSocket;
 
 namespace OCC {
 
+class AccountState;
 class SyncFileStatus;
 class Folder;
 class SocketListener;

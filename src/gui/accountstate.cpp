@@ -127,15 +127,6 @@ AccountState *AccountState::loadFromSettings(Account *account, const QSettings &
     return accountState;
 }
 
-/*std::unique_ptr<AccountState> AccountState::fromNewAccount(AccountPtr account)
-{
-    // todo: #22. In essence this function creates a unique pointer which in the caller is immediately added to the _accounts map
-    // as a QPointer. Meanwhile the parent is a shared pointer (the account) so who knows when this thing will ever get cleaned up?
-    // add to this that I rarely see anyone checking an account state to see if it's null. We need a consistent impl that reflects
-    // the ownership status of these elements, and make the lifetime concrete
-    return std::unique_ptr<AccountState>(new AccountState(account));
-}*/
-
 void AccountState::writeToSettings(QSettings &settings) const
 {
     // The SignedOut state is the only state where the client should *not* ask for credentials, nor
@@ -144,12 +135,6 @@ void AccountState::writeToSettings(QSettings &settings) const
     // SignedOut state to indicate that the client should not try to re-connect the next time it
     // is started.
     settings.setValue(userExplicitlySignedOutC(), _state == SignedOut);
-}
-
-// this is SOOO temporary
-AccountPtr AccountState::accountShared() const
-{
-    return _account->sharedFromThis();
 }
 
 Account *AccountState::account() const

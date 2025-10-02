@@ -20,8 +20,9 @@
 
 #include "folderwizard.h"
 
-#include "libsync/accountfwd.h"
+#include "libsync/account.h"
 
+#include <QPointer>
 #include <QCoreApplication>
 #include <QLoggingCategory>
 #include <QStringList>
@@ -51,8 +52,6 @@ public:
     QString spaceId() const;
     bool useVirtualFiles() const;
     QString displayName() const;
-
-    //   AccountState *accountState();
 
 private:
     Q_DECLARE_PUBLIC(FolderWizard)

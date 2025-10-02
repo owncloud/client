@@ -17,7 +17,6 @@
 
 #include "QProgressIndicator.h"
 
-#include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "activitywidget.h"

@@ -12,11 +12,9 @@
  * for more details.
  */
 
-#ifndef NOTIFICATIONCONFIRMJOB_H
-#define NOTIFICATIONCONFIRMJOB_H
+#pragma once
 
 #include "abstractnetworkjob.h"
-#include "accountfwd.h"
 #include "networkjobs/jsonjob.h"
 
 #include <QVector>
@@ -26,6 +24,7 @@
 
 namespace OCC {
 
+class Account;
 class NotificationWidget;
 
 /**
@@ -67,4 +66,3 @@ private:
 };
 }
 
-#endif // NotificationConfirmJob_H

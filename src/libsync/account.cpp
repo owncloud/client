@@ -61,7 +61,7 @@ Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObjec
     , _queueGuard(&_jobQueue)
     , _credentialManager(new CredentialManager(this))
 {
-    qRegisterMetaType<AccountPtr>("AccountPtr");
+    qRegisterMetaType<Account>("Account");
 
     _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(commonCacheDirectory(), _uuid.toString(QUuid::WithoutBraces));
     QDir().mkpath(_cacheDirectory);
@@ -82,13 +82,6 @@ Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObjec
 
     _spacesManager = new GraphApi::SpacesManager(this);
 }
-
-/*AccountPtr Account::create(const QUuid &uuid, const QString &user, const QUrl &url)
-{
-    AccountPtr acc = AccountPtr(new Account(uuid, user, url));
-    acc->setSharedThis(acc);
-    return acc;
-}*/
 
 Account::~Account()
 {
@@ -119,12 +112,6 @@ QString Account::davPath() const
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
 }
 
-// todo: #20. I'm speechless
-void Account::setSharedThis(AccountPtr sharedThis)
-{
-    _sharedThis = sharedThis.toWeakRef();
-}
-
 CredentialManager *Account::credentialManager() const
 {
     return _credentialManager;
@@ -133,12 +120,6 @@ CredentialManager *Account::credentialManager() const
 QUuid Account::uuid() const
 {
     return _uuid;
-}
-
-// todo: #20
-AccountPtr Account::sharedFromThis()
-{
-    return _sharedThis.toStrongRef();
 }
 
 QString Account::davUser() const

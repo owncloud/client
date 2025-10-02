@@ -12,10 +12,10 @@
  * for more details.
  */
 #include "newaccountbuilder.h"
-#include "account.h"
+
 #include "accountmanager.h"
 #include "accountsettings.h"
-#include "accountstate.h"
+#include "creds/abstractcredentials.h"
 
 
 namespace OCC {
