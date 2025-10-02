@@ -592,7 +592,7 @@ private Q_SLOTS:
         remote.appendByte(QStringLiteral("A2/a2m"));
         local.rename(QStringLiteral("A2"), QStringLiteral("A3"));
         local.setContents(QStringLiteral("B2/b2m"), FileModifier::DefaultFileSize, 'D');
-        local.appendByte(QStringLiteral("B2/b2m"));
+        local.appendByte(QStringLiteral("B2/b2m"), 'D');
         remote.rename(QStringLiteral("B2"), QStringLiteral("B3"));
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -607,16 +607,16 @@ private Q_SLOTS:
 
         // Folder rename with contents touched on both ends
         remote.setContents(QStringLiteral("A3/a2m"), FileModifier::DefaultFileSize, 'R');
-        remote.appendByte(QStringLiteral("A3/a2m"));
+        remote.appendByte(QStringLiteral("A3/a2m"), 'R');
         local.setContents(QStringLiteral("A3/a2m"), FileModifier::DefaultFileSize, 'L');
-        local.appendByte(QStringLiteral("A3/a2m"));
-        local.appendByte(QStringLiteral("A3/a2m"));
+        local.appendByte(QStringLiteral("A3/a2m"), 'L');
+        local.appendByte(QStringLiteral("A3/a2m"), 'L');
         local.rename(QStringLiteral("A3"), QStringLiteral("A4"));
         remote.setContents(QStringLiteral("B3/b2m"), FileModifier::DefaultFileSize, 'R');
-        remote.appendByte(QStringLiteral("B3/b2m"));
+        remote.appendByte(QStringLiteral("B3/b2m"), 'R');
         local.setContents(QStringLiteral("B3/b2m"), FileModifier::DefaultFileSize, 'L');
-        local.appendByte(QStringLiteral("B3/b2m"));
-        local.appendByte(QStringLiteral("B3/b2m"));
+        local.appendByte(QStringLiteral("B3/b2m"), 'L');
+        local.appendByte(QStringLiteral("B3/b2m"), 'L');
         remote.rename(QStringLiteral("B3"), QStringLiteral("B4"));
         QThread::sleep(1); // This test is timing-sensitive. No idea why, it's probably the modtime on the client side.
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
@@ -629,6 +629,7 @@ private Q_SLOTS:
         auto conflicts = findConflicts(currentLocal.children[QStringLiteral("A4")]);
         QCOMPARE(conflicts.size(), 1);
         for (const auto &c : std::as_const(conflicts)) {
+            qDebug() << c;
             QCOMPARE(currentLocal.find(c)->contentChar, 'L');
             local.remove(c);
         }
