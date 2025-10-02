@@ -249,7 +249,8 @@ SyncOptions Folder::loadSyncOptions()
     ConfigFile cfgFile;
 
     opt._moveFilesToTrash = cfgFile.moveToTrash();
-    opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
+    // got a nullptr hit here - this is so shady but best I can do for now
+    opt._parallelNetworkJobs = (_accountState && _accountState->account() && _accountState->account()->isHttp2Supported()) ? 20 : 6;
 
     opt.fillFromEnvironmentVariables();
     return opt;
