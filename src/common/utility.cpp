@@ -170,7 +170,7 @@ OCSYNC_EXPORT bool fsCasePreserving_override = []() -> bool {
     return Utility::isWindows() || Utility::isMac();
 }();
 
-bool Utility::fsCasePreserving()
+bool Utility::fsCasePreservingButCaseInsensitive()
 {
     return fsCasePreserving_override;
 }
@@ -184,7 +184,7 @@ bool Utility::fileNamesEqual(const QString &fn1, const QString &fn2)
     // ONLY use this function with existing pathes.
     const QString a = fd1.canonicalPath();
     const QString b = fd2.canonicalPath();
-    bool re = !a.isEmpty() && QString::compare(a, b, fsCasePreserving() ? Qt::CaseInsensitive : Qt::CaseSensitive) == 0;
+    bool re = !a.isEmpty() && QString::compare(a, b, fsCaseSensitivity()) == 0;
     return re;
 }
 
