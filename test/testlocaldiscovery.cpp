@@ -347,10 +347,16 @@ private Q_SLOTS:
 
         QCOMPARE(counter.nGET, 0);
         QCOMPARE(counter.nDELETE, 0);
-        QCOMPARE(counter.nMOVE, 1); // For now
+        QCOMPARE(counter.nMOVE, 0);
         QCOMPARE(counter.nPUT, 0);
-        // QVERIFY(fakeFolder.currentRemoteState().find(a_umlaut_composed) != nullptr);
-        // QVERIFY(fakeFolder.currentRemoteState().find(a_umlaut_decomposed) == nullptr);
+
+        // Check that nothing changed on the server:
+        QVERIFY(fakeFolder.currentRemoteState().find(a_umlaut_composed) != nullptr);
+        QVERIFY(fakeFolder.currentRemoteState().find(a_umlaut_decomposed) == nullptr);
+
+        // Check that locally the file is renamed back to the same composition as on the server
+        QVERIFY(fakeFolder.currentLocalState().find(a_umlaut_composed) != nullptr);
+        QVERIFY(fakeFolder.currentLocalState().find(a_umlaut_decomposed) == nullptr);
     }
 };
 

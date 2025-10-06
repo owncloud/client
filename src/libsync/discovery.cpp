@@ -857,6 +857,28 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
         return;
     }
 
+    // File size, mod time, checksum the same, but the name is different. Now check if the move is
+    // *only* a normalization change, not a capitalization change.
+    if (originalPath.normalized(QString::NormalizationForm_C) == path._local.normalized(QString::NormalizationForm_C)) {
+        // Issue a local rename: this is a technical encoding change, and not visible to end-users
+        QString adjustedOriginalPath = _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
+        _discoveryData->_renamedItemsLocal.insert(originalPath, path._local);
+        item->_modtime = base._modtime;
+        item->_inode = base._inode;
+        item->_etag = base._etag;
+        item->_checksumHeader = base._checksumHeader;
+        item->_fileId = base._fileId;
+        item->_remotePerm = base._remotePerm;
+        item->setInstruction(CSYNC_INSTRUCTION_RENAME);
+        item->_direction = SyncFileItem::Down;
+        item->_renameTarget = adjustedOriginalPath;
+        item->_file = path._local;
+        item->_originalFile = originalPath;
+        qCInfo(lcDisco) << "Rename detected (down) " << item->_file << " -> " << item->_renameTarget;
+        finalize(path, recurseQueryServer);
+        return;
+    }
+
     // Check local permission if we are allowed to put move the file here
     // Technically we should use the permissions from the server, but we'll assume it is the same
     auto movePerms = checkMovePermissions(base._remotePerm, originalPath, item->isDirectory());
