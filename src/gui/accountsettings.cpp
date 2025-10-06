@@ -523,31 +523,7 @@ void AccountSettings::buildManageAccountMenu()
     menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountSettings::slotOpenAccountInBrowser);
     menu->addAction(tr("Remove"), this, &AccountSettings::slotDeleteAccount);
 
-    if (Utility::isMac()) {
-        // VoiceOver will read the button as a "menu button", clearly indicating that this is not a normal
-        // button, and that a menu will appear. Using the Windows/Linux work-around results in the button
-        // being read as "button" (no indication of the menu), and the setActiveAction doesn't help either.
-        //
-        // Bug in Qt: the menu somehow is not added to the a11y chain, VoiceOver doesn't "see" it, even
-        // when navigating around inside it with the arrow keys.
-        ui->manageAccountButton->setMenu(menu);
-        ui->manageAccountButton->setPopupMode(QToolButton::InstantPopup);
-    } else {
-        // Windows: when using a button-with-a-menu, Narrator will not notice the menu. Manually showing
-        // and placing it, and then setting the first item as active, will have Narrator read this as
-        // "Account options menu, window, Log in, menu item".
-        //
-        // Linux with Gnome: place the menu BELOW the button. If this is omitted, the click event that
-        // opened the menu will be forwarded to the menu, resulting in selecting the first action (!!!),
-        // and immediately close the menu. The work-around is to manually call "popup", which seems
-        // to work in ~60% of the cases. If it doesn't work, select e.g settings, switch back, and try
-        // again.
-        connect(ui->manageAccountButton, &QPushButton::clicked, this, [menu, logInOutAction, button = ui->manageAccountButton] {
-            auto pos = button->mapToGlobal(QPoint(0, button->height()));
-            menu->popup(pos);
-            menu->setActiveAction(logInOutAction);
-        });
-    }
+    ui->manageAccountButton->setMenu(menu);
 }
 
 // Refactoring todo: the signal sends the new account state, refactor this to use that param

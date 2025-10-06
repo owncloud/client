@@ -6,7 +6,7 @@ class AccountSetting:
     MANAGE_ACCOUNT_BUTTON = {
         "container": names.settings_dialogStack_QStackedWidget,
         "name": "manageAccountButton",
-        "type": "QToolButton",
+        "type": "QPushButton",
         "visible": 1,
     }
     ACCOUNT_MENU = {
