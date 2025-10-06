@@ -68,7 +68,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="manageAccountButton">
+       <widget class="QPushButton" name="manageAccountButton">
         <property name="text">
          <string>Manage Account</string>
         </property>
