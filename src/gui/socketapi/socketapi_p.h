@@ -14,18 +14,12 @@
  * for more details.
  */
 
-#ifndef SOCKETAPI_P_H
-#define SOCKETAPI_P_H
+#pragma once
 
-#include <functional>
 #include <QBitArray>
 #include <QPointer>
 
-#include <QJsonDocument>
 #include <QJsonObject>
-
-#include <memory>
-#include <QTimer>
 
 namespace OCC {
 
@@ -85,52 +79,6 @@ private:
     BloomFilter _monitoredDirectoriesBloomFilter;
 };
 
-class ListenerClosure : public QObject
-{
-    Q_OBJECT
-public:
-    using CallbackFunction = std::function<void()>;
-    ListenerClosure(const CallbackFunction &callback)
-        : callback_(callback)
-    {
-    }
-
-public Q_SLOTS:
-    void closureSlot()
-    {
-        callback_();
-        deleteLater();
-    }
-
-private:
-    CallbackFunction callback_;
-};
-
-class SocketApiJob : public QObject
-{
-    Q_OBJECT
-public:
-    explicit SocketApiJob(const QString &jobId, const QSharedPointer<SocketListener> &socketListener, const QJsonObject &arguments)
-        : _jobId(jobId)
-        , _socketListener(socketListener)
-        , _arguments(arguments)
-    {
-    }
-
-    void resolve(const QString &response = QString());
-
-    void resolve(const QJsonObject &response);
-
-    const QJsonObject &arguments() { return _arguments; }
-
-    void reject(const QString &response);
-
-protected:
-    QString _jobId;
-    QSharedPointer<SocketListener> _socketListener;
-    QJsonObject _arguments;
-};
-
 class SocketApiJobV2 : public QObject
 {
     Q_OBJECT
@@ -161,5 +109,3 @@ private:
 }
 
 Q_DECLARE_METATYPE(OCC::SocketListener *)
-
-#endif // SOCKETAPI_P_H
