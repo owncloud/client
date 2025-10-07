@@ -17,7 +17,6 @@
 #include "common/checksums.h"
 #include "common/syncjournaldb.h"
 #include "filesystem.h"
-#include "networkjobs.h"
 #include "owncloudpropagator_p.h"
 #include "propagatorjobs.h"
 #include "putfilejob.h"
@@ -28,8 +27,6 @@
 #include <QFileInfo>
 #include <QRandomGenerator>
 
-#include <cmath>
-#include <cstring>
 #include <memory>
 
 namespace OCC {

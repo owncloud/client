@@ -17,8 +17,8 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "accessmanager.h"
 #include "common/asserts.h"
-#include "common/depreaction.h"
 #include "configfile.h"
 #include "folder.h"
 #include "gui/networkinformation.h"
@@ -39,7 +39,6 @@
 #include <QMutableSetIterator>
 #include <QNetworkProxy>
 #include <QStringLiteral>
-#include <QtCore>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -257,7 +256,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
         settings.beginGroup("Accounts");
 
         // prepare the root - reality check this as I think the user can change this from default?
-        const QString localDir(spacesMgr->account()->defaultSyncRoot());
+        const QString localDir(accountState->account()->defaultSyncRoot());
         if (!prepareFolder(localDir)) {
             return;
         }
@@ -270,7 +269,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
 
             folderDef.setPriority(space->priority());
 
-            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, spacesMgr->account()->uuid());
+            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, accountState->account()->uuid());
             folderDef.setLocalPath(localPath);
             folderDef.setTargetPath({});
 
@@ -471,7 +470,7 @@ void FolderMan::slotServerVersionChanged(Account *account)
                                << "pausing all folders on the account";
 
         for (auto &f : std::as_const(_folders)) {
-            if (f->accountState()->account().data() == account) {
+            if (f->accountState()->account() == account) {
                 f->setSyncPaused(true);
             }
         }
@@ -634,7 +633,7 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
     return nullptr;
 }
 
-QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const AccountPtr acc)
+QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Account *acc)
 {
     QStringList re;
 
@@ -644,7 +643,7 @@ QStringList FolderMan::findFileInLocalFolders(const QString &relPath, const Acco
         serverPath.prepend(QLatin1Char('/'));
 
     for (auto *folder : std::as_const(_folders)) {
-        if (acc != nullptr && folder->accountState()->account() != acc) {
+        if (acc && folder->accountState() && folder->accountState()->account() != acc) {
             continue;
         }
         if (!serverPath.startsWith(folder->remotePath()))

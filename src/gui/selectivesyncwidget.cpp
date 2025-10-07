@@ -60,7 +60,7 @@ private:
     }
 };
 
-SelectiveSyncWidget::SelectiveSyncWidget(AccountPtr account, QWidget *parent)
+SelectiveSyncWidget::SelectiveSyncWidget(Account *account, QWidget *parent)
     : QWidget(parent)
     , _account(account)
     , _inserting(false)
@@ -98,8 +98,12 @@ QSize SelectiveSyncWidget::sizeHint() const
     return QWidget::sizeHint().expandedTo(QSize(600, 600));
 }
 
+// todo DC-150 or beyond: jobs should not be run in the gui! create a controller to run the job, and eliminate the account dep here in this widget
 void SelectiveSyncWidget::refreshFolders()
 {
+    if (!_account)
+        return;
+
     auto *job = new PropfindJob(_account, davUrl(), _folderPath, PropfindJob::Depth::One, this);
     job->setProperties({QByteArrayLiteral("resourcetype"), QByteArrayLiteral("http://owncloud.org/ns:size")});
     connect(job, &PropfindJob::directoryListingSubfolders, this, &SelectiveSyncWidget::slotUpdateDirectories);
@@ -290,6 +294,9 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
 
 void SelectiveSyncWidget::slotItemExpanded(QTreeWidgetItem *item)
 {
+    if (!_account)
+        return;
+
     QString dir = item->data(0, Qt::UserRole).toString();
     if (dir.isEmpty()) {
         return;

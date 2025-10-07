@@ -12,11 +12,9 @@
  * for more details.
  */
 
-#ifndef NOTIFICATIONCONFIRMJOB_H
-#define NOTIFICATIONCONFIRMJOB_H
+#pragma once
 
 #include "abstractnetworkjob.h"
-#include "accountfwd.h"
 #include "networkjobs/jsonjob.h"
 
 #include <QVector>
@@ -26,6 +24,7 @@
 
 namespace OCC {
 
+class Account;
 class NotificationWidget;
 
 /**
@@ -41,7 +40,7 @@ class NotificationConfirmJob : public JsonApiJob
     Q_OBJECT
 
 public:
-    explicit NotificationConfirmJob(AccountPtr account, const QUrl &root, const QByteArray &verb, QObject *parent = nullptr);
+    explicit NotificationConfirmJob(Account *account, const QUrl &root, const QByteArray &verb, QObject *parent = nullptr);
 
     /**
      * @brief Start the OCS request
@@ -67,4 +66,3 @@ private:
 };
 }
 
-#endif // NotificationConfirmJob_H

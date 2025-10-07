@@ -51,7 +51,7 @@ QVariant ActivityListModel::data(const QModelIndex &index, int role) const
 
     const auto &a = _finalList.at(index.row());
     AccountState *accountState = AccountManager::instance()->accountState(a.accountUuid());
-    if (!accountState) {
+    if (!accountState || !accountState->account()) {
         return {};
     }
     const auto column = static_cast<ActivityRole>(index.column());
@@ -181,48 +181,48 @@ bool ActivityListModel::canFetchMore(const QModelIndex &) const
     return false;
 }
 
-void ActivityListModel::startFetchJob(AccountState *ast)
+void ActivityListModel::startFetchJob(AccountState *accountState)
 {
-    if (!ast || !ast->isConnected()) {
+    if (!accountState || !accountState->isConnected() || !accountState->account()) {
         return;
     }
-    auto *job = new JsonApiJob(ast->account(), QStringLiteral("ocs/v2.php/cloud/activity"), { { QStringLiteral("page"), QStringLiteral("0") }, { QStringLiteral("pagesize"), QStringLiteral("100") } }, {}, this);
+    auto *job = new JsonApiJob(accountState->account(), QStringLiteral("ocs/v2.php/cloud/activity"),
+        {{QStringLiteral("page"), QStringLiteral("0")}, {QStringLiteral("pagesize"), QStringLiteral("100")}}, {}, this);
 
-    QObject::connect(
-        job, &JsonApiJob::finishedSignal, this, [job, ast, this] {
-            _currentlyFetching.remove(ast);
-            const auto activities = job->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toArray();
+    QObject::connect(job, &JsonApiJob::finishedSignal, this, [job, accountState, this] {
+        _currentlyFetching.remove(accountState);
+        const auto activities = job->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toArray();
 
-            /*
-             * in case the activity app is disabled or not installed, the server returns an empty 500 response instead of a response
-             * with the expected status code 999
-             * we are not entirely sure when this has changed, but it is likely that there is a regression in the activity addon
-             * to support this new behavior, we have to fake the expected status code
-             */
-            if (job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-                Q_EMIT activityJobStatusCode(ast, 999);
-                return;
-            }
+        /*
+         * in case the activity app is disabled or not installed, the server returns an empty 500 response instead of a response
+         * with the expected status code 999
+         * we are not entirely sure when this has changed, but it is likely that there is a regression in the activity addon
+         * to support this new behavior, we have to fake the expected status code
+         */
+        if (job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+            Q_EMIT activityJobStatusCode(accountState, 999);
+            return;
+        }
 
-            ActivityList list;
-            list.reserve(activities.size());
-            for (const auto &activ : activities) {
-                const auto json = activ.toObject();
-                list.append(Activity{Activity::ActivityType, json.value(QStringLiteral("id")).toString(), ast->account(),
-                    json.value(QStringLiteral("subject")).toString(), json.value(QStringLiteral("message")).toString(),
-                    json.value(QStringLiteral("file")).toString(), QUrl(json.value(QStringLiteral("link")).toString()),
-                    QDateTime::fromString(json.value(QStringLiteral("date")).toString(), Qt::ISODate)});
-            }
+        ActivityList list;
+        list.reserve(activities.size());
+        for (const auto &activ : activities) {
+            const auto json = activ.toObject();
+            list.append(Activity{Activity::ActivityType, json.value(QStringLiteral("id")).toString(), accountState->account()->displayNameWithHost(),
+                accountState->account()->uuid(), json.value(QStringLiteral("subject")).toString(), json.value(QStringLiteral("message")).toString(),
+                json.value(QStringLiteral("file")).toString(), QUrl(json.value(QStringLiteral("link")).toString()),
+                QDateTime::fromString(json.value(QStringLiteral("date")).toString(), Qt::ISODate)});
+        }
 
-            _activityLists[ast] = std::move(list);
+        _activityLists[accountState] = std::move(list);
 
-            Q_EMIT activityJobStatusCode(ast, job->ocsStatus());
+        Q_EMIT activityJobStatusCode(accountState, job->ocsStatus());
 
-            combineActivityLists();
-        });
+        combineActivityLists();
+    });
 
-    _currentlyFetching.insert(ast, job);
-    qCInfo(lcActivity) << "Start fetching activities for " << ast->account()->displayNameWithHost();
+    _currentlyFetching.insert(accountState, job);
+    qCInfo(lcActivity) << "Start fetching activities for " << accountState->account()->displayNameWithHost();
     job->start();
 }
 

@@ -19,7 +19,6 @@
 #include "common/asserts.h"
 #include "networkjobs.h"
 #include "account.h"
-#include "owncloudpropagator.h"
 #include "httplogger.h"
 
 #include "creds/abstractcredentials.h"
@@ -47,7 +46,7 @@ seconds AbstractNetworkJob::httpTimeout = [] {
     return seconds(def);
 }();
 
-AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, const QString &path, QObject *parent)
+AbstractNetworkJob::AbstractNetworkJob(Account *account, const QUrl &baseUrl, const QString &path, QObject *parent)
     : QObject(parent)
     , _account(account)
     , _baseUrl(baseUrl)
@@ -58,25 +57,15 @@ AbstractNetworkJob::AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, 
     Q_ASSERT(baseUrl.isValid());
 }
 
-QUrl AbstractNetworkJob::baseUrl() const
-{
-    return _baseUrl;
-}
-
 QUrl AbstractNetworkJob::url() const
 {
-    return Utility::concatUrlPath(baseUrl(), path(), query());
+    return Utility::concatUrlPath(_baseUrl, _path, _query);
 }
 
 
 void AbstractNetworkJob::setQuery(const QUrlQuery &query)
 {
     _query = query;
-}
-
-QUrlQuery AbstractNetworkJob::query() const
-{
-    return _query;
 }
 
 void AbstractNetworkJob::setTimeout(const std::chrono::seconds sec)
@@ -100,11 +89,6 @@ QNetworkReply *AbstractNetworkJob::reply() const
     return _reply;
 }
 
-bool AbstractNetworkJob::isAuthenticationJob() const
-{
-    return _isAuthenticationJob;
-}
-
 void AbstractNetworkJob::setAuthenticationJob(bool b)
 {
     _isAuthenticationJob = b;
@@ -112,7 +96,7 @@ void AbstractNetworkJob::setAuthenticationJob(bool b)
 
 bool AbstractNetworkJob::needsRetry() const
 {
-    if (isAuthenticationJob()) {
+    if (_isAuthenticationJob) {
         qCDebug(lcNetworkJob) << "Not Retry auth job" << this << url();
         return false;
     }
@@ -144,6 +128,11 @@ bool AbstractNetworkJob::needsRetry() const
 void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     const QNetworkRequest &req, QIODevice *requestBody)
 {
+    if (!_account) {
+        slotFinished();
+        return;
+    }
+
     _verb = verb;
 
     _request = req;
@@ -166,7 +155,7 @@ void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     _request.setPriority(_priority);
     _request.setTransferTimeout(duration_cast<milliseconds>(_timeout).count());
 
-    if (!isAuthenticationJob() && _account->jobQueue()->enqueue(this)) {
+    if (!_isAuthenticationJob && _account->jobQueue()->enqueue(this)) {
         return;
     }
 
@@ -196,8 +185,15 @@ void AbstractNetworkJob::adoptRequest(QPointer<QNetworkReply> reply)
 }
 
 void AbstractNetworkJob::slotFinished()
-{
+{        
     _finished = true;
+
+    if (!_reply || !_account) {
+        qCWarning(lcNetworkJob) << "Network job finished but reply and/or account is nullptr - aborting" << this;
+        Q_EMIT networkError(nullptr);
+        deleteLater();
+        return;
+    }
 
     if (!_account->credentials()->stillValid(_reply) && !ignoreCredentialFailure()) {
         _account->invalidCredentialsEncountered();
@@ -218,9 +214,11 @@ void AbstractNetworkJob::slotFinished()
     // get the Date timestamp from reply
     _responseTimestamp = _reply->rawHeader("Date");
 
-    if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull() && !(isAuthenticationJob() || reply()->request().hasRawHeader(QByteArrayLiteral("OC-Connection-Validator")))) {
+    if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull()
+        && !(_isAuthenticationJob || reply()->request().hasRawHeader(QByteArrayLiteral("OC-Connection-Validator")))) {
         Q_EMIT _account->unknownConnectionState();
-        qCWarning(lcNetworkJob) << this << "Unsupported redirect on" << _reply->url().toString() << "to" << reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+        qCWarning(lcNetworkJob) << this << "Unsupported redirect on" << _reply->url().toString() << "to"
+                                << reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
         Q_EMIT networkError(_reply);
         if (_account->jobQueue()->retry(this)) {
             qCWarning(lcNetworkJob) << "Retry Nr:" << _retryCount << _reply->url();
@@ -423,8 +421,7 @@ QDebug operator<<(QDebug debug, const OCC::AbstractNetworkJob *job)
 {
     QDebugStateSaver saver(debug);
     debug.setAutoInsertSpaces(false);
-    debug << job->metaObject()->className() << "(" << job->account().data() << ", " << job->url().toDisplayString()
-          << ", " << job->_verb;
+    debug << job->metaObject()->className() << "(" << job->url().toDisplayString() << ", " << job->_verb;
     if (auto reply = job->_reply) {
         debug << ", Original-Request-ID: " << reply->request().rawHeader("Original-Request-ID")
               << ", X-Request-ID: " << reply->request().rawHeader("X-Request-ID");
@@ -438,7 +435,7 @@ QDebug operator<<(QDebug debug, const OCC::AbstractNetworkJob *job)
         }
     }
     if (job->_timedout) {
-        debug << ", timedout";
+        debug << ", timed out";
     }
     debug << ")";
     return debug.maybeSpace();

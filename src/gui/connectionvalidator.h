@@ -17,11 +17,11 @@
 #include "gui/owncloudguilib.h"
 
 #include "common/chronoelapsedtimer.h"
-#include "gui/guiutility.h"
-#include "libsync/accountfwd.h"
+#include "libsync/account.h"
 
 #include <QNetworkReply>
 #include <QObject>
+#include <QPointer>
 #include <QStringList>
 #include <QVariantMap>
 
@@ -84,7 +84,7 @@ class OWNCLOUDGUI_EXPORT ConnectionValidator : public QObject
 {
     Q_OBJECT
 public:
-    explicit ConnectionValidator(AccountPtr account, QObject *parent);
+    explicit ConnectionValidator(Account *account, QObject *parent);
     ~ConnectionValidator() override;
 
     enum class ValidationMode {
@@ -151,8 +151,9 @@ private:
     void statusFound(const QUrl &url, const QJsonObject &info);
     void checkServerJobFinished();
 
+    QPointer<Account> _account;
+
     QStringList _errors;
-    AccountPtr _account;
     bool _clearCookies = false;
 
     Utility::ChronoElapsedTimer _duration;

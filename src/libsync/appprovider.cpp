@@ -73,8 +73,11 @@ const AppProvider::Provider &AppProvider::app(const QString &localPath) const
     return app(mimeType);
 }
 
-bool AppProvider::open(const AccountPtr &account, const QString &localPath, const QByteArray &fileId) const
+bool AppProvider::open(Account *account, const QString &localPath, const QByteArray &fileId) const
 {
+    if (!account)
+        return false;
+
     const auto &a = app(localPath);
     if (a.isValid()) {
         SimpleNetworkJob::UrlQuery query { { QStringLiteral("file_id"), QString::fromUtf8(fileId) } };

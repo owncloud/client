@@ -34,7 +34,7 @@ auto fetchSettingsTimeout()
 }
 
 // TODO: move to libsync?
-FetchServerSettingsJob::FetchServerSettingsJob(const OCC::AccountPtr &account, QObject *parent)
+FetchServerSettingsJob::FetchServerSettingsJob(OCC::Account *account, QObject *parent)
     : QObject(parent)
     , _account(account)
 {
@@ -43,6 +43,11 @@ FetchServerSettingsJob::FetchServerSettingsJob(const OCC::AccountPtr &account, Q
 
 void FetchServerSettingsJob::start()
 {
+    if (!_account) {
+        Q_EMIT finishedSignal(Result::Undefined);
+        return;
+    }
+
     // The main flow now needs the capabilities
     auto *job = new JsonApiJob(_account, QStringLiteral("ocs/v2.php/cloud/capabilities"), {}, {}, this);
     job->setAuthenticationJob(isAuthJob());
@@ -71,7 +76,7 @@ void FetchServerSettingsJob::start()
                 Q_EMIT finishedSignal(Result::UnsupportedServer);
                 return;
             }
-            auto *userJob = new JsonApiJob(_account, QStringLiteral("ocs/v2.php/cloud/user"), SimpleNetworkJob::UrlQuery{}, QNetworkRequest{}, this);
+            auto *userJob = new JsonApiJob(_account.get(), QStringLiteral("ocs/v2.php/cloud/user"), SimpleNetworkJob::UrlQuery{}, QNetworkRequest{}, this);
             userJob->setAuthenticationJob(isAuthJob());
             userJob->setTimeout(fetchSettingsTimeout());
             connect(userJob, &JsonApiJob::finishedSignal, this, [userJob, this] {
@@ -114,6 +119,9 @@ void FetchServerSettingsJob::start()
 
 void FetchServerSettingsJob::runAsyncUpdates()
 {
+    if (!_account)
+        return;
+
     // those jobs are:
     // - never auth jobs
     // - might get queued

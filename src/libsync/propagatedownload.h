@@ -38,7 +38,7 @@ class OWNCLOUDSYNC_EXPORT GETFileJob : public AbstractNetworkJob
 public:
     // DOES NOT take ownership of the device.
     // For directDownloadUrl:
-    explicit GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device, const QMap<QByteArray, QByteArray> &headers,
+    explicit GETFileJob(Account *account, const QUrl &url, const QString &path, QIODevice *device, const QMap<QByteArray, QByteArray> &headers,
         const QString &expectedEtagForResume, qint64 resumeStart, QObject *parent = nullptr);
 
     qint64 currentDownloadPosition();

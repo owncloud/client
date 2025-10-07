@@ -19,20 +19,23 @@
 using namespace OCC;
 using namespace Spaces;
 
-SpaceImageProvider::SpaceImageProvider(const AccountPtr &account)
+SpaceImageProvider::SpaceImageProvider(GraphApi::SpacesManager *spacesMgr)
     : QQuickImageProvider(QQuickImageProvider::Pixmap, QQuickImageProvider::ForceAsynchronousImageLoading)
-    , _account(account.data())
+    , _spacesManager(spacesMgr)
 {
 }
 
 QPixmap SpaceImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    if (!_spacesManager)
+        return {};
+
     QIcon icon;
     if (id == QLatin1String("placeholder")) {
         icon = Resources::getCoreIcon(QStringLiteral("space"));
     } else {
         const auto ids = id.split(QLatin1Char('/'));
-        const auto *space = _account->spacesManager()->space(ids.last());
+        const auto *space = _spacesManager->space(ids.last());
         if (space) {
             icon = space->image()->image();
         }

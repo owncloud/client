@@ -13,10 +13,10 @@
  */
 
 #pragma once
-#include "accountfwd.h"
-#include <QDialog>
-#include <QTreeWidget>
+
+#include <QPointer>
 #include <QUrl>
+#include <QWidget>
 
 #include "csync_exclude.h"
 
@@ -27,6 +27,7 @@ class QLabel;
 namespace OCC {
 
 class Folder;
+class Account;
 
 /**
  * @brief The SelectiveSyncWidget contains a folder tree with labels
@@ -36,7 +37,7 @@ class SelectiveSyncWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SelectiveSyncWidget(AccountPtr account, QWidget *parent = nullptr);
+    explicit SelectiveSyncWidget(Account *account, QWidget *parent);
 
     /// Returns a list of blacklisted paths, each including the trailing /
     QSet<QString> createBlackList(QTreeWidgetItem *root = nullptr) const;
@@ -62,7 +63,7 @@ private:
     QUrl davUrl() const;
 
 private:
-    AccountPtr _account;
+    QPointer<Account> _account;
 
     QString _folderPath;
     QString _rootName;

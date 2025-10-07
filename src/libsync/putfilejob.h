@@ -36,8 +36,8 @@ private:
     QElapsedTimer _requestTimer;
 
 public:
-    explicit PUTFileJob(AccountPtr account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device,
-        const HeaderMap &headers, QObject *parent = nullptr);
+    explicit PUTFileJob(
+        Account *account, const QUrl &url, const QString &path, std::unique_ptr<QIODevice> &&device, const HeaderMap &headers, QObject *parent = nullptr);
     ~PUTFileJob() override;
 
     void start() override;

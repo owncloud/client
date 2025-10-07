@@ -16,43 +16,33 @@
 #ifndef SERVERCONNECTION_H
 #define SERVERCONNECTION_H
 
-#include "common/utility.h"
+#include "owncloudlib.h"
 
 #include "appprovider.h"
 #include "capabilities.h"
 #include "jobqueue.h"
 
+#include <QPointer>
 #include <QByteArray>
 #include <QGradient>
 #include <QIcon>
-#include <QNetworkAccessManager>
-#include <QNetworkCookie>
 #include <QNetworkDiskCache>
 #include <QNetworkRequest>
-#include <QPixmap>
-#include <QSharedPointer>
+
 #include <QSslCertificate>
-#include <QSslCipher>
-#include <QSslConfiguration>
-#include <QSslError>
-#include <QSslSocket>
 #include <QUrl>
 #include <QUuid>
 #include <QtQmlIntegration/QtQmlIntegration>
 
 class QSettings;
 class QNetworkReply;
-class QUrl;
 class AccessManager;
 
 namespace OCC {
 
 class CredentialManager;
 class AbstractCredentials;
-class Account;
-typedef QSharedPointer<Account> AccountPtr;
 class AccessManager;
-class SimpleNetworkJob;
 
 namespace GraphApi {
     class SpacesManager;
@@ -89,12 +79,11 @@ public:
     static void setCommonCacheDirectory(const QString &directory);
     static QString commonCacheDirectory();
 
-    static AccountPtr create(const QUuid &uuid, const QString &user, const QUrl &url);
+    // static AccountPtr create(const QUuid &uuid, const QString &user, const QUrl &url);
+    Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent = nullptr);
     ~Account() override;
 
     void cleanupForRemoval();
-
-    AccountPtr sharedFromThis();
 
     /**
      *  The unique identifier for the account.
@@ -210,7 +199,7 @@ public:
 
     void clearCookieJar();
 
-    AccessManager *accessManager();
+    AccessManager *accessManager() const;
 
     JobQueue *jobQueue();
 
@@ -254,10 +243,6 @@ private:
     // directory all newly created accounts store their various caches in
     static QString _customCommonCacheDirectory;
 
-    Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent = nullptr);
-    void setSharedThis(AccountPtr sharedThis);
-
-    QWeakPointer<Account> _sharedThis;
     QString _groupIndex;
     QUuid _uuid;
     QString _davUser;
@@ -286,7 +271,7 @@ private:
 };
 }
 
-Q_DECLARE_METATYPE(OCC::AccountPtr)
+Q_DECLARE_METATYPE(OCC::Account)
 
 
 QDebug OWNCLOUDSYNC_EXPORT operator<<(QDebug debug, const OCC::Account *job);
