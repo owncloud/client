@@ -68,13 +68,10 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     // as usual we do too many things in the ctr and we need to eval all the code paths to make sure they handle
     // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
-    Q_ASSERT(_accountState);
+    if (!_accountState || !_accountState->account())
+        return;
 
-
-    _model = new FolderStatusModel(this);
-
-    // see comments in this impl as it needs work
-    _model->setAccountState(_accountState);
+    _model = new FolderStatusModel(_accountState, this);
 
     auto weightedModel = new QSortFilterProxyModel(this);
     weightedModel->setSourceModel(_model);
@@ -83,19 +80,19 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     _sortModel = weightedModel;
 
-    ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()));
+    ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
     connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
 
     ui->connectionStatusLabel->clear();
 
-    connect(_accountState.data(), &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
-    slotAccountStateChanged();
+    connect(_accountState, &AccountState::stateChanged, this, &AccountSettings::slotAccountStateChanged);
+    slotAccountStateChanged(_accountState->state());
 
     buildManageAccountMenu();
 
-    connect(_accountState.get(), &AccountState::isSettingUpChanged, this, &AccountSettings::accountSettingUpChanged);
+    connect(_accountState, &AccountState::isSettingUpChanged, this, &AccountSettings::accountSettingUpChanged);
 
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this,
         [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->quickWidget); });
@@ -146,7 +143,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
     // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
     // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
     // to id
-    Q_ASSERT(_accountState);
+    Q_ASSERT(_accountState && _accountState->account());
 
     // qpointer for async calls
     const auto isDeployed = folder->isDeployed();
@@ -257,7 +254,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
 
 void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
@@ -279,11 +276,11 @@ void AccountSettings::showSelectiveSyncDialog(Folder *folder)
 
 void AccountSettings::slotAddFolder()
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
-    FolderWizard *folderWizard = new FolderWizard(_accountState, this);
+    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), this);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
     connect(folderWizard, &QDialog::accepted, this, &AccountSettings::slotFolderWizardAccepted);
@@ -522,42 +519,17 @@ void AccountSettings::buildManageAccountMenu()
     menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountSettings::slotOpenAccountInBrowser);
     menu->addAction(tr("Remove"), this, &AccountSettings::slotDeleteAccount);
 
-    if (Utility::isMac()) {
-        // VoiceOver will read the button as a "menu button", clearly indicating that this is not a normal
-        // button, and that a menu will appear. Using the Windows/Linux work-around results in the button
-        // being read as "button" (no indication of the menu), and the setActiveAction doesn't help either.
-        //
-        // Bug in Qt: the menu somehow is not added to the a11y chain, VoiceOver doesn't "see" it, even
-        // when navigating around inside it with the arrow keys.
-        ui->manageAccountButton->setMenu(menu);
-        ui->manageAccountButton->setPopupMode(QToolButton::InstantPopup);
-    } else {
-        // Windows: when using a button-with-a-menu, Narrator will not notice the menu. Manually showing
-        // and placing it, and then setting the first item as active, will have Narrator read this as
-        // "Account options menu, window, Log in, menu item".
-        //
-        // Linux with Gnome: place the menu BELOW the button. If this is omitted, the click event that
-        // opened the menu will be forwarded to the menu, resulting in selecting the first action (!!!),
-        // and immediately close the menu. The work-around is to manually call "popup", which seems
-        // to work in ~60% of the cases. If it doesn't work, select e.g settings, switch back, and try
-        // again.
-        connect(ui->manageAccountButton, &QPushButton::clicked, this, [menu, logInOutAction, button = ui->manageAccountButton] {
-            auto pos = button->mapToGlobal(QPoint(0, button->height()));
-            menu->popup(pos);
-            menu->setActiveAction(logInOutAction);
-        });
-    }
+    ui->manageAccountButton->setMenu(menu);
 }
 
 // Refactoring todo: the signal sends the new account state, refactor this to use that param
-void AccountSettings::slotAccountStateChanged()
+void AccountSettings::slotAccountStateChanged(AccountState::State state)
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
-    const AccountState::State state = _accountState->state();
-    const AccountPtr account = _accountState->account();
+    Account *account = _accountState->account();
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 
     FolderMan *folderMan = FolderMan::instance();
@@ -720,21 +692,21 @@ void AccountSettings::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolic
     Q_ASSERT(widget->testAttribute(Qt::WA_DeleteOnClose));
 
     // Refactoring todo: eval this more completely
-    Q_ASSERT(_accountState);
+    Q_ASSERT(_accountState && _accountState->account());
 
     connect(widget, &QWidget::destroyed, this, [this, outerWidget] {
         outerWidget->deleteLater();
         if (!_goingDown) {
-            ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account().get());
+            ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
         }
     });
     widget->setVisible(true);
-    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
+    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
 void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 {
-    if (!_accountState) {
+    if (!_accountState || !_accountState->account()) {
         return;
     }
 
@@ -743,9 +715,9 @@ void AccountSettings::addModalAccountWidget(AccountModalWidget *widget)
 
     connect(widget, &AccountModalWidget::finished, this, [widget, this] {
         widget->deleteLater();
-        ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account().get());
+        ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
     });
-    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account().get());
+    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
 uint AccountSettings::unsyncedSpaces() const

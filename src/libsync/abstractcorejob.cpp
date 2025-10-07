@@ -14,6 +14,7 @@
  */
 
 #include "abstractcorejob.h"
+#include "common/asserts.h"
 
 using namespace OCC;
 
@@ -24,11 +25,6 @@ AbstractCoreJobFactory::AbstractCoreJobFactory(QNetworkAccessManager *nam)
 
 AbstractCoreJobFactory::~AbstractCoreJobFactory()
 {
-}
-
-QNetworkAccessManager *AbstractCoreJobFactory::nam() const
-{
-    return _nam;
 }
 
 void AbstractCoreJobFactory::setJobResult(CoreJob *job, const QVariant &result)

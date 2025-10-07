@@ -15,12 +15,14 @@
 #ifndef OWNCLOUDPROPAGATOR_H
 #define OWNCLOUDPROPAGATOR_H
 
+#include <QObject>
+#include <QPointer>
+
 #include <QHash>
 #include <QMap>
-#include <QObject>
 #include <QTimer>
 
-#include "accountfwd.h"
+#include "account.h"
 #include "common/syncjournaldb.h"
 #include "csync.h"
 #include "syncfileitem.h"
@@ -136,6 +138,7 @@ Q_SIGNALS:
      * Emitted when the abort is fully finished
      */
     void abortFinished(SyncFileItem::Status status = SyncFileItem::NormalError);
+
 protected:
     OwncloudPropagator *propagator() const;
 
@@ -382,7 +385,7 @@ public:
 
 public:
     OwncloudPropagator(
-        AccountPtr account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder, SyncJournalDb *progressDb)
+        Account *account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder, SyncJournalDb *progressDb)
         : _journal(progressDb)
         , _finishedEmitted(false)
         , _anotherSyncNeeded(false)
@@ -394,8 +397,6 @@ public:
     {
         qRegisterMetaType<PropagatorJob::AbortType>("PropagatorJob::AbortType");
     }
-
-    ~OwncloudPropagator() override;
 
     void start(SyncFileItemSet &&_syncedItems);
 
@@ -472,7 +473,7 @@ public:
 
     void abort();
 
-    AccountPtr account() const;
+    Account *account() const;
 
     QUrl webDavUrl() const
     {
@@ -556,7 +557,7 @@ Q_SIGNALS:
     void insufficientRemoteStorage();
 
 private:
-    AccountPtr _account;
+    QPointer<Account> _account;
     QScopedPointer<PropagateRootDirectory> _rootJob;
     SyncOptions _syncOptions;
     bool _jobScheduled = false;

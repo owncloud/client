@@ -120,17 +120,6 @@ public:
     bool proxyNeedsAuth() const;
     QString proxyUser() const;
 
-    /** 0: no limit, 1: manual, >0: automatic */
-    int useUploadLimit() const;
-    int useDownloadLimit() const;
-    void setUseUploadLimit(int);
-    void setUseDownloadLimit(int);
-    /** in kbyte/s */
-    int uploadLimit() const;
-    int downloadLimit() const;
-    void setUploadLimit(int kbytes);
-    void setDownloadLimit(int kbytes);
-
     bool pauseSyncWhenMetered() const;
     void setPauseSyncWhenMetered(bool isChecked);
 

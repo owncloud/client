@@ -26,7 +26,7 @@ class DeleteJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
-    explicit DeleteJob(AccountPtr account, const QUrl &url, const QString &path, QObject *parent = nullptr);
+    explicit DeleteJob(Account *account, const QUrl &url, const QString &path, QObject *parent = nullptr);
 
     void start() override;
     void finished() override;

@@ -14,10 +14,11 @@
 
 #pragma once
 
-#include <QObject>
+#include "common/syncjournaldb.h"
 #include "discoveryphase.h"
 #include "syncfileitem.h"
-#include "common/syncjournaldb.h"
+#include <QObject>
+#include <deque>
 
 class ExcludedFiles;
 
@@ -49,6 +50,7 @@ class ProcessDirectoryJob : public QObject
     Q_OBJECT
 
     struct PathTuple;
+
 public:
     enum QueryMode {
         NormalQuery,

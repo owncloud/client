@@ -134,9 +134,6 @@ private:
     /// Which virtual files setting the folder uses
     Vfs::Mode _virtualFilesMode = Vfs::Off;
 
-    /// Whether the vfs mode shall silently be updated if possible
-    bool _upgradeVfsMode = false;
-
     // oc10 and as cache for ocis
     QUrl _webDavUrl;
 
@@ -279,8 +276,6 @@ public:
     virtual void wipeForRemoval();
 
     void setSyncState(SyncResult::Status state);
-
-    void setDirtyNetworkLimits();
 
     void reloadSyncOptions();
 

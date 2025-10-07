@@ -249,7 +249,8 @@ SyncOptions Folder::loadSyncOptions()
     ConfigFile cfgFile;
 
     opt._moveFilesToTrash = cfgFile.moveToTrash();
-    opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
+    // got a nullptr hit here - this is so shady but best I can do for now
+    opt._parallelNetworkJobs = (_accountState && _accountState->account() && _accountState->account()->isHttp2Supported()) ? 20 : 6;
 
     opt.fillFromEnvironmentVariables();
     return opt;
@@ -882,12 +883,6 @@ void Folder::startSync()
             this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
         return;
     }
-    // Refactoring todo: why is this called every time a sync starts? the data seems to come from hard vals or the config which means
-    // the config is queried on every sync - not great.
-    // if it does it should just be updated once, after notification that the user changed it.
-    // This is part of what Erik wants to ditch - having user settable bandwidth limits is fairly nuts but until it's
-    // removed completely this has to still be handled.
-    setDirtyNetworkLimits();
 
     // get the latest touched files
     // this will enqueue this folder again, it doesn't matter
@@ -915,34 +910,6 @@ void Folder::startSync()
     QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
 
     Q_EMIT syncStarted();
-}
-
-void Folder::setDirtyNetworkLimits()
-{
-    Q_ASSERT(isReady());
-    if (!isReady()) {
-        qCWarning(lcFolder) << "Folder is not ready";
-        return;
-    }
-
-    ConfigFile cfg;
-    int downloadLimit = -75; // 75%
-    int useDownLimit = cfg.useDownloadLimit();
-    if (useDownLimit >= 1) {
-        downloadLimit = cfg.downloadLimit() * 1000;
-    } else if (useDownLimit == 0) {
-        downloadLimit = 0;
-    }
-
-    int uploadLimit = -75; // 75%
-    int useUpLimit = cfg.useUploadLimit();
-    if (useUpLimit >= 1) {
-        uploadLimit = cfg.uploadLimit() * 1000;
-    } else if (useUpLimit == 0) {
-        uploadLimit = 0;
-    }
-
-    _engine->setNetworkLimits(uploadLimit, downloadLimit);
 }
 
 void Folder::reloadSyncOptions()

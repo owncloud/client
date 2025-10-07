@@ -24,13 +24,10 @@
 #include "httplogger.h"
 #include "networkjobs.h"
 #include "owncloudpropagator_p.h"
-#include "propagateuploadfile.h"
-#include "propagatorjobs.h"
 #include "syncengine.h"
 
 #include <QFileInfo>
 
-#include <cmath>
 #include <memory>
 
 namespace {
@@ -145,7 +142,7 @@ void PropagateUploadFileTUS::startNextChunk()
     }();
 
     QNetworkRequest req = prepareRequest(chunkSize);
-    auto device = prepareDevice(chunkSize);
+    UploadDevice *device = prepareDevice(chunkSize);
     if (!device) {
         return;
     }
@@ -166,7 +163,7 @@ void PropagateUploadFileTUS::startNextChunk()
 
     addChildJob(job);
     connect(job, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileTUS::slotChunkFinished);
-    job->addNewReplyHook([device, this](QNetworkReply *reply) {
+    job->addNewReplyHook([this](QNetworkReply *reply) {
         connect(reply, &QNetworkReply::uploadProgress, this, [this](qint64 bytesSent, qint64) {
             propagator()->reportProgress(*_item, _currentOffset + bytesSent);
         });
@@ -258,7 +255,8 @@ void PropagateUploadFileTUS::slotChunkFinished()
     if (!_finished) {
         // Either the ETag or the remote Permissions were not in the headers of the reply.
         // Start a PROPFIND to fetch these data from the server.
-        auto check = new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
+        auto check =
+            new PropfindJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), PropfindJob::Depth::Zero, this);
         addChildJob(check);
         check->setProperties({ "http://owncloud.org/ns:fileid", "http://owncloud.org/ns:permissions", "getetag" });
         connect(check, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &map) {

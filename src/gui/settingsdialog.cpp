@@ -73,6 +73,8 @@ public:
     {
         const auto qmlIcon = OCC::Resources::QMLResources::parseIcon(id);
         const auto accountState = OCC::AccountManager::instance()->accountState(QUuid::fromString(qmlIcon.iconName));
+        if (!accountState || !accountState->account())
+            return {};
         return OCC::Resources::pixmap(requestedSize, accountState->account()->avatar(), qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
     }
 };
@@ -143,7 +145,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
         onAccountAdded(accountState);
     }
     if (!_widgetForAccount.isEmpty()) {
-        setCurrentAccount(accounts.first()->account().get());
+        setCurrentAccount(accounts.first()->account());
     }
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &SettingsDialog::onAccountAdded);
@@ -158,20 +160,20 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::onAccountAdded(AccountState *state)
 {
-    if (!state)
+    if (!state || !state->account())
         return;
     auto accountSettings = new AccountSettings(state, this);
     _ui->stack->addWidget(accountSettings);
-    _widgetForAccount.insert(state->account().data(), accountSettings);
-    setCurrentAccount(state->account().get());
+    _widgetForAccount.insert(state->account(), accountSettings);
+    setCurrentAccount(state->account());
 }
 
 void SettingsDialog::onAccountRemoved(AccountState *state)
 {
-    if (!state)
+    if (!state || !state->account())
         return;
     // todo: #37. using the account after we know it's been removed is not ok.
-    Account *acc = state->account().data();
+    Account *acc = state->account();
     if (AccountSettings *asw = _widgetForAccount.value(acc)) {
         _widgetForAccount.remove(acc);
         _ui->stack->removeWidget(asw);
@@ -194,6 +196,9 @@ void SettingsDialog::addModalWidget(QWidget *w)
 
 void SettingsDialog::requestModality(Account *account)
 {
+    if (!account)
+        return;
+
     _ui->quickWidget->setEnabled(false);
     if (_modalStack.isEmpty()) {
         setCurrentAccount(account);
@@ -204,7 +209,7 @@ void SettingsDialog::requestModality(Account *account)
 
 void SettingsDialog::ceaseModality(Account *account)
 {
-    if (_modalStack.contains(account)) {
+    if (account && _modalStack.contains(account)) {
         _modalStack.removeOne(account);
         if (!_modalStack.isEmpty()) {
             setCurrentAccount(_modalStack.first());
@@ -264,7 +269,7 @@ SettingsDialog::SettingsPage SettingsDialog::currentPage() const
 
 void SettingsDialog::setCurrentAccount(Account *account)
 {
-    if (account == _currentAccount)
+    if (!account || account == _currentAccount)
         return;
 
     _currentAccount = account;
@@ -285,9 +290,11 @@ void SettingsDialog::createNewAccount()
     ocApp()->gui()->runAccountWizard();
 }
 
-void SettingsDialog::runFolderWizard(AccountPtr account)
+void SettingsDialog::runFolderWizard(Account *account)
 {
-    setCurrentAccount(account.get());
+    if (!account)
+        return;
+    setCurrentAccount(account);
     accountSettings(_currentAccount)->slotAddFolder();
 }
 

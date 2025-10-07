@@ -11,10 +11,6 @@ set(client_UI_SRCS
     localactivitywidget.ui
     syncerrorwidget.ui
     settingsdialog.ui
-    sharedialog.ui
-    sharelinkwidget.ui
-    shareusergroupwidget.ui
-    shareuserline.ui
     tlserrordialog.ui
     logbrowser.ui
 )
@@ -42,7 +38,6 @@ set(client_SRCS
     logbrowser.cpp
     networkinformation.cpp
     networksettings.cpp
-    ocssharejob.cpp
     openfilemanager.cpp
     owncloudgui.cpp
     localactivitywidget.cpp
@@ -51,11 +46,6 @@ set(client_SRCS
     activitysettings.cpp
     selectivesyncwidget.cpp
     settingsdialog.cpp
-    sharedialog.cpp
-    sharelinkwidget.cpp
-    sharemanager.cpp
-    shareusergroupwidget.cpp
-    sharee.cpp
     tlserrordialog.cpp
     syncrunfilelog.cpp
     accountstate.cpp

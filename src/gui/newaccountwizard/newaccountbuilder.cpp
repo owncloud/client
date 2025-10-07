@@ -12,10 +12,10 @@
  * for more details.
  */
 #include "newaccountbuilder.h"
-#include "account.h"
+
 #include "accountmanager.h"
 #include "accountsettings.h"
-#include "accountstate.h"
+#include "creds/abstractcredentials.h"
 
 
 namespace OCC {
@@ -29,6 +29,7 @@ NewAccountBuilder::NewAccountBuilder(const NewAccountModel &model, QObject *pare
 
 void NewAccountBuilder::buildAccount()
 {
+    Q_ASSERT(_account);
     // the account manager triggers the first checkConnection in the state when it's added - there should be no need to call it again explicitly
     // either in the application or the folderman, as was the case previously
     _accountState = AccountManager::instance()->addAccount(_account);
@@ -57,7 +58,9 @@ void NewAccountBuilder::onAccountStateChanged(AccountState::State state)
 
 void NewAccountBuilder::completeAccountSetup()
 {
-    AccountManager::instance()->saveAccount(_account.get());
+    Q_ASSERT(_account);
+
+    AccountManager::instance()->saveAccount(_account);
 
     // the creds should always be ready when creating new account as we don't get here unless the auth and all other checks succeeded
     // the check is perfunctory.

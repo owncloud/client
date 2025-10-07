@@ -15,7 +15,6 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
-#include "account.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
@@ -85,7 +84,7 @@ OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManage
     , _networkAccessManager(networkAccessManager)
     , _clientId(Theme::instance()->oauthClientId())
     , _clientSecret(Theme::instance()->oauthClientSecret())
-    , _redirectUrl(Theme::instance()->oauthLocalhost())
+    , _redirectUrl(QString("http://localhost"))
     , _supportedPromptValues(defaultOauthPromptValue())
 {
 }
@@ -476,7 +475,10 @@ void OAuth::openBrowser()
     }
 }
 
-AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)
+// todo: I was contemplating how we can make sure the passed account isn't null before we use it
+// to seed the OAuth ctr, and really, I'm not sure this should be a subclass of oauth in the first place. Instead it could simply use an
+// oauth instance to complete the tasks it can't do itself -> this could possibly be a "has a" not an "is a" impl
+AccountBasedOAuth::AccountBasedOAuth(Account *account, QObject *parent)
     : OAuth(account->url(), account->davUser(), account->accessManager(), parent)
     , _account(account)
 {
@@ -489,9 +491,14 @@ void AccountBasedOAuth::startAuthentication()
 
 void AccountBasedOAuth::fetchWellKnown()
 {
+    if (!_account) {
+        qCWarning(lcOauth) << "Unable to fetch well known, account has been deleted";
+        return;
+    }
+
     qCDebug(lcOauth) << "starting CheckServerJob before fetching" << wellKnownPathC;
 
-    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account, true, this).startJob(_serverUrl, this);
+    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account, true).startJob(_serverUrl, this);
 
     connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
         if (checkServerJob->success()) {
@@ -515,7 +522,8 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
         return;
     }
 
-    // I don't see where this ever gets set to false
+    // I don't see where this ever gets set to false - seems to rely on a one shot run before creating a new instance where the value
+    // is initialized to false. hm.
     _isRefreshingToken = true;
 
 

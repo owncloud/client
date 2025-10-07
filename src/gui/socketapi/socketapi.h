@@ -16,10 +16,12 @@
 
 #include "gui/owncloudguilib.h"
 
-#include "syncfileitem.h"
 #include "common/syncfilestatus.h"
-#include "sharedialog.h" // for the ShareDialogStartPage
 #include "common/syncjournalfilerecord.h"
+#include "libsync/account.h"
+#include "syncfileitem.h"
+
+#include <QPointer>
 
 #if defined(Q_OS_MAC)
 #include "socketapisocket_mac.h"
@@ -34,6 +36,7 @@ class QLocalSocket;
 
 namespace OCC {
 
+class AccountState;
 class SyncFileStatus;
 class Folder;
 class SocketListener;
@@ -57,15 +60,18 @@ public:
     void startShellIntegration();
 
 public Q_SLOTS:
-    void registerAccount(const AccountPtr &a);
-    void unregisterAccount(const AccountPtr &a);
+    // todo: registerAccount is called directly in accountState ctr but should be connected to AccountManager::accountAdded instead asap
+    void registerAccount(Account *a);
+    // unregisterAccount *is* connected to accountRemoved but hopefully we can get rid of the AccountState part and send the account itself
+    // asap.
+    void unregisterAccount(AccountState *state);
     void slotUpdateFolderView(Folder *f);
     void slotUnregisterPath(Folder *f);
     void slotRegisterPath(Folder *f);
     void broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus);
 
 Q_SIGNALS:
-    void shareCommandReceived(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
+    void shareCommandReceived(const QString &sharePath, const QString &localPath);
 
 private Q_SLOTS:
     void slotNewConnection();
@@ -101,9 +107,6 @@ private:
 
     void broadcastMessage(const QString &msg, bool doWait = false);
 
-    // opens share dialog, sends reply
-    void processShareRequest(const QString &localFile, SocketListener *listener, ShareDialogStartPage startPage);
-
     Q_INVOKABLE void command_RETRIEVE_FOLDER_STATUS(const QString &argument, SocketListener *listener);
     Q_INVOKABLE void command_RETRIEVE_FILE_STATUS(const QString &argument, SocketListener *listener);
 
@@ -113,8 +116,6 @@ private:
 
     // The context menu actions
     Q_INVOKABLE void command_SHARE(const QString &localFile, SocketListener *listener);
-    Q_INVOKABLE void command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener);
-    Q_INVOKABLE void command_COPY_PUBLIC_LINK(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_COPY_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_OPEN_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
@@ -125,8 +126,6 @@ private:
     Q_INVOKABLE void command_MOVE_ITEM(const QString &localFile, SocketListener *listener);
 
     Q_INVOKABLE void command_OPEN_APP_LINK(const QString &localFile, SocketListener *listener);
-    // External sync
-    Q_INVOKABLE void command_V2_LIST_ACCOUNTS(const QSharedPointer<SocketApiJobV2> &job) const;
 
     // Sends the id and the client icon as PNG image (base64 encoded) in Json key "png"
     // e.g. { "id" : "1", "arguments" : { "png" : "hswehs343dj8..." } } or an error message in key "error"
@@ -157,7 +156,9 @@ private:
 
     QString _socketPath;
     QSet<Folder *> _registeredFolders;
-    QSet<AccountPtr> _registeredAccounts;
+    // todo: we really should not keep any pointer to the account, as we only ever need the defaultSyncRoot, but this needs to go into a future
+    // refactoring to ensure full testing of that change. IMO we could just store the defaultSyncRoot alone, no uuid or account required at all
+    QHash<QUuid, QPointer<Account>> _registeredAccounts;
     QMap<SocketApiSocket *, QSharedPointer<SocketListener>> _listeners;
     SocketApiServer _localServer;
 };

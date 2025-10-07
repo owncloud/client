@@ -53,7 +53,7 @@ public:
      * @param model contains the data used to set up the new account (usually collected from the new account wizard)
      * @return the AccountPtr associated with the new account. for now.
      */
-    AccountPtr createAccount(const NewAccountModel &model);
+    Account *createAccount(const NewAccountModel &model);
 
     /**
      * Creates account objects from a given settings file.
@@ -68,7 +68,7 @@ public:
      * Typically called from the wizard
      */
     // todo: #28 - this should not be public and should not be called directly by any third party
-    AccountState *addAccount(const AccountPtr &newAccount);
+    AccountState *addAccount(Account *newAccount);
 
     /**
      * remove all accounts
@@ -119,15 +119,16 @@ Q_SIGNALS:
 private:
     // saving and loading Account to settings
     void saveAccountHelper(Account *account, QSettings &settings, bool saveCredentials = true);
-    AccountPtr loadAccountHelper(QSettings &settings);
+    Account *loadAccountHelper(QSettings &settings);
 
     bool isAccountIndexAvailable(const QString &index) const;
     QString generateFreeAccountIndex() const;
 
     // Adds an account to the tracked list, emitting accountAdded()
-    AccountState *addAccountState(std::unique_ptr<AccountState> &&accountState);
+    AccountState *addAccountState(AccountState *accountState);
 
     AccountManager() {}
+
     QMap<QUuid, AccountState *> _accounts;
 };
 }

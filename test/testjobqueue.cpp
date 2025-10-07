@@ -20,7 +20,7 @@ class TestJob : public AbstractNetworkJob
     // AbstractNetworkJob interface
 public:
     // TODO: davurl
-    TestJob(AccountPtr account)
+    TestJob(Account *account)
         : AbstractNetworkJob(account, account->davUrl(), QStringLiteral("/A/a1"))
     {
     }

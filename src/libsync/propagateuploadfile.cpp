@@ -17,7 +17,6 @@
 #include "common/checksums.h"
 #include "common/syncjournaldb.h"
 #include "filesystem.h"
-#include "networkjobs.h"
 #include "owncloudpropagator_p.h"
 #include "propagatorjobs.h"
 #include "putfilejob.h"
@@ -28,8 +27,6 @@
 #include <QFileInfo>
 #include <QRandomGenerator>
 
-#include <cmath>
-#include <cstring>
 #include <memory>
 
 namespace OCC {
@@ -202,17 +199,14 @@ void PropagateUploadFile::slotUploadProgress(qint64 sent, qint64 total)
 
 void PropagateUploadFile::abort(PropagatorJob::AbortType abortType)
 {
-    abortNetworkJobs(
-        abortType,
-        [this, abortType](AbstractNetworkJob *job) {
-            if (PUTFileJob *putJob = qobject_cast<PUTFileJob *>(job)){
-                if (abortType == AbortType::Asynchronous
-                    && putJob->device()->atEnd()) {
-                    return false;
-                }
+    abortNetworkJobs(abortType, [abortType](AbstractNetworkJob *job) {
+        if (PUTFileJob *putJob = qobject_cast<PUTFileJob *>(job)) {
+            if (abortType == AbortType::Asynchronous && putJob->device()->atEnd()) {
+                return false;
             }
-            return true;
-        });
+        }
+        return true;
+    });
 }
 
 }

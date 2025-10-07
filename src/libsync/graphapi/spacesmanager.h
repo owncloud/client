@@ -16,18 +16,16 @@
 
 #include "owncloudlib.h"
 
-#include "libsync/accountfwd.h"
 #include "libsync/graphapi/space.h"
 
 #include <OAIDrive.h>
 
-#include <algorithm>
-
-#include <QFuture>
-
 class QTimer;
 
 namespace OCC {
+
+class Account;
+
 namespace GraphApi {
 
     class OWNCLOUDSYNC_EXPORT SpacesManager : public QObject
@@ -41,9 +39,9 @@ namespace GraphApi {
 
         QVector<Space *> spaces() const;
 
-        // deprecated: we need to migrate to id based spaces
-        [[deprecated("Use space(const QString &id)")]] Space *spaceByUrl(const QUrl &url) const;
-
+        // todo DC-150: remove this accessor and take responsibility for running job to retrieve/update space image as needed
+        // once that is complete we can get rid of the account memeber entirely (and even revert the parent arg to a simple QObject)
+        // by passing the value for hasManyPersonalSpaces to this via ctr
         Account *account() const;
 
         /**
@@ -59,7 +57,7 @@ namespace GraphApi {
     private:
         void refresh();
 
-        Account *_account;
+        QPointer<Account> _account;
         QTimer *_refreshTimer;
         QMap<QString, Space *> _spacesMap;
         bool _ready = false;
