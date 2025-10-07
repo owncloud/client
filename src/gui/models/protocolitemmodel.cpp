@@ -16,11 +16,7 @@
 #include "account.h"
 #include "accountstate.h"
 #include "models.h"
-#include "gui/folderman.h"
-
-#include "theme.h"
-
-#include <QIcon>
+#include "resources.h"
 
 using namespace OCC;
 
