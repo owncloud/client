@@ -155,12 +155,12 @@ private Q_SLOTS:
 
     void testFsCasePreserving()
     {
-        QVERIFY(isMac() || isWindows() ? fsCasePreserving() : ! fsCasePreserving());
+        QVERIFY(isMac() || isWindows() ? fsCasePreservingButCaseInsensitive() : !fsCasePreservingButCaseInsensitive());
         QScopedValueRollback<bool> scope(OCC::fsCasePreserving_override);
         OCC::fsCasePreserving_override = 1;
-        QVERIFY(fsCasePreserving());
+        QVERIFY(fsCasePreservingButCaseInsensitive());
         OCC::fsCasePreserving_override = 0;
-        QVERIFY(! fsCasePreserving());
+        QVERIFY(!fsCasePreservingButCaseInsensitive());
     }
 
     void testFileNamesEqual()
@@ -169,7 +169,7 @@ private Q_SLOTS:
         QVERIFY(dir.isValid());
         QDir dir2(dir.path());
         QVERIFY(dir2.mkpath(QStringLiteral("1")));
-        if( !fsCasePreserving() ) {
+        if (!fsCasePreservingButCaseInsensitive()) {
             QVERIFY(dir2.mkpath(QStringLiteral("TEST")));
         }
         QVERIFY(dir2.mkpath(QStringLiteral("test/TESTI")));
