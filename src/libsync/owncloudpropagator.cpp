@@ -564,7 +564,7 @@ const SyncOptions &OwncloudPropagator::syncOptions() const
 Result<QString, bool> OwncloudPropagator::localFileNameClash(const QString &relFile)
 {
     OC_ASSERT(!relFile.isEmpty());
-    if (!relFile.isEmpty() && Utility::fsCasePreserving()) {
+    if (!relFile.isEmpty() && Utility::fsCasePreservingButCaseInsensitive()) {
         const QFileInfo fileInfo(_localDir + relFile);
 #ifdef Q_OS_MAC
         // APFS is case preserving but case ignoring. It is also normalization preserving and normalization ignoring.

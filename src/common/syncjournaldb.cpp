@@ -542,8 +542,8 @@ bool SyncJournalDb::checkConnect()
 
     QByteArray sql("SELECT lastTryEtag, lastTryModtime, retrycount, errorstring, lastTryTime, ignoreDuration, renameTarget, errorCategory, requestId "
                    "FROM blacklist WHERE path=?1");
-    if (Utility::fsCasePreserving()) {
-        // if the file system is case preserving we have to check the blacklist
+    if (Utility::fsCasePreservingButCaseInsensitive()) {
+        // if the file system is case insensitive we have to check the blacklist
         // case insensitively
         sql += " COLLATE NOCASE";
     }
