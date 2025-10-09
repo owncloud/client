@@ -14,6 +14,7 @@
 #include "urlpagecontroller.h"
 
 #include "accessmanager.h"
+#include "configfile.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
@@ -34,10 +35,28 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
 {
     buildPage();
 
-    QString themeUrl = Theme::instance()->overrideServerUrlV2();
-    if (_urlField && !themeUrl.isEmpty()) {
-        setUrl(themeUrl);
-        // The theme provides the url, don't let the user change it!
+    if (_urlField == nullptr) {
+        return;
+    }
+
+    // a theme can provide a hardcoded url which is not subject of change by definition
+    bool allowServerUrlChange = true;
+    QString serverUrl = Theme::instance()->overrideServerUrlV2();
+    if (serverUrl.isEmpty()) {
+        // respect global pre-configuration
+        // TODO: move to own class or make it part of ConfigFile?
+        const QSettings settings(QSettings::SystemScope, this);
+        allowServerUrlChange = settings.value("Setup/AllowServerUrlChange", true).toBool();
+        serverUrl = settings.value("Setup/ServerUrl", QString()).toString();
+    }
+
+    // no server url was given by any means, so the user has to provide one
+    if (serverUrl.isEmpty()) {
+        return;
+    }
+    setUrl(serverUrl);
+    // The system admin provides the url, don't let the user change it!
+    if (!allowServerUrlChange) {
         _urlField->setEnabled(false);
         _instructionLabel->setText(tr("Your web browser will be opened to complete sign in."));
     }
