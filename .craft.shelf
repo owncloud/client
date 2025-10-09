@@ -15,7 +15,7 @@ revision = ba6feae
 
 [craft/craft-core]
 version = master
-revision = e7da38392
+revision = 59ba2eecac262d0637e3ab40e601549114966ad9
 
 [dev-utils/7zip-base]
 version = 24.09
@@ -114,7 +114,7 @@ version = 18.1.8
 version = 3.11.2
 
 [libs/openssl]
-version = 3.4.1
+version = 3.4.3
 
 [libs/pcre2]
 version = 10.44
