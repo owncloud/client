@@ -52,6 +52,7 @@ set(libsync_SRCS
     abstractcorejob.cpp
 
     appprovider.cpp
+    systemconfig.cpp
 )
 
 if(WIN32)
