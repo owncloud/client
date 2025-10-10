@@ -753,18 +753,13 @@ OwncloudPropagator::DiskSpaceResult OwncloudPropagator::diskSpaceCheck() const
     return DiskSpaceOk;
 }
 
-bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
-    PropagatorCompositeJob *composite, QString *error)
+bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item, QString *error)
 {
     QString fn = fullLocalPath(item->_file);
 
     QString renameError;
     auto conflictModTime = FileSystem::getModTime(fn);
-    QString conflictUserName;
-    if (account()->capabilities().uploadConflictFiles())
-        conflictUserName = account()->davDisplayName();
-    QString conflictFileName = Utility::makeConflictFileName(
-        item->_file, Utility::qDateTimeFromTime_t(conflictModTime), conflictUserName);
+    QString conflictFileName = Utility::makeConflictFileName(item->_file, Utility::qDateTimeFromTime_t(conflictModTime));
     QString conflictFilePath = fullLocalPath(conflictFileName);
 
     // If the file is locked, we want to retry this sync when it
@@ -799,25 +794,6 @@ bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
     }
 
     _journal->setConflictRecord(conflictRecord);
-
-    // Create a new upload job if the new conflict file should be uploaded
-    if (account()->capabilities().uploadConflictFiles()) {
-        if (composite && !QFileInfo(conflictFilePath).isDir()) {
-            SyncFileItemPtr conflictItem = SyncFileItemPtr(new SyncFileItem);
-            conflictItem->_file = conflictFileName;
-            conflictItem->_type = ItemTypeFile;
-            conflictItem->_direction = SyncFileItem::Up;
-            conflictItem->setInstruction(CSYNC_INSTRUCTION_NEW);
-            conflictItem->_modtime = conflictModTime;
-            conflictItem->_size = item->_previousSize;
-            Q_EMIT newItem(conflictItem);
-            composite->appendTask(conflictItem);
-        } else {
-            // Directories we can't process in one go. The next sync run
-            // will take care of uploading the conflict dir contents.
-            _anotherSyncNeeded = true;
-        }
-    }
 
     return true;
 }
