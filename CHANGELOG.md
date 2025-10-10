@@ -1,5 +1,6 @@
 # Table of Contents
 
+* [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
 * [Changelog for 6.0.0](#changelog-for-owncloud-desktop-client-600-2025-09-08)
 * [Changelog for 5.3.2](#changelog-for-owncloud-desktop-client-532-2025-01-20)
 * [Changelog for 5.3.1](#changelog-for-owncloud-desktop-client-531-2024-06-11)
@@ -37,6 +38,43 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [6.0.1] (2025-10-10)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.1 relevant to
+ownCloud admins and users.
+
+[6.0.1]: https://github.com/owncloud/client/compare/v6.0.0...v6.0.1
+
+## Summary
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12305](https://github.com/owncloud/client/pull/12305)
+* Bugfix - Reverting UTF-8 normalisation change: [#12334](https://github.com/owncloud/client/pull/12334)
+* Change - Move to trash-bin is enabled now by default: [#12338](https://github.com/owncloud/client/pull/12338)
+
+## Details
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12305](https://github.com/owncloud/client/pull/12305)
+
+   On the last page of the folder wizard, there is a checkbox to select/deselect
+   VFS. By default this is checked. The bug was that after unchecking this
+   checkbox, it could not be checked again. This has now been fixed.
+
+   https://github.com/owncloud/client/pull/12305
+
+* Bugfix - Reverting UTF-8 normalisation change: [#12334](https://github.com/owncloud/client/pull/12334)
+
+   The UTF-8 normalization change as per #12039 has been reverted.
+
+   https://github.com/owncloud/client/pull/12334
+   https://github.com/owncloud/client/pull/12039
+
+* Change - Move to trash-bin is enabled now by default: [#12338](https://github.com/owncloud/client/pull/12338)
+
+   To protect users from data loss the "move to trash" option is now enabled by
+   default.
+
+   https://github.com/owncloud/client/pull/12338
+
 # Changelog for ownCloud Desktop Client [6.0.0] (2025-09-08)
 
 The following sections list the changes in ownCloud Desktop Client 6.0.0 relevant to
