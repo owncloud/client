@@ -18,6 +18,7 @@
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
+#include "systemconfig.h"
 #include "theme.h"
 
 #include <QLabel>
@@ -44,10 +45,8 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
     QString serverUrl = Theme::instance()->overrideServerUrlV2();
     if (serverUrl.isEmpty()) {
         // respect global pre-configuration
-        // TODO: move to own class or make it part of ConfigFile?
-        const QSettings settings(QSettings::SystemScope, this);
-        allowServerUrlChange = settings.value("Setup/AllowServerUrlChange", true).toBool();
-        serverUrl = settings.value("Setup/ServerUrl", QString()).toString();
+        allowServerUrlChange = SystemConfig::allowServerUrlChange();
+        serverUrl = SystemConfig::serverUrl();
     }
 
     // no server url was given by any means, so the user has to provide one
