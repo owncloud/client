@@ -496,13 +496,9 @@ public:
      *
      * Sets up conflict records.
      *
-     * It also creates a new upload job in composite if the item that's
-     * moved away is a file and conflict uploads are requested.
-     *
      * Returns true on success, false and error on error.
      */
-    bool createConflict(const SyncFileItemPtr &item,
-        PropagatorCompositeJob *composite, QString *error);
+    bool createConflict(const SyncFileItemPtr &item, QString *error);
 
     // Map original path (as in the DB) to target final path
     // TODO: no public members...
