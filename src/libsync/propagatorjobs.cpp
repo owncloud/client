@@ -166,7 +166,7 @@ void PropagateLocalMkdir::start()
             }
         } else if (_item->instruction() == CSYNC_INSTRUCTION_CONFLICT) {
             QString error;
-            if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+            if (!propagator()->createConflict(_item, &error)) {
                 done(SyncFileItem::SoftError, error);
                 return;
             }
