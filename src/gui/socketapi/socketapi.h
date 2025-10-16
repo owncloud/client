@@ -40,7 +40,6 @@ class AccountState;
 class SyncFileStatus;
 class Folder;
 class SocketListener;
-class SocketApiJob;
 class SocketApiJobV2;
 
 Q_DECLARE_LOGGING_CATEGORY(lcSocketApi)
