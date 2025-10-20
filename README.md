@@ -34,9 +34,6 @@ patches, we need you to sign the [Contributor
 Agreement](https://owncloud.com/contribute/join-the-development/contributor-agreement/) before
 we can accept your patch.
 
-If you want to contact us, e.g. before starting a more complex feature,
-you can join us at
-[RocketChat](https://talk.owncloud.com/channel/desktop).
 
 ## Maintainers and Contributors
 
