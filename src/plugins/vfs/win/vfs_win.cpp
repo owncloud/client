@@ -638,7 +638,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
             providerInfo.Path(f);
         } catch (winrt::hresult_error const& ex) {
             qCWarning(lcVfs) << "Could not retrieve StorageFolder for" << syncRoot << "error:" << ex.code() << hstringToQString(ex.message());
-            Q_EMIT q->error(tr("Could not retrieve StorageFolder for %1 %2").arg(syncRoot, hstringToQString(ex.message())));
+            Q_EMIT q->error(tr("Could not retrieve StorageFolder for %1 %2 (0x%3)").arg(syncRoot, hstringToQString(ex.message()), QString::number(ex.code(), 16)));
             return;
         }
 
@@ -680,7 +680,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
                         }
                     } else {
                         qCWarning(lcVfs) << "Id did not match" << hstringToQString(previousInfo.Id()) << "!=" << oldId;
-                        Q_EMIT q->error(tr("The folder is used by a different client %1").arg(hstringToQString(previousInfo.DisplayNameResource())));
+                        Q_EMIT q->error(tr("The folder is used by a different client: %1").arg(hstringToQString(previousInfo.DisplayNameResource())));
                         return;
                     }
                     _registrationId = previousInfo.Id();
@@ -702,7 +702,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
             StorageProviderSyncRootManager::Register(providerInfo);
         } catch (winrt::hresult_error const& ex) {
             qCWarning(lcVfs) << "Error registering StorageProvider for" << params.filesystemPath << QString::number(ex.code()) << hstringToQString(ex.message());
-            Q_EMIT q->error(tr("Error registering StorageProvider for %1: %2 %3").arg(params.filesystemPath, QString::number(ex.code()), hstringToQString(ex.message())));
+            Q_EMIT q->error(tr("Error registering StorageProvider for %1: %2 (0x%3)").arg(params.filesystemPath, hstringToQString(ex.message()), QString::number(ex.code(), 16)));
             return;
         }
 
@@ -735,7 +735,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
                 | CF_CONNECT_FLAG_REQUIRE_FULL_FILE_PATH, // request that callbacks get the full path
             &_connectionKey);
         if (FAILED(ok)) {
-            Q_EMIT q->error(tr("CfConnectSyncRoot: %1 error: %2").arg(syncRoot, Utility::formatWinError(ok)));
+            Q_EMIT q->error(tr("Unable to connect sync root: %1 error: %2").arg(syncRoot, Utility::formatWinError(ok)));
             return;
         }
         // We have not discovered what the status ends up being used for
