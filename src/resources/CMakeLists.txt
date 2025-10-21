@@ -45,6 +45,7 @@ ecm_add_qml_module(owncloudResources
         URI org.ownCloud.resources
         VERSION 1.0
         NAMESPACE OCC
+        GENERATE_PLUGIN_SOURCE
 )
 
 ecm_finalize_qml_module(owncloudResources DESTINATION ${KDE_INSTALL_QMLDIR})
