@@ -226,8 +226,7 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
 
     /** Returns a file name based on \a fn that's suitable for a conflict.
      */
-    OCSYNC_EXPORT QString makeConflictFileName(
-        const QString &fn, const QDateTime &dt, const QString &user);
+    OCSYNC_EXPORT QString makeConflictFileName(const QString &fn, const QDateTime &dt);
 
     /** Returns whether a file name indicates a conflict file
      */
