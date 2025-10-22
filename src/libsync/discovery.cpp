@@ -565,7 +565,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
                     // If the file exist or if there is another error, consider it is a new file.
                     postProcessServerNew();
                     return;
-                } else if (OC_ENSURE(job->httpStatusCode() == 404)) {
+                } else if (job->httpStatusCode() == 404) {
                     // The file do not exist, it is a rename
 
                     // In case the deleted item was discovered in parallel
