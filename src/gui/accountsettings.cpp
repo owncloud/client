@@ -522,11 +522,15 @@ void AccountSettings::buildManageAccountMenu()
     ui->manageAccountButton->setMenu(menu);
 }
 
+// Refactoring todo: the signal sends the new account state, refactor this to use that param
 void AccountSettings::slotAccountStateChanged(AccountState::State state)
 {
     if (!_accountState || !_accountState->account()) {
         return;
     }
+
+    Account *account = _accountState->account();
+    qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 
     FolderMan *folderMan = FolderMan::instance();
     for (auto *folder : folderMan->folders()) {
@@ -537,9 +541,11 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     case AccountState::Connected: {
         QStringList errors;
         StatusIcon icon = StatusIcon::Connected;
-
+        if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
+            errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->capabilities().status().versionString());
+            icon = StatusIcon::Warning;
+        }
         showConnectionLabel(tr("Connected"), icon, errors);
-        // todo: this does not belong here in the gui.
         connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountSettings::slotSpacesUpdated, Qt::UniqueConnection);
         // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
         // triggering the slot? ie duplicate call to slotSpacesUpdated?
@@ -581,7 +587,6 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     }
 }
 
-// todo: #47 - incorporate existing todo's below as well
 void AccountSettings::slotSpacesUpdated()
 {
     if (!_accountState || !_accountState->account() || !_accountState->account()->spacesManager()) {
