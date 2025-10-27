@@ -115,16 +115,13 @@ void AccountState::connectNetworkInformation()
     connect(NetworkInformation::instance(), &NetworkInformation::isBehindCaptivePortalChanged, this, &AccountState::onBehindCaptivePortalChanged);
 }
 
-AccountState *AccountState::loadFromSettings(Account *account, const QSettings &settings)
+void AccountState::loadSettings(const QSettings &settings)
 {
-    auto accountState = new AccountState(account);
     const bool userExplicitlySignedOut = settings.value(userExplicitlySignedOutC(), false).toBool();
     if (userExplicitlySignedOut) {
         // see writeToSettings below
-        accountState->setState(SignedOut);
+        setState(SignedOut);
     }
-
-    return accountState;
 }
 
 void AccountState::writeToSettings(QSettings &settings) const
@@ -560,11 +557,6 @@ void AccountState::slotCredentialsFetched()
     checkConnectivity();
 }
 
-
-Account *AccountState::accountForQml() const
-{
-    return _account;
-}
 
 std::unique_ptr<QSettings> AccountState::settings()
 {
