@@ -108,9 +108,9 @@ bool AccountManager::restore()
         settings->beginGroup(accountIndex);
         if (auto acc = loadAccountHelper(*settings)) {
             acc->_groupIndex = accountIndex;
-            if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
-                addAccountState(accState);
-            }
+            AccountState *accState = new AccountState(acc);
+            accState->loadSettings(*settings);
+            addAccountState(accState);
         }
         settings->endGroup();
     }
