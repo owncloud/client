@@ -63,7 +63,7 @@ GeneralSettings::GeneralSettings(QWidget *parent)
 
     _ui->crashreporterCheckBox->setVisible(Theme::instance()->withCrashReporter());
 
-    _ui->moveToTrashCheckBox->setVisible(Theme::instance()->enableMoveToTrash());
+    _ui->moveToTrashCheckBox->setVisible(true);
     connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, [this](bool checked) {
         ConfigFile().setMoveToTrash(checked);
         Q_EMIT syncOptionsChanged();

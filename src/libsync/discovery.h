@@ -14,10 +14,11 @@
 
 #pragma once
 
-#include <QObject>
+#include "common/syncjournaldb.h"
 #include "discoveryphase.h"
 #include "syncfileitem.h"
-#include "common/syncjournaldb.h"
+#include <QObject>
+#include <deque>
 
 class ExcludedFiles;
 
@@ -49,6 +50,7 @@ class ProcessDirectoryJob : public QObject
     Q_OBJECT
 
     struct PathTuple;
+
 public:
     enum QueryMode {
         NormalQuery,
@@ -153,6 +155,10 @@ private:
 
     /// processFile helper for when remote information is available, typically flows into AnalyzeLocalInfo when done
     void processFileAnalyzeRemoteInfo(const SyncFileItemPtr &item, PathTuple, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &);
+
+    /// Function to gradually check conditions for accepting a move-candidate
+    bool isMove(
+        const SyncFileItemPtr &item, const PathTuple &path, const LocalInfo &localEntry, const SyncJournalFileRecord &base, const QString &originalPath) const;
 
     /// processFile helper for reconciling local changes
     void processFileAnalyzeLocalInfo(const SyncFileItemPtr &item, const PathTuple &, const LocalInfo &, const RemoteInfo &, const SyncJournalFileRecord &, QueryMode recurseQueryServer);

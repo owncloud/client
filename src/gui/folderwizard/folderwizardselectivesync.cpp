@@ -27,7 +27,6 @@
 #include "libsync/theme.h"
 
 #include "common/vfs.h"
-#include "gui/settingsdialog.h"
 
 #include <QCheckBox>
 #include <QVBoxLayout>
@@ -35,22 +34,19 @@
 
 using namespace OCC;
 
-FolderWizardSelectiveSync::FolderWizardSelectiveSync(FolderWizardPrivate *parent)
+FolderWizardSelectiveSync::FolderWizardSelectiveSync(Account *account, FolderWizardPrivate *parent)
     : FolderWizardPage(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
-    _selectiveSync = new SelectiveSyncWidget(folderWizardPrivate()->accountState()->account(), this);
+    _selectiveSync = new SelectiveSyncWidget(account, this);
     layout->addWidget(_selectiveSync);
 
-    if (!Theme::instance()->forceVirtualFilesOption() && Theme::instance()->showVirtualFilesOption()
-        && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
+    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
         _virtualFilesCheckBox = new QCheckBox(tr("Use virtual files instead of downloading content immediately"));
-        connect(_virtualFilesCheckBox, &QCheckBox::clicked, this, &FolderWizardSelectiveSync::virtualFilesCheckboxClicked);
-        connect(_virtualFilesCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
-            _selectiveSync->setEnabled(state == Qt::Unchecked);
-        });
+        connect(_virtualFilesCheckBox, &QCheckBox::checkStateChanged, this, &FolderWizardSelectiveSync::slotVfsStateChanged);
         _virtualFilesCheckBox->setChecked(true);
         layout->addWidget(_virtualFilesCheckBox);
+        _virtualFilesCheckBox->setDisabled(Theme::instance()->forceVirtualFilesOption());
     }
 }
 
@@ -83,18 +79,13 @@ bool FolderWizardSelectiveSync::useVirtualFiles() const
     return _virtualFilesCheckBox && _virtualFilesCheckBox->isChecked();
 }
 
-void FolderWizardSelectiveSync::virtualFilesCheckboxClicked()
-{
-    // The click has already had an effect on the box, so if it's
-    // checked it was newly activated.
-    if (_virtualFilesCheckBox->isChecked()) {
-        if (OC_ENSURE(VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi)) {
-            _virtualFilesCheckBox->setChecked(false);
-        }
-    }
-}
-
 const QSet<QString> &FolderWizardSelectiveSync::selectiveSyncBlackList() const
 {
     return _selectiveSyncBlackList;
+}
+
+void FolderWizardSelectiveSync::slotVfsStateChanged(Qt::CheckState state)
+{
+    // Enable the selective sync widget when VFS is *not* used, disable it if VFS *is* used.
+    _selectiveSync->setEnabled(state == Qt::Unchecked);
 }

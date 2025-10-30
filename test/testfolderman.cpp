@@ -11,10 +11,9 @@
 
 #include "common/utility.h"
 #include "folderman.h"
-#include "account.h"
 #include "accountstate.h"
-#include "configfile.h"
 
+#include "guiutility.h"
 #include "testutils/testutils.h"
 
 #include <syncenginetestutils.h>

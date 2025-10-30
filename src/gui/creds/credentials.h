@@ -46,9 +46,8 @@ public:
     // this access manager is monitored for authenticationRequired signal
     // it also becomes the access manager member in the account. Try to invert this so the account
     // creates it and connects the creds slot to the _am.
-    // it is ALSO used by the checkServerJobFactory where it sets the parent to the parent of that job. This is so
-    // shady and needs to be fixed, but we may have to leave that to a future refactoring.
-    // the main point is I am not sure the creds should be creating the nam - I think this should be an account responsibility in the end.
+    // note this is used by the checkServerJobFactory where a new nam is "needed" for every job due to options to clear cookies
+    // and other factors that mean we don't want to use the account's nam directly.
     AccessManager *createAccessManager() const override;
 
     // todo: DC-112 I think this needs a naming update.

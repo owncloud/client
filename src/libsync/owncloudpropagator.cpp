@@ -28,6 +28,7 @@
 #include "propagateuploadfile.h"
 #include "propagateuploadtus.h"
 #include "propagatorjobs.h"
+#include "vio/csync_vio_local.h"
 
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
@@ -74,11 +75,6 @@ qint64 freeSpaceLimit()
 
     return value;
 }
-
-OwncloudPropagator::~OwncloudPropagator()
-{
-}
-
 
 int OwncloudPropagator::maximumActiveTransferJob()
 {
@@ -520,9 +516,9 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 // since it would be done before the actual remove (issue #1845)
                 // NOTE: Currently this means that we don't update those etag at all in this sync,
                 //       but it should not be a problem, they will be updated in the next sync.
-                for (auto &dir : directories) {
-                    if (dir.second->item()->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA) {
-                        dir.second->item()->setInstruction(CSYNC_INSTRUCTION_NONE);
+                for (auto &aDir : directories) {
+                    if (aDir.second->item()->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA) {
+                        aDir.second->item()->setInstruction(CSYNC_INSTRUCTION_NONE);
                         _anotherSyncNeeded = true;
                     }
                 }
@@ -563,17 +559,36 @@ const SyncOptions &OwncloudPropagator::syncOptions() const
 Result<QString, bool> OwncloudPropagator::localFileNameClash(const QString &relFile)
 {
     OC_ASSERT(!relFile.isEmpty());
-    if (!relFile.isEmpty() && Utility::fsCasePreserving()) {
+    if (!relFile.isEmpty() && Utility::fsCasePreservingButCaseInsensitive()) {
         const QFileInfo fileInfo(_localDir + relFile);
 #ifdef Q_OS_MAC
+        // APFS is case preserving but case ignoring. It is also normalization preserving and normalization ignoring.
+        // So we have to check for both
         if (!fileInfo.exists()) {
+            // No file with an "equivalent" name exists.
             return false;
         } else {
-            // Need to normalize to composited form because of QTBUG-39622/QTBUG-55896
-            const QString cName = fileInfo.canonicalFilePath().normalized(QString::NormalizationForm_C);
-            if (fileInfo.filePath() != cName && !cName.endsWith(relFile, Qt::CaseSensitive)) {
-                qCWarning(lcPropagator) << "Detected case clash between" << fileInfo.filePath() << "and" << cName;
-                return cName;
+            // Check if the existing file is an *exact* name match with the remote file. Do this by
+            // checking each file name in the directory of `relFile`.
+            QString fileName = fileInfo.fileName(); // The file name of the to-be-downloaded file
+            bool hasFileInExactNormalizationAndCaseForm = false;
+            auto handle = csync_vio_local_opendir(fileInfo.path());
+            while (true) {
+                std::unique_ptr<csync_file_stat_t> dirent = csync_vio_local_readdir(handle, nullptr);
+                if (!dirent)
+                    break;
+
+                if (fileName == dirent->path) {
+                    // Exact match: no case differences, and no normalization differences, so no clash.
+                    hasFileInExactNormalizationAndCaseForm = true;
+                    break;
+                }
+            }
+            csync_vio_local_closedir(handle);
+
+            if (!hasFileInExactNormalizationAndCaseForm) {
+                qCWarning(lcPropagator) << "Detected clash for" << fileInfo.filePath();
+                return fileInfo.filePath();
             }
         }
 #elif defined(Q_OS_WIN)
@@ -715,7 +730,7 @@ void OwncloudPropagator::reportProgress(const SyncFileItem &item, qint64 bytes)
     Q_EMIT progress(item, bytes);
 }
 
-AccountPtr OwncloudPropagator::account() const
+Account *OwncloudPropagator::account() const
 {
     return _account;
 }

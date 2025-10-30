@@ -16,12 +16,13 @@
 #include "newaccountmodel.h"
 #include <QObject>
 
-#include "accountfwd.h"
+#include "libsync/account.h"
 #include "accountstate.h"
 
 #include "newaccountenums.h"
 
 namespace OCC {
+
 
 class NewAccountBuilder : public QObject
 {
@@ -32,15 +33,15 @@ public:
     void buildAccount();
 
 Q_SIGNALS:
-    void requestSetUpSyncFoldersForAccount(AccountState *, bool useVfs);
-    void requestFolderWizard(OCC::AccountPtr account);
+    void requestSetUpSyncFoldersForAccount(OCC::AccountState *, bool useVfs);
+    void requestFolderWizard(OCC::Account *account);
     void unableToCompleteAccountCreation(const QString &error);
 
 private:
     void onAccountStateChanged(AccountState::State state);
     void completeAccountSetup();
 
-    AccountPtr _account = nullptr;
+    Account *_account = nullptr;
     AccountState *_accountState = nullptr;
     NewAccount::SyncType _syncType = NewAccount::SyncType::NONE;
 };

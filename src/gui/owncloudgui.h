@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include "account.h"
 #include "gui/owncloudguilib.h"
 #include "progressdispatcher.h"
 #include "syncresult.h"
@@ -29,6 +28,8 @@ namespace OCC {
 namespace Wizard {
     class SetupWizardController;
 }
+class AccountState;
+class Account;
 class Folder;
 
 class AboutDialog;
@@ -36,11 +37,6 @@ class SettingsDialog;
 class ShareDialog;
 class Application;
 class LogBrowser;
-
-enum class ShareDialogStartPage {
-    UsersAndGroups,
-    PublicLinks,
-};
 
 /**
  * @brief The ownCloudGui class
@@ -89,7 +85,7 @@ public Q_SLOTS:
      * localPath is the absolute local path to it (so not relative
      * to the folder).
      */
-    void slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage);
+    void slotShowShareInBrowser(const QString &sharePath, const QString &localPath);
     void handleAccountSetupError(const QString &error);
 
 private:

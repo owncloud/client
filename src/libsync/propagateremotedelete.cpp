@@ -24,7 +24,7 @@ namespace OCC {
 Q_LOGGING_CATEGORY(lcDeleteJob, "sync.networkjob.delete", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcPropagateRemoteDelete, "sync.propagator.remotedelete", QtInfoMsg)
 
-DeleteJob::DeleteJob(AccountPtr account, const QUrl &url, const QString &path, QObject *parent)
+DeleteJob::DeleteJob(Account *account, const QUrl &url, const QString &path, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
 {
 }
@@ -48,9 +48,7 @@ void PropagateRemoteDelete::start()
 
     qCDebug(lcPropagateRemoteDelete) << _item->_file;
 
-    _job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(),
-        propagator()->fullRemotePath(_item->_file),
-        this);
+    _job = new DeleteJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), this);
     connect(_job.data(), &DeleteJob::finishedSignal, this, &PropagateRemoteDelete::slotDeleteJobFinished);
     propagator()->_activeJobList.append(this);
     _job->start();

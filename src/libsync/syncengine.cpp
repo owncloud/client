@@ -24,7 +24,6 @@
 #include "discovery.h"
 #include "discoveryphase.h"
 #include "owncloudpropagator.h"
-#include "propagateremotedelete.h"
 
 #include <chrono>
 
@@ -44,7 +43,7 @@ Q_LOGGING_CATEGORY(lcEngine, "sync.engine", QtInfoMsg)
 // doc in header
 std::chrono::seconds SyncEngine::minimumFileAgeForUpload(2s);
 
-SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
+SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
     : _account(account)
     , _baseUrl(baseUrl)
     , _needsUpdate(false)
@@ -53,8 +52,6 @@ SyncEngine::SyncEngine(AccountPtr account, const QUrl &baseUrl, const QString &l
     , _remotePath(remotePath)
     , _journal(journal)
     , _progressInfo(new ProgressInfo)
-    , _uploadLimit(0)
-    , _downloadLimit(0)
 {
     // Refactoring todo: reality check that we actually need to use these types in queued connections. if so,
     // we should move to a one shot registration method a) to make it really easy to see which types may
@@ -258,6 +255,9 @@ void SyncEngine::conflictRecordMaintenance()
 
 void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 {
+    if (!_account)
+        return;
+
     if (Utility::isConflictFile(item->_file))
         _seenConflictFiles.insert(item->_file);
     if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
@@ -298,6 +298,11 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
 void SyncEngine::startSync()
 {
+    if (!_account) {
+        finalize(false);
+        return;
+    }
+
     if (_syncRunning) {
         OC_ASSERT(false);
         return;
@@ -381,8 +386,7 @@ void SyncEngine::startSync()
     }
 
     qCInfo(lcEngine) << "#### Discovery start ####################################################" << _duration.duration();
-    qCInfo(lcEngine) << "Server" << account()->capabilities().status().versionString()
-                     << (account()->isHttp2Supported() ? "Using HTTP/2" : "");
+    qCInfo(lcEngine) << "Server" << _account->capabilities().status().versionString() << (_account->isHttp2Supported() ? "Using HTTP/2" : "");
     _progressInfo->_status = ProgressInfo::Discovery;
     Q_EMIT transmissionProgress(*_progressInfo);
 
@@ -568,9 +572,6 @@ void SyncEngine::slotDiscoveryFinished()
         connect(_propagator.data(), &OwncloudPropagator::insufficientRemoteStorage, this, &SyncEngine::slotInsufficientRemoteStorage);
         connect(_propagator.data(), &OwncloudPropagator::newItem, this, &SyncEngine::slotNewItem);
 
-        // apply the network limits to the propagator
-        setNetworkLimits(_uploadLimit, _downloadLimit);
-
         deleteStaleDownloadInfos(_syncItems);
         deleteStaleUploadInfos(_syncItems);
         deleteStaleErrorBlacklistEntries(_syncItems);
@@ -587,18 +588,6 @@ void SyncEngine::slotDiscoveryFinished()
     };
 
     finish();
-}
-
-void SyncEngine::setNetworkLimits(int upload, int download)
-{
-    _uploadLimit = upload;
-    _downloadLimit = download;
-
-    if (_propagator) {
-        if (upload != 0 || download != 0) {
-            qCInfo(lcEngine) << "Network Limits (down/up) " << upload << download;
-        }
-    }
 }
 
 void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
@@ -708,11 +697,6 @@ void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
             break;
         }
     }
-}
-
-AccountPtr SyncEngine::account() const
-{
-    return _account;
 }
 
 void SyncEngine::setLocalDiscoveryOptions(LocalDiscoveryStyle style, std::set<QString> paths)

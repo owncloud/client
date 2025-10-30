@@ -48,10 +48,8 @@ Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
 const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
-//const QString caCertsKeyC() { return QStringLiteral("CaCertificates"); } only used from account.cpp
 const QString forceSyncIntervalC() { return QStringLiteral("forceSyncInterval"); }
 const QString fullLocalDiscoveryIntervalC() { return QStringLiteral("fullLocalDiscoveryInterval"); }
-const QString notificationRefreshIntervalC() { return QStringLiteral("notificationRefreshInterval"); }
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
@@ -83,11 +81,6 @@ const QString proxyUserC()
     return QStringLiteral("Proxy/user");
 }
 const QString proxyNeedsAuthC() { return QStringLiteral("Proxy/needsAuth"); }
-
-const QString useUploadLimitC() { return QStringLiteral("BWLimit/useUploadLimit"); }
-const QString useDownloadLimitC() { return QStringLiteral("BWLimit/useDownloadLimit"); }
-const QString uploadLimitC() { return QStringLiteral("BWLimit/uploadLimit"); }
-const QString downloadLimitC() { return QStringLiteral("BWLimit/downloadLimit"); }
 
 const QString pauseSyncWhenMeteredC()
 {
@@ -451,23 +444,6 @@ chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const
     return millisecondsValue(settings, fullLocalDiscoveryIntervalC(), 1h);
 }
 
-chrono::milliseconds ConfigFile::notificationRefreshInterval(const QString &connection) const
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-
-    auto defaultInterval = chrono::minutes(5);
-    auto interval = millisecondsValue(settings, notificationRefreshIntervalC(), defaultInterval);
-    if (interval < chrono::minutes(1)) {
-        qCWarning(lcConfigFile) << "Notification refresh interval smaller than one minute, setting to one minute";
-        interval = chrono::minutes(1);
-    }
-    return interval;
-}
-
 chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
 {
     QString con(connection);
@@ -629,46 +605,6 @@ QString ConfigFile::proxyUser() const
     return getValue(proxyUserC()).toString();
 }
 
-int ConfigFile::useUploadLimit() const
-{
-    return getValue(useUploadLimitC(), QString(), 0).toInt();
-}
-
-int ConfigFile::useDownloadLimit() const
-{
-    return getValue(useDownloadLimitC(), QString(), 0).toInt();
-}
-
-void ConfigFile::setUseUploadLimit(int val)
-{
-    setValue(useUploadLimitC(), val);
-}
-
-void ConfigFile::setUseDownloadLimit(int val)
-{
-    setValue(useDownloadLimitC(), val);
-}
-
-int ConfigFile::uploadLimit() const
-{
-    return getValue(uploadLimitC(), QString(), 10).toInt();
-}
-
-int ConfigFile::downloadLimit() const
-{
-    return getValue(downloadLimitC(), QString(), 80).toInt();
-}
-
-void ConfigFile::setUploadLimit(int kbytes)
-{
-    setValue(uploadLimitC(), kbytes);
-}
-
-void ConfigFile::setDownloadLimit(int kbytes)
-{
-    setValue(downloadLimitC(), kbytes);
-}
-
 bool ConfigFile::pauseSyncWhenMetered() const
 {
     return getValue(pauseSyncWhenMeteredC(), {}, false).toBool();
@@ -681,11 +617,8 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 
 bool ConfigFile::moveToTrash() const
 {
-    if (Theme::instance()->enableMoveToTrash()) {
-        return getValue(moveToTrashC(), QString(), false).toBool();
-    }
-
-    return false;
+    auto defaultValue = Theme::instance()->moveToTrashDefaultValue();
+    return getValue(moveToTrashC(), QString(), defaultValue).toBool();
 }
 
 void ConfigFile::setMoveToTrash(bool isChecked)

@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef CONFIGFILE_H
-#define CONFIGFILE_H
+#pragma once
 
 #include "owncloudlib.h"
 
@@ -72,9 +71,6 @@ public:
     /* Set poll interval. Value in milliseconds has to be larger than 5000 */
     void setRemotePollInterval(std::chrono::milliseconds interval, const QString &connection = QString());
 
-    /* Interval to check for new notifications */
-    std::chrono::milliseconds notificationRefreshInterval(const QString &connection = QString()) const;
-
     /* Force sync interval, in milliseconds */
     std::chrono::milliseconds forceSyncInterval(std::chrono::seconds remoteFromCapabilities, const QString &connection = QString()) const;
 
@@ -123,17 +119,6 @@ public:
     int proxyPort() const;
     bool proxyNeedsAuth() const;
     QString proxyUser() const;
-
-    /** 0: no limit, 1: manual, >0: automatic */
-    int useUploadLimit() const;
-    int useDownloadLimit() const;
-    void setUseUploadLimit(int);
-    void setUseDownloadLimit(int);
-    /** in kbyte/s */
-    int uploadLimit() const;
-    int downloadLimit() const;
-    void setUploadLimit(int kbytes);
-    void setDownloadLimit(int kbytes);
 
     bool pauseSyncWhenMetered() const;
     void setPauseSyncWhenMetered(bool isChecked);
@@ -200,4 +185,3 @@ private:
     static QString _confDir;
 };
 }
-#endif // CONFIGFILE_H

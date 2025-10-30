@@ -212,13 +212,6 @@ public:
      */
     Folder *folderForPath(const QString &path, QString *relativePath = nullptr);
 
-    /**
-      * returns a list of local files that exist on the local harddisk for an
-      * incoming relative server path. The method checks with all existing sync
-      * folders.
-      */
-    QStringList findFileInLocalFolders(const QString &relPath, const AccountPtr acc);
-
     /** Returns the folder by id or NULL if no folder with the id exists. */
     [[deprecated("directly reference the folder")]] Folder *folder(const QByteArray &id);
 
@@ -265,9 +258,7 @@ public:
 
     SyncScheduler *scheduler() { return _scheduler; }
 
-
     void setDirtyProxy();
-    void setDirtyNetworkLimits();
 
     /** Whether or not vfs is supported in the location. */
     bool checkVfsAvailability(const QString &path, Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode()) const;

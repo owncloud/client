@@ -21,7 +21,7 @@ endfunction()
 
 
 function(__addIcon QRC_PATH THEME ICON_NAME)
-    set(options)
+    set(options "REQUIRED")
     set(oneValueArgs SRC_PATH)
     set(multiValueArgs)
     cmake_parse_arguments(_ICON "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -44,6 +44,8 @@ function(__addIcon QRC_PATH THEME ICON_NAME)
                 ALIAS ${iconAlias}
             )
         else()
+            message(STATUS "Icon not found: ${OEM_THEME_DIR}/${icon}")
+
             set(SIZES "16;22;32;48;64;128;256;512;1024")
             foreach(size ${SIZES})
                 set(icon "theme/${_ICON_SRC_PATH}/${ICON_NAME}-${size}.png")
@@ -54,6 +56,10 @@ function(__addIcon QRC_PATH THEME ICON_NAME)
                         FILE_PATH ${OEM_THEME_DIR}/${icon}
                         ALIAS ${iconAlias}
                     )
+                else()
+                    if (_ICON_REQUIRED)
+                        message(FATAL_ERROR "Icon ${ICON_NAME} not found in ${THEME} theme at ${OEM_THEME_DIR}")
+                    endif()
                 endif()
             endforeach()
         endif()
@@ -97,7 +103,7 @@ function(generate_theme TARGET OWNCLOUD_SIDEBAR_ICONS_OUT)
 
         foreach(theme IN ITEMS colored dark black white)
             foreach(state IN ITEMS ok error information offline pause sync)
-                __addIcon(${QRC_PATH} ${theme} "state-${state}")
+                __addIcon(${QRC_PATH} ${theme} "state-${state}" REQUIRED)
             endforeach()
         endforeach()
 

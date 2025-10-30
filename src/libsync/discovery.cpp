@@ -14,7 +14,6 @@
 
 #include "discovery.h"
 #include "csync.h"
-#include "owncloudpropagator.h"
 #include "syncfileitem.h"
 
 #include "csync/csync_exclude.h"
@@ -25,7 +24,6 @@
 
 #include "libsync/theme.h"
 
-#include <algorithm>
 
 #include <QFile>
 #include <QFileInfo>
@@ -41,6 +39,8 @@ void ProcessDirectoryJob::start()
 
     if (_queryServer == NormalQuery) {
         _serverJob = startAsyncServerQuery();
+        if (!_serverJob)
+            return;
     } else {
         _serverQueryDone = true;
     }
@@ -550,6 +550,10 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             done = true;
         } else {
             // we need to make a request to the server to know that the original file is deleted on the server
+            if (_discoveryData->_account == nullptr) {
+                Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+                return;
+            }
             _pendingAsyncJobs++;
             auto job = new RequestEtagJob(_discoveryData->_account, _discoveryData->_baseUrl, _discoveryData->_remoteFolder + originalPath, this);
             connect(job, &RequestEtagJob::finishedSignal, this, [=]() mutable {
@@ -592,6 +596,67 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
         return;
     }
     processFileAnalyzeLocalInfo(item, path, localEntry, serverEntry, dbEntry, _queryServer);
+}
+
+bool ProcessDirectoryJob::isMove(
+    const SyncFileItemPtr &item, const PathTuple &path, const LocalInfo &localEntry, const SyncJournalFileRecord &base, const QString &originalPath) const
+{
+    // Go from "cheap" to check up to "expensive" to check
+
+    if (!base.isValid()) {
+        qCInfo(lcDisco) << "Not a move, no item in db with inode" << localEntry.inode;
+        return false;
+    }
+
+    // Type changes (file->dir or vice-versa) are not moves
+    if (base.isDirectory() != item->isDirectory()) {
+        qCInfo(lcDisco) << "Not a move, types don't match" << base._type << item->_type << localEntry.type;
+        return false;
+    }
+
+    // Directories and virtual files don't need size/mtime equality
+    if (!localEntry.isDirectory && !base.isVirtualFile() && (base._modtime != localEntry.modtime || base._fileSize != localEntry.size)) {
+        qCInfo(lcDisco) << "Not a move, mtime or size differs, "
+                        << "modtime:" << base._modtime << localEntry.modtime << ", "
+                        << "size:" << base._fileSize << localEntry.size;
+        return false;
+    }
+
+    if (_discoveryData->isRenamed(originalPath)) {
+        qCInfo(lcDisco) << "Not a move, base path already renamed";
+        return false;
+    }
+
+    // If the old file still exists, it is not a move
+    if (QFile::exists(_discoveryData->_localDir + originalPath)) {
+        // However...:
+        if (
+            // Exception 1: If the rename only changes case (like "foo" -> "Foo"), the
+            // old filename might still point to the same file on a case-insensitive filesystem
+            !(Utility::fsCasePreservingButCaseInsensitive() && originalPath.compare(path._local, Qt::CaseInsensitive) == 0 && originalPath != path._local)
+            // Exception 2: normalization change
+            && !(
+                originalPath != path._local && originalPath.normalized(QString::NormalizationForm_C) == path._local.normalized(QString::NormalizationForm_C))) {
+            qCInfo(lcDisco) << "Not a move, base file still exists at" << originalPath;
+            return false;
+        }
+    }
+
+    // Verify the checksum where possible
+    if (!base._checksumHeader.isEmpty() && item->_type == ItemTypeFile && base._type == ItemTypeFile) {
+        if (computeLocalChecksum(base._checksumHeader, _discoveryData->_localDir + path._original, item)) {
+            qCInfo(lcDisco) << "checking checksum of potential rename " << path._original << item->_checksumHeader << base._checksumHeader;
+            if (item->_checksumHeader != base._checksumHeader) {
+                qCInfo(lcDisco) << "Not a move, checksums differ";
+                return false;
+            }
+        } else {
+            // We cannot calculate the checksum, so we cannot assume the contents of the old file and the new file are the same.
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
@@ -778,65 +843,38 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
     };
 
     // Check if it is a move
-    OCC::SyncJournalFileRecord base;
+    SyncJournalFileRecord base;
     if (!_discoveryData->_statedb->getFileRecordByInode(localEntry.inode, &base)) {
         dbError();
         return;
     }
     const auto originalPath = QString::fromUtf8(base._path);
 
-    // Function to gradually check conditions for accepting a move-candidate
-    auto moveCheck = [&]() {
-        if (!base.isValid()) {
-            qCInfo(lcDisco) << "Not a move, no item in db with inode" << localEntry.inode;
-            return false;
-        }
-        if (base.isDirectory() != item->isDirectory()) {
-            qCInfo(lcDisco) << "Not a move, types don't match" << base._type << item->_type << localEntry.type;
-            return false;
-        }
-        // Directories and virtual files don't need size/mtime equality
-        if (!localEntry.isDirectory && !base.isVirtualFile()
-            && (base._modtime != localEntry.modtime || base._fileSize != localEntry.size)) {
-            qCInfo(lcDisco) << "Not a move, mtime or size differs, "
-                            << "modtime:" << base._modtime << localEntry.modtime << ", "
-                            << "size:" << base._fileSize << localEntry.size;
-            return false;
-        }
-
-        // The old file must have been deleted.
-        if (QFile::exists(_discoveryData->_localDir + originalPath)
-            // Exception: If the rename changes case only (like "foo" -> "Foo") the
-            // old filename might still point to the same file.
-            && !(Utility::fsCasePreserving()
-                 && originalPath.compare(path._local, Qt::CaseInsensitive) == 0
-                 && originalPath != path._local)) {
-            qCInfo(lcDisco) << "Not a move, base file still exists at" << originalPath;
-            return false;
-        }
-
-        // Verify the checksum where possible
-        if (!base._checksumHeader.isEmpty() && item->_type == ItemTypeFile && base._type == ItemTypeFile) {
-            if (computeLocalChecksum(base._checksumHeader, _discoveryData->_localDir + path._original, item)) {
-                qCInfo(lcDisco) << "checking checksum of potential rename " << path._original << item->_checksumHeader << base._checksumHeader;
-                if (item->_checksumHeader != base._checksumHeader) {
-                    qCInfo(lcDisco) << "Not a move, checksums differ";
-                    return false;
-                }
-            }
-        }
-
-        if (_discoveryData->isRenamed(originalPath)) {
-            qCInfo(lcDisco) << "Not a move, base path already renamed";
-            return false;
-        }
-
-        return true;
-    };
-
     // If it's not a move it's just a local-NEW
-    if (!moveCheck()) {
+    if (!isMove(item, path, localEntry, base, originalPath)) {
         postProcessLocalNew(path);
+        finalize(path, recurseQueryServer);
+        return;
+    }
+
+    // File size, mod time, checksum the same, but the name is different. Now check if the move is
+    // *only* a normalization change, not a capitalization change.
+    if (originalPath.normalized(QString::NormalizationForm_C) == path._local.normalized(QString::NormalizationForm_C)) {
+        // Issue a local rename: this is a technical encoding change, and not visible to end-users
+        QString adjustedOriginalPath = _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
+        _discoveryData->_renamedItemsLocal.insert(originalPath, path._local);
+        item->_modtime = base._modtime;
+        item->_inode = base._inode;
+        item->_etag = base._etag;
+        item->_checksumHeader = base._checksumHeader;
+        item->_fileId = base._fileId;
+        item->_remotePerm = base._remotePerm;
+        item->setInstruction(CSYNC_INSTRUCTION_RENAME);
+        item->_direction = SyncFileItem::Down;
+        item->_renameTarget = adjustedOriginalPath;
+        item->_file = path._local;
+        item->_originalFile = originalPath;
+        qCInfo(lcDisco) << "Rename detected (down) " << item->_file << " -> " << item->_renameTarget;
         finalize(path, recurseQueryServer);
         return;
     }
@@ -912,10 +950,15 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
     if (wasDeletedOnClient.first) {
         finalize(processRename(path), wasDeletedOnClient.second.toUtf8() == base._etag ? ParentNotChanged : NormalQuery);
     } else {
+        if (_discoveryData->_account == nullptr) {
+            Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+            return;
+        }
+
         // We must query the server to know if the etag has not changed
         _pendingAsyncJobs++;
         QString serverOriginalPath = _discoveryData->_remoteFolder + _discoveryData->adjustRenamedPath(originalPath, SyncFileItem::Down);
-        auto job = new RequestEtagJob(_discoveryData->_account, _discoveryData->_baseUrl, serverOriginalPath, this);
+        auto job = new RequestEtagJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, serverOriginalPath, this);
         connect(job, &RequestEtagJob::finishedSignal, this,
             [job, recurseQueryServer, path = path, postProcessLocalNew, processRename, base, item, originalPath, this] {
                 if (job->httpStatusCode() == 404 || (job->etag().toUtf8() != base._etag && !item->isDirectory()) || _discoveryData->isRenamed(originalPath)) {
@@ -1269,27 +1312,32 @@ void ProcessDirectoryJob::dbError()
 
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 {
-    auto serverJob = new DiscoverySingleDirectoryJob(_discoveryData->_account, _discoveryData->_baseUrl,
-        _discoveryData->_remoteFolder + _currentFolder._server, this);
+    if (_discoveryData->_account == nullptr) {
+        Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+        return nullptr;
+    }
+
+    auto discoveryJob =
+        new DiscoverySingleDirectoryJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, _discoveryData->_remoteFolder + _currentFolder._server, this);
     if (!_dirItem)
-        serverJob->setIsRootPath(); // query the fingerprint on the root
-    connect(serverJob, &DiscoverySingleDirectoryJob::etag, this, &ProcessDirectoryJob::etag);
+        discoveryJob->setIsRootPath(); // query the fingerprint on the root
+    connect(discoveryJob, &DiscoverySingleDirectoryJob::etag, this, &ProcessDirectoryJob::etag);
     _discoveryData->_currentlyActiveJobs++;
     _pendingAsyncJobs++;
-    connect(serverJob, &DiscoverySingleDirectoryJob::finished, this, [this, serverJob](const auto &results) {
+    connect(discoveryJob, &DiscoverySingleDirectoryJob::finished, this, [this, discoveryJob](const auto &results) {
         _discoveryData->_currentlyActiveJobs--;
         _pendingAsyncJobs--;
         if (results) {
             _serverNormalQueryEntries = *results;
             _serverQueryDone = true;
-            if (!serverJob->_dataFingerprint.isEmpty() && _discoveryData->_dataFingerprint.isEmpty())
-                _discoveryData->_dataFingerprint = serverJob->_dataFingerprint;
+            if (!discoveryJob->_dataFingerprint.isEmpty() && _discoveryData->_dataFingerprint.isEmpty())
+                _discoveryData->_dataFingerprint = discoveryJob->_dataFingerprint;
             if (_localQueryDone)
                 this->process();
         } else {
             auto code = results.error().code;
             qCWarning(lcDisco) << "Server error in directory" << _currentFolder._server << code;
-            if (serverJob->isRootPath()) {
+            if (discoveryJob->isRootPath()) {
                 if (code == 404 && _discoveryData->isSpace()) {
                     Q_EMIT _discoveryData->fatalError(tr("This Space is currently unavailable"));
                     return;
@@ -1316,16 +1364,15 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
                     .arg(_currentFolder._server.isEmpty() ? QStringLiteral("/") : _currentFolder._server, results.error().message));
         }
     });
-    connect(serverJob, &DiscoverySingleDirectoryJob::firstDirectoryPermissions, this,
-        [this](const RemotePermissions &perms) { _rootPermissions = perms; });
-    serverJob->start();
-    return serverJob;
+    connect(discoveryJob, &DiscoverySingleDirectoryJob::firstDirectoryPermissions, this, [this](const RemotePermissions &perms) { _rootPermissions = perms; });
+    discoveryJob->start();
+    return discoveryJob;
 }
 
 void ProcessDirectoryJob::startAsyncLocalQuery()
 {
     QString localPath = _discoveryData->_localDir + _currentFolder._local;
-    auto localJob = new DiscoverySingleLocalDirectoryJob(_discoveryData->_account, localPath, _discoveryData->_syncOptions._vfs.data());
+    auto localJob = new DiscoverySingleLocalDirectoryJob(localPath, _discoveryData->_syncOptions._vfs.data());
 
     _discoveryData->_currentlyActiveJobs++;
     _pendingAsyncJobs++;

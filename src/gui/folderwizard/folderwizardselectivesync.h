@@ -20,10 +20,10 @@
 #pragma once
 
 #include "gui/folderwizard/folderwizard_p.h"
-#include "libsync/accountfwd.h"
 
 namespace OCC {
 
+class Account;
 class SelectiveSyncWidget;
 
 /**
@@ -34,7 +34,7 @@ class FolderWizardSelectiveSync : public FolderWizardPage
 {
     Q_OBJECT
 public:
-    explicit FolderWizardSelectiveSync(FolderWizardPrivate *parent);
+    explicit FolderWizardSelectiveSync(Account *account, FolderWizardPrivate *parent);
     ~FolderWizardSelectiveSync() override;
 
     bool validatePage() override;
@@ -44,8 +44,8 @@ public:
 
     const QSet<QString> &selectiveSyncBlackList() const;
 
-private Q_SLOTS:
-    void virtualFilesCheckboxClicked();
+private slots:
+    void slotVfsStateChanged(Qt::CheckState state);
 
 private:
     SelectiveSyncWidget *_selectiveSync;

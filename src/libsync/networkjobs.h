@@ -43,7 +43,7 @@ class OWNCLOUDSYNC_EXPORT EntityExistsJob : public AbstractNetworkJob
 {
     Q_OBJECT
 public:
-    explicit EntityExistsJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
+    explicit EntityExistsJob(Account *account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
     void start() override;
 
 Q_SIGNALS:
@@ -79,7 +79,7 @@ public:
         Zero,
         One
     } Q_ENUMS(Depth);
-    explicit PropfindJob(AccountPtr account, const QUrl &url, const QString &path, Depth depth, QObject *parent = nullptr);
+    explicit PropfindJob(Account *account, const QUrl &url, const QString &path, Depth depth, QObject *parent = nullptr);
     void start() override;
 
     /**
@@ -127,7 +127,7 @@ public:
      * @param userId The user for which to obtain the avatar
      * @param size The size of the avatar (square so size*size)
      */
-    explicit AvatarJob(AccountPtr account, const QString &userId, int size, QObject *parent = nullptr);
+    explicit AvatarJob(Account *account, const QString &userId, int size, QObject *parent = nullptr);
 
     void start() override;
 
@@ -155,8 +155,7 @@ class OWNCLOUDSYNC_EXPORT MkColJob : public AbstractNetworkJob
     HeaderMap _extraHeaders;
 
 public:
-    explicit MkColJob(AccountPtr account, const QUrl &url, const QString &path,
-        const HeaderMap &extraHeaders, QObject *parent = nullptr);
+    explicit MkColJob(Account *account, const QUrl &url, const QString &path, const HeaderMap &extraHeaders, QObject *parent = nullptr);
     void start() override;
 
 Q_SIGNALS:
@@ -174,7 +173,7 @@ class OWNCLOUDSYNC_EXPORT RequestEtagJob : public PropfindJob
 {
     Q_OBJECT
 public:
-    explicit RequestEtagJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
+    explicit RequestEtagJob(Account *account, const QUrl &rootUrl, const QString &path, QObject *parent = nullptr);
 
     const QString &etag() const;
 
@@ -196,10 +195,14 @@ public:
     using UrlQuery = QList<QPair<QString, QString>>;
 
     // fully qualified urls can be passed in the QNetworkRequest
-    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QIODevice *requestBody = nullptr, const QNetworkRequest &req = {}, QObject *parent = nullptr);
-    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const UrlQuery &arguments, const QNetworkRequest &req = {}, QObject *parent = nullptr);
-    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QJsonObject &arguments, const QNetworkRequest &req = {}, QObject *parent = nullptr);
-    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QByteArray &&requestBody, const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QIODevice *requestBody = nullptr,
+        const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const UrlQuery &arguments,
+        const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QJsonObject &arguments,
+        const QNetworkRequest &req = {}, QObject *parent = nullptr);
+    explicit SimpleNetworkJob(Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QByteArray &&requestBody,
+        const QNetworkRequest &req = {}, QObject *parent = nullptr);
 
     virtual ~SimpleNetworkJob();
 
@@ -214,7 +217,7 @@ protected:
     QNetworkRequest _request;
 
 private:
-    explicit SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QNetworkRequest &req, QObject *parent);
+    explicit SimpleNetworkJob(Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QNetworkRequest &req, QObject *parent);
 
     QByteArray _verb;
     QByteArray _body;
@@ -234,8 +237,8 @@ private:
  * Note: targetFun is guaranteed to be called only through the event
  * loop and never directly.
  */
-void OWNCLOUDSYNC_EXPORT fetchPrivateLinkUrl(AccountPtr account, const QUrl &baseUrl, const QString &remotePath, QObject *target,
-    const std::function<void(const QUrl &url)> &targetFun);
+void OWNCLOUDSYNC_EXPORT fetchPrivateLinkUrl(
+    Account *account, const QUrl &baseUrl, const QString &remotePath, QObject *target, const std::function<void(const QUrl &url)> &targetFun);
 
 } // namespace OCC
 

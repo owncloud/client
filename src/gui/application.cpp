@@ -96,7 +96,7 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
         slotAccountStateAdded(ai);
     }
 
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareDialog);
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
 
     // Refactoring example: this is oversimplified and really belongs in a dedicated app builder impl but the idea is illustrated:
     // don't handling everything "locally" -> request that the best entity for the job do it. Then make the proper connections between
@@ -132,15 +132,17 @@ void Application::lastAccountStateRemoved() const
 
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
+    if (!accountState || !accountState->account())
+        return;
     // Hook up the GUI slots to the account state's Q_SIGNALS:
+    Account *account = accountState->account();
+
     connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
-    connect(accountState->account().data(), &Account::serverVersionChanged, _gui.data(),
-        [account = accountState->account().data(), this] { _gui->slotTrayMessageIfServerUnsupported(account); });
+    connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
     connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
-    connect(accountState->account().data(), &Account::serverVersionChanged, FolderMan::instance(),
-        [account = accountState->account().data()] { FolderMan::instance()->slotServerVersionChanged(account); });
+    connect(account, &Account::serverVersionChanged, FolderMan::instance(), [account] { FolderMan::instance()->slotServerVersionChanged(account); });
 }
 
 void Application::slotCleanup()

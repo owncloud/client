@@ -15,9 +15,10 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 
 #include "accessmanager.h"
-#include "accountfwd.h"
+#include "account.h"
 #include "owncloudlib.h"
 #include <csync.h>
 
@@ -103,8 +104,8 @@ Q_SIGNALS:
 
 protected:
     // the account should be the parent of the creds, so it should not go out of scope while we are using this.
-    // however, those may be famous last words depending on how the tear
-    Account *_account;
+    // however, those may be famous last words depending on how the teardown happens so keep it in a weak ref
+    QPointer<Account> _account;
 
     // todo: DC-112 I don't understand why this is needed but will try to figure it out
     bool _wasEverFetched;
