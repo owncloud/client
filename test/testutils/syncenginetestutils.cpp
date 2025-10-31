@@ -914,18 +914,14 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     OC_ENFORCE(syncOnce())
 }
 
-FakeFolder::~FakeFolder()
-{
-    auto opts = _syncEngine->syncOptions();
-    opts._vfs->stop();
-    opts._vfs->unregisterFolder(); // Important! This removes the side-bar entry in Windows Explorer!
-}
+FakeFolder::~FakeFolder() { }
 
 void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
 {
     auto opts = _syncEngine->syncOptions();
 
     opts._vfs->stop();
+    opts._vfs->unregisterFolder();
     QObject::disconnect(_syncEngine.get(), nullptr, opts._vfs.data(), nullptr);
 
     opts._vfs = vfs;
@@ -939,7 +935,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
     vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
     vfsParams.multipleAccountsRegistered = false;
-    QObject::connect(_syncEngine.get(), &QObject::destroyed, vfs.data(), [vfs]() {
+    QObject::connect(_syncEngine.get(), &QObject::destroyed, this, [vfs]() {
         vfs->stop();
         vfs->unregisterFolder();
     });
