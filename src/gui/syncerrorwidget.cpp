@@ -213,10 +213,10 @@ SyncErrorWidget::SyncErrorWidget(QWidget *parent)
 
     _model = new ProtocolItemModel(20000, true, this);
     _sortModel = new Models::SignalledQSortFilterProxyModel(this);
-    connect(_sortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &SyncErrorWidget::filterDidChange);
+    connect(_sortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &SyncErrorWidget::filterChanged);
     _sortModel->setSourceModel(_model);
     _statusSortModel = new SyncFileItemStatusSetSortFilterProxyModel(this); // Note: this will restore a previously set filter, if there was one.
-    connect(_statusSortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &SyncErrorWidget::filterDidChange);
+    connect(_statusSortModel, &Models::SignalledQSortFilterProxyModel::filterChanged, this, &SyncErrorWidget::filterChanged);
     _statusSortModel->setSourceModel(_sortModel);
     _statusSortModel->setSortRole(Qt::DisplayRole); // Sorting should be done based on the text in the column cells, but...
     _statusSortModel->setFilterRole(Models::UnderlyingDataRole); // ... filtering should be done on the underlying enum value.
@@ -239,7 +239,7 @@ SyncErrorWidget::SyncErrorWidget(QWidget *parent)
     connect(_ui->_filterButton, &QAbstractButton::clicked, this, [this] {
         showFilterMenu(_ui->_filterButton);
     });
-    filterDidChange(); // Set the appropriate label.
+    filterChanged(); // Set the appropriate label.
 
     _ui->_tooManyIssuesWarning->hide();
     connect(_model, &ProtocolItemModel::rowsInserted, this, [this] {
@@ -256,16 +256,25 @@ SyncErrorWidget::SyncErrorWidget(QWidget *parent)
         tr("There were conflicts. <a href=\"%1\">Check the documentation on how to resolve them.</a>")
             .arg(Theme::instance()->conflictHelpUrl()));
 
-    connect(FolderMan::instance(), &FolderMan::folderRemoved, this, [this](Folder *f) {
-        _model->remove_if([f](const ProtocolItem &item) {
-            return item.folder() == f;
-        });
-    });
+    connect(FolderMan::instance(), &FolderMan::folderRemoved, this, &SyncErrorWidget::onFolderRemoved);
+
+    connect(FolderMan::instance(), &FolderMan::folderListChanged, this, &SyncErrorWidget::onFolderListChanged);
 }
 
 SyncErrorWidget::~SyncErrorWidget()
 {
     delete _ui;
+}
+
+void SyncErrorWidget::onFolderListChanged()
+{
+    QList<Folder *> folders = FolderMan::instance()->folders();
+    _model->remove_if([folders](const ProtocolItem &item) { return (!folders.contains(item.folder())); });
+}
+
+void SyncErrorWidget::onFolderRemoved(Folder *f)
+{
+    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
 }
 
 QMenu *SyncErrorWidget::showFilterMenu(QWidget *parent)
@@ -355,7 +364,7 @@ void SyncErrorWidget::slotItemCompleted(Folder *folder, const SyncFileItemPtr &i
     _model->addProtocolItem(ProtocolItem { folder, item });
 }
 
-void SyncErrorWidget::filterDidChange()
+void SyncErrorWidget::filterChanged()
 {
     // We have two filters here: the filter by status (which can have multiple items checked *off*...
     int filterCount = _statusSortModel->filterCount();

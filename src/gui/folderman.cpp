@@ -123,7 +123,7 @@ FolderMan::~FolderMan()
     _instance = nullptr;
 }
 
-const QVector<Folder *> &FolderMan::folders() const
+const QList<Folder *> &FolderMan::folders() const
 {
     return _folders;
 }
@@ -280,6 +280,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
             }
         }
         setSyncEnabled(true);
+        emit folderListChanged();
     }
 }
 
@@ -438,6 +439,7 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
         removeFolderSettings(f, settings);
         removeFolderSync(f);
     }
+    emit folderListChanged();
 }
 
 void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
@@ -633,6 +635,13 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
     return nullptr;
 }
 
+void FolderMan::removeFolderFromGui(Folder *f)
+{
+    emit folderRemoved(f);
+    removeFolderSettings(f);
+    removeFolderSync(f);
+}
+
 void FolderMan::removeFolderSync(Folder *f)
 {
     if (!OC_ENSURE(f)) {
@@ -657,8 +666,7 @@ void FolderMan::removeFolderSync(Folder *f)
 
     disconnectFolder(f);
 
-    Q_EMIT folderRemoved(f);
-    Q_EMIT folderListChanged();
+//    Q_EMIT folderRemoved(f);
 
     f->deleteLater();
 }
@@ -969,8 +977,7 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
         qCWarning(lcFolderMan) << "Failed to create local sync folder!";
     }
 
-    // todo: #8 - emit folderAdded
-    Q_EMIT folderListChanged();
+    // we should not emit any folder list change from this function because it can be called in bulk as well as individual operations
 
     return newFolder;
 }
@@ -989,6 +996,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
 
     if (f) {
         saveFolder(f);
+        emit folderAdded(f);
 
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});

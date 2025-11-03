@@ -76,6 +76,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void currentPageChanged();
+    // I think this only goes to qml
     void currentAccountChanged();
 
 protected Q_SLOTS:

@@ -42,7 +42,7 @@ public:
     explicit LocalActivityWidget(QWidget *parent = nullptr);
     ~LocalActivityWidget() override;
 
-    // these absolutely do not belong here. move them to an independent impl which can be shared between the protocolWidget and the issuesWidget
+    // todo: these absolutely do not belong here. move them to an independent impl which can be shared between the protocolWidget and the issuesWidget
     static void showContextMenu(QWidget *parent, QTableView *table, Models::SignalledQSortFilterProxyModel *sortModel, ProtocolItemModel *itemModel,
         const QModelIndexList &items, const QPoint &pos);
     static QMenu *showFilterMenu(QWidget *parent, Models::SignalledQSortFilterProxyModel *model, int role, const QString &columnName);
@@ -53,6 +53,10 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void slotItemContextMenu(const QPoint &pos);
+
+    void onFolderListChanged();
+
+    void onFolderRemoved(Folder *f);
 
 private:
     ProtocolItemModel *_model;

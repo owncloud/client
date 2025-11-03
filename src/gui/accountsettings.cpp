@@ -83,7 +83,10 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
-    connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
+    FolderMan *folderMan = FolderMan::instance();
+    connect(folderMan, &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
+    //    connect(folderMan, &FolderMan::folderAdded, _model, &FolderStatusModel::onFolderAdded);
+    //   connect(folderMan, &FolderMan::folderRemoved, _model, &FolderStatusModel::onFolderRemoved);
 
     ui->connectionStatusLabel->clear();
 
@@ -331,9 +334,11 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
+            FolderMan::instance()->removeFolderFromGui(folder);
             // todo: #3
-            FolderMan::instance()->removeFolderSettings(folder);
+            /*FolderMan::instance()->removeFolderSettings(folder);
             FolderMan::instance()->removeFolderSync(folder);
+            */
             // todo:#4
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
@@ -587,6 +592,8 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     }
 }
 
+
+// todo: #47 - this does not belong here, but in folderman. see details below
 void AccountSettings::slotSpacesUpdated()
 {
     if (!_accountState || !_accountState->account() || !_accountState->account()->spacesManager()) {
