@@ -109,7 +109,7 @@ void showInFileManager(const QString &localPath)
             p.waitForFinished(5000);
         }
     } else if (Utility::isMac()) {
-        QProcess::startDetached("/usr/bin/open", {"-R", localPath});
+        QProcess::startDetached(QStringLiteral("/usr/bin/open"), {QStringLiteral("-R"), localPath});
     } else {
         QString app;
         QStringList args;
