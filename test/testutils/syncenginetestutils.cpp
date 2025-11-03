@@ -927,7 +927,7 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
     opts._vfs = vfs;
     _syncEngine->setSyncOptions(opts);
 
-    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), false, &syncEngine());
+    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), &syncEngine());
     vfsParams.filesystemPath = localPath();
     vfsParams.remotePath = QLatin1Char('/');
     vfsParams.journal = _journalDb.get();

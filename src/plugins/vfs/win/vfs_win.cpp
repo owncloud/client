@@ -609,13 +609,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
     // A Uri to a cloud storage recycle bin.
     //providerInfo.RecycleBinUri(L"recycle bin");
 
-    qCInfo(lcVfs)<<"winvfs: groupInsidebar:"<<params.groupInSidebar();
-    if (!params.groupInSidebar()) {
-        qCWarning(lcVfs) << "groupInsidebar info: parent dir:" << QFileInfo(Utility::stripTrailingSlash(syncRoot)).dir().path()
-                         << "home path:" << QDir::homePath()
-                         << "default sync root:" << params.account->defaultSyncRoot();
-    }
-    providerInfo.ShowSiblingsAsGroup(params.groupInSidebar());
+    providerInfo.ShowSiblingsAsGroup(true);
 
     // Prepage the key from the shell property store we'll use to determine
     // availability.
