@@ -151,7 +151,6 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.syncJournal().conflictRecord("A/a2").isValid());
     }
 
-    // Same test, but with uploadConflictFiles == false
     void testConflictRecordRemoval2()
     {
         QFETCH_GLOBAL(Vfs::Mode, vfsMode);

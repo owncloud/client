@@ -883,7 +883,6 @@ void PropagatorCompositeJob::slotSubJobAbortFinished()
 
 void PropagatorCompositeJob::appendJob(PropagatorJob *job)
 {
-    job->setAssociatedComposite(this);
     _jobsToDo.append(job);
 }
 
@@ -1013,7 +1012,6 @@ PropagateDirectory::PropagateDirectory(OwncloudPropagator *propagator, const Syn
 {
     if (_firstJob) {
         connect(_firstJob.get(), &PropagatorJob::finished, this, &PropagateDirectory::slotFirstJobFinished);
-        _firstJob->setAssociatedComposite(&_subJobs);
     }
     connect(&_subJobs, &PropagatorJob::finished, this, &PropagateDirectory::slotSubJobsFinished);
 }

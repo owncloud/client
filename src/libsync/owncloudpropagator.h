@@ -104,14 +104,6 @@ public:
      */
     virtual qint64 committedDiskSpace() const { return 0; }
 
-    /** Set the associated composite job
-     *
-     * Used only from PropagatorCompositeJob itself, when a job is added
-     * and from PropagateDirectory to associate the subJobs with the first
-     * job.
-     */
-    void setAssociatedComposite(PropagatorCompositeJob *job) { _associatedComposite = job; }
-
     const QString path() { return _path; }
 
 public Q_SLOTS:
@@ -141,16 +133,6 @@ Q_SIGNALS:
 
 protected:
     OwncloudPropagator *propagator() const;
-
-    /** If this job gets added to a composite job, this will point to the parent.
-     *
-     * For the PropagateDirectory::_firstJob it will point to
-     * PropagateDirectory::_subJobs.
-     *
-     * That can be useful for jobs that want to spawn follow-up jobs without
-     * becoming composite jobs themselves.
-     */
-    PropagatorCompositeJob *_associatedComposite = nullptr;
 
 private:
     QString _path;
