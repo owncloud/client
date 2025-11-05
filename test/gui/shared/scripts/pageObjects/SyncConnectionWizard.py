@@ -24,19 +24,19 @@ class SyncConnectionWizard:
     BACK_BUTTON = {
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
         "type": "QPushButton",
-        "text": "< &Back",
+        # "text": "< &Back",
         "visible": 1,
     }
     NEXT_BUTTON = {
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
         "type": "QPushButton",
-        "text": "&Next >",
+        # "text": "&Next >",
         "visible": 1,
     }
     SELECTIVE_SYNC_ROOT_FOLDER = {
         "column": 0,
         "container": names.folder_Sync_Connection_Deselect_remote_folders_QTreeWidget,
-        "text": get_config("client_name"),
+        # "text": get_config("client_name"),
         "type": "QModelIndex",
     }
     SYNC_DIALOG_FOLDER_TREE = {
@@ -57,7 +57,7 @@ class SyncConnectionWizard:
         "visible": 1,
     }
     VFS_CHECKBOX = {
-        "text": "Use virtual files instead of downloading content immediately",
+        # "text": "Use virtual files instead of downloading content immediately",
         "type": "QCheckBox",
         "unnamed": 1,
         "visible": 1,
@@ -94,7 +94,7 @@ class SyncConnectionWizard:
         "visible": 1,
     }
     CREATE_REMOTE_FOLDER_CONFIRM_BUTTON = {
-        "text": "OK",
+        # "text": "OK",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
