@@ -194,6 +194,8 @@ public:
      */
     const QVector<Folder *> &folders() const;
 
+    const QList<Folder *> foldersForAccount(QUuid accountId);
+
 
     /**
      *  Removes a folder sync permanently in response to user request
@@ -303,7 +305,7 @@ Q_SIGNALS:
      * this includes after building the list for a new account or restore from config
      * also when removing folders in bulk, on account removed or shutdown.
      */
-    void folderListChanged();
+    void folderListChanged(const QList<Folder *> folders);
     // emitted on incremental folder additions (eg when the user uses the folder wizard to create a new sync)
     void folderAdded(Folder *folder);
     // emitted on incremental folder removal (eg when the user deletes a sync connection via gui)
@@ -426,7 +428,7 @@ private:
     void registerFolderWithSocketApi(Folder *folder);
 
     QSet<Folder *> _disabledFolders;
-    QList<Folder *> _folders;
+
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
 
@@ -444,6 +446,14 @@ private:
     mutable QMap<QString, Result<void, QString>> _unsupportedConfigurationError;
 
     static FolderMan *_instance;
+
+    // todo: find a way to separate the folders by account id since we often need to filter them that way
+    // I would love to use QMultiHash with key == account uuid but docs say the values() are returnd in most recently added order, which is
+    // basically backwards. Eg we'd have to reverse the list of values in so many cases (to read it or write it or show it etc)
+    // I don't understand this impl choice at all, Qt!!!
+    QList<Folder *> _folders;
+
+
     friend class OCC::Application;
 
     // the literal is needed to get the tests to build

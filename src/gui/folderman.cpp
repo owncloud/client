@@ -141,7 +141,8 @@ void FolderMan::unloadAndDeleteAllFolders()
         _socketApi->slotUnregisterPath(folder);
         folder->deleteLater();
     }
-    Q_EMIT folderListChanged();
+    Q_ASSERT(_folders.isEmpty());
+    Q_EMIT folderListChanged({});
 }
 
 void FolderMan::registerFolderWithSocketApi(Folder *folder)
@@ -189,7 +190,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
         setSyncEnabled(true);
     }
 
-    Q_EMIT folderListChanged();
+    Q_EMIT folderListChanged(_folders);
 
     return _folders.size();
 }
@@ -280,7 +281,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
             }
         }
         setSyncEnabled(true);
-        emit folderListChanged();
+        emit folderListChanged(_folders);
     }
 }
 
@@ -439,7 +440,7 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
         removeFolderSettings(f, settings);
         removeFolderSync(f);
     }
-    emit folderListChanged();
+    emit folderListChanged(_folders);
 }
 
 void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
@@ -665,8 +666,6 @@ void FolderMan::removeFolderSync(Folder *f)
     _folders.removeAll(f);
 
     disconnectFolder(f);
-
-//    Q_EMIT folderRemoved(f);
 
     f->deleteLater();
 }

@@ -74,8 +74,11 @@ public:
 
 public Q_SLOTS:
     void slotUpdateFolderState(Folder *);
-    void resetFolders();
     void slotSetProgress(const ProgressInfo &progress, Folder *f);
+
+    void resetFolders(const QList<Folder *> folders);
+    void onFolderAdded(Folder *folder);
+    void onFolderRemoved(Folder *folder);
 
 private Q_SLOTS:
     void slotFolderSyncStateChange(Folder *f);
@@ -87,6 +90,7 @@ private:
 
     // todo: #45 I don't see why these need to be unique pointers instead of simple instances.
     std::vector<std::unique_ptr<SubFolderInfo>> _folders;
+    void addFolder(Folder *f);
 };
 
 

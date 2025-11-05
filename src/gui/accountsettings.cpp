@@ -85,8 +85,9 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
 
     FolderMan *folderMan = FolderMan::instance();
     connect(folderMan, &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
-    //    connect(folderMan, &FolderMan::folderAdded, _model, &FolderStatusModel::onFolderAdded);
-    //   connect(folderMan, &FolderMan::folderRemoved, _model, &FolderStatusModel::onFolderRemoved);
+    connect(folderMan, &FolderMan::folderAdded, _model, &FolderStatusModel::onFolderAdded);
+    connect(folderMan, &FolderMan::folderRemoved, _model, &FolderStatusModel::onFolderRemoved);
+    _model->resetFolders(folderMan->folders()); // ForAccount(_accountState->account()->uuid()));
 
     ui->connectionStatusLabel->clear();
 

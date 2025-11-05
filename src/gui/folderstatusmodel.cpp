@@ -193,8 +193,6 @@ FolderStatusModel::FolderStatusModel(AccountState *accountState, QObject *parent
             }
         });
     }
-
-    resetFolders();
 }
 
 FolderStatusModel::~FolderStatusModel() { }
@@ -408,32 +406,62 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
     slotUpdateFolderState(f);
 }
 
-void FolderStatusModel::resetFolders()
+void FolderStatusModel::resetFolders(const QList<Folder *> folders)
 {
     beginResetModel();
     _folders.clear();
 
-    if (!_accountState) {
+    if (!_accountState || folders.isEmpty()) {
         endResetModel();
         return;
     }
 
     // todo: there is already a plan to organize folders in the folderman by account using a lookup on the uuid. this kind of filtering in the dependent is not
     // ok. also the folder should not have an accessor for the account state or any other "powerful" object.
-    for (const auto &f : FolderMan::instance()->folders()) {
+    for (const auto &f : folders) {
         if (f->accountState() != _accountState)
             continue;
 
-        _folders.push_back(std::make_unique<SubFolderInfo>(f));
-
-        connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, [f, this](Folder *folder, const ProgressInfo &progress) {
-            if (folder == f) {
-                slotSetProgress(progress, f);
-            }
-        });
+        addFolder(f);
     }
 
     endResetModel();
+}
+
+// todo for new model: override insertRows
+void FolderStatusModel::onFolderAdded(Folder *folder)
+{
+    if (!folder || folder->accountState() != _accountState)
+        return;
+    int insertIndex = rowCount();
+    beginInsertRows({}, insertIndex, insertIndex);
+    addFolder(folder);
+    endInsertRows();
+}
+
+void FolderStatusModel::addFolder(Folder *f)
+{
+    _folders.push_back(std::make_unique<SubFolderInfo>(f));
+
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, [f, this](Folder *folder, const ProgressInfo &progress) {
+        if (folder == f) {
+            slotSetProgress(progress, f);
+        }
+    });
+}
+
+// todo for new model: override removeRows
+void FolderStatusModel::onFolderRemoved(Folder *folder)
+{
+    if (!folder || folder->accountState() != _accountState)
+        return;
+
+    int removeIndex = indexOf(folder);
+    if (removeIndex >= 0) {
+        beginRemoveRows({}, removeIndex, removeIndex);
+        _folders.erase(_folders.cbegin() + removeIndex);
+        endRemoveRows();
+    }
 }
 
 } // namespace OCC

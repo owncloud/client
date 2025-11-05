@@ -339,8 +339,11 @@ public:
 
     uint32_t priority() const { return _definition.priority(); }
 
-
-    void setPriority(uint32_t p) { _definition.setPriority(p); }
+	
+	// I don't think we ever want to allow setting this via the folder but need to verify.
+	// short story is this prio comes from the space, directly, and it's more related to "sorted" order of folders
+	// in the main folder list than anything else. It is *not* related to sync prio as far as I can tell
+    //  void setPriority(uint32_t p) { _definition.setPriority(p); }
 
     static Result<void, QString> checkPathLength(const QString &path);
 

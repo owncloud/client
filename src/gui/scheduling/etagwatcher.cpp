@@ -31,7 +31,7 @@ ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
     , _folderMan(folderMan)
 {
     // Refactoring todo: use folderAdded/folderAboutToBeRemoved signals when implemented on the FolderMan
-    connect(folderMan, &FolderMan::folderListChanged, this, &ETagWatcher::slotFolderListChanged);
+    connect(_folderMan, &FolderMan::folderListChanged, this, &ETagWatcher::slotFolderListChanged);
 }
 
 void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
