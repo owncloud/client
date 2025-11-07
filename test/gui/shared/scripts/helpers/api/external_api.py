@@ -11,6 +11,14 @@ from helpers.FilesHelper import get_file_for_upload
 
 tokens = {}
 personal_sync_folder_id = {}
+created_spaces = {}
+available_roles = {
+    'viewer': 6,
+    'downloader': 2,
+    'uploader': 7,
+    'collaborator': 3,
+    'manager': 4,
+}
 
 
 def get_headers(user, extra_headers=None):
@@ -55,17 +63,20 @@ def generate_xsrf_token(user):
     return tokens[user]
 
 
-def resource_exists(user, resource):
+def resource_exists(user, resource, space=None):
     user = get_username_for_user(user)
     resource_name = os.path.basename(resource)
     folder_path = os.path.dirname(resource)
-    folder_id = get_folder_id_by_path(user, folder_path)
+    if space:
+        folder_id = get_space_id(user, space)
+    else:
+        folder_id = get_folder_id_by_path(user, folder_path)
     return get_resource(user, resource_name, folder_id) is not None
 
 
-def get_file_content(user, resource):
+def get_file_content(user, resource, space=None):
     user = get_username_for_user(user)
-    r = get_resource(user, resource)
+    r = get_resource(user, resource, space=space)
     url = url_join(get_config('localBackendUrl'), f'rest/files/{r["id"]}/content')
     headers = get_headers(user)
     response = request.get(url, headers=headers)
@@ -285,7 +296,9 @@ def get_folder_items_count(user, folder_name):
     return str(len(resources))
 
 
-def get_resource(user, name, folder_id=None, resource_type=None):
+def get_resource(user, name, folder_id=None, resource_type=None, space=None):
+    if space:
+        folder_id = get_space_id(user, space)
     resources = get_resources_inside_folder(user, folder_id=folder_id)
     for resource in resources:
         if resource['name'] == name and (
@@ -293,3 +306,132 @@ def get_resource(user, name, folder_id=None, resource_type=None):
         ):
             return resource
     return None
+
+
+def create_space(space_name, user='admin'):
+    user = get_username_for_user(user)
+    url = url_join(get_config('localBackendUrl'), 'rest/folders/0/folders')
+    headers = get_headers(user, {'content-type': 'application/json'})
+    body = json.dumps(
+        {
+            'name': space_name,
+            'parent': '0',
+            'description': '',
+            'expire': '0',
+            'fileLifetime': '0',
+            'syncable': '1',
+            'secure': '0',
+        }
+    )
+    response = request.post(url, body, headers)
+    assert (
+        response.status_code == 201
+    ), f'Could not create space {space_name} for user {user}'
+    if user not in created_spaces:
+        created_spaces[user] = []
+    created_spaces[user].append(space_name)
+
+
+def get_spaces(user, deleted=False):
+    url = url_join(get_config('localBackendUrl'), f'rest/folders/top?deleted={deleted}')
+    headers = get_headers(user)
+    response = request.get(url, headers)
+    assert response.status_code == 200, f'Failed to get spaces for user {user}'
+    data = json.loads(response.text)
+    return data['data']
+
+
+def get_space_id(user, space_name):
+    spaces = get_spaces(user)
+    for space in spaces:
+        if space['name'] == space_name:
+            return space['id']
+    raise ValueError(f'Could not get space id for space {space_name}')
+
+
+def get_deleted_space_ids(user):
+    spaces = get_spaces(user, True)
+    deleted_space_ids = []
+    for space in spaces:
+        deleted_space_ids.append(space['id'])
+    return deleted_space_ids
+
+
+def delete_all_spaces():
+    for user in created_users.values():
+        if (user := user['username']) in created_spaces:
+            for space in created_spaces[user]:
+                space_id = get_space_id(user, space)
+                url = url_join(
+                    get_config('localBackendUrl'),
+                    f'rest/folders?partialSuccess=true&id:in={space_id}',
+                )
+                headers = get_headers(user)
+                response = request.delete(url, headers)
+                assert response.status_code == 204, f'Could not delete space: {space}'
+
+
+def permanently_delete_all_spaces():
+    for user in created_users.values():
+        if (user := user['username']) in created_spaces:
+            deleted_space_ids = get_deleted_space_ids(user)
+            headers = get_headers(user)
+            url = url_join(
+                get_config('localBackendUrl'),
+                f'rest/folders/actions/permanent?partialSuccess=true&id:in={",".join(deleted_space_ids)}',
+            )
+            response = request.delete(url, headers)
+            assert (
+                response.status_code == 204
+            ), 'Failed to permanently delete all spaces'
+    created_spaces.clear()
+
+
+def create_space_folder(space, folder_name, user='admin'):
+    user = get_username_for_user(user)
+    space_id = get_space_id(user, space)
+    url = url_join(get_config('localBackendUrl'), f'rest/folders/{space_id}/folders')
+    headers = get_headers(user, {'content-type': 'application/json'})
+    body = json.dumps(
+        {
+            'description': '',
+            'fileLifetime': '0',
+            'name': folder_name,
+            'syncable': '1',
+        }
+    )
+    response = request.post(url, body, headers)
+    assert (
+        response.status_code == 201
+    ), f'Could not create the folder: {folder_name} in space {space}'
+
+
+def upload_space_file(space, file_name, file_content, user='admin'):
+    user = get_username_for_user(user)
+    file_path = f'{get_config("tempFolderPath")}/{file_name}'
+    write_file(file_path, file_content)
+    file_size = os.path.getsize(file_path)
+    space_id = get_space_id(user, space)
+    # initiate upload
+    upload_uri = initiate_upload(user, file_name, file_size, space_id)
+    # finalize upload
+    finalize_upload(user, file_name, file_path, file_size, upload_uri)
+
+
+def add_user_to_space(user, space_name, role, space_owner='admin'):
+    space_owner = get_username_for_user(space_owner)
+    user = get_username_for_user(user)
+    role_id = available_roles[role]
+    space_id = get_space_id(space_owner, space_name)
+    url = url_join(
+        get_config('localBackendUrl'),
+        f'rest/folders/{space_id}/members?updateIfExists=true&partialSuccess=true',
+    )
+    headers = get_headers(space_owner, {'content-type': 'application/json'})
+    body = json.dumps(
+        {'roleId': role_id, 'notify': True, 'notifyFileAdded': False, 'emails': [user]}
+    )
+    response = request.post(url, body, headers)
+    assert (
+        response.status_code == 201
+    ), f'Failed to add user {user} to space {space_name}'

@@ -914,7 +914,12 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     OC_ENFORCE(syncOnce())
 }
 
-FakeFolder::~FakeFolder() { }
+FakeFolder::~FakeFolder()
+{
+    auto opts = _syncEngine->syncOptions();
+    opts._vfs->stop();
+    opts._vfs->unregisterFolder(); // Important! This removes the side-bar entry in Windows Explorer!
+}
 
 void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
 {
