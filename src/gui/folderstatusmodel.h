@@ -60,7 +60,7 @@ public:
     };
     Q_ENUMS(Roles)
 
-    FolderStatusModel(AccountState *accountState, QObject *parent = nullptr);
+    FolderStatusModel(AccountState *state, QObject *parent);
 
     // todo: #45 this only "needs" to exist as if it is removed there are gcc errors on the unique_ptr for the SubFolderInfo (which is reported as "incomplete"
     // type?) in the anonymous namspace
@@ -76,17 +76,16 @@ public Q_SLOTS:
     void slotUpdateFolderState(Folder *);
     void slotSetProgress(const ProgressInfo &progress, Folder *f);
 
-    void resetFolders(const QList<Folder *> folders);
-    void onFolderAdded(Folder *folder);
-    void onFolderRemoved(Folder *folder);
-
-private Q_SLOTS:
+    void resetFolders(const QUuid &accountId, const QList<Folder *> folders);
+    void onFolderAdded(const QUuid &accountId, Folder *folder);
+    void onFolderRemoved(const QUuid &accountId, Folder *folder);
     void slotFolderSyncStateChange(Folder *f);
 
 private:
     int indexOf(Folder *f) const;
 
-    QPointer<AccountState> _accountState;
+    // QPointer<AccountState> _accountState;
+    QUuid _accountId;
 
     // todo: #45 I don't see why these need to be unique pointers instead of simple instances.
     std::vector<std::unique_ptr<SubFolderInfo>> _folders;

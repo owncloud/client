@@ -29,16 +29,23 @@ class ETagWatcher : public QObject
 {
     Q_OBJECT
 public:
-    ETagWatcher(FolderMan *folderMan, QObject *parent);
+    ETagWatcher(QObject *parent);
 
 public Q_SLOTS:
     void slotSpaceChanged(GraphApi::Space *space);
-    void slotFolderListChanged();
+
+    void slotFolderListChanged(const QUuid &accountId, const QList<Folder *> folders);
+
+    void onFolderAdded(const QUuid &accountId, Folder *folder);
+
+    void onFolderRemoved(const QUuid &accountId, Folder *folder);
+
+
+Q_SIGNALS:
+    void requestEnqueueFolder(Folder *folder);
 
 private:
     void updateEtag(const QString &spaceId, const QString &etag);
-
-    FolderMan *_folderMan;
 
     struct ETagInfo
     {
@@ -46,7 +53,7 @@ private:
         Folder *folder;
     };
 
-    std::unordered_map<QString, ETagInfo> _lastEtagJobForSpace;
+    QHash<QString, ETagInfo> _lastEtagJobForSpace;
 };
 
 }

@@ -174,34 +174,32 @@ namespace {
     }
 }
 
-FolderStatusModel::FolderStatusModel(AccountState *accountState, QObject *parent)
+FolderStatusModel::FolderStatusModel(AccountState *state, QObject *parent)
     : QAbstractListModel(parent)
-    , _accountState(accountState)
+// , _accountState(state)
 {
-    connect(FolderMan::instance(), &FolderMan::folderSyncStateChange, this, &FolderStatusModel::slotFolderSyncStateChange);
+    if (!state || !state->account() || !state->account()->spacesManager())
+        return;
 
-    if (_accountState && _accountState->account() && _accountState->account()->spacesManager()) {
-        // todo: we should not update the whole folder model any time the spaces are updated, implement spaceAdded and removed to deal with that incrementally
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this,
-            [this] { Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0)); });
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](auto *space) {
-            for (int i = 0; i < rowCount(); ++i) {
-                if (_folders[i]->_folder->space() == space) {
-                    Q_EMIT dataChanged(index(i, 0), index(i, 0));
-                    break;
-                }
+    _accountId = state->account()->uuid();
+
+    GraphApi::SpacesManager *spaceMan = state->account()->spacesManager();
+    // todo: we should not update the whole folder model any time the spaces are updated, implement spaceAdded and removed to deal with that incrementally
+    connect(spaceMan, &GraphApi::SpacesManager::updated, this, [this] { Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0)); });
+    connect(spaceMan, &GraphApi::SpacesManager::spaceChanged, this, [this](auto *space) {
+        for (int i = 0; i < rowCount(); ++i) {
+            if (_folders[i]->_folder->space() == space) {
+                Q_EMIT dataChanged(index(i, 0), index(i, 0));
+                break;
             }
-        });
-    }
+        }
+    });
 }
 
 FolderStatusModel::~FolderStatusModel() { }
 
 QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
 {
-    if (_accountState == nullptr)
-        return QVariant();
-
     if (!index.isValid())
         return QVariant();
 
@@ -406,22 +404,20 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
     slotUpdateFolderState(f);
 }
 
-void FolderStatusModel::resetFolders(const QList<Folder *> folders)
+void FolderStatusModel::resetFolders(const QUuid &accountId, const QList<Folder *> folders)
 {
+    if (!accountId.isNull() && _accountId != accountId)
+        return;
+
     beginResetModel();
     _folders.clear();
 
-    if (!_accountState || folders.isEmpty()) {
+    if (folders.isEmpty()) {
         endResetModel();
         return;
     }
 
-    // todo: there is already a plan to organize folders in the folderman by account using a lookup on the uuid. this kind of filtering in the dependent is not
-    // ok. also the folder should not have an accessor for the account state or any other "powerful" object.
     for (const auto &f : folders) {
-        if (f->accountState() != _accountState)
-            continue;
-
         addFolder(f);
     }
 
@@ -429,10 +425,11 @@ void FolderStatusModel::resetFolders(const QList<Folder *> folders)
 }
 
 // todo for new model: override insertRows
-void FolderStatusModel::onFolderAdded(Folder *folder)
+void FolderStatusModel::onFolderAdded(const QUuid &accountId, Folder *folder)
 {
-    if (!folder || folder->accountState() != _accountState)
+    if (!folder || accountId != _accountId)
         return;
+
     int insertIndex = rowCount();
     beginInsertRows({}, insertIndex, insertIndex);
     addFolder(folder);
@@ -451,9 +448,9 @@ void FolderStatusModel::addFolder(Folder *f)
 }
 
 // todo for new model: override removeRows
-void FolderStatusModel::onFolderRemoved(Folder *folder)
+void FolderStatusModel::onFolderRemoved(const QUuid &accountId, Folder *folder)
 {
-    if (!folder || folder->accountState() != _accountState)
+    if (!folder || accountId != _accountId)
         return;
 
     int removeIndex = indexOf(folder);

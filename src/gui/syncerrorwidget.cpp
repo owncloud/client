@@ -266,14 +266,15 @@ SyncErrorWidget::~SyncErrorWidget()
     delete _ui;
 }
 
-void SyncErrorWidget::onFolderListChanged()
+void SyncErrorWidget::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
 {
-    QList<Folder *> folders = FolderMan::instance()->folders();
+    Q_UNUSED(accountId);
     _model->remove_if([folders](const ProtocolItem &item) { return (!folders.contains(item.folder())); });
 }
 
-void SyncErrorWidget::onFolderRemoved(Folder *f)
+void SyncErrorWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
 {
+    Q_UNUSED(accountId);
     _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
 }
 

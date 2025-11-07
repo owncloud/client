@@ -83,11 +83,14 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
+    QUuid accountId = _accountState->account()->uuid();
     FolderMan *folderMan = FolderMan::instance();
     connect(folderMan, &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
     connect(folderMan, &FolderMan::folderAdded, _model, &FolderStatusModel::onFolderAdded);
     connect(folderMan, &FolderMan::folderRemoved, _model, &FolderStatusModel::onFolderRemoved);
-    _model->resetFolders(folderMan->folders()); // ForAccount(_accountState->account()->uuid()));
+    _model->resetFolders(accountId, folderMan->foldersForAccount(accountId));
+
+    connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
 
     ui->connectionStatusLabel->clear();
 
@@ -503,6 +506,8 @@ void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
     selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
 
     // Insert the selected folder at the front of the queue
+    // this should not be a direct call, just signal a request. When that time comes move the prio enum to an independent location to avoid
+    // caller deps on the scheduler
     FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High);
 
     // Restart scheduler
@@ -603,7 +608,7 @@ void AccountSettings::slotSpacesUpdated()
 
     auto spaces = _accountState->account()->spacesManager()->spaces();
     auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
-    for (const auto &f : std::as_const(FolderMan::instance()->folders())) {
+    for (const auto &f : FolderMan::instance()->foldersForAccount(_accountState->account()->uuid())) {
         unsycnedSpaces.erase(f->space());
     }
 

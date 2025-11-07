@@ -15,7 +15,7 @@
 #include "gui/scheduling/etagwatcher.h"
 
 #include "accountstate.h"
-#include "gui/folderman.h"
+#include "folder.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "libsync/syncengine.h"
 
@@ -26,54 +26,69 @@ using namespace OCC;
 
 Q_LOGGING_CATEGORY(lcEtagWatcher, "gui.scheduler.etagwatcher", QtInfoMsg)
 
-ETagWatcher::ETagWatcher(FolderMan *folderMan, QObject *parent)
+ETagWatcher::ETagWatcher(QObject *parent)
     : QObject(parent)
-    , _folderMan(folderMan)
 {
-    // Refactoring todo: use folderAdded/folderAboutToBeRemoved signals when implemented on the FolderMan
-    connect(_folderMan, &FolderMan::folderListChanged, this, &ETagWatcher::slotFolderListChanged);
 }
 
 void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
 {
     QString spaceId = space->id();
-    auto it = _lastEtagJobForSpace.find(spaceId);
-    if (it != _lastEtagJobForSpace.cend()) {
+    if (_lastEtagJobForSpace.contains(spaceId)) {
         QString etag = Utility::normalizeEtag(space->drive().getRoot().getETag());
         updateEtag(spaceId, etag);
     }
 }
 
-void ETagWatcher::slotFolderListChanged()
+void ETagWatcher::slotFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
 {
-    decltype(_lastEtagJobForSpace) newMap;
-
-    for (auto *f : _folderMan->folders()) {
-        if (f->accountState() && f->isReady()) {
-            connect(f->accountState()->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, &ETagWatcher::slotSpaceChanged,
-                Qt::UniqueConnection);
-
-            QString spaceId = f->definition().spaceId();
-
-            auto it = _lastEtagJobForSpace.find(spaceId);
-            if (it != _lastEtagJobForSpace.cend()) {
-                newMap[spaceId] = std::move(it->second);
-            } else {
-                newMap[spaceId] = {};
-                newMap[spaceId].folder = f;
-                connect(&f->syncEngine(), &SyncEngine::rootEtag, this, [f, this](const QString &etag, const QDateTime &time) {
-                    QString spaceId = f->definition().spaceId();
-                    auto &info = _lastEtagJobForSpace[spaceId];
-                    info.etag = etag;
-                    if (f->accountState()) {
-                        f->accountState()->tagLastSuccessfulETagRequest(time);
-                    }
-                });
+    if (folders.isEmpty()) {
+        // if the list is empty and there is no accountId, it means ALL folders have been removed, eg on app shutdown
+        if (accountId.isNull())
+            _lastEtagJobForSpace.clear();
+        else
+        // remove all folders associated with the account id because there are no longer any active folders here
+        {
+            for (const ETagInfo &info : std::as_const(_lastEtagJobForSpace)) {
+                Folder *f = info.folder;
+                if (f->accountState() && f->accountState()->account() && f->accountState()->account()->uuid() == accountId)
+                    _lastEtagJobForSpace.remove(f->definition().spaceId());
             }
         }
+        return;
     }
 
-    _lastEtagJobForSpace = std::move(newMap);
+    for (Folder *f : folders)
+        onFolderAdded({}, f);
+}
+
+void ETagWatcher::onFolderAdded(const QUuid &accountId, Folder *folder)
+{
+    Q_UNUSED(accountId);
+
+    QString spaceId = folder->definition().spaceId();
+    if (_lastEtagJobForSpace.contains(spaceId))
+        return;
+
+    if (folder->accountState() && folder->accountState()->account() && folder->isReady()) {
+        _lastEtagJobForSpace.insert(spaceId, ETagInfo{{}, folder});
+
+        connect(&folder->syncEngine(), &SyncEngine::rootEtag, this, [folder, this](const QString &etag, const QDateTime &time) {
+            QString spaceId = folder->definition().spaceId();
+            auto &info = _lastEtagJobForSpace[spaceId];
+            info.etag = etag;
+            if (folder->accountState()) {
+                folder->accountState()->tagLastSuccessfulETagRequest(time);
+            }
+        });
+    }
+}
+
+void ETagWatcher::onFolderRemoved(const QUuid &accountId, Folder *folder)
+{
+    Q_UNUSED(accountId);
+    if (folder)
+        _lastEtagJobForSpace.remove(folder->definition().spaceId());
 }
 
 void ETagWatcher::updateEtag(const QString &spaceId, const QString &etag)
@@ -89,7 +104,7 @@ void ETagWatcher::updateEtag(const QString &spaceId, const QString &etag)
             if (folderWasSyncedOnce) {
                 // Only schedule a sync if the folder finished its initial sync.
                 qCDebug(lcEtagWatcher) << "Scheduling sync of" << info.folder->displayName() << info.folder->path() << "due to an etag change";
-                _folderMan->scheduler()->enqueueFolder(info.folder);
+                emit requestEnqueueFolder(info.folder);
             }
         }
     } else {

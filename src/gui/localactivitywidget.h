@@ -54,9 +54,9 @@ public Q_SLOTS:
 private Q_SLOTS:
     void slotItemContextMenu(const QPoint &pos);
 
-    void onFolderListChanged();
+    void onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders);
 
-    void onFolderRemoved(Folder *f);
+    void onFolderRemoved(const QUuid &accountId, Folder *f);
 
 private:
     ProtocolItemModel *_model;

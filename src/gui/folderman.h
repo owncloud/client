@@ -192,9 +192,9 @@ public:
      * future configurations (possibly with user confirmation for deletions) and in
      * FolderMan::setupFolders() to know which too-new folder configurations to skip.
      */
-    const QVector<Folder *> &folders() const;
+    QList<Folder *> folders() const;
 
-    const QList<Folder *> foldersForAccount(QUuid accountId);
+    QList<Folder *> foldersForAccount(const QUuid &accountId);
 
 
     /**
@@ -305,11 +305,11 @@ Q_SIGNALS:
      * this includes after building the list for a new account or restore from config
      * also when removing folders in bulk, on account removed or shutdown.
      */
-    void folderListChanged(const QList<Folder *> folders);
+    void folderListChanged(const QUuid &accountId, const QList<Folder *> folders);
     // emitted on incremental folder additions (eg when the user uses the folder wizard to create a new sync)
-    void folderAdded(Folder *folder);
+    void folderAdded(const QUuid &accountId, Folder *folder);
     // emitted on incremental folder removal (eg when the user deletes a sync connection via gui)
-    void folderRemoved(Folder *folder);
+    void folderRemoved(const QUuid &accountId, Folder *folder);
 
 public Q_SLOTS:
 
@@ -451,7 +451,8 @@ private:
     // I would love to use QMultiHash with key == account uuid but docs say the values() are returnd in most recently added order, which is
     // basically backwards. Eg we'd have to reverse the list of values in so many cases (to read it or write it or show it etc)
     // I don't understand this impl choice at all, Qt!!!
-    QList<Folder *> _folders;
+    // QList<Folder *> _folders;
+    QMultiHash<QUuid, Folder *> _folders;
 
 
     friend class OCC::Application;

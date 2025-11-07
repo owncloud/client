@@ -123,13 +123,23 @@ FolderMan::~FolderMan()
     _instance = nullptr;
 }
 
-const QList<Folder *> &FolderMan::folders() const
+QList<Folder *> FolderMan::folders() const
 {
-    return _folders;
+    return _folders.values();
+}
+
+QList<Folder *> FolderMan::foldersForAccount(const QUuid &accountId)
+{
+    return _folders.values(accountId);
 }
 
 void FolderMan::unloadAndDeleteAllFolders()
 {
+    // notify interested parties *before* the folders are actually deleted - this is important in eg etagwatcher and the activity
+    // tabs because they need the original folder pointers to update themselves. todo: review the use of the folder pointers in these
+    // classes
+    emit folderListChanged(QUuid(), {});
+
     // save all folder definitions using a single settings instance to avoid file write/read churn
     // the settings will be synced to file when the instance goes out of scope, at the latest
     QSettings settings = ConfigFile::makeQSettings();
@@ -142,7 +152,6 @@ void FolderMan::unloadAndDeleteAllFolders()
         folder->deleteLater();
     }
     Q_ASSERT(_folders.isEmpty());
-    Q_EMIT folderListChanged({});
 }
 
 void FolderMan::registerFolderWithSocketApi(Folder *folder)
@@ -190,8 +199,6 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
         setSyncEnabled(true);
     }
 
-    Q_EMIT folderListChanged(_folders);
-
     return _folders.size();
 }
 
@@ -222,18 +229,23 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
     }
     settings.endGroup(); // accountId\Folders
 
+    Q_ASSERT(account && account->account() && account->account()->spacesManager());
+    _scheduler->connectSpacesManager(account->account()->spacesManager());
+    QUuid id = account->account()->uuid();
+    emit folderListChanged(id, _folders.values(id));
+
     return true;
 }
 
 void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
 {
     if (accountState && accountState->account() && accountState->account()->spacesManager()) {
-        QObject::connect(accountState->account()->spacesManager(), &GraphApi::SpacesManager::ready, this,
-            [this, accountState, useVfs] { loadSpacesWhenReady(accountState, useVfs); });
+        GraphApi::SpacesManager *spaceMan = accountState->account()->spacesManager();
+        QObject::connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState, useVfs] { loadSpacesWhenReady(accountState, useVfs); });
         // this is questionable - basically if the spaces aren't ready requesting "checkReady" triggers "getting them ready" - there is no way to directly
         // ask "are you ready?" - in all cases you have to call this function to get the ready signal which is handled above
         // todo: #10
-        accountState->account()->spacesManager()->checkReady();
+        spaceMan->checkReady();
     }
 }
 
@@ -281,7 +293,9 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
             }
         }
         setSyncEnabled(true);
-        emit folderListChanged(_folders);
+        _scheduler->connectSpacesManager(spacesMgr);
+        QUuid id = accountState->account()->uuid();
+        emit folderListChanged(id, _folders.values(id));
     }
 }
 
@@ -427,20 +441,17 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     QSettings settings = ConfigFile::makeQSettings();
     QString accountGroup = QStringLiteral("Accounts/%1").arg(accountState->account()->groupIndex());
     settings.beginGroup(accountGroup);
-    QList<Folder *> foldersToRemove;
-    // reserve a magic number
-    // todo: #6
-    foldersToRemove.reserve(16);
-    for (auto *folder : std::as_const(_folders)) {
-        if (folder->accountState() == accountState) {
-            foldersToRemove.append(folder);
-        }
-    }
+
+    QUuid id = accountState->account()->uuid();
+    // we always should emit before the folders have actually been deleted. consider renaming
+    emit folderListChanged(id, {});
+
+    QList<Folder *> foldersToRemove = _folders.values(id);
+
     for (const auto &f : foldersToRemove) {
         removeFolderSettings(f, settings);
         removeFolderSync(f);
     }
-    emit folderListChanged(_folders);
 }
 
 void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
@@ -539,7 +550,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
-    _folders.push_back(folder);
+    _folders.insert(accountState->account()->uuid(), folder);
     if (folder->syncPaused()) {
         _disabledFolders.insert(folder);
     }
@@ -638,14 +649,15 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
 
 void FolderMan::removeFolderFromGui(Folder *f)
 {
-    emit folderRemoved(f);
+    Q_ASSERT(f->accountState() && f->accountState()->account());
+    emit folderRemoved(f->accountState()->account()->uuid(), f);
     removeFolderSettings(f);
     removeFolderSync(f);
 }
 
 void FolderMan::removeFolderSync(Folder *f)
 {
-    if (!OC_ENSURE(f)) {
+    if (!f) {
         return;
     }
 
@@ -662,8 +674,8 @@ void FolderMan::removeFolderSync(Folder *f)
     // this function includes the stuff to remove the database files.
     f->wipeForRemoval();
 
-    // highly suspicious - how can there be more than one instance?!
-    _folders.removeAll(f);
+    Q_ASSERT(f->accountState() && f->accountState()->account());
+    _folders.remove(f->accountState()->account()->uuid(), f);
 
     disconnectFolder(f);
 
@@ -984,6 +996,9 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
 // todo: #1
 void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &description)
 {
+    if (!accountState || !accountState->account())
+        return;
+
     setSyncEnabled(false);
 
     FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
@@ -995,11 +1010,10 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
 
     if (f) {
         saveFolder(f);
-        emit folderAdded(f);
+        emit folderAdded(accountState->account()->uuid(), f);
 
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
-
 
         _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
     }
