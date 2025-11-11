@@ -239,11 +239,6 @@ public:
      */
     QStringList blacklistedFiles() const;
 
-    /**
-     * Whether conflict files should remain local (default) or should be uploaded.
-     */
-    bool uploadConflictFiles() const;
-
     /** Is versioning available? */
     bool versioningEnabled() const;
 
