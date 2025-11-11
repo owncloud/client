@@ -1,5 +1,7 @@
 # Table of Contents
 
+* [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
 * [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
 * [Changelog for 6.0.0](#changelog-for-owncloud-desktop-client-600-2025-09-08)
 * [Changelog for 5.3.2](#changelog-for-owncloud-desktop-client-532-2025-01-20)
@@ -38,6 +40,48 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v6.0.2...master
+
+## Summary
+
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+
+## Details
+
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+
+   None of the supported servers implements (or plans on implementing) this
+   feature. This removal includes the `OWNCLOUD_UPLOAD_CONFLICT_FILES` environment
+   variable.
+
+   https://github.com/owncloud/client/pull/12369
+
+# Changelog for ownCloud Desktop Client [6.0.2] (2025-11-03)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.2 relevant to
+ownCloud admins and users.
+
+[6.0.2]: https://github.com/owncloud/client/compare/v6.0.1...v6.0.2
+
+## Summary
+
+* Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
+
+## Details
+
+* Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
+
+   CVE and security advisory will follow.
+
+   https://github.com/owncloud/client/pull/12379
+   https://github.com/owncloud/client/pull/12389
+   https://github.com/owncloud/client/pull/12390
+
 # Changelog for ownCloud Desktop Client [6.0.1] (2025-10-10)
 
 The following sections list the changes in ownCloud Desktop Client 6.0.1 relevant to
