@@ -145,16 +145,6 @@ QString Capabilities::invalidFilenameRegex() const
     return _capabilities[QStringLiteral("dav")].toMap()[QStringLiteral("invalidFilenameRegex")].toString();
 }
 
-bool Capabilities::uploadConflictFiles() const
-{
-    static auto envIsSet = !qEnvironmentVariableIsEmpty("OWNCLOUD_UPLOAD_CONFLICT_FILES");
-    static int envValue = qEnvironmentVariableIntValue("OWNCLOUD_UPLOAD_CONFLICT_FILES");
-    if (envIsSet)
-        return envValue != 0;
-
-    return _capabilities[QStringLiteral("uploadConflictFiles")].toBool();
-}
-
 bool Capabilities::versioningEnabled() const
 {
     return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("versioning")).toBool();
