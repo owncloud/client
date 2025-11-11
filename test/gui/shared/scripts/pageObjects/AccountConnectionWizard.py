@@ -71,6 +71,7 @@ class AccountConnectionWizard:
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     DIRECTORY_NAME_BOX = {
+        "name": "BrowseButton",
         # "text": "Browse...",
         "type": "QPushButton",
         "unnamed": 1,
