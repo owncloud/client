@@ -114,6 +114,7 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
     , _queue(new FolderPriorityQueue)
 {
     _watcher = new ETagWatcher(this);
+
     connect(parent, &FolderMan::folderAdded, _watcher, &ETagWatcher::onFolderAdded);
     connect(parent, &FolderMan::folderRemoved, _watcher, &ETagWatcher::onFolderRemoved);
     connect(parent, &FolderMan::folderListChanged, _watcher, &ETagWatcher::slotFolderListChanged);
@@ -126,7 +127,10 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
     auto *fullLocalDiscoveryTimer = new QTimer(this);
     fullLocalDiscoveryTimer->setInterval(ConfigFile().fullLocalDiscoveryInterval() + 2min);
     connect(fullLocalDiscoveryTimer, &QTimer::timeout, this, [parent, this] {
-        for (auto *f : parent->folders()) {
+        // I'm doing it this way as std::as_const won't compile as it's "deleted" (no idea)
+        // and if I just hit folders() we get clazy complaining that it might detach :/
+        const QList<Folder *> folders = parent->folders();
+        for (auto *f : folders) {
             if (f->isReady() && f->accountState()->state() == AccountState::State::Connected) {
                 enqueueFolder(f);
             }

@@ -332,6 +332,7 @@ public Q_SLOTS:
 
     // emits folderRemoved
     void removeFolderFromGui(Folder *f);
+    void forceFolderSync(Folder *f);
 
 private Q_SLOTS:
     void slotFolderSyncPauseChanged(Folder *, bool paused);

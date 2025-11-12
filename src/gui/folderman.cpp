@@ -658,6 +658,33 @@ void FolderMan::removeFolderFromGui(Folder *f)
     removeFolderSync(f);
 }
 
+void FolderMan::forceFolderSync(Folder *f)
+{
+    if (!f)
+return;
+    // Prevent new sync starts
+    _scheduler->stop();
+
+    // Terminate and reschedule any running sync
+    for (auto *folder : _folders.values()) {
+        if (folder->isSyncRunning()) {
+            folder->slotTerminateSync(tr("User triggered force sync"));
+            _scheduler->enqueueFolder(folder);
+        }
+    }
+
+    f->slotWipeErrorBlacklist(); // issue #6757
+    f->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
+
+    // Insert the selected folder at the front of the queue
+    // this should not be a direct call, just signal a request. When that time comes move the prio enum to an independent location to avoid
+    // caller deps on the scheduler
+    _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
+
+    // Restart scheduler
+    _scheduler->start();
+}
+
 void FolderMan::removeFolderSync(Folder *f)
 {
     if (!f) {

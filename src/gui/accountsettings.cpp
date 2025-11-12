@@ -172,7 +172,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
             addRemoveFolderAction(menu);
         }
         menu->popup(QCursor::pos());
-        // accassebility
+        // accessibility
         menu->setFocus();
         return;
     }
@@ -338,11 +338,8 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
+            // todo: #3, this should be a signal to folderman
             FolderMan::instance()->removeFolderFromGui(folder);
-            // todo: #3
-            /*FolderMan::instance()->removeFolderSettings(folder);
-            FolderMan::instance()->removeFolderSync(folder);
-            */
             // todo:#4
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
@@ -491,27 +488,7 @@ void AccountSettings::slotForceSyncCurrentFolder(Folder *folder)
 
 void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
 {
-    // Prevent new sync starts
-    FolderMan::instance()->scheduler()->stop();
-
-    // Terminate and reschedule any running sync
-    for (auto *folder : FolderMan::instance()->folders()) {
-        if (folder->isSyncRunning()) {
-            folder->slotTerminateSync(tr("User triggered force sync"));
-            FolderMan::instance()->scheduler()->enqueueFolder(folder);
-        }
-    }
-
-    selectedFolder->slotWipeErrorBlacklist(); // issue #6757
-    selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
-
-    // Insert the selected folder at the front of the queue
-    // this should not be a direct call, just signal a request. When that time comes move the prio enum to an independent location to avoid
-    // caller deps on the scheduler
-    FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High);
-
-    // Restart scheduler
-    FolderMan::instance()->scheduler()->start();
+    FolderMan::instance()->forceFolderSync(selectedFolder);
 }
 
 void AccountSettings::buildManageAccountMenu()
