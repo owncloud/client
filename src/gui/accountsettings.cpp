@@ -83,7 +83,14 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
-    connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
+    QUuid accountId = _accountState->account()->uuid();
+    FolderMan *folderMan = FolderMan::instance();
+    connect(folderMan, &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
+    connect(folderMan, &FolderMan::folderAdded, _model, &FolderStatusModel::onFolderAdded);
+    connect(folderMan, &FolderMan::folderRemoved, _model, &FolderStatusModel::onFolderRemoved);
+    _model->resetFolders(accountId, folderMan->foldersForAccount(accountId));
+
+    connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
 
     ui->connectionStatusLabel->clear();
 
@@ -165,7 +172,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
             addRemoveFolderAction(menu);
         }
         menu->popup(QCursor::pos());
-        // accassebility
+        // accessibility
         menu->setFocus();
         return;
     }
@@ -331,9 +338,8 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            // todo: #3
-            FolderMan::instance()->removeFolderSettings(folder);
-            FolderMan::instance()->removeFolderSync(folder);
+            // todo: #3, this should be a signal to folderman
+            FolderMan::instance()->removeFolderFromGui(folder);
             // todo:#4
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
@@ -482,25 +488,7 @@ void AccountSettings::slotForceSyncCurrentFolder(Folder *folder)
 
 void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
 {
-    // Prevent new sync starts
-    FolderMan::instance()->scheduler()->stop();
-
-    // Terminate and reschedule any running sync
-    for (auto *folder : FolderMan::instance()->folders()) {
-        if (folder->isSyncRunning()) {
-            folder->slotTerminateSync(tr("User triggered force sync"));
-            FolderMan::instance()->scheduler()->enqueueFolder(folder);
-        }
-    }
-
-    selectedFolder->slotWipeErrorBlacklist(); // issue #6757
-    selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
-
-    // Insert the selected folder at the front of the queue
-    FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High);
-
-    // Restart scheduler
-    FolderMan::instance()->scheduler()->start();
+    FolderMan::instance()->forceFolderSync(selectedFolder);
 }
 
 void AccountSettings::buildManageAccountMenu()
@@ -587,6 +575,8 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     }
 }
 
+
+// todo: #47 - this does not belong here, but in folderman. see details below
 void AccountSettings::slotSpacesUpdated()
 {
     if (!_accountState || !_accountState->account() || !_accountState->account()->spacesManager()) {
@@ -595,7 +585,7 @@ void AccountSettings::slotSpacesUpdated()
 
     auto spaces = _accountState->account()->spacesManager()->spaces();
     auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
-    for (const auto &f : std::as_const(FolderMan::instance()->folders())) {
+    for (const auto &f : FolderMan::instance()->foldersForAccount(_accountState->account()->uuid())) {
         unsycnedSpaces.erase(f->space());
     }
 
