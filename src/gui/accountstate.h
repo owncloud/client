@@ -47,7 +47,7 @@ class FetchServerSettingsJob;
 class OWNCLOUDGUI_EXPORT AccountState : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Account *account READ accountForQml CONSTANT)
+    Q_PROPERTY(Account *account READ account CONSTANT)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
     Q_PROPERTY(AccountState::State state READ state NOTIFY stateChanged)
     QML_ELEMENT
@@ -95,11 +95,11 @@ public:
     explicit AccountState(Account *account);
     ~AccountState() override;
 
-    /** Creates an account state from settings and an Account object.
+    /** loads the state's settings
      *
      * Use from AccountManager with a prepared QSettings object only.
      */
-    static AccountState *loadFromSettings(Account *account, const QSettings &settings);
+    void loadSettings(const QSettings &settings);
 
     /** Writes account state information to settings.
      *
@@ -173,7 +173,6 @@ protected Q_SLOTS:
     void slotCredentialsFetched();
 
 private:
-    Account *accountForQml() const;
     QPointer<Account> _account;
     JobQueueGuard _queueGuard;
     State _state;
