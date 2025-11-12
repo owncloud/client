@@ -135,6 +135,9 @@ QList<Folder *> FolderMan::foldersForAccount(const QUuid &accountId)
 
 void FolderMan::unloadAndDeleteAllFolders()
 {
+    if (_folders.isEmpty())
+        return;
+
     // notify interested parties *before* the folders are actually deleted - this is important in eg etagwatcher and the activity
     // tabs because they need the original folder pointers to update themselves. todo: review the use of the folder pointers in these
     // classes

@@ -45,7 +45,7 @@ Q_SIGNALS:
     void requestEnqueueFolder(Folder *folder);
 
 private:
-    void updateEtag(const QString &spaceId, const QString &etag);
+    void updateEtag(const QUuid &accountId, const QString &spaceId, const QString &etag);
 
     struct ETagInfo
     {
@@ -53,7 +53,9 @@ private:
         Folder *folder;
     };
 
-    QHash<QString, ETagInfo> _lastEtagJobForSpace;
+    // we have to separate the data into accounts because it's NOT the case that all spaceid's are unique
+    // specifically, the Shares space always has the same space id -> see Space.cpp sharesIdC
+    QHash<QUuid, QHash<QString, ETagInfo>> _lastEtagJobForSpace;
 };
 
 }

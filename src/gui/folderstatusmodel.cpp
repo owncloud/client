@@ -176,7 +176,6 @@ namespace {
 
 FolderStatusModel::FolderStatusModel(AccountState *state, QObject *parent)
     : QAbstractListModel(parent)
-// , _accountState(state)
 {
     if (!state || !state->account() || !state->account()->spacesManager())
         return;
@@ -408,7 +407,10 @@ void FolderStatusModel::resetFolders(const QUuid &accountId, const QList<Folder 
 {
     if (!accountId.isNull() && _accountId != accountId)
         return;
-
+    // important to understand: the first check is just the identify whether we are associated with the account
+    // the change was related it.
+    // if the accountId is null it means that ALL folders, regardless of account, were removed, eg on shutdown
+    // so we still need to reset the model even if the accountId is null
     beginResetModel();
     _folders.clear();
 
@@ -424,7 +426,6 @@ void FolderStatusModel::resetFolders(const QUuid &accountId, const QList<Folder 
     endResetModel();
 }
 
-// todo for new model: override insertRows
 void FolderStatusModel::onFolderAdded(const QUuid &accountId, Folder *folder)
 {
     if (!folder || accountId != _accountId)
@@ -447,7 +448,6 @@ void FolderStatusModel::addFolder(Folder *f)
     });
 }
 
-// todo for new model: override removeRows
 void FolderStatusModel::onFolderRemoved(const QUuid &accountId, Folder *folder)
 {
     if (!folder || accountId != _accountId)

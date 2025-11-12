@@ -16,7 +16,6 @@
 
 #include "accountstate.h"
 #include "folder.h"
-#include "libsync/graphapi/spacesmanager.h"
 #include "libsync/syncengine.h"
 
 
@@ -31,12 +30,14 @@ ETagWatcher::ETagWatcher(QObject *parent)
 {
 }
 
+// todo: #48 - this seems to be triggered on every timer driven sync check for each folder. Investigate.
 void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
 {
     QString spaceId = space->id();
-    if (_lastEtagJobForSpace.contains(spaceId)) {
+    QUuid account = space->accountId();
+    if (_lastEtagJobForSpace.contains(account) && _lastEtagJobForSpace[account].contains(spaceId)) {
         QString etag = Utility::normalizeEtag(space->drive().getRoot().getETag());
-        updateEtag(spaceId, etag);
+        updateEtag(account, spaceId, etag);
     }
 }
 
@@ -46,20 +47,13 @@ void ETagWatcher::slotFolderListChanged(const QUuid &accountId, const QList<Fold
         // if the list is empty and there is no accountId, it means ALL folders have been removed, eg on app shutdown
         if (accountId.isNull())
             _lastEtagJobForSpace.clear();
-        else
-        // remove all folders associated with the account id because there are no longer any active folders here
-        {
-            for (const ETagInfo &info : std::as_const(_lastEtagJobForSpace)) {
-                Folder *f = info.folder;
-                if (f->accountState() && f->accountState()->account() && f->accountState()->account()->uuid() == accountId)
-                    _lastEtagJobForSpace.remove(f->definition().spaceId());
-            }
-        }
+        else if (_lastEtagJobForSpace.contains(accountId))
+            _lastEtagJobForSpace.remove(accountId);
         return;
     }
 
     for (Folder *f : folders)
-        onFolderAdded({}, f);
+        onFolderAdded(accountId, f);
 }
 
 void ETagWatcher::onFolderAdded(const QUuid &accountId, Folder *folder)
@@ -67,36 +61,36 @@ void ETagWatcher::onFolderAdded(const QUuid &accountId, Folder *folder)
     Q_UNUSED(accountId);
 
     QString spaceId = folder->definition().spaceId();
-    if (_lastEtagJobForSpace.contains(spaceId))
+    if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId))
         return;
 
-    if (folder->accountState() && folder->accountState()->account() && folder->isReady()) {
-        _lastEtagJobForSpace.insert(spaceId, ETagInfo{{}, folder});
+    _lastEtagJobForSpace[accountId].insert(spaceId, ETagInfo{{}, folder});
 
-        connect(&folder->syncEngine(), &SyncEngine::rootEtag, this, [folder, this](const QString &etag, const QDateTime &time) {
-            QString spaceId = folder->definition().spaceId();
-            auto &info = _lastEtagJobForSpace[spaceId];
+    connect(&folder->syncEngine(), &SyncEngine::rootEtag, this, [accountId, folder, this](const QString &etag, const QDateTime &time) {
+        QString spaceId = folder->definition().spaceId();
+        if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId)) {
+            auto &info = _lastEtagJobForSpace[accountId][spaceId];
             info.etag = etag;
             if (folder->accountState()) {
                 folder->accountState()->tagLastSuccessfulETagRequest(time);
             }
-        });
-    }
+        }
+    });
 }
 
 void ETagWatcher::onFolderRemoved(const QUuid &accountId, Folder *folder)
 {
     Q_UNUSED(accountId);
-    if (folder)
-        _lastEtagJobForSpace.remove(folder->definition().spaceId());
+    if (folder && _lastEtagJobForSpace.contains(accountId))
+        _lastEtagJobForSpace[accountId].remove(folder->definition().spaceId());
 }
 
-void ETagWatcher::updateEtag(const QString &spaceId, const QString &etag)
+void ETagWatcher::updateEtag(const QUuid &accountId, const QString &spaceId, const QString &etag)
 {
     // the server must provide a valid etag but there might be bugs
     // https://github.com/owncloud/ocis/issues/7160
-    if (OC_ENSURE_NOT(etag.isEmpty())) {
-        auto &info = _lastEtagJobForSpace[spaceId];
+    if (!etag.isEmpty() && _lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId)) {
+        auto &info = _lastEtagJobForSpace[accountId][spaceId];
         if (info.folder->canSync() && info.etag != etag) {
             const bool folderWasSyncedOnce = !info.etag.isEmpty();
             info.etag = etag;
