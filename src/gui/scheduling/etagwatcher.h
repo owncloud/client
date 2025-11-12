@@ -55,6 +55,7 @@ private:
 
     // we have to separate the data into accounts because it's NOT the case that all spaceid's are unique
     // specifically, the Shares space always has the same space id -> see Space.cpp sharesIdC
+    // so we have a hash keyed on the uuid of the account, which in turn holds the hash for the space ids->etag info
     QHash<QUuid, QHash<QString, ETagInfo>> _lastEtagJobForSpace;
 };
 

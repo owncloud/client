@@ -79,8 +79,9 @@ LocalActivityWidget::~LocalActivityWidget()
 
 void LocalActivityWidget::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
 {
-    Q_UNUSED(accountId);
-    _model->remove_if([folders](const ProtocolItem &item) { return (!folders.contains(item.folder())); });
+    _model->remove_if([accountId, folders](const ProtocolItem &item) {
+        return (item.folder()->accountState()->account()->uuid() == accountId && !folders.contains(item.folder()));
+    });
 }
 
 void LocalActivityWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
