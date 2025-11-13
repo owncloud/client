@@ -81,7 +81,6 @@ set( final_src
 )
 
 add_subdirectory(folderwizard)
-
 add_library(owncloudGui SHARED ${final_src})
 
 set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
@@ -120,6 +119,7 @@ add_subdirectory(networkadapters)
 add_subdirectory(newaccountwizard)
 add_subdirectory(socketapi)
 add_subdirectory(spaces)
+add_subdirectory(FoldersGui)
 
 target_include_directories(owncloudGui PUBLIC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/QProgressIndicator
