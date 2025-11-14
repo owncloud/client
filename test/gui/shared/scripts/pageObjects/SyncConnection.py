@@ -36,7 +36,7 @@ class SyncConnection:
         "visible": 1,
     }
     DISABLE_VFS_CONFIRMATION_BUTTON = {
-        # "text": "Disable support",
+        "name": "DisableVFSSupportButton",
         "type": "QPushButton",
         "visible": 1,
         "window": names.disable_virtual_file_support_QMessageBox,
@@ -48,14 +48,14 @@ class SyncConnection:
         "visible": 1,
     }
     CANCEL_FOLDER_SYNC_CONNECTION_DIALOG = {
-        # "text": "Cancel",
+        "name":"CancelFolderSyncDialog",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
         "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox,
     }
     REMOVE_FOLDER_SYNC_CONNECTION_BUTTON = {
-        # "text": "Remove Folder Sync Connection",
+        "name":"RemoveFolderSyncButton",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,

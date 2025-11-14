@@ -16,10 +16,11 @@ class SyncConnectionWizard:
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
     }
     CHOOSE_LOCAL_SYNC_FOLDER = {
+        "container": names.stackedWidget_Add_Folder_Sync_Connection_QGroupBox,
         "name": "localFolderLineEdit",
         "type": "QLineEdit",
         "visible": 1,
-        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        # "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
     }
     BACK_BUTTON = {
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
@@ -28,7 +29,8 @@ class SyncConnectionWizard:
         "visible": 1,
     }
     NEXT_BUTTON = {
-        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        "container": names.stackedWidget_Add_Folder_Sync_Connection_QGroupBox,
+        "name": "__qt__passive_wizardbutton1",
         "type": "QPushButton",
         # "text": "&Next >",
         "visible": 1,
@@ -48,7 +50,7 @@ class SyncConnectionWizard:
         "name": "qt_wizard_finish",
         "type": "QPushButton",
         "visible": 1,
-        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        "container": names.stackedWidget_Add_Folder_Sync_Connection_QGroupBox
     }
     REMOTE_FOLDER_TREE = {
         "container": names.add_Folder_Sync_Connection_groupBox_QGroupBox,
@@ -71,7 +73,7 @@ class SyncConnectionWizard:
         "visible": 1,
     }
     CANCEL_FOLDER_SYNC_CONNECTION_WIZARD = {
-        "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        "container": names.stackedWidget_Add_Folder_Sync_Connection_QGroupBox,
         "name": "qt_wizard_cancel",
         "type": "QPushButton",
         "visible": 1,

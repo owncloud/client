@@ -333,9 +333,12 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
             .arg(shortGuiLocalPath),
         QMessageBox::NoButton, ocApp()->gui()->settingsDialog());
+    messageBox->setObjectName("ConfirmFolderSyncRemovalMessageBox");
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
     QPushButton *yesButton = messageBox->addButton(tr("Remove Folder Sync Connection"), QMessageBox::YesRole);
-    messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
+    yesButton->setObjectName("RemoveFolderSyncButton");
+    QPushButton *cancelButton = messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
+    cancelButton->setObjectName("CancelFolderSyncDialog");
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
             // todo: #3, this should be a signal to folderman
@@ -372,7 +375,9 @@ void AccountSettings::slotDisableVfsCurrentFolder(Folder *folder)
            "will become available again."
            "\n\n"
            "This action will abort any currently running synchronization."));
+    msgBox->setObjectName("DisableVFSMessageBox");
     auto acceptButton = msgBox->addButton(tr("Disable support"), QMessageBox::AcceptRole);
+    acceptButton->setObjectName("DisableVFSSupportButton");
     msgBox->addButton(tr("Cancel"), QMessageBox::RejectRole);
     connect(msgBox, &QMessageBox::finished, msgBox, [msgBox, folder, acceptButton] {
         msgBox->deleteLater();
@@ -734,6 +739,7 @@ void AccountSettings::slotDeleteAccount()
             .arg(_accountState->account()->displayNameWithHost()),
         QMessageBox::NoButton, this);
     auto yesButton = messageBox->addButton(tr("Remove connection"), QMessageBox::YesRole);
+    yesButton->setObjectName("RemoveConnectionButton");
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
     connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton]{

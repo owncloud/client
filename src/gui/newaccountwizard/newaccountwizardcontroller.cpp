@@ -53,6 +53,7 @@ void NewAccountWizardController::setupWizard()
     _wizard->setFixedSize(600, 450);
     _wizard->setWizardStyle(QWizard::ModernStyle);
     _wizard->setWindowTitle(tr("Add account..."));
+    _wizard->setObjectName("NewAccountWizard");
 
     QWizard::WizardOptions origOptions = _wizard->options();
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
@@ -207,7 +208,6 @@ void NewAccountWizardController::onPageChanged(int newPageIndex)
         _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Sign in"));
     } else if (newPageIndex == _oauthPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_oauthPageIndex]);
-        _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Open sign in again"));
         if (_autoValidateOAuthPage) {
             _autoValidateOAuthPage = false;
             _wizard->validateCurrentPage();
