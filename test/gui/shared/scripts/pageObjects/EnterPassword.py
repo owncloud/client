@@ -53,7 +53,6 @@ class EnterPassword:
         "visible": 1,
     }
     ACCEPT_CERTIFICATE_YES = {
-        "text": "Yes",
         "type": "QPushButton",
         "visible": 1,
         "window": TLS_CERT_WINDOW,

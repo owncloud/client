@@ -14,11 +14,9 @@ from helpers.SyncHelper import listen_sync_status_for_item
 
 class AccountConnectionWizard:
     SERVER_ADDRESS_BOX = {
-        "aboveWidget": names.server_address_QLabel,
+        "name": "ServerAddressLineEdit",
         "type": "QLineEdit",
-        "unnamed": 1,
         "visible": 1,
-        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     NEXT_BUTTON = {
         "container": names.settings_dialogStack_QStackedWidget,
@@ -45,7 +43,7 @@ class AccountConnectionWizard:
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONFIRM_INSECURE_CONNECTION_BUTTON = {
-        "text": "Confirm",
+        # "text": "Confirm",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
@@ -71,14 +69,13 @@ class AccountConnectionWizard:
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     DIRECTORY_NAME_BOX = {
-        "text": "Browse...",
+        "name": "BrowseButton",
         "type": "QPushButton",
-        "unnamed": 1,
         "visible": 1,
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CHOOSE_BUTTON = {
-        "text": "Choose",
+        # "text": "Choose",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
@@ -102,16 +99,13 @@ class AccountConnectionWizard:
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
-        "aboveWidget": names.leave_screen_QLabel,
+        "name": "CopyUrlToClipboardButton",
         "type": "QPushButton",
-        "unnamed": 1,
         "visible": 1,
-        "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
     CONF_SYNC_MANUALLY_RADIO_BUTTON = {
-        "text": "Sync and download folders manually",
+        "name": "SelectiveSyncRadioButton",
         "type": "QRadioButton",
-        "unnamed": 1,
         "visible": 1,
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }
@@ -134,9 +128,8 @@ class AccountConnectionWizard:
         "visible": 1,
     }
     SYNC_EVERYTHING_RADIO_BUTTON = {
-        "text": "Automatically sync and download folders and files",
+        "name": "SyncAllRadioButton",
         "type": "QRadioButton",
-        "unnamed": 1,
         "visible": 1,
         "window": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     }

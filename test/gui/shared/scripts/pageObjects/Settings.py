@@ -25,7 +25,6 @@ class Settings:
         "visible": 1,
     }
     ABOUT_DIALOG_OK_BUTTON = {
-        "text": "OK",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,
