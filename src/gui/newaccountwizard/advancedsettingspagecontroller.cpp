@@ -77,11 +77,13 @@ void AdvancedSettingsPageController::buildPage()
     layout->addWidget(vfsButton, Qt::AlignLeft);
 
     QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download folders and files"), _page);
+    syncAllButton->setObjectName("SyncAllRadioButton");
     syncAllButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
     layout->addWidget(syncAllButton, Qt::AlignLeft);
 
     QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download folders manually"), _page);
+    selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
     selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
     layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
