@@ -14,17 +14,37 @@
 
 #pragma once
 
-#include "foldererroritem.h"
+#include "QStandardItem"
 
-#include <memory>
+// #include "foldererroritem.h"
+#include "folder.h"
+
 #include <QList>
+#include <QPointer>
 
-class FolderItem
+#include "folderstatusupdater.h"
+
+namespace OCC {
+
+enum ItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusInfoRole };
+
+class FolderItem : public QStandardItem
 {
 public:
-    FolderItem();
+    FolderItem(Folder *folder);
+
+    QVariant data(int role) const override;
+
+    SyncProgress _progress;
 
 private:
     // I may switch this to hold simple instances instead of unique pointers as...why the heck not?
-    QList<std::unique_ptr<FolderErrorItem>> _errorItems;
+    QPointer<Folder> _folder;
+
+    //  QList<std::unique_ptr<FolderErrorItem>> _errorItems;
+    void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
+
+    // QString statusIconName();
+    QString statusIconName();
 };
+}

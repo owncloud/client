@@ -16,9 +16,21 @@
 
 #include <QAbstractItemModel>
 
+class FolderData;
+
 class FolderModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
     explicit FolderModel(QObject *parent);
+
+    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = {}) const override;
+    QModelIndex parent(const QModelIndex &index) const override;
+    int rowCount(const QModelIndex &parent = {}) const override;
+    int columnCount(const QModelIndex &parent = {}) const override;
+
+    // hash the folder id to folder info
+
 };

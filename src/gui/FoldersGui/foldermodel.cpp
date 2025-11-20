@@ -19,3 +19,29 @@ FolderModel::FolderModel(QObject *parent)
     : QAbstractItemModel{parent}
 {
 }
+
+QVariant FolderModel::data(const QModelIndex &index, int role) const
+{
+    return {};
+}
+
+
+QModelIndex FolderModel::index(int row, int column, const QModelIndex &parent) const
+{
+    return {};
+}
+
+QModelIndex FolderModel::parent(const QModelIndex &index) const
+{
+    return {};
+}
+
+int FolderModel::rowCount(const QModelIndex &parent) const
+{
+    return 0;
+}
+
+int FolderModel::columnCount(const QModelIndex &parent) const
+{
+    return 3; // so far. maybe we get it from the item at that index instead
+}

@@ -151,6 +151,8 @@ if(WITH_AUTO_UPDATER)
     target_compile_definitions(owncloudGui PUBLIC $<BUILD_INTERFACE:WITH_AUTO_UPDATER>)
 endif()
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_executable(owncloud main.cpp)
 
 set_target_properties(owncloud PROPERTIES
@@ -160,6 +162,7 @@ set_target_properties(owncloud PROPERTIES
 )
 apply_common_target_settings(owncloud)
 target_link_libraries(owncloud PUBLIC owncloudGui owncloudResources KDAB::kdsingleapplication )
+target_link_libraries(owncloud PRIVATE Qt6::Core)
 
 MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")
 
