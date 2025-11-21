@@ -44,7 +44,6 @@ private:
     //  QList<std::unique_ptr<FolderErrorItem>> _errorItems;
     void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
 
-    // QString statusIconName();
-    QString statusIconName();
+    QString statusIconName() const;
 };
 }

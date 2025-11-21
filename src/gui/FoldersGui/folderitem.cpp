@@ -32,7 +32,7 @@ FolderItem::FolderItem(Folder *folder)
     // QObject::connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, &FolderItem::updateProgress);
 }
 
-QString FolderItem::statusIconName()
+QString FolderItem::statusIconName() const
 {
     if (!_folder || !_folder->accountState())
         return {};

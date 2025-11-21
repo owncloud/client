@@ -3,8 +3,6 @@ target_sources(owncloudGui PRIVATE
 	folderitem.h
 	foldererroritem.cpp
 	foldererroritem.h
-	foldermodel.cpp
-	foldermodel.h
 	foldermodelcontroller.cpp
 	foldermodelcontroller.h
 	folderstatusupdater.cpp
