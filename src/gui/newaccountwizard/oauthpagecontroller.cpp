@@ -76,6 +76,7 @@ void OAuthPageController::buildPage()
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
     _copyButton = new QPushButton(copyIcon(), QString(), _page);
+    _copyButton->setObjectName("CopyUrlToClipboardButton");
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
     _copyButton->setFixedSize(_urlField->height(), _urlField->height());

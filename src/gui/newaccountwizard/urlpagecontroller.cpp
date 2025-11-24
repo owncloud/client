@@ -82,6 +82,7 @@ void UrlPageController::buildPage()
     _urlField->setFocusPolicy(Qt::StrongFocus);
     _urlField->setAccessibleName(tr("Server address field"));
     _urlField->setAccessibleDescription(tr("Enter your server address here"));
+    _urlField->setObjectName("ServerAddressLineEdit");
 
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
