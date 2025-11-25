@@ -46,7 +46,7 @@ public:
 public Q_SLOTS:
     void slotProgressInfo(Folder *folder, const ProgressInfo &progress);
     void slotItemCompleted(Folder *folder, const SyncFileItemPtr &item);
-    void filterDidChange();
+    void filterChanged();
 
 Q_SIGNALS:
     void issueCountUpdated(int);
@@ -54,6 +54,8 @@ Q_SIGNALS:
 private Q_SLOTS:
     QMenu *showFilterMenu(QWidget *parent);
     void slotItemContextMenu(const QPoint &pos);
+    void onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders);
+    void onFolderRemoved(const QUuid &accountId, Folder *f);
 
 private:
     static void addResetFiltersAction(QMenu *menu, const QList<std::function<void()>> &resetFunctions);

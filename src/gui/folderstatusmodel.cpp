@@ -174,36 +174,31 @@ namespace {
     }
 }
 
-FolderStatusModel::FolderStatusModel(AccountState *accountState, QObject *parent)
+FolderStatusModel::FolderStatusModel(AccountState *state, QObject *parent)
     : QAbstractListModel(parent)
-    , _accountState(accountState)
 {
-    connect(FolderMan::instance(), &FolderMan::folderSyncStateChange, this, &FolderStatusModel::slotFolderSyncStateChange);
+    if (!state || !state->account() || !state->account()->spacesManager())
+        return;
 
-    if (_accountState && _accountState->account() && _accountState->account()->spacesManager()) {
-        // todo: we should not update the whole folder model any time the spaces are updated, implement spaceAdded and removed to deal with that incrementally
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this,
-            [this] { Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0)); });
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](auto *space) {
-            for (int i = 0; i < rowCount(); ++i) {
-                if (_folders[i]->_folder->space() == space) {
-                    Q_EMIT dataChanged(index(i, 0), index(i, 0));
-                    break;
-                }
+    _accountId = state->account()->uuid();
+
+    GraphApi::SpacesManager *spaceMan = state->account()->spacesManager();
+    // todo: we should not update the whole folder model any time the spaces are updated, implement spaceAdded and removed to deal with that incrementally
+    connect(spaceMan, &GraphApi::SpacesManager::updated, this, [this] { Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0)); });
+    connect(spaceMan, &GraphApi::SpacesManager::spaceChanged, this, [this](auto *space) {
+        for (int i = 0; i < rowCount(); ++i) {
+            if (_folders[i]->_folder->space() == space) {
+                Q_EMIT dataChanged(index(i, 0), index(i, 0));
+                break;
             }
-        });
-    }
-
-    resetFolders();
+        }
+    });
 }
 
 FolderStatusModel::~FolderStatusModel() { }
 
 QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
 {
-    if (_accountState == nullptr)
-        return QVariant();
-
     if (!index.isValid())
         return QVariant();
 
@@ -217,9 +212,9 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
 
     auto getErrors = [f] {
         auto errors = f->syncResult().errorStrings();
-        const auto legacyError = FolderMan::instance()->unsupportedConfiguration(f->path());
-        if (!legacyError) {
-            errors.append(legacyError.error());
+        const Result<void, QString> notLegacyError = FolderMan::instance()->unsupportedConfiguration(f->path());
+        if (!notLegacyError) {
+            errors.append(notLegacyError.error());
         }
         if (f->syncResult().hasUnresolvedConflicts()) {
             errors.append(tr("There are unresolved conflicts."));
@@ -408,32 +403,62 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
     slotUpdateFolderState(f);
 }
 
-void FolderStatusModel::resetFolders()
+void FolderStatusModel::resetFolders(const QUuid &accountId, const QList<Folder *> folders)
 {
+    if (!accountId.isNull() && _accountId != accountId)
+        return;
+    // important to understand: the first check is just the identify whether we are associated with the account
+    // the change was related it.
+    // if the accountId is null it means that ALL folders, regardless of account, were removed, eg on shutdown
+    // so we still need to reset the model even if the accountId is null
     beginResetModel();
     _folders.clear();
 
-    if (!_accountState) {
+    if (folders.isEmpty()) {
         endResetModel();
         return;
     }
 
-    // todo: there is already a plan to organize folders in the folderman by account using a lookup on the uuid. this kind of filtering in the dependent is not
-    // ok. also the folder should not have an accessor for the account state or any other "powerful" object.
-    for (const auto &f : FolderMan::instance()->folders()) {
-        if (f->accountState() != _accountState)
-            continue;
-
-        _folders.push_back(std::make_unique<SubFolderInfo>(f));
-
-        connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, [f, this](Folder *folder, const ProgressInfo &progress) {
-            if (folder == f) {
-                slotSetProgress(progress, f);
-            }
-        });
+    for (const auto &f : folders) {
+        addFolder(f);
     }
 
     endResetModel();
+}
+
+void FolderStatusModel::onFolderAdded(const QUuid &accountId, Folder *folder)
+{
+    if (!folder || accountId != _accountId)
+        return;
+
+    int insertIndex = rowCount();
+    beginInsertRows({}, insertIndex, insertIndex);
+    addFolder(folder);
+    endInsertRows();
+}
+
+void FolderStatusModel::addFolder(Folder *f)
+{
+    _folders.push_back(std::make_unique<SubFolderInfo>(f));
+
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, [f, this](Folder *folder, const ProgressInfo &progress) {
+        if (folder == f) {
+            slotSetProgress(progress, f);
+        }
+    });
+}
+
+void FolderStatusModel::onFolderRemoved(const QUuid &accountId, Folder *folder)
+{
+    if (!folder || accountId != _accountId)
+        return;
+
+    int removeIndex = indexOf(folder);
+    if (removeIndex >= 0) {
+        beginRemoveRows({}, removeIndex, removeIndex);
+        _folders.erase(_folders.cbegin() + removeIndex);
+        endRemoveRows();
+    }
 }
 
 } // namespace OCC

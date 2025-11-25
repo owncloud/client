@@ -532,8 +532,6 @@ void Folder::startVfs()
             }
         });
         _vfsIsReady = true;
-        // Refactoring todo: NO. Just no.
-        Q_EMIT FolderMan::instance()->folderListChanged();
         // We are set up, schedule ourselves if we can.
         // If not the scheduler will take care of it later.
         if (canSync()) {

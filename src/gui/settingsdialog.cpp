@@ -149,7 +149,6 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     }
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &SettingsDialog::onAccountAdded);
-
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &SettingsDialog::onAccountRemoved);
 }
 

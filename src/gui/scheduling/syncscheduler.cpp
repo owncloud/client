@@ -19,6 +19,7 @@
 #include "gui/scheduling/etagwatcher.h"
 #include "libsync/configfile.h"
 #include "libsync/syncengine.h"
+#include "spacesmanager.h"
 
 using namespace std::chrono_literals;
 
@@ -112,7 +113,13 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
     , _pauseSyncWhenMetered(ConfigFile().pauseSyncWhenMetered())
     , _queue(new FolderPriorityQueue)
 {
-    new ETagWatcher(parent, this);
+    _watcher = new ETagWatcher(this);
+
+    connect(parent, &FolderMan::folderAdded, _watcher, &ETagWatcher::onFolderAdded);
+    connect(parent, &FolderMan::folderRemoved, _watcher, &ETagWatcher::onFolderRemoved);
+    connect(parent, &FolderMan::folderListChanged, _watcher, &ETagWatcher::slotFolderListChanged);
+
+    connect(_watcher, &ETagWatcher::requestEnqueueFolder, this, &SyncScheduler::handleEnqueueFolder);
 
     // Normal syncs are performed incremental but when fullLocalDiscoveryInterval times out
     // a complete local discovery is performed.
@@ -120,7 +127,10 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
     auto *fullLocalDiscoveryTimer = new QTimer(this);
     fullLocalDiscoveryTimer->setInterval(ConfigFile().fullLocalDiscoveryInterval() + 2min);
     connect(fullLocalDiscoveryTimer, &QTimer::timeout, this, [parent, this] {
-        for (auto *f : parent->folders()) {
+        // I'm doing it this way as std::as_const won't compile as it's "deleted" (no idea)
+        // and if I just hit folders() we get clazy complaining that it might detach :/
+        const QList<Folder *> folders = parent->folders();
+        for (auto *f : folders) {
             if (f->isReady() && f->accountState()->state() == AccountState::State::Connected) {
                 enqueueFolder(f);
             }
@@ -133,6 +143,16 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
 SyncScheduler::~SyncScheduler()
 {
     delete _queue;
+}
+
+void SyncScheduler::connectSpacesManager(OCC::GraphApi::SpacesManager *spaceMan)
+{
+    connect(spaceMan, &GraphApi::SpacesManager::spaceChanged, _watcher, &ETagWatcher::slotSpaceChanged, Qt::UniqueConnection);
+}
+
+void SyncScheduler::handleEnqueueFolder(Folder *folder)
+{
+    enqueueFolder(folder);
 }
 
 void SyncScheduler::enqueueFolder(Folder *folder, Priority priority)

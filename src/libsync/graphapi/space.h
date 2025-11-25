@@ -70,6 +70,7 @@ namespace GraphApi {
         QString displayName() const;
 
         QString id() const;
+        QUuid accountId() const;
 
 
         OpenAPI::OAIDrive drive() const;
@@ -96,6 +97,7 @@ namespace GraphApi {
         void setDrive(const OpenAPI::OAIDrive &drive);
 
         SpacesManager *_spaceManager;
+        QUuid _accountId;
         OpenAPI::OAIDrive _drive;
 
         SpaceImage *_image;

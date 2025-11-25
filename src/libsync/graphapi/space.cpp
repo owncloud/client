@@ -28,6 +28,11 @@ namespace {
 const auto personalC = QLatin1String("personal");
 
 // https://github.com/cs3org/reva/blob/0cde0a3735beaa14ebdfd8988c3eb77b3c2ab0e6/pkg/utils/utils.go#L56-L59
+
+// important detail about this id: the "shares" folder always has this id, even across different accounts!
+// this means that we can never assume that space id's are unique across accounts, to the contrary, if a share is
+// in play they most definitely are not. This concept could theoretically extend to other folders so we need to index
+// space id against account id for many operations.
 const auto sharesIdC = QLatin1String("a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668");
 }
 
@@ -40,6 +45,8 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
     // todo future refactoring: get this setDrive out of the ctr since it potentially kicks off a job for the SpaceImage before the Space is fully constructed
     // propose removing the drive arg from the ctr completely, and moving the call to setDrive to the spacesmanager such that any call to
     // "new" space is immediately followed by setDrive.
+    if (_spaceManager->account())
+        _accountId = _spaceManager->account()->uuid();
     setDrive(drive);
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
 }
@@ -47,6 +54,11 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
 OpenAPI::OAIDrive Space::drive() const
 {
     return _drive;
+}
+
+QUuid Space::accountId() const
+{
+    return _accountId;
 }
 
 void Space::setDrive(const OpenAPI::OAIDrive &drive)
