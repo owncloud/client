@@ -6,7 +6,7 @@ import pdb, pprint
 
 if len(sys.argv) < 4:
     print("Usage:")
-    print("\tgen_sym_files.py <path to breakpad's dump_syms> <path to owncloud.app> <symbol output dir>")
+    print("\tgen_sym_files.py <path to breakpad's dump_syms> <path to ownCloud.app> <symbol output dir>")
     print("")
     print("Symbols will be created in './symbols'")
     sys.exit(1)
