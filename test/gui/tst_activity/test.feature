@@ -1,4 +1,3 @@
-@skip
 Feature: filter activity for user
     As a user
     I want to filter activity

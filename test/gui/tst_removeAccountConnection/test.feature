@@ -1,4 +1,3 @@
-@skip
 Feature: remove account connection
   As a user
   I want to remove my account

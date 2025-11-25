@@ -1,4 +1,3 @@
-@skip
 Feature: edit files
     As a user
     I want to be able to edit the file content

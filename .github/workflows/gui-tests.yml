@@ -5,22 +5,11 @@ on:
   push:
     branches: [ master ]
     tags: [ "*" ]
+  schedule:
+    - cron: "0 3 * * *"
 
 env:
-  DEFAULT_PHP_VERSION: "7.4"
-  MYSQL: "mysql:8.0"
-  OC_CI_ALPINE: "owncloudci/alpine:latest"
-  OC_CI_CLIENT: "owncloudci/client:latest"
-  OC_CI_DRONE_SKIP_PIPELINE: "owncloudci/drone-skip-pipeline"
-#  OC_CI_NODEJS: "owncloudci/nodejs:18"
-  OC_CI_PHP: "owncloudci/php:%s"
-  OC_CI_WAIT_FOR: "owncloudci/wait-for:latest"
-#  OC_OCIS: "owncloud/ocis-rolling:%s"
-  OC_UBUNTU: "owncloud/ubuntu:20.04"
-#  OC_CI_SQUISH: "owncloudci/squish:fedora-42-8.1.0-qt68x-linux64"
-  PLUGINS_GIT_ACTION: "plugins/git-action:1"
-  PLUGINS_S3: "plugins/s3:1.4.0"
-  TOOLHIPPIE_CALENS: "toolhippie/calens:0.4.0"
+  # OC_CI_WAIT_FOR: "owncloudci/wait-for:latest"
   # npm packages to install
   NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
   S3_PUBLIC_CACHE_SERVER: "https://cache.owncloud.com"
@@ -53,30 +42,35 @@ jobs:
 
   changelog:
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
     permissions:
       contents: write
       pull-requests: read
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Generate changelog
         uses: docker://toolhippie/calens:0.4.0
         with:
           entrypoint: /bin/sh
           args: -c "calens > CHANGELOG.md"
-      
+
       - name: Show diff
         run: git diff
-      
+
       - name: Output
         run: cat CHANGELOG.md
-      
+
       - name: Publish
-        # if: github.event_name == "push" && github.ref == "refs/heads/master"
+        if: >
+          github.event_name == 'push' &&
+          github.ref == 'refs/heads/master' &&
+          !startsWith(github.ref, 'refs/tags/') &&
+          !startsWith(github.ref, 'refs/pull/')
         run: |
           git config user.name "ownClouders"
           git config user.email "devops@owncloud.com"
@@ -170,7 +164,16 @@ jobs:
           SECURE_BACKEND_HOST: https://ocis:9200
           OCIS: true
           SERVER_INI: test/gui/drone/server.ini
-          SQUISH_PARAMETERS: "--testsuite test/gui --reportgen html,test/gui/guiReportUpload --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip --tags ~@skipOnLinux"
+          # SQUISH_PARAMETERS: "--testsuite test/gui --reportgen html,test/gui/guiReportUpload --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip --tags ~@skipOnLinux"
+          SQUISH_PARAMETERS: >
+            --testsuite test/gui
+            --reportgen html,test/gui/guiReportUpload
+            --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false
+            --tags ~@skip --tags ~@skipOnLinux
+            ${{ 
+              !contains(github.event.pull_request.title, 'full-ci') 
+              && '--abortOnFail' || '' 
+            }}
           STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
           OWNCLOUD_CORE_DUMP: 1
           RECORD_VIDEO_ON_FAILURE: false
