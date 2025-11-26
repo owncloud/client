@@ -547,7 +547,7 @@ ownCloud admins and users.
 
 * Security - Fixing high security vulnerability in Windows Installer: [#12010](https://github.com/owncloud/client/issues/12010)
 
-   CVE and security advisory will follow.
+   CVE: CVE-2025-24926
 
    https://github.com/owncloud/client/issues/12010
 
