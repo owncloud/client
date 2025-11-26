@@ -76,7 +76,7 @@ ownCloud admins and users.
 
 * Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
 
-   CVE and security advisory will follow.
+   CVE: CVE-2025-64441
 
    https://github.com/owncloud/client/pull/12379
    https://github.com/owncloud/client/pull/12389
