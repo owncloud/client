@@ -9,8 +9,7 @@ SERVERS=("oc10" "ocis")
 BUILD_STATUS="✅ Success"
 TEST_LOGS=""
 BRANCH_NAME="${GITHUB_REF_NAME}"
-#ROOMID="!rnWsCVUmDHDJbiSPMM:matrix.org"
-ROOMiD="!PtHqBMpXPtWLSAfZxh:openproject.org"
+ROOMID="!rnWsCVUmDHDJbiSPMM:matrix.org"
 
 if [ "${GITHUB_BUILD_STATUS}" == "failure" ]; then
     BUILD_STATUS="❌️ Failure"

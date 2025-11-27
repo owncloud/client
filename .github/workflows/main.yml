@@ -1,14 +1,14 @@
 name: ownCloud CI
 
-#on:
-#  push:
-#    branches:
-#      - master
-#      - '[0-9]+'
-#  pull_request:
-#  workflow_dispatch:
+on:
+  push:
+    branches:
+      - master
+      - '[0-9]+'
+  pull_request:
+  workflow_dispatch:
 
-concurrency:
+concurrency: 
   group: ${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 

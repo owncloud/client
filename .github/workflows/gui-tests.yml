@@ -6,11 +6,9 @@ on:
     branches: [ master ]
     tags: [ "*" ]
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 0 * * *"
 
 env:
-  # OC_CI_WAIT_FOR: "owncloudci/wait-for:latest"
-  # npm packages to install
   NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
   S3_PUBLIC_CACHE_SERVER: "https://cache.owncloud.com"
   S3_PUBLIC_CACHE_BUCKET: "public"
@@ -149,9 +147,18 @@ jobs:
           mkdir test/gui/guiReportUpload/screenshots -p
           chmod 777 test/gui -R
 
-#      - name: Wait for oCIS service
-#        run: |
-#          docker run --rm --network host ${{ env.OC_CI_WAIT_FOR }} https://ocis:9200 -t 300
+      - name: Wait for ocis service
+        run: |
+          echo "Waiting for ocis"
+          for i in {1..30}; do
+            if curl -kfsSL https://ocis:9200 > /dev/null; then
+              echo "ocis is up ✅"
+              exit 0
+            fi
+            echo "Retrying in 5s..."
+            sleep 5
+          done
+          echo "❌ ocis failed to start" && exit 1
 
       - name: Run GUI test
         id: run_gui_test
@@ -164,7 +171,6 @@ jobs:
           SECURE_BACKEND_HOST: https://ocis:9200
           OCIS: true
           SERVER_INI: test/gui/drone/server.ini
-          # SQUISH_PARAMETERS: "--testsuite test/gui --reportgen html,test/gui/guiReportUpload --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip --tags ~@skipOnLinux"
           SQUISH_PARAMETERS: >
             --testsuite test/gui
             --reportgen html,test/gui/guiReportUpload
@@ -177,7 +183,6 @@ jobs:
           STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
           OWNCLOUD_CORE_DUMP: 1
           RECORD_VIDEO_ON_FAILURE: false
-          # allow to use any available pnpm version
           COREPACK_ENABLE_STRICT: 0
           HOME: /home/headless
         run: bash /dockerstartup/entrypoint.sh
@@ -197,20 +202,21 @@ jobs:
           SERVER_TYPE: ocis
         run: bash test/gui/drone/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
 
-#  notification:
-#    needs: gui-tests
-#    runs-on: ubuntu-latest
-#    container:
-#      image: owncloudci/alpine:latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: notify-matrix
-#        env:
-#          CACHE_ENDPOINT: https://cache.owncloud.com
-#          CACHE_BUCKET: public
-#          MATRIX_TOKEN: ${{ secrets.MATRIX_TOKEN }}
-#          GITHUB_BUILD_STATUS: ${{ needs.gui-tests.result }}
-#          COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
-#        run: bash test/gui/drone/notification_template.sh .
+  notification:
+    needs: gui-tests
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    container:
+      image: owncloudci/alpine:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: notify-matrix
+        env:
+          CACHE_ENDPOINT: https://cache.owncloud.com
+          CACHE_BUCKET: public
+          MATRIX_TOKEN: ${{ secrets.MATRIX_TOKEN }}
+          GITHUB_BUILD_STATUS: ${{ needs.gui-tests.result }}
+          COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
+        run: bash test/gui/drone/notification_template.sh .

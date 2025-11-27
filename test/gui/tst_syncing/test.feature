@@ -17,7 +17,7 @@ Feature: Syncing files
         And the user clicks on the activity tab
         And the user selects "Local Activity" tab in the activity
         Then the file "lorem-for-upload.txt" should have status "Uploaded" in the activity tab
-        And as "Alice" the file "lorem-for-upload.txt" should have the content "test conten" in the server
+        And as "Alice" the file "lorem-for-upload.txt" should have the content "test content" in the server
 
     @predefined_users
     Scenario: Syncing all files and folders from the server
