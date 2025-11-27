@@ -248,7 +248,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
         return folderInfo->_progress._overallSyncString;
     case Roles::Priority:
         // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
-        return QVariant::fromValue(f->priority() * 100 - (f->displayName().isEmpty() ? 0 : static_cast<int64_t>(f->displayName().at(0).toLower().unicode())));
+        return QVariant::fromValue(f->sortPriority() * 100 - (f->displayName().isEmpty() ? 0 : static_cast<int64_t>(f->displayName().at(0).toLower().unicode())));
     case Roles::Quota: {
         qint64 used{};
         qint64 total{};
