@@ -30,7 +30,6 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
-#include "gui/accountsettings.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"

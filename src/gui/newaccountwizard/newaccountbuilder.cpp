@@ -14,7 +14,6 @@
 #include "newaccountbuilder.h"
 
 #include "accountmanager.h"
-#include "accountsettings.h"
 #include "creds/abstractcredentials.h"
 
 

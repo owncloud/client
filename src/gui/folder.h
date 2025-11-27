@@ -337,13 +337,7 @@ public:
      */
     bool isDeployed() const;
 
-    uint32_t priority() const { return _definition.priority(); }
-
-	
-	// I don't think we ever want to allow setting this via the folder but need to verify.
-	// short story is this prio comes from the space, directly, and it's more related to "sorted" order of folders
-	// in the main folder list than anything else. It is *not* related to sync prio as far as I can tell
-    //  void setPriority(uint32_t p) { _definition.setPriority(p); }
+    uint32_t sortPriority() const { return _definition.priority(); }
 
     static Result<void, QString> checkPathLength(const QString &path);
 
@@ -361,6 +355,8 @@ Q_SIGNALS:
     void canSyncChanged();
     void spaceChanged();
     void vfsModeChanged(Folder *f, Vfs::Mode newMode);
+    void displayNameChanged();
+    void imageChanged(); // probably part of space changed
 
 
     /**
