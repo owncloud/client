@@ -16,12 +16,7 @@ env:
 jobs:
   lint-gui-test:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name != 'schedule' &&
-      (
-        github.event_name != 'pull_request' ||
-        !contains(github.event.pull_request.title, 'skip ci')
-      )
+    if: github.event_name == 'pull_request'
     container:
       image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
     steps:
@@ -44,53 +39,8 @@ jobs:
           npm install -g ${{ env.NPM_GHERLINT }}
           make -C test/gui gherkin-lint
 
-  changelog:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'schedule'
-    permissions:
-      contents: write
-      pull-requests: read
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Generate changelog
-        uses: docker://toolhippie/calens:0.4.0
-        with:
-          entrypoint: /bin/sh
-          args: -c "calens > CHANGELOG.md"
-
-      - name: Show diff
-        run: git diff
-
-      - name: Output
-        run: cat CHANGELOG.md
-
-      - name: Publish
-        if: >
-          github.event_name == 'push' &&
-          github.ref == 'refs/heads/master' &&
-          !startsWith(github.ref, 'refs/tags/') &&
-          !startsWith(github.ref, 'refs/pull/')
-        run: |
-          git config user.name "ownClouders"
-          git config user.email "devops@owncloud.com"
-          git add CHANGELOG.md
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-          git commit -m "Automated changelog update [skip ci]"
-          git push origin master
-
   gui-tests:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name != 'pull_request' ||
-      !contains(github.event.pull_request.title, 'skip ci')
     container:
       image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
       env:
@@ -177,7 +127,7 @@ jobs:
           BACKEND_HOST: https://ocis:9200
           SECURE_BACKEND_HOST: https://ocis:9200
           OCIS: true
-          SERVER_INI: test/gui/drone/server.ini
+          SERVER_INI: test/gui/ci/server.ini
           SQUISH_PARAMETERS: >
             --testsuite test/gui
             --reportgen html,test/gui/guiReportUpload
@@ -207,7 +157,7 @@ jobs:
         env:
           REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
           SERVER_TYPE: ocis
-        run: bash test/gui/drone/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
+        run: bash test/gui/ci/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
 
   notification:
     needs: gui-tests
@@ -221,9 +171,9 @@ jobs:
 
       - name: notify-matrix
         env:
-          CACHE_ENDPOINT: https://cache.owncloud.com
-          CACHE_BUCKET: public
+          CACHE_ENDPOINT: ${{ env.S3_PUBLIC_CACHE_SERVER }}
+          CACHE_BUCKET: ${{ env.S3_PUBLIC_CACHE_BUCKET }}
           MATRIX_TOKEN: ${{ secrets.MATRIX_TOKEN }}
           GITHUB_BUILD_STATUS: ${{ needs.gui-tests.result }}
           COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
-        run: bash test/gui/drone/notification_template.sh .
+        run: bash test/gui/ci/notification_template.sh .
