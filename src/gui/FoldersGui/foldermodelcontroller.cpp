@@ -16,6 +16,7 @@
 
 #include "folder.h"
 #include "folderitem.h"
+#include "folderman.h"
 
 #include <QStandardItemModel>
 
@@ -76,4 +77,13 @@ void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *fold
     // _folders.remove(id);
 }
 
+void FolderModelController::connectSignals(FolderMan *folderMan)
+{
+    connect(folderMan, &FolderMan::folderListChanged, this, &FolderModelController::onFolderListChanged);
+    connect(folderMan, &FolderMan::folderAdded, this, &FolderModelController::onFolderAdded);
+    connect(folderMan, &FolderMan::folderRemoved, this, &FolderModelController::onFolderRemoved);
+    onFolderListChanged(_accountId, folderMan->foldersForAccount(_accountId));
+
+    // connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
+}
 }

@@ -11,41 +11,23 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+#include "folderitemupdater.h"
 
-#pragma once
-
-#include "QStandardItem"
-
-// #include "foldererroritem.h"
 #include "folder.h"
-
-#include <QList>
-#include <QPointer>
-
-#include "folderstatusupdater.h"
+#include "folderitem.h"
 
 namespace OCC {
-
-enum ItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusInfoRole };
-
-class FolderItem : public QStandardItem
+FolderItemUpdater::FolderItemUpdater(FolderItem *item, QObject *parent)
+    : QObject{parent}
+    , _item(item)
 {
-public:
-    FolderItem(Folder *folder);
+    if (_item && _item->folder()) {
+        connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onFolderChanged);
+    }
+}
 
-    QVariant data(int role) const override;
-
-    void refresh();
-
-    SyncProgress _progress;
-
-    Folder *folder();
-
-private:
-    QPointer<Folder> _folder;
-
-    void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
-
-    QString statusIconName() const;
-};
+void FolderItemUpdater::onFolderChanged()
+{
+    _item->refresh();
+}
 }

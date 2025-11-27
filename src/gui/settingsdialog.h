@@ -27,7 +27,7 @@ namespace OCC {
 namespace Ui {
     class SettingsDialog;
 }
-class AccountSettings;
+class AccountView;
 class Application;
 class FolderMan;
 class ownCloudGui;
@@ -57,7 +57,7 @@ public:
     void requestModality(Account *account);
     void ceaseModality(Account *account);
 
-    AccountSettings *accountSettings(Account *account) const;
+    AccountView *accountSettings(Account *account) const;
 
     SettingsPage currentPage() const;
 
@@ -91,7 +91,7 @@ private:
     Ui::SettingsDialog *const _ui;
 
     // todo: #37
-    QHash<Account *, AccountSettings *> _widgetForAccount;
+    QHash<QUuid, AccountView *> _widgetForAccount;
 
     ActivitySettings *_activitySettings;
     ownCloudGui *_gui;

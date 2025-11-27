@@ -27,22 +27,28 @@ class QStandardItemModel;
 namespace OCC {
 //class FolderData;
 class Folder;
+class FolderMan;
+class FolderItem;
 
 class FolderModelController : public QObject
 {
 public:
    explicit FolderModelController(const QUuid &accountId, QObject *parent);
 
-    QStandardItemModel *itemModel();
+   QStandardItemModel *itemModel() const { return _model; }
 
-protected slots:
-    void onFolderListChanged(const QUuid &accountId, const QList<OCC::Folder *> folders);
-    void onFolderAdded(const QUuid &accountId, OCC::Folder *folder);
-    void onFolderRemoved(const QUuid &accountId, OCC::Folder *folder);
+   // getting creative to allow connecting to folderman via dependency injection. its a bit weird but let's see how it is
+   // note we don't want to pass folderman to the ctr as we only need to connect to it, don't want it to be a member,
+   // and this separate connect function makes more sense it that respect
+   void connectSignals(FolderMan *folderman);
 
-private:
+   protected slots:
+   void onFolderListChanged(const QUuid &accountId, const QList<OCC::Folder *> folders);
+   void onFolderAdded(const QUuid &accountId, OCC::Folder *folder);
+   void onFolderRemoved(const QUuid &accountId, OCC::Folder *folder);
 
-    QUuid _accountId;
+   private:
+   QUuid _accountId;
    // QHash<QByteArray, QPointer<Folder>> _folders;
     QHash<QByteArray, QStandardItem *> _items;
     QStandardItemModel *_model;

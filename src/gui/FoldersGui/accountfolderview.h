@@ -11,41 +11,36 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-
 #pragma once
 
-#include "QStandardItem"
+#include <QWidget>
 
-// #include "foldererroritem.h"
-#include "folder.h"
-
-#include <QList>
-#include <QPointer>
-
-#include "folderstatusupdater.h"
+class QStandardItemModel;
+class QTreeView;
+class QLabel;
+class QPushButton;
 
 namespace OCC {
 
-enum ItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusInfoRole };
-
-class FolderItem : public QStandardItem
+class AccountFolderView : public QWidget
 {
+    Q_OBJECT
 public:
-    FolderItem(Folder *folder);
+    explicit AccountFolderView(QWidget *parent = nullptr);
 
-    QVariant data(int role) const override;
+    void setItemModel(QStandardItemModel *model);
+    void setFolderActions(QList<QAction *> actions);
+    void setSyncedFolderCount(int synced, int total);
+    void enableAddFolder(bool enableAdd);
 
-    void refresh();
-
-    SyncProgress _progress;
-
-    Folder *folder();
+signals:
+    void addFolderTriggered();
 
 private:
-    QPointer<Folder> _folder;
+    void buildView();
 
-    void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
-
-    QString statusIconName() const;
+    QTreeView *_treeView = nullptr;
+    QLabel *_syncedFolderCount = nullptr;
+    QPushButton *_addFolderButton = nullptr;
 };
 }

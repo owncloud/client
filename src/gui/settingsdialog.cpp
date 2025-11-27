@@ -16,7 +16,7 @@
 #include "ui_settingsdialog.h"
 
 #include "accountmanager.h"
-#include "accountsettings.h"
+#include "accountview.h"
 #include "activitysettings.h"
 #include "application.h"
 #include "configfile.h"
@@ -161,9 +161,12 @@ void SettingsDialog::onAccountAdded(AccountState *state)
 {
     if (!state || !state->account())
         return;
-    auto accountSettings = new AccountSettings(state, this);
-    _ui->stack->addWidget(accountSettings);
-    _widgetForAccount.insert(state->account(), accountSettings);
+    // asap we need to create some kind of accountView builder that will instantiate a controller and view + whatever else
+    // as currently everything is in the view which is absolutely not ok, especially given the multitude of "heavy lifting"
+    // that goes on in there
+    auto accountView = new AccountView(state, this);
+    _ui->stack->addWidget(accountView);
+    _widgetForAccount.insert(state->account()->uuid(), accountView);
     setCurrentAccount(state->account());
 }
 
@@ -173,8 +176,8 @@ void SettingsDialog::onAccountRemoved(AccountState *state)
         return;
     // todo: #37. using the account after we know it's been removed is not ok.
     Account *acc = state->account();
-    if (AccountSettings *asw = _widgetForAccount.value(acc)) {
-        _widgetForAccount.remove(acc);
+    if (AccountView *asw = _widgetForAccount.value(acc->uuid())) {
+        _widgetForAccount.remove(acc->uuid());
         _ui->stack->removeWidget(asw);
         asw->deleteLater();
         //  go to the settings page if the last account was removed
@@ -217,9 +220,9 @@ void SettingsDialog::ceaseModality(Account *account)
     _ui->quickWidget->setEnabled(_modalStack.isEmpty());
 }
 
-AccountSettings *SettingsDialog::accountSettings(Account *account) const
+AccountView *SettingsDialog::accountSettings(Account *account) const
 {
-    return _widgetForAccount.value(account, nullptr);
+    return _widgetForAccount.value(account->uuid(), nullptr);
 }
 
 void SettingsDialog::setVisible(bool visible)

@@ -32,6 +32,16 @@ FolderItem::FolderItem(Folder *folder)
     // QObject::connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, &FolderItem::updateProgress);
 }
 
+void FolderItem::refresh()
+{
+    emitDataChanged();
+}
+
+Folder *FolderItem::folder()
+{
+    return _folder;
+}
+
 QString FolderItem::statusIconName() const
 {
     if (!_folder || !_folder->accountState())
@@ -69,10 +79,14 @@ QVariant FolderItem::data(int role) const
         //      return getErrors();
     case Qt::DisplayRole:
         return _folder->displayName();
+    case Qt::DecorationRole:
+        if (_folder && _folder->space() && _folder->space()->image())
+            return _folder->space()->image()->image();
+        return {};
     case ItemRoles::StatusIconRole:
         return statusIconName();
-    case ItemRoles::StatusInfoRole:
-        return _progress._progressString;
+        // case ItemRoles::StatusInfoRole:
+        //   return _progress._progressString;
         /*case Roles::SyncProgressOverallPercent:
             return folderInfo->_progress._overallPercent / 100.0;
         case Roles::SyncProgressOverallString:

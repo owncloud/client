@@ -13,12 +13,14 @@ set(client_UI_SRCS
     settingsdialog.ui
     tlserrordialog.ui
     logbrowser.ui
+    accountview.ui
 )
 
 set(client_SRCS
     aboutdialog.cpp
     accountmanager.cpp
     accountsettings.cpp
+    accountview.cpp
 
     accountmodalwidget.cpp
     accountmodalwidget.ui
