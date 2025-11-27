@@ -16,6 +16,12 @@ env:
 jobs:
   lint-gui-test:
     runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'schedule' &&
+      (
+        github.event_name != 'pull_request' ||
+        !contains(github.event.pull_request.title, 'skip ci')
+      )
     container:
       image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
     steps:
@@ -82,6 +88,9 @@ jobs:
 
   gui-tests:
     runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'pull_request' ||
+      !contains(github.event.pull_request.title, 'skip ci')
     container:
       image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
       env:
@@ -95,14 +104,11 @@ jobs:
           - 9200:9200
         env:
           OCIS_URL: https://ocis:9200
-          STORAGE_HOME_DRIVER: ocis
-          STORAGE_USERS_DRIVER: ocis
-          OCIS_LOG_LEVEL: "debug"
+          OCIS_LOG_LEVEL: "error"
           OCIS_LOG_PRETTY: "true"
           OCIS_LOG_COLOR: "true"
           OCIS_INSECURE: "true"
           PROXY_ENABLE_BASIC_AUTH: "true"
-          IDM_CREATE_DEMO_USERS: "true"
           OCIS_ADMIN_USER_ID: "some-admin-user-id-0000-000000000000"
           IDM_ADMIN_PASSWORD: "admin"
           OCIS_SYSTEM_USER_ID: "some-system-user-id-000-000000000000"
@@ -150,6 +156,7 @@ jobs:
       - name: Wait for ocis service
         run: |
           echo "Waiting for ocis"
+          # 150s timeout
           for i in {1..30}; do
             if curl -kfsSL https://ocis:9200 > /dev/null; then
               echo "ocis is up ✅"
@@ -192,8 +199,8 @@ jobs:
         run: |
           curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /tmp/mc
           chmod +x /tmp/mc
-          /tmp/mc alias set cache https://cache.owncloud.com ${{ secrets.CACHE_PUBLIC_S3_ACCESS_KEY }} ${{ secrets.CACHE_PUBLIC_S3_SECRET_KEY }}
-          /tmp/mc cp --recursive test/gui/guiReportUpload cache/public/${{ github.repository }}/${{ github.run_number }}/ocis
+          /tmp/mc alias set cache ${{ env.S3_PUBLIC_CACHE_SERVER }} ${{ secrets.CACHE_PUBLIC_S3_ACCESS_KEY }} ${{ secrets.CACHE_PUBLIC_S3_SECRET_KEY }}
+          /tmp/mc cp --recursive test/gui/guiReportUpload cache/${{ env.S3_PUBLIC_CACHE_BUCKET }}/${{ github.repository }}/${{ github.run_number }}/ocis
 
       - name: Log GUI reports
         if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
