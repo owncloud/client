@@ -16,6 +16,12 @@
 
 class FolderItem;
 
+/**
+ * @brief The FolderErrorItem class will present any errors that arise on sync
+ *
+ * the error items will be children of the related FolderItem
+ *
+ */
 class FolderErrorItem
 {
     FolderErrorItem(FolderItem *parent);

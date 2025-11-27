@@ -14,6 +14,7 @@
 
 #include "folderitem.h"
 
+#include "configfile.h"
 #include "progressdispatcher.h"
 #include "theme.h"
 
@@ -49,7 +50,8 @@ QString FolderItem::statusIconName() const
     auto status = _folder->syncResult();
     if (!_folder->accountState()->isConnected()) {
         status.setStatus(SyncResult::Status::Offline);
-    } else if (_folder->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()) {
+    } else if (_folder->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal()
+        || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
         status.setStatus(SyncResult::Status::Paused);
     }
     return QStringLiteral("states/%1").arg(Theme::instance()->syncStateIconName(status));

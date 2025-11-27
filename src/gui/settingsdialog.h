@@ -22,12 +22,15 @@
 #include <QMainWindow>
 #include <QStyledItemDelegate>
 
+// #define USE_NEW_FOLDER_LIST
+
 namespace OCC {
 
 namespace Ui {
     class SettingsDialog;
 }
 class AccountView;
+class AccountSettings;
 class Application;
 class FolderMan;
 class ownCloudGui;
@@ -57,7 +60,8 @@ public:
     void requestModality(Account *account);
     void ceaseModality(Account *account);
 
-    AccountView *accountSettings(Account *account) const;
+    AccountSettings *accountSettings(Account *account) const;
+    AccountView *accountView(Account *account) const;
 
     SettingsPage currentPage() const;
 
@@ -91,7 +95,8 @@ private:
     Ui::SettingsDialog *const _ui;
 
     // todo: #37
-    QHash<QUuid, AccountView *> _widgetForAccount;
+    QHash<QUuid, AccountSettings *> _widgetForAccount;
+    QHash<QUuid, AccountView *> _viewForAccount;
 
     ActivitySettings *_activitySettings;
     ownCloudGui *_gui;

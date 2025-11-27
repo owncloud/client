@@ -13,6 +13,7 @@
  */
 #include "requestauthenticationcontroller.h"
 
+#include "accountsettings.h"
 #include "accountview.h"
 #include "application.h"
 #include "requestauthenticationwidget.h"
@@ -64,9 +65,15 @@ void RequestAuthenticationController::startAuthentication(Account *account)
     if (_widget && _modalWidget == nullptr) { // first show of the gui
         connect(_widget, &RequestAuthenticationWidget::connectClicked, this, &RequestAuthenticationController::handleSignIn);
         connect(_widget, &RequestAuthenticationWidget::stayLoggedOutClicked, this, &RequestAuthenticationController::handleLogOut);
-        AccountView *accountView = ocApp()->gui()->settingsDialog()->accountSettings(_account);
+#ifdef USE_NEW_FOLDER_LIST
+        AccountView *accountView = ocApp()->gui()->settingsDialog()->accountView(_account);
         _modalWidget = new AccountModalWidget(QString(), _widget, accountView);
         accountView->addModalAccountWidget(_modalWidget);
+#else
+        AccountSettings *accountSettings = ocApp()->gui()->settingsDialog()->accountSettings(_account);
+        _modalWidget = new AccountModalWidget(QString(), _widget, accountSettings);
+        accountSettings->addModalAccountWidget(_modalWidget);
+#endif
     }
     _oauth->startAuthentication();
 }

@@ -20,6 +20,8 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "theme.h"
+
 namespace OCC {
 
 AccountFolderView::AccountFolderView(QWidget *parent)
@@ -53,7 +55,12 @@ void AccountFolderView::buildView()
     // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    mainLayout->addWidget(_treeView, 1, Qt::AlignCenter);
+    _treeView->setLineWidth(2);
+    mainLayout->addWidget(_treeView);
+
+    _syncedFolderCountLabel = new QLabel("placeholder for sync count", this);
+    _syncedFolderCountLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    mainLayout->addWidget(_syncedFolderCountLabel, 0, Qt::AlignLeft);
 
     setLayout(mainLayout);
 }
@@ -63,4 +70,5 @@ void AccountFolderView::setItemModel(QStandardItemModel *model)
     _treeView->setModel(model);
 }
 
+void AccountFolderView::setSyncedFolderCount(int synced, int total) { }
 }

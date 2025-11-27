@@ -40,7 +40,7 @@ private:
     void buildView();
 
     QTreeView *_treeView = nullptr;
-    QLabel *_syncedFolderCount = nullptr;
+    QLabel *_syncedFolderCountLabel = nullptr;
     QPushButton *_addFolderButton = nullptr;
 };
 }
