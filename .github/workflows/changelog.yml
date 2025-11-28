@@ -1,10 +1,10 @@
-name: Changelog
-
-on:
-  pull_request:
-  push:
-    branches: [ master ]
-    tags: [ "*" ]
+#name: Changelog
+#
+#on:
+#  pull_request:
+#  push:
+#    branches: [ "6" ]
+#    tags: [ "*" ]
 
 jobs:
   changelog:
