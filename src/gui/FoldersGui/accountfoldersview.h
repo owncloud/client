@@ -22,11 +22,11 @@ class QPushButton;
 
 namespace OCC {
 
-class AccountFolderView : public QWidget
+class AccountFoldersView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AccountFolderView(QWidget *parent = nullptr);
+    explicit AccountFoldersView(QWidget *parent = nullptr);
 
     void setItemModel(QStandardItemModel *model);
     void setFolderActions(QList<QAction *> actions);
