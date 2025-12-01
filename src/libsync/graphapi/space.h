@@ -19,6 +19,7 @@
 #include <OAIDrive.h>
 
 #include <QIcon>
+#include <QList>
 #include <QtQmlIntegration>
 
 namespace OCC {
@@ -68,12 +69,14 @@ namespace GraphApi {
          * Exceptions: Personal spaces
          */
         QString displayName() const;
-
+        QString description() const;
+        QUrl webUrl() const;
         QString id() const;
+        QUrl webDavUrl() const;
+        QString eTag() const;
+        OpenAPI::OAIQuota quota() const;
+
         QUuid accountId() const;
-
-
-        OpenAPI::OAIDrive drive() const;
 
         /***
          * Assign a priority to a drive, used for sorting
@@ -87,14 +90,17 @@ namespace GraphApi {
 
         SpaceImage *image() const;
 
-        QUrl webdavUrl() const;
 
     Q_SIGNALS:
         void imageChanged();
 
+    protected:
+        QList<OpenAPI::OAIDriveItem> getSpecialItems() const;
+
+
     private:
         Space(SpacesManager *spaceManager, const OpenAPI::OAIDrive &drive, bool hasManyPersonalSpaces);
-        void setDrive(const OpenAPI::OAIDrive &drive);
+        bool setDrive(const OpenAPI::OAIDrive &drive);
 
         SpacesManager *_spaceManager;
         QUuid _accountId;

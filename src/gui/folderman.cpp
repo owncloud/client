@@ -233,6 +233,7 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
     settings.endGroup(); // accountId\Folders
 
     Q_ASSERT(account && account->account() && account->account()->spacesManager());
+
     _scheduler->connectSpacesManager(account->account()->spacesManager());
     QUuid id = account->account()->uuid();
     emit folderListChanged(id, _folders.values(id));
@@ -242,6 +243,10 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
 void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
 {
+    /*confirmed that the checkReady thing is not necessary.the account creation triggers the spaces manager well before we get here.I think we should
+    remove this weird concept and deal with updates using signals from the spacesmanager once it is connected - whenever that happens.
+    fazit : the folderman does not need to trigger the spacesmanager to start running
+    */
     if (accountState && accountState->account() && accountState->account()->spacesManager()) {
         GraphApi::SpacesManager *spaceMan = accountState->account()->spacesManager();
         QObject::connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState, useVfs] { loadSpacesWhenReady(accountState, useVfs); });
@@ -280,8 +285,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
         Utility::setupFavLink(localDir);
 
         for (const auto *space : std::as_const(spaces)) {
-            FolderDefinition folderDef = FolderDefinition::createNewFolderDefinition(
-                QUrl(space->drive().getRoot().getWebDavUrl()), space->drive().getRoot().getId(), space->displayName());
+            FolderDefinition folderDef = FolderDefinition::createNewFolderDefinition(space->webDavUrl(), space->id(), space->displayName());
 
             folderDef.setPriority(space->priority());
 
@@ -300,6 +304,61 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
         QUuid id = accountState->account()->uuid();
         emit folderListChanged(id, _folders.values(id));
     }
+}
+
+void FolderMan::slotSpacesUpdated(Account *account)
+{
+    if (!account || !account->spacesManager()) {
+        return;
+    }
+
+    auto spaces = account->spacesManager()->spaces();
+    auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
+    for (const auto &f : foldersForAccount(account->uuid())) {
+        unsycnedSpaces.erase(f->space());
+    }
+
+    // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
+    if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
+        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
+        // where does this slot run if not on the main thread?
+        // what needs to be processed "before" this loading routine that requires scheduling it for later?
+        // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
+        // event loop.
+        QTimer::singleShot(0, this, [this, account, unsycnedSpaces]() {
+            for (GraphApi::Space *newSpace : unsycnedSpaces) {
+                // TODO: Problem: when a space is manually removed, this will re-add it!
+                qCInfo(lcFolderMan) << "Adding sync connection for newly discovered space" << newSpace->displayName();
+
+                const QString localDir(account->defaultSyncRoot());
+                const QString folderName = findGoodPathForNewSyncFolder(localDir, newSpace->displayName(), NewFolderType::SpacesFolder, account->uuid());
+
+                SyncConnectionDescription fwr;
+                fwr.davUrl = newSpace->webDavUrl();
+                fwr.spaceId = newSpace->id();
+                fwr.localPath = folderName;
+                fwr.displayName = newSpace->displayName();
+                fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
+                fwr.priority = newSpace->priority();
+                // addFolderFromGui(, fwr);
+            }
+
+            //     _unsyncedSpaces = 0;
+            //    _syncedSpaces = _accountState->account()->spacesManager()->spaces().size();
+            //     Q_EMIT unsyncedSpacesChanged();
+            //    Q_EMIT syncedSpacesChanged();
+        });
+    } /*else {
+        if (_unsyncedSpaces != unsycnedSpaces.size()) {
+            _unsyncedSpaces = static_cast<uint>(unsycnedSpaces.size());
+            Q_EMIT unsyncedSpacesChanged();
+        }
+        uint syncedSpaces = spaces.size() - _unsyncedSpaces;
+        if (_syncedSpaces != syncedSpaces) {
+            _syncedSpaces = syncedSpaces;
+            Q_EMIT syncedSpacesChanged();
+        }
+    }*/
 }
 
 bool FolderMan::ensureJournalGone(const QString &journalDbFile)

@@ -51,8 +51,15 @@ namespace GraphApi {
 
     Q_SIGNALS:
         void spaceChanged(Space *space) const;
-        void updated();
+        // I think this will go
+        void updated(Account *account);
         void ready() const;
+        void spaceAdded(OCC::GraphApi::Space *space);
+        void spaceAboutToBeRemoved(OCC::GraphApi::Space *space);
+        // these are emitted after any/all processing of active spaces is complete, so eg for the space deleted
+        // we can only provide space id's since the pointers are gone.
+        void spacesAdded(QList<OCC::GraphApi::Space *> spaces);
+        void spacesRemoved(QList<QString> deletedSpaces);
 
     private:
         void refresh();

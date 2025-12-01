@@ -113,7 +113,7 @@ uint32_t FolderWizardPrivate::priority() const
 
 QUrl FolderWizardPrivate::davUrl() const
 {
-    auto url = _spacesPage->currentSpace()->webdavUrl();
+    auto url = _spacesPage->currentSpace()->webDavUrl();
     if (!url.path().endsWith(QLatin1Char('/'))) {
         url.setPath(url.path() + QLatin1Char('/'));
     }

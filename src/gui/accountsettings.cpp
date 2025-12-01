@@ -615,12 +615,13 @@ void AccountSettings::slotSpacesUpdated()
                     localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, _accountState->account()->uuid());
 
                 FolderMan::SyncConnectionDescription fwr;
-                fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());
-                fwr.spaceId = newSpace->drive().getRoot().getId();
+                fwr.davUrl = newSpace->webDavUrl();
+                fwr.spaceId = newSpace->id();
                 fwr.localPath = folderName;
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
                 fwr.priority = newSpace->priority();
+                // todo DC-205: this is not from gui so fix this!
                 FolderMan::instance()->addFolderFromGui(_accountState, fwr);
             }
 

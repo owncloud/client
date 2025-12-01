@@ -44,11 +44,11 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Roles::Name:
         return space->displayName();
     case Roles::Subtitle:
-        return space->drive().getDescription();
+        return space->description();
     case Roles::WebUrl:
-        return space->drive().getWebUrl();
+        return space->webUrl();
     case Roles::WebDavUrl:
-        return space->webdavUrl();
+        return space->webDavUrl();
     case Roles::Priority:
         // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by appling a negative factor
         return QVariant::fromValue(
@@ -58,7 +58,7 @@ QVariant SpacesModel::data(const QModelIndex &index, int role) const
     case Roles::Enabled:
         return !space->disabled();
     case Roles::AccessibleDescriptionRole:
-        return QStringLiteral("%1,%2").arg(space->displayName(), space->drive().getDescription());
+        return QStringLiteral("%1,%2").arg(space->displayName(), space->description());
     }
     return {};
 }

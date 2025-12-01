@@ -334,6 +334,8 @@ public Q_SLOTS:
     void removeFolderFromGui(Folder *f);
     void forceFolderSync(Folder *f);
 
+protected:
+    void slotSpacesUpdated(Account *account);
 private Q_SLOTS:
     void slotFolderSyncPauseChanged(Folder *, bool paused);
     void slotFolderCanSyncChanged();
@@ -429,6 +431,7 @@ private:
     void registerFolderWithSocketApi(Folder *folder);
 
     QSet<Folder *> _disabledFolders;
+    QSet<GraphApi::Space *> _unsyncedSpaces;
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;

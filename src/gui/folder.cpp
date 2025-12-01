@@ -21,7 +21,6 @@
 #include "accountstate.h"
 #include "application.h"
 #include "common/checksums.h"
-#include "common/depreaction.h"
 #include "common/filesystembase.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -330,7 +329,7 @@ QUrl Folder::webDavUrl() const
 {
     GraphApi::Space *sp = space();
     if (sp)
-        return QUrl(sp->drive().getRoot().getWebDavUrl());
+        return sp->webDavUrl();
     return _definition.webDavUrl();
 }
 
