@@ -5,7 +5,7 @@ host = https://www.transifex.com
 source_file = translations/client_en.ts
 source_lang = en
 file_filter = translations/client_<lang>.ts
-type = TS
+type = QT
 minimum_perc = 75
 
 # de_DE holds the formal translation which we want as default
