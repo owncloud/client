@@ -21,7 +21,7 @@ jobs:
       image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup NodeJs
         uses: actions/setup-node@v4
@@ -83,7 +83,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build client
         run: |
@@ -167,7 +167,7 @@ jobs:
       image: owncloudci/alpine:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: notify-matrix
         env:
