@@ -31,7 +31,6 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           submodules: recursive
-          fetch-depth: 0
           ref: ${{ matrix.branch }}
 
       - name: install-deps
