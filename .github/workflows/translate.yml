@@ -16,6 +16,11 @@ jobs:
     permissions:
       # for git push
       contents: write
+    strategy:
+      matrix:
+        # current transifex plan only allows 1 additional branch
+        branch: ['master', '6']
+
     runs-on: ubuntu-latest
 
     env:
@@ -26,6 +31,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           submodules: recursive
+          ref: ${{ matrix.branch }}
 
       - name: install-deps
         run: sudo apt install -y qt6-l10n-tools
@@ -39,15 +45,31 @@ jobs:
         run: /usr/lib/qt6/bin/lupdate src -no-obsolete -ts translations/client_en.ts
 
       - name: l10n-push-source
+        if: ${{ matrix.branch != 'master' }}
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TX_TOKEN }}
-          args: push -s --silent
+          args: push -s --branch "${{ matrix.branch }}"
+
+      - name: l10n-push-source
+        if: ${{ matrix.branch == 'master' }}
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TX_TOKEN }}
+          args: push -s
 
       - name: fix-transifex-action
         run: rm -rf /tmp/tx
 
       - name: l10n-pull
+        if: ${{ matrix.branch != 'master' }}
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TX_TOKEN }}
+          args: pull --force --all --silent --branch "${{ matrix.branch }}"
+
+      - name: l10n-pull
+        if: ${{ matrix.branch == 'master' }}
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TX_TOKEN }}
@@ -57,4 +79,6 @@ jobs:
         with:
           email: devops@owncloud.com
           name: ownClouders
-          commit_message: "[tx] updated translations from transifex"
+          commit_message: "[tx] updated translations from transifex (branch: ${{ matrix.branch }})"
+          target_branch: ${{ matrix.branch }}
+          remote_repository: origin
