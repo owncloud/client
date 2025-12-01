@@ -287,7 +287,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
         for (const auto *space : std::as_const(spaces)) {
             FolderDefinition folderDef = FolderDefinition::createNewFolderDefinition(space->webDavUrl(), space->id(), space->displayName());
 
-            folderDef.setPriority(space->priority());
+            folderDef.setPriority(space->sortPriority());
 
             QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, accountState->account()->uuid());
             folderDef.setLocalPath(localPath);
@@ -339,7 +339,7 @@ void FolderMan::slotSpacesUpdated(Account *account)
                 fwr.localPath = folderName;
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
-                fwr.priority = newSpace->priority();
+                fwr.sortPriority = newSpace->sortPriority();
                 // addFolderFromGui(, fwr);
             }
 
@@ -1093,7 +1093,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
     FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
     definition.setLocalPath(description.localPath);
     definition.setTargetPath(description.remotePath);
-    definition.setPriority(description.priority);
+    definition.setPriority(description.sortPriority);
     auto f = addFolderFromScratch(accountState, std::move(definition), description.useVirtualFiles);
 
 

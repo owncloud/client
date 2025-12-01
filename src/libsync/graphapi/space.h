@@ -79,9 +79,9 @@ namespace GraphApi {
         QUuid accountId() const;
 
         /***
-         * Assign a priority to a drive, used for sorting
+         * Assign a sortPriority to a drive, used for sorting
          */
-        uint32_t priority() const;
+        uint32_t sortPriority() const;
 
         /**
          * Whether a drive object has been deleted.

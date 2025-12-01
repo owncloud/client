@@ -123,7 +123,7 @@ public:
          */
         bool useVirtualFiles;
 
-        uint32_t priority;
+        uint32_t sortPriority;
 
         QSet<QString> selectiveSyncBlackList;
     };

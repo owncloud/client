@@ -108,7 +108,7 @@ QString FolderWizardPrivate::initialLocalPath() const
 
 uint32_t FolderWizardPrivate::priority() const
 {
-    return _spacesPage->currentSpace()->priority();
+    return _spacesPage->currentSpace()->sortPriority();
 }
 
 QUrl FolderWizardPrivate::davUrl() const

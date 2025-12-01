@@ -620,7 +620,7 @@ void AccountSettings::slotSpacesUpdated()
                 fwr.localPath = folderName;
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
-                fwr.priority = newSpace->priority();
+                fwr.sortPriority = newSpace->sortPriority();
                 // todo DC-205: this is not from gui so fix this!
                 FolderMan::instance()->addFolderFromGui(_accountState, fwr);
             }

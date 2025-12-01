@@ -99,7 +99,7 @@ QString Space::description() const
 }
 
 
-uint32_t Space::priority() const
+uint32_t Space::sortPriority() const
 {
     if (_drive.getDriveType() == personalC) {
         return 100;
