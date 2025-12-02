@@ -143,7 +143,7 @@ QString OCUpdater::statusString() const
 
     switch (downloadState()) {
     case Downloading:
-        return tr("Downloading %1. Please wait...").arg(updateVersion);
+        return tr("Downloading %1. Please wait…").arg(updateVersion);
     case DownloadComplete:
         if (Utility::runningInAppImage()) {
             return tr("%1 installed successfully. Restart the application to finish installing the update.").arg(updateVersion);
@@ -164,7 +164,7 @@ QString OCUpdater::statusString() const
 #endif
         return tr("New %1 available. Please use the system's update tool to install it.").arg(updateVersion);
     case CheckingServer:
-        return tr("Checking update server...");
+        return tr("Checking update server…");
     case Unknown:
         return tr("Update status is unknown: Did not check for new updates.");
     case UpToDate:
