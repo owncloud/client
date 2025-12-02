@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="140"/>
         <source>Configure files download:</source>
-        <translation>Formësoni hkarkim kartelash:</translation>
+        <translation>Formësoni shkarkim kartelash:</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="147"/>
@@ -52,7 +52,7 @@
     <message>
         <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="157"/>
         <source>After completing this wizard, you can set up folder synchronization manually.</source>
-        <translation>Pas plotësimit të këtyre hapave, mun të ujdisni dorazi njëkohësim dosjesh.</translation>
+        <translation>Pas plotësimit të këtyre hapave, mund të ujdisni dorazi njëkohësim dosjesh.</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="160"/>
@@ -318,7 +318,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation><numerusform>Po bëni njëkohësimin e %1 nga %n hapësire</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %2 hapësirave</numerusform></translation>
+        <translation><numerusform>Po bëni njëkohësimin e %1 nga %n hapësire</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %n hapësirave</numerusform></translation>
     </message>
 </context>
 <context>
@@ -531,7 +531,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="24"/>
         <source>About</source>
-        <translation>Rreth</translation>
+        <translation>Mbi</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="108"/>
@@ -946,7 +946,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="153"/>
         <source>&lt;br/&gt;%1 does not provide activities.</source>
-        <translation>&lt;br/&gt;%1 s’jpe veprimtari.</translation>
+        <translation>&lt;br/&gt;%1 s’jep veprimtari.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="287"/>
@@ -1942,12 +1942,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/networksettings.ui" line="59"/>
         <source>Specify proxy manually</source>
-        <translation>Jepenni ndërmjetësin dorazi</translation>
+        <translation>Jepeni ndërmjetësin dorazi</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
-        <translation>Llok ndërmjetësi</translation>
+        <translation>Lloj ndërmjetësi</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
@@ -2778,7 +2778,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <location filename="../src/gui/selectivesyncwidget.cpp" line="108"/>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="244"/>
         <source>Currently there are no subfolders on the server.</source>
-        <translation>Aktualisht te shërbyesi s’ka nëndosje</translation>
+        <translation>Aktualisht te shërbyesi s’ka nëndosje.</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
@@ -3358,7 +3358,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="493"/>
         <source>Cannot open the sync journal</source>
-        <translation>S’hapet dot regjistri i njëkohësimeve.</translation>
+        <translation>S’hapet dot regjistri i njëkohësimeve</translation>
     </message>
 </context>
 <context>
@@ -3659,7 +3659,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>URL-ja e kërkuar dështoi me vlerë kërkese: %1</translation>
     </message>
 </context>
 <context>
@@ -3975,7 +3975,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="57"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>S’u pikas dot shërbyes i përputhshmë te %1</translation>
+        <translation>S’u pikas dot shërbyes i përputhshëm te %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="86"/>
@@ -4054,7 +4054,7 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="152"/>
         <source>&lt; Back</source>
-        <translation>&lt; Mbrapasht</translation>
+        <translation>&lt; Mbrapsht</translation>
     </message>
 </context>
 <context>

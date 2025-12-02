@@ -313,12 +313,12 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 個のフォルダのうち %1 個を同期しています</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform></translation>
+        <translation><numerusform>%n 個のスペースのうち %1 個を同期しています</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1245,7 +1245,7 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>Unsupported filesystem</source>
-        <translation type="unfinished"/>
+        <translation>サポートされていないファイルシステム</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>
@@ -1320,7 +1320,7 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On macOS, only the Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>macOS では、Apple ファイルシステムのみサポートしています。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="805"/>
@@ -1952,7 +1952,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>帯域幅の制限は非推奨であり、将来のリリースで削除される予定です。</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
@@ -3288,12 +3288,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>フォルダーを選択してコンピューターに同期します。</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>スペースを選択してコンピューターに同期します。</translation>
     </message>
 </context>
 <context>
@@ -3382,7 +3382,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/theme.cpp" line="327"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;バージョン %1 詳細については、&lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;をご覧ください&lt;/p&gt;&lt;p&gt;既知の問題とヘルプは、&lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;をご覧ください。&lt;/p&gt;&lt;p&gt;&lt;small&gt;Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller およびその他の貢献者。&lt;/small&gt;&lt;/p&gt;&lt;p&gt;著作権 ownCloud GmbH (A Kiteworks 社)&lt;/p&gt;&lt;p&gt;%4 によって配布され、GNU General Public License (GPL) バージョン 2.0 でライセンスされています。&lt;br/&gt;%5 および %5 ロゴは、アメリカ合衆国、その他の国、またはその両方における %4 の登録商標です。&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3659,7 +3659,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>要求されたURLは、以下のクエリ値で失敗しました: %1 </translation>
     </message>
 </context>
 <context>
