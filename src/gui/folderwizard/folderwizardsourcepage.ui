@@ -29,7 +29,7 @@
      <item>
       <widget class="QPushButton" name="localFolderChooseBtn">
        <property name="text">
-        <string>&amp;Choose...</string>
+        <string>&amp;Choose…</string>
        </property>
       </widget>
      </item>

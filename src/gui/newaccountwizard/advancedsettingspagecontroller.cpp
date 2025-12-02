@@ -137,7 +137,7 @@ void AdvancedSettingsPageController::buildPage()
     });
     connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
-    _folderButton = new QPushButton(tr("Browse..."), _page);
+    _folderButton = new QPushButton(tr("Browse…"), _page);
     _folderButton->setObjectName("BrowseButton");
     _folderButton->setFocusPolicy(Qt::StrongFocus);
     _folderButton->setAccessibleDescription(tr("Browse for a download location"));
