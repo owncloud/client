@@ -12,12 +12,13 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
+          fetch-depth: 0
 
       - name: Generate changelog
         uses: docker://toolhippie/calens:0.4.0
