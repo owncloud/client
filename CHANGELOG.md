@@ -49,9 +49,16 @@ ownCloud admins and users.
 
 ## Summary
 
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
 * Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
 
 ## Details
+
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+
+   Fix runtime crash at startup with ECM 6.19.
+
+   https://github.com/owncloud/client/pull/12374
 
 * Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
 
