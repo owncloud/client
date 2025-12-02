@@ -29,7 +29,7 @@
      <item>
       <widget class="QPushButton" name="localFolderChooseBtn">
        <property name="text">
-        <string>&amp;Choose…</string>
+        <string>Browse…</string>
        </property>
       </widget>
      </item>
@@ -41,14 +41,14 @@
       <string/>
      </property>
      <property name="textFormat">
-      <enum>Qt::RichText</enum>
+      <enum>Qt::TextFormat::RichText</enum>
      </property>
     </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
