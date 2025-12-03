@@ -198,27 +198,12 @@ public:
 
 
     /**
-     *  Removes a folder sync permanently in response to user request
-     *  Not for general folder cleanup
-     *  it is caller's responsibility to remove folder from settings if necessary.
-     */
-    // Refactoring todo: this is called directly from the AccountSettings gui - instead the gui should signal a request to
-    // remove the folder.
-    // also, this function *is* used for general folder cleanup when an account is removed.
-    // we must develop concise, SINGLE impls for eg adding or removing folders instead of spreading the handling over multiple
-    // locations.
-    void removeFolderSync(Folder *);
-
-    /**
      * Returns the folder which the file or directory stored in path is in
      *
      * Optionally, the path relative to the found folder is returned in
      * relativePath.
      */
     Folder *folderForPath(const QString &path, QString *relativePath = nullptr);
-
-    /** Returns the folder by id or NULL if no folder with the id exists. */
-    [[deprecated("directly reference the folder")]] Folder *folder(const QByteArray &id);
 
     /**
      * Ensures that a given directory does not contain a sync journal file.
@@ -292,6 +277,11 @@ public:
     // todo: #3
     void removeFolderSettings(Folder *folder);
 
+    /**
+     * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the space
+     */
+    Folder *folder(QString spaceId) const;
+
 Q_SIGNALS:
     /**
       * signal to indicate a folder has changed its sync state.
@@ -335,8 +325,11 @@ public Q_SLOTS:
     void forceFolderSync(Folder *f);
 
 protected:
-    void slotSpacesUpdated(Account *account);
+    // void slotSpacesUpdated(Account *account);
+    void slotSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces);
+
 private Q_SLOTS:
+
     void slotFolderSyncPauseChanged(Folder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
@@ -419,6 +412,13 @@ private:
     // impl detail: we also disconnect the folder from autosave here!
     void removeFolderSettings(Folder *folder, QSettings &settings);
 
+    /**
+     *  Removes a folder sync permanently and deletes the folder
+     *  Not for general folder cleanup
+     *  it is caller's responsibility to remove folder from settings if necessary.
+     */
+    void deleteFolderSync(Folder *);
+
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
 
@@ -451,18 +451,18 @@ private:
 
     static FolderMan *_instance;
 
-    // todo: find a way to separate the folders by account id since we often need to filter them that way
-    // I would love to use QMultiHash with key == account uuid but docs say the values() are returnd in most recently added order, which is
-    // basically backwards. Eg we'd have to reverse the list of values in so many cases (to read it or write it or show it etc)
-    // I don't understand this impl choice at all, Qt!!!
-    // QList<Folder *> _folders;
-    QMultiHash<QUuid, Folder *> _folders;
+    // QMultiHash<QUuid, Folder *> _folders;
 
+    // consider updating folders container to something like this:
+    QHash<QUuid, QHash<QString, Folder *>> _folders;
+    //  the inner hash contains the folder pointers hashed against their spaceId which makes any kind if retrieval *much*
+    //  faster
 
     friend class OCC::Application;
 
     // the literal is needed to get the tests to build
     inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
+    void scheduleFoldersForAccount(const QUuid &accountId);
 };
 
 } // namespace OCC

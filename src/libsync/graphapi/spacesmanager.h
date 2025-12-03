@@ -54,12 +54,12 @@ namespace GraphApi {
         // I think this will go
         void updated(Account *account);
         void ready() const;
-        void spaceAdded(OCC::GraphApi::Space *space);
-        void spaceAboutToBeRemoved(OCC::GraphApi::Space *space);
+        void spaceAdded(QUuid accountId, OCC::GraphApi::Space *space);
+        void spaceAboutToBeRemoved(QUuid accountId, OCC::GraphApi::Space *space);
         // these are emitted after any/all processing of active spaces is complete, so eg for the space deleted
         // we can only provide space id's since the pointers are gone.
-        void spacesAdded(QList<OCC::GraphApi::Space *> spaces);
-        void spacesRemoved(QList<QString> deletedSpaces);
+        void spacesAdded(QUuid accountId, QList<OCC::GraphApi::Space *> spaces);
+        void spacesRemoved(QUuid accountId, QList<QString> deletedSpaces);
 
     private:
         void refresh();

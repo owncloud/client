@@ -526,7 +526,7 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 
     FolderMan *folderMan = FolderMan::instance();
-    for (auto *folder : folderMan->folders()) {
+    for (auto *folder : folderMan->foldersForAccount(_accountState->account()->uuid())) {
         _model->slotUpdateFolderState(folder);
     }
 

@@ -73,7 +73,7 @@ void SpacesManager::refresh()
                 if (!space) {
                     space = new Space(this, dr, hasManyPersonalSpaces);
                     _spacesMap.insert(dr.getId(), space);
-                    emit spaceAdded(space);
+                    emit spaceAdded(_account->uuid(), space);
                     newSpaces.append(space);
                 } else {
                     bool changed = space->setDrive(dr);
@@ -83,7 +83,7 @@ void SpacesManager::refresh()
             }
             for (const QString &id : std::as_const(oldKeys)) {
                 auto *oldSpace = _spacesMap.take(id);
-                emit spaceAboutToBeRemoved(oldSpace);
+                emit spaceAboutToBeRemoved(_account->uuid(), oldSpace);
                 deletedSpaces.append(id);
                 oldSpace->deleteLater();
             }
@@ -93,9 +93,9 @@ void SpacesManager::refresh()
             }
         }
         if (!newSpaces.isEmpty())
-            emit spacesAdded(newSpaces);
+            emit spacesAdded(_account->uuid(), newSpaces);
         if (!deletedSpaces.isEmpty())
-            emit spacesRemoved(deletedSpaces);
+            emit spacesRemoved(_account->uuid(), deletedSpaces);
         Q_EMIT updated(_account);
         _refreshTimer->start();
     });
