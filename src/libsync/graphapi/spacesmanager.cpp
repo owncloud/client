@@ -37,12 +37,12 @@ SpacesManager::SpacesManager(Account *parent)
     , _account(parent)
     , _refreshTimer(new QTimer(this))
 {
+    connect(_account, &Account::credentialsFetched, this, &SpacesManager::refresh);
+
     _refreshTimer->setInterval(refreshTimeoutC);
     // the timer will be restarted once we received drives data
     _refreshTimer->setSingleShot(true);
-
     connect(_refreshTimer, &QTimer::timeout, this, &SpacesManager::refresh);
-    connect(_account, &Account::credentialsFetched, this, &SpacesManager::refresh);
 }
 
 void SpacesManager::refresh()
@@ -58,10 +58,13 @@ void SpacesManager::refresh()
     auto drivesJob = new Drives(_account, nullptr);
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {
+        drivesJob->deleteLater();
+
         // a system which provides multiple personal spaces the name of the drive is always used as display name
         auto hasManyPersonalSpaces = _account->capabilities().spacesSupport().hasMultiplePersonalSpaces;
+        QList<Space *> newSpaces;
+        QList<QString> deletedSpaces;
 
-        drivesJob->deleteLater();
         if (drivesJob->httpStatusCode() == 200) {
             auto oldKeys = _spacesMap.keys();
             for (const auto &dr : drivesJob->drives()) {
@@ -70,13 +73,18 @@ void SpacesManager::refresh()
                 if (!space) {
                     space = new Space(this, dr, hasManyPersonalSpaces);
                     _spacesMap.insert(dr.getId(), space);
+                    emit spaceAdded(_account->uuid(), space);
+                    newSpaces.append(space);
                 } else {
-                    space->setDrive(dr);
+                    bool changed = space->setDrive(dr);
+                    if (changed)
+                        emit spaceChanged(space);
                 }
-                Q_EMIT spaceChanged(space);
             }
             for (const QString &id : std::as_const(oldKeys)) {
                 auto *oldSpace = _spacesMap.take(id);
+                emit spaceAboutToBeRemoved(_account->uuid(), oldSpace);
+                deletedSpaces.append(id);
                 oldSpace->deleteLater();
             }
             if (!_ready) {
@@ -84,7 +92,11 @@ void SpacesManager::refresh()
                 Q_EMIT ready();
             }
         }
-        Q_EMIT updated();
+        if (!newSpaces.isEmpty())
+            emit spacesAdded(_account->uuid(), newSpaces);
+        if (!deletedSpaces.isEmpty())
+            emit spacesRemoved(_account->uuid(), deletedSpaces);
+        Q_EMIT updated(_account);
         _refreshTimer->start();
     });
     _refreshTimer->stop();
@@ -106,14 +118,4 @@ Account *SpacesManager::account() const
 QVector<Space *> SpacesManager::spaces() const
 {
     return {_spacesMap.begin(), _spacesMap.end()};
-}
-
-void SpacesManager::checkReady()
-{
-    // see constructor for calls to refresh
-    if (_ready) {
-        Q_EMIT ready();
-    } else {
-        refresh();
-    }
 }

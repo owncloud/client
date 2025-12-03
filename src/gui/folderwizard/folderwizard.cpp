@@ -108,12 +108,12 @@ QString FolderWizardPrivate::initialLocalPath() const
 
 uint32_t FolderWizardPrivate::priority() const
 {
-    return _spacesPage->currentSpace()->priority();
+    return _spacesPage->currentSpace()->sortPriority();
 }
 
 QUrl FolderWizardPrivate::davUrl() const
 {
-    auto url = _spacesPage->currentSpace()->webdavUrl();
+    auto url = _spacesPage->currentSpace()->webDavUrl();
     if (!url.path().endsWith(QLatin1Char('/'))) {
         url.setPath(url.path() + QLatin1Char('/'));
     }

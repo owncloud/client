@@ -14,7 +14,7 @@
 
 
 #include "accountview.h"
-#include "FoldersGui/accountfolderview.h"
+#include "FoldersGui/accountfoldersview.h"
 #include "FoldersGui/foldermodelcontroller.h"
 #include "ui_accountview.h"
 
@@ -88,9 +88,9 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
    */
 
     //   AccountFolderView *folderView = new AccountFolderView(this);
-    ui->accountFolderView->setItemModel(_model);
+    ui->accountFoldersView->setItemModel(_model);
 
-    connect(ui->accountFolderView, &AccountFolderView::addFolderTriggered, this, &AccountView::slotAddFolder);
+    connect(ui->accountFoldersView, &AccountFoldersView::addFolderTriggered, this, &AccountView::slotAddFolder);
     // ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     // ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
@@ -110,8 +110,8 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
     connect(_accountState, &AccountState::isSettingUpChanged, this, &AccountView::accountSettingUpChanged);
 
     connect(ui->stackedWidget, &QStackedWidget::currentChanged, this,
-        [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->accountFolderView); });
-    ui->stackedWidget->setCurrentWidget(ui->accountFolderView);
+        [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->accountFoldersView); });
+    ui->stackedWidget->setCurrentWidget(ui->accountFoldersView);
 }
 
 void AccountView::accountSettingUpChanged(bool settingUp)
@@ -121,7 +121,7 @@ void AccountView::accountSettingUpChanged(bool settingUp)
         ui->stackedWidget->setCurrentWidget(ui->loadingPage);
     } else {
         ui->spinner->stopAnimation();
-        ui->stackedWidget->setCurrentWidget(ui->accountFolderView);
+        ui->stackedWidget->setCurrentWidget(ui->accountFoldersView);
     }
 }
 
@@ -149,121 +149,6 @@ void AccountView::slotToggleSignInState()
         _accountState->signIn();
     } else {
         _accountState->signOutByUi();
-    }
-}
-
-void AccountView::slotCustomContextMenuRequested(Folder *folder)
-{
-    // Refactoring todo: we need to eval defensive handling of the account state QPointer in more depth, and I
-    // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
-    // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
-    // to id
-    Q_ASSERT(_accountState && _accountState->account());
-
-    // qpointer for async calls
-    const auto isDeployed = folder->isDeployed();
-    const auto addRemoveFolderAction = [isDeployed, folder, this](QMenu *menu) {
-        Q_ASSERT(!isDeployed);
-        return menu->addAction(tr("Remove folder sync connection"), this, [folder, this] { slotRemoveCurrentFolder(folder); });
-    };
-
-
-    auto *menu = new QMenu(ui->accountFolderView);
-    menu->setAccessibleName(tr("Sync options menu"));
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    connect(folder, &OCC::Folder::destroyed, menu, &QMenu::close);
-    // Only allow removal if the item isn't in "ready" state.
-    if (!folder->isReady() && !isDeployed) {
-        if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-            menu->addAction(tr("Folder is not ready yet"))->setEnabled(false);
-        } else {
-            addRemoveFolderAction(menu);
-        }
-        menu->popup(QCursor::pos());
-        // accessibility
-        menu->setFocus();
-        return;
-    }
-    // Add an action to open the folder in the system's file browser:
-    QAction *showInFileManagerAction = menu->addAction(CommonStrings::showInFileBrowser(), [folder]() {
-        qCInfo(lcAccountView) << "Opening local folder" << folder->path();
-        if (QFileInfo::exists(folder->path())) {
-            showInFileManager(folder->path());
-        }
-    });
-
-    if (!QFile::exists(folder->path())) {
-        showInFileManagerAction->setEnabled(false);
-    }
-
-    // Add an action to open the folder on the server in a webbrowser:
-    // Refactoring todo: why are we using the folder accountState AND the local member? shouldn't the folder have the same account state
-    // as this settings panel?!
-    if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
-        QString path = folder->remotePathTrailingSlash();
-        menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
-            fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
-        });
-    }
-
-
-    // Root-folder specific actions:
-    menu->addSeparator();
-
-    // qpointer for the async context menu
-    if (OC_ENSURE(folder->isReady())) {
-        const bool folderPaused = folder->syncPaused();
-
-        if (!folderPaused) {
-            QAction *forceSyncAction = menu->addAction(tr("Force sync now"));
-            if (folder->isSyncRunning()) {
-                forceSyncAction->setText(tr("Restart sync"));
-            }
-            forceSyncAction->setEnabled(folder->accountState()->isConnected());
-            connect(forceSyncAction, &QAction::triggered, this, [folder, this] { slotForceSyncCurrentFolder(folder); });
-        }
-
-        QAction *resumeAction = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
-        connect(resumeAction, &QAction::triggered, this, [folder, this] { slotEnableCurrentFolder(folder, true); });
-
-        if (!isDeployed) {
-            if (!Theme::instance()->syncNewlyDiscoveredSpaces()) {
-                addRemoveFolderAction(menu);
-            }
-
-            auto maybeShowEnableVfs = [folder, menu, this]() {
-                // Only show "Enable VFS" if a VFS mode is available
-                const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
-                if (FolderMan::instance()->checkVfsAvailability(folder->path(), mode)) {
-                    if (mode == Vfs::WindowsCfApi) {
-                        QAction *enableVfsAction = menu->addAction(tr("Enable virtual file support"));
-                        connect(enableVfsAction, &QAction::triggered, this, [folder, this] { slotEnableVfsCurrentFolder(folder); });
-                    }
-                }
-            };
-
-            if (Theme::instance()->showVirtualFilesOption()) {
-                if (Theme::instance()->forceVirtualFilesOption()) {
-                    if (!folder->virtualFilesEnabled()) {
-                        // VFS is currently disabled, but is forced on by theming (e.g. due to a theme change)
-                        maybeShowEnableVfs();
-                    }
-                } else {
-                    if (folder->virtualFilesEnabled()) {
-                        menu->addAction(tr("Disable virtual file support"), this, [folder, this] { slotDisableVfsCurrentFolder(folder); });
-                    } else {
-                        maybeShowEnableVfs();
-                    }
-                }
-            }
-            if (!folder->virtualFilesEnabled()) {
-                menu->addAction(tr("Choose what to sync"), this, [folder, this] { showSelectiveSyncDialog(folder); });
-            }
-            menu->popup(QCursor::pos());
-            menu->setFocus(); // for accassebility (keyboard navigation)
-        } else {
-            menu->deleteLater();
-        }
     }
 }
 
@@ -347,7 +232,7 @@ void AccountView::slotRemoveCurrentFolder(Folder *folder)
             // todo: #3, this should be a signal to folderman
             FolderMan::instance()->removeFolderFromGui(folder);
             // todo:#4
-            QTimer::singleShot(0, this, &AccountView::slotSpacesUpdated);
+            // QTimer::singleShot(0, this, &AccountView::slotSpacesUpdated);
         }
     });
     messageBox->open();
@@ -553,10 +438,11 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
             icon = StatusIcon::Warning;
         }
         showConnectionLabel(tr("Connected"), icon, errors);
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountView::slotSpacesUpdated, Qt::UniqueConnection);
+        // connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountView::slotSpacesUpdated, Qt::UniqueConnection);
+
         // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
         // triggering the slot? ie duplicate call to slotSpacesUpdated?
-        slotSpacesUpdated();
+        // slotSpacesUpdated();
 
         break;
     }
@@ -594,67 +480,6 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
     }
 }
 
-
-// todo: #47 - this does not belong here, but in folderman. see details below
-void AccountView::slotSpacesUpdated()
-{
-    if (!_accountState || !_accountState->account() || !_accountState->account()->spacesManager()) {
-        return;
-    }
-
-    auto spaces = _accountState->account()->spacesManager()->spaces();
-    auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
-    for (const auto &f : FolderMan::instance()->foldersForAccount(_accountState->account()->uuid())) {
-        unsycnedSpaces.erase(f->space());
-    }
-
-    // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
-    // Refactoring todo answer to above: we should not be loading spaces in any gui. Instead I would expect that the gui merely updates
-    // it's view/state in response to new or removed spaces. The clue is that the main actor here is FolderMan - connect FolderMan to whoever
-    // emits the newly discovered spaces (or whatever this is) and let it deal with it.
-    // A wrinkle here is that this slot is called in several places in the gui, apparently just to trigger refresh or similar? Not good!
-    if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
-        // where does this slot run if not on the main thread?
-        // what needs to be processed "before" this loading routine that requires scheduling it for later?
-        // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
-        // event loop.
-        QTimer::singleShot(0, this, [this, unsycnedSpaces]() {
-            for (GraphApi::Space *newSpace : unsycnedSpaces) {
-                // TODO: Problem: when a space is manually removed, this will re-add it!
-                qCInfo(lcAccountView) << "Adding sync connection for newly discovered space" << newSpace->displayName();
-
-                const QString localDir(_accountState->account()->defaultSyncRoot());
-                const QString folderName = FolderMan::instance()->findGoodPathForNewSyncFolder(
-                    localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, _accountState->account()->uuid());
-
-                FolderMan::SyncConnectionDescription fwr;
-                fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());
-                fwr.spaceId = newSpace->drive().getRoot().getId();
-                fwr.localPath = folderName;
-                fwr.displayName = newSpace->displayName();
-                fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
-                fwr.priority = newSpace->priority();
-                FolderMan::instance()->addFolderFromGui(_accountState, fwr);
-            }
-
-            _unsyncedSpaces = 0;
-            _syncedSpaces = _accountState->account()->spacesManager()->spaces().size();
-            Q_EMIT unsyncedSpacesChanged();
-            Q_EMIT syncedSpacesChanged();
-        });
-    } else {
-        if (_unsyncedSpaces != unsycnedSpaces.size()) {
-            _unsyncedSpaces = static_cast<uint>(unsycnedSpaces.size());
-            Q_EMIT unsyncedSpacesChanged();
-        }
-        uint syncedSpaces = spaces.size() - _unsyncedSpaces;
-        if (_syncedSpaces != syncedSpaces) {
-            _syncedSpaces = syncedSpaces;
-            Q_EMIT syncedSpacesChanged();
-        }
-    }
-}
 
 AccountView::~AccountView()
 {
@@ -729,15 +554,6 @@ void AccountView::addModalAccountWidget(AccountModalWidget *widget)
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
-uint AccountView::unsyncedSpaces() const
-{
-    return _unsyncedSpaces;
-}
-
-uint AccountView::syncedSpaces() const
-{
-    return _syncedSpaces;
-}
 
 void AccountView::slotDeleteAccount()
 {

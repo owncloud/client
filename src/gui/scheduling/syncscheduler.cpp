@@ -54,6 +54,7 @@ private:
 public:
     FolderPriorityQueue() = default;
 
+    // todo #50
     void enqueueFolder(Folder *folder, SyncScheduler::Priority priority)
     {
         const auto [it, inserted] = _scheduledFolders.emplace(folder, priority);
