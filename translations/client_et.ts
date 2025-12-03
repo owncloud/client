@@ -425,7 +425,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
         <source>&amp;Choose...</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Vali...</translation>
     </message>
 </context>
 <context>
