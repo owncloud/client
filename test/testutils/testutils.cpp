@@ -18,6 +18,9 @@ namespace TestUtils {
         d.setLocalPath(path);
         d.setTargetPath(path);
         d.setJournalPath(SyncJournalDb::makeDbName(d.localPath()));
+        // I don't think format really matters here as it's purely imaginary and has nothing to do with anything
+        // but the folderman still expects it to be there because it hashes existing folders by spaceid
+        d.setSpaceId(QUuid::createUuid().toString());
         return d;
     }
 

@@ -82,11 +82,8 @@ private Q_SLOTS:
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + QStringLiteral("/ownCloud2/"), type, uuid).isNull());
 
         QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath, type, uuid).isNull());
-        // these need comments - I have no idea what is expected so just commenting out ones that fail.
-        // more importantly, the tests use the newfolder type OC10SyncRoot which is dead so these all need to be updated to work for spaces
-        // and docced so it's clear what the expected result is
-        //      QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + QStringLiteral("/sub/ownCloud1/folder"), type, uuid).isNull());
-        //      QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + QStringLiteral("/sub/ownCloud1/folder/f"), type, uuid).isNull());
+        QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + QStringLiteral("/sub/ownCloud1/folder"), type, uuid).isNull());
+        QVERIFY(!folderman->checkPathValidityForNewFolder(dirPath + QStringLiteral("/sub/ownCloud1/folder/f"), type, uuid).isNull());
 
 #ifndef Q_OS_WIN // no links on windows, no permissions
         // make a bunch of links
