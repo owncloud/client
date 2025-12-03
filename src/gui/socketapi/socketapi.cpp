@@ -615,7 +615,7 @@ void SocketApi::command_MOVE_ITEM(const QString &localFile, SocketListener *)
 
     auto target = QFileDialog::getSaveFileName(
         nullptr,
-        tr("Select new location..."),
+        tr("Select new location…"),
         defaultDirAndName,
         QString(), nullptr, QFileDialog::HideNameFilterDetails);
     if (target.isEmpty())
@@ -703,7 +703,7 @@ void SocketApi::openPrivateLink(const QUrl &link)
 void SocketApi::command_GET_STRINGS(const QString &argument, SocketListener *listener)
 {
     static std::array<std::pair<QString, QString>, 5> strings { {
-        { QStringLiteral("SHARE_MENU_TITLE"), tr("Share...") },
+        { QStringLiteral("SHARE_MENU_TITLE"), tr("Share…") },
         { QStringLiteral("CONTEXT_MENU_TITLE"), Theme::instance()->appNameGUI() },
         { QStringLiteral("COPY_PRIVATE_LINK_MENU_TITLE"), tr("Copy private link to clipboard") },
     } };
@@ -732,7 +732,7 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
         listener->sendMessage(QStringLiteral("MENU_ITEM:DISABLED:d:")
             + (record.isDirectory() ? tr("Resharing this folder is not allowed") : tr("Resharing this file is not allowed")));
     } else {
-        listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share..."));
+        listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share…"));
     }
 
     if (capabilities.privateLinkPropertyAvailable()) {
@@ -838,22 +838,22 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
                         if (canAddToDir) {
                             if (isOnTheServer) {
                                 // Conflict file that is already uploaded
-                                listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Rename..."));
+                                listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Rename…"));
                             } else {
                                 // Local-only conflict file
-                                listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Rename and upload..."));
+                                listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Rename and upload…"));
                             }
                         } else {
                             if (isOnTheServer) {
                                 // Uploaded conflict file in read-only directory
-                                listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move and rename..."));
+                                listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move and rename…"));
                             } else {
                                 if (isOnTheServer) {
                                     // Uploaded conflict file in read-only directory
-                                    listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move and rename..."));
+                                    listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move and rename…"));
                                 } else {
                                     // Local-only conflict file in a read-only dir
-                                    listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move, rename and upload..."));
+                                    listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move, rename and upload…"));
                                 }
                             }
                             listener->sendMessage(QLatin1String("MENU_ITEM:DELETE_ITEM::") + tr("Delete local changes"));
@@ -861,7 +861,7 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
 
                         // File in a read-only directory?
                         if (!isConflict && !isOnTheServer && !canAddToDir) {
-                            listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move and upload..."));
+                            listener->sendMessage(QLatin1String("MENU_ITEM:MOVE_ITEM::") + tr("Move and upload…"));
                             listener->sendMessage(QLatin1String("MENU_ITEM:DELETE_ITEM::") + tr("Delete"));
                         }
                     }

@@ -310,7 +310,7 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
-        <source>&amp;Choose...</source>
+        <source>Browse…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -435,7 +435,7 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
-        <source>Add new folder sync...</source>
+        <source>Add new folder sync…</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -614,7 +614,12 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
-        <source>Updating credentials...</source>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="568"/>
+        <source>Connecting…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -625,11 +630,6 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="566"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="568"/>
-        <source>Connecting...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -875,7 +875,12 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
-        <source>Updating credentials...</source>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="582"/>
+        <source>Connecting…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -886,11 +891,6 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="582"/>
-        <source>Connecting...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -977,7 +977,7 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
-        <source>Browse...</source>
+        <source>Browse…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2042,7 +2042,7 @@ Note that using any logging command line options will override the settings.</so
     <name>OCC::NewAccountWizardController</name>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
-        <source>Add account...</source>
+        <source>Add account…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2246,7 +2246,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
-        <source>Downloading %1. Please wait...</source>
+        <source>Downloading %1. Please wait…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2271,7 +2271,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
-        <source>Checking update server...</source>
+        <source>Checking update server…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2886,7 +2886,7 @@ Note that using any logging command line options will override the settings.</so
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
-        <source>Loading ...</source>
+        <source>Loading …</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2968,11 +2968,6 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
-        <source>Select new location...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="628"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
@@ -2990,9 +2985,14 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
+        <source>Select new location…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
-        <source>Share...</source>
+        <source>Share…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3023,33 +3023,33 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
-        <source>Rename...</source>
+        <source>Rename…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
-        <source>Rename and upload...</source>
+        <source>Rename and upload…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
-        <source>Move and rename...</source>
+        <source>Move and rename…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
-        <source>Move, rename and upload...</source>
+        <source>Move, rename and upload…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
+        <source>Move and upload…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Delete local changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
-        <source>Move and upload...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

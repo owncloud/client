@@ -49,9 +49,16 @@ ownCloud admins and users.
 
 ## Summary
 
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
 * Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
 
 ## Details
+
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+
+   Fix runtime crash at startup with ECM 6.19.
+
+   https://github.com/owncloud/client/pull/12374
 
 * Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
 
@@ -860,7 +867,7 @@ ownCloud admins and users.
 * Enhancement - Change how all files deleted is handled: [#8360](https://github.com/owncloud/client/issues/8360)
 * Enhancement - Port from QtSingleApplication to KDSingleApplication: [#8432](https://github.com/owncloud/client/issues/8432)
 * Enhancement - Enable crash reporter in commandline client: [#8991](https://github.com/owncloud/client/issues/8991)
-* Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
+* Enhancement - Make "Show files versions…" context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 * Enhancement - Log http request when it is sent: [#10313](https://github.com/owncloud/client/issues/10313)
 * Enhancement - Allow selective sync of spaces in folder wizard: [#10596](https://github.com/owncloud/client/issues/10596)
 * Enhancement - Send a language header in all http requests: [#10619](https://github.com/owncloud/client/issues/10619)
@@ -1070,7 +1077,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/8991
 
-* Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
+* Enhancement - Make "Show files versions…" context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 
    https://github.com/owncloud/client/issues/10197
 
@@ -1455,7 +1462,7 @@ ownCloud admins and users.
 
 * Enhancement - Open sharing options in Web: [#10590](https://github.com/owncloud/client/pull/10590)
 
-   When selecting "Share..." in the file browser context menu, we now not only
+   When selecting "Share…" in the file browser context menu, we now not only
    display that file in the web view but also directly show the sharing options.
 
    https://github.com/owncloud/client/pull/10590

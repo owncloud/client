@@ -43,7 +43,7 @@ void AccountFoldersView::buildView()
     description->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     buttonLineLayout->addWidget(description, 0, Qt::AlignLeft);
 
-    _addFolderButton = new QPushButton(tr("Add new folder sync..."), this);
+    _addFolderButton = new QPushButton(tr("Add new folder sync…"), this);
     _addFolderButton->setObjectName("addAccountFolderButton");
     connect(_addFolderButton, &QPushButton::clicked, this, &AccountFoldersView::addFolderTriggered);
     buttonLineLayout->addStretch(1);

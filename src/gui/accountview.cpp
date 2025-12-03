@@ -456,7 +456,7 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
         showConnectionLabel(tr("Signed out"), StatusIcon::Disconnected);
         break;
     case AccountState::AskingCredentials: {
-        showConnectionLabel(tr("Updating credentials..."), StatusIcon::Info);
+        showConnectionLabel(tr("Updating credentials…"), StatusIcon::Info);
         break;
     }
     case AccountState::Connecting:
@@ -465,7 +465,7 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
         } else if (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered()) {
             showConnectionLabel(tr("Sync is paused due to metered internet connection"), StatusIcon::Disconnected);
         } else {
-            showConnectionLabel(tr("Connecting..."), StatusIcon::Info);
+            showConnectionLabel(tr("Connecting…"), StatusIcon::Info);
         }
         break;
     case AccountState::ConfigurationError:
