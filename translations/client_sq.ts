@@ -300,8 +300,8 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
-        <source>&amp;Choose...</source>
-        <translation>&amp;Zgjidhni…</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -425,8 +425,8 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
-        <source>Add new folder sync...</source>
-        <translation>Shtoni njëkohësim të ri dosjesh…</translation>
+        <source>Add new folder sync…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -608,8 +608,13 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
-        <source>Updating credentials...</source>
-        <translation>Po përditësohen kredenciale…</translation>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="568"/>
+        <source>Connecting…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -620,11 +625,6 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <location filename="../src/gui/accountsettings.cpp" line="566"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Njëkohësimi është ndalur, për shkak lidhjeje internet me racion</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="568"/>
-        <source>Connecting...</source>
-        <translation>Po lidhet…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="572"/>
@@ -873,8 +873,13 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
-        <source>Updating credentials...</source>
-        <translation>Po përditësohen kredenciale…</translation>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="582"/>
+        <source>Connecting…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
@@ -885,11 +890,6 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Njëkohësimi është ndalur, për shkak lidhjeje internet me racion</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="582"/>
-        <source>Connecting...</source>
-        <translation>Po lidhet…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="586"/>
@@ -975,8 +975,8 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
-        <source>Browse...</source>
-        <translation>Shfletoni…</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
@@ -2031,8 +2031,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <name>OCC::NewAccountWizardController</name>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
-        <source>Add account...</source>
-        <translation>Shtoni llogari…</translation>
+        <source>Add account…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
@@ -2236,8 +2236,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
-        <source>Downloading %1. Please wait...</source>
-        <translation>Po shkarkohet %1. Ju lutemi, pritni…</translation>
+        <source>Downloading %1. Please wait…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2261,8 +2261,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
-        <source>Checking update server...</source>
-        <translation>Po kontrollohet shërbyesi i përditësimeve…</translation>
+        <source>Checking update server…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2876,8 +2876,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
-        <source>Loading ...</source>
-        <translation>Po ngarkohet …</translation>
+        <source>Loading …</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2958,11 +2958,6 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Doni të fshihet përgjithnjë kartela &lt;i&gt;%1&lt;/i&gt;?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
-        <source>Select new location...</source>
-        <translation>Përzgjidhni vendndodhje të re…</translation>
-    </message>
-    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="628"/>
         <source>Error</source>
         <translation>Gabim</translation>
@@ -2982,10 +2977,15 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Ndava diçka me ju</translation>
     </message>
     <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
+        <source>Select new location…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
-        <source>Share...</source>
-        <translation>Ndani me të tjerë…</translation>
+        <source>Share…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3015,34 +3015,34 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
-        <source>Rename...</source>
-        <translation>Riemërtoni…</translation>
+        <source>Rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
-        <source>Rename and upload...</source>
-        <translation>Riemërtoni dhe ngarkoni…</translation>
+        <source>Rename and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
-        <source>Move and rename...</source>
-        <translation>Zhvendosni dhe riemërtoni…</translation>
+        <source>Move and rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
-        <source>Move, rename and upload...</source>
-        <translation>Zhvendosni, riemërtoni dhe ngarkoni…</translation>
+        <source>Move, rename and upload…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
+        <source>Move and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Delete local changes</source>
         <translation>Fshiji ndryshimet vendore</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
-        <source>Move and upload...</source>
-        <translation>Zhvendosni dhe ngarkoni…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>

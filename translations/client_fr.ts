@@ -300,8 +300,8 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
-        <source>&amp;Choose...</source>
-        <translation>&amp;Sélectionner…</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -425,8 +425,8 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
-        <source>Add new folder sync...</source>
-        <translation>Ajouter un nouveau dossier synchronisé</translation>
+        <source>Add new folder sync…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -608,8 +608,13 @@ Cette action stoppera toute synchronisation en cours.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
-        <source>Updating credentials...</source>
-        <translation>Mise à jour des informations d&apos;identification...</translation>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="568"/>
+        <source>Connecting…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -620,11 +625,6 @@ Cette action stoppera toute synchronisation en cours.</translation>
         <location filename="../src/gui/accountsettings.cpp" line="566"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>La synchronisation est mise en pause à cause d&apos;une connexion internet limitée.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="568"/>
-        <source>Connecting...</source>
-        <translation>connexion en cours...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="572"/>
@@ -873,8 +873,13 @@ Cette action stoppera toute synchronisation en cours.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
-        <source>Updating credentials...</source>
-        <translation>Mise à jour des informations d&apos;identification...</translation>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="582"/>
+        <source>Connecting…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
@@ -885,11 +890,6 @@ Cette action stoppera toute synchronisation en cours.</translation>
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>La synchronisation est mise en pause à cause d&apos;une connexion internet limitée.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="582"/>
-        <source>Connecting...</source>
-        <translation>connexion en cours...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="586"/>
@@ -975,8 +975,8 @@ Cette action stoppera toute synchronisation en cours.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
-        <source>Browse...</source>
-        <translation>Parcourir...</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
@@ -2031,8 +2031,8 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     <name>OCC::NewAccountWizardController</name>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
-        <source>Add account...</source>
-        <translation>Ajouter un compte...</translation>
+        <source>Add account…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
@@ -2236,8 +2236,8 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
-        <source>Downloading %1. Please wait...</source>
-        <translation>Téléchargement %1 en cours. Veuillez patienter…</translation>
+        <source>Downloading %1. Please wait…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2261,8 +2261,8 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
-        <source>Checking update server...</source>
-        <translation>Interrogation du serveur de mises à jour...</translation>
+        <source>Checking update server…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2876,8 +2876,8 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
-        <source>Loading ...</source>
-        <translation>Chargement…</translation>
+        <source>Loading …</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2958,11 +2958,6 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Voulez-vous vraiment supprimer définitivement le fichier &lt;i&gt;%1&lt;/i&gt; ?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
-        <source>Select new location...</source>
-        <translation>Sélectionner nouvel emplacement..</translation>
-    </message>
-    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="628"/>
         <source>Error</source>
         <translation>Erreur</translation>
@@ -2982,10 +2977,15 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>J&apos;ai partagé quelque chose avec vous</translation>
     </message>
     <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
+        <source>Select new location…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
-        <source>Share...</source>
-        <translation>partager</translation>
+        <source>Share…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3015,34 +3015,34 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
-        <source>Rename...</source>
-        <translation>Renommer...</translation>
+        <source>Rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
-        <source>Rename and upload...</source>
-        <translation>Renommer et téléverser...</translation>
+        <source>Rename and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
-        <source>Move and rename...</source>
-        <translation>Déplacer et renommer...</translation>
+        <source>Move and rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
-        <source>Move, rename and upload...</source>
-        <translation>Déplacer, renommer et téléverser...</translation>
+        <source>Move, rename and upload…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
+        <source>Move and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Delete local changes</source>
         <translation>Supprimer les changements locaux</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
-        <source>Move and upload...</source>
-        <translation>Déplacer et téléverser...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>

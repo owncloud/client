@@ -300,8 +300,8 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
-        <source>&amp;Choose...</source>
-        <translation>&amp;Vali...</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -425,7 +425,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
-        <source>Add new folder sync...</source>
+        <source>Add new folder sync…</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -608,8 +608,13 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
-        <source>Updating credentials...</source>
-        <translation>Uuendan kasutajatunnuseid...</translation>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="568"/>
+        <source>Connecting…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -620,11 +625,6 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <location filename="../src/gui/accountsettings.cpp" line="566"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Sünkroniseerimine on peatatud mahupõhise internetiühenduse tõttu</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="568"/>
-        <source>Connecting...</source>
-        <translation>Ühendamine...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="572"/>
@@ -869,7 +869,12 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
-        <source>Updating credentials...</source>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="582"/>
+        <source>Connecting…</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -880,11 +885,6 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="582"/>
-        <source>Connecting...</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -971,7 +971,7 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
-        <source>Browse...</source>
+        <source>Browse…</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2026,7 +2026,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <name>OCC::NewAccountWizardController</name>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
-        <source>Add account...</source>
+        <source>Add account…</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2231,8 +2231,8 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
-        <source>Downloading %1. Please wait...</source>
-        <translation>%1 allalaadimine. Palun oota...</translation>
+        <source>Downloading %1. Please wait…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2256,8 +2256,8 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
-        <source>Checking update server...</source>
-        <translation>Kontrollin uuendusserverit...</translation>
+        <source>Checking update server…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2871,8 +2871,8 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
-        <source>Loading ...</source>
-        <translation>Laadimine ...</translation>
+        <source>Loading …</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2953,11 +2953,6 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Kas soovite faili &lt;i&gt;%1&lt;/i&gt; jäädavalt kustutada?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
-        <source>Select new location...</source>
-        <translation>Vali uus asukoht...</translation>
-    </message>
-    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="628"/>
         <source>Error</source>
         <translation>Viga</translation>
@@ -2977,10 +2972,15 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Jagasin teiega midagi</translation>
     </message>
     <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
+        <source>Select new location…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
-        <source>Share...</source>
-        <translation>Jaga...</translation>
+        <source>Share…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3010,34 +3010,34 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
-        <source>Rename...</source>
-        <translation>Nimeta ümber...</translation>
+        <source>Rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
-        <source>Rename and upload...</source>
-        <translation>Nimeta ümber ja lae üles...</translation>
+        <source>Rename and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
-        <source>Move and rename...</source>
-        <translation>Liiguta ja nimeta ümber...</translation>
+        <source>Move and rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
-        <source>Move, rename and upload...</source>
-        <translation>Liiguta, nimeta ümber ja laadi üles…</translation>
+        <source>Move, rename and upload…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
+        <source>Move and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Delete local changes</source>
         <translation>Kustuta kohalikud muudatused</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
-        <source>Move and upload...</source>
-        <translation>Liiguta ja laadi üles...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>

@@ -300,8 +300,8 @@ Anwendung zur Datei-Synchronisation.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
-        <source>&amp;Choose...</source>
-        <translation>&amp;Auswählen…</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -425,8 +425,8 @@ Anwendung zur Datei-Synchronisation.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
-        <source>Add new folder sync...</source>
-        <translation>Synchronisierten Ordner hinzufügen...</translation>
+        <source>Add new folder sync…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -608,8 +608,13 @@ Diese Aktion wird gerade laufende Synchronisationen abbrechen.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
-        <source>Updating credentials...</source>
-        <translation>Zugangsdaten werden aktualisiert...</translation>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="568"/>
+        <source>Connecting…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -620,11 +625,6 @@ Diese Aktion wird gerade laufende Synchronisationen abbrechen.</translation>
         <location filename="../src/gui/accountsettings.cpp" line="566"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Die Synchronisierung ist aufgrund einer getakteten Internetverbindung pausiert</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="568"/>
-        <source>Connecting...</source>
-        <translation>Verbinde…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="572"/>
@@ -753,17 +753,17 @@ Diese Aktion wird gerade laufende Synchronisationen abbrechen.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="337"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Löschen der Ordnersychronisation bestätigen</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="338"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Möchten Sie das Verzeichnis &lt;i&gt;%1&lt;/i&gt; wirklich nicht mehr synchronisieren?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Hinweis:&lt;/b&gt; Dies wird &lt;b&gt;keine&lt;/b&gt; Daten löschen.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="343"/>
         <source>Remove Folder Sync Connection</source>
-        <translation type="unfinished"/>
+        <translation>Ordner-Synchronisation entfernen</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="344"/>
@@ -775,7 +775,7 @@ Diese Aktion wird gerade laufende Synchronisationen abbrechen.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="373"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>Deaktiviere Unterstützung für virtuelle Dateien?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="374"/>
@@ -784,133 +784,135 @@ Diese Aktion wird gerade laufende Synchronisationen abbrechen.</translation>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>Diese Aktion wird die Unterstützung für virtuelle Dateien abschalten. Als Konsequenz werden Inhalte aus Ordnern heruntergeladen, die aktuell als &apos;nur online verfügbar&apos; markiert sind.
+
+Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bricht die aktuell laufende Synchronisation ab.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="381"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>Unterstützung abschalten</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="446"/>
         <source>Sync Running</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisation läuft</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="446"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation type="unfinished"/>
+        <translation>Die Synchronisation läuft gerade.&lt;br/&gt;Trotzdem beenden?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="463"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierung vom Benutzer pausiert</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="489"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Die Internetverbindung ist getaktet.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="490"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierung wird pausiert, weil die Internetverbindung getaktet ist&lt;p&gt;Soll die sofortige Fortsetzung der Synchronisierung wirklich erzwungen werden?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="514"/>
         <source>Account options menu</source>
-        <translation type="unfinished"/>
+        <translation>Menü „Kontooptionen“</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="516"/>
         <location filename="../src/gui/accountview.cpp" line="520"/>
         <source>Log in</source>
-        <translation type="unfinished"/>
+        <translation>Anmelden</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="517"/>
         <source>Reconnect</source>
-        <translation type="unfinished"/>
+        <translation>Erneut verbinden</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="520"/>
         <source>Log out</source>
-        <translation type="unfinished"/>
+        <translation>Abmelden</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="525"/>
         <source>Remove</source>
-        <translation type="unfinished"/>
+        <translation>Entfernen</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="552"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation type="unfinished"/>
+        <translation>Die Server Version %1 wird nicht unterstützt. Weitere Schritte erfolgen auf eigene Gefahr.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="555"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>Verbunden</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="564"/>
         <source>Server is temporarily unavailable</source>
-        <translation type="unfinished"/>
+        <translation>Der Server ist vorübergehend nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="567"/>
         <source>Server is currently in maintenance mode</source>
-        <translation type="unfinished"/>
+        <translation>Server befindet sich im Wartungsmodus</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="570"/>
         <source>Signed out</source>
-        <translation type="unfinished"/>
+        <translation>Abgemeldet</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
-        <source>Updating credentials...</source>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="582"/>
+        <source>Connecting…</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>Ein &quot;Captive Portal&quot; verhindert die Verbindung zum Server.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="582"/>
-        <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>Die Synchronisierung ist aufgrund einer getakteten Internetverbindung pausiert</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="586"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>Serverkonfigurationsfehler</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="592"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Getrennt</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="750"/>
         <source>Confirm Account Removal</source>
-        <translation type="unfinished"/>
+        <translation>Löschen des Benutzerkontos bestätigen</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="751"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Möchtest Du den Zugang zum Benutzerkonto &lt;i&gt;%1&lt;/i&gt; wirklich entfernen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Hinweis:&lt;/b&gt;Es werden &lt;b&gt;keine&lt;/b&gt; lokalen Daten gelöscht.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="755"/>
         <source>Remove connection</source>
-        <translation type="unfinished"/>
+        <translation>Zugang löschen</translation>
     </message>
 </context>
 <context>
@@ -937,77 +939,77 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="48"/>
         <source>Advanced settings</source>
-        <translation type="unfinished"/>
+        <translation>Erweiterte Einstellungen</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
         <source>Sync and download options</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierungs- und Downloadoptionen</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="56"/>
         <source>Download location</source>
-        <translation type="unfinished"/>
+        <translation>Download-Speicherort</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="74"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
-        <translation type="unfinished"/>
+        <translation>Dateien werden synchronisiert und heruntergeladen, während sie verwendet werden (spart Festplattenspeicher).</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="79"/>
         <source>Automatically sync and download folders and files</source>
-        <translation type="unfinished"/>
+        <translation>Ordner und Dateien automatisch synchronisieren und herunterladen</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="85"/>
         <source>Sync and download folders manually</source>
-        <translation type="unfinished"/>
+        <translation>Ordner manuell synchronisieren und herunterladen</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="132"/>
         <source>Download location on the local machine</source>
-        <translation type="unfinished"/>
+        <translation>Download-Speicherort auf dem lokalen Rechner</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
-        <source>Browse...</source>
+        <source>Browse…</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
         <source>Browse for a download location</source>
-        <translation type="unfinished"/>
+        <translation>Suchen Sie nach einem Download-Speicherort</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="210"/>
         <source>Invalid local download directory %1: %2</source>
-        <translation type="unfinished"/>
+        <translation>Falsches lokales Download Verzeichnis %1: %2</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="213"/>
         <source>your user directory may not be chosen as the sync root.</source>
-        <translation type="unfinished"/>
+        <translation>Ihr Benutzerverzeichnis kann nicht als Synchronisierungsstammverzeichnis ausgewählt werden.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="220"/>
         <source>path is not located on a supported Apple File System.</source>
-        <translation type="unfinished"/>
+        <translation>Der Pfad befindet sich nicht auf einem unterstützten Apple-Dateisystem.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="225"/>
         <source>path must be absolute.</source>
-        <translation type="unfinished"/>
+        <translation>Der Pfad muss absolut sein.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="239"/>
         <source>selected path does not support using virtual file system.</source>
-        <translation type="unfinished"/>
+        <translation>Der ausgewählte Pfad unterstützt die Verwendung eines virtuellen Dateisystems nicht.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="254"/>
         <source>Select sync root</source>
-        <translation type="unfinished"/>
+        <translation>Wählen Sie das Synchronisierungsstammverzeichnis aus</translation>
     </message>
 </context>
 <context>
@@ -1083,7 +1085,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="226"/>
         <source>No account configured</source>
-        <translation type="unfinished"/>
+        <translation>Kein Konto konfiguriert</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="261"/>
@@ -1135,7 +1137,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="276"/>
         <source>The account was deleted before we could start the propfind job</source>
-        <translation type="unfinished"/>
+        <translation>Das Konto wurde gelöscht, bevor wir den Propfind-Job starten konnten.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
@@ -1363,7 +1365,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/folderman.cpp" line="671"/>
         <source>User triggered force sync</source>
-        <translation type="unfinished"/>
+        <translation>Benutzer hat die Synchronisierung erzwungen</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="699"/>
@@ -1493,12 +1495,12 @@ Erwägung Sie, diesen Ordner aus dem Konto zu entfernen und erneut hinzuzufügen
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="64"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Prüfe Änderungen der entfernten &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="66"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Prüfe Änderungen der lokalen &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="70"/>
@@ -2027,7 +2029,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <name>OCC::NewAccountWizardController</name>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
-        <source>Add account...</source>
+        <source>Add account…</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2232,8 +2234,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
-        <source>Downloading %1. Please wait...</source>
-        <translation>Herunterladen von %1. Bitte warten…</translation>
+        <source>Downloading %1. Please wait…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2257,8 +2259,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
-        <source>Checking update server...</source>
-        <translation>Aktualisierungsserver wird überprüft …</translation>
+        <source>Checking update server…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2872,8 +2874,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
-        <source>Loading ...</source>
-        <translation>Laden…</translation>
+        <source>Loading …</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2954,11 +2956,6 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Soll die Datei &lt;i&gt;%1&lt;/i&gt; dauerhaft gelöscht werden?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
-        <source>Select new location...</source>
-        <translation>Neuen Ort wählen...</translation>
-    </message>
-    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="628"/>
         <source>Error</source>
         <translation>Fehler</translation>
@@ -2978,10 +2975,15 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Ich habe etwas mit Ihnen geteilt.</translation>
     </message>
     <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
+        <source>Select new location…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
-        <source>Share...</source>
-        <translation>Teilen…</translation>
+        <source>Share…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3011,34 +3013,34 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
-        <source>Rename...</source>
-        <translation>Umbenennen...</translation>
+        <source>Rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
-        <source>Rename and upload...</source>
-        <translation>Umbenennen und hochladen...</translation>
+        <source>Rename and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
-        <source>Move and rename...</source>
-        <translation>Verschieben und umbenennen...</translation>
+        <source>Move and rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
-        <source>Move, rename and upload...</source>
-        <translation>Verschieben, umbenennen und hochladen...</translation>
+        <source>Move, rename and upload…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
+        <source>Move and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
         <source>Delete local changes</source>
         <translation>Lokale Änderungen löschen</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
-        <source>Move and upload...</source>
-        <translation>Verschieben und hochladen...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>
