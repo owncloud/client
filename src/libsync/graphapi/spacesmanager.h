@@ -44,10 +44,7 @@ namespace GraphApi {
         // by passing the value for hasManyPersonalSpaces to this via ctr
         Account *account() const;
 
-        /**
-         * Only relevant during bootstraping or when disconnected
-         */
-        void checkReady();
+        bool isReady() const { return _ready; }
 
     Q_SIGNALS:
         void spaceChanged(Space *space) const;

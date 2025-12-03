@@ -119,13 +119,3 @@ QVector<Space *> SpacesManager::spaces() const
 {
     return {_spacesMap.begin(), _spacesMap.end()};
 }
-
-void SpacesManager::checkReady()
-{
-    // see constructor for calls to refresh
-    if (_ready) {
-        Q_EMIT ready();
-    } else {
-        refresh();
-    }
-}

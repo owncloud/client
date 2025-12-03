@@ -259,21 +259,21 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
 void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
 {
-    /*confirmed that the checkReady thing is not necessary.the account creation triggers the spaces manager well before we get here.I think we should
-    remove this weird concept and deal with updates using signals from the spacesmanager once it is connected - whenever that happens.
-    fazit : the folderman does not need to trigger the spacesmanager to start running
-    */
     if (accountState && accountState->account() && accountState->account()->spacesManager()) {
         GraphApi::SpacesManager *spaceMan = accountState->account()->spacesManager();
-        QObject::connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState, useVfs] { loadSpacesWhenReady(accountState, useVfs); });
-        // this is questionable - basically if the spaces aren't ready requesting "checkReady" triggers "getting them ready" - there is no way to directly
-        // ask "are you ready?" - in all cases you have to call this function to get the ready signal which is handled above
-        // todo: #10
-        spaceMan->checkReady();
+
+        // this replaces the old use of SpacesManager::checkReady which was overcomplicated.
+        // short explanation: the spaces manager has to wait for the account credentials to be valid before it can load its spaces
+        // folderman can't "force" that condiiton so it just has to wait for that setup to complete
+        // normally the spaces manager should always be ready at this point, but if for whatever reason it's not, catch it when it is
+        if (!spaceMan->isReady())
+            connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState, useVfs] { loadSpaces(accountState, useVfs); });
+        else
+            loadSpaces(accountState, useVfs);
     }
 }
 
-void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
+void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
 {
     if (!accountState || !accountState->account())
         return;
@@ -318,6 +318,7 @@ void FolderMan::loadSpacesWhenReady(AccountState *accountState, bool useVfs)
         }
         setSyncEnabled(true);
         _scheduler->connectSpacesManager(spacesMgr);
+        // initial load is complete, now we just wait for spaces to be added or removed incrementally
         connect(spacesMgr, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::slotSpacesAdded);
         QUuid id = accountState->account()->uuid();
         emit folderListChanged(id, _folders[id].values());

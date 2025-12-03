@@ -369,7 +369,7 @@ private:
      *
      *  emits folderListChanged
      */
-    void loadSpacesWhenReady(AccountState *accountState, bool useVfs);
+    void loadSpaces(AccountState *accountState, bool useVfs);
 
     /**
      *  reads the folder defs from the config for a single account.
