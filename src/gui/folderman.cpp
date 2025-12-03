@@ -950,7 +950,7 @@ QString FolderMan::checkPathValidityForNewFolder(const QString &path, NewFolderT
     const auto cs = Utility::fsCaseSensitivity();
 
     const QString userDir = QDir::cleanPath(canonicalPath(path)) + QLatin1Char('/');
-    for (auto f : _folders[accountUuid]) {
+    for (auto f : folders()) {
         const QString folderDir = QDir::cleanPath(canonicalPath(f->path())) + QLatin1Char('/');
 
         if (QString::compare(folderDir, userDir, cs) == 0) {
