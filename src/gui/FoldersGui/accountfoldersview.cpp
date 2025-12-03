@@ -24,6 +24,7 @@
 
 namespace OCC {
 
+
 AccountFoldersView::AccountFoldersView(QWidget *parent)
     : QWidget{parent}
 {
