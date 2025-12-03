@@ -248,7 +248,7 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
             WebFingerLookupAdapter lookup(_accessManager, token, _serverUrl);
             const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {
-                handleError(tr("Failed to look up webfinger instances: %1").arg(webfingerResult.error));
+                handleError(tr("Failed to look up WebFinger instances: %1").arg(webfingerResult.error));
                 return;
             } else {
                 if (!webfingerResult.urls.isEmpty())
