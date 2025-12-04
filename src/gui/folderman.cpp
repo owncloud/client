@@ -783,8 +783,6 @@ static QString checkPathForSyncRootMarkingRecursive(const QString &path, FolderM
                 return {};
             }
             [[fallthrough]];
-        case FolderMan::NewFolderType::OC10SyncRoot:
-            [[fallthrough]];
         case FolderMan::NewFolderType::SpacesSyncRoot:
             // It's our application but we don't want to create a spaces folder, so it must be another space root
             return FolderMan::tr("Folder '%1' is already in use by another account.").arg(path);
@@ -840,6 +838,7 @@ QString FolderMan::checkPathValidityRecursive(const QString &path, FolderMan::Ne
     return checkPathForSyncRootMarkingRecursive(path, folderType, accountUuid);
 }
 
+// XXX
 /*
  * OC10 folder:
  *  - sync root not in syncdb folder
@@ -1050,7 +1049,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
     setSyncEnabled(true);
 }
 
-QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)
+QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)//XXX
 {
     return FolderMan::instance()->findGoodPathForNewSyncFolder(QDir::homePath(), Theme::instance()->appName(), folderType, accountUuid);
 }
