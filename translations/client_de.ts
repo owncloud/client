@@ -301,7 +301,7 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Durchsuchen…</translation>
     </message>
 </context>
 <context>
@@ -426,7 +426,7 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
         <source>Add new folder sync…</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierten Ordner hinzufügen…</translation>
     </message>
 </context>
 <context>
@@ -609,12 +609,12 @@ Diese Aktion wird gerade laufende Synchronisationen abbrechen.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
         <source>Updating credentials…</source>
-        <translation type="unfinished"/>
+        <translation>Zugangsdaten werden aktualisiert…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="568"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Verbinde…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -872,12 +872,12 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
         <source>Updating credentials…</source>
-        <translation type="unfinished"/>
+        <translation>Zugangsdaten werden aktualisiert…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="582"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Verbinde…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
@@ -974,7 +974,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Durchsuchen…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
@@ -1505,7 +1505,7 @@ Erwägung Sie, diesen Ordner aus dem Konto zu entfernen und erneut hinzuzufügen
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="70"/>
         <source>Reconciling changes</source>
-        <translation type="unfinished"/>
+        <translation>Änderungen zusammenführen</translation>
     </message>
 </context>
 <context>
@@ -1784,43 +1784,43 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="32"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filter</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>Tabelle mit lokaler Aktivität</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="62"/>
         <location filename="../src/gui/localactivitywidget.cpp" line="68"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Konto</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="105"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filtermenü</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="120"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>Aktionsmenü</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="162"/>
         <source>Sort ascending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Aufsteigend nach %1 sortieren</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="166"/>
         <source>Sort descending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Absteigend nach %1 sortieren</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="188"/>
         <source>Retry sync</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisation wiederholen</translation>
     </message>
 </context>
 <context>
@@ -2004,12 +2004,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="50"/>
         <source>no error details are available</source>
-        <translation type="unfinished"/>
+        <translation>Es liegen keine Fehlerdetails vor.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="51"/>
         <source>Unable to connect to server during account creation: %1.</source>
-        <translation type="unfinished"/>
+        <translation>Unable to connect to server during account creation: %1.Verbindung zum Server konnte während der Kontoerstellung nicht hergestellt werden: %1.</translation>
     </message>
 </context>
 <context>
@@ -2017,12 +2017,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Cancel Setup</source>
-        <translation type="unfinished"/>
+        <translation>Setup abbrechen</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Do you really want to cancel the account setup?</source>
-        <translation type="unfinished"/>
+        <translation>Die Benutzereinrichtung wirklich abbrechen?</translation>
     </message>
 </context>
 <context>
@@ -2030,22 +2030,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Add account…</source>
-        <translation type="unfinished"/>
+        <translation>Konto hinzufügen…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
         <source>Back</source>
-        <translation type="unfinished"/>
+        <translation>Zurück</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="64"/>
         <source>Advanced</source>
-        <translation type="unfinished"/>
+        <translation>Erweitert</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="208"/>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>Anmelden</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
@@ -2076,12 +2076,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Successfully signed in</source>
-        <translation type="unfinished"/>
+        <translation>Erfolgreich angemeldet</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="157"/>
         <source>Now, explore %1 on desktop.</source>
-        <translation type="unfinished"/>
+        <translation>Erkunden Sie nun %1 auf Ihrem Desktop.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="268"/>
@@ -2124,7 +2124,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="310"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation type="unfinished"/>
+        <translation>Sie haben sich mit Benutzer &lt;em&gt;%1&lt;/em&gt;angemeldet, müssen sich aber mit Benutzer&lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Bitte kehren Sie zum %3-Client zurück und starten Sie die Authentifizierung neu.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="313"/>
@@ -2137,27 +2137,27 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Anwendungsname Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation type="unfinished"/>
+        <translation>Lassen Sie dieses Fenster geöffnet. In Ihrem Webbrowser erscheint eine Anmeldeaufforderung, die Sie mit der folgenden Adresse verbindet.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>Anmelde-URL</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"/>
+        <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwenden Sie die Schaltfläche „Kopieren“.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="83"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"/>
+        <translation>URL zum Anmelden kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="103"/>
@@ -2167,7 +2167,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="180"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL kopiert</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
@@ -2177,11 +2177,11 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
-        <translation type="unfinished"/>
+        <translation>Bitte kopieren Sie die Authentifizierungs-URL mithilfe der Schaltfläche oben und geben Sie diese Informationen an den Support weiter.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
-        <source>Failed to look up webfinger instances: %1</source>
+        <source>Failed to look up WebFinger instances: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2192,32 +2192,32 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
         <source>Unable to retrieve capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>Die Capabilities konnten nicht vom Server abgerufen werden.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"/>
+        <translation>Dieser Client unterstützt diesen Server nicht.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Versuch sich bei einem OAuth2-fähigen Server anzumelden. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
         <source>Unable to open browser with provided URL. %1</source>
-        <translation type="unfinished"/>
+        <translation>Der Browser konnte die angegebene URL nicht öffnen. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
-        <translation type="unfinished"/>
+        <translation>OAuth2 Anmeldung benötigt eine gesicherte Verbindung. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
         <source>Authorization server unreachable. %1</source>
-        <translation type="unfinished"/>
+        <translation>Autorisierungsserver nicht erreichbar. %1</translation>
     </message>
 </context>
 <context>
@@ -2235,7 +2235,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>Downloading %1. Please wait…</source>
-        <translation type="unfinished"/>
+        <translation>Herunterladen von %1. Bitte warten…</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2260,7 +2260,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
         <source>Checking update server…</source>
-        <translation type="unfinished"/>
+        <translation>Überprüfung des Update-Servers…</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2358,7 +2358,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/libsync/discovery.cpp" line="954"/>
         <location filename="../src/libsync/discovery.cpp" line="1316"/>
         <source>account was deleted. Unable to continue</source>
-        <translation type="unfinished"/>
+        <translation>Konto wurde gelöscht. Vorgang kann nicht fortgesetzt werden.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1113"/>
@@ -2657,18 +2657,18 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="64"/>
         <source>Local file changed during sync. It will be resumed.</source>
-        <translation type="unfinished"/>
+        <translation>Lokale Datei während der Synchronisierung geändert. Der Synchronisationsvorgang wird wiederholt.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="81"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
-        <translation type="unfinished"/>
+        <translation>Die Datei %1 kann nicht hochgeladen werden, da eine andere Datei mit dem selben Namen, nur unterschiedlicher Großschreibung, existiert</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="92"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="280"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
-        <translation type="unfinished"/>
+        <translation>Das Hochladen von %1 überschreitet das Speicherkontingent des Ordners </translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>

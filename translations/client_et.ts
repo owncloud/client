@@ -2178,8 +2178,8 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
-        <source>Failed to look up webfinger instances: %1</source>
-        <translation>Webfingeri instantside leidmine ebaõnnestus: %1</translation>
+        <source>Failed to look up WebFinger instances: %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
