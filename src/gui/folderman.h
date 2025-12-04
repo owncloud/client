@@ -85,7 +85,6 @@ public:
      * Or in case of a space folder, that if the new folder is in a Space sync root, it is the sync root of the same account.
      */
     enum class NewFolderType {
-        OC10SyncRoot, // todo: #43
         SpacesSyncRoot,
         SpacesFolder,
     };
@@ -130,8 +129,13 @@ public:
 
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
 
-
-    static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
+    /**
+     * @brief Check a path for validity.
+     *
+     * We do not allow putting a folder inside another folder that is already syncing to a server. We also disallow a space to be put into the default sync root
+     * of another (possibly branded) client, nor in the defaut sync root of another account in our own client.
+     */
+    static QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
 
     static std::unique_ptr<FolderMan> createInstance();
 
@@ -214,14 +218,6 @@ public:
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
     SocketApi *socketApi();
-
-    /**
-     * Check if @a path is a valid path for a new folder considering the already sync'ed items.
-     * Make sure that this folder, or any subfolder is not sync'ed already.
-     *
-     * @returns an empty string if it is allowed, or an error if it is not allowed
-     */
-    QString checkPathValidityForNewFolder(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
     /**
      * Attempts to find a non-existing, acceptable path for creating a new sync folder.
@@ -456,6 +452,9 @@ private:
     // makes the folder known to the socket api
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
+
+    // Helper for `checkPathValidity`
+    static QString checkPathValidityRecursive(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
