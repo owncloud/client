@@ -85,7 +85,6 @@ public:
      * Or in case of a space folder, that if the new folder is in a Space sync root, it is the sync root of the same account.
      */
     enum class NewFolderType {
-        OC10SyncRoot, // todo: #43
         SpacesSyncRoot,
         SpacesFolder,
     };
@@ -130,7 +129,12 @@ public:
 
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
 
-
+    /**
+     * @brief Check a path for validity.
+     *
+     * We do not allow putting a folder inside another folder that is already syncing to a server. We also disallow a space to be put into the default sync root
+     * of another (possibly branded) client, nor in the defaut sync root of another account in our own client.
+     */
     static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
 
     static std::unique_ptr<FolderMan> createInstance();

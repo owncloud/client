@@ -59,7 +59,7 @@ private Q_SLOTS:
         QVERIFY(folderman->addFolder(
             newAccountState.get(), TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + QStringLiteral("/ownCloud2"))));
 
-        const auto type = FolderMan::NewFolderType::OC10SyncRoot;
+        const auto type = FolderMan::NewFolderType::SpacesFolder;
         const QUuid uuid = {};
 
         // those should be allowed
@@ -187,7 +187,7 @@ private Q_SLOTS:
             newAccountState.get(), TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + QStringLiteral("/ownCloud (2)/"))));
 
         // TEST
-        const auto folderType = FolderMan::NewFolderType::OC10SyncRoot;
+        const auto folderType = FolderMan::NewFolderType::SpacesFolder;
         const auto uuid = QUuid::createUuid();
 
         QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("oc"), folderType, uuid), dirPath + QStringLiteral("/oc"));
