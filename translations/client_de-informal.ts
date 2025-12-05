@@ -2179,7 +2179,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Auffinden von WebFinger-Instanzen: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
@@ -2671,22 +2671,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>Datei %1 wird gerade benutzt</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
         <source>File Removed</source>
-        <translation type="unfinished"/>
+        <translation>Datei entfernt</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="385"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"/>
+        <translation>Der Server hat die Dateiberechtigungen nicht bereitgestellt</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="393"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Aktualisieren von Metadaten: %1</translation>
     </message>
 </context>
 <context>
@@ -2694,12 +2694,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="41"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>Datei %1 wird gerade benutzt</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="121"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished"/>
+        <translation>Der Server hat nach einer nicht mehr benutzen Funktion angefragt (Polling)</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="141"/>
@@ -2709,7 +2709,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="161"/>
         <source>The server did not acknowledge the file upload. (No e-tag was present)</source>
-        <translation type="unfinished"/>
+        <translation>Der Server hat den Datei-Upload nicht bestätigt. (Es war kein E-Tag vorhanden.)</translation>
     </message>
 </context>
 <context>
@@ -2778,12 +2778,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>IdP is unreachable. Contact your system administrator or try again later.Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
         <source>Authentication failed.</source>
-        <translation type="unfinished"/>
+        <translation>Authentifizierung fehlgeschlagen.</translation>
     </message>
 </context>
 <context>
@@ -2791,57 +2791,57 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="43"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Anwendungsname Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
         <source>Sign in required</source>
-        <translation type="unfinished"/>
+        <translation>Anmeldung erforderlich</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="53"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
-        <translation type="unfinished"/>
+        <translation>Möglicherweise wurden Sie aufgrund eines Serverproblems oder einer Zeitüberschreitung automatisch getrennt. Bitte melden Sie sich erneut an.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>Anmelde-URL</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="65"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"/>
+        <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwenden Sie die Schaltfläche „Kopieren“.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="71"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"/>
+        <translation>URL zum Anmelden kopieren</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="92"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
         <source>Stay logged out</source>
-        <translation type="unfinished"/>
+        <translation>Abgemeldet bleiben</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>Anmelden</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL kopiert</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>URL kopieren</translation>
     </message>
 </context>
 <context>
@@ -2849,7 +2849,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="59"/>
         <source>SSL failure when connecting to server at %1</source>
-        <translation type="unfinished"/>
+        <translation>SSL-Fehler beim Verbindungsaufbau zum Server unter %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="63"/>
@@ -2859,7 +2859,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="68"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"/>
+        <translation>Die aufgelöste URL ist ungültig %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="71"/>
@@ -2872,7 +2872,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
         <source>Loading …</source>
-        <translation type="unfinished"/>
+        <translation>Laden…</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2935,7 +2935,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/gui/socketapi/socketapi.cpp" line="468"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
-        <translation type="unfinished"/>
+        <translation>Mit %1 teilen</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="573"/>
@@ -2974,13 +2974,13 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
         <source>Select new location…</source>
-        <translation type="unfinished"/>
+        <translation>Neuen Ort wählen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Share…</source>
-        <translation type="unfinished"/>
+        <translation>Teilen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3011,28 +3011,28 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
         <source>Rename…</source>
-        <translation type="unfinished"/>
+        <translation>Umbenennen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
         <source>Rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Umbenennen und hochladen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
         <source>Move and rename…</source>
-        <translation type="unfinished"/>
+        <translation>Verschieben und umbenennen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
         <source>Move, rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Verschieben, umbenennen und hochladen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
         <source>Move and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Verschieben und hochladen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
@@ -3118,47 +3118,47 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>Problemtabelle</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="72"/>
         <source>There were too many issues. Not all will be visible here.</source>
-        <translation type="unfinished"/>
+        <translation>Es gab zu viele Fehler. Nicht alle werden hier angezeigt.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="82"/>
         <source>There were conflicts. Check the documentation on how to resolve them.</source>
-        <translation type="unfinished"/>
+        <translation>Es bestehen Konflikte. Prüfe die Dokumentation, wie diese zu lösen sind.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="210"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
-        <translation type="unfinished"/>
+        <translation>Die Datei %1 wurde ignoriert, da ihr Name von %2 reserviert ist</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="236"/>
         <source>Reset column sizes</source>
-        <translation type="unfinished"/>
+        <translation>Zurücksetzen der Spaltenbreiten</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="256"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Es bestehen Konflikte. &lt;a href=&quot;%1&quot;&gt;Prüfe die Dokumentation, wie diese zu lösen sind.&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="285"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filtermenü</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="287"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Konto</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="377"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filter</translation>
     </message>
 </context>
 <context>
@@ -3231,7 +3231,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
         <source>Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Ihr Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
@@ -3246,32 +3246,32 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Geben Sie Ihre Serveradresse ein, um zu beginnen. Ihr Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
         <source>Server address field</source>
-        <translation type="unfinished"/>
+        <translation>Serveradressfeld</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
         <source>Enter your server address here</source>
-        <translation type="unfinished"/>
+        <translation>Geben Sie hier Ihre Serveradresse ein.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
+        <translation>Ungültige Server-URL: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Ungültiges URL-Schema. Nur https wird akzeptiert.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
@@ -3284,22 +3284,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="64"/>
         <source>Network request to collect user info failed</source>
-        <translation type="unfinished"/>
+        <translation>Netzwerkanfrage zum Abrufen von Benutzerinformationen fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="70"/>
         <source>Unable to retrieve user info: invalid credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Benutzerinformationen konnten nicht abgerufen werden: Ungültige Anmeldeinformationen.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="72"/>
         <source>Unexpected network response when retrieving user info.</source>
-        <translation type="unfinished"/>
+        <translation>Unerwartete Netzwerkantwort beim Abrufen von Benutzerinformationen.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="82"/>
         <source>Retrieving user info failed with JSON error.</source>
-        <translation type="unfinished"/>
+        <translation>Der Abruf der Benutzerinformationen ist mit einem JSON-Fehler fehlgeschlagen.</translation>
     </message>
 </context>
 <context>
@@ -3334,47 +3334,47 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="580"/>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="583"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 - %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="617"/>
         <source>Could not find StorageProviderState property %1</source>
-        <translation type="unfinished"/>
+        <translation>Die StorageProviderState-Eigenschaft %1 konnte nicht gefunden werden.</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="631"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>Speicherordner für %1 konnte nicht gefunden werden: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
         <source>Could not retrieve StorageFolder for %1 %2</source>
-        <translation type="unfinished"/>
+        <translation>Speicherordner für %1 konnte nicht abgerufen werden: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="678"/>
         <source>%1 is managed by another sync client</source>
-        <translation type="unfinished"/>
+        <translation>%1 wird von einem anderen Synchronisierungsclient verwaltet.</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
         <source>The folder is used by a different client %1</source>
-        <translation type="unfinished"/>
+        <translation>Der Ordner wird von einem anderen Client verwendet %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"/>
+        <translation>Das Herabstufen des Ordners von %1 auf %2 wird nicht unterstützt.</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
         <source>Error registering StorageProvider for %1: %2 %3</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Registrieren des StorageProviders für %1: %2 %3</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
         <source>CfConnectSyncRoot: %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>CfConnectSyncRoot: %1 Fehler: %2</translation>
     </message>
 </context>
 <context>
@@ -3387,7 +3387,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="100"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"/>
+        <translation>Die WebFinger-Suche ergab keine Ergebnisse.</translation>
     </message>
 </context>
 <context>
@@ -3464,19 +3464,21 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <location filename="../src/gui/owncloudgui.cpp" line="254"/>
         <source>New account failure</source>
-        <translation type="unfinished"/>
+        <translation>Fehler bei neuem Konto</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führen Sie den Assistenten erneut aus.</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="255"/>
         <source>The account could not be created due to an error:
 %1
 Please check the server&apos;s availability then run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>Das Konto konnte aufgrund eines Fehlers nicht erstellt werden:
+%1
+Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneut aus.</translation>
     </message>
 </context>
 <context>

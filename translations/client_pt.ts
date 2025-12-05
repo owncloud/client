@@ -879,42 +879,42 @@ Esta ação interromperá qualquer sincronização em andamento.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="582"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Conectando…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>O portal cativo impede as conexões com o servidor.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
+        <translation>A sincronização é interrompida devido a conexão com a Internet medida</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="586"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>Erro de configuração do servidor</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="592"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Desligado</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="750"/>
         <source>Confirm Account Removal</source>
-        <translation type="unfinished"/>
+        <translation>Confirmar Remoção da Conta</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="751"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Deseja mesmo remover a ligação da conta &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; isto &lt;b&gt;não&lt;/b&gt; irá eliminar quaisquer ficheiros.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="755"/>
         <source>Remove connection</source>
-        <translation type="unfinished"/>
+        <translation>Remover ligação</translation>
     </message>
 </context>
 <context>
@@ -941,7 +941,7 @@ Esta ação interromperá qualquer sincronização em andamento.</translation>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="48"/>
         <source>Advanced settings</source>
-        <translation type="unfinished"/>
+        <translation>Configurações avançadas</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
@@ -976,7 +976,7 @@ Esta ação interromperá qualquer sincronização em andamento.</translation>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Navegar…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
@@ -1367,7 +1367,7 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location filename="../src/gui/folderman.cpp" line="671"/>
         <source>User triggered force sync</source>
-        <translation type="unfinished"/>
+        <translation>Sincronização forçada acionada pelo usuário</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="699"/>
@@ -1497,17 +1497,17 @@ Considere remover esta pasta da conta e adicioná-la novamente.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="64"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Verificando alterações remotamente &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="66"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Verificação de alterações local &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="70"/>
         <source>Reconciling changes</source>
-        <translation type="unfinished"/>
+        <translation>Reconciliando mudanças</translation>
     </message>
 </context>
 <context>
@@ -1786,43 +1786,43 @@ Os itens em que a exclusão é permitida serão excluídos se impedirem que um d
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="32"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filtro</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>Tabela de atividade local</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="62"/>
         <location filename="../src/gui/localactivitywidget.cpp" line="68"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Conta</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="105"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Menu do filtro</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="120"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>Menu de ações</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="162"/>
         <source>Sort ascending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Classificar ascendente por %1</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="166"/>
         <source>Sort descending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Classificar descendo por %1</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="188"/>
         <source>Retry sync</source>
-        <translation type="unfinished"/>
+        <translation>Tentar sincronizar novamente </translation>
     </message>
 </context>
 <context>
@@ -2019,12 +2019,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Cancel Setup</source>
-        <translation type="unfinished"/>
+        <translation>Cancelar Configuração</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Do you really want to cancel the account setup?</source>
-        <translation type="unfinished"/>
+        <translation>Você realmente deseja cancelar a configuração da conta?</translation>
     </message>
 </context>
 <context>
@@ -2037,17 +2037,17 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
         <source>Back</source>
-        <translation type="unfinished"/>
+        <translation>Anterior</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="64"/>
         <source>Advanced</source>
-        <translation type="unfinished"/>
+        <translation>Avançadas</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="208"/>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>Iniciar sessão</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
@@ -2659,39 +2659,39 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="64"/>
         <source>Local file changed during sync. It will be resumed.</source>
-        <translation type="unfinished"/>
+        <translation>Arquivo local alterado durante a sincronização. Será retomada.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="81"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível transferir o ficheiro %1 devido a existir um ficheiro com o mesmo nome, diferenciando apenas as maiúsculas ou minúsculas.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="92"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="280"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
-        <translation type="unfinished"/>
+        <translation>O envio de %1 excede a quota da pasta</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
         <source>File Removed</source>
-        <translation type="unfinished"/>
+        <translation>Ficheiro Eliminado</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="385"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"/>
+        <translation>O servidor não forneceu as permissões de arquivo</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="393"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished"/>
+        <translation>Erro ao atualizar metadados : %1</translation>
     </message>
 </context>
 <context>
@@ -2699,12 +2699,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="41"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="121"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished"/>
+        <translation>O servidor solicitou a remoção de um recurso legado (pesquisa) </translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="141"/>
@@ -2788,7 +2788,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
         <source>Authentication failed.</source>
-        <translation type="unfinished"/>
+        <translation>Falhou a autenticação.</translation>
     </message>
 </context>
 <context>
@@ -2831,12 +2831,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
         <source>Stay logged out</source>
-        <translation type="unfinished"/>
+        <translation>Permanecer desconectado</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>Iniciar sessão</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
@@ -2846,7 +2846,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Copiar Hiperligação</translation>
     </message>
 </context>
 <context>
@@ -2877,7 +2877,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
         <source>Loading …</source>
-        <translation type="unfinished"/>
+        <translation>A carregar...</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2940,7 +2940,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location filename="../src/gui/socketapi/socketapi.cpp" line="468"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
-        <translation type="unfinished"/>
+        <translation>Partilhar com %1</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="573"/>
@@ -3123,47 +3123,47 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>Tabela de problemas</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="72"/>
         <source>There were too many issues. Not all will be visible here.</source>
-        <translation type="unfinished"/>
+        <translation>Havia muitos problemas. Nem todos serão visíveis aqui.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="82"/>
         <source>There were conflicts. Check the documentation on how to resolve them.</source>
-        <translation type="unfinished"/>
+        <translation>Houve conflitos. Verifique a documentação sobre como resolvê-los.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="210"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
-        <translation type="unfinished"/>
+        <translation>O arquivo %1 foi ignorado porque este nome foi reservado por  %2</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="236"/>
         <source>Reset column sizes</source>
-        <translation type="unfinished"/>
+        <translation>Redefinir tamanhos de coluna </translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="256"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Houve conflitos.&lt;a href=&quot;%1&quot;&gt;Verifique a documentação sobre como resolvê-los.&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="285"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Menu do filtro</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="287"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Conta</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="377"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filtro</translation>
     </message>
 </context>
 <context>
@@ -3339,7 +3339,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="580"/>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="583"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 - %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="617"/>

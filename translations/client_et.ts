@@ -614,7 +614,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="568"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Ühendamine...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -682,100 +682,100 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     <message>
         <location filename="../src/gui/accountview.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"/>
+        <translation>Vorm</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.ui" line="73"/>
         <source>Manage Account</source>
-        <translation type="unfinished"/>
+        <translation>Halda kontot</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.ui" line="109"/>
         <source>Preparing the account</source>
-        <translation type="unfinished"/>
+        <translation>Konto ettevalmistamine</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.ui" line="137"/>
         <source>Sync connections</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseeri ühendused</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="167"/>
         <source>Remove folder sync connection</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="172"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimise valikute menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="178"/>
         <source>Folder is not ready yet</source>
-        <translation type="unfinished"/>
+        <translation>Kaust ei ole veel valmis</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="218"/>
         <source>Force sync now</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseeri jõuga kohe</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="220"/>
         <source>Restart sync</source>
-        <translation type="unfinished"/>
+        <translation>Taaskäivita sünkroniseerimine</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="226"/>
         <source>Resume sync</source>
-        <translation type="unfinished"/>
+        <translation>Jätka sünkroniseerimist</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="226"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>Peata sünkroniseerimine</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="239"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Luba virtuaalse faili tugi</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="253"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Keela virtuaalse faili tugi</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="260"/>
         <location filename="../src/gui/accountview.cpp" line="283"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>Vali, mida sünkroniseerida</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="337"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Kinnita kaustade sünkroniseerimise ühenduse kustutamine</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="338"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Kas soovid tõesti katkestada kataloogi &lt;i&gt;%1&lt;/i&gt; sünkroniseerimist?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="343"/>
         <source>Remove Folder Sync Connection</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="344"/>
         <location filename="../src/gui/accountview.cpp" line="382"/>
         <location filename="../src/gui/accountview.cpp" line="756"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Loobu</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="373"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>Lülita virtuaalse faili tugi välja?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="374"/>
@@ -784,88 +784,92 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>See tegevus lülitab välja virtuaalse faili toe. Selle tagajärjel laetakse alla kataloogid märkega &apos;saadaval vaid võrguühendusega&apos;.
+
+Ainus eelis virtuaalse faili toe väljalülitamisel on valikulise sünkroniseerimise võimaluse taastumine.
+
+See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="381"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda tugi</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="446"/>
         <source>Sync Running</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine on käimas</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="446"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine käib. &lt;br/&gt; Kas soovid katkestada?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="463"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine peatati kasutaja poolt</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="489"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Internetiühendus on mahupõhine</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="490"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine on peatatud, kuna interneti-ühendus on mahupõhine&lt;p&gt;Kas soovite tõesti sünkroniseerida?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="514"/>
         <source>Account options menu</source>
-        <translation type="unfinished"/>
+        <translation>Konto valikute menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="516"/>
         <location filename="../src/gui/accountview.cpp" line="520"/>
         <source>Log in</source>
-        <translation type="unfinished"/>
+        <translation>Logi sisse</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="517"/>
         <source>Reconnect</source>
-        <translation type="unfinished"/>
+        <translation>Ühendu uuesti</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="520"/>
         <source>Log out</source>
-        <translation type="unfinished"/>
+        <translation>Logi välja</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="525"/>
         <source>Remove</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="552"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation type="unfinished"/>
+        <translation>Serveri versioon %1 ei ole toetatud! Jätkake omal vastutusel.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="555"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>Ühendatud</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="564"/>
         <source>Server is temporarily unavailable</source>
-        <translation type="unfinished"/>
+        <translation>Server ei ole ajutiselt ligipääsetav</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="567"/>
         <source>Server is currently in maintenance mode</source>
-        <translation type="unfinished"/>
+        <translation>Server on hooldusrežiimil</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="570"/>
         <source>Signed out</source>
-        <translation type="unfinished"/>
+        <translation>Välja logitud</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
@@ -875,42 +879,42 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountview.cpp" line="582"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Ühendamine...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>Piiratud portaal takistab ühendusi serverisse.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="580"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine on peatatud mahupõhise internetiühenduse tõttu</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="586"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>Serveri seadete viga</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="592"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Lahti ühendatud</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="750"/>
         <source>Confirm Account Removal</source>
-        <translation type="unfinished"/>
+        <translation>Kinnita konto eemaldamine</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="751"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Kas soovid tõesti ühenduse kontoga &lt;i&gt;%1&lt;/i&gt; eemaldada?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="755"/>
         <source>Remove connection</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda ühendus</translation>
     </message>
 </context>
 <context>
@@ -937,7 +941,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="48"/>
         <source>Advanced settings</source>
-        <translation type="unfinished"/>
+        <translation>Lisavalikud</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
@@ -1362,7 +1366,7 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
     <message>
         <location filename="../src/gui/folderman.cpp" line="671"/>
         <source>User triggered force sync</source>
-        <translation type="unfinished"/>
+        <translation>Kasutaja käivitas sunnitud sünkroniseerimise</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="699"/>
@@ -1492,17 +1496,17 @@ Palun kaaluge selle kausta eemaldamist kontolt ja selle uuesti lisamist.</transl
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="64"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Kaugühenduse &apos;%1&apos; muutuste kontroll</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="66"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Kohaliku &apos;%1&apos; muutuste kontroll</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="70"/>
         <source>Reconciling changes</source>
-        <translation type="unfinished"/>
+        <translation>Muudatuste kooskõlastamine</translation>
     </message>
 </context>
 <context>
@@ -1781,43 +1785,43 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="32"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filter</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>Kohalike tegevuste tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="62"/>
         <location filename="../src/gui/localactivitywidget.cpp" line="68"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Konto</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="105"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filtri menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="120"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>Tegevuste menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="162"/>
         <source>Sort ascending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Sort järgi %1 kasvavalt</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="166"/>
         <source>Sort descending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Sorteeri %1 järgi kahanevalt</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="188"/>
         <source>Retry sync</source>
-        <translation type="unfinished"/>
+        <translation>Korda sünkroniseerimist</translation>
     </message>
 </context>
 <context>
@@ -2014,12 +2018,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Cancel Setup</source>
-        <translation type="unfinished"/>
+        <translation>Tühista seadistamine</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Do you really want to cancel the account setup?</source>
-        <translation type="unfinished"/>
+        <translation>Kas te tõesti soovite konto seadistamise tühistada?</translation>
     </message>
 </context>
 <context>
@@ -2032,17 +2036,17 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
         <source>Back</source>
-        <translation type="unfinished"/>
+        <translation>Tagasi</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="64"/>
         <source>Advanced</source>
-        <translation type="unfinished"/>
+        <translation>Täpsemad seaded</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="208"/>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>Logi sisse</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
@@ -2654,39 +2658,39 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="64"/>
         <source>Local file changed during sync. It will be resumed.</source>
-        <translation type="unfinished"/>
+        <translation>Kohalik fail muutus sünkroniseerimise ajal. Seda jätkatakse.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="81"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
-        <translation type="unfinished"/>
+        <translation>Faili %1 ei saa üles laadida, sest on olemas teine samanimeline fail, mis erineb ainult tõstutundlikkuse poolest.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="92"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="280"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
-        <translation type="unfinished"/>
+        <translation>%1 üleslaadimine ületab kausta piirmäära</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>%1 fail on hetkel kasutuses</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
         <source>File Removed</source>
-        <translation type="unfinished"/>
+        <translation>Fail eemaldatud</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="385"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"/>
+        <translation>Server ei väljastanud faili õiguseid</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="393"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished"/>
+        <translation>Viga metaandmete uuendamisel: %1</translation>
     </message>
 </context>
 <context>
@@ -2694,12 +2698,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="41"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>%1 fail on hetkel kasutuses</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="121"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished"/>
+        <translation>Server päris eemaldatud pärandfunktsiooni (polling)</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="141"/>
@@ -2783,7 +2787,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
         <source>Authentication failed.</source>
-        <translation type="unfinished"/>
+        <translation>Autentimine ebaõnnestus.</translation>
     </message>
 </context>
 <context>
@@ -2791,7 +2795,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="43"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Rakendus Nimi Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
@@ -2821,27 +2825,27 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="92"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
         <source>Stay logged out</source>
-        <translation type="unfinished"/>
+        <translation>Jää väljalogituks</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
         <source>Sign in</source>
-        <translation type="unfinished"/>
+        <translation>Logi sisse</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL kopeeritud</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Kopeeri URL</translation>
     </message>
 </context>
 <context>
@@ -2872,7 +2876,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
         <source>Loading …</source>
-        <translation type="unfinished"/>
+        <translation>Laadimine ...</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2935,7 +2939,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <location filename="../src/gui/socketapi/socketapi.cpp" line="468"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
-        <translation type="unfinished"/>
+        <translation>Jaga kasutajaga %1</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="573"/>
@@ -3118,47 +3122,47 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>Vigade tabel</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="72"/>
         <source>There were too many issues. Not all will be visible here.</source>
-        <translation type="unfinished"/>
+        <translation>Esines liiga palju vigu. Kõiki ei ole võimalik kuvada.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="82"/>
         <source>There were conflicts. Check the documentation on how to resolve them.</source>
-        <translation type="unfinished"/>
+        <translation>Tekkisid konfliktid. Lahendamiseks vaadake dokumentatsiooni.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="210"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
-        <translation type="unfinished"/>
+        <translation>Faili %1 ignoreeriti, kuna selle nimi on reserveeritud %2 poolt.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="236"/>
         <source>Reset column sizes</source>
-        <translation type="unfinished"/>
+        <translation>Lähtesta veergude suurused</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="256"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Tekkisid konfliktid. &lt;a href=&quot;%1&quot;&gt;Lahendamiseks vaadake dokumentatsiooni.&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="285"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Filtri menüü</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="287"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>Konto</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="377"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Filter</translation>
     </message>
 </context>
 <context>
@@ -3261,7 +3265,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
@@ -3334,7 +3338,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="580"/>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="583"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 - %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="617"/>
