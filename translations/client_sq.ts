@@ -2184,7 +2184,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"/>
+        <translation>S’u arrit të kërkohet për instanca WebFinger: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
