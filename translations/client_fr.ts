@@ -2184,7 +2184,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"/>
+        <translation>Échec de la recherche des instances WebFinger : %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
