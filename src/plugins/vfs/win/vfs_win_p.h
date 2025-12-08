@@ -89,6 +89,7 @@ public:
     VfsWin *q;
     QAtomicInt _registrationState;
     CF_CONNECTION_KEY _connectionKey;
+    static QMutex registrationMutex;
 
     // System.StorageProviderState key
     std::unique_ptr<PROPERTYKEY> storageProviderStateKey;

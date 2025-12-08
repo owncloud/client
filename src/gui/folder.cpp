@@ -502,7 +502,7 @@ void Folder::startVfs()
         return;
     }
 
-    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), groupInSidebar(), _engine.get());
+    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), _engine.get());
     vfsParams.filesystemPath = path();
     vfsParams.remotePath = remotePathTrailingSlash();
     vfsParams.journal = &_journal;
@@ -1222,17 +1222,6 @@ QString FolderDefinition::displayName() const
         }
     }
     return _displayName;
-}
-
-bool Folder::groupInSidebar() const
-{
-    if (_accountState && _accountState->account() && _accountState->account()->hasDefaultSyncRoot()) {
-        // QFileInfo is horrible and "/foo/" is treated different to "/foo"
-        const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
-        // If parentDir == home, we would add the home dir to the sidebar.
-        return QFileInfo(parentDir) != QFileInfo(QDir::homePath()) && FileSystem::isChildPathOf(parentDir, _accountState->account()->defaultSyncRoot());
-    }
-    return false;
 }
 
 } // namespace OCC
