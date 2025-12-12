@@ -52,14 +52,11 @@ class LocalDiscoveryTracker;
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
+    // use for reading from config
     FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName);
 
-    // Lisa todo: just make this a normal public ctr. there is no reason to have this static create method, but it's used in several places so keeping it for
-    // now
-    static auto createNewFolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {})
-    {
-        return FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName);
-    }
+    // use when creating folder from scratch for the very first time
+    FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {});
 
 
     /// Saves the folder definition into the given settings (group should be preconfigured)
@@ -116,7 +113,8 @@ public:
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
      */
-    bool isDeployed() const { return _deployed; }
+    // todo #52 Release 8.0 = eliminate this OC10 property and remove prop from settings
+    [[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] bool isDeployed() const { return _deployed; }
 
     /**
      * Higher values mean more important

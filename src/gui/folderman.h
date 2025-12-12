@@ -301,6 +301,15 @@ Q_SIGNALS:
     // emitted on incremental folder removal (eg when the user deletes a sync connection via gui)
     void folderRemoved(const QUuid &accountId, Folder *folder);
 
+    // still working these out but generally this belongs in folderman more than anywhere else as it can cross ref
+    // existing folders and track unsynced spaces
+    // still need to figure out how to "track" synced folder count when a space had a folder but was deleted
+    // server side. we show these as "unavailable" in the folder list but really not sure how the effectively dead folder
+    // is "counted"
+    // void syncedSpaceCountChanged(QUuid accountId, int syncedCount);
+    // void unsyncedSpacesChanged(QUuid accountId, QSet<GraphApi::Space *> unsyncedSpaces, int totalSpaceCount);
+    void unsyncedSpaceCountChanged(QUuid accountId, int unsyncedCount, int totalSpaces);
+
 public Q_SLOTS:
 
     /**
@@ -323,10 +332,6 @@ public Q_SLOTS:
     // emits folderRemoved
     void removeFolderFromGui(Folder *f);
     void forceFolderSync(Folder *f);
-
-protected:
-    // void slotSpacesUpdated(Account *account);
-    void slotSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces);
 
 private Q_SLOTS:
 
@@ -370,6 +375,9 @@ private:
      *  emits folderListChanged
      */
     void loadSpaces(AccountState *accountState, bool useVfs);
+
+    // void slotSpacesUpdated(Account *account);
+    void onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces, int totalSpaceCount);
 
     /**
      *  reads the folder defs from the config for a single account.
@@ -430,8 +438,13 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
+    // as far as I can tell these are paused folders, not to be confused with folders whose space is disabled but needs
+    // verification
     QSet<Folder *> _disabledFolders;
-    QSet<GraphApi::Space *> _unsyncedSpaces;
+
+    QHash<QString, GraphApi::Space *> _unsyncedSpaces;
+    // this is stored based on signals coming from spacesManager when spacesAdded/removed is logged
+    int _totalSpaceCount = 0;
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;

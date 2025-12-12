@@ -14,13 +14,12 @@ namespace TestUtils {
     FolderDefinition createDummyFolderDefinition(Account *account, const QString &path)
     {
         // TODO: legacy
-        auto d = OCC::FolderDefinition::createNewFolderDefinition(account->davUrl(), {});
+        // todo: #51 - make a real def, not this super minimal thing
+        // space Id can never be empty!
+        FolderDefinition d(account->davUrl(), QUuid::createUuid().toString());
         d.setLocalPath(path);
         d.setTargetPath(path);
         d.setJournalPath(SyncJournalDb::makeDbName(d.localPath()));
-        // I don't think format really matters here as it's purely imaginary and has nothing to do with anything
-        // but the folderman still expects it to be there because it hashes existing folders by spaceid
-        d.setSpaceId(QUuid::createUuid().toString());
         return d;
     }
 

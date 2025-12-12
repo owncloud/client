@@ -163,8 +163,10 @@ void FolderMan::unloadAndDeleteAllFolders()
             folder->deleteLater();
         }
         _folders[id].clear();
+        emit unsyncedSpaceCountChanged(id, 0, 0);
     }
     _folders.clear();
+    _unsyncedSpaces.clear();
     Q_ASSERT(_folders.isEmpty());
 }
 
@@ -249,10 +251,13 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
     GraphApi::SpacesManager *spaceMan = account->account()->spacesManager();
     _scheduler->connectSpacesManager(spaceMan);
-    connect(spaceMan, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::slotSpacesAdded);
+    connect(spaceMan, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::onSpacesAdded);
 
     QUuid accountId = account->account()->uuid();
     emit folderListChanged(accountId, _folders[accountId].values());
+    // at this stage the spaces manager tends to be empty
+    int spaceCount = spaceMan->spacesCount();
+    emit unsyncedSpaceCountChanged(accountId, spaceCount - _folders[accountId].count(), spaceCount);
 
     return true;
 }
@@ -300,12 +305,12 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
 
         Utility::setupFavLink(localDir);
 
-        for (const auto *space : std::as_const(spaces)) {
-            FolderDefinition folderDef = FolderDefinition::createNewFolderDefinition(space->webDavUrl(), space->id(), space->displayName());
+        for (auto *space : std::as_const(spaces)) {
+            FolderDefinition folderDef(space->webDavUrl(), space->id(), space->displayName());
 
             folderDef.setPriority(space->sortPriority());
 
-            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, accountState->account()->uuid());
+            QString localPath = findGoodPathForNewSyncFolder(localDir, folderDef.displayName(), NewFolderType::SpacesFolder, space->accountId());
             folderDef.setLocalPath(localPath);
             folderDef.setTargetPath({});
 
@@ -319,69 +324,74 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
         setSyncEnabled(true);
         _scheduler->connectSpacesManager(spacesMgr);
         // initial load is complete, now we just wait for spaces to be added or removed incrementally
-        connect(spacesMgr, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::slotSpacesAdded);
+        connect(spacesMgr, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::onSpacesAdded);
         QUuid id = accountState->account()->uuid();
         emit folderListChanged(id, _folders[id].values());
+        int spaceCount = spacesMgr->spacesCount();
+        emit unsyncedSpaceCountChanged(id, spaceCount - _folders[id].count(), spaceCount);
     }
 }
 
-void FolderMan::slotSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces)
+void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces, int totalSpaceCount)
 {
-    /*    // if (!account || !account->spacesManager()) {
-        //     return;
-        // }
+    // not a fan but the spaces manager doesn't have the account state, just the account. At the point that we correct the relationship
+    // so that account "owns" account state, the spacesManager can include the account pointer in the signal to eliminate
+    // this "need" for the singleton
+    AccountState *accountState = AccountManager::instance()->accountState(accountId);
+    if (!accountState || !accountState->account())
+        return;
 
-        // auto spaces = account->spacesManager()->spaces();
-        auto unsycnedSpaces = QSet<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
-        // this really should not happen but check anyway
-        // for (auto space : std::as_const(spaces)) {
-        /*    if (_folders.contains(accountId)
-    {
-                && _folders[accountId].contains(space->id()))
-                unsycnedSpaces.remove(space);
+    QSet<GraphApi::Space *> newUnsyncedSpaces(spaces.cbegin(), spaces.cend());
+    for (auto space : std::as_const(spaces)) {
+        // be sure to eliminate any spaces that are already in the umsynced list to prevent auto-adding spaces that the
+        // user explicitly removed from sync
+        if (_unsyncedSpaces.contains(space->id()) || isSpaceSynced(space))
+            newUnsyncedSpaces.remove(space);
+    }
 
 
-        // Check if we should add new spaces automagically, or only signal that there are unsynced spaces.
-        if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-            // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
-            // where does this slot run if not on the main thread?
-            // what needs to be processed "before" this loading routine that requires scheduling it for later?
-            // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
-            // event loop.
-            //  QTimer::singleShot(0, this, [this, account, unsycnedSpaces]() {
-            for (GraphApi::Space *newSpace : unsycnedSpaces) {
-                // TODO: Problem: when a space is manually removed, this will re-add it!
-                qCInfo(lcFolderMan) << "Adding sync connection for newly discovered space" << newSpace->displayName();
+    _totalSpaceCount = totalSpaceCount;
+    if (newUnsyncedSpaces.isEmpty()) {
+        // this normally happens when the folderman has loaded folders from config - the folders are created
+        // before the spaces manager is ready so space count at that stage is zero, we catch the change here instead
+        emit unsyncedSpaceCountChanged(accountId, totalSpaceCount - _folders[accountId].count(), totalSpaceCount);
+        return;
+    }
 
-                const QString localDir(account->defaultSyncRoot());
-                const QString folderName = findGoodPathForNewSyncFolder(localDir, newSpace->displayName(), NewFolderType::SpacesFolder, account->uuid());
+    if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
+        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
+        // where does this slot run if not on the main thread?
+        // what needs to be processed "before" this loading routine that requires scheduling it for later?
+        // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
+        // event loop.
+        //  QTimer::singleShot(0, this, [this, account, unsycnedSpaces]() {
+        for (GraphApi::Space *newSpace : newUnsyncedSpaces) {
+            qCInfo(lcFolderMan) << "Adding sync connection for newly discovered space" << newSpace->displayName();
 
-                SyncConnectionDescription fwr;
-                fwr.davUrl = newSpace->webDavUrl();
-                fwr.spaceId = newSpace->id();
-                fwr.localPath = folderName;
-                fwr.displayName = newSpace->displayName();
-                fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
-                fwr.sortPriority = newSpace->sortPriority();
-                // addFolderFromGui(, fwr);
-            }
+            const QString localDir(accountState->account()->defaultSyncRoot());
+            const QString folderName = findGoodPathForNewSyncFolder(localDir, newSpace->displayName(), NewFolderType::SpacesFolder, accountId);
 
-            //     _unsyncedSpaces = 0;
-            //    _syncedSpaces = _accountState->account()->spacesManager()->spaces().size();
-            //     Q_EMIT unsyncedSpacesChanged();
-            //    Q_EMIT syncedSpacesChanged();
-            //  });
-        } /*else {
-            if (_unsyncedSpaces != unsycnedSpaces.size()) {
-                _unsyncedSpaces = static_cast<uint>(unsycnedSpaces.size());
-                Q_EMIT unsyncedSpacesChanged();
-            }
-            uint syncedSpaces = spaces.size() - _unsyncedSpaces;
-            if (_syncedSpaces != syncedSpaces) {
-                _syncedSpaces = syncedSpaces;
-                Q_EMIT syncedSpacesChanged();
-            }
-        }*/
+            // I'm recycling the routine used in the folder wizard to add a new space from gui for now. No I don't
+            // like it but I am out of steam trying to collate all these barely different methods of creating a folder
+            // into something sensible right now - I will come back to it
+            SyncConnectionDescription fwr;
+            fwr.davUrl = newSpace->webDavUrl();
+            fwr.spaceId = newSpace->id();
+            fwr.localPath = folderName;
+            fwr.displayName = newSpace->displayName();
+            fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
+            fwr.sortPriority = newSpace->sortPriority();
+
+            addFolderFromGui(accountState, fwr);
+        }
+        newUnsyncedSpaces.clear();
+        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces.count(), _totalSpaceCount);
+    } else if (!newUnsyncedSpaces.isEmpty()) {
+        for (auto *sp : std::as_const(newUnsyncedSpaces))
+            _unsyncedSpaces.insert(sp->id(), sp);
+        //  emit unsyncedSpacesChanged(accountId, _unsyncedSpaces, totalSpaceCount);
+        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces.count(), _totalSpaceCount);
+    }
 }
 
 bool FolderMan::ensureJournalGone(const QString &journalDbFile)
@@ -539,9 +549,11 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit folderListChanged(id, {});
 
     for (const auto &f : std::as_const(_folders[id])) {
+        // _unsyncedSpaces.remove(f->definition().spaceId());
         removeFolderSettings(f, settings);
         deleteFolderSync(f);
     }
+
     _folders.remove(id);
 }
 
@@ -1123,7 +1135,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
 
     setSyncEnabled(false);
 
-    FolderDefinition definition = FolderDefinition::createNewFolderDefinition(description.davUrl, description.spaceId, description.displayName);
+    FolderDefinition definition(description.davUrl, description.spaceId, description.displayName);
     definition.setLocalPath(description.localPath);
     definition.setTargetPath(description.remotePath);
     definition.setPriority(description.sortPriority);
