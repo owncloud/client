@@ -278,9 +278,9 @@ public:
     void removeFolderSettings(Folder *folder);
 
     /**
-     * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the space
+     * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo
      */
-    Folder *folder(QString spaceId) const;
+    Folder *folder(const QUuid &accountId, const QString &spaceId) const;
 
 Q_SIGNALS:
     /**
@@ -438,14 +438,6 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
-    // as far as I can tell these are paused folders, not to be confused with folders whose space is disabled but needs
-    // verification
-    QSet<Folder *> _disabledFolders;
-
-    QHash<QString, GraphApi::Space *> _unsyncedSpaces;
-    // this is stored based on signals coming from spacesManager when spacesAdded/removed is logged
-    int _totalSpaceCount = 0;
-
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
 
@@ -464,12 +456,22 @@ private:
 
     static FolderMan *_instance;
 
-    // QMultiHash<QUuid, Folder *> _folders;
-
-    // consider updating folders container to something like this:
+    // the inner hash contains the folder pointers hashed against their spaceId which makes any kind if retrieval *much*
+    // faster. the folders need to be split by account id for a variety of reasons, but a very important factor is that the "shares" space
+    // always has the same space id even across accounts.
+    // uuid is the account id, qstring is the folder's space id, folder is obvious I hope
     QHash<QUuid, QHash<QString, Folder *>> _folders;
-    //  the inner hash contains the folder pointers hashed against their spaceId which makes any kind if retrieval *much*
-    //  faster
+
+
+    // similar to the _folders container, unsynced spaces need to be split by account id primarily because the "shares" space
+    // always has the same space id even across accounts.
+    // inner hash contains the unsynced spaces hashed by spaceid
+    // uuid is the account id, qstring is the space id, space is self explanatory
+    QHash<QUuid, QHash<QString, GraphApi::Space *>> _unsyncedSpaces;
+
+    // as far as I can tell these are paused folders, not to be confused with folders whose space is disabled. We add and remove folders to this
+    // set when they are paused/resumed but aside from that we don't really do anything with it.
+    QSet<Folder *> _disabledFolders;
 
     friend class OCC::Application;
 

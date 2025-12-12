@@ -328,7 +328,7 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
         QUuid id = accountState->account()->uuid();
         emit folderListChanged(id, _folders[id].values());
         int spaceCount = spacesMgr->spacesCount();
-        emit unsyncedSpaceCountChanged(id, spaceCount - _folders[id].count(), spaceCount);
+        emit unsyncedSpaceCountChanged(id, _unsyncedSpaces[id].count(), spaceCount);
     }
 }
 
@@ -343,18 +343,17 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
 
     QSet<GraphApi::Space *> newUnsyncedSpaces(spaces.cbegin(), spaces.cend());
     for (auto space : std::as_const(spaces)) {
-        // be sure to eliminate any spaces that are already in the umsynced list to prevent auto-adding spaces that the
+        // be sure to eliminate any spaces that are already in the unsynced list to prevent auto-adding spaces that the
         // user explicitly removed from sync
-        if (_unsyncedSpaces.contains(space->id()) || isSpaceSynced(space))
+        if (isSpaceSynced(space) || (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(space->id())))
             newUnsyncedSpaces.remove(space);
     }
 
 
-    _totalSpaceCount = totalSpaceCount;
     if (newUnsyncedSpaces.isEmpty()) {
         // this normally happens when the folderman has loaded folders from config - the folders are created
         // before the spaces manager is ready so space count at that stage is zero, we catch the change here instead
-        emit unsyncedSpaceCountChanged(accountId, totalSpaceCount - _folders[accountId].count(), totalSpaceCount);
+        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
         return;
     }
 
@@ -385,12 +384,12 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
             addFolderFromGui(accountState, fwr);
         }
         newUnsyncedSpaces.clear();
-        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces.count(), _totalSpaceCount);
+        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
     } else if (!newUnsyncedSpaces.isEmpty()) {
         for (auto *sp : std::as_const(newUnsyncedSpaces))
-            _unsyncedSpaces.insert(sp->id(), sp);
-        //  emit unsyncedSpacesChanged(accountId, _unsyncedSpaces, totalSpaceCount);
-        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces.count(), _totalSpaceCount);
+            _unsyncedSpaces[accountId].insert(sp->id(), sp);
+
+        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
     }
 }
 
@@ -459,13 +458,11 @@ void FolderMan::slotFolderCanSyncChanged()
     }
 }
 
-Folder *FolderMan::folder(QString spaceId) const
+Folder *FolderMan::folder(const QUuid &accountId, const QString &spaceId) const
 {
-    QList<QUuid> accountIds = _folders.keys();
-    for (QUuid id : std::as_const(accountIds)) {
-        if (_folders[id].contains(spaceId))
-            return _folders[id][spaceId];
-    }
+    if (_folders.contains(accountId) && _folders[accountId].contains(spaceId))
+        return _folders[accountId][spaceId];
+
     return nullptr;
 }
 
@@ -633,14 +630,17 @@ bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinitio
 
 Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition &folderDefinition)
 {
-    if (Folder *f = folder(folderDefinition.id())) {
-        qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
-        return f;
-    }
+    if (!accountState || !accountState->account())
+        return nullptr;
 
     if (!validateFolderDefinition(folderDefinition)) {
         qCWarning(lcFolderMan) << "Folder Definition validation failed for folder" << folderDefinition.localPath();
         return nullptr;
+    }
+
+    if (Folder *f = folder(accountState->account()->uuid(), folderDefinition.spaceId())) {
+        qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
+        return f;
     }
 
     auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
@@ -654,6 +654,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
     _folders[accountState->account()->uuid()].insert(folder->definition().spaceId(), folder);
+
     if (folder->syncPaused()) {
         _disabledFolders.insert(folder);
     }
@@ -1075,7 +1076,7 @@ Result<void, QString> FolderMan::unsupportedConfiguration(const QString &path) c
 
 bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
 {
-    return (folder(space->id()) != nullptr);
+    return (space && folder(space->accountId(), space->id()) != nullptr);
 }
 
 // this only seems to be triggered when changing the move to trash setting?
