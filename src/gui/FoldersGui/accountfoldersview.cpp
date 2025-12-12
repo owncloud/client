@@ -71,5 +71,13 @@ void AccountFoldersView::setItemModel(QStandardItemModel *model)
     _treeView->setModel(model);
 }
 
-void AccountFoldersView::setSyncedFolderCount(int synced, int total) { }
+void AccountFoldersView::setSyncedFolderCount(int synced, int total)
+{
+    _syncedFolderCountLabel->setText(tr("Syncing %1 out of %2 spaces").arg(QString::number(synced), QString::number(total)));
+}
+
+void AccountFoldersView::enableAddFolder(bool enableAdd)
+{
+    _addFolderButton->setEnabled(enableAdd);
+}
 }

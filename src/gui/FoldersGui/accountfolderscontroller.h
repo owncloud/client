@@ -14,13 +14,39 @@
 
 #pragma once
 
+#include "folderman.h"
+
 #include <QObject>
+#include <QUuid>
+
+namespace OCC {
+
+class AccountFoldersView;
+class AccountState;
+class FolderModelController;
+class Folder;
 
 class AccountFoldersController : public QObject
 {
     Q_OBJECT
 public:
-    explicit AccountFoldersController(QObject *parent = nullptr);
+    explicit AccountFoldersController(AccountState *state, AccountFoldersView *view, QObject *parent);
+
+    // void onUnsyncedSpacesChanged(const QUuid &accountId, QSet<GraphApi::Space *> unsyncedSpaces, int totalSpaceCount);
+    void onUnsyncedSpaceCountChanged(const QUuid &accountId, int unsyncedSpaceCount, int totalSpaceCount);
 
 signals:
+    void removeFolderFromGui(OCC::Folder *f);
+    void requestShowModalWidget(QWidget *widget);
+
+protected slots:
+    void slotAddFolder();
+    void slotFolderWizardAccepted(FolderMan::SyncConnectionDescription result);
+
+private:
+    AccountState *_accountState = nullptr;
+    QUuid _accountId;
+    AccountFoldersView *_view = nullptr;
+    FolderModelController *_modelController = nullptr;
 };
+}
