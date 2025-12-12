@@ -47,8 +47,14 @@ public:
     explicit FolderWizard(Account *account, QWidget *parent);
 
     FolderMan::SyncConnectionDescription result();
-
     Q_DECLARE_PRIVATE(FolderWizard)
+
+signals:
+    void folderWizardAccepted(FolderMan::SyncConnectionDescription result);
+
+private:
+    void sendResult();
+
 
 private:
     QScopedPointer<FolderWizardPrivate> d_ptr;

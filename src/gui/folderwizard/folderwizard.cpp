@@ -155,6 +155,13 @@ FolderWizard::FolderWizard(Account *account, QWidget *parent)
     setOptions(QWizard::CancelButtonOnLeft);
     setButtonText(QWizard::FinishButton, tr("Add Sync Connection"));
     setWizardStyle(QWizard::ModernStyle);
+
+    connect(this, &QWizard::accepted, this, &FolderWizard::sendResult);
+}
+
+void FolderWizard::sendResult()
+{
+    emit folderWizardAccepted(result());
 }
 
 FolderMan::SyncConnectionDescription FolderWizard::result()

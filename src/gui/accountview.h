@@ -69,30 +69,20 @@ public:
     //   uint unsyncedSpaces() const;
     //   uint syncedSpaces() const;
 
-    QSortFilterProxyModel *model() { return _sortModel; }
+    // QSortFilterProxyModel *model() { return _sortModel; }
 
 Q_SIGNALS:
     void showIssuesList();
-    void unsyncedSpacesChanged();
-    void syncedSpacesChanged();
-    void removeFolderFromGui(Folder *f);
+
 
 public Q_SLOTS:
     void slotAccountStateChanged(AccountState::State state);
-    // void slotSpacesUpdated();
-    void slotAddFolder();
+    void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
 
 protected Q_SLOTS:
-    void slotEnableCurrentFolder(Folder *folder, bool terminate = false);
-    void slotForceSyncCurrentFolder(Folder *folder);
-    void slotRemoveCurrentFolder(Folder *folder);
-    void slotEnableVfsCurrentFolder(Folder *folder);
-    void slotDisableVfsCurrentFolder(Folder *folder);
-    void slotFolderWizardAccepted();
     void slotDeleteAccount();
     void slotOpenAccountInBrowser();
     void slotToggleSignInState();
-    //  void slotCustomContextMenuRequested(Folder *folder);
 
 protected:
     void accountSettingUpChanged(bool settingUp);
@@ -103,7 +93,6 @@ private:
     enum class StatusIcon { None, Connected, Disconnected, Info, Warning };
     void showConnectionLabel(const QString &message, StatusIcon statusIcon, QStringList errors = QStringList());
 
-    void doForceSyncCurrentFolder(Folder *selectedFolder);
 
     void buildManageAccountMenu();
 
