@@ -301,7 +301,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Shfletoni…</translation>
     </message>
 </context>
 <context>
@@ -426,7 +426,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
         <source>Add new folder sync…</source>
-        <translation type="unfinished"/>
+        <translation>Shtoni njëkohësim të ri dosjesh…</translation>
     </message>
 </context>
 <context>
@@ -609,12 +609,12 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
         <source>Updating credentials…</source>
-        <translation type="unfinished"/>
+        <translation>Po përditësohen kredenciale…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="568"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Po lidhet…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -874,12 +874,12 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/accountview.cpp" line="573"/>
         <source>Updating credentials…</source>
-        <translation type="unfinished"/>
+        <translation>Po përditësohen kredenciale…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="582"/>
         <source>Connecting…</source>
-        <translation type="unfinished"/>
+        <translation>Po bëhet lidhja…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="578"/>
@@ -976,7 +976,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Shfletoni…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
@@ -2032,7 +2032,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Add account…</source>
-        <translation type="unfinished"/>
+        <translation>Shtoni llogari…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
@@ -2183,8 +2183,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
-        <source>Failed to look up webfinger instances: %1</source>
-        <translation>S’u arrit të kërkohet për instanca “webfinger”: %1</translation>
+        <source>Failed to look up WebFinger instances: %1</source>
+        <translation>S’u arrit të kërkohet për instanca WebFinger: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
@@ -2237,7 +2237,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>Downloading %1. Please wait…</source>
-        <translation type="unfinished"/>
+        <translation>Po shkarkohet %1. Ju lutemi, prisni…</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2262,7 +2262,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
         <source>Checking update server…</source>
-        <translation type="unfinished"/>
+        <translation>Po kontrollohet shërbyesi i përditësimeve…</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2676,7 +2676,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>%1 kartela është aktualisht në përdorim</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
@@ -2699,7 +2699,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="41"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"/>
+        <translation>%1 kartela është aktualisht në përdorim</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="121"/>
@@ -2877,7 +2877,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
         <source>Loading …</source>
-        <translation type="unfinished"/>
+        <translation>Po ngarkohet…</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2979,13 +2979,13 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
         <source>Select new location…</source>
-        <translation type="unfinished"/>
+        <translation>Përzgjidhni vendndodhje të re…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Share…</source>
-        <translation type="unfinished"/>
+        <translation>Ndani me të tjerë…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3016,28 +3016,28 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
         <source>Rename…</source>
-        <translation type="unfinished"/>
+        <translation>Riemërtojeni…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
         <source>Rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Riemërtoni dhe ngarkoni…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
         <source>Move and rename…</source>
-        <translation type="unfinished"/>
+        <translation>Lëvizni dhe riemërtoni…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
         <source>Move, rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Lëvizni, riemërtoni dhe ngarkoni…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
         <source>Move and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Lëvizni dhe ngarkoni…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
