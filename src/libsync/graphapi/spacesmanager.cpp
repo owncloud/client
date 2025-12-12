@@ -66,26 +66,33 @@ void SpacesManager::refresh()
         QList<QString> deletedSpaces;
 
         if (drivesJob->httpStatusCode() == 200) {
-            auto oldKeys = _spacesMap.keys();
+            QList<QString> oldKeys = _spaces.keys();
             for (const auto &dr : drivesJob->drives()) {
-                auto *space = this->space(dr.getId());
-                oldKeys.removeAll(dr.getId());
-                if (!space) {
-                    space = new Space(this, dr, hasManyPersonalSpaces);
-                    _spacesMap.insert(dr.getId(), space);
-                    emit spaceAdded(_account->uuid(), space);
-                    newSpaces.append(space);
-                } else {
+                bool driveDisabled = dr.getRoot().getDeleted().getState() == QLatin1String("trashed");
+                auto *space = _spaces.value(dr.getId(), nullptr);
+                if (space && !driveDisabled) {
+                    // we need to treat any newly disabled spaces as if they were deleted so leave it
+                    // in the old key list for removal, below
+                    oldKeys.removeOne(dr.getId());
                     bool changed = space->setDrive(dr);
                     if (changed)
                         emit spaceChanged(space);
                 }
+                // likewise, don't add newly discovered space if it's disabled
+                else if (!space && !driveDisabled) {
+                    space = new Space(this, dr, hasManyPersonalSpaces);
+                    _spaces.insert(dr.getId(), space);
+                    emit spaceAdded(_account->uuid(), space);
+                    newSpaces.append(space);
+                }
             }
             for (const QString &id : std::as_const(oldKeys)) {
-                auto *oldSpace = _spacesMap.take(id);
-                emit spaceAboutToBeRemoved(_account->uuid(), oldSpace);
-                deletedSpaces.append(id);
-                oldSpace->deleteLater();
+                auto *oldSpace = _spaces.take(id);
+                if (oldSpace) {
+                    emit spaceAboutToBeRemoved(_account->uuid(), oldSpace);
+                    deletedSpaces.append(id);
+                    oldSpace->deleteLater();
+                }
             }
             if (!_ready) {
                 _ready = true;
@@ -93,9 +100,10 @@ void SpacesManager::refresh()
             }
         }
         if (!newSpaces.isEmpty())
-            emit spacesAdded(_account->uuid(), newSpaces);
+            emit spacesAdded(_account->uuid(), newSpaces, _spaces.count());
         if (!deletedSpaces.isEmpty())
-            emit spacesRemoved(_account->uuid(), deletedSpaces);
+            emit spacesRemoved(_account->uuid(), deletedSpaces, _spaces.count());
+        // todo: remove this once the old accountSettings are gone
         Q_EMIT updated(_account);
         _refreshTimer->start();
     });
@@ -107,7 +115,7 @@ Space *SpacesManager::space(const QString &id) const
 {
     if (id.isEmpty())
         return nullptr;
-    return _spacesMap.value(id, nullptr);
+    return _spaces.value(id, nullptr);
 }
 
 Account *SpacesManager::account() const
@@ -117,5 +125,5 @@ Account *SpacesManager::account() const
 
 QVector<Space *> SpacesManager::spaces() const
 {
-    return {_spacesMap.begin(), _spacesMap.end()};
+    return {_spaces.begin(), _spaces.end()};
 }
