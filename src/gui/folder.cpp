@@ -21,7 +21,6 @@
 #include "accountstate.h"
 #include "application.h"
 #include "common/checksums.h"
-#include "common/depreaction.h"
 #include "common/filesystembase.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -74,7 +73,8 @@ auto displayNameC()
     return QLatin1String("displayString");
 }
 
-auto deployedC()
+// todo #52 - eliminate this config value and scrub configs next major release
+[[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] auto deployedC()
 {
     return QStringLiteral("deployed");
 }
@@ -330,7 +330,7 @@ QUrl Folder::webDavUrl() const
 {
     GraphApi::Space *sp = space();
     if (sp)
-        return QUrl(sp->drive().getRoot().getWebDavUrl());
+        return sp->webDavUrl();
     return _definition.webDavUrl();
 }
 
@@ -1127,6 +1127,11 @@ FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, con
     , _spaceId(spaceId)
     , _id(id)
     , _displayName(displayName)
+{
+}
+
+FolderDefinition::FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName)
+    : FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName)
 {
 }
 

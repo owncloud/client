@@ -132,7 +132,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="OCC::AccountFolderView" name="accountFolderView">
+     <widget class="OCC::AccountFoldersView" name="accountFoldersView">
       <property name="accessibleName">
        <string>Sync connections</string>
       </property>
@@ -149,9 +149,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>OCC::AccountFolderView</class>
+   <class>OCC::AccountFoldersView</class>
    <extends>QWidget</extends>
-   <header>gui/FoldersGui/accountfolderview.h</header>
+   <header>gui/FoldersGui/accountfoldersview.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

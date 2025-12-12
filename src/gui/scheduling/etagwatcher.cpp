@@ -36,7 +36,7 @@ void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
     QString spaceId = space->id();
     QUuid account = space->accountId();
     if (_lastEtagJobForSpace.contains(account) && _lastEtagJobForSpace[account].contains(spaceId)) {
-        QString etag = Utility::normalizeEtag(space->drive().getRoot().getETag());
+        QString etag = Utility::normalizeEtag(space->eTag());
         updateEtag(account, spaceId, etag);
     }
 }

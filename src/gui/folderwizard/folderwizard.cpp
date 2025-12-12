@@ -108,12 +108,12 @@ QString FolderWizardPrivate::initialLocalPath() const
 
 uint32_t FolderWizardPrivate::priority() const
 {
-    return _spacesPage->currentSpace()->priority();
+    return _spacesPage->currentSpace()->sortPriority();
 }
 
 QUrl FolderWizardPrivate::davUrl() const
 {
-    auto url = _spacesPage->currentSpace()->webdavUrl();
+    auto url = _spacesPage->currentSpace()->webDavUrl();
     if (!url.path().endsWith(QLatin1Char('/'))) {
         url.setPath(url.path() + QLatin1Char('/'));
     }
@@ -155,6 +155,13 @@ FolderWizard::FolderWizard(Account *account, QWidget *parent)
     setOptions(QWizard::CancelButtonOnLeft);
     setButtonText(QWizard::FinishButton, tr("Add Sync Connection"));
     setWizardStyle(QWizard::ModernStyle);
+
+    connect(this, &QWizard::accepted, this, &FolderWizard::sendResult);
+}
+
+void FolderWizard::sendResult()
+{
+    emit folderWizardAccepted(result());
 }
 
 FolderMan::SyncConnectionDescription FolderWizard::result()
