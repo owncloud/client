@@ -486,10 +486,11 @@ void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
     FolderMan::instance()->scheduler()->stop();
 
     // Terminate and reschedule any running sync
+    auto tracker = QUuid::createUuid();
     for (auto *folder : FolderMan::instance()->folders()) {
         if (folder->isSyncRunning()) {
             folder->slotTerminateSync(tr("User triggered force sync"));
-            FolderMan::instance()->scheduler()->enqueueFolder(folder);
+            FolderMan::instance()->scheduler()->enqueueFolder(folder, SyncScheduler::Priority::Low, tracker);
         }
     }
 
@@ -497,7 +498,7 @@ void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
     selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
 
     // Insert the selected folder at the front of the queue
-    FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High);
+    FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High, tracker);
 
     // Restart scheduler
     FolderMan::instance()->scheduler()->start();

@@ -48,7 +48,7 @@ public:
     explicit SyncScheduler(FolderMan *parent);
     ~SyncScheduler() override;
 
-    void enqueueFolder(Folder *folder, Priority priority = Priority::Low);
+    void enqueueFolder(Folder *folder, Priority priority, const QUuid& tracker);
 
     void start();
 

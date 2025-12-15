@@ -496,6 +496,8 @@ void Folder::startVfs()
     OC_ENFORCE(_vfs);
     OC_ENFORCE(_vfs->mode() == _definition.virtualFilesMode());
 
+    auto tracker = QUuid::createUuid();
+
     const auto result = Vfs::checkAvailability(path(), _vfs->mode());
     if (!result) {
         _syncResult.appendErrorString(result.error());
@@ -528,7 +530,7 @@ void Folder::startVfs()
             if (canSync()) {
                 // the vfs plugin detected that its metadata is out of sync and requests a new sync
                 // the request has a high priority as it is probably issued after a user request
-                FolderMan::instance()->scheduler()->enqueueFolder(this, SyncScheduler::Priority::High);
+                FolderMan::instance()->scheduler()->enqueueFolder(this, SyncScheduler::Priority::High, tracker);
             }
         });
         _vfsIsReady = true;
@@ -540,7 +542,7 @@ void Folder::startVfs()
             // Refactoring todo: also no. We need a general cleanup task to eval and fix all of these crossed triggers
             // the only element that should emit FolderMan signals is FolderMan! same for any/all other classes
             // I don't care if signals are now public: it is not correct for anyone but the owner to trigger them
-            FolderMan::instance()->scheduler()->enqueueFolder(this);
+            FolderMan::instance()->scheduler()->enqueueFolder(this, SyncScheduler::Priority::Low, tracker);
         }
     });
     connect(_vfs.get(), &Vfs::error, this, [this](const QString &error) {
@@ -850,11 +852,11 @@ bool Folder::reloadExcludes()
     return _engine->reloadExcludes();
 }
 
-void Folder::startSync()
+void Folder::startSync(const QUuid& tracker)
 {
     Q_ASSERT(isReady() && _folderWatcher);
     if (!isReady() || !_folderWatcher) {
-        qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
+        qCWarning(lcFolder, tracker) << "Folder sync attempted before ready and/or without valid folder watcher";
         return;
     }
 

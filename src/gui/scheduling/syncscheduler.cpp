@@ -135,10 +135,10 @@ SyncScheduler::~SyncScheduler()
     delete _queue;
 }
 
-void SyncScheduler::enqueueFolder(Folder *folder, Priority priority)
+void SyncScheduler::enqueueFolder(const QUuid& tracker, Folder *folder, Priority priority)
 {
     if (!folder->canSync()) {
-        qCWarning(lcSyncScheduler) << "Cannot enqueue folder" << folder->path() << ": folder is marked as cannot sync";
+        qCWarning(lcSyncScheduler, tracker) << "Cannot enqueue folder" << folder->path() << ": folder is marked as cannot sync";
         return;
     }
 
@@ -189,7 +189,7 @@ void SyncScheduler::startNext()
             Qt::SingleShotConnection);
         connect(_currentSync, &Folder::destroyed, this, &SyncScheduler::startNext, Qt::SingleShotConnection);
         qCInfo(lcSyncScheduler) << "Starting sync for" << _currentSync->path();
-        _currentSync->startSync();
+        _currentSync->startSync(tracker);
     }
 }
 
