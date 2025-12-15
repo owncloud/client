@@ -288,8 +288,6 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
         return;
 
     auto spaces = spacesMgr->spaces();
-    // we do not want to set up folder sync connections for disabled spaces (#10173)
-    spaces.erase(std::remove_if(spaces.begin(), spaces.end(), [](auto *space) { return space->disabled(); }), spaces.end());
 
     if (!spaces.isEmpty()) {
         setSyncEnabled(false);
@@ -297,7 +295,8 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
         QSettings settings = ConfigFile::makeQSettings();
         settings.beginGroup("Accounts");
 
-        // prepare the root - reality check this as I think the user can change this from default?
+        // prepare the root - reality check this as I think the user can change this from default? Yes they can but not for auto-loaded
+        // folders eg on account creation, which is what is happening here.
         const QString localDir(accountState->account()->defaultSyncRoot());
         if (!prepareFolder(localDir)) {
             return;
@@ -384,13 +383,12 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
             addFolderFromGui(accountState, fwr);
         }
         newUnsyncedSpaces.clear();
-        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
-    } else if (!newUnsyncedSpaces.isEmpty()) {
+    } else {
         for (auto *sp : std::as_const(newUnsyncedSpaces))
             _unsyncedSpaces[accountId].insert(sp->id(), sp);
-
-        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
     }
+
+    emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
 }
 
 bool FolderMan::ensureJournalGone(const QString &journalDbFile)

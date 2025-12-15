@@ -69,17 +69,18 @@ void SpacesManager::refresh()
             QList<QString> oldKeys = _spaces.keys();
             for (const auto &dr : drivesJob->drives()) {
                 bool driveDisabled = dr.getRoot().getDeleted().getState() == QLatin1String("trashed");
+                // we need to treat any newly disabled spaces as if they were deleted so leave it alone.
+                // if an existing space is now disabled it will remain in the old key list for removal, below
+                if (driveDisabled)
+                    continue;
+
                 auto *space = _spaces.value(dr.getId(), nullptr);
-                if (space && !driveDisabled) {
-                    // we need to treat any newly disabled spaces as if they were deleted so leave it
-                    // in the old key list for removal, below
+                if (space) {
                     oldKeys.removeOne(dr.getId());
                     bool changed = space->setDrive(dr);
                     if (changed)
                         emit spaceChanged(space);
-                }
-                // likewise, don't add newly discovered space if it's disabled
-                else if (!space && !driveDisabled) {
+                } else {
                     space = new Space(this, dr, hasManyPersonalSpaces);
                     _spaces.insert(dr.getId(), space);
                     emit spaceAdded(_account->uuid(), space);
