@@ -107,9 +107,7 @@ QUrlQuery Updater::getQueryParams()
     query.addQueryItem(QStringLiteral("versionsuffix"), OCC::Version::suffix());
 
     auto channel = ConfigFile().updateChannel();
-    if (channel != QLatin1String("stable")) {
-        query.addQueryItem(QStringLiteral("channel"), channel);
-    }
+    query.addQueryItem("channel", channel);
 
     // requested by #11328
     // we use the names Qt gives us instead of inventing our own labels
@@ -126,7 +124,7 @@ QUrlQuery Updater::getQueryParams()
 Updater *Updater::create()
 {
     auto url = updateUrl();
-    qCDebug(lcUpdater) << url;
+    qCDebug(lcUpdater) << "Updater URL: "<< url.toDisplayString();
     if (url.isEmpty()) {
         qCWarning(lcUpdater) << "Not a valid updater URL, will not do update check";
         return nullptr;

@@ -59,7 +59,6 @@ const QString optionalDesktopNotificationsC()
 }
 const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
-const QString updateChannelC() { return QStringLiteral("updateChannel"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
@@ -491,24 +490,17 @@ void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
 
 QString ConfigFile::updateChannel() const
 {
-    QString defaultUpdateChannel = QStringLiteral("stable");
+    // By now only two channels are supported: ocis and beta-ocis
     const QString suffix = OCC::Version::suffix();
     if (suffix.startsWith(QLatin1String("daily"))
         || suffix.startsWith(QLatin1String("nightly"))
         || suffix.startsWith(QLatin1String("alpha"))
         || suffix.startsWith(QLatin1String("rc"))
         || suffix.startsWith(QLatin1String("beta"))) {
-        defaultUpdateChannel = QStringLiteral("beta");
+        return "ocis-beta";
     }
 
-    auto settings = makeQSettings();
-    return settings.value(updateChannelC(), defaultUpdateChannel).toString();
-}
-
-void ConfigFile::setUpdateChannel(const QString &channel)
-{
-    auto settings = makeQSettings();
-    settings.setValue(updateChannelC(), channel);
+    return "ocis";
 }
 
 QString ConfigFile::uiLanguage() const
