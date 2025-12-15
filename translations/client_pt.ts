@@ -946,32 +946,32 @@ Esta ação interromperá qualquer sincronização em andamento.</translation>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
         <source>Sync and download options</source>
-        <translation type="unfinished"/>
+        <translation>Opções de sincronização e download</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="56"/>
         <source>Download location</source>
-        <translation type="unfinished"/>
+        <translation>Local de download</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="74"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
-        <translation type="unfinished"/>
+        <translation>Sincronize e baixe arquivos conforme os utiliza (economiza espaço no disco rígido).</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="79"/>
         <source>Automatically sync and download folders and files</source>
-        <translation type="unfinished"/>
+        <translation>Sincronize e baixe pastas e arquivos automaticamente.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="85"/>
         <source>Sync and download folders manually</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizar e baixar pastas manualmente</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="132"/>
         <source>Download location on the local machine</source>
-        <translation type="unfinished"/>
+        <translation>Local para baixar na máquina local</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
@@ -981,37 +981,37 @@ Esta ação interromperá qualquer sincronização em andamento.</translation>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
         <source>Browse for a download location</source>
-        <translation type="unfinished"/>
+        <translation>Procure um local para salvar o que baixar.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="210"/>
         <source>Invalid local download directory %1: %2</source>
-        <translation type="unfinished"/>
+        <translation>Diretório local para baixar é inválido %1: %2</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="213"/>
         <source>your user directory may not be chosen as the sync root.</source>
-        <translation type="unfinished"/>
+        <translation>Seu diretório de usuário pode não ter sido escolhido como raiz de sincronização.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="220"/>
         <source>path is not located on a supported Apple File System.</source>
-        <translation type="unfinished"/>
+        <translation>O caminho não está localizado em um sistema de arquivos Apple compatível.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="225"/>
         <source>path must be absolute.</source>
-        <translation type="unfinished"/>
+        <translation>O caminho deve ser absoluto.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="239"/>
         <source>selected path does not support using virtual file system.</source>
-        <translation type="unfinished"/>
+        <translation>O caminho selecionado não suporta o uso de sistema de arquivos virtual.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="254"/>
         <source>Select sync root</source>
-        <translation type="unfinished"/>
+        <translation>Selecione a raiz de sincronização</translation>
     </message>
 </context>
 <context>
@@ -1049,17 +1049,17 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="45"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo do nome do aplicativo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="47"/>
         <source>You&apos;re all set! Open %1 and get started.</source>
-        <translation type="unfinished"/>
+        <translation>Está tudo pronto! Abra %1 e comece.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo adicional definido pela organização</translation>
     </message>
 </context>
 <context>
@@ -1087,7 +1087,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="226"/>
         <source>No account configured</source>
-        <translation type="unfinished"/>
+        <translation>Nenhuma conta configurada</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="261"/>
@@ -1113,7 +1113,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
         <source>Server does not support OAuth</source>
-        <translation type="unfinished"/>
+        <translation>O servidor não suporta OAuth.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
@@ -1123,7 +1123,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
         <source>Failed to determine authentication type: %1</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível determinar o tipo de autenticação: %1</translation>
     </message>
 </context>
 <context>
@@ -1139,7 +1139,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="276"/>
         <source>The account was deleted before we could start the propfind job</source>
-        <translation type="unfinished"/>
+        <translation>A conta foi excluída antes que pudéssemos iniciar a busca de propriedades.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
@@ -1184,17 +1184,17 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="67"/>
         <source>server sent invalid content type: %1.</source>
-        <translation type="unfinished"/>
+        <translation>O servidor enviou um tipo de conteúdo inválido: %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="73"/>
         <source>could not parse Capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível analisar as capacidades do servidor.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="81"/>
         <source>reply sent for different subject (server): %1</source>
-        <translation type="unfinished"/>
+        <translation>Resposta enviada para assunto diferente (servidor): %1</translation>
     </message>
 </context>
 <context>
@@ -2006,12 +2006,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="50"/>
         <source>no error details are available</source>
-        <translation type="unfinished"/>
+        <translation>Não há detalhes disponíveis sobre o erro.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="51"/>
         <source>Unable to connect to server during account creation: %1.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível conectar ao servidor durante a criação da conta: %1.</translation>
     </message>
 </context>
 <context>
@@ -2032,7 +2032,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Add account…</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar conta…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
@@ -2052,7 +2052,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
         <source>Open sign in again</source>
-        <translation type="unfinished"/>
+        <translation>Abrir sessão novamente</translation>
     </message>
 </context>
 <context>
@@ -2078,12 +2078,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Successfully signed in</source>
-        <translation type="unfinished"/>
+        <translation>Login efetuado com sucesso.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="157"/>
         <source>Now, explore %1 on desktop.</source>
-        <translation type="unfinished"/>
+        <translation>Agora, explore %1 no computador.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="268"/>
@@ -2126,7 +2126,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="310"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation type="unfinished"/>
+        <translation>Você fez login com o usuário 1%11, mas deve fazer login com o usuário 2%22.3Por favor, retorne ao cliente %3 e reinicie a autenticação.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="313"/>
@@ -2139,37 +2139,37 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo do nome do aplicativo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation type="unfinished"/>
+        <translation>Deixe esta tela aberta. Uma solicitação de login aparecerá no seu navegador para conectá-lo ao seguinte endereço.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>URL de login</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"/>
+        <translation>Para copiar o URL de login para a área de transferência, use o botão de copiar.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="83"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"/>
+        <translation>Copie o URL para fazer login.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="103"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo adicional definido pela organização</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="180"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL copiada</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
@@ -2179,12 +2179,12 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
-        <translation type="unfinished"/>
+        <translation>Por favor, copie o URL de autenticação usando o botão acima e forneça essas informações ao suporte.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"/>
+        <translation>Falha ao localizar instâncias do WebFinger: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
@@ -2194,32 +2194,32 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
         <source>Unable to retrieve capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível recuperar as capacidades do servidor.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"/>
+        <translation>Este cliente não suporta o servidor.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
-        <translation type="unfinished"/>
+        <translation>Erro ao tentar fazer login em um servidor habilitado para OAuth2. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
         <source>Unable to open browser with provided URL. %1</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível abrir o navegador com o URL fornecido. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
-        <translation type="unfinished"/>
+        <translation>A autenticação OAuth2 requer uma conexão segura. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
         <source>Authorization server unreachable. %1</source>
-        <translation type="unfinished"/>
+        <translation>Servidor de autorização inacessível. %1</translation>
     </message>
 </context>
 <context>
@@ -2237,7 +2237,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>Downloading %1. Please wait…</source>
-        <translation type="unfinished"/>
+        <translation>Baixando 1%. Aguarde…</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2262,7 +2262,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
         <source>Checking update server…</source>
-        <translation type="unfinished"/>
+        <translation>Verificando o servidor de atualizações…</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2360,7 +2360,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location filename="../src/libsync/discovery.cpp" line="954"/>
         <location filename="../src/libsync/discovery.cpp" line="1316"/>
         <source>account was deleted. Unable to continue</source>
-        <translation type="unfinished"/>
+        <translation>A conta foi excluída. Não é possível continuar.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1113"/>
@@ -2714,7 +2714,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="161"/>
         <source>The server did not acknowledge the file upload. (No e-tag was present)</source>
-        <translation type="unfinished"/>
+        <translation>O servidor não reconheceu o envio do arquivo. (Nenhuma tag eletrônica estava presente)</translation>
     </message>
 </context>
 <context>
@@ -2783,7 +2783,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>O IdP está inacessível. Contate o administrador do sistema ou tente novamente mais tarde.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
@@ -2796,37 +2796,37 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="43"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo do nome do aplicativo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
         <source>Sign in required</source>
-        <translation type="unfinished"/>
+        <translation>É necessário fazer login.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="53"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
-        <translation type="unfinished"/>
+        <translation>Você pode ter sido desconectado automaticamente devido a um problema no servidor ou tempo limite excedido. Por favor, faça login novamente.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>URL de login</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="65"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"/>
+        <translation>Para copiar o URL de login para a área de transferência, use o botão de copiar.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="71"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"/>
+        <translation>Copie o URL para fazer login.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="92"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo adicional definido pela organização</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
@@ -2841,7 +2841,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL copiada</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
@@ -2979,13 +2979,13 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
         <source>Select new location…</source>
-        <translation type="unfinished"/>
+        <translation>Selecione um novo local…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Share…</source>
-        <translation type="unfinished"/>
+        <translation>Compartilhar…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -3016,28 +3016,28 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
         <source>Rename…</source>
-        <translation type="unfinished"/>
+        <translation>Renomear…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
         <source>Rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Renomear e carregar…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
         <source>Move and rename…</source>
-        <translation type="unfinished"/>
+        <translation>Mover e renomear…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
         <source>Move, rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Mover, renomear e carregar…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
         <source>Move and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Mover e carregar…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
@@ -3236,7 +3236,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
         <source>Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Seu navegador será aberto para concluir o login.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
@@ -3251,22 +3251,22 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Digite o endereço do seu servidor para começar. Seu navegador será aberto para concluir o login.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
         <source>Server address field</source>
-        <translation type="unfinished"/>
+        <translation>Campo de endereço do servidor</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
         <source>Enter your server address here</source>
-        <translation type="unfinished"/>
+        <translation>Insira o endereço do seu servidor aqui.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Logotipo adicional definido pela organização</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
@@ -3276,7 +3276,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Esquema de URL inválido. Somente https é aceito.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
@@ -3289,22 +3289,22 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="64"/>
         <source>Network request to collect user info failed</source>
-        <translation type="unfinished"/>
+        <translation>A solicitação de rede para coletar informações do usuário falhou.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="70"/>
         <source>Unable to retrieve user info: invalid credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível recuperar as informações do usuário: credenciais inválidas.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="72"/>
         <source>Unexpected network response when retrieving user info.</source>
-        <translation type="unfinished"/>
+        <translation>Resposta inesperada da rede ao recuperar informações do usuário.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="82"/>
         <source>Retrieving user info failed with JSON error.</source>
-        <translation type="unfinished"/>
+        <translation>A recuperação das informações do usuário falhou com um erro JSON.</translation>
     </message>
 </context>
 <context>
@@ -3344,42 +3344,42 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="617"/>
         <source>Could not find StorageProviderState property %1</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível encontrar a propriedade StorageProviderState %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="631"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível encontrar a pasta de armazenamento para %1 erro: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
         <source>Could not retrieve StorageFolder for %1 %2</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível recuperar a pasta de armazenamento para %1 %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="678"/>
         <source>%1 is managed by another sync client</source>
-        <translation type="unfinished"/>
+        <translation>%1 é gerenciado por outro cliente de sincronização</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
         <source>The folder is used by a different client %1</source>
-        <translation type="unfinished"/>
+        <translation>A pasta é usada por um cliente diferente %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"/>
+        <translation>Não é possível fazer o downgrade da pasta de %1 para %2.</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
         <source>Error registering StorageProvider for %1: %2 %3</source>
-        <translation type="unfinished"/>
+        <translation>Erro ao registrar o StorageProvider para %1: %2 %3</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
         <source>CfConnectSyncRoot: %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>CfConnectSyncRoot: %1 erro: %2</translation>
     </message>
 </context>
 <context>
@@ -3470,19 +3470,21 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <location filename="../src/gui/owncloudgui.cpp" line="254"/>
         <source>New account failure</source>
-        <translation type="unfinished"/>
+        <translation>Falha na criação da conta</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>As informações necessárias para criar uma nova conta estão incompletas. Execute o assistente novamente.</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="255"/>
         <source>The account could not be created due to an error:
 %1
 Please check the server&apos;s availability then run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível criar a conta devido a um erro:
+%1
+Verifique a disponibilidade do servidor e execute o assistente novamente.</translation>
     </message>
 </context>
 <context>
