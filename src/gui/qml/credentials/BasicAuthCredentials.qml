@@ -64,7 +64,7 @@ Credentials {
             horizontalAlignment: TextField.AlignHCenter
             placeholderText: qsTr("Enter Password")
             text: credentials.password
-            echoMode: TextField.PasswordEchoOnEdit
+            echoMode: TextField.Password
             onTextChanged: {
                 credentials.password = text;
             }
