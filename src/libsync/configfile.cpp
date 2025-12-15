@@ -488,21 +488,6 @@ void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
     settings.sync();
 }
 
-QString ConfigFile::updateChannel() const
-{
-    // By now only two channels are supported: ocis and beta-ocis
-    const QString suffix = OCC::Version::suffix();
-    if (suffix.startsWith(QLatin1String("daily"))
-        || suffix.startsWith(QLatin1String("nightly"))
-        || suffix.startsWith(QLatin1String("alpha"))
-        || suffix.startsWith(QLatin1String("rc"))
-        || suffix.startsWith(QLatin1String("beta"))) {
-        return "ocis-beta";
-    }
-
-    return "ocis";
-}
-
 QString ConfigFile::uiLanguage() const
 {
     auto settings = makeQSettings();
