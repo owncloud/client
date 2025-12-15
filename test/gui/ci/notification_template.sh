@@ -70,7 +70,7 @@ log_success() {
 
 GITHUB_BUILD_LINK="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-message_html='<b>'$BUILD_STATUS'</b> <a href="'${GITHUB_BUILD_LINK}'">'${GITHUB_REPOSITORY}'#'$COMMIT_SHA_SHORT'</a> ('${BRANCH_NAME}') by <b>'${COMMIT_AUTHOR:-unknown}'</b> <br> <b>'"${TEST_LOGS}"'</b>'
+message_html='<b>'$BUILD_STATUS'</b> <a href="'${GITHUB_BUILD_LINK}'">'${GITHUB_REPOSITORY}'#'$COMMIT_SHA_SHORT'</a> ('${BRANCH_NAME}') by <b>'${COMMIT_AUTHOR}'</b> <br> <b>'"${TEST_LOGS}"'</b>'
 message_html=$(echo "$message_html" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
 
 log_info "Sending report to the element chat..."
