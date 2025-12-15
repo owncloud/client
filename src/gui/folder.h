@@ -237,6 +237,14 @@ public:
 
     bool syncPaused() const { return _definition.paused(); }
 
+    /** a folder is unavailable if its space is missing from the spaces manager
+     *  this happens when a folder has been added for an existing space, then that space is disabled
+     *  or deleted on the server.
+     *  we should not try to sync unavailable spaces!
+     */
+    bool isAvailable() const { return space() != nullptr; }
+    void setAvailable(bool available);
+
     /**
      * Returns true when the folder may sync.
      */

@@ -376,8 +376,27 @@ private:
      */
     void loadSpaces(AccountState *accountState, bool useVfs);
 
-    // void slotSpacesUpdated(Account *account);
+    /**
+     * @brief onSpacesAdded - handles notice from spaces manager that spaces were added
+     * @param accountId - account the new spaces live in
+     * @param spaces - the new spaces
+     * @param totalSpaceCount - total space count after new spaces added
+     *
+     * important change: the spaces manager now filters out disabled spaces automatically so no one else should be trying to figure out
+     * if a space is disabled or not - they will not be part of the active space set from now on
+     */
     void onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces, int totalSpaceCount);
+
+    /**
+     * @brief onSpacesRemoved - handles notice from spaces manager that spaces were removed
+     * @param accountId - account the spaces lived in
+     * @param spaceIds - these are the spoace id's of removed spaces since the pointers are already gone
+     * @param totalSpaceCount - the number of spaces available after removal
+     *
+     * important change: spaces that have been disabled will now appear in the "removed" collection because the spaces manager filters
+     * them out from the start, now.
+     */
+    void onSpacesRemoved(const QUuid &accountId, QList<QString> spaceIds, int totalSpaceCount);
 
     /**
      *  reads the folder defs from the config for a single account.

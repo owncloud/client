@@ -360,6 +360,8 @@ void SocketApi::slotUpdateFolderView(Folder *f)
         }
         case SyncResult::SetupError:
             [[fallthrough]];
+        case SyncResult::Unavailable:
+            [[fallthrough]];
         case OCC::SyncResult::Undefined:
             Q_FALLTHROUGH();
         case OCC::SyncResult::NotYetStarted:

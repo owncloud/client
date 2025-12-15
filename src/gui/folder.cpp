@@ -351,7 +351,7 @@ bool Folder::canSync() const
 {
     if (!_engine || !_accountState || !_accountState->account() || !_folderWatcher)
         return false;
-    return !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
+    return isAvailable() && !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
 }
 
 bool Folder::isReady() const
@@ -376,6 +376,23 @@ void Folder::setSyncPaused(bool paused)
     } else {
         setSyncState(SyncResult::Paused);
     }
+    Q_EMIT canSyncChanged();
+}
+
+void Folder::setAvailable(bool available)
+{
+    if (available != (space() != nullptr))
+        return;
+
+    _syncResult.reset();
+    if (space() == nullptr) {
+        _syncResult.setStatus(SyncResult::Status::Unavailable);
+        _syncResult.appendErrorString(tr("The folder has been disabled or removed from the server"));
+    } else {
+        _syncResult.setStatus(SyncResult::Status::NotYetStarted);
+    }
+
+    emit syncStateChange();
     Q_EMIT canSyncChanged();
 }
 
@@ -849,7 +866,6 @@ bool Folder::reloadExcludes()
 
 void Folder::startSync()
 {
-    Q_ASSERT(isReady() && _folderWatcher);
     if (!isReady() || !_folderWatcher) {
         qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
         return;

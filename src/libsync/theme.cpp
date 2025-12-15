@@ -366,6 +366,8 @@ QString Theme::syncStateIconName(const SyncResult &result) const
         return QStringLiteral("offline");
     case SyncResult::Error:
         [[fallthrough]];
+    case SyncResult::Unavailable:
+        [[fallthrough]];
     case SyncResult::SetupError:
         // FIXME: Use problem once we have an icon.
         return QStringLiteral("error");

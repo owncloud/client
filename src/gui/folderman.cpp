@@ -245,6 +245,8 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
             continue;
         }
 
+        folder->setAvailable(folder->space() != nullptr);
+
         settings.endGroup(); // folderAlias
     }
     settings.endGroup(); // accountId\Folders
@@ -252,12 +254,14 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
     GraphApi::SpacesManager *spaceMan = account->account()->spacesManager();
     _scheduler->connectSpacesManager(spaceMan);
     connect(spaceMan, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::onSpacesAdded);
+    connect(spaceMan, &GraphApi::SpacesManager::spacesRemoved, this, &FolderMan::onSpacesRemoved);
 
     QUuid accountId = account->account()->uuid();
     emit folderListChanged(accountId, _folders[accountId].values());
     // at this stage the spaces manager tends to be empty
     int spaceCount = spaceMan->spacesCount();
-    emit unsyncedSpaceCountChanged(accountId, spaceCount - _folders[accountId].count(), spaceCount);
+    int unsyncedCount = _unsyncedSpaces.contains(accountId) ? _unsyncedSpaces[accountId].count() : 0;
+    emit unsyncedSpaceCountChanged(accountId, unsyncedCount, spaceCount);
 
     return true;
 }
@@ -324,6 +328,8 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
         _scheduler->connectSpacesManager(spacesMgr);
         // initial load is complete, now we just wait for spaces to be added or removed incrementally
         connect(spacesMgr, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::onSpacesAdded);
+        connect(spacesMgr, &GraphApi::SpacesManager::spacesRemoved, this, &FolderMan::onSpacesRemoved);
+
         QUuid id = accountState->account()->uuid();
         emit folderListChanged(id, _folders[id].values());
         int spaceCount = spacesMgr->spacesCount();
@@ -344,8 +350,12 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
     for (auto space : std::as_const(spaces)) {
         // be sure to eliminate any spaces that are already in the unsynced list to prevent auto-adding spaces that the
         // user explicitly removed from sync
-        if (isSpaceSynced(space) || (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(space->id())))
+        if (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(space->id()))
             newUnsyncedSpaces.remove(space);
+        else if (_folders.contains(accountId) && _folders[accountId].contains(space->id())) {
+            newUnsyncedSpaces.remove(space);
+            _folders[accountId][space->id()]->setAvailable(true);
+        }
     }
 
 
@@ -390,6 +400,24 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
 
     emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
 }
+
+void FolderMan::onSpacesRemoved(const QUuid &accountId, QList<QString> spaceIds, int totalSpaceCount)
+{
+    if (!_unsyncedSpaces.contains(accountId) && !_folders.contains(accountId))
+        return;
+
+    for (const QString &id : std::as_const(spaceIds)) {
+        _unsyncedSpaces[accountId].remove(id);
+
+        if (_folders[accountId].contains(id)) {
+            Folder *f = _folders[accountId][id];
+            f->setAvailable(false);
+        }
+    }
+
+    emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), totalSpaceCount);
+}
+
 
 bool FolderMan::ensureJournalGone(const QString &journalDbFile)
 {
