@@ -572,12 +572,14 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit folderListChanged(id, {});
 
     for (const auto &f : std::as_const(_folders[id])) {
-        // _unsyncedSpaces.remove(f->definition().spaceId());
         removeFolderSettings(f, settings);
         deleteFolderSync(f);
     }
 
     _folders.remove(id);
+    _unsyncedSpaces.remove(id);
+    // this is probably pointless but should not hurt
+    emit unsyncedSpaceCountChanged(id, 0, 0);
 }
 
 void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
@@ -664,7 +666,9 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
         return nullptr;
     }
 
-    if (Folder *f = folder(accountState->account()->uuid(), folderDefinition.spaceId())) {
+    QUuid accountId = accountState->account()->uuid();
+
+    if (Folder *f = folder(accountId, folderDefinition.spaceId())) {
         qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
         return f;
     }
@@ -678,8 +682,9 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
+    QString spaceId = folder->definition().spaceId();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
-    _folders[accountState->account()->uuid()].insert(folder->definition().spaceId(), folder);
+    _folders[accountId].insert(spaceId, folder);
 
     if (folder->syncPaused()) {
         _disabledFolders.insert(folder);
@@ -780,7 +785,14 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
 void FolderMan::removeFolderFromGui(Folder *f)
 {
     Q_ASSERT(f->accountState() && f->accountState()->account());
-    emit folderRemoved(f->accountState()->account()->uuid(), f);
+
+    QUuid accountId = f->accountState()->account()->uuid();
+    emit folderRemoved(accountId, f);
+    if (f->isAvailable())
+    {
+        _unsyncedSpaces[accountId].insert(f->definition().spaceId(), f->space());
+        emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), f->accountState()->account()->spacesManager()->spacesCount());
+    }
     removeFolderSettings(f);
     deleteFolderSync(f);
 }
@@ -1170,8 +1182,15 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
 
 
     if (f) {
+        QUuid accountId = accountState->account()->uuid();
         saveFolder(f);
-        emit folderAdded(accountState->account()->uuid(), f);
+        emit folderAdded(accountId, f);
+
+        if (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(f->definition().spaceId()))
+        {
+            _unsyncedSpaces[accountId].remove(f->definition().spaceId());
+            emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), accountState->account()->spacesManager()->spacesCount());
+        }
 
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
