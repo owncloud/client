@@ -11,7 +11,12 @@ TEST_LOGS=""
 BRANCH_NAME="${GITHUB_REF_NAME}"
 ROOMID="!rnWsCVUmDHDJbiSPMM:matrix.org"
 
-COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an' 2>/dev/null)
+
+if [ "${GITHUB_EVENT_NAME}" == "schedule" ]; then
+    COMMIT_AUTHOR="Scheduled Run ($(git log -1 --pretty=format:'%an' 2>/dev/null))"
+else
+    COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an' 2>/dev/null)
+fi
 
 if [ "${GITHUB_BUILD_STATUS}" == "failure" ]; then
     BUILD_STATUS="❌️ Failure"
