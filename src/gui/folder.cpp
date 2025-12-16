@@ -384,8 +384,9 @@ void Folder::setAvailable(bool available)
     if (available != (space() != nullptr))
         return;
 
+    _available = available;
     _syncResult.reset();
-    if (space() == nullptr) {
+    if (!_available) {
         _syncResult.setStatus(SyncResult::Status::Unavailable);
         _syncResult.appendErrorString(tr("The folder has been disabled or removed from the server"));
     } else {
@@ -393,7 +394,7 @@ void Folder::setAvailable(bool available)
     }
 
     emit syncStateChange();
-    Q_EMIT canSyncChanged();
+    emit canSyncChanged();
 }
 
 void Folder::setSyncState(SyncResult::Status state)

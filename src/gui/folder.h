@@ -242,7 +242,7 @@ public:
      *  or deleted on the server.
      *  we should not try to sync unavailable spaces!
      */
-    bool isAvailable() const { return space() != nullptr; }
+    bool isAvailable() const { return _available; }
     void setAvailable(bool available);
 
     /**
@@ -513,6 +513,9 @@ private:
      * Setting up vfs is an async operation
      */
     bool _vfsIsReady = false;
+
+    // does the folder have a corresponding space on the server? folderman will update the value if not
+    bool _available = true;
 
     /**
      * Watches this folder's local directory for changes.
